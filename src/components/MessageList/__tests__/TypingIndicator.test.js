@@ -2,9 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { TypingIndicator } from '../TypingIndicator';
 
 import { Chat } from '../../Chat/Chat';
@@ -12,6 +9,12 @@ import { Chat } from '../../Chat/Chat';
 import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
+
+import {
+  generateStaticUser,
+  generateUser,
+} from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 afterEach(cleanup);
 

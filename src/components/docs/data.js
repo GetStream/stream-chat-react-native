@@ -4,7 +4,7 @@ const StreamChat = require('stream-chat').StreamChat;
 const Dayjs = require('dayjs');
 export const client = new StreamChat('qk4nn7rpcn75');
 
-client.setUser(
+client.connectUser(
   {
     id: 'John',
   },

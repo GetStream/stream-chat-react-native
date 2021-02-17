@@ -1,18 +1,18 @@
 import React from 'react';
-import { ThemeProvider } from 'styled-components/native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
+
+import { MessageSystem } from '../MessageSystem';
+
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { Streami18n } from '../../../utils/Streami18n';
 
 import {
   generateMessage,
   generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser } from 'mock-builders/generator/user';
-
-import { MessageSystem } from '../MessageSystem';
-
-import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { defaultTheme } from '../../../styles/themeConstants';
-import { Streami18n } from '../../../utils/Streami18n';
+} from '../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../mock-builders/generator/user';
 
 afterEach(cleanup);
 
@@ -22,7 +22,7 @@ describe('MessageSystem', () => {
     const translators = await i18nInstance.getTranslators();
     const message = generateMessage();
     const { queryByTestId } = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <TranslationProvider value={translators}>
           <MessageSystem message={message} />
         </TranslationProvider>
@@ -40,7 +40,7 @@ describe('MessageSystem', () => {
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
     const { toJSON } = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <TranslationProvider value={translators}>
           <MessageSystem message={message} />
         </TranslationProvider>

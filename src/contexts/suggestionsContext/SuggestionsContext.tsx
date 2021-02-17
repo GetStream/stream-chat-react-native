@@ -1,18 +1,10 @@
-import React, {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { findNodeHandle, Keyboard, View } from 'react-native';
-
-import { SuggestionsList } from './SuggestionsList';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
+import type { Emoji } from '../../emoji-data/compiled';
 import type {
   DefaultCommandType,
   DefaultUserType,
@@ -24,6 +16,20 @@ export type SuggestionComponentType<
   Us extends UnknownType = DefaultUserType
 > = string | React.ReactElement<{ item: Suggestion<Co, Us> }>;
 
+export const isSuggestionCommand = <
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
+>(
+  suggestion: Suggestion<Co, Us>,
+): suggestion is SuggestionCommand<Co> => 'args' in suggestion;
+
+export const isSuggestionEmoji = <
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
+>(
+  suggestion: Suggestion<Co, Us>,
+): suggestion is Emoji => 'unicode' in suggestion;
+
 export const isSuggestionUser = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
@@ -34,7 +40,7 @@ export const isSuggestionUser = <
 export type Suggestion<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
-> = SuggestionCommand<Co> | SuggestionUser<Us>;
+> = SuggestionCommand<Co> | SuggestionUser<Us> | Emoji;
 
 export type SuggestionCommand<
   Co extends string = DefaultCommandType
@@ -56,25 +62,41 @@ export type SuggestionsContextValue<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
+  /** Override handler for closing suggestions (mentions, command autocomplete etc) */
   closeSuggestions: () => void;
+  /**
+   * Override handler for opening suggestions (mentions, command autocomplete etc)
+   *
+   * @param component {Component|element} UI Component for suggestion item.
+   * @param title {string} Title for suggestions box
+   *
+   * @overrideType Function
+   */
   openSuggestions: (
-    title: string,
     component: SuggestionComponentType<Co, Us>,
+    title?: React.ReactElement,
   ) => Promise<void>;
-  setInputBoxContainerRef: (ref: View | null) => void;
-  updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
+  /**
+   * Override handler for updating suggestions (mentions, command autocomplete etc)
+   *
+   * @param newSuggestions {Component|element} UI Component for suggestion item.
+   * @param newSuggestionsTitle {string} Title for suggestions box
+   *
+   * @overrideType Function
+   */
+  updateSuggestions: (
+    newSuggestions: Suggestions<Co, Us>,
+    newSuggestionsTitle?: React.ReactElement,
+  ) => void;
+  componentType?: SuggestionComponentType<Co, Us>;
+  suggestions?: Suggestions<Co, Us>;
+  suggestionsTitle?: React.ReactElement;
+  suggestionsViewActive?: boolean;
 };
 
 export const SuggestionsContext = React.createContext(
   {} as SuggestionsContextValue,
 );
-
-type MeasureLayout = () => Promise<{
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-}>;
 
 /**
  * This provider component exposes the properties stored within the SuggestionsContext.
@@ -90,79 +112,46 @@ export const SuggestionsProvider = <
     SuggestionComponentType<Co, Us>
   >('');
   const [suggestions, setSuggestions] = useState<Suggestions<Co, Us>>();
-  const [suggestionsBackdropHeight, setSuggestionsBackdropHeight] = useState(0);
-  const [suggestionsLeftMargin, setSuggestionsLeftMargin] = useState(0);
-  const [suggestionsTitle, setSuggestionsTitle] = useState('');
+  const [
+    suggestionsTitle,
+    setSuggestionsTitle,
+  ] = useState<React.ReactElement>();
   const [suggestionsViewActive, setSuggestionsViewActive] = useState(false);
-  const [suggestionsWidth, setSuggestionsWidth] = useState(0);
 
-  const messageInputBox = useRef<View | null>(null);
-  const rootView = useRef<View>(null);
-
-  // For the time being, we will just dismiss the suggestions view when keyboard is dismissed.
-  // TODO: Ideally SuggestionsView should update the position as per keyboard status (open/closed).
-  // Lets handle it after stream-chat-react-native@2.0.0 is published
-  useEffect(() => {
-    const onKeyboardHidden = () => {
-      setSuggestionsViewActive(false);
-    };
-
-    const subscription = Keyboard.addListener(
-      'keyboardDidHide',
-      onKeyboardHidden,
-    );
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  const openSuggestions = async (
-    title: string,
+  const openSuggestions = (
     component: SuggestionComponentType<Co, Us>,
+    title?: React.ReactElement,
   ) => {
-    const inputBoxPosition = await getInputBoxPosition();
-
     setComponentType(component);
-    setSuggestionsBackdropHeight(inputBoxPosition.y);
-    setSuggestionsLeftMargin(inputBoxPosition.x);
     setSuggestionsTitle(title);
     setSuggestionsViewActive(true);
-    setSuggestionsWidth(inputBoxPosition.width);
   };
 
-  const updateSuggestions = (newSuggestions: Suggestions<Co, Us>) => {
+  const updateSuggestions = (
+    newSuggestions: Suggestions<Co, Us>,
+    newSuggestionsTitle?: React.ReactElement,
+  ) => {
     setSuggestions(newSuggestions);
+    if (newSuggestionsTitle) {
+      setSuggestionsTitle(newSuggestionsTitle);
+    }
     setSuggestionsViewActive(!!componentType);
   };
 
   const closeSuggestions = () => {
     setComponentType('');
-    setSuggestionsTitle('');
+    setSuggestions(undefined);
+    setSuggestionsTitle(undefined);
     setSuggestionsViewActive(false);
   };
 
-  const setInputBoxContainerRef = (ref: View) => {
-    messageInputBox.current = ref;
-  };
-
-  const getInputBoxPosition: MeasureLayout = () =>
-    new Promise((resolve) => {
-      const nodeHandleRoot = findNodeHandle(rootView.current) || 0;
-      messageInputBox?.current?.measureLayout(
-        nodeHandleRoot,
-        (x, y, width, height) => {
-          resolve({ height, width, x, y });
-        },
-        () => resolve({ height: 0, width: 0, x: 0, y: 0 }),
-      );
-    });
-
   const suggestionsContext = {
     closeSuggestions: value?.closeSuggestions || closeSuggestions,
+    componentType,
     openSuggestions: value?.openSuggestions || openSuggestions,
-    setInputBoxContainerRef:
-      value?.setInputBoxContainerRef || setInputBoxContainerRef,
+    suggestions,
+    suggestionsTitle,
+    suggestionsViewActive,
     updateSuggestions: value?.updateSuggestions || updateSuggestions,
   };
 
@@ -170,22 +159,7 @@ export const SuggestionsProvider = <
     <SuggestionsContext.Provider
       value={(suggestionsContext as unknown) as SuggestionsContextValue}
     >
-      {/** TODO: Support dynamic item view for different type of suggestions */}
-      {suggestions && (
-        <SuggestionsList<Co, Us>
-          active={suggestionsViewActive}
-          backdropHeight={suggestionsBackdropHeight}
-          componentType={componentType}
-          handleDismiss={() => setSuggestionsViewActive(false)}
-          marginLeft={suggestionsLeftMargin}
-          suggestions={suggestions}
-          suggestionsTitle={suggestionsTitle}
-          width={suggestionsWidth}
-        />
-      )}
-      <View collapsable={false} ref={rootView} style={{ height: '100%' }}>
-        {children}
-      </View>
+      {children}
     </SuggestionsContext.Provider>
   );
 };

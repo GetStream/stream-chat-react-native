@@ -1,43 +1,37 @@
-import React, { useEffect, useRef } from 'react';
-
-import { MessageActionSheet as DefaultActionSheet } from './MessageActionSheet';
+import React from 'react';
 import {
-  MessageReplies as DefaultMessageReplies,
-  MessageRepliesProps,
-} from './MessageReplies';
+  LayoutChangeEvent,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import merge from 'lodash/merge';
+
 import { MessageTextContainer } from './MessageTextContainer';
 
-import { Attachment as DefaultAttachment } from '../../Attachment/Attachment';
-import { FileAttachment as DefaultFileAttachment } from '../../Attachment/FileAttachment';
-import { FileAttachmentGroup as DefaultFileAttachmentGroup } from '../../Attachment/FileAttachmentGroup';
-import { Gallery as DefaultGallery } from '../../Attachment/Gallery';
 import {
-  ReactionList as DefaultReactionList,
-  LatestReactions,
-} from '../../Reaction/ReactionList';
-import { ReactionPickerWrapper } from '../../Reaction/ReactionPickerWrapper';
-
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
+  ChannelContextValue,
+  useChannelContext,
+} from '../../../contexts/channelContext/ChannelContext';
 import {
-  Alignment,
-  GroupType,
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
-import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TDateTimeParserInput,
+  TranslationContextValue,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
-import { styled } from '../../../styles/styledComponents';
-import { emojiData } from '../../../utils/utils';
 
-import type { GestureResponderEvent } from 'react-native';
-import type { ActionSheetCustom } from 'react-native-actionsheet';
-import type { MessageResponse } from 'stream-chat';
+import { Error } from '../../../icons';
+import { vw } from '../../../utils/utils';
 
-import type { MessageSimpleProps } from './MessageSimple';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -49,80 +43,38 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-/**
- * Border radii are useful for the case of error message types only.
- * Otherwise background is transparent, so border radius is not really visible.
- */
-const Container = styled.TouchableOpacity<{
-  alignment: Alignment;
-  error: boolean;
-}>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  background-color: ${({ error, theme }) =>
-    error
-      ? theme.message.content.errorContainer.backgroundColor
-      : theme.colors.transparent};
-  border-bottom-left-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.container.borderRadiusS
-      : theme.message.content.container.borderRadiusL}px;
-  border-bottom-right-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.container.borderRadiusL
-      : theme.message.content.container.borderRadiusS}px;
-  border-top-left-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL}px;
-  border-top-right-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL}px;
-  justify-content: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  max-width: 250px;
-  padding: ${({ error }) => (error ? 5 : 0)}px;
-  ${({ theme }) => theme.message.content.container.css};
-`;
+const styles = StyleSheet.create({
+  containerInner: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  leftAlignContent: {
+    justifyContent: 'flex-start',
+  },
+  leftAlignItems: {
+    alignItems: 'flex-start',
+  },
+  replyBorder: {
+    borderLeftWidth: 1,
+    bottom: 0,
+    position: 'absolute',
+  },
+  replyContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingTop: 8,
+  },
+  rightAlignContent: {
+    justifyContent: 'flex-end',
+  },
+  rightAlignItems: {
+    alignItems: 'flex-end',
+  },
+});
 
-const ContainerInner = styled.View<{ alignment: Alignment }>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.message.content.containerInner.css}
-`;
-
-const DeletedContainer = styled.View<{ alignment: Alignment }>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  justify-content: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  max-width: 250px;
-  padding: 5px;
-  ${({ theme }) => theme.message.content.deletedContainer.css};
-`;
-
-const DeletedText = styled.Text`
-  color: #a4a4a4;
-  font-size: 15px;
-  line-height: 20px;
-  ${({ theme }) => theme.message.content.deletedText.css};
-`;
-
-const FailedText = styled.Text`
-  color: #a4a4a4;
-  margin-right: 5px;
-`;
-
-const MetaContainer = styled.View`
-  margin-top: 2px;
-  ${({ theme }) => theme.message.content.metaContainer.css};
-`;
-
-const MetaText = styled.Text<{ alignment: Alignment }>`
-  color: ${({ theme }) => theme.colors.textGrey};
-  font-size: 11px;
-  text-align: ${({ alignment }) => alignment};
-  ${({ theme }) => theme.message.content.metaText.css};
-`;
-
-export type ForwardedMessageProps<
+export type MessageContentPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -130,40 +82,461 @@ export type ForwardedMessageProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the app is using a custom MessageContent component
-   */
-  customMessageContent: boolean;
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: GroupType[];
-  disabled?: boolean;
-  /**
-   * Custom message footer component
-   */
-  MessageFooter?: React.ComponentType<UnknownType & { testID: string }>;
-  /**
-   * Custom message header component
-   */
-  MessageHeader?: React.ComponentType<UnknownType & { testID: string }>;
-  /**
-   * Custom message replies component
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
-   */
-  MessageReplies?: React.ComponentType<
-    MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  textBeforeAttachments?: boolean;
+> = Pick<
+  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'disabled' | 'members'
+> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'alignment'
+    | 'groupStyles'
+    | 'hasReactions'
+    | 'lastGroupMessage'
+    | 'message'
+    | 'messageContentOrder'
+    | 'onLongPress'
+    | 'onlyEmojis'
+    | 'onPress'
+    | 'otherAttachments'
+    | 'preventPress'
+    | 'showMessageStatus'
+    | 'threadList'
+  > &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'additionalTouchableProps'
+    | 'Attachment'
+    | 'FileAttachmentGroup'
+    | 'formatDate'
+    | 'Gallery'
+    | 'MessageFooter'
+    | 'MessageHeader'
+    | 'MessageReplies'
+    | 'MessageStatus'
+    | 'onPressInMessage'
+    | 'repliesEnabled'
+    | 'Reply'
+  > &
+  Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
+    setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
+  };
+
+/**
+ * Child of MessageSimple that displays a message's content
+ */
+export const MessageContentWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTouchableProps,
+    alignment,
+    Attachment,
+    disabled,
+    FileAttachmentGroup,
+    formatDate,
+    Gallery,
+    groupStyles,
+    hasReactions,
+    lastGroupMessage,
+    members,
+    message,
+    messageContentOrder,
+    MessageFooter,
+    MessageHeader,
+    MessageReplies,
+    MessageStatus,
+    onLongPress,
+    onlyEmojis,
+    onPress,
+    onPressInMessage,
+    otherAttachments,
+    preventPress,
+    repliesEnabled,
+    Reply,
+    setMessageContentWidth,
+    showMessageStatus,
+    tDateTimeParser,
+    threadList,
+  } = props;
+
+  const {
+    theme: {
+      colors: {
+        accent_red,
+        blue_alice,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        transparent,
+      },
+      messageSimple: {
+        content: {
+          container: { borderRadiusL, borderRadiusS, ...container },
+          containerInner,
+          deletedContainer,
+          deletedText,
+          errorContainer,
+          errorIcon,
+          errorIconContainer,
+          replyBorder,
+          replyContainer,
+        },
+        reactionList: { radius, reactionSize },
+      },
+    },
+  } = useTheme();
+
+  const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
+    if (!message.created_at) return '';
+
+    if (formatter) {
+      return formatter(message.created_at);
+    }
+
+    const parserOutput = tDateTimeParser(message.created_at);
+
+    if (isDayOrMoment(parserOutput)) {
+      return parserOutput.format('LT');
+    }
+    return message.created_at;
+  };
+
+  const onLayout: (event: LayoutChangeEvent) => void = ({
+    nativeEvent: {
+      layout: { width },
+    },
+  }) => {
+    setMessageContentWidth(width);
+  };
+
+  if (message.deleted_at) {
+    return (
+      <View
+        onLayout={onLayout}
+        style={[
+          alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
+          deletedContainer,
+        ]}
+      >
+        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+          markdownStyles={merge({ em: { color: grey } }, deletedText)}
+          message={{ ...message, text: '_Message deleted_' }}
+        />
+        <MessageFooter
+          alignment={alignment}
+          formattedDate={getDateText(formatDate)}
+          isDeleted
+          members={members}
+          message={message}
+          MessageStatus={MessageStatus}
+          otherAttachments={otherAttachments}
+          showMessageStatus={showMessageStatus}
+          testID='message-footer'
+        />
+      </View>
+    );
+  }
+
+  const error = message.type === 'error' || message.status === 'failed';
+
+  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
+
+  const hasThreadReplies = !!message?.reply_count;
+
+  const noBorder =
+    (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      disabled={disabled}
+      onLongPress={onLongPress}
+      onPress={onPress}
+      {...additionalTouchableProps}
+      /**
+       * Border radii are useful for the case of error message types only.
+       * Otherwise background is transparent, so border radius is not really visible.
+       */
+      style={[
+        alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
+        { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
+        error ? errorContainer : {},
+        container,
+      ]}
+    >
+      {MessageHeader && (
+        <MessageHeader
+          alignment={alignment}
+          formattedDate={getDateText(formatDate)}
+          isDeleted={!!message.deleted_at}
+          lastGroupMessage={lastGroupMessage}
+          members={members}
+          message={message}
+          MessageStatus={MessageStatus}
+          otherAttachments={otherAttachments}
+          showMessageStatus={showMessageStatus}
+          testID='message-header'
+        />
+      )}
+      <View onLayout={onLayout}>
+        {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
+          <View
+            style={[
+              styles.replyBorder,
+              {
+                borderColor: grey_whisper,
+                height: borderRadiusL,
+                left: alignment === 'left' ? 0 : undefined,
+                right: alignment === 'right' ? 0 : undefined,
+              },
+              replyBorder,
+            ]}
+          />
+        )}
+        <View
+          style={[
+            styles.containerInner,
+            {
+              backgroundColor:
+                onlyEmojis && !message.quoted_message
+                  ? transparent
+                  : otherAttachments.length
+                  ? otherAttachments[0].type === 'giphy'
+                    ? transparent
+                    : blue_alice
+                  : alignment === 'left' || error
+                  ? transparent
+                  : grey_gainsboro,
+              borderBottomLeftRadius:
+                (groupStyle === 'left_bottom' ||
+                  groupStyle === 'left_single') &&
+                (!hasThreadReplies || threadList)
+                  ? borderRadiusS
+                  : borderRadiusL,
+              borderBottomRightRadius:
+                (groupStyle === 'right_bottom' ||
+                  groupStyle === 'right_single') &&
+                (!hasThreadReplies || threadList)
+                  ? borderRadiusS
+                  : borderRadiusL,
+              borderColor: grey_whisper,
+            },
+            noBorder ? { borderWidth: 0 } : {},
+            containerInner,
+          ]}
+          testID='message-content-wrapper'
+        >
+          {message.quoted_message && (
+            <View style={[styles.replyContainer, replyContainer]}>
+              <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
+            </View>
+          )}
+          {messageContentOrder.map(
+            (messageContentType, messageContentOrderIndex) => {
+              switch (messageContentType) {
+                case 'attachments':
+                  return otherAttachments.map((attachment, attachmentIndex) => (
+                    <Attachment
+                      attachment={attachment}
+                      key={`${message.id}-${attachmentIndex}`}
+                      onPressIn={onPressInMessage}
+                    />
+                  ));
+                case 'files':
+                  return (
+                    <FileAttachmentGroup
+                      key={`file_attachment_group_${messageContentOrderIndex}`}
+                      messageId={message.id}
+                      onPressIn={onPressInMessage}
+                    />
+                  );
+                case 'gallery':
+                  return (
+                    <Gallery
+                      key={`gallery_${messageContentOrderIndex}`}
+                      onPressIn={onPressInMessage}
+                      preventPress={preventPress}
+                    />
+                  );
+                case 'text':
+                default:
+                  return otherAttachments.length &&
+                    otherAttachments[0].actions ? null : (
+                    <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                      key={`message_text_container_${messageContentOrderIndex}`}
+                    />
+                  );
+              }
+            },
+          )}
+        </View>
+        {error && (
+          <View style={StyleSheet.absoluteFill}>
+            <View style={errorIconContainer}>
+              <Error pathFill={accent_red} {...errorIcon} />
+            </View>
+          </View>
+        )}
+      </View>
+      {repliesEnabled && <MessageReplies noBorder={noBorder} />}
+      <MessageFooter
+        alignment={alignment}
+        formattedDate={getDateText(formatDate)}
+        lastGroupMessage={lastGroupMessage}
+        members={members}
+        message={message}
+        MessageStatus={MessageStatus}
+        otherAttachments={otherAttachments}
+        showMessageStatus={showMessageStatus}
+        testID='message-footer'
+      />
+    </TouchableOpacity>
+  );
 };
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    groupStyles: prevGroupStyles,
+    hasReactions: prevHasReactions,
+    lastGroupMessage: prevLastGroupMessage,
+    members: prevMembers,
+    message: prevMessage,
+    messageContentOrder: prevMessageContentOrder,
+    onlyEmojis: prevOnlyEmojis,
+    otherAttachments: prevOtherAttachments,
+    t: prevT,
+    tDateTimeParser: prevTDateTimeParser,
+  } = prevProps;
+  const {
+    groupStyles: nextGroupStyles,
+    hasReactions: nextHasReactions,
+    lastGroupMessage: nextLastGroupMessage,
+    members: nextMembers,
+    message: nextMessage,
+    messageContentOrder: nextMessageContentOrder,
+    onlyEmojis: nextOnlyEmojis,
+    otherAttachments: nextOtherAttachments,
+    t: nextT,
+    tDateTimeParser: nextTDateTimeParser,
+  } = nextProps;
+
+  const hasReactionsEqual = prevHasReactions === nextHasReactions;
+  if (!hasReactionsEqual) return false;
+
+  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
+  const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
+  if (!onlyEmojisEqual) return false;
+
+  const otherAttachmentsEqual =
+    prevOtherAttachments.length === nextOtherAttachments.length &&
+    prevOtherAttachments?.[0]?.actions?.length ===
+      nextOtherAttachments?.[0]?.actions?.length;
+  if (!otherAttachmentsEqual) return false;
+
+  const membersEqual =
+    Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  if (!membersEqual) return false;
+
+  const groupStylesEqual =
+    prevGroupStyles.length === nextGroupStyles.length &&
+    prevGroupStyles[0] === nextGroupStyles[0];
+  if (!groupStylesEqual) return false;
+
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.reply_count === nextMessage.reply_count &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.text === nextMessage.text;
+  if (!messageEqual) return false;
+
+  const prevAttachments = prevMessage.attachments;
+  const nextAttachments = nextMessage.attachments;
+  const attachmentsEqual =
+    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
+      ? prevAttachments.length === nextAttachments.length &&
+        prevAttachments.every(
+          (attachment, index) =>
+            attachment.image_url === nextAttachments[index].image_url &&
+            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
+            attachment.thumb_url === nextAttachments[index].thumb_url,
+        )
+      : prevAttachments === nextAttachments;
+  if (!attachmentsEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage.latest_reactions) &&
+    Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length ===
+          nextMessage.latest_reactions.length &&
+        prevMessage.latest_reactions.every(
+          ({ type }, index) =>
+            type === nextMessage.latest_reactions?.[index].type,
+        )
+      : prevMessage.latest_reactions === nextMessage.latest_reactions;
+  if (!latestReactionsEqual) return false;
+
+  const messageContentOrderEqual =
+    prevMessageContentOrder.length === nextMessageContentOrder.length &&
+    prevMessageContentOrder.every(
+      (messageContentType, index) =>
+        messageContentType === nextMessageContentOrder[index],
+    );
+  if (!messageContentOrderEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
+  if (!tDateTimeParserEqual) return false;
+
+  return true;
+};
+
+const MemoizedMessageContent = React.memo(
+  MessageContentWithContext,
+  areEqual,
+) as typeof MessageContentWithContext;
+
+export type MessageContentProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<
+  Omit<
+    MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'setMessageContentWidth'
+  >
+> &
+  Pick<
+    MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'setMessageContentWidth'
+  >;
 
 /**
  * Child of MessageSimple that displays a message's content
@@ -177,346 +550,76 @@ export const MessageContent = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { disabled, members } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    ActionSheet = DefaultActionSheet,
-    Attachment: PropsAttachment,
-    AttachmentActions,
-    AttachmentFileIcon,
-    Card,
-    CardCover,
-    CardFooter,
-    CardHeader,
-    FileAttachment = DefaultFileAttachment,
-    FileAttachmentGroup = DefaultFileAttachmentGroup,
-    Gallery = DefaultGallery,
-    Giphy,
+    alignment,
+    groupStyles,
+    hasReactions,
+    lastGroupMessage,
+    message,
+    messageContentOrder,
+    onLongPress,
+    onlyEmojis,
+    onPress,
+    otherAttachments,
+    preventPress,
+    showMessageStatus,
+    threadList,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps,
+    Attachment,
+    FileAttachmentGroup,
+    formatDate,
+    Gallery,
     MessageFooter,
     MessageHeader,
-    MessageReplies = DefaultMessageReplies,
-    MessageText,
-    ReactionList = DefaultReactionList,
-    UrlPreview,
-    actionSheetStyles,
-    actionSheetVisible,
-    additionalTouchableProps,
-    alignment,
-    canDeleteMessage,
-    canEditMessage,
-    customMessageContent,
-    dismissReactionPicker,
-    enableLongPress = true,
-    formatDate,
-    getTotalReactionCount,
-    groupStyles,
-    handleAction,
-    handleDelete,
-    handleEdit,
-    handleReaction,
-    hideReactionCount = false,
-    hideReactionOwners = false,
-    isMyMessage,
-    markdownRules,
-    message,
-    messageActions,
-    onLongPress,
-    onPress,
-    onThreadSelect,
-    openReactionPicker,
-    reactionPickerVisible,
-    reactionsEnabled = true,
-    repliesEnabled = true,
-    setActionSheetVisible,
-    showActionSheet,
-    supportedReactions = emojiData,
-    threadList,
-    textBeforeAttachments = false,
-    disabled: disabledFromProps,
-  } = props;
-
-  const { disabled: disabledFromContext } = useChannelContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const disabled = disabledFromProps || disabledFromContext;
-  const {
-    Attachment: ContextAttachment,
-    Message,
-    retrySendMessage,
+    MessageReplies,
+    MessageStatus,
+    onPressInMessage,
+    repliesEnabled,
+    Reply,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
-  const Attachment = PropsAttachment || ContextAttachment || DefaultAttachment;
-
-  const actionSheetRef = useRef<ActionSheetCustom>();
-
-  const onOpenThread = () => {
-    if (onThreadSelect) {
-      onThreadSelect(message);
-    } else if (openThread) {
-      openThread(message);
-    }
-  };
-
-  useEffect(() => {
-    if (actionSheetVisible && actionSheetRef.current) {
-      setTimeout(
-        () => {
-          actionSheetRef.current?.show?.();
-        },
-        customMessageContent ? 10 : 0,
-      );
-    }
-  }, [actionSheetVisible]);
-
-  const showTime = groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
-  const hasReactions =
-    reactionsEnabled &&
-    message.latest_reactions &&
-    message.latest_reactions.length > 0;
-  const images =
-    (Array.isArray(message.attachments) &&
-      message.attachments.filter(
-        (item) =>
-          item.type === 'image' && !item.title_link && !item.og_scrape_url,
-      )) ||
-    [];
-  const files =
-    (Array.isArray(message.attachments) &&
-      message.attachments.filter((item) => item.type === 'file')) ||
-    [];
-
-  if (message.deleted_at) {
-    return (
-      <DeletedContainer alignment={alignment}>
-        <DeletedText testID='message-deleted'>
-          {t('This message was deleted ...')}
-        </DeletedText>
-      </DeletedContainer>
-    );
-  }
-
-  const contentProps = {
-    activeOpacity: 0.7,
-    alignment,
-    disabled,
-    hasReactions,
-    onLongPress:
-      onLongPress && !disabled
-        ? (event: GestureResponderEvent) => onLongPress(message, event)
-        : enableLongPress
-        ? showActionSheet
-        : () => null,
-    onPress: onPress
-      ? (event: GestureResponderEvent) => onPress(message, event)
-      : () => null,
-    status: message.status,
-    ...additionalTouchableProps,
-  };
-
-  if (message.status === 'failed') {
-    contentProps.onPress = () =>
-      retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-  }
-
-  const context = {
-    additionalTouchableProps,
-    disabled,
-    onLongPress: contentProps.onLongPress,
-  };
-
-  const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
-    if (!message.created_at) return '';
-
-    if (formatter) {
-      if (typeof message.created_at === 'string') {
-        return formatter(message.created_at);
-      } else {
-        return formatter(message.created_at.asMutable());
-      }
-    }
-
-    let parserOutput;
-
-    if (typeof message.created_at === 'string') {
-      parserOutput = tDateTimeParser(message.created_at);
-    } else {
-      parserOutput = tDateTimeParser(message.created_at.asMutable());
-    }
-
-    if (isDayOrMoment(parserOutput)) {
-      return parserOutput.format('LT');
-    }
-    return message.created_at;
-  };
-
-  const renderAttachments = () => (
-    <>
-      {Array.isArray(message.attachments) &&
-        message.attachments.map((attachment, index) => {
-          // We handle files separately
-          if (
-            attachment.type === 'file' ||
-            (attachment.type === 'image' &&
-              !attachment.title_link &&
-              !attachment.og_scrape_url)
-          ) {
-            return null;
-          }
-
-          return (
-            <Attachment<At>
-              actionHandler={handleAction}
-              alignment={alignment}
-              attachment={attachment}
-              AttachmentActions={AttachmentActions}
-              Card={Card}
-              CardCover={CardCover}
-              CardFooter={CardFooter}
-              CardHeader={CardHeader}
-              FileAttachment={FileAttachment}
-              Giphy={Giphy}
-              key={`${message.id}-${index}`}
-              UrlPreview={UrlPreview}
-            />
-          );
-        })}
-      {files.length > 0 && (
-        <FileAttachmentGroup<At>
-          alignment={alignment}
-          AttachmentActions={AttachmentActions}
-          AttachmentFileIcon={AttachmentFileIcon}
-          FileAttachment={FileAttachment}
-          files={files}
-          handleAction={handleAction}
-          messageId={message.id}
-        />
-      )}
-      {images.length > 0 && (
-        <Gallery<At> alignment={alignment} images={images} />
-      )}
-    </>
-  );
   return (
-    <MessageContentProvider value={context}>
-      <Container
-        {...contentProps}
-        error={message.type === 'error' || message.status === 'failed'}
-        testID='message-content-wrapper'
-      >
-        {message.type === 'error' && (
-          <FailedText testID='message-error'>{t('ERROR · UNSENT')}</FailedText>
-        )}
-        {message.status === 'failed' && (
-          <FailedText testID='message-failed'>
-            {t('Message failed - try again')}
-          </FailedText>
-        )}
-        {reactionsEnabled && ReactionList && (
-          <ReactionPickerWrapper<At, Ch, Co, Ev, Me, Re, Us>
-            alignment={alignment}
-            customMessageContent={customMessageContent}
-            dismissReactionPicker={dismissReactionPicker}
-            handleReaction={handleReaction}
-            hideReactionCount={hideReactionCount}
-            hideReactionOwners={hideReactionOwners}
-            message={message}
-            offset={{
-              left: 10,
-              right: 10,
-              top: 0,
-            }}
-            openReactionPicker={openReactionPicker}
-            reactionPickerVisible={reactionPickerVisible}
-            supportedReactions={supportedReactions}
-          >
-            {message.latest_reactions &&
-              message.latest_reactions.length > 0 && (
-                <ReactionList<At, Ch, Co, Me, Re, Us>
-                  alignment={alignment}
-                  getTotalReactionCount={getTotalReactionCount}
-                  latestReactions={
-                    message.latest_reactions as LatestReactions<
-                      At,
-                      Ch,
-                      Co,
-                      Me,
-                      Re,
-                      Us
-                    >
-                  }
-                  supportedReactions={supportedReactions}
-                  visible={!reactionPickerVisible}
-                />
-              )}
-          </ReactionPickerWrapper>
-        )}
-        {MessageHeader && <MessageHeader testID='message-header' {...props} />}
-        {/* TODO: Look at this in production: Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-        <ContainerInner alignment={alignment} collapsable={false}>
-          {!textBeforeAttachments && renderAttachments()}
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-            alignment={alignment}
-            disabled={message.status === 'failed' || message.type === 'error'}
-            groupStyles={groupStyles}
-            handleReaction={handleReaction}
-            isMyMessage={isMyMessage}
-            markdownRules={markdownRules}
-            message={message}
-            Message={Message}
-            MessageText={MessageText}
-            openThread={onOpenThread}
-          />
-          {textBeforeAttachments && renderAttachments()}
-        </ContainerInner>
-        {repliesEnabled && (
-          <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
-            alignment={alignment}
-            isThreadList={!!threadList}
-            message={message}
-            openThread={onOpenThread}
-          />
-        )}
-        {MessageFooter && (
-          <MessageFooter
-            testID='message-footer'
-            {...props}
-            supportedReactions={supportedReactions}
-          />
-        )}
-        {!MessageFooter && showTime && (
-          <MetaContainer testID='show-time'>
-            <MetaText alignment={alignment}>{getDateText(formatDate)}</MetaText>
-          </MetaContainer>
-        )}
-        {actionSheetVisible && enableLongPress && (
-          <ActionSheet
-            actionSheetStyles={actionSheetStyles}
-            canDeleteMessage={canDeleteMessage}
-            canEditMessage={canEditMessage}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            handleReaction={handleReaction}
-            message={message}
-            messageActions={messageActions}
-            openReactionPicker={openReactionPicker}
-            openThread={onOpenThread}
-            reactionsEnabled={reactionsEnabled}
-            ref={actionSheetRef}
-            repliesEnabled={repliesEnabled}
-            setActionSheetVisible={setActionSheetVisible}
-            supportedReactions={emojiData}
-            threadList={threadList}
-          />
-        )}
-      </Container>
-    </MessageContentProvider>
+    <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
+      {...{
+        additionalTouchableProps,
+        alignment,
+        Attachment,
+        disabled,
+        FileAttachmentGroup,
+        formatDate,
+        Gallery,
+        groupStyles,
+        hasReactions,
+        lastGroupMessage,
+        members,
+        message,
+        messageContentOrder,
+        MessageFooter,
+        MessageHeader,
+        MessageReplies,
+        MessageStatus,
+        onLongPress,
+        onlyEmojis,
+        onPress,
+        onPressInMessage,
+        otherAttachments,
+        preventPress,
+        repliesEnabled,
+        Reply,
+        showMessageStatus,
+        t,
+        tDateTimeParser,
+        threadList,
+      }}
+      {...props}
+    />
   );
 };
+
+MessageContent.displayName = 'MessageContent{messageSimple{content}}';

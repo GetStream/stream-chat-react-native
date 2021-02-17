@@ -1,29 +1,45 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
 
-const ErrorNotification = styled.View`
-  align-items: center;
-  background-color: #fae6e8;
-  color: red;
-  padding: 5px;
-  z-index: 10;
-  ${({ theme }) => theme.messageList.errorNotification.css}
-`;
-
-const ErrorNotificationText = styled.Text`
-  background-color: #fae6e8;
-  color: red;
-  ${({ theme }) => theme.messageList.errorNotificationText.css}
-`;
+const styles = StyleSheet.create({
+  errorNotification: {
+    alignItems: 'center',
+    left: 0,
+    paddingVertical: 4,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  errorNotificationText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+  },
+});
 
 export const NetworkDownIndicator = () => {
+  const {
+    theme: {
+      colors: { grey },
+      messageList: { errorNotification, errorNotificationText },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
+
   return (
-    <ErrorNotification testID='error-notification'>
-      <ErrorNotificationText>
-        {t('Connection failure, reconnecting now ...')}
-      </ErrorNotificationText>
-    </ErrorNotification>
+    <View
+      style={[
+        styles.errorNotification,
+        { backgroundColor: `${grey}E6` },
+        errorNotification,
+      ]}
+      testID='error-notification'
+    >
+      <Text style={[styles.errorNotificationText, errorNotificationText]}>
+        {t('Reconnecting...')}
+      </Text>
+    </View>
   );
 };

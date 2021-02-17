@@ -1,291 +1,477 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   GestureResponderEvent,
   Image,
-  Modal,
-  StatusBar,
+  ImageProps,
+  PixelRatio,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import { Immutable, isImmutable } from 'seamless-immutable';
 
-import { CloseButton } from '../CloseButton/CloseButton';
-
-import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
+import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
-import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
-import type { Attachment } from 'stream-chat';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
+const GalleryImage: React.FC<
+  Omit<ImageProps, 'height' | 'source'> & {
+    height: number | string;
+    uri: string;
+  }
+> = (props) => {
+  const { height, uri, ...rest } = props;
 
-const Single = styled.TouchableOpacity<{ alignment: Alignment }>`
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2}px;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2}px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  height: 200px;
-  overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width}px;
-  ${({ theme }) => theme.message.gallery.single.css}
-`;
-
-const GalleryContainer = styled.View<{
-  alignment: Alignment;
-  length?: number;
-}>`
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2}px;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2}px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: ${({ length, theme }) =>
-    length && length >= 4
-      ? theme.message.gallery.doubleSize
-      : length === 3
-      ? theme.message.gallery.halfSize
-      : theme.message.gallery.size}px;
-  overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width}px;
-  ${({ theme }) => theme.message.gallery.galleryContainer.css}
-`;
-
-const ImageContainer = styled.TouchableOpacity<{ length?: number }>`
-  height: ${({ length, theme }) =>
-    length !== 3
-      ? theme.message.gallery.size
-      : theme.message.gallery.halfSize}px;
-  width: ${({ length, theme }) =>
-    length !== 3
-      ? theme.message.gallery.size
-      : theme.message.gallery.halfSize}px;
-  ${({ theme }) => theme.message.gallery.imageContainer.css}
-`;
-
-const HeaderContainer = styled.View`
-  flex-direction: row;
-  justify-content: flex-end;
-  position: absolute;
-  width: 100%;
-  z-index: 1000;
-  ${({ theme }) => theme.message.gallery.header.container.css}
-`;
-
-const HeaderButton = styled.TouchableOpacity`
-  align-items: center;
-  border-radius: 20px;
-  height: 30px;
-  justify-content: center;
-  margin-right: 32px;
-  margin-top: 32px;
-  width: 30px;
-  ${({ theme }) => theme.message.gallery.header.button.css}
-`;
-
-type GalleryHeaderProps = {
-  handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
-};
-
-const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
-  useEffect(() => {
-    StatusBar.setHidden(true);
-    return () => StatusBar.setHidden(false);
-  }, []);
+  const [error, setError] = useState(false);
 
   return (
-    <HeaderContainer>
-      <HeaderButton onPress={handleDismiss}>
-        <CloseButton />
-      </HeaderButton>
-    </HeaderContainer>
+    <Image
+      key={uri}
+      {...rest}
+      onError={() => setError(true)}
+      source={{
+        uri: uri.includes('&h=%2A')
+          ? error
+            ? uri
+            : uri.replace(
+                'h=%2A',
+                `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
+              )
+          : uri,
+      }}
+    />
   );
 };
 
-export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * The image attachments to render
-   */
-  images: Attachment<At>[];
-};
+const MemoizedGalleryImage = React.memo(
+  GalleryImage,
+  (prevProps, nextProps) =>
+    prevProps.height === nextProps.height && prevProps.uri === nextProps.uri,
+) as typeof GalleryImage;
 
-/**
- * UI component for card in attachments.
- *
- * @example ./Gallery.md
- */
-export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
-  props: GalleryProps<At>,
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  galleryContainer: {
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+  },
+  imageContainer: { flex: 1, padding: 1 },
+  moreImagesContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
+});
+
+export type GalleryPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<ImageGalleryContextValue, 'setImage'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'alignment' | 'groupStyles' | 'images' | 'onLongPress' | 'threadList'
+  > &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps'
+  > &
+  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+    hasThreadReplies?: boolean;
+    messageId?: string;
+    messageText?: string;
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+    preventPress?: boolean;
+  };
+
+const GalleryWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, images } = props;
+  const {
+    additionalTouchableProps,
+    alignment,
+    groupStyles,
+    hasThreadReplies,
+    images,
+    messageId,
+    messageText,
+    onLongPress,
+    onPressIn,
+    preventPress,
+    setBlurType,
+    setImage,
+    setOverlay,
+    threadList,
+  } = props;
 
-  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
-  const { t } = useTranslationContext();
-
-  const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
-  const [viewerModalOpen, setViewerModalOpen] = useState(false);
+  const {
+    theme: {
+      colors: { overlay },
+      imageGallery: { blurType },
+      messageSimple: {
+        gallery: {
+          galleryContainer,
+          galleryItemColumn,
+          halfSize,
+          image,
+          imageContainer,
+          moreImagesContainer,
+          moreImagesText,
+          size,
+          width,
+        },
+      },
+    },
+  } = useTheme();
 
   if (!images?.length) return null;
 
-  const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
-    const url = currentImage.image_url || currentImage.thumb_url;
-    if (url) {
-      returnArray.push({
-        url: makeImageCompatibleUrl(url),
-      } as Immutable<IImageInfo>);
-    }
-    return returnArray;
-  }, [] as Immutable<IImageInfo>[]);
+  // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
+  const galleryImages = images
+    .slice(0, 4)
+    .reduce((returnArray, currentImage, index) => {
+      const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
+      if (attachmentUrl) {
+        const url = makeImageCompatibleUrl(attachmentUrl);
+        if (images.length <= 2) {
+          returnArray[0] = [
+            ...(returnArray[0] || []),
+            { height: size || 200, url },
+          ];
+        } else if (images.length === 3) {
+          if (index === 0) {
+            returnArray[0] = [{ height: size || 200, url }];
+          } else {
+            returnArray[1] = [
+              ...(returnArray[1] || []),
+              { height: halfSize || 100, url },
+            ];
+          }
+        } else {
+          returnArray[index % 2] = [
+            ...(returnArray[index % 2] || []),
+            { height: halfSize || 100, url },
+          ];
+        }
+      }
+      return returnArray;
+    }, [] as { height: number | string; url: string }[][]);
 
-  const galleryImages: IImageInfo[] = [];
-
-  immutableGalleryImages.forEach((image) => {
-    const galleryImage = isImmutable(image) ? image.asMutable() : image;
-    galleryImages.push(galleryImage);
-  });
-
-  if (galleryImages.length === 1) {
-    return (
-      <>
-        <Single
-          alignment={alignment}
-          onLongPress={onLongPress}
-          onPress={() => setViewerModalOpen(true)}
-          testID='image-attachment-single'
-          {...additionalTouchableProps}
-        >
-          <Image
-            resizeMode='cover'
-            source={{ uri: galleryImages[0].url }}
-            style={{ flex: 1 }}
-          />
-        </Single>
-        {viewerModalOpen && (
-          <Modal
-            onRequestClose={() => setViewerModalOpen(false)}
-            transparent
-            visible
-          >
-            <ImageViewer
-              // TODO: We don't have 'save image' functionality.
-              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-              // opens up popup menu to with an option "Save to the album", which basically does nothing.
-              enableSwipeDown
-              imageUrls={galleryImages}
-              onCancel={() => setViewerModalOpen(false)}
-              renderHeader={() => (
-                <GalleryHeader
-                  handleDismiss={() => setViewerModalOpen(false)}
-                />
-              )}
-              saveToLocalByLongPress={false}
-              useNativeDriver
-            />
-          </Modal>
-        )}
-      </>
-    );
-  }
+  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
 
   return (
-    <>
-      <GalleryContainer
-        alignment={alignment}
-        length={galleryImages.length}
-        testID='image-multiple-container'
-      >
-        {galleryImages.slice(0, 4).map((image, i) => (
-          <ImageContainer
-            activeOpacity={0.8}
-            key={`gallery-item-${i}`}
-            length={galleryImages.length}
-            onLongPress={onLongPress}
-            onPress={() => {
-              setViewerModalOpen(true);
-              setViewerModalImageIndex(i);
-            }}
-            testID='image-multiple'
-            {...additionalTouchableProps}
-          >
-            {i === 3 && galleryImages.length > 4 ? (
-              <View style={{ flex: 1 }}>
-                <Image
+    <View
+      style={[
+        styles.galleryContainer,
+        {
+          width,
+        },
+        galleryContainer,
+      ]}
+      testID='image-multiple-container'
+    >
+      {galleryImages.map((column, colIndex) => (
+        <View
+          key={`gallery-item-column-${colIndex}`}
+          style={[
+            styles.flex,
+            {
+              flexDirection: images.length === 2 ? 'row' : 'column',
+            },
+            galleryItemColumn,
+          ]}
+        >
+          {column.map(({ height, url }, rowIndex) => {
+            const defaultOnPress = () => {
+              setImage({ messageId, url });
+              setBlurType(blurType);
+              setOverlay('gallery');
+            };
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                key={`gallery-item-${url}/${rowIndex}/${images.length}`}
+                onLongPress={onLongPress}
+                onPress={() => {
+                  if (!onPressIn && !preventPress) {
+                    defaultOnPress();
+                  }
+                }}
+                onPressIn={(event) => {
+                  if (onPressIn && !preventPress) {
+                    onPressIn(event, defaultOnPress);
+                  }
+                }}
+                style={[
+                  styles.imageContainer,
+                  {
+                    height,
+                  },
+                  imageContainer,
+                ]}
+                testID='image-multiple'
+                {...additionalTouchableProps}
+              >
+                <MemoizedGalleryImage
+                  height={height}
                   resizeMode='cover'
-                  source={{ uri: galleryImages[i].url }}
-                  style={{ flex: 1, opacity: 0.5 }}
-                />
-                <View
                   style={[
-                    StyleSheet.absoluteFillObject,
-                    { alignItems: 'center', justifyContent: 'center' },
+                    styles.flex,
+                    {
+                      borderBottomLeftRadius:
+                        (images.length === 1 ||
+                          (images.length === 3 &&
+                            colIndex === 0 &&
+                            rowIndex === 0) ||
+                          (images.length === 4 &&
+                            colIndex === 0 &&
+                            rowIndex === 1)) &&
+                        !messageText &&
+                        ((groupStyle !== 'left_bottom' &&
+                          groupStyle !== 'left_single') ||
+                          (hasThreadReplies && !threadList))
+                          ? 14
+                          : 0,
+                      borderBottomRightRadius:
+                        (images.length === 1 ||
+                          (colIndex === 1 &&
+                            (images.length === 2 || rowIndex === 1))) &&
+                        !messageText &&
+                        ((groupStyle !== 'right_bottom' &&
+                          groupStyle !== 'right_single') ||
+                          (hasThreadReplies && !threadList))
+                          ? 14
+                          : 0,
+                      borderTopLeftRadius:
+                        colIndex === 0 && rowIndex === 0 ? 14 : 0,
+                      borderTopRightRadius:
+                        ((colIndex === 1 || images.length === 1) &&
+                          rowIndex === 0) ||
+                        (images.length === 3 &&
+                          colIndex === 0 &&
+                          rowIndex === 1)
+                          ? 14
+                          : 0,
+                    },
+                    image,
                   ]}
-                >
+                  uri={url}
+                />
+                {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
                   <View
-                    style={{
-                      alignItems: 'center',
-                      backgroundColor: '#000000B0',
-                      borderRadius: 20,
-                      height: '40%',
-                      justifyContent: 'center',
-                      width: '90%',
-                    }}
+                    style={[
+                      StyleSheet.absoluteFillObject,
+                      styles.moreImagesContainer,
+                      { backgroundColor: overlay },
+                      moreImagesContainer,
+                    ]}
                   >
-                    <Text
-                      style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}
-                    >
-                      +
-                      {t('{{ imageCount }} more', {
-                        imageCount: galleryImages.length - i,
-                      })}
+                    <Text style={[styles.moreImagesText, moreImagesText]}>
+                      {`+${images.length - 3}`}
                     </Text>
                   </View>
-                </View>
-              </View>
-            ) : (
-              <Image
-                resizeMode='cover'
-                source={{ uri: image?.url }}
-                style={{ flex: 1 }}
-              />
-            )}
-          </ImageContainer>
-        ))}
-      </GalleryContainer>
-      {viewerModalOpen && (
-        <Modal
-          onRequestClose={() => setViewerModalOpen(false)}
-          transparent
-          visible
-        >
-          <ImageViewer
-            // TODO: We don't have 'save image' functionality.
-            // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-            // opens up popup menu to with an option "Save to the album", which basically does nothing.
-            enableSwipeDown
-            imageUrls={galleryImages}
-            index={viewerModalImageIndex}
-            onCancel={() => setViewerModalOpen(false)}
-            renderHeader={() => (
-              <GalleryHeader handleDismiss={() => setViewerModalOpen(false)} />
-            )}
-            saveToLocalByLongPress={false}
-            useNativeDriver
-          />
-        </Modal>
-      )}
-    </>
+                ) : null}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ))}
+    </View>
   );
 };
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    groupStyles: prevGroupStyles,
+    hasThreadReplies: prevHasThreadReplies,
+    images: prevImages,
+    messageText: prevMessageText,
+  } = prevProps;
+  const {
+    groupStyles: nextGroupStyles,
+    hasThreadReplies: nextHasThreadReplies,
+    images: nextImages,
+    messageText: nextMessageText,
+  } = nextProps;
+
+  const messageTextEqual = prevMessageText === nextMessageText;
+  if (!messageTextEqual) return false;
+
+  const groupStylesEqual =
+    prevGroupStyles.length === nextGroupStyles.length &&
+    prevGroupStyles[0] === nextGroupStyles[0];
+  if (!groupStylesEqual) return false;
+
+  const hasThreadRepliesEqual = prevHasThreadReplies === nextHasThreadReplies;
+  if (!hasThreadRepliesEqual) return false;
+
+  const imagesEqual =
+    prevImages.length === nextImages.length &&
+    prevImages.every(
+      (image, index) =>
+        image.image_url === nextImages[index].image_url &&
+        image.thumb_url === nextImages[index].thumb_url,
+    );
+  if (!imagesEqual) return false;
+
+  return true;
+};
+
+const MemoizedGallery = React.memo(
+  GalleryWithContext,
+  areEqual,
+) as typeof GalleryWithContext;
+
+export type GalleryProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+/**
+ * UI component for card in attachments.
+ */
+export const Gallery = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTouchableProps: propAdditionalTouchableProps,
+    alignment: propAlignment,
+    groupStyles: propGroupStyles,
+    hasThreadReplies,
+    images: propImages,
+    messageId,
+    messageText,
+    onLongPress: propOnLongPress,
+    onPressIn: propOnPressIn,
+    preventPress,
+    setBlurType: propSetBlurType,
+    setImage: propSetImage,
+    setOverlay: propSetOverlay,
+    threadList: propThreadList,
+  } = props;
+
+  const { setImage: contextSetImage } = useImageGalleryContext();
+  const {
+    alignment: contextAlignment,
+    groupStyles: contextGroupStyles,
+    images: contextImages,
+    message,
+    onLongPress: contextOnLongPress,
+    threadList: contextThreadList,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+    onPressInMessage,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    setBlurType: contextSetBlurType,
+    setOverlay: contextSetOverlay,
+  } = useOverlayContext();
+
+  const images = propImages || contextImages;
+
+  if (!images.length) return null;
+
+  const additionalTouchableProps =
+    propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const alignment = propAlignment || contextAlignment;
+  const groupStyles = propGroupStyles || contextGroupStyles;
+  const onLongPress = propOnLongPress || contextOnLongPress;
+  const onPressIn = propOnPressIn || onPressInMessage;
+  const setBlurType = propSetBlurType || contextSetBlurType;
+  const setImage = propSetImage || contextSetImage;
+  const setOverlay = propSetOverlay || contextSetOverlay;
+  const threadList = propThreadList || contextThreadList;
+
+  return (
+    <MemoizedGallery
+      {...{
+        additionalTouchableProps,
+        alignment,
+        groupStyles,
+        hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        images,
+        messageId: messageId || message?.id,
+        messageText: messageText || message?.text,
+        onLongPress,
+        onPressIn,
+        preventPress,
+        setBlurType,
+        setImage,
+        setOverlay,
+        threadList,
+      }}
+    />
+  );
+};
+
+Gallery.displayName = 'Gallery{messageSimple{gallery}}';

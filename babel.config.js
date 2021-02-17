@@ -8,7 +8,25 @@ module.exports = (api) => {
           compact: false,
         },
       ],
-      plugins: ['module-resolver', 'babel-plugin-styled-components'],
+      plugins: [
+        [
+          'i18next-extract',
+          {
+            contextSeparator: '__',
+            defaultContexts: [''],
+            defaultNS: 'en',
+            discardOldKeys: true,
+            jsonSpace: 4,
+            keyAsDefaultValue: ['en'],
+            keyAsDefaultValueForDerivedKeys: false,
+            keySeparator: null,
+            locales: ['en', 'fr', 'hi', 'it', 'nl', 'ru', 'tr'],
+            nsSeparator: null,
+            outputPath: 'src/i18n/{{locale}}.json',
+          },
+        ],
+        'module-resolver',
+      ],
       presets: [
         '@babel/env',
         'module:metro-react-native-babel-preset',
@@ -35,7 +53,25 @@ module.exports = (api) => {
         compact: false,
       },
     ],
-    plugins: ['module-resolver', 'babel-plugin-styled-components'],
+    plugins: [
+      [
+        'i18next-extract',
+        {
+          contextSeparator: '__',
+          defaultContexts: [''],
+          defaultNS: 'en',
+          discardOldKeys: true,
+          jsonSpace: 4,
+          keyAsDefaultValue: ['en'],
+          keyAsDefaultValueForDerivedKeys: false,
+          keySeparator: null,
+          locales: ['nl', 'en', 'it', 'tr', 'fr', 'hi', 'ru'],
+          nsSeparator: null,
+          outputPath: 'src/i18n/{{locale}}.json',
+        },
+      ],
+      'module-resolver',
+    ],
     presets: [
       '@babel/env',
       'module:metro-react-native-babel-preset',

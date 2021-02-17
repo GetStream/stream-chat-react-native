@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import {
   cleanup,
   fireEvent,
@@ -7,20 +6,20 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { Message } from '../../Message';
 
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
 import { MessageInput } from '../../../MessageInput/MessageInput';
 import { MessageList } from '../../../MessageList/MessageList';
+
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateMessage } from '../../../../mock-builders/generator/message';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../../mock-builders/mock';
 
 describe('Message', () => {
   let channel;
@@ -339,31 +338,6 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(onLongPress).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('renders a custom action sheet when the `ActionSheet` prop exists', async () => {
-    const message = generateMessage({ user });
-    // eslint-disable-next-line
-    const ActionSheet = React.forwardRef((props, ref) => (
-      <View {...props} testID='action-sheet-prop' />
-    ));
-
-    const { getByTestId, queryAllByTestId } = renderMessage({
-      ActionSheet,
-      message,
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(queryAllByTestId('action-sheet-prop')).toHaveLength(0);
-    });
-
-    fireEvent(getByTestId('message-content-wrapper'), 'longPress');
-
-    await waitFor(() => {
-      expect(getByTestId('action-sheet-prop')).toBeTruthy();
     });
   });
 });

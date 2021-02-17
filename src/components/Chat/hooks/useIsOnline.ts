@@ -27,12 +27,14 @@ export const useIsOnline = <
 >(
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<
-    NetInfoSubscription
-  >();
+  const [
+    unsubscribeNetInfo,
+    setUnsubscribeNetInfo,
+  ] = useState<NetInfoSubscription>();
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
+  const clientExits = !!client;
   useEffect(() => {
     const handleChangedEvent = (
       event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>,
@@ -68,6 +70,12 @@ export const useIsOnline = <
       );
     };
 
+    const setInitialOnlineState = async () => {
+      const status = await NetInfo.fetch();
+      setIsOnline(status);
+    };
+
+    setInitialOnlineState();
     if (client) {
       client.on('connection.changed', handleChangedEvent);
       client.on('connection.recovered', handleRecoveredEvent);
@@ -81,7 +89,7 @@ export const useIsOnline = <
         unsubscribeNetInfo();
       }
     };
-  }, [client]);
+  }, [clientExits]);
 
   return { connectionRecovering, isOnline };
 };

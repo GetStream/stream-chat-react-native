@@ -11,7 +11,7 @@ function isExternalModule(modulePath) {
 }
 
 function listDirectories(rootPath, cb) {
-  FS.readdirSync(rootPath).forEach(fileName => {
+  FS.readdirSync(rootPath).forEach((fileName) => {
     if (fileName.charAt(0) === '.') return;
 
     let fullFileName = PATH.join(rootPath, fileName),
@@ -121,7 +121,7 @@ function getPolyfillHelper() {
   // See if project has custom polyfills, if so, include the PATH to them
   try {
     const customPolyfills = require.resolve('./polyfills.js');
-    getPolyfills = (function(originalGetPolyfills) {
+    getPolyfills = (function (originalGetPolyfills) {
       return () => originalGetPolyfills().concat(customPolyfills);
     })(getPolyfills);
   } catch (e) {
@@ -138,12 +138,12 @@ const FS = require('fs'),
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
-  new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
-  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
-  //   new RegExp(repoDir + '/native-example/(.*)'),
-  new RegExp(repoDir + '/expo-package/.*'),
-  new RegExp(repoDir + '/native-package/node_modules/.*'),
-  new RegExp(repoDir + '/node_modules/.*'),
+    new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+    new RegExp(repoDir + '/examples/SampleApp/.*'),
+    new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
+    new RegExp(repoDir + '/expo-package/.*'),
+    new RegExp(repoDir + '/native-package/node_modules/.*'),
+    new RegExp(repoDir + '/node_modules/.*'),
   ],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)

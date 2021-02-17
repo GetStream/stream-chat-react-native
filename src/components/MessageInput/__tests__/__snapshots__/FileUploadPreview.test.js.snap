@@ -2,13 +2,15 @@
 
 exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 uploaded, and 1 failed file 1`] = `
 <View
-  fileUploadsLength={3}
   style={
     Array [
       Object {
-        "height": 165,
         "marginHorizontal": 10,
       },
+      Object {
+        "height": 165,
+      },
+      Object {},
     ]
   }
 >
@@ -85,17 +87,15 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -106,6 +106,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -131,6 +132,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -143,13 +145,14 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -158,28 +161,27 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
             <View
               style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  },
-                ]
+                Object {
+                  "alignItems": "center",
+                  "bottom": 0,
+                  "justifyContent": "center",
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                }
               }
             >
               <ActivityIndicator
@@ -206,7 +208,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -231,6 +233,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -248,17 +251,15 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -269,6 +270,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -294,6 +296,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -316,7 +319,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -341,6 +344,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -358,17 +362,15 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -379,6 +381,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -404,6 +407,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -416,13 +420,14 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -431,12 +436,13 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
@@ -495,7 +501,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -520,6 +526,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -532,13 +539,15 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
 
 exports[`FileUploadPreview should render FileUploadPreview with all failed files 1`] = `
 <View
-  fileUploadsLength={3}
   style={
     Array [
       Object {
-        "height": 165,
         "marginHorizontal": 10,
       },
+      Object {
+        "height": 165,
+      },
+      Object {},
     ]
   }
 >
@@ -615,17 +624,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -636,6 +643,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -661,6 +669,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -673,13 +682,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -688,12 +698,13 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
@@ -752,7 +763,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -777,6 +788,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -794,17 +806,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -815,6 +825,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -840,6 +851,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -852,13 +864,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -867,12 +880,13 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
@@ -931,7 +945,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -956,6 +970,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -973,17 +988,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -994,6 +1007,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1019,6 +1033,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1031,13 +1046,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -1046,12 +1062,13 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
@@ -1110,7 +1127,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1135,6 +1152,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1147,13 +1165,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
 
 exports[`FileUploadPreview should render FileUploadPreview with all uploaded files 1`] = `
 <View
-  fileUploadsLength={3}
   style={
     Array [
       Object {
-        "height": 165,
         "marginHorizontal": 10,
       },
+      Object {
+        "height": 165,
+      },
+      Object {},
     ]
   }
 >
@@ -1230,17 +1250,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1251,6 +1269,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1276,6 +1295,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1298,7 +1318,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1323,6 +1343,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1340,17 +1361,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1361,6 +1380,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1386,6 +1406,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1408,7 +1429,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1433,6 +1454,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1450,17 +1472,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1471,6 +1491,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1496,6 +1517,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1518,7 +1540,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1543,6 +1565,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1555,13 +1578,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
 
 exports[`FileUploadPreview should render FileUploadPreview with all uploading files 1`] = `
 <View
-  fileUploadsLength={3}
   style={
     Array [
       Object {
-        "height": 165,
         "marginHorizontal": 10,
       },
+      Object {
+        "height": 165,
+      },
+      Object {},
     ]
   }
 >
@@ -1638,17 +1663,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1659,6 +1682,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1684,6 +1708,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1696,13 +1721,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -1711,28 +1737,27 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
             <View
               style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  },
-                ]
+                Object {
+                  "alignItems": "center",
+                  "bottom": 0,
+                  "justifyContent": "center",
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                }
               }
             >
               <ActivityIndicator
@@ -1759,7 +1784,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1784,6 +1809,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1801,17 +1827,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1822,6 +1846,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -1847,6 +1872,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -1859,13 +1885,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -1874,28 +1901,27 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
             <View
               style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  },
-                ]
+                Object {
+                  "alignItems": "center",
+                  "bottom": 0,
+                  "justifyContent": "center",
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                }
               }
             >
               <ActivityIndicator
@@ -1922,7 +1948,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -1947,6 +1973,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />
@@ -1964,17 +1991,15 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "borderColor": "#ebebeb",
+                  "borderColor": "#EBEBEB",
                   "borderWidth": 0.5,
                   "flexDirection": "row",
                   "height": 50,
                   "justifyContent": "space-between",
                   "marginBottom": 5,
-                  "paddingBottom": 10,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
-                  "paddingTop": 10,
+                  "padding": 10,
                 },
+                Object {},
               ]
             }
           >
@@ -1985,6 +2010,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     "alignItems": "center",
                     "flexDirection": "row",
                   },
+                  Object {},
                 ]
               }
             >
@@ -2010,6 +2036,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                     Object {
                       "paddingLeft": 10,
                     },
+                    Object {},
                   ]
                 }
               >
@@ -2022,13 +2049,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                  "backgroundColor": "#0000004D",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           />
@@ -2037,28 +2065,27 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255, 255, 255, 0)",
+                  "backgroundColor": "#FFFFFF00",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
                   "width": "100%",
                 },
+                Object {},
               ]
             }
           >
             <View
               style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  },
-                ]
+                Object {
+                  "alignItems": "center",
+                  "bottom": 0,
+                  "justifyContent": "center",
+                  "left": 0,
+                  "position": "absolute",
+                  "right": 0,
+                  "top": 0,
+                }
               }
             >
               <ActivityIndicator
@@ -2085,7 +2112,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           style={
             Object {
               "alignItems": "center",
-              "backgroundColor": "#fff",
+              "backgroundColor": "#FFFFFF",
               "borderRadius": 20,
               "height": 20,
               "justifyContent": "center",
@@ -2110,6 +2137,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "height": 10,
                   "width": 10,
                 },
+                Object {},
               ]
             }
           />

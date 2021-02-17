@@ -14,6 +14,7 @@ import type {
 } from '../../../../types/types';
 
 type Parameters = {
+  refreshList: () => void;
   setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
 };
 
@@ -26,12 +27,14 @@ export const useConnectionRecovered = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >({
+  refreshList,
   setForceUpdate,
 }: Parameters) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
     const handleEvent = () => {
+      refreshList();
       setForceUpdate((count) => count + 1);
     };
 
@@ -41,8 +44,8 @@ export const useConnectionRecovered = <
     );
     const { unsubscribe: unsubscribeChanged } = client.on(
       'connection.changed',
-      (e) => {
-        if (e.online) {
+      (event) => {
+        if (event.online) {
           handleEvent();
         }
       },

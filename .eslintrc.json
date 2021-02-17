@@ -16,16 +16,10 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "babel",
-    "markdown",
-    "better-styled-components",
-    "sort-destructure-keys"
-  ],
+  "plugins": ["babel", "markdown", "sort-destructure-keys"],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
-    "better-styled-components/sort-declarations-alphabetically": 0,
     "comma-dangle": 0,
     "babel/no-invalid-this": 2,
     "default-case": 2,
@@ -132,15 +126,14 @@
         "prettier",
         "react",
         "typescript-sort-keys",
-        "better-styled-components",
         "sort-destructure-keys"
       ],
       "rules": {
         "@typescript-eslint/explicit-module-boundary-types": 0,
         "@typescript-eslint/no-empty-interface": 0,
         "@typescript-eslint/ban-ts-comment": 0,
+        "@typescript-eslint/no-unused-vars": 1,
         "@typescript-eslint/no-var-requires": 0,
-        "better-styled-components/sort-declarations-alphabetically": 1,
         "react-hooks/exhaustive-deps": 0,
         "react-native/no-inline-styles": 0,
         "array-callback-return": 2,
@@ -154,6 +147,7 @@
         "no-console": 0,
         "no-mixed-spaces-and-tabs": 1,
         "no-self-compare": 2,
+        "no-shadow": 0,
         "no-underscore-dangle": [2, { "allowAfterThis": true }],
         "no-unused-vars": [1, { "ignoreRestSiblings": true }],
         "no-useless-concat": 2,

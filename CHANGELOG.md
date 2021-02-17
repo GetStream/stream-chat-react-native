@@ -1,5 +1,41 @@
 # Changelog
 
+## [3.0.0]
+
+Version 3.x is a major revamp of the SDK and comes with **many breaking changes**. The new implementation takes advantage of React Context along with many popular community libraries such as Reanimated V2 to deliver a superior chat experience. **Upgrading will require re-implementing** your integration but will yield performance and functional benefits. It is highly recommended you read the Cookbook and examine the SampleApp / TypeScriptMessaging apps before upgrading to understand what is required.
+
+**NOTE:** As of release expo is on version 40 which uses a version of React Native with a bug in the Dimensions API that occurs upon reloading an app in the simulator. Version 3.x uses relative sizing widely and depends on this API so issues will be visible in Expo until they update the custom React Native version they ship.
+
+- Added peer dependencies for:
+  - BlurView using one of these
+    - Expo: [expo-blur](https://docs.expo.io/versions/latest/sdk/blur-view/#installation)
+    - React Native: [@react-native-community/blur](https://github.com/Kureev/react-native-blur#installation)
+  - Image Compression using one of these
+    - Expo: [expo-image-manipulator](https://docs.expo.io/versions/latest/sdk/imagemanipulator/#installation)
+    - React Native: [react-native-image-resizer](https://github.com/bamlab/react-native-image-resizer#setup)
+  - FileSystem using one of these
+    - Expo: [expo-file-system](https://docs.expo.io/versions/latest/sdk/filesystem/#installation)
+    - React Native: [react-native-fs](https://github.com/itinance/react-native-fs/)
+  - Share using one of these
+    - Expo [expo-sharing](https://docs.expo.io/versions/latest/sdk/sharing/#installation)
+    - React Native: [react-native-share](https://github.com/react-native-share/react-native-share#getting-started)
+  - Image Picking using one of these
+    - Expo [expo-media-library](https://docs.expo.io/versions/latest/sdk/media-library/#installation)
+    - React Native: [react-native-cameraroll](https://github.com/react-native-cameraroll/react-native-cameraroll#getting-started)
+  - [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation)
+  - [react-native-reanimated v2](https://docs.swmansion.com/react-native-reanimated/docs/installation)
+  - [react-native-svg](https://github.com/react-native-svg/react-native-svg#installation)
+
+- Removed peer dependencies for:
+  - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values)
+
+- Removed seamless-immutable
+
+- Removed styled-components:
+  - Removed dot notation for theming applications
+  - Removed css string notation for styles on theme
+  - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
+
 ## [2.2.2] 2021-02-07
 
 Handling the case of standlone Channel component (without ChannelList) on top of fix in [v2.2.1](https://github.com/GetStream/stream-chat-react-native/releases/tag/v2.2.1) - [ba7d744](https://github.com/GetStream/stream-chat-react-native/commit/ba7d744dcdf76e16bcee29a9daa6f8879ef0ec79)

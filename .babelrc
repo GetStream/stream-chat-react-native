@@ -16,6 +16,24 @@
       "compact": false
     }
   ],
-  "plugins": ["module-resolver", "babel-plugin-styled-components"],
+  "plugins": [
+    [
+      "i18next-extract",
+      {
+        "contextSeparator": "__",
+        "defaultContexts": [""],
+        "defaultNS": "en",
+        "locales": ["en", "fr", "hi", "it", "nl", "ru", "tr"],
+        "jsonSpace": 4,
+        "keySeparator": null,
+        "nsSeparator": null,
+        "keyAsDefaultValue": ["en"],
+        "keyAsDefaultValueForDerivedKeys": false,
+        "outputPath": "src/i18n/{{locale}}.json",
+        "discardOldKeys": true
+      }
+    ],
+    "module-resolver"
+  ],
   "presets": ["@babel/env", "module:metro-react-native-babel-preset"]
 }

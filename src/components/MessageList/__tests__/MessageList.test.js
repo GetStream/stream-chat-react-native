@@ -7,19 +7,6 @@ import {
 } from '@testing-library/react-native';
 import { act } from 'react-test-renderer';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import dispatchMessageNewEvent from 'mock-builders/event/messageNew';
-import dispatchTypingEvent from 'mock-builders/event/typing';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import {
-  generateMessage,
-  generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { MessageList } from '../MessageList';
 
 import { Channel } from '../../Channel/Channel';
@@ -29,6 +16,22 @@ import {
   ChatContext,
   ChatProvider,
 } from '../../../contexts/chatContext/ChatContext';
+
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchTypingEvent from '../../../mock-builders/event/typing';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMember } from '../../../mock-builders/generator/member';
+import {
+  generateMessage,
+  generateStaticMessage,
+} from '../../../mock-builders/generator/message';
+import {
+  generateStaticUser,
+  generateUser,
+} from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -184,13 +187,11 @@ describe('MessageList', () => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('error-notification')).toBeTruthy();
-      expect(
-        getByText('Connection failure, reconnecting now ...'),
-      ).toBeTruthy();
+      expect(getByText('Connection failure, reconnecting now...')).toBeTruthy();
     });
   });
 
-  it('should render MessageNotification when new message is received and user has scroll up in list, then remove MessageNotification on scroll down', async () => {
+  it('should render ScrollToBottomButton when new message is received and user has scroll up in list, then remove ScrollToBottomButton on scroll down', async () => {
     const user1 = generateUser();
     const user2 = generateUser();
     const messages = new Array(50).fill(generateMessage({ user: user1 }));

@@ -7,7 +7,7 @@
         "contextSeparator": "__",
         "defaultContexts": [""],
         "defaultNS": "en",
-        "locales": ["nl", "en", "it", "tr", "fr", "hi", "ru"],
+        "locales": ["en", "fr", "hi", "it", "nl", "ru", "tr"],
         "jsonSpace": 4,
         "keySeparator": null,
         "nsSeparator": null,
@@ -17,7 +17,6 @@
         "discardOldKeys": true
       }
     ],
-    "@babel/transform-runtime",
-    "babel-plugin-styled-components"
+    "@babel/transform-runtime"
   ]
 }

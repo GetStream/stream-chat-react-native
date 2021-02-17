@@ -2,20 +2,20 @@ import React from 'react';
 import { Text } from 'react-native';
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import dispatchMessageDeletedEvent from 'mock-builders/event/messageDeleted';
-import dispatchMessageNewEvent from 'mock-builders/event/messageNew';
-import dispatchMessageReadEvent from 'mock-builders/event/messageRead';
-import dispatchMessageUpdatedEvent from 'mock-builders/event/messageUpdated';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { ChannelPreview } from '../ChannelPreview';
 
 import { Chat } from '../../Chat/Chat';
+
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchMessageDeletedEvent from '../../../mock-builders/event/messageDeleted';
+import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
+import dispatchMessageUpdatedEvent from '../../../mock-builders/event/messageUpdated';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 const ChannelPreviewUIComponent = (props) => (
   <>

@@ -49,11 +49,12 @@ export const useNewMessage = <
   useEffect(() => {
     const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setChannels((channels) => {
-        if (!lockChannelOrder && event.cid)
+        if (!lockChannelOrder && event.cid) {
           return moveChannelUp<At, Ch, Co, Ev, Me, Re, Us>({
             channels,
             cid: event.cid,
           });
+        }
         return [...channels];
       });
     };

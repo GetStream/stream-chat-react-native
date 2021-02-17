@@ -1,5 +1,3 @@
-import { InsertDatesResponse, isDateSeparator } from '../utils/insertDates';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -10,6 +8,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
   At extends UnknownType = DefaultAttachmentType,
@@ -20,13 +19,13 @@ export const getLastReceivedMessage = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>,
+  messages: MessageType<At, Ch, Co, Ev, Me, Re, Us>[],
 ) => {
   /**
    * There are no status on dates so they will be skipped
    */
   for (const message of messages) {
-    if (message && !isDateSeparator(message) && message.status === 'received') {
+    if (message?.status === 'received' || message?.status === 'sending') {
       return message;
     }
   }

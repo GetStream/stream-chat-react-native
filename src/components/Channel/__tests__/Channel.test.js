@@ -3,14 +3,6 @@ import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { Channel } from '../Channel';
 
 import { Attachment } from '../../Attachment/Attachment';
@@ -28,6 +20,13 @@ import {
   ThreadContext,
   ThreadProvider,
 } from '../../../contexts/threadContext/ThreadContext';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMember } from '../../../mock-builders/generator/member';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -208,9 +207,9 @@ describe('Channel', () => {
 
     renderComponent(
       { channel },
-      ({ loadMore }) => {
+      ({ loadMoreEarlier }) => {
         useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-        loadMore(limit);
+        loadMoreEarlier(limit);
       },
       MessagesContext,
     );

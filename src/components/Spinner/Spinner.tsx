@@ -1,54 +1,58 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Easing } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ViewStyle } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Loading } from '../../icons/Loading';
 
-const AnimatedView = Animated.createAnimatedComponent(Animated.View);
+const styles = StyleSheet.create({
+  spinner: {
+    height: 16,
+    justifyContent: 'center',
+    margin: 5,
+    width: 16,
+  },
+});
 
-const Circle = styled(AnimatedView)`
-  border-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 30px;
-  border-right-color: transparent;
-  border-width: 2px;
-  height: 30px;
-  justify-content: center;
-  margin: 5px;
-  width: 30px;
-  ${({ theme }) => theme.spinner.css};
-`;
-
-/**
- * @example ./Spinner.md
- */
 export const Spinner: React.FC = () => {
-  const rotateValue = useRef(new Animated.Value(0));
+  const rotation = useSharedValue(0);
 
-  const loop = Animated.loop(
-    Animated.timing(rotateValue.current, {
-      duration: 800,
-      easing: Easing.linear,
-      toValue: 1,
-      useNativeDriver: true,
-    }),
-  );
+  const {
+    theme: {
+      colors: { accent_blue },
+      spinner,
+    },
+  } = useTheme();
+
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    transform: [
+      {
+        rotate: `${rotation.value}deg`,
+      },
+    ],
+  }));
 
   useEffect(() => {
-    loop.start();
-    return loop.stop;
-  });
+    rotation.value = withRepeat(
+      withTiming(360, {
+        duration: 800,
+        easing: Easing.linear,
+      }),
+      -1,
+    );
+  }, []);
 
   return (
-    <Circle
-      style={{
-        transform: [
-          {
-            rotate: rotateValue.current.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0deg', '360deg'],
-            }),
-          },
-        ],
-      }}
-    />
+    <Animated.View style={[styles.spinner, animatedStyle, spinner]}>
+      <Loading stopColor={accent_blue} />
+    </Animated.View>
   );
 };
+
+Spinner.displayName = 'Spinner{spinner}';

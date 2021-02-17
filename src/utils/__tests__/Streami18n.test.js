@@ -1,7 +1,6 @@
 import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Streami18n } from '../Streami18n';
 
@@ -66,7 +65,7 @@ describe('Streami18n instance - default', () => {
 
   it('should provide default english translator', async () => {
     const { t: _t } = await streami18n.getTranslators();
-    const text = uuidv4();
+    const text = Date.now().toString();
 
     expect(_t(text)).toBe(text);
   });
@@ -78,7 +77,7 @@ describe('Streami18n instance - default', () => {
   });
 });
 
-describe('Streami18n instance - with built-in langauge', () => {
+describe('Streami18n instance - with built-in language', () => {
   describe('datetime translations enabled', () => {
     const streami18nOptions = { language: 'nl' };
     const streami18n = new Streami18n(streami18nOptions);
@@ -153,7 +152,7 @@ describe('Streami18n instance - with custom translations', () => {
       [textKey2]: textValue2,
     };
     const streami18nOptions = {
-      langauge: 'zh',
+      language: 'zh',
       translationsForLanguage: translations,
     };
     const streami18n = new Streami18n(streami18nOptions);

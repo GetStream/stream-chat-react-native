@@ -4,8 +4,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { ChannelState } from 'stream-chat';
 
-import type { MessageWithDates } from '../messagesContext/MessagesContext';
-import type { Message } from '../../components/MessageList/utils/insertDates';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,13 +25,11 @@ export type ThreadContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  thread:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    | MessageWithDates<At, Ch, Co, Me, Re, Us>
-    | null;
+  openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  thread: MessageType<At, Ch, Co, Ev, Me, Re, Us> | null;
   threadHasMore: boolean;
   threadLoadingMore: boolean;
   threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
@@ -79,8 +76,8 @@ export const useThreadContext = <
   >;
 
 /**
- * Typescript currently does not support partial inference so if MessageContentContext
- * typing is desired while using the HOC withMessageContentContextContext the Props for the
+ * Typescript currently does not support partial inference so if ThreadContext
+ * typing is desired while using the HOC withThreadContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withThreadContext = <

@@ -1,99 +1,197 @@
 import React from 'react';
-import { View } from 'react-native';
+import {
+  GestureResponderEvent,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
-import { ActionHandler, Attachment } from './Attachment';
+import { Attachment as AttachmentDefault } from './Attachment';
 
-import type { Attachment as AttachmentType } from 'stream-chat';
-
-import type { AttachmentActionsProps } from './AttachmentActions';
-import type { FileAttachmentProps } from './FileAttachment';
-import type { FileIconProps } from './FileIcon';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
-  Alignment,
-  GroupType,
-} from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
-export type FileAttachmentGroupProps<
-  At extends UnknownType = DefaultAttachmentType
-> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * The files attached to a message
-   */
-  files: AttachmentType<At>[];
-  /**
-   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
-   */
-  handleAction: ActionHandler;
-  /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
-   */
-  AttachmentActions?: React.ComponentType<AttachmentActionsProps<At>>;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
-   */
-  FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
-  /**
-   * The unique id for the message with file attachments
-   */
-  messageId?: string;
-};
+const styles = StyleSheet.create({
+  container: {
+    padding: 4,
+  },
+});
 
-export const FileAttachmentGroup = <
-  At extends UnknownType = DefaultAttachmentType
+export type FileAttachmentGroupPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
+    /**
+     * The unique id for the message with file attachments
+     */
+    messageId: string;
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+    styles?: Partial<{
+      attachmentContainer: StyleProp<ViewStyle>;
+      container: StyleProp<ViewStyle>;
+    }>;
+  };
+
+const FileAttachmentGroupWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
-  props: FileAttachmentGroupProps<At>,
+  props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    alignment,
-    AttachmentActions,
-    AttachmentFileIcon,
-    FileAttachment,
+    Attachment,
     files,
-    handleAction,
     messageId,
+    onPressIn,
+    styles: stylesProp = {},
   } = props;
 
-  return (
-    <View>
-      {files.length &&
-        files.map((file, index) => {
-          const groupStyle: GroupType =
-            files.length === 1
-              ? 'single'
-              : index === 0
-              ? 'top'
-              : index < files.length - 1 && index > 0
-              ? 'middle'
-              : index === files.length - 1
-              ? 'bottom'
-              : 'single';
+  const {
+    theme: {
+      messageSimple: {
+        fileAttachmentGroup: { container },
+      },
+    },
+  } = useTheme();
 
-          return (
-            <Attachment<At>
-              actionHandler={handleAction}
-              alignment={alignment}
-              attachment={file}
-              AttachmentActions={AttachmentActions}
-              AttachmentFileIcon={AttachmentFileIcon}
-              FileAttachment={FileAttachment}
-              groupStyle={groupStyle}
-              key={`${messageId}-${index}`}
-            />
-          );
-        })}
+  return (
+    <View style={[styles.container, container, stylesProp.container]}>
+      {files.map((file, index) => (
+        <View
+          key={`${messageId}-${index}`}
+          style={[
+            { paddingBottom: index !== files.length - 1 ? 4 : 0 },
+            stylesProp.attachmentContainer,
+          ]}
+        >
+          <Attachment attachment={file} onPressIn={onPressIn} />
+        </View>
+      ))}
     </View>
   );
 };
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { files: prevFiles } = prevProps;
+  const { files: nextFiles } = nextProps;
+
+  const filesEqual = prevFiles.length === nextFiles.length;
+
+  return filesEqual;
+};
+
+const MemoizedFileAttachmentGroup = React.memo(
+  FileAttachmentGroupWithContext,
+  areEqual,
+) as typeof FileAttachmentGroupWithContext;
+
+export type FileAttachmentGroupProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<
+  Omit<
+    FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'messageId'
+  >
+> &
+  Pick<
+    FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'messageId'
+  >;
+
+export const FileAttachmentGroup = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { files: propFiles, messageId, onPressIn: propOnPressIn } = props;
+
+  const { files: contextFiles } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
+  const {
+    Attachment = AttachmentDefault,
+    onPressInMessage,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const files = propFiles || contextFiles;
+  const onPressIn = propOnPressIn || onPressInMessage;
+
+  if (!files.length) return null;
+
+  return (
+    <MemoizedFileAttachmentGroup
+      {...{
+        Attachment,
+        files,
+        messageId,
+        onPressIn,
+      }}
+    />
+  );
+};
+
+FileAttachmentGroup.displayName =
+  'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';

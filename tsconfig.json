@@ -28,32 +28,9 @@
     "noEmitOnError": false,
     "noImplicitAny": true,
     "allowJs": true,
-    "checkJs": false,
-    "plugins": [
-      {
-        "name": "typescript-styled-plugin",
-        "lint": {
-          "validProperties": [
-            "include-font-padding",
-            "shadow-color",
-            "shadow-opacity",
-            "shadow-offset",
-            "shadow-radius",
-            "padding-horizontal",
-            "padding-vertical",
-            "margin-vertical",
-            "margin-horizontal",
-            "tint-color",
-            "aspect-ratio",
-            "elevation",
-            "resize-mode",
-            "text-align-vertical"
-          ]
-        }
-      }
-    ]
+    "checkJs": false
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "styleguideComponents"],
   "exclude": [
     "./src/components/docs/*",
     "./src/mock-builders",

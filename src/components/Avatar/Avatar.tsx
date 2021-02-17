@@ -1,90 +1,154 @@
 import React, { useState } from 'react';
+import {
+  Image,
+  ImageStyle,
+  PixelRatio,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
+import Svg, { Circle, CircleProps } from 'react-native-svg';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
-const BASE_AVATAR_SIZE = 32;
+const randomImageBaseUrl = 'https://getstream.io/random_png/';
+const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
+const streamCDN = 'stream-io-cdn.com';
 
-const AvatarContainer = styled.View`
-  align-items: center;
-  ${({ theme }) => theme.avatar.container.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  presenceIndicatorContainer: {
+    height: 10,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 10,
+  },
+});
 
-const AvatarFallback = styled.View<{ size: number }>`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: ${({ size }) => size / 2}px;
-  height: ${({ size }) => size}px;
-  justify-content: center;
-  width: ${({ size }) => size}px;
-  ${({ theme }) => theme.avatar.fallback.css}
-`;
-
-const AvatarImage = styled.Image<{ size: number }>`
-  border-radius: ${({ size }) => size / 2}px;
-  height: ${({ size }) => size}px;
-  width: ${({ size }) => size}px;
-  ${({ theme }) => theme.avatar.image.css}
-`;
-
-const AvatarText = styled.Text<{ fontSize: number }>`
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: ${({ fontSize }) => fontSize}px;
-  font-weight: bold;
-  text-transform: uppercase;
-  ${({ theme }) => theme.avatar.text.css}
-`;
-
-const getInitials = (fullName?: string) =>
+const getInitials = (fullName: string) =>
   fullName
-    ? fullName
-        .split(' ')
-        .slice(0, 2)
-        .map((name) => name.charAt(0))
-    : null;
+    .split(' ')
+    .slice(0, 2)
+    .map((name) => name.charAt(0))
+    .join(' ');
 
 export type AvatarProps = {
+  /** size in pixels */
+  size: number;
+  containerStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
-  /** name of the picture, used for title tag fallback */
+  /** name of the picture, used for fallback */
+  imageStyle?: StyleProp<ImageStyle>;
   name?: string;
-  /** size in pixels */
-  size?: number;
+  online?: boolean;
+  presenceIndicator?: CircleProps;
+  presenceIndicatorContainerStyle?: StyleProp<ViewStyle>;
   testID?: string;
 };
 
 /**
  * Avatar - A round avatar image with fallback to user's initials
- *
- * @example ./Avatar.md
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
-  const { image, name, size = BASE_AVATAR_SIZE, testID } = props;
+  const {
+    containerStyle,
+    image: imageProp,
+    imageStyle,
+    name,
+    online,
+    presenceIndicator: presenceIndicatorProp,
+    presenceIndicatorContainerStyle,
+    size,
+    testID,
+  } = props;
+  const {
+    theme: {
+      avatar: {
+        container,
+        image,
+        presenceIndicator,
+        presenceIndicatorContainer,
+      },
+      colors: { accent_green, white },
+    },
+  } = useTheme();
+
   const [imageError, setImageError] = useState(false);
 
   return (
-    <AvatarContainer>
-      {image && !imageError ? (
-        <AvatarImage
-          accessibilityLabel='initials'
+    <View>
+      <View
+        style={[
+          styles.container,
+          {
+            borderRadius: size / 2,
+            height: size,
+            width: size,
+          },
+          container,
+          containerStyle,
+        ]}
+      >
+        <Image
+          accessibilityLabel={testID || 'avatar-image'}
           onError={() => setImageError(true)}
-          resizeMethod='resize'
-          size={size}
-          source={{ uri: image }}
+          source={{
+            uri:
+              imageError ||
+              !imageProp ||
+              imageProp.includes(randomImageBaseUrl) ||
+              imageProp.includes(randomSvgBaseUrl)
+                ? imageProp?.includes(streamCDN)
+                  ? imageProp
+                  : `${randomImageBaseUrl}${
+                      name ? `?name=${getInitials(name)}&size=${size}` : ''
+                    }`
+                : imageProp.replace(
+                    'h=%2A',
+                    `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`,
+                  ),
+          }}
+          style={[
+            image,
+            size
+              ? {
+                  borderRadius: size / 2,
+                  height: size,
+                  width: size,
+                }
+              : {},
+            imageStyle,
+          ]}
           testID={testID || 'avatar-image'}
         />
-      ) : (
-        <AvatarFallback size={size}>
-          <AvatarText
-            fontSize={
-              BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE)
-            }
-            testID={testID || 'avatar-text'}
-          >
-            {getInitials(name)}
-          </AvatarText>
-        </AvatarFallback>
+      </View>
+      {online && (
+        <View
+          style={[
+            styles.presenceIndicatorContainer,
+            presenceIndicatorContainer,
+            presenceIndicatorContainerStyle,
+          ]}
+        >
+          <Svg>
+            <Circle
+              fill={accent_green}
+              stroke={white}
+              {...presenceIndicator}
+              {...presenceIndicatorProp}
+            />
+          </Svg>
+        </View>
       )}
-    </AvatarContainer>
+    </View>
   );
 };
+
+Avatar.displayName = 'Avatar{avatar}';

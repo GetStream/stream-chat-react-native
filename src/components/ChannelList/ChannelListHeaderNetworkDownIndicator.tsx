@@ -1,31 +1,40 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
 
-const Container = styled.View`
-  align-items: center;
-  background-color: #fae6e8;
-  justify-content: center;
-  padding: 3px;
-  width: 100%;
-  ${({ theme }) => theme.channelListHeaderErrorIndicator.container.css}
-`;
-
-const ErrorText = styled.Text`
-  color: red;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 3px;
-  ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    width: '100%',
+  },
+  errorText: {
+    fontSize: 14,
+  },
+});
 
 export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
+  const {
+    theme: {
+      channelListHeaderErrorIndicator: { container, errorText },
+      colors: { grey, white },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
 
   return (
-    <Container>
-      <ErrorText>{t('Connection failure, reconnecting now ...')}</ErrorText>
-    </Container>
+    <View
+      style={[styles.container, { backgroundColor: `${grey}E6` }, container]}
+    >
+      <Text style={[styles.errorText, { color: white }, errorText]}>
+        {t('Reconnecting...')}
+      </Text>
+    </View>
   );
 };
+
+ChannelListHeaderNetworkDownIndicator.displayName =
+  'ChannelListHeaderNetworkDownIndicator{channelListHeaderErrorIndicator}';

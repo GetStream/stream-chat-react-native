@@ -1,109 +1,123 @@
 import React from 'react';
-import { FlatList, ImageRequireSource } from 'react-native';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import type { ImageUpload } from './hooks/useMessageDetailsForState';
-
-import { styled } from '../../styles/styledComponents';
+import {
+  ImageUpload,
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Close } from '../../icons/Close';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
-const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
-const Container = styled.View`
-  height: 70px;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.container.css};
-`;
+const IMAGE_PREVIEW_SIZE = 100;
 
-const Dismiss = styled.TouchableOpacity`
-  align-items: center;
-  background-color: #fff;
-  border-radius: 20px;
-  height: 20px;
-  justify-content: center;
-  position: absolute;
-  right: 5px;
-  top: 5px;
-  width: 20px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
-`;
+const styles = StyleSheet.create({
+  dismiss: {
+    borderRadius: 24,
+    position: 'absolute',
+    right: 8,
+    top: 8,
+  },
+  flatList: { paddingBottom: 12 },
+  itemContainer: {
+    flexDirection: 'row',
+    height: IMAGE_PREVIEW_SIZE,
+    marginLeft: 8,
+  },
+  upload: {
+    borderRadius: 10,
+    height: IMAGE_PREVIEW_SIZE,
+    width: IMAGE_PREVIEW_SIZE,
+  },
+});
 
-const DismissImage = styled.Image`
-  height: 10px;
-  width: 10px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
-`;
+type ImageUploadPreviewPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'imageUploads' | 'removeImage' | 'uploadImage'
+>;
 
-const ItemContainer = styled.View`
-  align-items: flex-start;
-  flex-direction: row;
-  height: 50px;
-  margin-left: 5px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
-`;
+export type ImageUploadPreviewProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
-const Upload = styled.Image`
-  border-radius: 10px;
-  height: 50px;
-  width: 50px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
-`;
-
-export type ImageUploadPreviewProps = {
-  /**
-   * An array of image objects which are set for upload. It has the following structure:
-   *
-   * ```json
-   *  [
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_1",
-   *      "state": "uploading" // or "finished",
-   *    },
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_2",
-   *      "state": "uploading" // or "finished",
-   *    },
-   *  ]
-   * ```
-   *
-   */
-  imageUploads: ImageUpload[];
-  /**
-   * Function for removing an image from the upload preview
-   *
-   * @param id string ID of image in `imageUploads` object in state of MessageInput
-   */
-  removeImage: (id: string) => void;
-  /**
-   * Function for attempting to upload an image
-   *
-   * @param id string ID of image in `imageUploads` object in state of MessageInput
-   */
-  retryUpload: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-};
-
-/**
- * UI Component to preview the images set for upload
- *
- * @example ./ImageUploadPreview.md
- */
-export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
-  props,
+const ImageUploadPreviewWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { imageUploads, removeImage, retryUpload } = props;
+  const { imageUploads, removeImage, uploadImage } = props;
 
-  const renderItem = ({ item }: { item: ImageUpload }) => (
-    <ItemContainer>
+  const {
+    theme: {
+      colors: { overlay_dark, white },
+      messageInput: {
+        imageUploadPreview: { dismiss, flatList, itemContainer, upload },
+      },
+    },
+  } = useTheme();
+
+  const renderItem = ({
+    index,
+    item,
+  }: {
+    index: number;
+    item: ImageUpload;
+  }) => (
+    <View
+      style={[
+        styles.itemContainer,
+        index === imageUploads.length - 1 ? { marginRight: 8 } : {},
+        itemContainer,
+      ]}
+    >
       <UploadProgressIndicator
         action={() => {
-          if (retryUpload) {
-            retryUpload({ newImage: item });
-          }
+          uploadImage({ newImage: item });
         }}
-        active={item.state !== FileState.UPLOADED}
+        active={
+          item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED
+        }
+        style={styles.upload}
         type={
           item.state === FileState.UPLOADING
             ? ProgressIndicatorTypes.IN_PROGRESS
@@ -112,33 +126,100 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
             : undefined
         }
       >
-        <Upload
+        <Image
           resizeMode='cover'
           source={{ uri: item.file.uri || item.url }}
+          style={[styles.upload, upload]}
         />
       </UploadProgressIndicator>
-      <Dismiss
+      <TouchableOpacity
         onPress={() => {
-          if (removeImage) {
-            removeImage(item.id);
-          }
+          removeImage(item.id);
         }}
+        style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
         testID='remove-image-upload-preview'
       >
-        <DismissImage source={closeRound} />
-      </Dismiss>
-    </ItemContainer>
+        <Close pathFill={white} />
+      </TouchableOpacity>
+    </View>
   );
 
-  return imageUploads?.length > 0 ? (
-    <Container>
-      <FlatList
-        data={imageUploads}
-        horizontal
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        style={{ flex: 1 }}
-      />
-    </Container>
+  return imageUploads.length > 0 ? (
+    <FlatList
+      data={imageUploads}
+      getItemLayout={(_, index) => ({
+        index,
+        length: IMAGE_PREVIEW_SIZE + 8,
+        offset: (IMAGE_PREVIEW_SIZE + 8) * index,
+      })}
+      horizontal
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      style={[styles.flatList, flatList]}
+    />
   ) : null;
 };
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { imageUploads: prevImageUploads } = prevProps;
+  const { imageUploads: nextImageUploads } = nextProps;
+
+  return (
+    prevImageUploads.length === nextImageUploads.length &&
+    prevImageUploads.every(
+      (prevImageUpload, index) =>
+        prevImageUpload.state === nextImageUploads[index].state,
+    )
+  );
+};
+
+const MemoizedImageUploadPreviewWithContext = React.memo(
+  ImageUploadPreviewWithContext,
+  areEqual,
+) as typeof ImageUploadPreviewWithContext;
+
+/**
+ * UI Component to preview the images set for upload
+ */
+export const ImageUploadPreview = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
+  return (
+    <MemoizedImageUploadPreviewWithContext
+      {...{ imageUploads, removeImage, uploadImage }}
+      {...props}
+    />
+  );
+};
+
+ImageUploadPreview.displayName =
+  'ImageUploadPreview{messageInput{imageUploadPreview}}';

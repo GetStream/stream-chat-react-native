@@ -9,28 +9,28 @@ import {
   within,
 } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { queryChannelsApi } from 'mock-builders/api/queryChannels';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import dispatchChannelDeletedEvent from 'mock-builders/event/channelDeleted';
-import dispatchChannelHiddenEvent from 'mock-builders/event/channelHidden';
-import dispatchChannelTruncatedEvent from 'mock-builders/event/channelTruncated';
-import dispatchChannelUpdatedEvent from 'mock-builders/event/channelUpdated';
-import dispatchConnectionRecoveredEvent from 'mock-builders/event/connectionRecovered';
-import dispatchMessageNewEvent from 'mock-builders/event/messageNew';
-import dispatchNotificationAddedToChannelEvent from 'mock-builders/event/notificationAddedToChannel';
-import dispatchNotificationMessageNewEvent from 'mock-builders/event/notificationMessageNew';
-import dispatchNotificationRemovedFromChannel from 'mock-builders/event/notificationRemovedFromChannel';
-import dispatchUserPresenceEvent from 'mock-builders/event/userPresence';
-import dispatchUserUpdatedEvent from 'mock-builders/event/userUpdated';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { ChannelList } from '../ChannelList';
 
 import { Chat } from '../../Chat/Chat';
+
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
+import dispatchChannelHiddenEvent from '../../../mock-builders/event/channelHidden';
+import dispatchChannelTruncatedEvent from '../../../mock-builders/event/channelTruncated';
+import dispatchChannelUpdatedEvent from '../../../mock-builders/event/channelUpdated';
+import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
+import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchNotificationAddedToChannelEvent from '../../../mock-builders/event/notificationAddedToChannel';
+import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/notificationMessageNew';
+import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
+import dispatchUserPresenceEvent from '../../../mock-builders/event/userPresence';
+import dispatchUserUpdatedEvent from '../../../mock-builders/event/userUpdated';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 /**
  * We are gonna use following custom UI components for preview and list.

@@ -1,5 +1,4 @@
 import React from 'react';
-import { ThemeProvider } from 'styled-components/native';
 import {
   cleanup,
   fireEvent,
@@ -7,13 +6,16 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
-
 import { MessageReplies } from '../MessageReplies';
 
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
-import { defaultTheme } from '../../../../styles/themeConstants';
+import { generateMessage } from '../../../../mock-builders/generator/message';
+import {
+  generateStaticUser,
+  generateUser,
+} from '../../../../mock-builders/generator/user';
 
 afterEach(cleanup);
 
@@ -34,7 +36,7 @@ describe('MessageReplies', () => {
       toJSON,
     } = render(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
@@ -62,7 +64,7 @@ describe('MessageReplies', () => {
 
     rerender(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='left'
             groupStyles={['bottom']}
@@ -93,7 +95,7 @@ describe('MessageReplies', () => {
     });
     const { queryAllByTestId, rerender } = render(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
@@ -117,13 +119,13 @@ describe('MessageReplies', () => {
 
     rerender(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
-            isThreadList
             message={message2}
             openThread={() => null}
+            threadList
           />
         </ThemeProvider>
       </TranslationProvider>,

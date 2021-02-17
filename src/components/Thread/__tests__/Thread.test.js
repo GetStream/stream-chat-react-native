@@ -2,17 +2,6 @@ import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { v5 as uuidv5 } from 'uuid';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import {
-  generateMessage,
-  generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { Thread } from '../Thread';
 
 import { Channel } from '../../Channel/Channel';
@@ -22,6 +11,17 @@ import { ChannelContext } from '../../../contexts/channelContext/ChannelContext'
 import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
+
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMember } from '../../../mock-builders/generator/member';
+import {
+  generateMessage,
+  generateStaticMessage,
+} from '../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 

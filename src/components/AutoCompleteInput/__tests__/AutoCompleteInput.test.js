@@ -1,18 +1,18 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
 import { Chat } from '../../Chat/Chat';
 
-import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { ACITriggerSettings } from '../../../utils/utils';
+
+import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('AutoCompleteInput', () => {
   const clientUser = generateUser();

@@ -57,11 +57,16 @@ export const usePaginatedChannels = <
   >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const lastRefresh = useRef(Date.now());
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const lastRefresh = useRef(Date.now());
+
+  const clientConnectionID = client.connectionID;
+  useEffect(() => {
+    channels.map((channel) => channel.watch());
+  }, [clientConnectionID]);
 
   const queryChannels = async (
     queryType = '',
@@ -90,25 +95,23 @@ export const usePaginatedChannels = <
         newOptions,
       );
 
-      let newChannels;
-      if (queryType === 'reload' || queryType === 'refresh') {
-        newChannels = channelQueryResponse;
-      } else {
-        newChannels = [...channels, ...channelQueryResponse];
-      }
+      const newChannels =
+        queryType === 'reload' || queryType === 'refresh'
+          ? channelQueryResponse
+          : [...channels, ...channelQueryResponse];
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
       setError(false);
-    } catch (e) {
+    } catch (err) {
       await wait(2000);
 
       if (retryCount === 3) {
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);
-        console.warn(e);
+        console.warn(err);
         return setError(true);
       }
 
@@ -131,7 +134,6 @@ export const usePaginatedChannels = <
     lastRefresh.current = Date.now();
     return queryChannels('refresh');
   };
-
   const reloadList = () => queryChannels('reload');
 
   /**
@@ -150,22 +152,21 @@ export const usePaginatedChannels = <
    * in return will trigger useEffect. To avoid this, we can add a value check.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
+
   useEffect(() => {
     reloadList();
   }, [filterStr]);
 
   return {
     channels,
+    error,
     hasNextPage,
+    loadingChannels,
+    loadingNextPage,
     loadNextPage,
+    refreshing,
     refreshList,
     reloadList,
     setChannels,
-    status: {
-      error,
-      loadingChannels,
-      loadingNextPage,
-      refreshing,
-    },
   };
 };

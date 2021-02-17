@@ -1,25 +1,36 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '../Avatar/Avatar';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { AtMentions } from '../../icons/AtMentions';
 
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultUserType } from '../../types/types';
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.mention.container.css}
-`;
-
-const Name = styled.Text`
-  color: black;
-  font-weight: bold;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
-`;
+const styles = StyleSheet.create({
+  column: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    paddingLeft: 8,
+  },
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  name: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingBottom: 2,
+  },
+  tag: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+});
 
 export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   /**
@@ -32,14 +43,35 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   item: SuggestionUser<Us>;
 };
 
-/**
- * @example ./MentionsItem.md
- */
 export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
-  item: { id, image, name },
-}: MentionsItemProps<Us>) => (
-  <Container>
-    <Avatar image={image} name={name} />
-    <Name testID='mentions-item-name'>{name || id}</Name>
-  </Container>
-);
+  item: { id, image, name, online },
+}: MentionsItemProps<Us>) => {
+  const {
+    theme: {
+      colors: { accent_blue, black, grey },
+      messageInput: {
+        suggestions: {
+          mention: { avatarSize, column, container, name: nameStyle, tag },
+        },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <Avatar image={image} name={name} online={online} size={avatarSize} />
+      <View style={[styles.column, column]}>
+        <Text
+          style={[styles.name, { color: black }, nameStyle]}
+          testID='mentions-item-name'
+        >
+          {name || id}
+        </Text>
+        <Text style={[styles.tag, { color: grey }, tag]}>{`@${id}`}</Text>
+      </View>
+      <AtMentions pathFill={accent_blue} />
+    </View>
+  );
+};
+
+MentionsItem.displayName = 'MentionsItem{messageInput{suggestions{mention}}}';

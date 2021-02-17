@@ -2,21 +2,29 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
+import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
-import { useStreami18n } from './hooks/useStreami18n';
 
-import { ChatProvider } from '../../contexts/chatContext/ChatContext';
-import { ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import {
+  ChatContextValue,
+  ChatProvider,
+} from '../../contexts/chatContext/ChatContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  DeepPartial,
+  ThemeProvider,
+} from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../package.json';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
-import type { ThemeType } from '../../contexts/themeContext/utils/replaceCssShorthand';
+import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Streami18n } from '../../utils/Streami18n';
 import type {
   DefaultAttachmentType,
@@ -37,9 +45,7 @@ export type ChatProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /** The StreamChat client object */
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
@@ -92,35 +98,38 @@ export type ChatProps<
    * ```
    */
   i18nInstance?: Streami18n;
-  logger?: (message?: string) => void;
-  style?: ThemeType;
+  /**
+   * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
+   *
+   * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#theme) for details.
+   *
+   * ```
+   * import type { DeepPartial, Theme } from 'stream-chat-react-native';
+   *
+   * const theme: DeepPartial<Theme> = {
+   *   messageSimple: {
+   *     file: {
+   *       container: {
+   *         backgroundColor: 'red',
+   *       },
+   *       icon: {
+   *         height: 16,
+   *         width: 16,
+   *       },
+   *     },
+   *   },
+   * };
+   *
+   * <Chat style={theme}>
+   * </Chat>
+   * ```
+   *
+   * @overrideType object
+   */
+  style?: DeepPartial<Theme>;
 };
 
-/**
- * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
- * This Chat component provides the ChatContext to all other components.
- *
- * The ChatContext provides the following props:
- *
- * - channel - currently active channel
- * - client - client connection
- * - connectionRecovering - whether or not websocket is reconnecting
- * - isOnline - whether or not set user is active
- * - logger - custom logging function
- * - setActiveChannel - function to set the currently active channel
- *
- * The Chat Component takes the following generics in order:
- * - At (AttachmentType) - custom Attachment object extension
- * - Ct (ChannelType) - custom Channel object extension
- * - Co (CommandType) - custom Command string union extension
- * - Ev (EventType) - custom Event object extension
- * - Me (MessageType) - custom Message object extension
- * - Re (ReactionType) - custom Reaction object extension
- * - Us (UserType) - custom User object extension
- *
- * @example ./Chat.md
- */
-export const Chat = <
+const ChatWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -131,7 +140,7 @@ export const Chat = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, logger = () => null, style } = props;
+  const { children, client, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -140,7 +149,7 @@ export const Chat = <
   });
 
   // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
   const { connectionRecovering, isOnline } = useIsOnline<
@@ -154,23 +163,23 @@ export const Chat = <
   >(client);
 
   useEffect(() => {
-    client?.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
-    client.recoverStateOnReconnect = false;
+    if (client.setUserAgent) {
+      client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+    }
   }, []);
 
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
     setChannel(newChannel);
 
-  if (!translators.t) return null;
-
-  const chatContext = {
+  const chatContext = useCreateChatContext({
     channel,
     client,
     connectionRecovering,
     isOnline,
-    logger,
     setActiveChannel,
-  };
+  });
+
+  if (loadingTranslators) return null;
 
   return (
     <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
@@ -179,4 +188,41 @@ export const Chat = <
       </TranslationProvider>
     </ChatProvider>
   );
+};
+
+/**
+ * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
+ * This Chat component provides the ChatContext to all other components.
+ *
+ * The ChatContext provides the following props:
+ *
+ * - channel - currently active channel
+ * - client - client connection
+ * - connectionRecovering - whether or not websocket is reconnecting
+ * - isOnline - whether or not set user is active
+ * - setActiveChannel - function to set the currently active channel
+ *
+ * The Chat Component takes the following generics in order:
+ * - At (AttachmentType) - custom Attachment object extension
+ * - Ct (ChannelType) - custom Channel object extension
+ * - Co (CommandType) - custom Command string union extension
+ * - Ev (EventType) - custom Event object extension
+ * - Me (MessageType) - custom Message object extension
+ * - Re (ReactionType) - custom Reaction object extension
+ * - Us (UserType) - custom User object extension
+ */
+export const Chat = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const { style } = useOverlayContext();
+
+  return <ChatWithContext {...{ style }} {...props} />;
 };

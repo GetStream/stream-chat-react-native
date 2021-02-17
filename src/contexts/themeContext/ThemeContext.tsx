@@ -1,33 +1,40 @@
-import React from 'react';
+import React, { useContext } from 'react';
+
+import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
 
-import { replaceCssShorthand, ThemeType } from './utils/replaceCssShorthand';
+import { defaultTheme, Theme } from './utils/theme';
 
-import {
-  StyledComponentsThemeProvider,
-  useTheme,
-} from '../../styles/styledComponents';
-import { defaultTheme } from '../../styles/themeConstants';
-import { formatDotNotation } from './utils/formatDotNotation';
+export type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
 
 export type ThemeProviderInputValue = {
-  style?: ThemeType;
+  style?: DeepPartial<Theme>;
 };
+
+export const ThemeContext = React.createContext({} as Theme);
 
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const { children, style } = props;
-  const theme = useTheme();
-  const modifiedTheme = theme || defaultTheme;
-
+  const { theme } = useTheme();
+  const modifiedTheme =
+    Object.keys(theme).length === 0
+      ? cloneDeep(defaultTheme)
+      : cloneDeep(theme);
   if (style) {
-    const formattedStyle = replaceCssShorthand(style);
-    const formattedTheme = formatDotNotation({ formattedStyle, modifiedTheme });
-    merge(modifiedTheme, formattedTheme);
+    merge(modifiedTheme, style);
   }
 
   return (
-    <StyledComponentsThemeProvider theme={modifiedTheme}>
+    <ThemeContext.Provider value={modifiedTheme}>
       {children}
-    </StyledComponentsThemeProvider>
+    </ThemeContext.Provider>
   );
+};
+
+export const useTheme = () => {
+  const theme = useContext(ThemeContext);
+
+  return { theme };
 };

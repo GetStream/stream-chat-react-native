@@ -13,8 +13,8 @@ import {
   ReactNodeOutput,
 } from 'simple-markdown';
 
-import type { MarkdownStyle } from '../../../../styles/themeConstants';
-import type { Message } from '../../../MessageList/utils/insertDates';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,36 +25,35 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
+import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
+import type {
+  Colors,
+  MarkdownStyle,
+} from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
-  autolink: {
-    textDecorationLine: 'underline',
-  },
   inlineCode: {
-    backgroundColor: '#F3F3F3',
-    borderColor: '#dddddd',
-    color: 'red',
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
   },
   // unfortunately marginVertical doesn't override the defaults for these within the 3rd party lib
   paragraph: {
-    marginBottom: 0,
-    marginTop: 0,
+    marginBottom: 8,
+    marginTop: 8,
   },
   paragraphCenter: {
-    marginBottom: 0,
-    marginTop: 0,
+    marginBottom: 8,
+    marginTop: 8,
   },
   paragraphWithImage: {
-    marginBottom: 0,
-    marginTop: 0,
+    marginBottom: 8,
+    marginTop: 8,
   },
 };
 
-const parse: ParseFunction = (capture, parser, state) => ({
-  content: parseInline(parser, capture[0], state),
+const parse: ParseFunction = (capture, parse, state) => ({
+  content: parseInline(parse, capture[0], state),
 });
 
 export type MarkdownRules = Partial<DefaultRules>;
@@ -67,10 +66,13 @@ export type RenderTextParams<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  markdownRules: MarkdownRules;
-  markdownStyles: MarkdownStyle;
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+> = Partial<
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
+> & {
+  colors: typeof Colors;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  markdownRules?: MarkdownRules;
+  markdownStyles?: MarkdownStyle;
   onLink?: (url: string) => Promise<void>;
 };
 
@@ -86,15 +88,17 @@ export const renderText = <
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    colors,
     markdownRules,
     markdownStyles,
     message,
     onLink: onLinkParams,
+    onLongPress,
   } = params;
 
   // take the @ mentions and turn them into markdown?
   // translate links
-  const { mentioned_users = [], text } = message;
+  const { mentioned_users, text } = message;
 
   if (!text) return null;
 
@@ -118,18 +122,24 @@ export const renderText = <
     ...markdownStyles,
     autolink: {
       ...defaultMarkdownStyles.autolink,
+      color: colors.accent_blue,
       ...markdownStyles?.autolink,
     },
     inlineCode: {
       ...defaultMarkdownStyles.inlineCode,
+      backgroundColor: colors.white_smoke,
+      borderColor: colors.grey_gainsboro,
+      color: colors.accent_red,
       ...markdownStyles?.inlineCode,
     },
     mentions: {
       ...defaultMarkdownStyles.mentions,
+      color: colors.accent_blue,
       ...markdownStyles?.mentions,
     },
     text: {
       ...defaultMarkdownStyles.text,
+      color: colors.black,
       ...markdownStyles?.text,
     },
   };
@@ -147,6 +157,7 @@ export const renderText = <
       Text,
       {
         key: state.key,
+        onLongPress,
         onPress: () => onLink(node.target),
         style: styles.autolink,
         suppressHighlighting: true,

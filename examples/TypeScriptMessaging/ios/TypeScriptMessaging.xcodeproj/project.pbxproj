@@ -161,7 +161,6 @@
 				551276E70FF166CAEBFDFDC4 /* Pods-TypeScriptMessaging-tvOSTests.debug.xcconfig */,
 				0B80252C0BE3DBC1DD2513F4 /* Pods-TypeScriptMessaging-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};

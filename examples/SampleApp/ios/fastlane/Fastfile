@@ -1,0 +1,60 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+default_platform(:ios)
+
+
+before_all do
+  if is_ci
+    setup_ci()
+  end
+end
+
+
+desc "Installs all Certs and Profiles necessary for development and ad-hoc"
+lane :match_me do
+  match(
+    type: "adhoc",
+    app_identifier: [
+        "io.getstream.reactnative.SampleApp",
+    ],
+    readonly: true,
+    force_for_new_devices: !is_ci
+  )
+end
+
+platform :ios do
+  desc "Description of what the lane does"
+  lane :distribute do
+      match_me
+
+        gym(
+            workspace: "./SampleApp.xcworkspace",
+            scheme: "SampleApp",
+            export_method: "ad-hoc",
+            export_options: "./fastlane/beta_gym_export_options.plist",
+            silent: true,
+            clean: true,
+            include_symbols: true,
+            output_directory: "./dist",
+            xcargs: "ENABLE_BITCODE=1"
+        )
+
+        firebase_app_distribution(
+            app: "1:190151624402:ios:403df895972564bd658f0b",
+            groups: "ios-react-native-testers",
+            release_notes: "Lots of amazing new features to test out!"
+        )
+  end
+end

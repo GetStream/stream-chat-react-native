@@ -5,10 +5,11 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
   style={
     Array [
       Object {
-        "alignItems": "flex-end",
+        "alignItems": "center",
         "flexDirection": "row",
         "justifyContent": "flex-start",
       },
+      Object {},
     ]
   }
   testID="typing-indicator"
@@ -18,7 +19,10 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       Array [
         Object {
           "alignItems": "center",
+          "justifyContent": "center",
         },
+        Object {},
+        undefined,
       ]
     }
   >
@@ -26,7 +30,6 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       accessibilityLabel="initials"
       onError={[Function]}
       resizeMethod="resize"
-      size={20}
       source={
         Object {
           "uri": "https://i.imgur.com/SLx06PP.png",
@@ -35,9 +38,14 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       style={
         Array [
           Object {
-            "borderRadius": 10,
-            "height": 20,
-            "width": 20,
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          },
+          Object {
+            "borderRadius": 12,
+            "height": 24,
+            "width": 24,
           },
         ]
       }
@@ -49,7 +57,10 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       Array [
         Object {
           "alignItems": "center",
+          "justifyContent": "center",
         },
+        Object {},
+        undefined,
       ]
     }
   >
@@ -57,7 +68,6 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       accessibilityLabel="initials"
       onError={[Function]}
       resizeMethod="resize"
-      size={20}
       source={
         Object {
           "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
@@ -66,9 +76,14 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       style={
         Array [
           Object {
-            "borderRadius": 10,
-            "height": 20,
-            "width": 20,
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          },
+          Object {
+            "borderRadius": 12,
+            "height": 24,
+            "width": 24,
           },
         ]
       }
@@ -79,10 +94,13 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     style={
       Array [
         Object {
-          "color": "rgba(0,0,0,0.5)",
-          "fontSize": 14,
           "marginLeft": 10,
         },
+        Object {
+          "color": "#00000080",
+          "fontSize": 14,
+        },
+        Object {},
       ]
     }
   >

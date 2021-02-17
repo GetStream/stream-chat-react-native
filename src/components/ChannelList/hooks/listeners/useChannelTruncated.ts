@@ -24,6 +24,7 @@ type Parameters<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  refreshList: () => void;
   setChannels: React.Dispatch<
     React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
   >;
@@ -46,6 +47,7 @@ export const useChannelTruncated = <
   Us extends UnknownType = DefaultUserType
 >({
   onChannelTruncated,
+  refreshList,
   setChannels,
   setForceUpdate,
 }: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
@@ -56,6 +58,7 @@ export const useChannelTruncated = <
       if (typeof onChannelTruncated === 'function') {
         onChannelTruncated(setChannels, event);
       }
+      refreshList();
       setForceUpdate((count) => count + 1);
     };
 

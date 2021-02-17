@@ -1,32 +1,64 @@
-import React, { useEffect, useRef } from 'react';
-import { TextInput } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
+import throttle from 'lodash/throttle';
+
+import { CommandsHeader } from './CommandsHeader';
+import { EmojisHeader } from './EmojisHeader';
 
 import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  isSuggestionCommand,
+  isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
   SuggestionCommand,
+  SuggestionsContextValue,
   SuggestionUser,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
-import { isMentionTrigger } from '../../utils/utils';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
+import {
+  isCommandTrigger,
+  isEmojiTrigger,
+  isMentionTrigger,
+} from '../../utils/utils';
 
-import type { TextInputProps, TextInput as TextInputType } from 'react-native';
+import type { TextInputProps } from 'react-native';
 
+import type { Emoji } from '../../emoji-data/compiled';
 import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
   DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { Trigger, TriggerSettings } from '../../utils/utils';
+import type { Trigger } from '../../utils/utils';
 
-const InputBox = styled(TextInput)`
-  flex: 1;
-  margin: -5px;
-  max-height: 60px;
-  ${({ theme }) => theme.messageInput.inputBox.css}
-`;
+const styles = StyleSheet.create({
+  inputBox: {
+    flex: 1,
+    fontSize: 14,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
+  },
+});
 
 const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
   startOfTokenPosition + token.length;
@@ -34,79 +66,110 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 const isCommand = (text: string) =>
   text[0] === '/' && text.split(' ').length <= 1;
 
-export type AutoCompleteInputProps<
+type AutoCompleteInputPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
-  additionalTextInputProps: TextInputProps;
-  /**
-   * Handling text change events in the parent
-   *
-   * @param {string} text
-   */
-  onChange: (text: string) => void;
-  /**
-   * Ref callback to set reference on input box
-   */
-  setInputBoxRef: (ref: TextInputType | null) => void;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: TriggerSettings<Co, Us>;
-  /**
-   * Text value of the TextInput
-   */
-  value: string;
-};
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
+  Pick<
+    MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'additionalTextInputProps'
+    | 'giphyActive'
+    | 'maxMessageLength'
+    | 'numberOfLines'
+    | 'onChange'
+    | 'setGiphyActive'
+    | 'setInputBoxRef'
+    | 'setShowMoreOptions'
+    | 'text'
+    | 'triggerSettings'
+  > &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
+  > &
+  Pick<TranslationContextValue, 't'>;
 
-export const AutoCompleteInput = <
+export type AutoCompleteInputProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+const AutoCompleteInputWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: AutoCompleteInputProps<Co, Us>,
+  props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     additionalTextInputProps,
-    onChange,
-    setInputBoxRef,
-    triggerSettings,
-    value,
-  } = props;
-
-  const {
     closeSuggestions,
+    giphyActive,
+    giphyEnabled,
+    maxMessageLength,
+    numberOfLines,
+    onChange,
     openSuggestions,
+    setGiphyActive,
+    setInputBoxRef,
+    setShowMoreOptions,
+    t,
+    text,
+    triggerSettings,
     updateSuggestions: updateSuggestionsContext,
-  } = useSuggestionsContext<Co, Us>();
-  const { t } = useTranslationContext();
+  } = props;
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
+  const [textHeight, setTextHeight] = useState(0);
 
-  const handleChange = (text: string, fromUpdate = false) => {
+  const {
+    theme: {
+      colors: { black, grey },
+      messageInput: { inputBox },
+    },
+  } = useTheme();
+
+  const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
-      onChange(text);
+      onChange(newText);
     } else {
-      handleSuggestions(text);
+      handleSuggestionsThrottled(newText);
     }
   };
 
   useEffect(() => {
-    handleChange(value, true);
-  }, [value]);
+    handleChange(text, true);
+  }, [text]);
 
   const startTracking = (trigger: Trigger) => {
-    isTrackingStarted.current = true;
-    const { component: Component, title } = triggerSettings[trigger];
-    openSuggestions(
-      title,
-      typeof Component === 'string' ? Component : <Component />,
-    );
+    const triggerSetting = triggerSettings[trigger];
+    if (triggerSetting) {
+      isTrackingStarted.current = true;
+      const { component: Component } = triggerSetting;
+      openSuggestions(
+        typeof Component === 'string' ? Component : <Component />,
+        trigger === ':' ? (
+          <EmojisHeader title='' />
+        ) : trigger === '/' ? (
+          <CommandsHeader />
+        ) : undefined,
+      );
+    }
   };
 
   const stopTracking = () => {
@@ -122,33 +185,60 @@ export const AutoCompleteInput = <
     trigger: Trigger;
   }) => {
     if (isMentionTrigger(trigger)) {
-      await triggerSettings[trigger].dataProvider(
-        query as SuggestionUser<Us>['name'],
-        value,
-        (data, queryCallback) => {
-          if (query === queryCallback) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as SuggestionUser<Us>['name'],
+          text,
+          (data, queryCallback) => {
+            if (query === queryCallback) {
+              updateSuggestionsContext({
+                data,
+                onSelect: (item) => onSelectSuggestion({ item, trigger }),
+              });
+            }
+          },
+        );
+      }
+    } else if (isCommandTrigger(trigger)) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as SuggestionCommand<Co>['name'],
+          text,
+          (data, queryCallback) => {
+            if (query !== queryCallback) {
+              return;
+            }
+
             updateSuggestionsContext({
               data,
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
             });
-          }
-        },
-      );
+          },
+        );
+      }
     } else {
-      await triggerSettings[trigger].dataProvider(
-        query as SuggestionCommand<Co>['name'],
-        value,
-        (data, queryCallback) => {
-          if (query !== queryCallback) {
-            return;
-          }
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as Emoji['name'],
+          text,
+          (data, queryCallback) => {
+            if (query !== queryCallback) {
+              return;
+            }
 
-          updateSuggestionsContext({
-            data,
-            onSelect: (item) => onSelectSuggestion({ item, trigger }),
-          });
-        },
-      );
+            updateSuggestionsContext(
+              {
+                data,
+                onSelect: (item) => onSelectSuggestion({ item, trigger }),
+              },
+              <EmojisHeader title={query} />,
+            );
+          },
+        );
+      }
     }
   };
 
@@ -167,22 +257,31 @@ export const AutoCompleteInput = <
     item: Suggestion<Co, Us>;
     trigger: Trigger;
   }) => {
-    if (!trigger) {
+    if (!trigger || !triggerSettings[trigger]) {
       return;
     }
 
     let newTokenString = '';
-    if (isMentionTrigger(trigger)) {
-      if (isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    if (isCommandTrigger(trigger) && isSuggestionCommand(item)) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
       }
-    } else {
-      if (!isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    }
+    if (isEmojiTrigger(trigger) && isSuggestionEmoji(item)) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
+      }
+    }
+    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
       }
     }
 
-    const textToModify = value.slice(0, selectionEnd.current);
+    const textToModify = text.slice(0, selectionEnd.current);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -202,12 +301,23 @@ export const AutoCompleteInput = <
     )}${newTokenString}`;
 
     stopTracking();
-    onChange(value.replace(textToModify, modifiedText));
+
+    const newText = text.replace(textToModify, modifiedText);
+
+    if (giphyEnabled && newText.startsWith('/giphy ')) {
+      onChange(newText.slice(7)); // 7 because of '/giphy ' length
+      setGiphyActive(true);
+    } else {
+      onChange(newText);
+    }
 
     selectionEnd.current = newCaretPosition || 0;
 
     if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
-      triggerSettings[trigger].callback(item);
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        triggerSetting.callback(item);
+      }
     }
   };
 
@@ -226,17 +336,11 @@ export const AutoCompleteInput = <
   };
 
   const handleMentions = ({
-    selectionEnd: selectionEndProp,
-    text,
+    tokenMatch,
   }: {
-    selectionEnd: number;
-    text: string;
+    tokenMatch: RegExpMatchArray | null;
   }) => {
-    const tokenMatch = text
-      .slice(0, selectionEndProp)
-      .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
-
-    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleMentionsTrigger =
       (lastToken &&
         Object.keys(triggerSettings).find(
@@ -267,31 +371,198 @@ export const AutoCompleteInput = <
     updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleSuggestions = (text: string) => {
-    setTimeout(async () => {
-      if (
-        text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
-        !isTrackingStarted.current
-      ) {
-        stopTracking();
-      } else if (!(await handleCommand(text))) {
-        handleMentions({ selectionEnd: selectionEnd.current, text });
-      }
-    }, 100);
+  const handleEmojis = ({
+    tokenMatch,
+  }: {
+    tokenMatch: RegExpMatchArray | null;
+  }) => {
+    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
+    const handleEmojisTrigger =
+      (lastToken &&
+        Object.keys(triggerSettings).find(
+          (trigger) => trigger === lastToken[0],
+        )) ||
+      null;
+
+    /*
+      if we lost the trigger token or there is no following character we want to close
+      the autocomplete
+    */
+    if (!lastToken || lastToken.length <= 0) {
+      stopTracking();
+      return;
+    }
+
+    const actualToken = lastToken.slice(1);
+
+    // if trigger is not configured step out from the function, otherwise proceed
+    if (!handleEmojisTrigger) {
+      return;
+    }
+
+    if (!isTrackingStarted.current) {
+      startTracking(':');
+    }
+
+    updateSuggestions({ query: actualToken, trigger: ':' });
   };
 
+  const handleSuggestions = async (text: string) => {
+    if (
+      /\s/.test(text.slice(selectionEnd.current - 1, selectionEnd.current)) &&
+      isTrackingStarted.current
+    ) {
+      stopTracking();
+    } else if (giphyEnabled && !(await handleCommand(text))) {
+      const mentionTokenMatch = text
+        .slice(0, selectionEnd.current)
+        .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
+      if (mentionTokenMatch) {
+        handleMentions({ tokenMatch: mentionTokenMatch });
+      } else {
+        const emojiTokenMatch = text
+          .slice(0, selectionEnd.current)
+          .match(/(?!^|\W)?:\w{2,}[^\s]*\s?[^\s]*$/g);
+        handleEmojis({ tokenMatch: emojiTokenMatch });
+      }
+    }
+  };
+
+  const handleSuggestionsThrottled = throttle(handleSuggestions, 100, {
+    leading: false,
+  });
+
   return (
-    <InputBox
+    <TextInput
+      maxLength={maxMessageLength}
       multiline
-      onChangeText={(text) => {
-        handleChange(text);
+      onChangeText={(newText) => {
+        if (giphyEnabled && newText.startsWith('/giphy ')) {
+          handleChange(newText.slice(7)); // 7 because of '/giphy' length
+          setGiphyActive(true);
+        } else {
+          handleChange(newText);
+        }
+      }}
+      onContentSizeChange={({
+        nativeEvent: {
+          contentSize: { height },
+        },
+      }) => {
+        if (!textHeight) {
+          setTextHeight(height);
+        }
       }}
       onSelectionChange={handleSelectionChange}
-      placeholder={t('Write your message')}
+      placeholder={giphyActive ? t('Search GIFs') : t('Send a message')}
+      placeholderTextColor={grey}
       ref={setInputBoxRef}
+      style={[
+        styles.inputBox,
+        {
+          color: black,
+          maxHeight: (textHeight || 17) * numberOfLines,
+        },
+        inputBox,
+      ]}
       testID='auto-complete-text-input'
-      value={value}
+      value={text}
       {...additionalTextInputProps}
+      onBlur={(event) => {
+        if (additionalTextInputProps?.onBlur) {
+          additionalTextInputProps?.onBlur(event);
+        }
+        setShowMoreOptions(true);
+      }}
     />
   );
 };
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { giphyActive: prevGiphyActive, t: prevT, text: prevText } = prevProps;
+  const { giphyActive: nextGiphyActive, t: nextT, text: nextText } = nextProps;
+
+  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
+  if (!giphyActiveEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const textEqual = prevText === nextText;
+  if (!textEqual) return false;
+
+  return true;
+};
+
+const MemoizedAutoCompleteInput = React.memo(
+  AutoCompleteInputWithContext,
+  areEqual,
+) as typeof AutoCompleteInputWithContext;
+
+export const AutoCompleteInput = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTextInputProps,
+    giphyActive,
+    maxMessageLength,
+    numberOfLines,
+    onChange,
+    setGiphyActive,
+    setInputBoxRef,
+    setShowMoreOptions,
+    text,
+    triggerSettings,
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    closeSuggestions,
+    openSuggestions,
+    updateSuggestions,
+  } = useSuggestionsContext<Co, Us>();
+  const { t } = useTranslationContext();
+
+  return (
+    <MemoizedAutoCompleteInput
+      {...{
+        additionalTextInputProps,
+        closeSuggestions,
+        giphyActive,
+        giphyEnabled,
+        maxMessageLength,
+        numberOfLines,
+        onChange,
+        openSuggestions,
+        setGiphyActive,
+        setInputBoxRef,
+        setShowMoreOptions,
+        t,
+        text,
+        triggerSettings,
+        updateSuggestions,
+      }}
+      {...props}
+    />
+  );
+};
+
+AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';

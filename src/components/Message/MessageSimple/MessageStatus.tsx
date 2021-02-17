@@ -1,13 +1,20 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Avatar } from '../../Avatar/Avatar';
+import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { styled } from '../../../styles/styledComponents';
-
-import type { ImageRequireSource } from 'react-native';
-
-import type { ForwardedMessageProps } from './MessageContent';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../../contexts/channelContext/ChannelContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { Check } from '../../../icons/Check';
+import { CheckAll } from '../../../icons/CheckAll';
+import { Time } from '../../../icons/Time';
 
 import type {
   DefaultAttachmentType,
@@ -20,58 +27,158 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const iconDeliveredUnseen: ImageRequireSource = require('../../../images/icons/delivered_unseen.png');
-const loadingGif: ImageRequireSource = require('../../../images/loading.gif');
+const styles = StyleSheet.create({
+  readByCount: {
+    fontSize: 11,
+    fontWeight: '700',
+    paddingRight: 3,
+  },
+  statusContainer: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingRight: 3,
+  },
+});
 
-const CheckMark = styled.Image`
-  height: 6px;
-  width: 8px;
-  ${({ theme }) => theme.message.status.checkMark.css};
-`;
+export type MessageStatusPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'message' | 'threadList'
+> &
+  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'readEventsEnabled'>;
 
-const DeliveredCircle = styled.View`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 16px;
-  height: 16px;
-  justify-content: center;
-  padding: 6px;
-  width: 16px;
-  ${({ theme }) => theme.message.status.deliveredCircle.css};
-`;
+const MessageStatusWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { message, readEventsEnabled, threadList } = props;
 
-const DeliveredContainer = styled.View`
-  align-items: center;
-  height: 20px;
-  ${({ theme }) => theme.message.status.deliveredContainer.css};
-`;
+  const {
+    theme: {
+      colors: { accent_blue },
+      messageSimple: {
+        status: {
+          checkAllIcon,
+          checkIcon,
+          readByCount,
+          statusContainer,
+          timeIcon,
+        },
+      },
+    },
+  } = useTheme();
 
-const ReadByContainer = styled.View`
-  align-items: center;
-  flex-direction: row;
-  ${({ theme }) => theme.message.status.readByContainer.css};
-`;
+  if (message.status === 'sending') {
+    return (
+      <View style={[styles.statusContainer, statusContainer]}>
+        <Time {...checkIcon} />
+      </View>
+    );
+  }
 
-const SendingContainer = styled.View`
-  align-items: center;
-  ${({ theme }) => theme.message.status.sendingContainer.css};
-`;
+  if (
+    isMessagesWithStylesAndReadBy(message) &&
+    !threadList &&
+    readEventsEnabled !== false
+  ) {
+    return (
+      <View style={[styles.statusContainer, statusContainer]}>
+        {typeof message.readBy === 'number' ? (
+          <Text
+            style={[styles.readByCount, { color: accent_blue }, readByCount]}
+          >
+            {message.readBy}
+          </Text>
+        ) : null}
+        <CheckAll pathFill={accent_blue} {...checkAllIcon} />
+      </View>
+    );
+  }
 
-const SendingImage = styled.Image`
-  height: 10px;
-  width: 10px;
-  ${({ theme }) => theme.message.status.sendingImage.css};
-`;
+  if (
+    message.status === 'received' &&
+    message.type !== 'ephemeral' &&
+    !threadList
+  ) {
+    return (
+      <View style={[styles.statusContainer, statusContainer]}>
+        <Check {...timeIcon} />
+      </View>
+    );
+  }
 
-const Spacer = styled.View`
-  height: 10px;
-`;
+  return null;
+};
 
-const StatusContainer = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  width: 20px;
-`;
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    message: prevMessage,
+    readEventsEnabled: prevReadEventsEnabled,
+    threadList: prevThreadList,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    readEventsEnabled: nextReadEventsEnabled,
+    threadList: nextThreadList,
+  } = nextProps;
+
+  const threadListEqual = prevThreadList === nextThreadList;
+  if (!threadListEqual) return false;
+
+  const readEventsEnabledEqual =
+    prevReadEventsEnabled === nextReadEventsEnabled;
+  if (!readEventsEnabledEqual) return false;
+
+  const messageEqual =
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
+      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy);
+  if (!messageEqual) return false;
+
+  return true;
+};
+
+const MemoizedMessageStatus = React.memo(
+  MessageStatusWithContext,
+  areEqual,
+) as typeof MessageStatusWithContext;
+
+export type MessageStatusProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageStatus = <
   At extends UnknownType = DefaultAttachmentType,
@@ -82,60 +189,25 @@ export const MessageStatus = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >(
-  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { lastReceivedId, message, readBy = [], threadList } = props;
-
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const justReadByMe = readBy.length === 1 && readBy[0].id === client.user?.id;
-
-  if (message.status === 'sending') {
-    return (
-      <StatusContainer>
-        <SendingContainer testID='sending-container'>
-          <SendingImage source={loadingGif} />
-        </SendingContainer>
-      </StatusContainer>
-    );
-  }
-
-  if (readBy.length !== 0 && !threadList && !justReadByMe) {
-    const lastReadUser = readBy.filter(
-      (item) => item.id !== client.user?.id,
-    )[0];
-    return (
-      <StatusContainer>
-        <ReadByContainer testID='read-by-container'>
-          <Avatar
-            image={lastReadUser.image}
-            name={lastReadUser.name || lastReadUser.id}
-            size={16}
-          />
-        </ReadByContainer>
-      </StatusContainer>
-    );
-  }
-
-  if (
-    message.status === 'received' &&
-    message.type !== 'ephemeral' &&
-    message.id === lastReceivedId &&
-    !threadList
-  ) {
-    return (
-      <StatusContainer>
-        <DeliveredContainer testID='delivered-container'>
-          <DeliveredCircle>
-            <CheckMark source={iconDeliveredUnseen} />
-          </DeliveredCircle>
-        </DeliveredContainer>
-      </StatusContainer>
-    );
-  }
+  const { readEventsEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { message, threadList } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   return (
-    <StatusContainer>
-      <Spacer testID='spacer' />
-    </StatusContainer>
+    <MemoizedMessageStatus
+      {...{ message, readEventsEnabled, threadList }}
+      {...props}
+    />
   );
 };
+
+MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

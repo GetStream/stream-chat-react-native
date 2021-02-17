@@ -436,8 +436,9 @@ export class Streami18n {
       }
     } catch (error) {
       throw new Error(
-        `Streami18n: Looks like you wanted to provide a Dayjs instance but something went wrong while adding plugins` +
-          JSON.stringify(error),
+        `Streami18n: Looks like you wanted to provide a Dayjs instance but something went wrong while adding plugins ${JSON.stringify(
+          error,
+        )}`,
       );
     }
 
@@ -523,7 +524,7 @@ export class Streami18n {
       });
       this.initialized = true;
     } catch (error) {
-      this.logger(`Something went wrong with init:` + JSON.stringify(error));
+      this.logger(`Something went wrong with init: ${JSON.stringify(error)}`);
     }
 
     return {
@@ -646,7 +647,7 @@ export class Streami18n {
 
       return t;
     } catch (error) {
-      this.logger(`Failed to set language:` + JSON.stringify(error));
+      this.logger(`Failed to set language: ${JSON.stringify(error)}`);
       return this.t;
     }
   }

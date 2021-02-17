@@ -15,7 +15,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const getChannelPreviewDisplayAvatar = <
+export const getChannelPreviewDisplayAvatar = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -38,7 +38,7 @@ const getChannelPreviewDisplayAvatar = <
       name: channelName,
     };
   } else if (currentUserId) {
-    const members = Object.values(channel.state?.members || {});
+    const members = Object.values(channel.state?.members);
     const otherMembers = members.filter(
       (member) => member.user?.id !== currentUserId,
     );
@@ -49,6 +49,12 @@ const getChannelPreviewDisplayAvatar = <
         name: channelName || otherMembers[0].user?.name,
       };
     }
+    return {
+      images: otherMembers
+        .slice(0, 4)
+        .map((member) => member.user?.image || ''),
+      names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
+    };
   }
   return {
     name: channelName,
@@ -63,7 +69,7 @@ const getChannelPreviewDisplayAvatar = <
  */
 export const useChannelPreviewDisplayAvatar = <
   At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
+  Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,

@@ -1,12 +1,12 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { generateFileUploadPreview } from 'mock-builders/generator/attachment';
-
 import { FileUploadPreview } from '../FileUploadPreview';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { FileState } from '../../../utils/utils';
+
+import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
 
 describe('FileUploadPreview', () => {
   it('should render FileUploadPreview with all uploading files', async () => {

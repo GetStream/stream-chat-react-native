@@ -9,13 +9,14 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(0, 0, 0, 0.3)",
+          "backgroundColor": "#0000004D",
           "height": "100%",
           "justifyContent": "center",
           "opacity": 0,
           "position": "absolute",
           "width": "100%",
         },
+        Object {},
       ]
     }
   />
@@ -24,28 +25,27 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "backgroundColor": "#FFFFFF00",
           "height": "100%",
           "justifyContent": "center",
           "position": "absolute",
           "width": "100%",
         },
+        Object {},
       ]
     }
   >
     <View
       style={
-        Array [
-          Object {
-            "alignItems": "center",
-            "bottom": 0,
-            "justifyContent": "center",
-            "left": 0,
-            "position": "absolute",
-            "right": 0,
-            "top": 0,
-          },
-        ]
+        Object {
+          "alignItems": "center",
+          "bottom": 0,
+          "justifyContent": "center",
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
       }
     >
       <ActivityIndicator
@@ -69,13 +69,14 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(0, 0, 0, 0.3)",
+          "backgroundColor": "#0000004D",
           "height": "100%",
           "justifyContent": "center",
           "opacity": 0,
           "position": "absolute",
           "width": "100%",
         },
+        Object {},
       ]
     }
   />
@@ -84,12 +85,13 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "backgroundColor": "#FFFFFF00",
           "height": "100%",
           "justifyContent": "center",
           "position": "absolute",
           "width": "100%",
         },
+        Object {},
       ]
     }
   >

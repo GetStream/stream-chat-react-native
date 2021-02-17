@@ -8,5 +8,6 @@ const NetInfo = {
   },
 };
 registerNativeHandlers({
+  BlurView: () => null,
   NetInfo,
 });

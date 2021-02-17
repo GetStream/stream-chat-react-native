@@ -29,7 +29,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
   children,
   contentContainerStyle,
   enabled = true,
-  keyboardVerticalOffset = 66.5,
+  keyboardVerticalOffset = Platform.OS === 'ios' ? 86.5 : -300,
   style,
   ...props
 }) => {
@@ -88,8 +88,9 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
     };
 
     const unsetKeyboardListeners = () => {
-      subscriptions.current.forEach((subscription) => {
+      subscriptions.current = subscriptions.current.filter((subscription) => {
         subscription.remove();
+        return false;
       });
     };
 
@@ -106,7 +107,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
     updateBottomIfNecessary();
   }, [keyboardEvent.current]);
 
-  const dismissKeyboard = () => {
+  const dismissKeyboard: () => Promise<void> | undefined = () => {
     if (!isKeyboardOpen) {
       return;
     }

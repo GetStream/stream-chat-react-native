@@ -48,10 +48,9 @@ export const useUserPresence = <
         const newChannels = channels.map((channel) => {
           if (!event.user?.id || !channel.state.members[event.user.id]) {
             return channel;
-          } else {
-            channel.state.members.setIn([event.user.id, 'user'], event.user);
-            return channel;
           }
+          channel.state.members[event.user.id].user = event.user;
+          return channel;
         });
 
         return [...newChannels];

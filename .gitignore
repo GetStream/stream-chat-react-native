@@ -11,6 +11,7 @@ yarn-error.log
 dist/
 lib/
 .env*
+examples/SampleApp/ios/vendor/
 vendor
 pods
 .gradle
@@ -19,3 +20,12 @@ examples/SampleApp/build
 local.properties
 xcuserdata
 .tern-port
+
+########################################### Custom ##############################################
+
+**/ios/GoogleService-Info.plist
+**/google-services.json
+**/.env
+
+
+#################################################################################################

@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { LogBox, SafeAreaView, View, useColorScheme } from 'react-native';
 import {
-  LogBox,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  RouteProp,
+} from '@react-navigation/native';
 import {
   createStackNavigator,
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
-import { enableScreens } from 'react-native-screens';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -20,44 +22,26 @@ import {
   Chat,
   MessageInput,
   MessageList,
+  OverlayProvider,
   Streami18n,
   Thread,
   ThreadContextValue,
+  useAttachmentPickerContext,
 } from 'stream-chat-react-native';
 
+import { useStreamChatTheme } from './useStreamChatTheme';
+
 LogBox.ignoreAllLogs(true);
-enableScreens();
 
-type LocalAttachmentType = {};
-type LocalChannelType = {};
+type LocalAttachmentType = Record<string, unknown>;
+type LocalChannelType = Record<string, unknown>;
 type LocalCommandType = string;
-type LocalEventType = {};
-type LocalMessageType = {};
-type LocalResponseType = {};
-type LocalUserType = {};
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalResponseType = Record<string, unknown>;
+type LocalUserType = Record<string, unknown>;
 
-// Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-const theme = {
-  avatar: {
-    image: {
-      css: `
-        height: 32px;
-        width: 32px;
-      `,
-    },
-  },
-  colors: {
-    primary: 'blue',
-  },
-  spinner: {
-    css: `
-      height: 15px;
-      width: 15px;
-    `,
-  },
-};
-
-const chatClient = new StreamChat<
+const chatClient = StreamChat.getInstance<
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -73,12 +57,13 @@ const user = {
 };
 
 const filters = {
-  type: 'messaging',
   example: 'example-apps',
   members: { $in: ['ron'] },
+  type: 'messaging',
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 const options = {
+  presence: true,
   state: true,
   watch: true,
 };
@@ -99,30 +84,31 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   navigation,
 }) => {
   const { setChannel } = useContext(AppContext);
+
+  const memoizedFilters = useMemo(() => filters, []);
+
   return (
-    <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <View style={{ height: '100%', padding: 10 }}>
-          <ChannelList<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalResponseType,
-            LocalUserType
-          >
-            filters={filters}
-            onSelect={(channel) => {
-              setChannel(channel);
-              navigation.navigate('Channel');
-            }}
-            options={options}
-            sort={sort}
-          />
-        </View>
-      </Chat>
-    </SafeAreaView>
+    <Chat client={chatClient} i18nInstance={streami18n}>
+      <View style={{ height: '100%' }}>
+        <ChannelList<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+          filters={memoizedFilters}
+          onSelect={(channel) => {
+            setChannel(channel);
+            navigation.navigate('Channel');
+          }}
+          options={options}
+          sort={sort}
+        />
+      </View>
+    </Chat>
   );
 };
 
@@ -131,13 +117,22 @@ type ChannelScreenProps = {
 };
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
-  const { channel, setThread } = useContext(AppContext);
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { setTopInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setTopInset(headerHeight);
+  }, [headerHeight]);
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <Channel keyboardVerticalOffset={headerHeight} channel={channel}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
+        <Channel
+          channel={channel}
+          keyboardVerticalOffset={headerHeight}
+          thread={thread}
+        >
           <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
@@ -151,7 +146,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
               onThreadSelect={(thread) => {
                 setThread(thread);
                 if (channel?.id) {
-                  navigation.navigate('Thread', { channelId: channel.id });
+                  navigation.navigate('Thread');
                 }
               }}
             />
@@ -167,20 +162,17 @@ type ThreadScreenProps = {
   route: RouteProp<ThreadRoute, 'Thread'>;
 };
 
-const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
-  const { thread } = useContext(AppContext);
-  const [channel] = useState(
-    chatClient.channel('messaging', route.params.channelId),
-  );
+const ThreadScreen: React.FC<ThreadScreenProps> = () => {
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel
           channel={channel}
-          thread={thread}
           keyboardVerticalOffset={headerHeight}
+          thread={thread}
         >
           <View
             style={{
@@ -196,7 +188,9 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
               LocalMessageType,
               LocalResponseType,
               LocalUserType
-            > />
+            >
+              onThreadDismount={() => setThread(null)}
+            />
           </View>
         </Channel>
       </Chat>
@@ -206,7 +200,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
 
 type ChannelRoute = { Channel: undefined };
 type ChannelListRoute = { ChannelList: undefined };
-type ThreadRoute = { Thread: { channelId: string } };
+type ThreadRoute = { Thread: undefined };
 type NavigationParamsList = ChannelRoute & ChannelListRoute & ThreadRoute;
 
 const Stack = createStackNavigator<NavigationParamsList>();
@@ -266,7 +260,11 @@ type AppContextType = {
 
 const AppContext = React.createContext({} as AppContextType);
 
-export default () => {
+const App = () => {
+  const colorScheme = useColorScheme();
+  const { bottom } = useSafeAreaInsets();
+  const theme = useStreamChatTheme();
+
   const [channel, setChannel] = useState<
     ChannelType<
       LocalAttachmentType,
@@ -293,7 +291,7 @@ export default () => {
 
   useEffect(() => {
     const setupClient = async () => {
-      await chatClient.setUser(user, userToken);
+      await chatClient.connectUser(user, userToken);
 
       return setClientReady(true);
     };
@@ -302,67 +300,71 @@ export default () => {
   }, []);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      theme={{
+        colors: {
+          ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+          background: theme.colors?.white_snow || '#FCFCFC',
+        },
+        dark: colorScheme === 'dark',
+      }}
+    >
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        {clientReady && (
-          <Stack.Navigator
-            initialRouteName='ChannelList'
-            screenOptions={{
-              cardStyle: { backgroundColor: 'white' },
-              headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-            }}
-          >
-            <Stack.Screen
-              component={ChannelScreen}
-              name='Channel'
-              options={() => ({
-                headerBackTitle: 'Back',
-                headerTitle: channel?.data?.name,
-              })}
-            />
-            <Stack.Screen
-              component={ChannelListScreen}
-              name='ChannelList'
-              options={{ headerTitle: 'Channel List' }}
-            />
-            <Stack.Screen
-              component={ThreadScreen}
-              name='Thread'
-              options={({ navigation }) => ({
-                headerLeft: () => <></>,
-                headerRight: () => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 20,
-                    }}
-                  >
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        backgroundColor: 'white',
-                        borderColor: 'rgba(0, 0, 0, 0.1)',
-                        borderRadius: 3,
-                        borderStyle: 'solid',
-                        borderWidth: 1,
-                        height: 30,
-                        justifyContent: 'center',
-                        width: 30,
-                      }}
-                    >
-                      <Text>X</Text>
-                    </View>
-                  </TouchableOpacity>
-                ),
-              })}
-            />
-          </Stack.Navigator>
-        )}
+        <OverlayProvider<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+          bottomInset={bottom}
+          i18nInstance={streami18n}
+          value={{ style: theme }}
+        >
+          {clientReady && (
+            <Stack.Navigator
+              initialRouteName='ChannelList'
+              screenOptions={{
+                headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+              }}
+            >
+              <Stack.Screen
+                component={ChannelScreen}
+                name='Channel'
+                options={() => ({
+                  headerBackTitle: 'Back',
+                  headerRight: () => <></>,
+                  headerTitle: channel?.data?.name,
+                })}
+              />
+              <Stack.Screen
+                component={ChannelListScreen}
+                name='ChannelList'
+                options={{ headerTitle: 'Channel List' }}
+              />
+              <Stack.Screen
+                component={ThreadScreen}
+                name='Thread'
+                options={() => ({ headerLeft: () => <></> })}
+              />
+            </Stack.Navigator>
+          )}
+        </OverlayProvider>
       </AppContext.Provider>
     </NavigationContainer>
+  );
+};
+
+export default () => {
+  const theme = useStreamChatTheme();
+
+  return (
+    <SafeAreaProvider
+      style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}
+    >
+      <App />
+    </SafeAreaProvider>
   );
 };

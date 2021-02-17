@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
+import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
+import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
+import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
+import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import {
   ChannelListMessenger,
   ChannelListMessengerProps,
 } from './ChannelListMessenger';
-
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
@@ -13,11 +16,22 @@ import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
+import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
+import { Skeleton as SkeletonDefault } from './Skeleton';
 
-import type { FlatList, FlatListProps } from 'react-native';
+import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
+import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
+import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+
+import {
+  ChannelsContextValue,
+  ChannelsProvider,
+} from '../../contexts/channelsContext/ChannelsContext';
+
+import type { FlatList } from 'react-native-gesture-handler';
 import type {
   Channel,
   ChannelFilters,
@@ -25,12 +39,6 @@ import type {
   ChannelSort,
   Event,
 } from 'stream-chat';
-
-import type { HeaderErrorProps } from './ChannelListHeaderErrorIndicator';
-import type { ChannelPreviewMessengerProps } from '../ChannelPreview/ChannelPreviewMessenger';
-import type { EmptyStateProps } from '../Indicators/EmptyStateIndicator';
-import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
-import type { LoadingProps } from '../Indicators/LoadingIndicator';
 
 import type {
   DefaultAttachmentType,
@@ -51,62 +59,39 @@ export type ChannelListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
-   *
-   * @param channel A channel object
-   * */
-  onSelect: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  /**
-   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-   *
-   * **EXAMPLE:**
-   *
-   * ```
-   * <ChannelListMessenger
-   *  channels={channels}
-   *  additionalFlatListProps={{ bounces: true }}
-   * />
-   * ```
-   *
-   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
-   */
-  additionalFlatListProps?: Partial<
-    FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>
-  >;
-  /**
-   * Custom indicator to use when channel list is empty
-   *
-   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
-   * */
-  EmptyStateIndicator?: React.ComponentType<EmptyStateProps>;
+> = Partial<
+  Pick<
+    ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'additionalFlatListProps'
+    | 'EmptyStateIndicator'
+    | 'FooterLoadingIndicator'
+    | 'HeaderErrorIndicator'
+    | 'HeaderNetworkDownIndicator'
+    | 'LoadingErrorIndicator'
+    | 'LoadingIndicator'
+    | 'Preview'
+    | 'setFlatListRef'
+    | 'ListHeaderComponent'
+    | 'onSelect'
+    | 'PreviewAvatar'
+    | 'PreviewMessage'
+    | 'PreviewStatus'
+    | 'PreviewTitle'
+    | 'PreviewUnreadCount'
+    | 'loadMoreThreshold'
+    | 'Skeleton'
+    | 'maxUnreadCount'
+    | 'numberOfSkeletons'
+  >
+> & {
   /**
    * Object containing channel query filters
+   *
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields
+   *
+   * @overrideType object
    * */
   filters?: ChannelFilters<Ch, Co, Us>;
-  /**
-   * Custom loading indicator to display at bottom of the list, while loading further pages
-   *
-   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
-   */
-  FooterLoadingIndicator?: React.ComponentType;
-  /**
-   * Custom indicator to display error at top of list, if loading/pagination error occurs
-   *
-   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
-   */
-  HeaderErrorIndicator?: React.ComponentType<HeaderErrorProps>;
-  /**
-   * Custom indicator to display network-down error at top of list, if there is connectivity issue
-   *
-   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
-   */
-  HeaderNetworkDownIndicator?: React.ComponentType;
   /**
    * Custom UI component to display the list of channels
    *
@@ -116,30 +101,16 @@ export type ChannelListProps<
     ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
-   * Custom indicator to use when there is error in fetching channels
-   *
-   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
-   * */
-  LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
-  /**
-   * Custom loading indicator to use
-   *
-   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
-   * */
-  LoadingIndicator?: React.ComponentType<LoadingProps>;
-  /**
-   * The React Native FlatList threshold to fetch more data
-   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
-   * */
-  loadMoreThreshold?: number;
-  /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
   lockChannelOrder?: boolean;
   /**
    * Function that overrides default behavior when a user gets added to a channel
    *
-   * @param {Event} event [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   *
+   * @overrideType Function
    * */
   onAddedToChannel?: (
     setChannels: React.Dispatch<
@@ -150,7 +121,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   *
+   * @overrideType Function
    * */
   onChannelDeleted?: (
     setChannels: React.Dispatch<
@@ -161,7 +135,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   *
+   * @overrideType Function
    * */
   onChannelHidden?: (
     setChannels: React.Dispatch<
@@ -172,7 +149,10 @@ export type ChannelListProps<
   /**
    * Function to customize behavior when a channel gets truncated
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   *
+   * @overrideType Function
    * */
   onChannelTruncated?: (
     setChannels: React.Dispatch<
@@ -183,7 +163,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets updated
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   *
+   * @overrideType Function
    * */
   onChannelUpdated?: (
     setChannels: React.Dispatch<
@@ -192,9 +175,13 @@ export type ChannelListProps<
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Function that overrides default behavior when new message is received on channel not currently being watched
+   * Override the default listener/handler for event `notification.message_new`
+   * This event is received on channel, which is not being watched.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   *
+   * @overrideType Function
    * */
   onMessageNew?: (
     setChannels: React.Dispatch<
@@ -205,7 +192,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a user gets removed from a channel
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   *
+   * @overrideType Function
    * */
   onRemovedFromChannel?: (
     setChannels: React.Dispatch<
@@ -218,29 +208,6 @@ export type ChannelListProps<
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available option fields
    * */
   options?: ChannelOptions;
-  /**
-   * Custom UI component to display individual channel list items
-   *
-   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
-   * */
-  Preview?: React.ComponentType<
-    ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /**
-   * Function to gain access to the inner FlatList ref
-   *
-   * **Example:**
-   *
-   * ```
-   * <ChannelListMessenger
-   *  setFlatListRef={(ref) => {
-   *    // Use ref for your own good
-   *  }}
-   * ```
-   */
-  setFlatListRef?: (
-    ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
-  ) => void;
   /**
    * Object containing channel sort parameters
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
@@ -271,9 +238,21 @@ export const ChannelList = <
   props: ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    additionalFlatListProps = {},
+    EmptyStateIndicator = EmptyStateIndicatorDefault,
+    FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
     filters = DEFAULT_FILTERS,
+    HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
+    HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
     List = ChannelListMessenger,
+    ListHeaderComponent,
+    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
+    LoadingIndicator = ChannelListLoadingIndicator,
+    // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+    loadMoreThreshold = 2,
     lockChannelOrder = false,
+    maxUnreadCount = 255,
+    numberOfSkeletons = 6,
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
@@ -283,33 +262,35 @@ export const ChannelList = <
     onRemovedFromChannel,
     onSelect,
     options = DEFAULT_OPTIONS,
+    Preview = ChannelPreviewMessenger,
+    PreviewAvatar,
+    PreviewMessage,
+    PreviewStatus,
+    PreviewTitle,
+    PreviewUnreadCount,
     setFlatListRef,
+    Skeleton = SkeletonDefault,
     sort = DEFAULT_SORT,
   } = props;
 
-  const listRef = useRef<FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null>(
-    null,
-  );
   const [forceUpdate, setForceUpdate] = useState(0);
 
   const {
     channels,
+    error,
     hasNextPage,
+    loadingChannels,
+    loadingNextPage,
     loadNextPage,
+    refreshing,
     refreshList,
     reloadList,
     setChannels,
-    status,
   } = usePaginatedChannels<At, Ch, Co, Ev, Me, Re, Us>({
     filters,
     options,
     sort,
   });
-
-  useEffect(() => {
-    // TODO: Use sync api endpoint to refresh the list, instead of calling queryChannels.
-    refreshList();
-  }, [forceUpdate]);
 
   // Setup event listeners
   useAddedToChannelNotification({
@@ -329,6 +310,7 @@ export const ChannelList = <
 
   useChannelTruncated({
     onChannelTruncated,
+    refreshList,
     setChannels,
     setForceUpdate,
   });
@@ -339,6 +321,7 @@ export const ChannelList = <
   });
 
   useConnectionRecovered<At, Ch, Co, Ev, Me, Re, Us>({
+    refreshList,
     setForceUpdate,
   });
 
@@ -361,26 +344,48 @@ export const ChannelList = <
     setChannels,
   });
 
+  const channelsContext = useCreateChannelsContext({
+    additionalFlatListProps,
+    channels,
+    EmptyStateIndicator,
+    error,
+    FooterLoadingIndicator,
+    forceUpdate,
+    hasNextPage,
+    HeaderErrorIndicator,
+    HeaderNetworkDownIndicator,
+    ListHeaderComponent,
+    loadingChannels,
+    LoadingErrorIndicator,
+    LoadingIndicator,
+    loadingNextPage,
+    loadMoreThreshold,
+    loadNextPage,
+    maxUnreadCount,
+    numberOfSkeletons,
+    onSelect,
+    Preview,
+    PreviewAvatar,
+    PreviewMessage,
+    PreviewStatus,
+    PreviewTitle,
+    PreviewUnreadCount,
+    refreshing,
+    refreshList,
+    reloadList,
+    setFlatListRef: (
+      ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ) => {
+      if (setFlatListRef) {
+        setFlatListRef(ref);
+      }
+    },
+    Skeleton,
+  });
+
   return (
-    <List<At, Ch, Co, Ev, Me, Re, Us>
-      {...props}
-      channels={channels}
-      error={status.error}
-      forceUpdate={forceUpdate}
-      hasNextPage={hasNextPage}
-      loadingChannels={status.loadingChannels}
-      loadingNextPage={status.loadingNextPage}
-      loadNextPage={loadNextPage}
-      refreshing={status.refreshing}
-      refreshList={refreshList}
-      reloadList={reloadList}
-      setActiveChannel={onSelect}
-      setFlatListRef={(
-        ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
-      ) => {
-        listRef.current = ref;
-        setFlatListRef && setFlatListRef(ref);
-      }}
-    />
+    <ChannelsProvider value={channelsContext}>
+      <List<At, Ch, Co, Ev, Me, Re, Us> />
+    </ChannelsProvider>
   );
 };
