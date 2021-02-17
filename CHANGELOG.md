@@ -2,6 +2,10 @@
 
 ## [3.0.0]
 
+Version 3.x is a major revamp of the SDK and comes with **many breaking changes**. The new implementation takes advantage of React Context along with many popular community libraries such as Reanimated V2 to deliver a superior chat experience. **Upgrading will require re-implementing** your integration but will yield performance and functional benefits. It is highly recommended you read the Cookbook and examine the SampleApp / TypeScriptMessaging apps before upgrading to understand what is required.
+
+**NOTE:** As of release expo is on version 40 which uses a version of React Native with a bug in the Dimensions API that occurs upon reloading an app in the simulator. Version 3.x uses relative sizing widely and depends on this API so issues will be visible in Expo until they update the custom React Native version they ship.
+
 - Added peer dependencies for:
   - BlurView using one of these
     - Expo: [expo-blur](https://docs.expo.io/versions/latest/sdk/blur-view/#installation)
