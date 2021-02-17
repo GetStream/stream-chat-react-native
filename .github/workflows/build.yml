@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-      - v2-designs
+      - master
 jobs:
   build_and_deploy_ios:
     runs-on: [macos-latest]
