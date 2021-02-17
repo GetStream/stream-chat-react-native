@@ -52,7 +52,7 @@ export type AttachmentPickerContextValue = {
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
    *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#overlayprovider) section in Cookbook
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
    * for more details.
    */
   bottomInset?: number;
@@ -63,7 +63,7 @@ export type AttachmentPickerContextValue = {
    * `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be
    * set to 0 to cover the entire screen, or the safe area top inset if desired.
    *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#overlayprovider) section in Cookbook
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
    * for more details.
    */
   topInset?: number;

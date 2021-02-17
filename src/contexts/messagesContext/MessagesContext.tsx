@@ -277,7 +277,7 @@ export type MessagesContextValue<
   /**
    * Full override of the block user button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   blockUser?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -300,7 +300,7 @@ export type MessagesContextValue<
   /**
    * Full override of the copy message button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   copyMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -308,7 +308,7 @@ export type MessagesContextValue<
   /**
    * Full override of the delete message button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   deleteMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -317,7 +317,7 @@ export type MessagesContextValue<
   /**
    * Full override of the edit message button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   editMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -325,7 +325,7 @@ export type MessagesContextValue<
   /**
    * Full override of the flag message button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   flagMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -393,7 +393,7 @@ export type MessagesContextValue<
   /**
    * Full override of the mute user button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
   muteUser?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -424,19 +424,19 @@ export type MessagesContextValue<
   /**
    * Full override of the reply button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   reply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
   /**
    * Full override of the resend button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
   retry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
   selectReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -444,7 +444,7 @@ export type MessagesContextValue<
   /**
    * Full override of the thread reply button in the Message Actions
    *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
   threadReply?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,

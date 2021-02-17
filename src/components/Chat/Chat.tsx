@@ -101,7 +101,7 @@ export type ChatProps<
   /**
    * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
    *
-   * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#theme) for details.
+   * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
    *
    * ```
    * import type { DeepPartial, Theme } from 'stream-chat-react-native';
