@@ -9,7 +9,7 @@
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/test/badge.svg?branch=master)](https://github.com/GetStream/stream-chat-react-native/actions)
-[![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.github.io/stream-chat-react-native/)
+[![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.github.io/stream-chat-react-native/v3/)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
 
@@ -84,9 +84,7 @@ Check out our tutorial on how to build a slack clone using react-native and stre
 
 ## 📋 Docs
 
-The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work.
-
-The React Native components are created using the stream-chat-js library. If you're customizing the components, it's essential to learn how the Chat Server API works. You'll want to review our [JS chat API docs](https://getstream.io/chat/docs/js/). The styleguidist also contains the documentation for the [contexts](https://reactjs.org/docs/context.html) the app supplies which are also useful for creating custom components. The [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)) also contains a lot of useful information on how the library functions, how to modify components, and how to access data.
+Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta
 
 ## 💬 Keep in mind
 
