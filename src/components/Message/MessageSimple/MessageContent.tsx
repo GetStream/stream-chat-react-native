@@ -286,7 +286,7 @@ export const MessageContentWithContext = <
           testID='message-header'
         />
       )}
-      <View onLayout={onLayout}>
+      <View onLayout={onLayout} style={{ width: '100%' }}>
         {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
           <View
             style={[
