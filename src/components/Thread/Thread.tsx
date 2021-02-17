@@ -79,14 +79,14 @@ type ThreadPropsWithContext<
   Pick<TranslationContextValue, 't'> & {
     /**
      * Additional props for underlying MessageInput component.
-     * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
+     * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messageinput
      * */
     additionalMessageInputProps?: Partial<
       MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
     >;
     /**
      * Additional props for underlying MessageList component.
-     * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
+     * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messagelist
      * */
     additionalMessageListProps?: Partial<
       MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -99,7 +99,7 @@ type ThreadPropsWithContext<
     disabled?: boolean;
     /**
      * **Customized MessageInput component to used within Thread instead of default MessageInput
-     * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
+     * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/v3/#messageinput)**
      */
     MessageInput?: React.ComponentType<
       MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -264,7 +264,7 @@ export type ThreadProps<
  * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
  * The thread is only used for the list of replies to a message.
  *
- * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+ * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/v3/#channelcontext)
  * Underlying MessageList, MessageInput and Message components can be customized using props:
  * - additionalMessageListProps
  * - additionalMessageInputProps

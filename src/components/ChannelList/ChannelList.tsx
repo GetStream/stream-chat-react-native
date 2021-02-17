@@ -95,7 +95,7 @@ export type ChannelListProps<
   /**
    * Custom UI component to display the list of channels
    *
-   * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/#channellistmessenger)
+   * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channellistmessenger)
    */
   List?: React.ComponentType<
     ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>

@@ -747,11 +747,11 @@ export type MessageInputProps<
 /**
  * UI Component for message input
  * It's a consumer of
- * [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext),
- * [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext),
- * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/#messageinputcontext),
- * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext), and
- * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
+ * [Channel Context](https://getstream.github.io/stream-chat-react-native/v3/#channelcontext),
+ * [Chat Context](https://getstream.github.io/stream-chat-react-native/v3/#chatcontext),
+ * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/v3/#messageinputcontext),
+ * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/v3/#suggestionscontext), and
+ * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 export const MessageInput = <
   At extends DefaultAttachmentType = DefaultAttachmentType,

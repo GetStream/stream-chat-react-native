@@ -229,11 +229,11 @@ type MessageListPropsWithContext<
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
  *
- * [ChannelContext](https://getstream.github.io/stream-chat-react-native/#channelcontext)
- * [ChatContext](https://getstream.github.io/stream-chat-react-native/#chatcontext)
- * [MessagesContext](https://getstream.github.io/stream-chat-react-native/#messagescontext)
- * [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext)
- * [TranslationContext](https://getstream.github.io/stream-chat-react-native/#translationcontext)
+ * [ChannelContext](https://getstream.github.io/stream-chat-react-native/v3/#channelcontext)
+ * [ChatContext](https://getstream.github.io/stream-chat-react-native/v3/#chatcontext)
+ * [MessagesContext](https://getstream.github.io/stream-chat-react-native/v3/#messagescontext)
+ * [ThreadContext](https://getstream.github.io/stream-chat-react-native/v3/#threadcontext)
+ * [TranslationContext](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 const MessageListWithContext = <
   At extends UnknownType = DefaultAttachmentType,

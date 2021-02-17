@@ -224,7 +224,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for attach button.
    *
-   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
    */
   AttachButton: React.ComponentType<
     AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -234,7 +234,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for commands button.
    *
-   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/#commandsbutton)
+   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
    */
   CommandsButton: React.ComponentType<
     CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -266,7 +266,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for more options button.
    *
-   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/#moreoptionsbutton)
+   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/v3/#moreoptionsbutton)
    */
   MoreOptionsButton: React.ComponentType<
     MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -277,7 +277,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button.
    *
-   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
+   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
    */
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   sendImageAsync: boolean;

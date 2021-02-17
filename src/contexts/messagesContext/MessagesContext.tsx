@@ -196,7 +196,7 @@ export type MessagesContextValue<
   >;
   /**
    * UI component for MessageSystem
-   * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
+   * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
    */
   MessageSystem: React.ComponentType<
     MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -217,7 +217,7 @@ export type MessagesContextValue<
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
-   * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/#reply)
+   * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/v3/#reply)
    */
   Reply: React.ComponentType<ReplyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
@@ -228,7 +228,7 @@ export type MessagesContextValue<
   ) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
-   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/#ScrollToBottomButton)
+   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
@@ -238,12 +238,12 @@ export type MessagesContextValue<
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
-   * Defaults to: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
+   * Defaults to: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#typingindicator)
    */
   TypingIndicator: React.ComponentType;
   /**
    * UI component for TypingIndicatorContainer
-   * Defaults to: [TypingIndicatorContainer](https://getstream.github.io/stream-chat-react-native/#typingindicatorcontainer)
+   * Defaults to: [TypingIndicatorContainer](https://getstream.github.io/stream-chat-react-native/v3/#typingindicatorcontainer)
    */
   TypingIndicatorContainer: React.ComponentType;
   updateMessage: (

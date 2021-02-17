@@ -63,7 +63,7 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to use when channel list is empty
    *
-   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
+   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/v3/#emptystateindicator)
    * */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
@@ -73,7 +73,7 @@ export type ChannelsContextValue<
   /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
-   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListFooterLoadingIndicator)
    */
   FooterLoadingIndicator: React.ComponentType;
   /**
@@ -87,13 +87,13 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to display error at top of list, if loading/pagination error occurs
    *
-   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
+   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListHeaderErrorIndicator)
    */
   HeaderErrorIndicator: React.ComponentType<HeaderErrorProps>;
   /**
    * Custom indicator to display network-down error at top of list, if there is connectivity issue
    *
-   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListHeaderNetworkDownIndicator)
    */
   HeaderNetworkDownIndicator: React.ComponentType;
   /**
@@ -103,7 +103,7 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to use when there is error in fetching channels
    *
-   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
+   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/v3/#loadingerrorindicator)
    * */
   LoadingErrorIndicator: React.ComponentType<LoadingErrorProps>;
   /**
@@ -137,7 +137,7 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to display individual channel list items
    *
-   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
+   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channelpreviewmessenger)
    */
   Preview: React.ComponentType<
     ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
@@ -179,7 +179,7 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to display loading channel skeletons
    *
-   * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/#skeleton)
+   * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/v3/#skeleton)
    */
   Skeleton: React.ComponentType;
   ListHeaderComponent?: React.ComponentType;
