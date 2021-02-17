@@ -238,7 +238,7 @@ module.exports = {
       'src/styleguideComponents/register-react-native-web.js',
     ),
   ],
-  styleguideDir: 'docs',
+  styleguideDir: 'docs/v3',
   sortProps: (props) => props,
   styles: {
     StyleGuide: {
