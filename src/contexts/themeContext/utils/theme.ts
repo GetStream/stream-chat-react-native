@@ -374,6 +374,7 @@ export type Theme = {
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
       };
+      wrapper: ViewStyle;
     };
     file: {
       container: ViewStyle;
@@ -834,6 +835,7 @@ export const defaultTheme: Theme = {
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },
+      wrapper: {},
     },
     file: {
       container: {},

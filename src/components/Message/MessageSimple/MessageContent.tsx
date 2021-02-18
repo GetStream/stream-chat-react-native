@@ -188,6 +188,7 @@ export const MessageContentWithContext = <
           errorIconContainer,
           replyBorder,
           replyContainer,
+          wrapper,
         },
         reactionList: { radius, reactionSize },
       },
@@ -286,7 +287,7 @@ export const MessageContentWithContext = <
           testID='message-header'
         />
       )}
-      <View onLayout={onLayout} style={{ width: '100%' }}>
+      <View onLayout={onLayout} style={wrapper}>
         {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
           <View
             style={[
