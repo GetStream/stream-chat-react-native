@@ -106,7 +106,7 @@ You can see detailed documentation about the components at <https://getstream.gi
 
 ## 🛠 Setup (Setting up a chat app)
 
-Please follow this doc for setup - [Setup Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Installation-and-usage---v3.0#installation)
+Please follow this doc for setup - [Setup Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#installation)
 ## 💪 TypeScript Support
 
 As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.

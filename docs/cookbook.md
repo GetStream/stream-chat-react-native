@@ -1,6 +1,6 @@
 # Notice
 
-Cookbook has been moved to [wiki pages](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook). Please check it for updated version.
+Cookbook has been moved to [wiki pages](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0). Please check it for updated version.
 
 This following document is no longer being maintained and will be removed in future.
 

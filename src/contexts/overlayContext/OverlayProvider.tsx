@@ -73,7 +73,7 @@ import type {
  *
  * - Don't forget to check our cookbook section of [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider)
  *
- * - Also check the [visual component guide](https://github.com/GetStream/stream-chat-react-native/wiki/Visual-guide-for-customising-components), to learn about component customizations.
+ * - Also check the [visual component guide](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#custom-components), to learn about component customizations.
  *
  * @example ./OverlayProvider.md
  */
