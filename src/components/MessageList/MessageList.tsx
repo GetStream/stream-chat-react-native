@@ -305,7 +305,7 @@ const MessageListWithContext = <
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
-    [theme, myMessageTheme],
+    [myMessageTheme, theme],
   );
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
