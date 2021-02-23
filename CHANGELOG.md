@@ -1,10 +1,38 @@
 # Changelog
 
-## [3.0.0-beta.2]
+## [3.0.0] (2021-02-23) 🎉
 
 Version 3.x is a major revamp of the SDK and comes with **many breaking changes**. The new implementation takes advantage of React Context along with many popular community libraries such as Reanimated V2 to deliver a superior chat experience. **Upgrading will require re-implementing** your integration but will yield performance and functional benefits. It is highly recommended you read the Cookbook and examine the SampleApp / TypeScriptMessaging apps before upgrading to understand what is required.
 
-**NOTE:** As of release expo is on version 40 which uses a version of React Native with a bug in the Dimensions API that occurs upon reloading an app in the simulator. Version 3.x uses relative sizing widely and depends on this API so issues will be visible in Expo until they update the custom React Native version they ship.
+### New features
+
+  - Modern UX around reaction picker functionality, similar to iMessage
+  - Inline replies
+  - "Also send to channel" option on Threads
+  - In app attachment picker
+  - Improved avatars for grouped channels.
+  - Rich image viewers with options to share the image outside the app, or view the image in gallery view.
+  - "Copy Message" action as part of message actions.
+
+### Improvements
+
+- In previous versions, we did a lot of prop drilling throughout component trees, which makes it quite hard for end user to decide exactly where to set a particular prop. We have tried to centralize component customization on following three higher order components:
+
+  - OverlayProvider
+  - ChannelList
+  - Channel
+
+  We have prepared a visual guide to help you with component customizations - [Guide](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#custom-components)
+
+- In v2.x.x, we decided to move away from class based components, towards functional components along with react hooks. React hooks are definitely a big addition to react eco-system, but when not careful it has potential to hammer the performance. We have handled all these issues as part of v3.0.0 using careful revamp around all the contexts and memoizations, which improves the app performance by a great margin.
+
+- We have decided to abondon styled-components, are decided to have our own implementation
+
+  - Removed dot notation for theming applications
+  - Removed css string notation for styles on theme
+  - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`. Please check our [theme docs](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for more details.
+
+### Dependency changes:
 
 - Added peer dependencies for:
   - BlurView using one of these
@@ -30,13 +58,17 @@ Version 3.x is a major revamp of the SDK and comes with **many breaking changes*
   - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values)
 
 - Removed seamless-immutable
-
 - Removed styled-components:
-  - Removed dot notation for theming applications
-  - Removed css string notation for styles on theme
-  - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
 
 Please find detailed docs about this release in our [wiki](https://github.com/GetStream/stream-chat-react-native/wiki#v300)
+
+
+### Note for Expo
+
+- As of this release, expo is on version 40 which uses a version of React Native with a bug in the Dimensions API that occurs upon reloading an app in the simulator. Version 3.x uses relative sizing widely and depends on this API so issues will be visible in Expo until they update the custom React Native version they ship.
+
+- [Android] As part of this release, we implemented a new feature - inline replies, similar to whatsapp. Bi-directional scrolling/pagination was necessary for this feature. To keep smooth scrolling experience, we implemented our [own solution](https://github.com/GetStream/flat-list-mvcp#maintainvisiblecontentposition-prop-support-for-android-react-native) for react-native. Although, Expo being close-source project, we can't do any such thing for Expo. So inline reply feature is not recommended to use in Expo, since you will not have a good scroll experience on Android, while scrolling down in message list.
+
 
 ## [2.2.2] 2021-02-07
 
