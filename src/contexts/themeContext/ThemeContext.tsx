@@ -41,7 +41,7 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
     }
 
     return mergeThemes({ style, theme });
-  }, [theme, style, mergedStyle]);
+  }, [mergedStyle, style, theme]);
 
   return (
     <ThemeContext.Provider value={modifiedTheme}>
