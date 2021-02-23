@@ -178,7 +178,7 @@ const MessageOverlayWithContext = <
 
   const modifiedTheme = useMemo(
     () => mergeThemes({ style: myMessageTheme, theme }),
-    [theme, myMessageThemeString],
+    [myMessageThemeString, theme],
   );
 
   const scrollViewRef = useRef<ScrollView>(null);
