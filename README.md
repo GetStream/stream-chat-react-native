@@ -30,7 +30,7 @@ Currently we are working on publishing v3.0.0. Its in beta phase (`v3.0.0-beta.2
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
 - [Internationalization (i18n)](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n))
-- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta) 🚀
+- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v300) 🚀
 
 ## Contents
 
@@ -50,12 +50,12 @@ Currently we are working on publishing v3.0.0. Its in beta phase (`v3.0.0-beta.2
 
 To use this library you need to ensure you match up with the correct version of React Native you are using.
 
-| `stream-chat-react-native` version | Required React Native Version |
-| ----------------------------------------- | --------- |
-| `3.x.x` (beta)                           | `>= 0.60` |
-| `2.x.x`                                   | `>= 0.60` |
-| `1.x.x`                                   | `>= 0.59` |
-| `0.x.x`                                   | `*` |
+| `stream-chat-react-native` version  | React Native Version  | `stream-chat` Version |
+| ----------------------------------  | --------------------- | --------------------- |
+| `3.x.x` (beta)                      | `>= 0.60`             | `>= 3.0.0`            |
+| `2.x.x`                             | `>= 0.60`             | `< 3.0.0`             |
+| `1.x.x`                             | `>= 0.59`             | `< 3.0.0`             |
+| `0.x.x`                             | `*`                   | `< 3.0.0`             |
 
 ## 📖 React Native Chat Tutorial
 
@@ -94,7 +94,7 @@ Check out our tutorial on how to build a slack clone using react-native and stre
 
 ## 📋 Docs
 
-Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta
+Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v300
 
 ## 💬 Keep in mind
 
