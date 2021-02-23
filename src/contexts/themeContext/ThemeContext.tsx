@@ -8,26 +8,40 @@ export type DeepPartial<T> = {
 };
 
 export type ThemeProviderInputValue = {
+  mergedStyle?: Theme;
   style?: DeepPartial<Theme>;
+};
+
+export type MergedThemesParams = {
+  style?: DeepPartial<Theme>;
+  theme?: Theme;
+};
+
+export const mergeThemes = (params: MergedThemesParams) => {
+  const { style, theme } = params;
+  const finalTheme = (!theme || Object.keys(theme).length === 0
+    ? JSON.parse(JSON.stringify(defaultTheme))
+    : JSON.parse(JSON.stringify(theme))) as Theme;
+
+  if (style) {
+    merge(finalTheme, style);
+  }
+
+  return finalTheme;
 };
 
 export const ThemeContext = React.createContext({} as Theme);
 
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
-  const { children, style } = props;
+  const { children, mergedStyle, style } = props;
   const { theme } = useTheme();
   const modifiedTheme = useMemo(() => {
-    const finalTheme =
-      Object.keys(theme).length === 0
-        ? JSON.parse(JSON.stringify(defaultTheme))
-        : JSON.parse(JSON.stringify(theme));
-
-    if (style) {
-      merge(finalTheme, style);
+    if (mergedStyle) {
+      return mergedStyle;
     }
 
-    return finalTheme;
-  }, [theme, style]);
+    return mergeThemes({ style, theme });
+  }, [theme, style, mergedStyle]);
 
   return (
     <ThemeContext.Provider value={modifiedTheme}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Keyboard,
   Platform,
@@ -43,6 +43,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import {
+  mergeThemes,
   ThemeProvider,
   useTheme,
 } from '../../contexts/themeContext/ThemeContext';
@@ -145,24 +146,40 @@ const MessageOverlayWithContext = <
     visible,
   } = props;
 
+  const { theme } = useTheme();
+
   const {
-    theme: {
-      colors: {
-        blue_alice,
-        grey_gainsboro,
-        grey_whisper,
-        transparent,
-        white_smoke,
-      },
-      messageSimple: {
-        content: {
-          container: { borderRadiusL, borderRadiusS },
-          containerInner,
-          replyContainer,
-        },
+    colors: {
+      blue_alice,
+      grey_gainsboro,
+      grey_whisper,
+      transparent,
+      white_smoke,
+    },
+    messageSimple: {
+      content: {
+        container: { borderRadiusL, borderRadiusS },
+        containerInner,
+        replyContainer,
       },
     },
-  } = useTheme();
+  } = theme;
+
+  const myMessageTheme = messagesContext?.myMessageTheme;
+  const [myMessageThemeString, setMyMessageThemeString] = useState(
+    JSON.stringify(myMessageTheme),
+  );
+
+  useEffect(() => {
+    if (myMessageTheme) {
+      setMyMessageThemeString(JSON.stringify(myMessageTheme));
+    }
+  }, [myMessageTheme]);
+
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    [theme, myMessageThemeString],
+  );
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -312,20 +329,14 @@ const MessageOverlayWithContext = <
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const {
-    Attachment,
-    FileAttachmentGroup,
-    Gallery,
-    MessageAvatar,
-    myMessageTheme,
-    Reply,
-  } = messagesContext || {};
+  const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } =
+    messagesContext || {};
 
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
   return (
     <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-      <ThemeProvider style={wrapMessageInTheme ? myMessageTheme : undefined}>
+      <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
         <Animated.View
           pointerEvents={visible ? 'auto' : 'none'}
           style={StyleSheet.absoluteFillObject}
