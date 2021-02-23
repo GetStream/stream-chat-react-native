@@ -16,17 +16,18 @@ export const ThemeContext = React.createContext({} as Theme);
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const { children, style } = props;
   const { theme } = useTheme();
-  const modifiedTheme = useMemo(
-    () =>
+  const modifiedTheme = useMemo(() => {
+    const finalTheme =
       Object.keys(theme).length === 0
         ? JSON.parse(JSON.stringify(defaultTheme))
-        : JSON.parse(JSON.stringify(theme)),
-    [theme],
-  );
+        : JSON.parse(JSON.stringify(theme));
 
-  if (style) {
-    merge(modifiedTheme, style);
-  }
+    if (style) {
+      merge(finalTheme, style);
+    }
+
+    return finalTheme;
+  }, [theme, style]);
 
   return (
     <ThemeContext.Provider value={modifiedTheme}>
