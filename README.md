@@ -30,7 +30,7 @@ Currently we are working on publishing v3.0.0. Its in beta phase (`v3.0.0-beta.2
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
 - [Internationalization (i18n)](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n))
-- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta) 🚀
+- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v300) 🚀
 
 ## Contents
 
@@ -94,7 +94,7 @@ Check out our tutorial on how to build a slack clone using react-native and stre
 
 ## 📋 Docs
 
-Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta
+Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v300
 
 ## 💬 Keep in mind
 

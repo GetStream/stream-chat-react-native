@@ -36,7 +36,7 @@ Version 3.x is a major revamp of the SDK and comes with **many breaking changes*
   - Removed css string notation for styles on theme
   - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
 
-Please find detailed docs about this release in our [wiki](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta)
+Please find detailed docs about this release in our [wiki](https://github.com/GetStream/stream-chat-react-native/wiki#v300)
 
 ## [2.2.2] 2021-02-07
 
