@@ -13,6 +13,7 @@ import {
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -65,7 +66,9 @@ export const ChannelPreview: React.FC<
 
   const { setOverlay } = useAppOverlayContext();
 
-  const { setData } = useChannelInfoOverlayContext();
+  const { setData: setDataBottomSheet } = useBottomSheetOverlayContext();
+
+  const { setData, data } = useChannelInfoOverlayContext();
 
   const { client } = useChatContext<
     LocalAttachmentType,
@@ -85,6 +88,12 @@ export const ChannelPreview: React.FC<
     },
   } = useTheme();
 
+  const otherMembers = channel
+    ? Object.values(channel.state.members).filter(
+        (member) => member.user?.id !== data?.clientId,
+      )
+    : [];
+
   return (
     <Swipeable
       overshootLeft={false}
@@ -103,7 +112,22 @@ export const ChannelPreview: React.FC<
             <MenuPointHorizontal />
           </RectButton>
           <RectButton
-            onPress={() => channel.delete()}
+            onPress={() => {
+              setDataBottomSheet({
+                confirmText: 'DELETE',
+                onConfirm: () => {
+                  channel.delete();
+                  setOverlay('none');
+                },
+                subtext: `Are you sure you want to delete this ${
+                  otherMembers.length === 1 ? 'conversation' : 'group'
+                }?`,
+                title: `Delete ${
+                  otherMembers.length === 1 ? 'Conversation' : 'Group'
+                }`,
+              });
+              setOverlay('confirmation');
+            }}
             style={[styles.rightSwipeableButton]}
           >
             <Delete pathFill={accent_red} />

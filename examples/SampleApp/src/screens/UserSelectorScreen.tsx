@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
@@ -96,13 +99,17 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
     },
   } = useTheme();
   const { switchUser } = useContext(AppContext);
+  const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
     AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: white_snow }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: white_snow }]}
+      edges={['right', 'top', 'left']}
+    >
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         style={styles.scrollContainer}
@@ -192,9 +199,19 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </ScrollView>
-      <Text style={[styles.footerText, { color: grey_gainsboro }]}>
-        Stream SDK v{version}
-      </Text>
+      <View
+        style={[
+          {
+            paddingBottom: bottom ? bottom : 16,
+            paddingTop: 16,
+            backgroundColor: white_snow,
+          },
+        ]}
+      >
+        <Text style={[styles.footerText, { color: grey_gainsboro }]}>
+          Stream SDK v{version}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 };

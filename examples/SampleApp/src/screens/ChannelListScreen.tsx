@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     alignItems: 'center',
-    borderRadius: 18,
+    borderRadius: 30,
     borderWidth: 1,
     flexDirection: 'row',
     margin: 8,
