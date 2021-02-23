@@ -1,11 +1,3 @@
----
-
-## **Important Note**
-
-Currently we are working on publishing v3.0.0. Its in beta phase (`v3.0.0-beta.2`) at the moment. For [v2.x.x](https://github.com/GetStream/stream-chat-react-native/releases/tag/v2.2.2) (stable), please follow the docs [here](https://github.com/GetStream/stream-chat-react-native/tree/v2-legacy)
-
----
-
 # Official React Native SDK for [Stream Chat](https://getstream.io/chat/)
 
 <p align="center">
