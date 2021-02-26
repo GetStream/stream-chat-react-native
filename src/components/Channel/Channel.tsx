@@ -27,7 +27,7 @@ import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
-import { heavyThrottle, lightThrottle } from './utils/throttle';
+import { lightThrottle } from './utils/throttle';
 
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
@@ -708,7 +708,10 @@ const ChannelWithContext = <
         ) {
           const mostRecentMessage =
             channel.state.messages[channel.state.messages.length - 1];
-          await queryAfterMessage(mostRecentMessage.id, 5);
+          await queryAfterMessage(
+            mostRecentMessage.id,
+            9 - channel.state.messages.length,
+          );
         }
       } else {
         /**
@@ -809,7 +812,6 @@ const ChannelWithContext = <
       },
       watch: true,
     });
-
     channel.state.setIsUpToDate(offset === 0);
   };
 
@@ -1131,8 +1133,8 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = heavyThrottle(async () => {
-    if (loadingMoreRecent || loadingMore || hasMore === false) return;
+  >['loadMore'] = async () => {
+    if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -1161,7 +1163,7 @@ const ChannelWithContext = <
       console.warn('Message pagination request failed with error', err);
       return setLoadingMore(false);
     }
-  });
+  };
 
   const loadMoreRecent: MessagesContextValue<
     At,
@@ -1171,13 +1173,8 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMoreRecent'] = heavyThrottle(async () => {
-    if (
-      loadingMore ||
-      loadingMoreRecent ||
-      channel?.state.isUpToDate ||
-      !messages.length
-    ) {
+  >['loadMoreRecent'] = async () => {
+    if (channel?.state.isUpToDate) {
       return;
     }
 
@@ -1200,7 +1197,7 @@ const ChannelWithContext = <
       setLoadingMoreRecent(false);
       return;
     }
-  });
+  };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreRecentFinished = heavyDebounce(

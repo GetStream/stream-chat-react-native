@@ -109,7 +109,6 @@ const keyExtractor = <
       ? item.created_at
       : item.created_at.toISOString()
     : Date.now().toString());
-
 type MessageListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -266,7 +265,6 @@ const MessageListWithContext = <
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
-    loadingMoreRecent,
     loadMore,
     loadMoreRecent,
     loadMoreThread,
@@ -315,9 +313,18 @@ const MessageListWithContext = <
   });
   const messageListLength = messageList.length;
 
-  const [autoscrollToTopThreshold, setAutoscrollToTopThreshold] = useState(
-    channel?.state.isUpToDate ? 10 : undefined,
+  const [autoscrollToTop, setAutoscrollToTop] = useState(false);
+
+  const [onStartReachedInProgress, setOnStartReachedInProgress] = useState(
+    false,
   );
+  const [onEndReachedInProgress, setOnEndReachedInProgress] = useState(false);
+
+  const onStartReachedTracker = useRef<Record<number, boolean>>({});
+  const onEndReachedTracker = useRef<Record<number, boolean>>({});
+
+  const onStartReachedInPromise = useRef<Promise<void> | null>(null);
+  const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
   const flatListRef = useRef<FlatListType<
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
@@ -364,7 +371,6 @@ const MessageListWithContext = <
       initialScrollSet.current = true;
       return;
     }
-
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
       if (flatListRef.current) {
         flatListRef.current.scrollToEnd();
@@ -372,7 +378,21 @@ const MessageListWithContext = <
       setTimeout(() => {
         initialScrollSet.current = true;
       }, 500);
-    } else {
+    } else if (
+      // On android, you can't overscroll. So we are going to scroll up just a little
+      // which gives user some offset to scroll down and trigger onStartReached.
+      Platform.OS === 'android' &&
+      !channel?.state.isUpToDate &&
+      flatListRef.current
+    ) {
+      flatListRef.current.scrollToOffset({
+        animated: true,
+        offset: 50,
+      });
+      setTimeout(() => {
+        initialScrollSet.current = true;
+      }, 500);
+    } else if (!initialScrollSet.current) {
       initialScrollSet.current = true;
     }
   };
@@ -476,8 +496,11 @@ const MessageListWithContext = <
   }, [messageListLength]);
 
   useEffect(() => {
-    // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
-    setAutoscrollToTopThreshold(channel?.state.isUpToDate ? 10 : undefined);
+    if (!channel?.state.isUpToDate && autoscrollToTop) {
+      setAutoscrollToTop(false);
+    } else if (channel?.state.isUpToDate && !autoscrollToTop) {
+      setAutoscrollToTop(true);
+    }
   }, [messageListLength]);
 
   const renderItem = ({
@@ -563,6 +586,75 @@ const MessageListWithContext = <
     return null;
   };
 
+  const maybeCallOnStartReached = () => {
+    // If onStartReached has already been called for given data length, then ignore.
+    if (
+      messageList?.length &&
+      onStartReachedTracker.current[messageList.length]
+    ) {
+      return;
+    }
+
+    if (messageList?.length) {
+      onStartReachedTracker.current[messageList.length] = true;
+    }
+    setOnStartReachedInProgress(true);
+    const callback = () => {
+      onStartReachedInPromise.current = null;
+      setOnStartReachedInProgress(false);
+      return Promise.resolve();
+    };
+
+    // If onEndReached is in progress, better to wait for it to finish for smooth UX
+    if (onEndReachedInPromise.current) {
+      onEndReachedInPromise.current.finally(() => {
+        onStartReachedInPromise.current = (loadMoreRecent() as Promise<void>).then(
+          callback,
+        );
+      });
+    } else {
+      onStartReachedInPromise.current = (loadMoreRecent() as Promise<void>).then(
+        callback,
+      );
+    }
+  };
+
+  const maybeCallOnEndReached = () => {
+    // If onEndReached has already been called for given messageList length, then ignore.
+    if (
+      messageList?.length &&
+      onEndReachedTracker.current[messageList.length]
+    ) {
+      return;
+    }
+
+    if (messageList?.length) {
+      onEndReachedTracker.current[messageList.length] = true;
+    }
+    setOnEndReachedInProgress(true);
+
+    const callback = () => {
+      onEndReachedInPromise.current = null;
+      setOnEndReachedInProgress(false);
+
+      return Promise.resolve();
+    };
+
+    // If onStartReached is in progress, better to wait for it to finish for smooth UX
+    if (onStartReachedInPromise.current) {
+      onStartReachedInPromise.current.finally(() => {
+        onEndReachedInPromise.current = (threadList
+          ? loadMoreThread()
+          : (loadMore() as Promise<void>)
+        ).then(callback);
+      });
+    } else {
+      onEndReachedInPromise.current = (loadMore() as Promise<void>).then(
+        callback,
+      );
+    }
+  };
+
   /**
    * Following if condition covers following cases:
    * 1. If I scroll up -> show scrollToBottom button.
@@ -575,13 +667,26 @@ const MessageListWithContext = <
       return;
     }
 
-    const y = event.nativeEvent.contentOffset.y;
+    const offset = event.nativeEvent.contentOffset.y;
+    const visibleLength = event.nativeEvent.layoutMeasurement.height;
+    const contentLength = event.nativeEvent.contentSize.height;
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 100;
+    const isScrollAtEnd = contentLength - visibleLength - offset < 100;
+
+    if (isScrollAtStart) {
+      maybeCallOnStartReached();
+    }
+
+    if (isScrollAtEnd) {
+      maybeCallOnEndReached();
+    }
+
     // Show scrollToBottom button once scroll position goes beyond 300.
-    const isScrollAtBottom = y <= 300;
+    const isScrollAtBottom = offset <= 300;
     const showScrollToBottomButton =
       !isScrollAtBottom || !channel?.state.isUpToDate;
-    const loadMoreRecentResults =
-      !loadingMoreRecent && isScrollAtBottom && !channel?.state.isUpToDate;
+
     const shouldMarkRead =
       !threadList &&
       isScrollAtBottom &&
@@ -590,10 +695,6 @@ const MessageListWithContext = <
 
     if (shouldMarkRead) {
       markRead();
-    }
-
-    if (loadMoreRecentResults) {
-      loadMoreRecent();
     }
 
     if (showScrollToBottomButton && !scrollToBottomButtonVisible) {
@@ -694,7 +795,6 @@ const MessageListWithContext = <
   };
 
   if (!FlatList) return null;
-
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -718,22 +818,29 @@ const MessageListWithContext = <
             )}
           </View>
         }
-        ListFooterComponent={FooterComponent}
+        ListFooterComponent={() =>
+          FooterComponent ? (
+            FooterComponent
+          ) : onEndReachedInProgress ? (
+            <View style={[styles.activityIndicatorContainer]}>
+              <ActivityIndicator color={accent_blue} size='small' />
+            </View>
+          ) : null
+        }
         // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
         ListHeaderComponent={() =>
           HeaderComponent ? (
             HeaderComponent
-          ) : Platform.OS !== 'android' && loadingMoreRecent ? (
+          ) : onStartReachedInProgress ? (
             <View style={[styles.activityIndicatorContainer]}>
               <ActivityIndicator color={accent_blue} size='small' />
             </View>
           ) : null
         }
         maintainVisibleContentPosition={{
-          autoscrollToTopThreshold,
-          minIndexForVisible: 1,
+          autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
+          minIndexForVisible: 0,
         }}
-        onEndReached={threadList ? loadMoreThread : loadMore}
         onScroll={handleScroll}
         onScrollBeginDrag={() => setHasMoved(true)}
         onScrollEndDrag={() => setHasMoved(false)}
