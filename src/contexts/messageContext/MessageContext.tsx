@@ -10,6 +10,7 @@ import type {
   GroupType,
   MessageType,
 } from '../../components/MessageList/hooks/useMessageList';
+import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
@@ -112,7 +113,10 @@ export type MessageContextValue<
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-};
+} & Pick<
+  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'channel' | 'readEventsEnabled' | 'disabled' | 'members'
+>;
 
 export const MessageContext = React.createContext({} as MessageContextValue);
 
