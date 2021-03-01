@@ -115,7 +115,7 @@ export type MessageContextValue<
   showAvatar?: boolean;
 } & Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'channel' | 'readEventsEnabled' | 'disabled' | 'members'
+  'channel' | 'disabled' | 'members' | 'readEventsEnabled'
 >;
 
 export const MessageContext = React.createContext({} as MessageContextValue);
