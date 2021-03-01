@@ -47,7 +47,7 @@ export type MessageStatusPropsWithContext<
   Us extends DefaultUserType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'threadList' | 'readEventsEnabled'
+  'message' | 'readEventsEnabled' | 'threadList'
 >;
 
 const MessageStatusWithContext = <
