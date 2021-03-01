@@ -66,7 +66,7 @@ export const useCreateMessageContext = <
   }${message.updated_at}${message.deleted_at}${readBy}${message.status}${
     message.type
   }${message.text}${message.reply_count}`;
-  const membersValue = Object.keys(members).join;
+  const membersValue = JSON.stringify(members);
 
   const messageContext: MessageContextValue<
     At,
