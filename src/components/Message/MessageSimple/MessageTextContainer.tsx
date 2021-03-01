@@ -125,6 +125,7 @@ const MessageTextContainerWithContext = <
           },
           message,
           onLongPress,
+          onlyEmojis,
         })
       )}
     </View>
@@ -153,7 +154,13 @@ const areEqual = <
   if (!onlyEmojisEqual) return false;
 
   const mentionedUsersEqual =
-    prevMessage.mentioned_users?.length === nextMessage.mentioned_users?.length;
+    prevMessage.mentioned_users?.length ===
+      nextMessage.mentioned_users?.length &&
+    (nextMessage.mentioned_users?.length === 0 ||
+      (prevMessage.mentioned_users?.length &&
+        nextMessage.mentioned_users?.length &&
+        prevMessage.mentioned_users[0].name ===
+          nextMessage.mentioned_users[0].name));
   if (!mentionedUsersEqual) return false;
 
   return true;
