@@ -27,6 +27,8 @@ export const useCreateMessageContext = <
   alignment,
   animatedLongPress,
   canModifyMessage,
+  channel,
+  disabled,
   files,
   groupStyles,
   handleAction,
@@ -35,6 +37,7 @@ export const useCreateMessageContext = <
   isMyMessage,
   lastGroupMessage,
   lastReceivedId,
+  members,
   message,
   messageContentOrder,
   onLongPress,
@@ -44,6 +47,7 @@ export const useCreateMessageContext = <
   otherAttachments,
   preventPress,
   reactions,
+  readEventsEnabled,
   showAvatar,
   showMessageOverlay,
   showMessageStatus,
@@ -62,6 +66,7 @@ export const useCreateMessageContext = <
   }${message.updated_at}${message.deleted_at}${readBy}${message.status}${
     message.type
   }${message.text}${message.reply_count}`;
+  const membersValue = JSON.stringify(members);
 
   const messageContext: MessageContextValue<
     At,
@@ -77,6 +82,8 @@ export const useCreateMessageContext = <
       alignment,
       animatedLongPress,
       canModifyMessage,
+      channel,
+      disabled,
       files,
       groupStyles,
       handleAction,
@@ -85,6 +92,7 @@ export const useCreateMessageContext = <
       isMyMessage,
       lastGroupMessage,
       lastReceivedId,
+      members,
       message,
       messageContentOrder,
       onLongPress,
@@ -94,6 +102,7 @@ export const useCreateMessageContext = <
       otherAttachments,
       preventPress,
       reactions,
+      readEventsEnabled,
       showAvatar,
       showMessageOverlay,
       showMessageStatus,
@@ -103,12 +112,15 @@ export const useCreateMessageContext = <
       actionsEnabled,
       alignment,
       animatedLongPress,
+      disabled,
       groupStylesLength,
       hasReactions,
       lastGroupMessage,
       lastReceivedId,
+      membersValue,
       messageValue,
       reactionsValue,
+      readEventsEnabled,
       showAvatar,
       showMessageStatus,
       threadList,
