@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatListProps,
@@ -42,6 +42,7 @@ import {
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
 import {
+  mergeThemes,
   ThemeProvider,
   useTheme,
 } from '../../contexts/themeContext/ThemeContext';
@@ -295,12 +296,17 @@ const MessageListWithContext = <
     TypingIndicatorContainer,
   } = props;
 
+  const { theme } = useTheme();
+
   const {
-    theme: {
-      colors: { accent_blue, white_snow },
-      messageList: { container, listContainer },
-    },
-  } = useTheme();
+    colors: { accent_blue, white_snow },
+    messageList: { container, listContainer },
+  } = theme;
+
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    [myMessageTheme, theme],
+  );
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -507,7 +513,7 @@ const MessageListWithContext = <
       if (wrapMessageInTheme) {
         return (
           <>
-            <ThemeProvider style={myMessageTheme}>
+            <ThemeProvider mergedStyle={modifiedTheme}>
               <Message
                 goToMessage={goToMessage}
                 groupStyles={
