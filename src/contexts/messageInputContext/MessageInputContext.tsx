@@ -460,7 +460,7 @@ export const MessageInputProvider = <
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
-    if (text) {
+    if (text && text.trim()) {
       return true;
     }
 
