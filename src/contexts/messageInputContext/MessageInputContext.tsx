@@ -358,6 +358,9 @@ export type InputMessageInputContextValue<
       handleOnPress: () => void | Promise<void>;
     }
   >;
+  InputOptions?: React.ComponentType<{
+    openAttachmentPicker: () => void;
+  }>;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */

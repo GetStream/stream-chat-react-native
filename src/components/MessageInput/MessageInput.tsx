@@ -141,6 +141,7 @@ type MessageInputPropsWithContext<
     | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
+    | 'InputOptions'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'MoreOptionsButton'
@@ -201,6 +202,7 @@ export const MessageInputWithContext = <
     imageUploads,
     Input,
     inputBoxRef,
+    InputOptions,
     isValidMessage,
     maxNumberOfFiles,
     members,
@@ -487,6 +489,9 @@ export const MessageInputWithContext = <
                     />
                   ) : (
                     <>
+                      {InputOptions && (
+                        <InputOptions openAttachmentPicker={handleOnPress} />
+                      )}
                       {(hasImagePicker || hasFilePicker) &&
                         uploadsEnabled !== false && (
                           <View
@@ -794,6 +799,7 @@ export const MessageInput = <
     imageUploads,
     Input,
     inputBoxRef,
+    InputOptions,
     isValidMessage,
     maxNumberOfFiles,
     MoreOptionsButton,
@@ -847,6 +853,7 @@ export const MessageInput = <
         imageUploads,
         Input,
         inputBoxRef,
+        InputOptions,
         isValidMessage,
         maxNumberOfFiles,
         members,
