@@ -320,6 +320,8 @@ const MessageListWithContext = <
   );
   const [onEndReachedInProgress, setOnEndReachedInProgress] = useState(false);
 
+  // We want to call onEndReached and onStartReached only once, per content length.
+  // We keep track of calls to these functions per content length, with following trakcers.
   const onStartReachedTracker = useRef<Record<number, boolean>>({});
   const onEndReachedTracker = useRef<Record<number, boolean>>({});
 

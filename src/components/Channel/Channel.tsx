@@ -710,7 +710,7 @@ const ChannelWithContext = <
             channel.state.messages[channel.state.messages.length - 1];
           await queryAfterMessage(
             mostRecentMessage.id,
-            9 - channel.state.messages.length,
+            10 - channel.state.messages.length,
           );
         }
       } else {
