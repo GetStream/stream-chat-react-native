@@ -306,5 +306,3 @@ export default function App() {
 }
 
 ```
-
-#### Share leaderboard similar to Strava
