@@ -1270,10 +1270,12 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stream-io/flat-list-mvcp@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.8.tgz#4afe7d2125d4bbef6144096ce1b9d175ee5abb12"
-  integrity sha512-Qrf0qnucXF04f6FDFFyxZxH/MfQzPTdwQk72ka1Rl5REJ+uaIhaWVt1Mv+BsUqnZD8pU+scnQ2sgyraXgPVSMg==
+"@stream-io/flat-list-mvcp@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.9.tgz#8dad59a93766376a7745deb4a45e50cf0c012a65"
+  integrity sha512-tj9Y7bDlFqdiy4girVlvo1Euc0uiYHCQ2vhOjo1B+ChfGC3b5DBDu51OMJDKJyD+U9NP5F/XnV7tcr3k4aDjgg==
+  dependencies:
+    lodash.debounce "^4.0.8"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"

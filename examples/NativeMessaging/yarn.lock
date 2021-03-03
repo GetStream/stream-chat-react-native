@@ -1397,10 +1397,12 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stream-io/flat-list-mvcp@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.5.tgz#e2e28150a97292dfc6ae46d6bc12b99939362b52"
-  integrity sha512-BU+vQPU16m7WnpIOhAY8c2vqS7934oBW3sDbaxn6NWXCVOSbF8tv1iLW8ClHOkNpiUcRVmTKYFkEehEUifpEKw==
+"@stream-io/flat-list-mvcp@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.9.tgz#8dad59a93766376a7745deb4a45e50cf0c012a65"
+  integrity sha512-tj9Y7bDlFqdiy4girVlvo1Euc0uiYHCQ2vhOjo1B+ChfGC3b5DBDu51OMJDKJyD+U9NP5F/XnV7tcr3k4aDjgg==
+  dependencies:
+    lodash.debounce "^4.0.8"
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
@@ -5015,6 +5017,11 @@ lodash-es@4.17.20:
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.20.tgz#29f6332eefc60e849f869c264bc71126ad61e8f7"
   integrity sha512-JD1COMZsq8maT6mnuz1UMV0jvYD0E0aUsSOdrr1/nAG3dhqQXwRRgeW0cSqH1U43INKcqxaiVIQNOUDld7gRDA==
 
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
+
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.includes/-/lodash.includes-4.3.0.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
@@ -7195,9 +7202,24 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-"stream-chat-react-native-core@link:../..":
-  version "0.0.0"
-  uid ""
+stream-chat-react-native-core@v3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.0.0.tgz#63424f643070ba4743c9746224310641e278df16"
+  integrity sha512-2oLmMS8RsoHEl6P46PT4Cp0wp86nLwgpAi+8sMCGFlwuAi9fIZb9jyEIJwlJkiHCn6Vj452zaWKfFo1QZK+2ag==
+  dependencies:
+    "@babel/runtime" "7.12.13"
+    "@gorhom/bottom-sheet" "3.0.0-alpha.0"
+    anchorme "^1.1.2"
+    dayjs "1.10.4"
+    file-loader "6.2.0"
+    i18next "19.8.7"
+    lodash-es "4.17.20"
+    metro-react-native-babel-preset "0.65.0"
+    mime-types "2.1.28"
+    path "0.12.7"
+    react-art "^16.8.6"
+    react-native-markdown-package "1.8.1"
+    stream-chat "3.0.0"
 
 "stream-chat-react-native@link:../../native-package":
   version "0.0.0"
