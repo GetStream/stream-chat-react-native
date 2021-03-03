@@ -355,6 +355,7 @@ export type Theme = {
       };
       containerInner: ViewStyle;
       deletedContainer: ViewStyle;
+      deletedContainerInner: ViewStyle;
       deletedMetaText: TextStyle;
       deletedText: MarkdownStyle;
       errorContainer: ViewStyle;
@@ -786,6 +787,7 @@ export const defaultTheme: Theme = {
       },
       containerInner: {},
       deletedContainer: {},
+      deletedContainerInner: {},
       deletedMetaText: {
         paddingHorizontal: 10,
       },

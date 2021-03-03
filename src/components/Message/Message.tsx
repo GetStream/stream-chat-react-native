@@ -789,11 +789,26 @@ const MessageWithContext = <
       : {
           action: async () => {
             setOverlay('none');
+            const retryMessage = { ...message };
+            const reserved = [
+              'config',
+              'cid',
+              'created_by',
+              'id',
+              'member_count',
+              'type',
+              'created_at',
+              'updated_at',
+              'last_message_at',
+            ];
+            reserved.forEach((key) => {
+              delete retryMessage[key];
+            });
             if (handleRetry) {
-              handleRetry(message);
+              handleRetry(retryMessage);
             }
             await retrySendMessage({
-              ...message,
+              ...retryMessage,
               updated_at: undefined,
             } as MessageResponse<At, Ch, Co, Me, Re, Us>);
           },
@@ -941,8 +956,8 @@ const MessageWithContext = <
     images: attachments.images,
     isMyMessage,
     lastGroupMessage:
-      forwardedGroupStyles[0] === 'single' ||
-      forwardedGroupStyles[0] === 'bottom',
+      forwardedGroupStyles?.[0] === 'single' ||
+      forwardedGroupStyles?.[0] === 'bottom',
     lastReceivedId,
     message,
     messageContentOrder,
