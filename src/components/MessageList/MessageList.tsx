@@ -692,6 +692,10 @@ const MessageListWithContext = <
       closePicker();
     }
   };
+  const onScrollBeginDrag = () =>
+    !hasMoved && selectedPicker && setHasMoved(true);
+  const onScrollEndDrag = () =>
+    hasMoved && selectedPicker && setHasMoved(false);
 
   if (!FlatList) return null;
 
@@ -735,8 +739,8 @@ const MessageListWithContext = <
         }}
         onEndReached={threadList ? loadMoreThread : loadMore}
         onScroll={handleScroll}
-        onScrollBeginDrag={() => setHasMoved(true)}
-        onScrollEndDrag={() => setHasMoved(false)}
+        onScrollBeginDrag={onScrollBeginDrag}
+        onScrollEndDrag={onScrollEndDrag}
         onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={onViewableItemsChanged.current}
         ref={(ref) => {

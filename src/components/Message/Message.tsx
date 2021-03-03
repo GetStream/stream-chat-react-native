@@ -51,6 +51,7 @@ import {
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import {
   MessagesContextValue,
+  MessagesProvider,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
@@ -141,6 +142,8 @@ export type MessagePropsWithContext<
   | 'isAdmin'
   | 'isModerator'
   | 'isOwner'
+  | 'members'
+  | 'readEventsEnabled'
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
@@ -295,6 +298,7 @@ const MessageWithContext = <
     isModerator,
     isOwner,
     lastReceivedId,
+    members,
     message,
     messageActions: messageActionsProp,
     messageContentOrder: messageContentOrderProp,
@@ -310,6 +314,7 @@ const MessageWithContext = <
     OverlayReactionList,
     preventPress,
     reactionsEnabled,
+    readEventsEnabled,
     removeMessage,
     repliesEnabled,
     reply: replyProp,
@@ -949,6 +954,8 @@ const MessageWithContext = <
     alignment,
     animatedLongPress,
     canModifyMessage,
+    channel,
+    disabled,
     files: attachments.files,
     groupStyles: forwardedGroupStyles,
     handleAction,
@@ -959,6 +966,7 @@ const MessageWithContext = <
       forwardedGroupStyles?.[0] === 'single' ||
       forwardedGroupStyles?.[0] === 'bottom',
     lastReceivedId,
+    members,
     message,
     messageContentOrder,
     onLongPress: animatedLongPress
@@ -981,6 +989,7 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
+    readEventsEnabled,
     showAvatar,
     showMessageOverlay,
     showMessageStatus:
@@ -1063,9 +1072,18 @@ const MessageWithContext = <
                 targetedStyle,
               ]}
             />
-            <MessageProvider value={messageContext}>
-              <MessageSimple />
-            </MessageProvider>
+            {/**
+             * MessagesProvider is here to prevent and issue where FlatList
+             * and context re-rendering causes memoization to be skipped.
+             * We will separate messages to another context and keep the
+             * components currently in the same context apart to remove
+             * the need for this in a future PR.
+             */}
+            <MessagesProvider value={messagesContext}>
+              <MessageProvider value={messageContext}>
+                <MessageSimple />
+              </MessageProvider>
+            </MessagesProvider>
           </Animated.View>
         </TapGestureHandler>
       </Animated.View>
@@ -1221,6 +1239,8 @@ export const Message = <
     isAdmin,
     isModerator,
     isOwner,
+    members,
+    readEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
@@ -1242,8 +1262,10 @@ export const Message = <
         isAdmin,
         isModerator,
         isOwner,
+        members,
         messagesContext,
         openThread,
+        readEventsEnabled,
         setData,
         setOverlay,
         t,

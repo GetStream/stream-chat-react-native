@@ -10,10 +10,6 @@ import merge from 'lodash/merge';
 import { MessageTextContainer } from './MessageTextContainer';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
-import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -83,26 +79,24 @@ export type MessageContentPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Pick<
-  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'disabled' | 'members'
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'alignment'
+  | 'disabled'
+  | 'groupStyles'
+  | 'hasReactions'
+  | 'isMyMessage'
+  | 'lastGroupMessage'
+  | 'members'
+  | 'message'
+  | 'messageContentOrder'
+  | 'onLongPress'
+  | 'onlyEmojis'
+  | 'onPress'
+  | 'otherAttachments'
+  | 'preventPress'
+  | 'showMessageStatus'
+  | 'threadList'
 > &
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'alignment'
-    | 'groupStyles'
-    | 'hasReactions'
-    | 'isMyMessage'
-    | 'lastGroupMessage'
-    | 'message'
-    | 'messageContentOrder'
-    | 'onLongPress'
-    | 'onlyEmojis'
-    | 'onPress'
-    | 'otherAttachments'
-    | 'preventPress'
-    | 'showMessageStatus'
-    | 'threadList'
-  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTouchableProps'
@@ -580,13 +574,14 @@ export const MessageContent = <
 >(
   props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled, members } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     alignment,
+    disabled,
     groupStyles,
     hasReactions,
     isMyMessage,
     lastGroupMessage,
+    members,
     message,
     messageContentOrder,
     onLongPress,

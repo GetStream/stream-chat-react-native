@@ -63,7 +63,6 @@ export type MessageTextContainerPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'markdownRules' | 'MessageText'
   > & {
-    theme: { theme: Theme };
     markdownStyles?: MarkdownStyle;
     styles?: Partial<{
       textContainer: StyleProp<ViewStyle>;
@@ -81,6 +80,8 @@ const MessageTextContainerWithContext = <
 >(
   props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const theme = useTheme();
+
   const {
     markdownRules,
     markdownStyles: markdownStylesProp = {},
@@ -89,7 +90,6 @@ const MessageTextContainerWithContext = <
     onLongPress,
     onlyEmojis,
     styles: stylesProp = {},
-    theme,
   } = props;
 
   const {
@@ -210,7 +210,6 @@ export const MessageTextContainer = <
     Re,
     Us
   >();
-  const theme = useTheme();
 
   return (
     <MemoizedMessageTextContainer
@@ -220,7 +219,6 @@ export const MessageTextContainer = <
         MessageText,
         onLongPress,
         onlyEmojis,
-        theme,
       }}
       {...props}
     />

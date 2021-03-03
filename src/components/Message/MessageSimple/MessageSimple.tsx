@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
-import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -41,11 +37,10 @@ export type MessageSimplePropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'groupStyles' | 'hasReactions' | 'message'
-  > &
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
+> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'MessageAvatar' | 'MessageContent' | 'ReactionList'
@@ -217,16 +212,13 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { alignment, groupStyles, hasReactions, message } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    alignment,
+    channel,
+    groupStyles,
+    hasReactions,
+    message,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageAvatar, MessageContent, ReactionList } = useMessagesContext<
     At,
     Ch,
