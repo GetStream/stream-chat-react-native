@@ -4,10 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
 
 import {
-  ChannelContextValue,
-  useChannelContext,
-} from '../../../contexts/channelContext/ChannelContext';
-import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -51,9 +47,8 @@ export type MessageStatusPropsWithContext<
   Us extends DefaultUserType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'threadList'
-> &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'readEventsEnabled'>;
+  'message' | 'readEventsEnabled' | 'threadList'
+>;
 
 const MessageStatusWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -191,8 +186,7 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { readEventsEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { message, threadList } = useMessageContext<
+  const { message, readEventsEnabled, threadList } = useMessageContext<
     At,
     Ch,
     Co,
