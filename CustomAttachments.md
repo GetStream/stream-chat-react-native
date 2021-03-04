@@ -97,7 +97,7 @@ Lets build an example of location sharing option in the app:
 
 <img align="right" src="https://user-images.githubusercontent.com/11586388/109648367-d40fa400-7b5a-11eb-8589-d56293b25140.png" alt="IMAGE ALT TEXT HERE" width="320" border="1" style="float: right;" />
 
-- Show a "Share Location" button next to input box. Channel component accepts a prop `InputOptions`, to add some custom buttons next to input box.
+- Show a "Share Location" button next to input box. Channel component accepts a prop `InputButtons`, to add some custom buttons next to input box.
 - When user presses this button, it should fetch the current location coordinates of user, and send a message on channel as following:
 	```js
   const messageWithLocation = {
@@ -245,7 +245,7 @@ const ShareLocationIcon = (props) => (
 );
 
 // UI component to add Share Location button next to input box.
-const InputOptions = () => {
+const InputButtons = () => {
   const {channel: currentChannel} = useChannelContext();
 
   return (
@@ -269,7 +269,7 @@ const ChannelScreen = () => {
             channel={channel}
             keyboardVerticalOffset={0}
             Card={LocationCard}
-            InputOptions={InputOptions}>
+            InputButtons={InputButtons}>
             <View style={StyleSheet.absoluteFill}>
               <MessageList />
               <MessageInput />
