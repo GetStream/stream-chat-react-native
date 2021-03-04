@@ -266,6 +266,7 @@ const GalleryWithContext = <
                     {
                       borderBottomLeftRadius:
                         (images.length === 1 ||
+                          (images.length === 2 && rowIndex === 0) ||
                           (images.length === 3 &&
                             colIndex === 0 &&
                             rowIndex === 0) ||
