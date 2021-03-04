@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatListProps,
   FlatList as FlatListType,
   Platform,
@@ -64,12 +63,12 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import {
+  InlineLoadingIndicator,
+  InlineLoadingIndicatorProps,
+} from './InlineLoadingIndicator';
 
 const styles = StyleSheet.create({
-  activityIndicatorContainer: {
-    padding: 10,
-    width: '100%',
-  },
   container: {
     alignItems: 'center',
     flex: 1,
@@ -180,19 +179,23 @@ type MessageListPropsWithContext<
       FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
-     * UI component for footer of message list. By default message list doesn't have any footer.
+     * UI component for footer of message list. By default message list will use `InlineLoadingIndicator`
+     * as FooterComponent. You have access to prop `loadingMore` on this component,
+     * if you want to implement your own inline loading indicator.
+     *
      * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header by default if inverted is true or defaulted
-     *
      */
-    FooterComponent?: React.ReactElement;
+    FooterComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
     /**
-     * UI component for header of message list. By default message list doesn't have any header.
+     * UI component for header of message list. By default message list will use `InlineLoadingIndicator`
+     * as HeaderComponent. You have access to prop `loadingMore` on this component,
+     * if you want to implement your own inline loading indicator.
+     *
      * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header if inverted is false
-     *
      */
-    HeaderComponent?: React.ReactElement;
+    HeaderComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
@@ -256,8 +259,8 @@ const MessageListWithContext = <
     disableTypingIndicator,
     EmptyStateIndicator,
     FlatList,
-    FooterComponent,
-    HeaderComponent,
+    FooterComponent = InlineLoadingIndicator,
+    HeaderComponent = InlineLoadingIndicator,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     inverted = true,
@@ -297,7 +300,7 @@ const MessageListWithContext = <
   const { theme } = useTheme();
 
   const {
-    colors: { accent_blue, white_snow },
+    colors: { white_snow },
     messageList: { container, listContainer },
   } = theme;
 
@@ -846,28 +849,15 @@ const MessageListWithContext = <
             )}
           </View>
         }
-        ListFooterComponent={() =>
-          FooterComponent ? (
-            FooterComponent
-          ) : onEndReachedInProgress ? (
-            <View style={[styles.activityIndicatorContainer]}>
-              <ActivityIndicator color={accent_blue} size='small' />
-            </View>
-          ) : null
-        }
-        // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
-        ListHeaderComponent={() =>
-          HeaderComponent ? (
-            HeaderComponent
-          ) : onStartReachedInProgress ? (
-            <View style={[styles.activityIndicatorContainer]}>
-              <ActivityIndicator color={accent_blue} size='small' />
-            </View>
-          ) : null
-        }
+        ListFooterComponent={() => (
+          <FooterComponent loadingMore={onEndReachedInProgress} />
+        )}
+        ListHeaderComponent={() => (
+          <HeaderComponent loadingMore={onStartReachedInProgress} />
+        )}
         maintainVisibleContentPosition={{
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
-          minIndexForVisible: 0,
+          minIndexForVisible: 1,
         }}
         onScroll={handleScroll}
         onScrollBeginDrag={onScrollBeginDrag}
