@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 1,
   },
   moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
 });

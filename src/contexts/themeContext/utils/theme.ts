@@ -815,11 +815,7 @@ export const defaultTheme: Theme = {
         height: 16,
         width: 16,
       },
-      markdown: {
-        autolink: {
-          textDecorationLine: 'underline',
-        },
-      },
+      markdown: {},
       messageUser: {
         fontSize: 12,
         fontWeight: '700',

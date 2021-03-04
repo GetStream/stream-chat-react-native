@@ -845,11 +845,13 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: error
-        ? messageActionsProp || [retry, editMessage, deleteMessage]
+      messageActions: messageActionsProp
+        ? messageActionsProp
+        : error
+        ? [retry, editMessage, deleteMessage]
         : messageReactions
         ? undefined
-        : messageActionsProp || canModifyMessage
+        : canModifyMessage
         ? isThreadMessage
           ? message.text
             ? [editMessage, copyMessage, flagMessage, deleteMessage]

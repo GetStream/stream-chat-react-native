@@ -70,9 +70,11 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 12,
+    marginHorizontal: 8,
   },
   title: {
     fontSize: 12,
+    marginHorizontal: 8,
   },
 });
 

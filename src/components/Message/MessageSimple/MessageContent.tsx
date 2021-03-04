@@ -284,6 +284,9 @@ export const MessageContentWithContext = <
       ? transparent
       : grey_gainsboro;
 
+  const repliesCurveColor =
+    isMyMessage && !error ? backgroundColor : grey_whisper;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -322,7 +325,7 @@ export const MessageContentWithContext = <
             style={[
               styles.replyBorder,
               {
-                borderColor: grey_whisper,
+                borderColor: repliesCurveColor,
                 height: borderRadiusL,
                 left: alignment === 'left' ? 0 : undefined,
                 right: alignment === 'right' ? 0 : undefined,
@@ -408,7 +411,12 @@ export const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {repliesEnabled && <MessageReplies noBorder={noBorder} />}
+      {repliesEnabled && (
+        <MessageReplies
+          noBorder={noBorder}
+          repliesCurveColor={repliesCurveColor}
+        />
+      )}
       <MessageFooter
         alignment={alignment}
         formattedDate={getDateText(formatDate)}
