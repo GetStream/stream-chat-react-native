@@ -588,6 +588,29 @@ const MessageListWithContext = <
     return null;
   };
 
+  //
+  // We are keeping full control on message pagination, and not relying on react-native for it.
+  // The reasons being,
+  // 1. FlatList doesn't support onStartReached prop
+  // 2. `onEndReached` function prop available on react-native, gets executed
+  //    once per content length (and thats actually a nice optimization strategy).
+  //    But it also means, we always need to priotizie onEndReached above our
+  //    logic for `onStartReached`.
+  // 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
+  //    Its a factor of content length (which is necessary for "real" infinite scroll). But on
+  //    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
+  //    too early during scroll, which we don't really need. So we are going to instead
+  //    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
+  //
+  // We are still gonna keep the optimization, which react-native does - only call onEndReached
+  // once per content length.
+  //
+
+  /**
+   * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.
+   * 2. Ensures that we call `loadMoreRecent`, once per content length
+   * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
   const maybeCallOnStartReached = () => {
     // If onStartReached has already been called for given data length, then ignore.
     if (
@@ -610,17 +633,18 @@ const MessageListWithContext = <
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
       onEndReachedInPromise.current.finally(() => {
-        onStartReachedInPromise.current = (loadMoreRecent() as Promise<void>).then(
-          callback,
-        );
+        onStartReachedInPromise.current = loadMoreRecent().then(callback);
       });
     } else {
-      onStartReachedInPromise.current = (loadMoreRecent() as Promise<void>).then(
-        callback,
-      );
+      onStartReachedInPromise.current = loadMoreRecent().then(callback);
     }
   };
 
+  /**
+   * 1. Makes a call to `loadMore` function, which queries more older messages.
+   * 2. Ensures that we call `loadMore`, once per content length
+   * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
   const maybeCallOnEndReached = () => {
     // If onEndReached has already been called for given messageList length, then ignore.
     if (
@@ -647,13 +671,11 @@ const MessageListWithContext = <
       onStartReachedInPromise.current.finally(() => {
         onEndReachedInPromise.current = (threadList
           ? loadMoreThread()
-          : (loadMore() as Promise<void>)
+          : loadMore()
         ).then(callback);
       });
     } else {
-      onEndReachedInPromise.current = (loadMore() as Promise<void>).then(
-        callback,
-      );
+      onEndReachedInPromise.current = loadMore().then(callback);
     }
   };
 

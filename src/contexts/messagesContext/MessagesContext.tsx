@@ -136,8 +136,8 @@ export type MessagesContextValue<
   InlineUnreadIndicator: React.ComponentType;
   loadingMore: boolean;
   loadingMoreRecent: boolean;
-  loadMore: () => void | Promise<void>;
-  loadMoreRecent: () => void | Promise<void>;
+  loadMore: () => Promise<void>;
+  loadMoreRecent: () => Promise<void>;
   Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageAvatar
