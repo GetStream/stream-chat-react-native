@@ -50,7 +50,6 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  attachButtonContainer: { paddingRight: 10 },
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -141,7 +140,7 @@ type MessageInputPropsWithContext<
     | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
-    | 'InputOptions'
+    | 'InputButtons'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'MoreOptionsButton'
@@ -185,28 +184,24 @@ export const MessageInputWithContext = <
     appendText,
     asyncIds,
     asyncUploads,
-    AttachButton,
     clearEditingState,
     clearQuotedMessageState,
-    CommandsButton,
     componentType,
     disabled,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasCommands,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
-    InputOptions,
+    InputButtons,
     isValidMessage,
     maxNumberOfFiles,
     members,
-    MoreOptionsButton,
     numberOfUploads,
     pickFile,
     quotedMessage,
@@ -217,15 +212,12 @@ export const MessageInputWithContext = <
     sending,
     sendMessageAsync,
     setGiphyActive,
-    setShowMoreOptions,
-    showMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     suggestionsTitle,
     t,
     threadList,
     uploadNewImage,
-    uploadsEnabled,
     watchers,
   } = props;
 
@@ -244,10 +236,8 @@ export const MessageInputWithContext = <
         white_smoke,
       },
       messageInput: {
-        attachButtonContainer,
         attachmentSelectionBar,
         autoCompleteInputContainer,
-        commandsButtonContainer,
         composerContainer,
         container,
         editingBoxHeader,
@@ -400,18 +390,35 @@ export const MessageInputWithContext = <
     return result;
   };
 
-  const handleOnPress = () => {
+  const openAttachmentPicker = () => {
+    if (hasImagePicker && !fileUploads.length) {
+      Keyboard.dismiss();
+      openPicker();
+      setSelectedPicker('images');
+    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+      pickFile();
+    }
+  };
+
+  const closeAttachmentPicker = () => {
     if (selectedPicker) {
       setSelectedPicker(undefined);
       closePicker();
+    }
+  };
+
+  const toggleAttachmentPicker = () => {
+    if (selectedPicker) {
+      closeAttachmentPicker();
     } else {
-      if (hasImagePicker && !fileUploads.length) {
-        Keyboard.dismiss();
-        openPicker();
-        setSelectedPicker('images');
-      } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
-        pickFile();
-      }
+      openAttachmentPicker();
+    }
+  };
+
+  const openCommandsPicker = () => {
+    appendText('/');
+    if (inputBoxRef.current) {
+      inputBoxRef.current.focus();
     }
   };
 
@@ -475,52 +482,20 @@ export const MessageInputWithContext = <
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
               getUsers={getUsers}
-              handleOnPress={handleOnPress}
+              handleOnPress={toggleAttachmentPicker}
             />
           ) : (
             <>
-              {!giphyActive && (
-                <View style={[styles.optionsContainer, optionsContainer]}>
-                  {!showMoreOptions &&
-                  (hasImagePicker || hasFilePicker) &&
-                  hasCommands ? (
-                    <MoreOptionsButton
-                      handleOnPress={() => setShowMoreOptions(true)}
-                    />
-                  ) : (
-                    <>
-                      {InputOptions && (
-                        <InputOptions openAttachmentPicker={handleOnPress} />
-                      )}
-                      {(hasImagePicker || hasFilePicker) &&
-                        uploadsEnabled !== false && (
-                          <View
-                            style={[
-                              hasCommands
-                                ? styles.attachButtonContainer
-                                : undefined,
-                              attachButtonContainer,
-                            ]}
-                          >
-                            <AttachButton handleOnPress={handleOnPress} />
-                          </View>
-                        )}
-                      {hasCommands && (
-                        <View style={commandsButtonContainer}>
-                          <CommandsButton
-                            handleOnPress={() => {
-                              appendText('/');
-                              if (inputBoxRef.current) {
-                                inputBoxRef.current.focus();
-                              }
-                            }}
-                          />
-                        </View>
-                      )}
-                    </>
-                  )}
-                </View>
-              )}
+              <View style={[styles.optionsContainer, optionsContainer]}>
+                {InputButtons && (
+                  <InputButtons
+                    closeAttachmentPicker={closeAttachmentPicker}
+                    openAttachmentPicker={openAttachmentPicker}
+                    openCommandsPicker={openCommandsPicker}
+                    toggleAttachmentPicker={toggleAttachmentPicker}
+                  />
+                )}
+              </View>
               <View
                 style={[
                   styles.inputBoxContainer,
@@ -799,7 +774,7 @@ export const MessageInput = <
     imageUploads,
     Input,
     inputBoxRef,
-    InputOptions,
+    InputButtons,
     isValidMessage,
     maxNumberOfFiles,
     MoreOptionsButton,
@@ -853,7 +828,7 @@ export const MessageInput = <
         imageUploads,
         Input,
         inputBoxRef,
-        InputOptions,
+        InputButtons,
         isValidMessage,
         maxNumberOfFiles,
         members,

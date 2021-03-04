@@ -58,6 +58,7 @@ import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButto
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
+import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
@@ -433,7 +434,7 @@ const ChannelWithContext = <
     initialValue,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
-    InputOptions,
+    InputButtons = InputButtonsDefault,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -1419,7 +1420,7 @@ const ChannelWithContext = <
     ImageUploadPreview,
     initialValue,
     Input,
-    InputOptions,
+    InputButtons,
     maxNumberOfFiles,
     MoreOptionsButton,
     numberOfLines,

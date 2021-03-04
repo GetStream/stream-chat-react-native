@@ -46,6 +46,7 @@ import type { AttachButtonProps } from '../../components/MessageInput/AttachButt
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
+import type { InputButtonsProps } from '../..//components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
@@ -358,9 +359,9 @@ export type InputMessageInputContextValue<
       handleOnPress: () => void | Promise<void>;
     }
   >;
-  InputOptions?: React.ComponentType<{
-    openAttachmentPicker: () => void;
-  }>;
+  InputButtons?: React.ComponentType<
+    InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
