@@ -796,15 +796,15 @@ const MessageWithContext = <
             setOverlay('none');
             const retryMessage = { ...message };
             const reserved = [
-              'config',
               'cid',
+              'config',
+              'created_at',
               'created_by',
               'id',
+              'last_message_at',
               'member_count',
               'type',
-              'created_at',
               'updated_at',
-              'last_message_at',
             ];
             reserved.forEach((key) => {
               delete retryMessage[key];
