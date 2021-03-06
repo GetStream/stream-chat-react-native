@@ -11,6 +11,13 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+
+/**
+ * Disconnect the websocket connection when app goes to background,
+ * and reconnect when app comes to foreground.
+ * We do this to make sure, user receives push notifications when app is in the background.
+ * You can't receive push notification until you have active websocket connection.
+ */
 export const useAppStateListener = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -37,15 +44,12 @@ export const useAppStateListener = <
       appState.current.match(/inactive|background/) &&
       nextAppState === 'active'
     ) {
-      // eslint-disable-next-line no-underscore-dangle
-      await client._setupConnection();
-    } else if (nextAppState.match(/inactive|background/)) {
-      await client.wsConnection?.disconnect();
-
-      for (const cid in client.activeChannels) {
-        const channel = client.activeChannels[cid];
-        channel.state.setIsUpToDate(false);
-      }
+      await client.reconnectWebsocket();
+    } else if (
+      appState.current.match(/active|inactive/) &&
+      nextAppState === 'background'
+    ) {
+      await client.disconnectWebsocket();
     }
 
     appState.current = nextAppState;

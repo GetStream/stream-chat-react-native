@@ -168,6 +168,7 @@ const ChatWithContext = <
   useEffect(() => {
     if (client.setUserAgent) {
       client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+      // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
     }
   }, []);
