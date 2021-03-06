@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   message: {
     flexShrink: 1,
     fontSize: 12,
-    fontWeight: '400',
   },
 });
 

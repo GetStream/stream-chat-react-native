@@ -812,10 +812,9 @@ const MessageWithContext = <
             if (handleRetry) {
               handleRetry(retryMessage);
             }
-            await retrySendMessage({
-              ...retryMessage,
-              updated_at: undefined,
-            } as MessageResponse<At, Ch, Co, Me, Re, Us>);
+            await retrySendMessage(
+              retryMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
+            );
           },
           icon: <SendUp pathFill={accent_blue} />,
           title: t('Resend'),
