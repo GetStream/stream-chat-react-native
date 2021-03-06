@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ColorValue,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   MessageContextValue,
@@ -76,7 +82,7 @@ export type MessageRepliesPropsWithContext<
   > &
   Pick<TranslationContextValue, 't'> & {
     noBorder?: boolean;
-    repliesCurveColor?: string;
+    repliesCurveColor?: ColorValue;
   };
 
 const MessageRepliesWithContext = <
