@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -25,7 +25,6 @@ import type {
   DrawerNavigatorParamList,
   StackNavigatorParamList,
 } from '../types';
-import { useMemo } from 'react';
 
 const styles = StyleSheet.create({
   backButton: {
