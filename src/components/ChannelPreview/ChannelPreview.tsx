@@ -77,6 +77,7 @@ const ChannelPreviewWithContext = <
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
+
   useEffect(() => {
     if (
       channelLastMessage &&
@@ -84,6 +85,12 @@ const ChannelPreviewWithContext = <
         channelLastMessage.updated_at !== lastMessage.updated_at)
     ) {
       setLastMessage(channelLastMessage);
+    }
+
+    const newUnreadCount = channel.countUnread();
+
+    if (newUnreadCount !== unread) {
+      setUnread(newUnreadCount);
     }
   }, [channelLastMessageString]);
 

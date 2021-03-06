@@ -36,6 +36,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { useAppStateListener } from './hooks/useAppStateListener';
 
 export type ChatProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -162,9 +163,12 @@ const ChatWithContext = <
     Us
   >(client);
 
+  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(client);
+
   useEffect(() => {
     if (client.setUserAgent) {
       client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+      client.recoverStateOnReconnect = false;
     }
   }, []);
 
