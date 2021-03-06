@@ -20,6 +20,7 @@ registerNativeHandlers({
   compressImage: () => null,
   deleteFile: () => null,
   FlatList: () => null,
+  getLocalAssetUri: () => null,
   getPhotos: () => null,
   NetInfo: {
     addEventListener: () => {},

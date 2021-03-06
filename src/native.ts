@@ -34,11 +34,15 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
+type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
+export let getLocalAssetUri: GetLocalAssetUri = fail;
+
 export type Asset = {
   height: number;
   source: 'camera' | 'picker';
   uri: string;
   width: number;
+  id?: string;
 };
 type GetPhotos = ({
   after,
@@ -127,6 +131,7 @@ type Handlers = {
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
+  getLocalAssetUri?: GetLocalAssetUri;
   getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
@@ -154,6 +159,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
   }
   if (handlers.NetInfo) {
     NetInfo = handlers.NetInfo;
+  }
+
+  if (handlers.getLocalAssetUri) {
+    getLocalAssetUri = handlers.getLocalAssetUri;
   }
 
   if (handlers.getPhotos) {
