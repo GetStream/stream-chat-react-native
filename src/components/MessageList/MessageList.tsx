@@ -425,7 +425,12 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
+    if (
+      channel &&
+      channel.countUnread() > 0 &&
+      (channel.countUnread() <= scrollToFirstUnreadThreshold ||
+        !initialScrollToFirstUnreadMessage)
+    ) {
       channel.markRead();
     }
   }, []);
