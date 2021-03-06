@@ -25,6 +25,7 @@ import type {
   DrawerNavigatorParamList,
   StackNavigatorParamList,
 } from '../types';
+import { useMemo } from 'react';
 
 const styles = StyleSheet.create({
   backButton: {
@@ -137,6 +138,18 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     }
   }, [insets.top]);
 
+  const rightContent = useMemo(() => {
+    return RightContent && 
+      <View style={styles.rightContainer}>
+        <RightContent />
+      </View>
+  }, []);
+
+  const leftContent = useMemo(() => {
+    return LeftContent && 
+        <LeftContent />
+  }, []);
+
   return (
     <View
       style={[
@@ -159,14 +172,13 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
         ]}
       >
         <View style={styles.leftContainer}>
-          {LeftContent ? (
-            <LeftContent />
-          ) : (
+          {
+            leftContent || 
             <BackButton
               onBack={onBack}
               showUnreadCountBadge={showUnreadCountBadge}
             />
-          )}
+          }
         </View>
         <View style={styles.centerContainer}>
           <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>
@@ -204,9 +216,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
             )
           )}
         </View>
-        <View style={styles.rightContainer}>
-          <RightContent />
-        </View>
+        {rightContent}
       </View>
     </View>
   );
