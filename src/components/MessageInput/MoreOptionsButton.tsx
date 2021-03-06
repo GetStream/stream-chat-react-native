@@ -57,6 +57,7 @@ const MoreOptionsButtonWithContext = <
   return (
     <TouchableOpacity
       disabled={disabled}
+      hitSlop={{ bottom: 15, left: 15, right: 15, top: 15 }}
       onPress={handleOnPress}
       style={[moreOptionsButton]}
       testID='more-options-button'

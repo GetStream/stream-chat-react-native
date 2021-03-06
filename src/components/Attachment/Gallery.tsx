@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 1,
   },
   moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
 });
@@ -201,7 +202,7 @@ const GalleryWithContext = <
       return returnArray;
     }, [] as { height: number | string; url: string }[][]);
 
-  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
+  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
   return (
     <View
@@ -265,6 +266,7 @@ const GalleryWithContext = <
                     {
                       borderBottomLeftRadius:
                         (images.length === 1 ||
+                          (images.length === 2 && rowIndex === 0) ||
                           (images.length === 3 &&
                             colIndex === 0 &&
                             rowIndex === 0) ||
@@ -294,7 +296,8 @@ const GalleryWithContext = <
                           rowIndex === 0) ||
                         (images.length === 3 &&
                           colIndex === 0 &&
-                          rowIndex === 1)
+                          rowIndex === 1) ||
+                        (images.length === 2 && rowIndex === 1)
                           ? 14
                           : 0,
                     },

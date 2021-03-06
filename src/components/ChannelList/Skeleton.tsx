@@ -35,14 +35,14 @@ export const Skeleton: React.FC = () => {
   const {
     theme: {
       channelListSkeleton: {
-        animationTime = 1000,
+        animationTime = 1800,
         background,
         container,
         gradientStart,
         gradientStop,
         height = 64,
       },
-      colors: { black, border, white_snow },
+      colors: { border, grey_gainsboro, white_snow },
     },
   } = useTheme();
 
@@ -144,8 +144,9 @@ export const Skeleton: React.FC = () => {
               y1={0}
               y2={0}
             >
-              <Stop offset={1} stopColor={black} {...gradientStart} />
-              <Stop offset={0} stopColor={black} {...gradientStop} />
+              <Stop offset={1} stopColor={grey_gainsboro} {...gradientStart} />
+              <Stop offset={0.5} stopColor={grey_gainsboro} {...gradientStop} />
+              <Stop offset={0} stopColor={grey_gainsboro} {...gradientStart} />
             </LinearGradient>
           </Defs>
         </Svg>

@@ -37,6 +37,9 @@ const defaultMarkdownStyles: MarkdownStyle = {
     padding: 3,
     paddingHorizontal: 5,
   },
+  mentions: {
+    fontWeight: '700',
+  },
   // unfortunately marginVertical doesn't override the defaults for these within the 3rd party lib
   paragraph: {
     marginBottom: 8,
@@ -74,6 +77,7 @@ export type RenderTextParams<
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   onLink?: (url: string) => Promise<void>;
+  onlyEmojis?: boolean;
 };
 
 export const renderText = <
@@ -94,6 +98,7 @@ export const renderText = <
     message,
     onLink: onLinkParams,
     onLongPress,
+    onlyEmojis,
   } = params;
 
   // take the @ mentions and turn them into markdown?
@@ -210,6 +215,7 @@ export const renderText = <
 
   return (
     <Markdown
+      key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}`}
       onLink={onLink}
       rules={{
         ...customRules,

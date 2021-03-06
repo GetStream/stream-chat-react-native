@@ -63,6 +63,7 @@ export const CommandsButtonWithContext = <
   return (
     <TouchableOpacity
       disabled={disabled}
+      hitSlop={{ bottom: 15, left: 5, right: 15, top: 15 }}
       onPress={handleOnPress}
       style={[commandsButton]}
       testID='commands-button'

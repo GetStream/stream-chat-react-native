@@ -84,6 +84,7 @@ export type MessageContentPropsWithContext<
   | 'disabled'
   | 'groupStyles'
   | 'hasReactions'
+  | 'isMyMessage'
   | 'lastGroupMessage'
   | 'members'
   | 'message'
@@ -139,6 +140,7 @@ export const MessageContentWithContext = <
     Gallery,
     groupStyles,
     hasReactions,
+    isMyMessage,
     lastGroupMessage,
     members,
     message,
@@ -176,6 +178,7 @@ export const MessageContentWithContext = <
           container: { borderRadiusL, borderRadiusS, ...container },
           containerInner,
           deletedContainer,
+          deletedContainerInner,
           deletedText,
           errorContainer,
           errorIcon,
@@ -212,6 +215,15 @@ export const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
+  const error = message.type === 'error' || message.status === 'failed';
+
+  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+
+  const hasThreadReplies = !!message?.reply_count;
+
+  const noBorder =
+    (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+
   if (message.deleted_at) {
     return (
       <View
@@ -221,10 +233,31 @@ export const MessageContentWithContext = <
           deletedContainer,
         ]}
       >
-        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-          markdownStyles={merge({ em: { color: grey } }, deletedText)}
-          message={{ ...message, text: '_Message deleted_' }}
-        />
+        <View
+          style={[
+            styles.containerInner,
+            {
+              backgroundColor: grey_whisper,
+              borderBottomLeftRadius:
+                groupStyle === 'left_bottom' || groupStyle === 'left_single'
+                  ? borderRadiusS
+                  : borderRadiusL,
+              borderBottomRightRadius:
+                groupStyle === 'right_bottom' || groupStyle === 'right_single'
+                  ? borderRadiusS
+                  : borderRadiusL,
+              borderColor: grey_whisper,
+            },
+            noBorder ? { borderWidth: 0 } : {},
+            deletedContainerInner,
+          ]}
+          testID='message-content-wrapper'
+        >
+          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+            markdownStyles={merge({ em: { color: grey } }, deletedText)}
+            message={{ ...message, text: '_Message deleted_' }}
+          />
+        </View>
         <MessageFooter
           alignment={alignment}
           formattedDate={getDateText(formatDate)}
@@ -240,14 +273,19 @@ export const MessageContentWithContext = <
     );
   }
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const backgroundColor =
+    onlyEmojis && !message.quoted_message
+      ? transparent
+      : otherAttachments.length
+      ? otherAttachments[0].type === 'giphy'
+        ? transparent
+        : blue_alice
+      : alignment === 'left' || error
+      ? transparent
+      : grey_gainsboro;
 
-  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
-
-  const hasThreadReplies = !!message?.reply_count;
-
-  const noBorder =
-    (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+  const repliesCurveColor =
+    isMyMessage && !error ? backgroundColor : grey_whisper;
 
   return (
     <TouchableOpacity
@@ -287,7 +325,7 @@ export const MessageContentWithContext = <
             style={[
               styles.replyBorder,
               {
-                borderColor: grey_whisper,
+                borderColor: repliesCurveColor,
                 height: borderRadiusL,
                 left: alignment === 'left' ? 0 : undefined,
                 right: alignment === 'right' ? 0 : undefined,
@@ -300,16 +338,7 @@ export const MessageContentWithContext = <
           style={[
             styles.containerInner,
             {
-              backgroundColor:
-                onlyEmojis && !message.quoted_message
-                  ? transparent
-                  : otherAttachments.length
-                  ? otherAttachments[0].type === 'giphy'
-                    ? transparent
-                    : blue_alice
-                  : alignment === 'left' || error
-                  ? transparent
-                  : grey_gainsboro,
+              backgroundColor,
               borderBottomLeftRadius:
                 (groupStyle === 'left_bottom' ||
                   groupStyle === 'left_single') &&
@@ -322,7 +351,8 @@ export const MessageContentWithContext = <
                 (!hasThreadReplies || threadList)
                   ? borderRadiusS
                   : borderRadiusL,
-              borderColor: grey_whisper,
+              borderColor:
+                isMyMessage && !error ? backgroundColor : grey_whisper,
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
@@ -381,7 +411,12 @@ export const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {repliesEnabled && <MessageReplies noBorder={noBorder} />}
+      {repliesEnabled && (
+        <MessageReplies
+          noBorder={noBorder}
+          repliesCurveColor={repliesCurveColor}
+        />
+      )}
       <MessageFooter
         alignment={alignment}
         formattedDate={getDateText(formatDate)}
@@ -455,7 +490,7 @@ const areEqual = <
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length &&
-    prevGroupStyles[0] === nextGroupStyles[0];
+    prevGroupStyles?.[0] === nextGroupStyles?.[0];
   if (!groupStylesEqual) return false;
 
   const messageEqual =
@@ -552,6 +587,7 @@ export const MessageContent = <
     disabled,
     groupStyles,
     hasReactions,
+    isMyMessage,
     lastGroupMessage,
     members,
     message,
@@ -592,6 +628,7 @@ export const MessageContent = <
         Gallery,
         groupStyles,
         hasReactions,
+        isMyMessage,
         lastGroupMessage,
         members,
         message,

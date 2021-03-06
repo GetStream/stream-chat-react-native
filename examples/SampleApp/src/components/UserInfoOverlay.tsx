@@ -54,18 +54,13 @@ import type {
 
 dayjs.extend(relativeTime);
 
-const avatarPresenceIndicator = {
-  cx: 6,
-  cy: 6,
-  r: 6,
-};
 const avatarSize = 64;
 
 const permissions = ['admin', 'moderator'];
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
-    right: 4,
+    right: 5,
     top: 1,
   },
   channelName: {
@@ -327,7 +322,6 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                             image={member.user?.image}
                             name={member.user?.name || member.user?.id}
                             online={member.user?.online}
-                            presenceIndicator={avatarPresenceIndicator}
                             presenceIndicatorContainerStyle={
                               styles.avatarPresenceIndicator
                             }

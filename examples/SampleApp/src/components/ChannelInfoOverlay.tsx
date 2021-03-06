@@ -45,16 +45,11 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 
 dayjs.extend(relativeTime);
 
-const avatarPresenceIndicator = {
-  cx: 6,
-  cy: 6,
-  r: 6,
-};
 const avatarSize = 64;
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
-    right: 4,
+    right: 5,
     top: 1,
   },
   channelName: {
@@ -101,7 +96,7 @@ const styles = StyleSheet.create({
   userItemContainer: { marginHorizontal: 8, width: 64 },
   userName: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingTop: 4,
     textAlign: 'center',
   },
@@ -353,7 +348,6 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                                   image={item.image}
                                   name={item.name || item.id}
                                   online={item.online}
-                                  presenceIndicator={avatarPresenceIndicator}
                                   presenceIndicatorContainerStyle={
                                     styles.avatarPresenceIndicator
                                   }
