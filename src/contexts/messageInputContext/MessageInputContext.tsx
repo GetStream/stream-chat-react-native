@@ -354,10 +354,10 @@ export type InputMessageInputContextValue<
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
-    Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> & {
-      getUsers: () => UserResponse<Us>[];
-      handleOnPress: () => void | Promise<void>;
-    }
+    Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> &
+      InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us> & {
+        getUsers: () => UserResponse<Us>[];
+      }
   >;
   InputButtons?: React.ComponentType<
     InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>

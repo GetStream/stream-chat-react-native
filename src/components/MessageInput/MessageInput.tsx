@@ -481,8 +481,11 @@ export const MessageInputWithContext = <
           {Input ? (
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
+              closeAttachmentPicker={closeAttachmentPicker}
               getUsers={getUsers}
-              handleOnPress={toggleAttachmentPicker}
+              openAttachmentPicker={openAttachmentPicker}
+              openCommandsPicker={openCommandsPicker}
+              toggleAttachmentPicker={toggleAttachmentPicker}
             />
           ) : (
             <>
