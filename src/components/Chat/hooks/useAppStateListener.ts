@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+
 import type { StreamChat } from 'stream-chat';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

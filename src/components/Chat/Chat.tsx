@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
+import { useAppStateListener } from './hooks/useAppStateListener';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
@@ -36,7 +37,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { useAppStateListener } from './hooks/useAppStateListener';
 
 export type ChatProps<
   At extends UnknownType = DefaultAttachmentType,
