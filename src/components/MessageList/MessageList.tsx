@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatListProps,
   FlatList as FlatListType,
   Platform,
@@ -11,11 +10,15 @@ import {
 } from 'react-native';
 
 import {
+  InlineLoadingIndicator,
+  InlineLoadingIndicatorProps,
+} from './InlineLoadingIndicator';
+import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
+import {
   isMessagesWithStylesAndReadBy,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
   AttachmentPickerContextValue,
@@ -66,10 +69,6 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  activityIndicatorContainer: {
-    padding: 10,
-    width: '100%',
-  },
   container: {
     alignItems: 'center',
     flex: 1,
@@ -109,7 +108,6 @@ const keyExtractor = <
       ? item.created_at
       : item.created_at.toISOString()
     : Date.now().toString());
-
 type MessageListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -181,19 +179,23 @@ type MessageListPropsWithContext<
       FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
-     * UI component for footer of message list. By default message list doesn't have any footer.
+     * UI component for footer of message list. By default message list will use `InlineLoadingIndicator`
+     * as FooterComponent. You have access to prop `loadingMore` on this component,
+     * if you want to implement your own inline loading indicator.
+     *
      * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header by default if inverted is true or defaulted
-     *
      */
-    FooterComponent?: React.ReactElement;
+    FooterComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
     /**
-     * UI component for header of message list. By default message list doesn't have any header.
+     * UI component for header of message list. By default message list will use `InlineLoadingIndicator`
+     * as HeaderComponent. You have access to prop `loadingMore` on this component,
+     * if you want to implement your own inline loading indicator.
+     *
      * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header if inverted is false
-     *
      */
-    HeaderComponent?: React.ReactElement;
+    HeaderComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
@@ -257,8 +259,8 @@ const MessageListWithContext = <
     disableTypingIndicator,
     EmptyStateIndicator,
     FlatList,
-    FooterComponent,
-    HeaderComponent,
+    FooterComponent = InlineLoadingIndicator,
+    HeaderComponent = InlineLoadingIndicator,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     inverted = true,
@@ -266,7 +268,6 @@ const MessageListWithContext = <
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
-    loadingMoreRecent,
     loadMore,
     loadMoreRecent,
     loadMoreThread,
@@ -299,7 +300,7 @@ const MessageListWithContext = <
   const { theme } = useTheme();
 
   const {
-    colors: { accent_blue, white_snow },
+    colors: { white_snow },
     messageList: { container, listContainer },
   } = theme;
 
@@ -315,9 +316,20 @@ const MessageListWithContext = <
   });
   const messageListLength = messageList.length;
 
-  const [autoscrollToTopThreshold, setAutoscrollToTopThreshold] = useState(
-    channel?.state.isUpToDate ? 10 : undefined,
+  const [autoscrollToTop, setAutoscrollToTop] = useState(false);
+
+  const [onStartReachedInProgress, setOnStartReachedInProgress] = useState(
+    false,
   );
+  const [onEndReachedInProgress, setOnEndReachedInProgress] = useState(false);
+
+  // We want to call onEndReached and onStartReached only once, per content length.
+  // We keep track of calls to these functions per content length, with following trakcers.
+  const onStartReachedTracker = useRef<Record<number, boolean>>({});
+  const onEndReachedTracker = useRef<Record<number, boolean>>({});
+
+  const onStartReachedInPromise = useRef<Promise<void> | null>(null);
+  const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
   const flatListRef = useRef<FlatListType<
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
@@ -364,7 +376,6 @@ const MessageListWithContext = <
       initialScrollSet.current = true;
       return;
     }
-
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
       if (flatListRef.current) {
         flatListRef.current.scrollToEnd();
@@ -372,7 +383,21 @@ const MessageListWithContext = <
       setTimeout(() => {
         initialScrollSet.current = true;
       }, 500);
-    } else {
+    } else if (
+      // On android, you can't overscroll. So we are going to scroll up just a little
+      // which gives user some offset to scroll down and trigger onStartReached.
+      Platform.OS === 'android' &&
+      !channel?.state.isUpToDate &&
+      flatListRef.current
+    ) {
+      flatListRef.current.scrollToOffset({
+        animated: true,
+        offset: 50,
+      });
+      setTimeout(() => {
+        initialScrollSet.current = true;
+      }, 500);
+    } else if (!initialScrollSet.current) {
       initialScrollSet.current = true;
     }
   };
@@ -476,8 +501,11 @@ const MessageListWithContext = <
   }, [messageListLength]);
 
   useEffect(() => {
-    // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
-    setAutoscrollToTopThreshold(channel?.state.isUpToDate ? 10 : undefined);
+    if (!channel?.state.isUpToDate && autoscrollToTop) {
+      setAutoscrollToTop(false);
+    } else if (channel?.state.isUpToDate && !autoscrollToTop) {
+      setAutoscrollToTop(true);
+    }
   }, [messageListLength]);
 
   const renderItem = ({
@@ -563,6 +591,97 @@ const MessageListWithContext = <
     return null;
   };
 
+  //
+  // We are keeping full control on message pagination, and not relying on react-native for it.
+  // The reasons being,
+  // 1. FlatList doesn't support onStartReached prop
+  // 2. `onEndReached` function prop available on react-native, gets executed
+  //    once per content length (and thats actually a nice optimization strategy).
+  //    But it also means, we always need to priotizie onEndReached above our
+  //    logic for `onStartReached`.
+  // 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
+  //    Its a factor of content length (which is necessary for "real" infinite scroll). But on
+  //    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
+  //    too early during scroll, which we don't really need. So we are going to instead
+  //    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
+  //
+  // We are still gonna keep the optimization, which react-native does - only call onEndReached
+  // once per content length.
+  //
+
+  /**
+   * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.
+   * 2. Ensures that we call `loadMoreRecent`, once per content length
+   * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
+  const maybeCallOnStartReached = () => {
+    // If onStartReached has already been called for given data length, then ignore.
+    if (
+      messageList?.length &&
+      onStartReachedTracker.current[messageList.length]
+    ) {
+      return;
+    }
+
+    if (messageList?.length) {
+      onStartReachedTracker.current[messageList.length] = true;
+    }
+    setOnStartReachedInProgress(true);
+    const callback = () => {
+      onStartReachedInPromise.current = null;
+      setOnStartReachedInProgress(false);
+      return Promise.resolve();
+    };
+
+    // If onEndReached is in progress, better to wait for it to finish for smooth UX
+    if (onEndReachedInPromise.current) {
+      onEndReachedInPromise.current.finally(() => {
+        onStartReachedInPromise.current = loadMoreRecent().then(callback);
+      });
+    } else {
+      onStartReachedInPromise.current = loadMoreRecent().then(callback);
+    }
+  };
+
+  /**
+   * 1. Makes a call to `loadMore` function, which queries more older messages.
+   * 2. Ensures that we call `loadMore`, once per content length
+   * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
+   */
+  const maybeCallOnEndReached = () => {
+    // If onEndReached has already been called for given messageList length, then ignore.
+    if (
+      messageList?.length &&
+      onEndReachedTracker.current[messageList.length]
+    ) {
+      return;
+    }
+
+    if (messageList?.length) {
+      onEndReachedTracker.current[messageList.length] = true;
+    }
+    setOnEndReachedInProgress(true);
+
+    const callback = () => {
+      onEndReachedInPromise.current = null;
+      setOnEndReachedInProgress(false);
+
+      return Promise.resolve();
+    };
+
+    // If onStartReached is in progress, better to wait for it to finish for smooth UX
+    if (onStartReachedInPromise.current) {
+      onStartReachedInPromise.current.finally(() => {
+        onEndReachedInPromise.current = (threadList
+          ? loadMoreThread()
+          : loadMore()
+        ).then(callback);
+      });
+    } else {
+      onEndReachedInPromise.current = loadMore().then(callback);
+    }
+  };
+
   /**
    * Following if condition covers following cases:
    * 1. If I scroll up -> show scrollToBottom button.
@@ -575,13 +694,26 @@ const MessageListWithContext = <
       return;
     }
 
-    const y = event.nativeEvent.contentOffset.y;
+    const offset = event.nativeEvent.contentOffset.y;
+    const visibleLength = event.nativeEvent.layoutMeasurement.height;
+    const contentLength = event.nativeEvent.contentSize.height;
+    // Check if scroll has reached either start of end of list.
+    const isScrollAtStart = offset < 100;
+    const isScrollAtEnd = contentLength - visibleLength - offset < 100;
+
+    if (isScrollAtStart) {
+      maybeCallOnStartReached();
+    }
+
+    if (isScrollAtEnd) {
+      maybeCallOnEndReached();
+    }
+
     // Show scrollToBottom button once scroll position goes beyond 300.
-    const isScrollAtBottom = y <= 300;
+    const isScrollAtBottom = offset <= 300;
     const showScrollToBottomButton =
       !isScrollAtBottom || !channel?.state.isUpToDate;
-    const loadMoreRecentResults =
-      !loadingMoreRecent && isScrollAtBottom && !channel?.state.isUpToDate;
+
     const shouldMarkRead =
       !threadList &&
       isScrollAtBottom &&
@@ -590,10 +722,6 @@ const MessageListWithContext = <
 
     if (shouldMarkRead) {
       markRead();
-    }
-
-    if (loadMoreRecentResults) {
-      loadMoreRecent();
     }
 
     if (showScrollToBottomButton && !scrollToBottomButtonVisible) {
@@ -698,7 +826,6 @@ const MessageListWithContext = <
     hasMoved && selectedPicker && setHasMoved(false);
 
   if (!FlatList) return null;
-
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -722,22 +849,16 @@ const MessageListWithContext = <
             )}
           </View>
         }
-        ListFooterComponent={FooterComponent}
-        // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
-        ListHeaderComponent={() =>
-          HeaderComponent ? (
-            HeaderComponent
-          ) : Platform.OS !== 'android' && loadingMoreRecent ? (
-            <View style={[styles.activityIndicatorContainer]}>
-              <ActivityIndicator color={accent_blue} size='small' />
-            </View>
-          ) : null
-        }
+        ListFooterComponent={() => (
+          <FooterComponent loadingMore={onEndReachedInProgress} />
+        )}
+        ListHeaderComponent={() => (
+          <HeaderComponent loadingMore={onStartReachedInProgress} />
+        )}
         maintainVisibleContentPosition={{
-          autoscrollToTopThreshold,
+          autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
         }}
-        onEndReached={threadList ? loadMoreThread : loadMore}
         onScroll={handleScroll}
         onScrollBeginDrag={onScrollBeginDrag}
         onScrollEndDrag={onScrollEndDrag}
