@@ -1,6 +1,17 @@
 # Changelog
 
-## [3.0.0] (2021-02-23) 🎉
+## [3.1.0] (UNRELEASED)
+
+- **🛑 BREAKING**: Removed a prop `handleOnPress` on `Input` component.
+- Added support for new props on `Input` component, which can be used on Channel component as prop to replace undelying input component ([reference](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#how-to-change-the-layout-of-messageinput-component))
+    - closeAttachmentPicker (function)
+    - openAttachmentPicker (function)
+    - openCommandsPicker (function)
+    - toggleAttachmentPicker (function)
+
+- Added support for new prop on `Channel` component - `InputButtons`, to replace the extra buttons on the left on input box.
+
+## [3.0.0] (2021-02-23)
 
 Version 3.x is a major revamp of the SDK and comes with **many breaking changes**. The new implementation takes advantage of React Context along with many popular community libraries such as Reanimated V2 to deliver a superior chat experience. **Upgrading will require re-implementing** your integration but will yield performance and functional benefits. It is highly recommended you read the Cookbook and examine the SampleApp / TypeScriptMessaging apps before upgrading to understand what is required.
 
