@@ -46,7 +46,7 @@ import type { AttachButtonProps } from '../../components/MessageInput/AttachButt
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
-import type { InputButtonsProps } from '../..//components/MessageInput/InputButtons';
+import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';

@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import {
   MessageInputContextValue,
   useMessageInputContext,
-} from '../../contexts';
+} from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
@@ -96,28 +97,26 @@ export const InputButtonsWithContext = <
     return null;
   }
 
-  return (
+  return !showMoreOptions &&
+    (hasImagePicker || hasFilePicker) &&
+    hasCommands ? (
+    <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
+  ) : (
     <>
-      {!showMoreOptions && (hasImagePicker || hasFilePicker) && hasCommands ? (
-        <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
-      ) : (
-        <>
-          {(hasImagePicker || hasFilePicker) && uploadsEnabled !== false && (
-            <View
-              style={[
-                hasCommands ? styles.attachButtonContainer : undefined,
-                attachButtonContainer,
-              ]}
-            >
-              <AttachButton handleOnPress={toggleAttachmentPicker} />
-            </View>
-          )}
-          {hasCommands && !text && (
-            <View style={commandsButtonContainer}>
-              <CommandsButton handleOnPress={openCommandsPicker} />
-            </View>
-          )}
-        </>
+      {(hasImagePicker || hasFilePicker) && uploadsEnabled !== false && (
+        <View
+          style={[
+            hasCommands ? styles.attachButtonContainer : undefined,
+            attachButtonContainer,
+          ]}
+        >
+          <AttachButton handleOnPress={toggleAttachmentPicker} />
+        </View>
+      )}
+      {hasCommands && !text && (
+        <View style={commandsButtonContainer}>
+          <CommandsButton handleOnPress={openCommandsPicker} />
+        </View>
       )}
     </>
   );
@@ -134,30 +133,45 @@ const areEqual = <
   prevProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  if (prevProps.hasImagePicker !== nextProps.hasImagePicker) {
+  const {
+    hasCommands: prevHasCommands,
+    hasFilePicker: prevHasFilePicker,
+    hasImagePicker: prevHasImagePicker,
+    showMoreOptions: prevShowMoreOptions,
+    text: prevText,
+    uploadsEnabled: prevUploadsEnabled,
+  } = prevProps;
+
+  const {
+    hasCommands: nextHasCommands,
+    hasFilePicker: nextHasFilePicker,
+    hasImagePicker: nextHasImagePicker,
+    showMoreOptions: nextShowMoreOptions,
+    text: nextText,
+    uploadsEnabled: nextUploadsEnabled,
+  } = nextProps;
+
+  if (prevHasImagePicker !== nextHasImagePicker) {
     return false;
   }
 
-  if (prevProps.hasFilePicker !== nextProps.hasFilePicker) {
+  if (prevHasFilePicker !== nextHasFilePicker) {
     return false;
   }
 
-  if (prevProps.hasCommands !== nextProps.hasCommands) {
+  if (prevHasCommands !== nextHasCommands) {
     return false;
   }
 
-  if (prevProps.uploadsEnabled !== nextProps.uploadsEnabled) {
+  if (prevUploadsEnabled !== nextUploadsEnabled) {
     return false;
   }
 
-  if (prevProps.showMoreOptions !== nextProps.showMoreOptions) {
+  if (prevShowMoreOptions !== nextShowMoreOptions) {
     return false;
   }
 
-  if (
-    (!prevProps.text && nextProps.text) ||
-    (prevProps.text && !nextProps.text)
-  ) {
+  if ((!prevProps.text && nextText) || (prevText && !nextText)) {
     return false;
   }
 
