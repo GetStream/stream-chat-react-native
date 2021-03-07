@@ -10,11 +10,15 @@ import {
 } from 'react-native';
 
 import {
+  InlineLoadingIndicator,
+  InlineLoadingIndicatorProps,
+} from './InlineLoadingIndicator';
+import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
+import {
   isMessagesWithStylesAndReadBy,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
   AttachmentPickerContextValue,
@@ -63,10 +67,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import {
-  InlineLoadingIndicator,
-  InlineLoadingIndicatorProps,
-} from './InlineLoadingIndicator';
 
 const styles = StyleSheet.create({
   container: {

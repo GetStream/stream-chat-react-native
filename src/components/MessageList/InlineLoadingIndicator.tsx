@@ -22,13 +22,13 @@ export const InlineLoadingIndicator: React.FC<InlineLoadingIndicatorProps> = ({
     colors: { accent_blue },
   } = theme;
 
-  if (loadingMore) {
-    return (
-      <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator color={accent_blue} size='small' />
-      </View>
-    );
+  if (!loadingMore) {
+    return null;
   }
 
-  return null;
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={accent_blue} size='small' />
+    </View>
+  );
 };
