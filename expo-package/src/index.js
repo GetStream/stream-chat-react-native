@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Platform } from 'react-native';
+import { FlatList } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
@@ -35,15 +35,19 @@ registerNativeHandlers({
     }
   },
   FlatList,
+  getLocalAssetUri: async (assetId) => {
+    try {
+      const { localUri } = await MediaLibrary.getAssetInfoAsync(assetId);
+      return localUri;
+    } catch {
+      throw new Error('getLocalAssetUri Error');
+    }
+  },
   getPhotos: async ({ after, first }) => {
     try {
-      if (Platform.OS === 'android') {
-        const { status } = await Permissions.askAsync(
-          Permissions.MEDIA_LIBRARY,
-        );
-        if (status !== 'granted') {
-          throw new Error('getPhotos Error');
-        }
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      if (status !== 'granted') {
+        throw new Error('getPhotos Error');
       }
       const results = await MediaLibrary.getAssetsAsync({
         after,
@@ -52,6 +56,7 @@ registerNativeHandlers({
       });
       const assets = results.assets.map((asset) => ({
         height: asset.height,
+        id: asset.id,
         source: 'picker',
         uri: asset.uri,
         width: asset.width,
@@ -138,8 +143,16 @@ registerNativeHandlers({
   },
   takePhoto: async ({ compressImageQuality = 1 }) => {
     try {
-      const { status } = ImagePicker.getCameraPermissionsAsync();
-      if (status === 'granted') {
+      const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
+      const permissionGranted =
+        permissionCheck?.status === 'granted'
+          ? permissionCheck
+          : await Permissions.askAsync(Permissions.CAMERA);
+
+      if (
+        permissionGranted?.status === 'granted' ||
+        permissionGranted?.granted === true
+      ) {
         const photo = await ImagePicker.launchCameraAsync({
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
