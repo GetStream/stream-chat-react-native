@@ -206,10 +206,46 @@ export type MessagePropsWithContext<
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
     /**
-     * Array of allowed actions on message
+     * Array of allowed actions on message, this can also be a functions returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
-    messageActions?: MessageAction[];
+    messageActions?:
+      | MessageAction[]
+      | (({
+          blockUser,
+          canModifyMessage,
+          copyMessage,
+          deleteMessage,
+          editMessage,
+          error,
+          flagMessage,
+          isMyMessage,
+          isThreadMessage,
+          message,
+          messageReactions,
+          muteUser,
+          repliesEnabled,
+          reply,
+          retry,
+          threadReply,
+        }: {
+          blockUser: MessageAction;
+          canModifyMessage: boolean;
+          copyMessage: MessageAction;
+          deleteMessage: MessageAction;
+          editMessage: MessageAction;
+          error: boolean;
+          flagMessage: MessageAction;
+          isMyMessage: boolean;
+          isThreadMessage: boolean;
+          message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+          messageReactions: boolean;
+          muteUser: MessageAction;
+          reply: MessageAction;
+          retry: MessageAction;
+          threadReply: MessageAction;
+          repliesEnabled?: boolean;
+        }) => MessageAction[]);
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
@@ -844,70 +880,86 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActionsProp
-        ? messageActionsProp
-        : error && isMyMessage
-        ? [retry, editMessage, deleteMessage]
-        : messageReactions
-        ? undefined
-        : canModifyMessage
-        ? isThreadMessage
-          ? message.text
-            ? isMyMessage
+      messageActions:
+        typeof messageActionsProp === 'function'
+          ? messageActionsProp({
+              blockUser,
+              canModifyMessage,
+              copyMessage,
+              deleteMessage,
+              editMessage,
+              error,
+              flagMessage,
+              isMyMessage,
+              isThreadMessage,
+              message,
+              messageReactions,
+              muteUser,
+              repliesEnabled,
+              reply,
+              retry,
+              threadReply,
+            })
+          : messageActionsProp
+          ? messageActionsProp
+          : error && isMyMessage
+          ? [retry, editMessage, deleteMessage]
+          : messageReactions
+          ? undefined
+          : canModifyMessage
+          ? isThreadMessage
+            ? message.text
+              ? isMyMessage
+                ? [editMessage, copyMessage, deleteMessage]
+                : [copyMessage, flagMessage]
+              : isMyMessage
+              ? [editMessage, deleteMessage]
+              : [flagMessage]
+            : message.text
+            ? repliesEnabled
+              ? isMyMessage
+                ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
+                : [reply, threadReply, copyMessage, flagMessage]
+              : isMyMessage
               ? [editMessage, copyMessage, deleteMessage]
-              : [copyMessage, flagMessage]
+              : [copyMessage]
+            : repliesEnabled
+            ? isMyMessage
+              ? [reply, threadReply, editMessage, deleteMessage]
+              : [reply, threadReply, flagMessage]
             : isMyMessage
             ? [editMessage, deleteMessage]
             : [flagMessage]
+          : isThreadMessage
+          ? message.text
+            ? isMyMessage
+              ? [copyMessage, deleteMessage]
+              : [copyMessage, muteUser, flagMessage, blockUser]
+            : isMyMessage
+            ? [deleteMessage]
+            : [muteUser, blockUser, flagMessage]
           : message.text
           ? repliesEnabled
             ? isMyMessage
-              ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
-              : [reply, threadReply, copyMessage, flagMessage]
+              ? [reply, threadReply, copyMessage, deleteMessage]
+              : [
+                  reply,
+                  threadReply,
+                  copyMessage,
+                  muteUser,
+                  flagMessage,
+                  blockUser,
+                ]
             : isMyMessage
-            ? isMyMessage
-              ? [editMessage, copyMessage, deleteMessage]
-              : [copyMessage]
-            : isMyMessage
-            ? [copyMessage]
-            : [copyMessage, flagMessage]
-          : repliesEnabled
-          ? isMyMessage
-            ? [reply, threadReply, editMessage, deleteMessage]
-            : [reply, threadReply, flagMessage]
-          : isMyMessage
-          ? [editMessage, deleteMessage]
-          : [flagMessage]
-        : isThreadMessage
-        ? message.text
-          ? isMyMessage
             ? [copyMessage, deleteMessage]
             : [copyMessage, muteUser, flagMessage, blockUser]
+          : repliesEnabled
+          ? isMyMessage
+            ? [reply, threadReply, deleteMessage]
+            : [reply, threadReply, muteUser, blockUser]
           : isMyMessage
           ? [deleteMessage]
-          : [muteUser, blockUser, flagMessage]
-        : message.text
-        ? repliesEnabled
-          ? isMyMessage
-            ? [reply, threadReply, copyMessage, deleteMessage]
-            : [
-                reply,
-                threadReply,
-                copyMessage,
-                muteUser,
-                flagMessage,
-                blockUser,
-              ]
-          : isMyMessage
-          ? [copyMessage, deleteMessage]
-          : [copyMessage, muteUser, flagMessage, blockUser]
-        : repliesEnabled
-        ? isMyMessage
-          ? [reply, threadReply, deleteMessage]
-          : [reply, threadReply, muteUser, blockUser]
-        : isMyMessage
-        ? [deleteMessage]
-        : [muteUser, blockUser],
+          : [muteUser, blockUser],
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
