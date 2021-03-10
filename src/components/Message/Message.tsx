@@ -846,48 +846,68 @@ const MessageWithContext = <
       message,
       messageActions: messageActionsProp
         ? messageActionsProp
-        : error
+        : error && isMyMessage
         ? [retry, editMessage, deleteMessage]
         : messageReactions
         ? undefined
         : canModifyMessage
         ? isThreadMessage
           ? message.text
-            ? [editMessage, copyMessage, flagMessage, deleteMessage]
-            : [editMessage, flagMessage, deleteMessage]
+            ? isMyMessage
+              ? [editMessage, copyMessage, deleteMessage]
+              : [copyMessage, flagMessage]
+            : isMyMessage
+            ? [editMessage, deleteMessage]
+            : [flagMessage]
           : message.text
           ? repliesEnabled
-            ? [
-                reply,
-                threadReply,
-                editMessage,
-                copyMessage,
-                flagMessage,
-                deleteMessage,
-              ]
-            : [editMessage, copyMessage, flagMessage, deleteMessage]
+            ? isMyMessage
+              ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
+              : [reply, threadReply, copyMessage, flagMessage]
+            : isMyMessage
+            ? isMyMessage
+              ? [editMessage, copyMessage, deleteMessage]
+              : [copyMessage]
+            : isMyMessage
+            ? [copyMessage]
+            : [copyMessage, flagMessage]
           : repliesEnabled
-          ? [reply, threadReply, editMessage, flagMessage, deleteMessage]
-          : [editMessage, flagMessage, deleteMessage]
+          ? isMyMessage
+            ? [reply, threadReply, editMessage, deleteMessage]
+            : [reply, threadReply, flagMessage]
+          : isMyMessage
+          ? [editMessage, deleteMessage]
+          : [flagMessage]
         : isThreadMessage
         ? message.text
-          ? [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
-          : [muteUser, blockUser, flagMessage, deleteMessage]
+          ? isMyMessage
+            ? [copyMessage, deleteMessage]
+            : [copyMessage, muteUser, flagMessage, blockUser]
+          : isMyMessage
+          ? [deleteMessage]
+          : [muteUser, blockUser, flagMessage]
         : message.text
         ? repliesEnabled
-          ? [
-              reply,
-              threadReply,
-              copyMessage,
-              muteUser,
-              flagMessage,
-              blockUser,
-              deleteMessage,
-            ]
-          : [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
+          ? isMyMessage
+            ? [reply, threadReply, copyMessage, deleteMessage]
+            : [
+                reply,
+                threadReply,
+                copyMessage,
+                muteUser,
+                flagMessage,
+                blockUser,
+              ]
+          : isMyMessage
+          ? [copyMessage, deleteMessage]
+          : [copyMessage, muteUser, flagMessage, blockUser]
         : repliesEnabled
-        ? [reply, threadReply, muteUser, blockUser, deleteMessage]
-        : [muteUser, blockUser, deleteMessage],
+        ? isMyMessage
+          ? [reply, threadReply, deleteMessage]
+          : [reply, threadReply, muteUser, blockUser]
+        : isMyMessage
+        ? [deleteMessage]
+        : [muteUser, blockUser],
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
