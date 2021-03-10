@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ColorValue,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   MessageContextValue,
@@ -74,7 +80,10 @@ export type MessageRepliesPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'MessageRepliesAvatars'
   > &
-  Pick<TranslationContextValue, 't'> & { noBorder?: boolean };
+  Pick<TranslationContextValue, 't'> & {
+    noBorder?: boolean;
+    repliesCurveColor?: ColorValue;
+  };
 
 const MessageRepliesWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -94,13 +103,14 @@ const MessageRepliesWithContext = <
     noBorder,
     onLongPress,
     onOpenThread,
+    repliesCurveColor,
     t,
     threadList,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, grey_whisper },
+      colors: { accent_blue },
       messageSimple: {
         replies: { container, leftCurve, messageRepliesText, rightCurve },
       },
@@ -116,7 +126,7 @@ const MessageRepliesWithContext = <
           {!noBorder && (
             <View
               style={[
-                { borderColor: grey_whisper },
+                { borderColor: repliesCurveColor },
                 styles.messageRepliesCurve,
                 styles.leftMessageRepliesCurve,
                 leftCurve,
@@ -152,7 +162,7 @@ const MessageRepliesWithContext = <
           {!noBorder && (
             <View
               style={[
-                { borderColor: grey_whisper },
+                { borderColor: repliesCurveColor },
                 styles.messageRepliesCurve,
                 styles.rightMessageRepliesCurve,
                 rightCurve,

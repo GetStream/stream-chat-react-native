@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 224,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   description: {
     alignItems: 'center',
@@ -32,11 +34,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subtext: {
+    fontSize: 14,
+    fontWeight: '500',
     marginTop: 8,
+    paddingHorizontal: 16,
   },
   title: {
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
     marginTop: 18,
+    paddingHorizontal: 16,
   },
 });
 

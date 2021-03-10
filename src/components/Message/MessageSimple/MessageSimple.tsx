@@ -138,7 +138,8 @@ const areEqual = <
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
 
-  const groupStylesEqual = prevGroupStyles.length === nextGroupStyles.length;
+  const groupStylesEqual =
+    JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
 
   const messageEqual =

@@ -355,6 +355,7 @@ export type Theme = {
       };
       containerInner: ViewStyle;
       deletedContainer: ViewStyle;
+      deletedContainerInner: ViewStyle;
       deletedMetaText: TextStyle;
       deletedText: MarkdownStyle;
       errorContainer: ViewStyle;
@@ -512,8 +513,8 @@ export const defaultTheme: Theme = {
     },
     presenceIndicator: {
       cx: 6,
-      cy: 4,
-      r: 4,
+      cy: 6,
+      r: 5,
       strokeWidth: 2,
     },
     presenceIndicatorContainer: {},
@@ -533,11 +534,11 @@ export const defaultTheme: Theme = {
     flatListContent: {},
   },
   channelListSkeleton: {
-    animationTime: 1000, // in milliseconds
+    animationTime: 1800, // in milliseconds
     background: {},
     container: {},
     gradientStart: {
-      stopOpacity: 0.1,
+      stopOpacity: 0,
     },
     gradientStop: {
       stopOpacity: 0.5,
@@ -786,6 +787,7 @@ export const defaultTheme: Theme = {
       },
       containerInner: {},
       deletedContainer: {},
+      deletedContainerInner: {},
       deletedMetaText: {
         paddingHorizontal: 10,
       },
@@ -813,11 +815,7 @@ export const defaultTheme: Theme = {
         height: 16,
         width: 16,
       },
-      markdown: {
-        autolink: {
-          textDecorationLine: 'underline',
-        },
-      },
+      markdown: {},
       messageUser: {
         fontSize: 12,
         fontWeight: '700',

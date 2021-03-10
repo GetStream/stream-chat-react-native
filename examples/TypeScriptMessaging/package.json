@@ -16,7 +16,7 @@
     "@react-native-community/netinfo": "5.9.10",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
-    "@stream-io/flat-list-mvcp": "0.0.5",
+    "@stream-io/flat-list-mvcp": "0.0.9",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-document-picker": "5.0.0",

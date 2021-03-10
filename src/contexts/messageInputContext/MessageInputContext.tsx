@@ -38,7 +38,12 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
-import { Asset, compressImage, pickDocument } from '../../native';
+import {
+  Asset,
+  compressImage,
+  getLocalAssetUri,
+  pickDocument,
+} from '../../native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -46,6 +51,7 @@ import type { AttachButtonProps } from '../../components/MessageInput/AttachButt
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
+import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
@@ -353,10 +359,13 @@ export type InputMessageInputContextValue<
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
-    Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> & {
-      getUsers: () => UserResponse<Us>[];
-      handleOnPress: () => void | Promise<void>;
-    }
+    Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> &
+      InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us> & {
+        getUsers: () => UserResponse<Us>[];
+      }
+  >;
+  InputButtons?: React.ComponentType<
+    InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
@@ -460,7 +469,7 @@ export const MessageInputProvider = <
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
-    if (text) {
+    if (text && text.trim()) {
       return true;
     }
 
@@ -831,30 +840,47 @@ export const MessageInputProvider = <
 
     let response = {} as SendFileAPIResponse;
 
-    const uri = file.name || file.uri || '';
-    /**
-     * We skip compression if:
-     * - the file is from the camera as that should already be compressed
-     * - the file has not height/width value to maintain for compression
-     * - the compressImageQuality number is not present or is 1 (meaning no compression)
-     */
-    const compressedUri = await (file.source === 'camera' ||
-    !file.height ||
-    !file.width ||
-    typeof value.compressImageQuality !== 'number' ||
-    value.compressImageQuality === 1
-      ? uri
-      : compressImage({
-          compressImageQuality: value.compressImageQuality,
-          height: file.height,
-          uri,
-          width: file.width,
-        }));
-
-    const filename = uri.replace(/^(file:\/\/|content:\/\/)/, '');
-    const contentType = lookup(filename) || 'multipart/form-data';
-
     try {
+      /**
+       * Expo now uses the assets-library which is also how remote
+       * native files are presented. We now return a file id from Expo
+       * only, if that file id exits we call getLocalAssetUri to download
+       * the asset for expo before uploading it. We do the same for native
+       * if the uri includes assets-library, this uses the CameraRoll.save
+       * function to also create a local uri.
+       */
+      const localUri = file.id
+        ? await getLocalAssetUri(file.id)
+        : file.uri?.match(/assets-library/)
+        ? await getLocalAssetUri(file.uri)
+        : file.uri;
+
+      const uri = file.name || localUri || '';
+      /**
+       * We skip compression if:
+       * - the file is from the camera as that should already be compressed
+       * - the file has not height/width value to maintain for compression
+       * - the compressImageQuality number is not present or is 1 (meaning no compression)
+       */
+      const compressedUri = await (file.source === 'camera' ||
+      !file.height ||
+      !file.width ||
+      typeof value.compressImageQuality !== 'number' ||
+      value.compressImageQuality === 1
+        ? uri
+        : compressImage({
+            compressImageQuality: value.compressImageQuality,
+            height: file.height,
+            uri,
+            width: file.width,
+          }));
+
+      const filename = uri.replace(
+        /^(file:\/\/|content:\/\/|assets-library:\/\/)/,
+        '',
+      );
+      const contentType = lookup(filename) || 'multipart/form-data';
+
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {

@@ -17,7 +17,7 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  bold: { fontWeight: 'bold' },
+  bold: { fontWeight: '600' },
   message: {
     flexShrink: 1,
     fontSize: 12,

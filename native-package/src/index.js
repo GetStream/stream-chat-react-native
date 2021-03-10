@@ -46,6 +46,14 @@ registerNativeHandlers({
     }
   },
   FlatList,
+  getLocalAssetUri: async (remoteUri) => {
+    try {
+      const localUri = await CameraRoll.save(remoteUri);
+      return localUri;
+    } catch {
+      throw new Error('getLocalAssetUri Error');
+    }
+  },
   getPhotos: async ({ after, first }) => {
     try {
       if (Platform.OS === 'android') {

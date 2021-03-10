@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
       },
       default: {
         shadowOffset: {
-          height: 1,
+          height: 2,
           width: 0,
         },
         shadowOpacity: 0.25,

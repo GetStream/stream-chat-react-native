@@ -794,13 +794,27 @@ const MessageWithContext = <
       : {
           action: async () => {
             setOverlay('none');
+            const retryMessage = { ...message };
+            const reserved = [
+              'cid',
+              'config',
+              'created_at',
+              'created_by',
+              'id',
+              'last_message_at',
+              'member_count',
+              'type',
+              'updated_at',
+            ];
+            reserved.forEach((key) => {
+              delete retryMessage[key];
+            });
             if (handleRetry) {
-              handleRetry(message);
+              handleRetry(retryMessage);
             }
-            await retrySendMessage({
-              ...message,
-              updated_at: undefined,
-            } as MessageResponse<At, Ch, Co, Me, Re, Us>);
+            await retrySendMessage(
+              retryMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
+            );
           },
           icon: <SendUp pathFill={accent_blue} />,
           title: t('Resend'),
@@ -830,11 +844,13 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: error
-        ? messageActionsProp || [retry, editMessage, deleteMessage]
+      messageActions: messageActionsProp
+        ? messageActionsProp
+        : error
+        ? [retry, editMessage, deleteMessage]
         : messageReactions
         ? undefined
-        : messageActionsProp || canModifyMessage
+        : canModifyMessage
         ? isThreadMessage
           ? message.text
             ? [editMessage, copyMessage, flagMessage, deleteMessage]
@@ -948,8 +964,8 @@ const MessageWithContext = <
     images: attachments.images,
     isMyMessage,
     lastGroupMessage:
-      forwardedGroupStyles[0] === 'single' ||
-      forwardedGroupStyles[0] === 'bottom',
+      forwardedGroupStyles?.[0] === 'single' ||
+      forwardedGroupStyles?.[0] === 'bottom',
     lastReceivedId,
     members,
     message,

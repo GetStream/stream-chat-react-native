@@ -6,7 +6,6 @@ import type {
   GestureResponderEvent,
   TouchableOpacityProps,
 } from 'react-native';
-import type { DebouncedFunc } from 'lodash';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
@@ -137,8 +136,8 @@ export type MessagesContextValue<
   InlineUnreadIndicator: React.ComponentType;
   loadingMore: boolean;
   loadingMoreRecent: boolean;
-  loadMore: DebouncedFunc<() => Promise<void>>;
-  loadMoreRecent: DebouncedFunc<() => Promise<void>>;
+  loadMore: () => Promise<void>;
+  loadMoreRecent: () => Promise<void>;
   Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageAvatar

@@ -23,11 +23,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   presenceIndicatorContainer: {
-    height: 10,
+    height: 12,
     position: 'absolute',
     right: 0,
     top: 0,
-    width: 10,
+    width: 12,
   },
 });
 
