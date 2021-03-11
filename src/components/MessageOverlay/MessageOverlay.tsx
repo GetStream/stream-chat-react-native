@@ -31,6 +31,8 @@ import {
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
+import { MessageActions as DefaultMessageActions } from '../MessageOverlay/MessageActions';
+import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 
 import {
   MessageOverlayContextValue,
@@ -131,7 +133,7 @@ const MessageOverlayWithContext = <
     images,
     message,
     messageActions,
-    MessageActions,
+    MessageActions = DefaultMessageActions,
     messageReactionTitle,
     messagesContext,
     onlyEmojis,
@@ -139,7 +141,7 @@ const MessageOverlayWithContext = <
     overlay,
     overlayOpacity,
     OverlayReactionList = OverlayReactionListDefault,
-    OverlayReactions,
+    OverlayReactions = DefaultOverlayReactions,
     reset,
     setOverlay,
     threadList,
@@ -687,18 +689,25 @@ export const MessageOverlay = <
   } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
+  const componentProps = {
+    MessageActions: props.MessageActions || MessageActions,
+    OverlayReactionList:
+      props.OverlayReactionList ||
+      OverlayReactionList ||
+      data?.OverlayReactionList,
+    OverlayReactions: props.OverlayReactions || OverlayReactions,
+  };
+
   return (
     <MemoizedMessageOverlay
       {...(data || {})}
       {...{
-        MessageActions,
         overlay,
-        OverlayReactionList,
-        OverlayReactions,
         reset,
         setOverlay,
       }}
       {...props}
+      {...componentProps}
     />
   );
 };
