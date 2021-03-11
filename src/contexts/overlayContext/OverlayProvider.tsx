@@ -31,10 +31,7 @@ import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/At
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
-import { MessageActions as DefaultMessageActions } from '../../components/MessageOverlay/MessageActions';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
-import { OverlayReactionList as DefaultOverlayReactionList } from '../../components/MessageOverlay/OverlayReactionList';
-import { OverlayReactions as DefaultOverlayReactions } from '../../components/MessageOverlay/OverlayReactions';
 import { BlurView } from '../../native';
 import { useStreami18n } from '../../utils/useStreami18n';
 
@@ -112,7 +109,7 @@ export const OverlayProvider = <
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
-    MessageActions = DefaultMessageActions,
+    MessageActions,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -126,8 +123,8 @@ export const OverlayProvider = <
       }
     },
     topInset,
-    OverlayReactionList = DefaultOverlayReactionList,
-    OverlayReactions = DefaultOverlayReactions,
+    OverlayReactionList,
+    OverlayReactions,
     value,
   } = props;
 
