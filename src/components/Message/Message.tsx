@@ -176,6 +176,7 @@ export type MessagePropsWithContext<
     | 'handleReply'
     | 'handleRetry'
     | 'handleThreadReply'
+    | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
     | 'muteUser'
@@ -206,10 +207,9 @@ export type MessagePropsWithContext<
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
     /**
-     * Array of allowed actions on message
+     * Array of allowed actions or null on message, this can also be a function returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
-    messageActions?: MessageAction[];
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
@@ -584,6 +584,8 @@ const MessageWithContext = <
 
     const blockUser = blockUserProp
       ? blockUserProp(message)
+      : blockUserProp === null
+      ? null
       : {
           action: () => async () => {
             setOverlay('none');
@@ -604,6 +606,8 @@ const MessageWithContext = <
 
     const copyMessage = copyMessageProp
       ? copyMessageProp(message)
+      : copyMessageProp === null
+      ? null
       : {
           // using depreciated Clipboard from react-native until expo supports the community version or their own
           action: () => {
@@ -619,6 +623,8 @@ const MessageWithContext = <
 
     const deleteMessage = deleteMessageProp
       ? deleteMessageProp(message)
+      : deleteMessageProp === null
+      ? null
       : {
           action: () => {
             setOverlay('alert');
@@ -652,6 +658,8 @@ const MessageWithContext = <
 
     const editMessage = editMessageProp
       ? editMessageProp(message)
+      : editMessageProp === null
+      ? null
       : {
           action: () => {
             setOverlay('none');
@@ -666,6 +674,8 @@ const MessageWithContext = <
 
     const flagMessage = flagMessageProp
       ? flagMessageProp(message)
+      : flagMessageProp === null
+      ? null
       : {
           action: () => {
             setOverlay('alert');
@@ -757,6 +767,8 @@ const MessageWithContext = <
     );
     const muteUser = muteUserProp
       ? muteUserProp(message)
+      : muteUserProp === null
+      ? null
       : {
           action: async () => {
             setOverlay('none');
@@ -777,6 +789,8 @@ const MessageWithContext = <
 
     const reply = replyProp
       ? replyProp(message)
+      : replyProp === null
+      ? null
       : {
           action: () => {
             setOverlay('none');
@@ -791,6 +805,8 @@ const MessageWithContext = <
 
     const retry = retryProp
       ? retryProp(message)
+      : retryProp === null
+      ? null
       : {
           action: async () => {
             setOverlay('none');
@@ -822,6 +838,8 @@ const MessageWithContext = <
 
     const threadReply = threadReplyProp
       ? threadReplyProp(message)
+      : threadReplyProp === null
+      ? null
       : {
           action: () => {
             setOverlay('none');
@@ -836,6 +854,87 @@ const MessageWithContext = <
 
     const isThreadMessage = threadList || !!message.parent_id;
 
+    const messageActions =
+      typeof messageActionsProp === 'function'
+        ? messageActionsProp({
+            blockUser,
+            canModifyMessage,
+            copyMessage,
+            deleteMessage,
+            editMessage,
+            error,
+            flagMessage,
+            isMyMessage,
+            isThreadMessage,
+            message,
+            messageReactions,
+            muteUser,
+            repliesEnabled,
+            reply,
+            retry,
+            threadReply,
+          })
+        : messageActionsProp
+        ? messageActionsProp
+        : error && isMyMessage
+        ? [retry, editMessage, deleteMessage]
+        : messageReactions
+        ? undefined
+        : canModifyMessage
+        ? isThreadMessage
+          ? message.text
+            ? isMyMessage
+              ? [editMessage, copyMessage, deleteMessage]
+              : [copyMessage, flagMessage]
+            : isMyMessage
+            ? [editMessage, deleteMessage]
+            : [flagMessage]
+          : message.text
+          ? repliesEnabled
+            ? isMyMessage
+              ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
+              : [reply, threadReply, copyMessage, flagMessage]
+            : isMyMessage
+            ? [editMessage, copyMessage, deleteMessage]
+            : [copyMessage]
+          : repliesEnabled
+          ? isMyMessage
+            ? [reply, threadReply, editMessage, deleteMessage]
+            : [reply, threadReply, flagMessage]
+          : isMyMessage
+          ? [editMessage, deleteMessage]
+          : [flagMessage]
+        : isThreadMessage
+        ? message.text
+          ? isMyMessage
+            ? [copyMessage, deleteMessage]
+            : [copyMessage, muteUser, flagMessage, blockUser]
+          : isMyMessage
+          ? [deleteMessage]
+          : [muteUser, blockUser, flagMessage]
+        : message.text
+        ? repliesEnabled
+          ? isMyMessage
+            ? [reply, threadReply, copyMessage, deleteMessage]
+            : [
+                reply,
+                threadReply,
+                copyMessage,
+                muteUser,
+                flagMessage,
+                blockUser,
+              ]
+          : isMyMessage
+          ? [copyMessage, deleteMessage]
+          : [copyMessage, muteUser, flagMessage, blockUser]
+        : repliesEnabled
+        ? isMyMessage
+          ? [reply, threadReply, deleteMessage]
+          : [reply, threadReply, muteUser, blockUser]
+        : isMyMessage
+        ? [deleteMessage]
+        : [muteUser, blockUser];
+
     setData({
       alignment,
       clientId: client.userID,
@@ -844,50 +943,9 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActionsProp
-        ? messageActionsProp
-        : error
-        ? [retry, editMessage, deleteMessage]
-        : messageReactions
-        ? undefined
-        : canModifyMessage
-        ? isThreadMessage
-          ? message.text
-            ? [editMessage, copyMessage, flagMessage, deleteMessage]
-            : [editMessage, flagMessage, deleteMessage]
-          : message.text
-          ? repliesEnabled
-            ? [
-                reply,
-                threadReply,
-                editMessage,
-                copyMessage,
-                flagMessage,
-                deleteMessage,
-              ]
-            : [editMessage, copyMessage, flagMessage, deleteMessage]
-          : repliesEnabled
-          ? [reply, threadReply, editMessage, flagMessage, deleteMessage]
-          : [editMessage, flagMessage, deleteMessage]
-        : isThreadMessage
-        ? message.text
-          ? [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
-          : [muteUser, blockUser, flagMessage, deleteMessage]
-        : message.text
-        ? repliesEnabled
-          ? [
-              reply,
-              threadReply,
-              copyMessage,
-              muteUser,
-              flagMessage,
-              blockUser,
-              deleteMessage,
-            ]
-          : [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
-        : repliesEnabled
-        ? [reply, threadReply, muteUser, blockUser, deleteMessage]
-        : [muteUser, blockUser, deleteMessage],
+      messageActions: messageActions?.filter(Boolean) as
+        | MessageAction[]
+        | undefined,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
