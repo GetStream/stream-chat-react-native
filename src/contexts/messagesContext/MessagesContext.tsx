@@ -26,6 +26,7 @@ import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
+import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
@@ -52,7 +53,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 
 export type MessagesConfig = {
   reactionsEnabled?: boolean;
