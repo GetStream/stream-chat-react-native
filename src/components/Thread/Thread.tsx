@@ -178,7 +178,7 @@ const ThreadWithContext = <
 
   const replyCount = thread.reply_count;
 
-  const footerComponent = (
+  const FooterComponent = () => (
     <View style={styles.threadHeaderContainer}>
       <View style={styles.messagePadding}>
         <Message
@@ -237,7 +237,7 @@ const ThreadWithContext = <
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList
-        FooterComponent={footerComponent}
+        FooterComponent={FooterComponent}
         threadList
         {...additionalMessageListProps}
       />
