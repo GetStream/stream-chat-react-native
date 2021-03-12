@@ -741,13 +741,12 @@ const MessageListWithContext = <
   };
 
   const goToNewMessages = async () => {
-    if (flatListRef.current) {
+    if (!channel?.state.isUpToDate) {
+      await reloadChannel();
+    } else if (flatListRef.current) {
       flatListRef.current.scrollToIndex({
         index: 0,
       });
-    }
-    if (!channel?.state.isUpToDate) {
-      await reloadChannel();
     }
 
     setScrollToBottomButtonVisible(false);
@@ -849,22 +848,20 @@ const MessageListWithContext = <
     <HeaderComponent loadingMore={onStartReachedInProgress} />
   );
 
+  const renderEmptyStateIndicator = () => (
+    <View style={styles.flex}>
+      <View style={styles.flex} testID='empty-state'>
+        <EmptyStateIndicator listType='message' />
+      </View>
+    </View>
+  );
+
   if (!FlatList) return null;
 
   if (loading) {
     return (
       <View style={styles.flex}>
         <LoadingIndicator listType='message' />
-      </View>
-    );
-  }
-
-  if (messageList.length === 0) {
-    return (
-      <View style={styles.flex}>
-        <View style={styles.flex} testID='empty-state'>
-          <EmptyStateIndicator listType='message' />
-        </View>
       </View>
     );
   }
@@ -876,11 +873,12 @@ const MessageListWithContext = <
       <FlatList
         contentContainerStyle={styles.contentContainer}
         data={messageList}
-        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
+        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
+        ListEmptyComponent={renderEmptyStateIndicator}
         ListFooterComponent={renderFooterComponent}
         ListHeaderComponent={renderHeaderComponent}
         maintainVisibleContentPosition={{
