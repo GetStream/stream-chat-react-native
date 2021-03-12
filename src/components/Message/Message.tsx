@@ -176,6 +176,7 @@ export type MessagePropsWithContext<
     | 'handleReply'
     | 'handleRetry'
     | 'handleThreadReply'
+    | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
     | 'muteUser'
@@ -209,43 +210,6 @@ export type MessagePropsWithContext<
      * Array of allowed actions or null on message, this can also be a function returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
-    messageActions?:
-      | (MessageAction | null)[]
-      | (({
-          blockUser,
-          canModifyMessage,
-          copyMessage,
-          deleteMessage,
-          editMessage,
-          error,
-          flagMessage,
-          isMyMessage,
-          isThreadMessage,
-          message,
-          messageReactions,
-          muteUser,
-          repliesEnabled,
-          reply,
-          retry,
-          threadReply,
-        }: {
-          blockUser: MessageAction | null;
-          canModifyMessage: boolean;
-          copyMessage: MessageAction | null;
-          deleteMessage: MessageAction | null;
-          editMessage: MessageAction | null;
-          error: boolean;
-          flagMessage: MessageAction | null;
-          isMyMessage: boolean;
-          isThreadMessage: boolean;
-          message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-          messageReactions: boolean;
-          muteUser: MessageAction | null;
-          reply: MessageAction | null;
-          retry: MessageAction | null;
-          threadReply: MessageAction | null;
-          repliesEnabled?: boolean;
-        }) => (MessageAction | null)[] | undefined);
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
