@@ -26,6 +26,7 @@ import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
+import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
@@ -52,7 +53,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-import type { MessageFooterProps } from 'src/components/Message/MessageSimple/MessageFooter';
 
 export type MessagesConfig = {
   reactionsEnabled?: boolean;
@@ -379,6 +379,43 @@ export type MessagesContextValue<
   ) => Promise<void>;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
+  messageActions?:
+    | (MessageAction | null)[]
+    | (({
+        blockUser,
+        canModifyMessage,
+        copyMessage,
+        deleteMessage,
+        editMessage,
+        error,
+        flagMessage,
+        isMyMessage,
+        isThreadMessage,
+        message,
+        messageReactions,
+        muteUser,
+        repliesEnabled,
+        reply,
+        retry,
+        threadReply,
+      }: {
+        blockUser: MessageAction | null;
+        canModifyMessage: boolean;
+        copyMessage: MessageAction | null;
+        deleteMessage: MessageAction | null;
+        editMessage: MessageAction | null;
+        error: boolean;
+        flagMessage: MessageAction | null;
+        isMyMessage: boolean;
+        isThreadMessage: boolean;
+        message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+        messageReactions: boolean;
+        muteUser: MessageAction | null;
+        reply: MessageAction | null;
+        retry: MessageAction | null;
+        threadReply: MessageAction | null;
+        repliesEnabled?: boolean;
+      }) => (MessageAction | null)[] | undefined);
   /**
    * Custom message header component
    */
