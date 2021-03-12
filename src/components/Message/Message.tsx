@@ -206,11 +206,11 @@ export type MessagePropsWithContext<
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
     /**
-     * Array of allowed actions on message, this can also be a functions returning the array.
+     * Array of allowed actions or null on message, this can also be a function returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
     messageActions?:
-      | MessageAction[]
+      | (MessageAction | null)[]
       | (({
           blockUser,
           canModifyMessage,
@@ -245,7 +245,7 @@ export type MessagePropsWithContext<
           retry: MessageAction | null;
           threadReply: MessageAction | null;
           repliesEnabled?: boolean;
-        }) => MessageAction[]);
+        }) => (MessageAction | null)[] | undefined);
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
