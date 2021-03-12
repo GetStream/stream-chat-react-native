@@ -278,9 +278,9 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  blockUser?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  blockUser?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
@@ -301,34 +301,34 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  copyMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  copyMessage?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Full override of the delete message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  deleteMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  deleteMessage?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   disableTypingIndicator?: boolean;
   /**
    * Full override of the edit message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  editMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  editMessage?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Full override of the flag message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  flagMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  flagMessage?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
@@ -394,9 +394,9 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  muteUser?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  muteUser?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Theme provided only to messages that are the current users
    */
@@ -425,13 +425,17 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  reply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
+  reply?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Full override of the resend button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  retry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
+  retry?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
+    | null;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
