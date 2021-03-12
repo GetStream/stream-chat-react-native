@@ -48,6 +48,13 @@ export type ChatProps<
   Us extends UnknownType = DefaultUserType
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
+   * When false, ws connection won't be disconnection upon backgrounding the app.
+   * To receive push notifications, its necessary that user doesn't have active
+   * websocket connection. So by default, we disconnect websocket connection when
+   * app goes to background, and reconnect when app comes to foreground.
+   */
+  closeConnectionOnBackground?: boolean;
+  /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
    * Stream provides following list of in-built translations:
@@ -141,7 +148,13 @@ const ChatWithContext = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, style } = props;
+  const {
+    children,
+    client,
+    closeConnectionOnBackground = true,
+    i18nInstance,
+    style,
+  } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -163,7 +176,10 @@ const ChatWithContext = <
     Us
   >(client);
 
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(client);
+  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
+    client,
+    closeConnectionOnBackground,
+  );
 
   useEffect(() => {
     if (client.setUserAgent) {

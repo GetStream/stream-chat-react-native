@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleProp,
   StyleSheet,
@@ -137,18 +137,6 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     }
   }, [insets.top]);
 
-  const rightContent = useMemo(() => {
-    return RightContent && 
-      <View style={styles.rightContainer}>
-        <RightContent />
-      </View>
-  }, []);
-
-  const leftContent = useMemo(() => {
-    return LeftContent && 
-        <LeftContent />
-  }, []);
-
   return (
     <View
       style={[
@@ -172,7 +160,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
       >
         <View style={styles.leftContainer}>
           {
-            leftContent || 
+            LeftContent ? <LeftContent /> :
             <BackButton
               onBack={onBack}
               showUnreadCountBadge={showUnreadCountBadge}
@@ -215,7 +203,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
             )
           )}
         </View>
-        {rightContent}
+        <View style={styles.rightContainer}>
+          <RightContent />
+        </View>
       </View>
     </View>
   );

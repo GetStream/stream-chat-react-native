@@ -108,6 +108,11 @@ const keyExtractor = <
       ? item.created_at
       : item.created_at.toISOString()
     : Date.now().toString());
+
+const flatListViewabilityConfig = {
+  viewAreaCoveragePercentThreshold: 50,
+};
+
 type MessageListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -450,15 +455,10 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (
-      channel &&
-      channel.countUnread() > 0 &&
-      (channel.countUnread() <= scrollToFirstUnreadThreshold ||
-        !initialScrollToFirstUnreadMessage)
-    ) {
+    if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
       channel.markRead();
     }
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     /**
@@ -721,7 +721,7 @@ const MessageListWithContext = <
 
     const shouldMarkRead =
       !threadList &&
-      isScrollAtBottom &&
+      offset === 0 &&
       channel?.state.isUpToDate &&
       channel.countUnread() > 0;
 
@@ -741,12 +741,13 @@ const MessageListWithContext = <
   };
 
   const goToNewMessages = async () => {
-    if (!channel?.state.isUpToDate) {
-      await reloadChannel();
-    } else if (flatListRef.current) {
+    if (flatListRef.current) {
       flatListRef.current.scrollToIndex({
         index: 0,
       });
+    }
+    if (!channel?.state.isUpToDate) {
+      await reloadChannel();
     }
 
     setScrollToBottomButtonVisible(false);
@@ -830,7 +831,44 @@ const MessageListWithContext = <
   const onScrollEndDrag = () =>
     hasMoved && selectedPicker && setHasMoved(false);
 
+  const refCallback = (
+    ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>>,
+  ) => {
+    flatListRef.current = ref;
+
+    if (setFlatListRef) {
+      setFlatListRef(ref);
+    }
+  };
+
+  const renderFooterComponent = () => (
+    <FooterComponent loadingMore={onEndReachedInProgress} />
+  );
+
+  const renderHeaderComponent = () => (
+    <HeaderComponent loadingMore={onStartReachedInProgress} />
+  );
+
   if (!FlatList) return null;
+
+  if (loading) {
+    return (
+      <View style={styles.flex}>
+        <LoadingIndicator listType='message' />
+      </View>
+    );
+  }
+
+  if (messageList.length === 0) {
+    return (
+      <View style={styles.flex}>
+        <View style={styles.flex} testID='empty-state'>
+          <EmptyStateIndicator listType='message' />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -843,23 +881,8 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={
-          <View style={styles.flex}>
-            {loading ? (
-              <LoadingIndicator listType='message' />
-            ) : (
-              <View style={styles.flex} testID='empty-state'>
-                <EmptyStateIndicator listType='message' />
-              </View>
-            )}
-          </View>
-        }
-        ListFooterComponent={() => (
-          <FooterComponent loadingMore={onEndReachedInProgress} />
-        )}
-        ListHeaderComponent={() => (
-          <HeaderComponent loadingMore={onStartReachedInProgress} />
-        )}
+        ListFooterComponent={renderFooterComponent}
+        ListHeaderComponent={renderHeaderComponent}
         maintainVisibleContentPosition={{
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
@@ -869,19 +892,11 @@ const MessageListWithContext = <
         onScrollEndDrag={onScrollEndDrag}
         onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={onViewableItemsChanged.current}
-        ref={(ref) => {
-          flatListRef.current = ref;
-
-          if (setFlatListRef) {
-            setFlatListRef(ref);
-          }
-        }}
+        ref={refCallback}
         renderItem={renderItem}
         style={[styles.listContainer, listContainer]}
         testID='message-flat-list'
-        viewabilityConfig={{
-          viewAreaCoveragePercentThreshold: 50,
-        }}
+        viewabilityConfig={flatListViewabilityConfig}
         {...additionalFlatListProps}
       />
       {!loading && (

@@ -30,28 +30,35 @@ export const useAppStateListener = <
   Us extends UnknownType = DefaultUserType
 >(
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  closeConnectionOnBackground: boolean,
 ) => {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    AppState.addEventListener('change', handleAppStateChange);
+    closeConnectionOnBackground &&
+      AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      closeConnectionOnBackground &&
+        AppState.removeEventListener('change', handleAppStateChange);
     };
-  }, []);
+  }, [closeConnectionOnBackground]);
 
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
     if (
       appState.current.match(/inactive|background/) &&
       nextAppState === 'active'
     ) {
-      await client.reconnectWebsocket();
+      await client.openConnection();
     } else if (
       appState.current.match(/active|inactive/) &&
       nextAppState === 'background'
     ) {
-      await client.disconnectWebsocket();
+      await client.closeConnection();
+      for (const cid in client.activeChannels) {
+        const channel = client.activeChannels[cid];
+        channel.state.setIsUpToDate(false);
+      }
     }
 
     appState.current = nextAppState;

@@ -816,19 +816,18 @@ const ChannelWithContext = <
     });
 
   const loadChannel = () =>
-    channelQueryCall(() => {
+    channelQueryCall(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
-        channel?.state.clearMessages();
-        return channel?.watch();
+        await channel?.watch();
+        channel?.state.setIsUpToDate(true);
       }
 
       return;
     });
 
-  const reloadChannel = async () => {
-    if (channel) {
-      await loadChannel();
-    }
+  const reloadChannel = () => {
+    channel?.state.clearMessages();
+    return loadChannel();
   };
 
   /**
