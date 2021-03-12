@@ -30,9 +30,10 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["./src/**/*", "styleguideComponents"],
+  "include": ["./src/**/*"],
   "exclude": [
     "./src/components/docs/*",
+    "./src/emoji-data/*.js",
     "./src/mock-builders",
     "./src/styleguideComponents",
     "node_modules",
