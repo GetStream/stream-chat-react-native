@@ -873,8 +873,8 @@ const MessageListWithContext = <
       <FlatList
         contentContainerStyle={styles.contentContainer}
         data={messageList}
-        extraData={disabled || !channel?.state.isUpToDate}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+        extraData={disabled || !channel?.state.isUpToDate}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}

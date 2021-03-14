@@ -675,7 +675,7 @@ const ChannelWithContext = <
   };
 
   useEffect(() => {
-    // The more complex sync logic is done in Chat.js
+    // The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
     // listen to client.connection.recovered and all channel events
     client.on('connection.recovered', connectionRecoveredHandler);
     client.on('connection.changed', connectionChangedHandler);
