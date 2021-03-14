@@ -240,6 +240,7 @@ export type ChannelPropsWithContext<
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
+      | 'messageActions'
       | 'MessageAvatar'
       | 'MessageContent'
       | 'messageContentOrder'
@@ -445,6 +446,7 @@ const ChannelWithContext = <
     messageId,
     maxNumberOfFiles = 10,
     Message = MessageDefault,
+    messageActions,
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
@@ -1505,6 +1507,7 @@ const ChannelWithContext = <
     loadMoreRecent,
     markdownRules,
     Message,
+    messageActions,
     MessageAvatar,
     MessageContent,
     messageContentOrder,

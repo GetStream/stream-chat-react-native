@@ -18,21 +18,22 @@
     "README.md"
   ],
   "scripts": {
+    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
+    "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
     "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/src && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
     "docs": "styleguidist build",
-    "test": "TZ=UTC jest",
     "docs-server": "styleguidist server",
-    "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
-    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
-    "validate-translations": "node bin/validate-translations.js",
     "lint": "prettier --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && yarn run validate-translations",
     "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0",
+    "postversion": "./scripts/post_version.sh",
     "prepare": "yarn run build",
-    "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify"
+    "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify",
+    "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
+    "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
+    "test": "TZ=UTC jest",
+    "validate-translations": "node bin/validate-translations.js"
   },
   "@react-native-community/bob": {
     "source": "src",
