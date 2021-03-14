@@ -92,6 +92,7 @@ export type MessageContentPropsWithContext<
   | 'onLongPress'
   | 'onlyEmojis'
   | 'onPress'
+  | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
   | 'showMessageStatus'
@@ -152,7 +153,7 @@ export const MessageContentWithContext = <
     onLongPress,
     onlyEmojis,
     onPress,
-    onPressInMessage,
+    onPressIn,
     otherAttachments,
     preventPress,
     repliesEnabled,
@@ -364,6 +365,7 @@ export const MessageContentWithContext = <
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>
           )}
+          {/* @ts-ignore */}
           {messageContentOrder.map(
             (messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {
@@ -372,7 +374,7 @@ export const MessageContentWithContext = <
                     <Attachment
                       attachment={attachment}
                       key={`${message.id}-${attachmentIndex}`}
-                      onPressIn={onPressInMessage}
+                      onPressIn={onPressIn}
                     />
                   ));
                 case 'files':
@@ -380,14 +382,14 @@ export const MessageContentWithContext = <
                     <FileAttachmentGroup
                       key={`file_attachment_group_${messageContentOrderIndex}`}
                       messageId={message.id}
-                      onPressIn={onPressInMessage}
+                      onPressIn={onPressIn}
                     />
                   );
                 case 'gallery':
                   return (
                     <Gallery
                       key={`gallery_${messageContentOrderIndex}`}
-                      onPressIn={onPressInMessage}
+                      onPressIn={onPressIn}
                       preventPress={preventPress}
                     />
                   );
@@ -595,6 +597,7 @@ export const MessageContent = <
     onLongPress,
     onlyEmojis,
     onPress,
+    onPressIn,
     otherAttachments,
     preventPress,
     showMessageStatus,
@@ -610,7 +613,6 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    onPressInMessage,
     repliesEnabled,
     Reply,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -640,7 +642,7 @@ export const MessageContent = <
         onLongPress,
         onlyEmojis,
         onPress,
-        onPressInMessage,
+        onPressIn,
         otherAttachments,
         preventPress,
         repliesEnabled,

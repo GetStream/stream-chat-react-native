@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -119,17 +112,13 @@ export type GiphyPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleAction' | 'onLongPress'
+  'handleAction' | 'onLongPress' | 'onPressIn'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
   > & {
     attachment: Attachment<At>;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
   };
 
 const GiphyWithContext = <
@@ -360,17 +349,16 @@ export type GiphyProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Partial<
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'onLongPress' | 'onPressIn'
+  > &
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       'additionalTouchableProps'
     >
 > & {
   attachment: Attachment<At>;
-  onPressIn?: (
-    event: GestureResponderEvent,
-    defaultOnPress?: () => void,
-  ) => void;
 };
 
 /**
@@ -387,7 +375,7 @@ export const Giphy = <
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, onLongPress } = useMessageContext<
+  const { handleAction, onLongPress, onPressIn } = useMessageContext<
     At,
     Ch,
     Co,
@@ -396,10 +384,15 @@ export const Giphy = <
     Re,
     Us
   >();
-  const {
-    additionalTouchableProps,
-    onPressInMessage: onPressIn,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { additionalTouchableProps } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   return (
     <MemoizedGiphy

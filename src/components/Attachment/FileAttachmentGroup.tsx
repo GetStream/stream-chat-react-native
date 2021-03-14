@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -44,16 +38,15 @@ export type FileAttachmentGroupPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'files' | 'onPressIn'
+> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
     /**
      * The unique id for the message with file attachments
      */
     messageId: string;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     styles?: Partial<{
       attachmentContainer: StyleProp<ViewStyle>;
       container: StyleProp<ViewStyle>;
@@ -161,7 +154,12 @@ export const FileAttachmentGroup = <
 ) => {
   const { files: propFiles, messageId, onPressIn: propOnPressIn } = props;
 
-  const { files: contextFiles } = useMessageContext<
+  const {
+    files: contextFiles,
+    onPressIn: onPressInContext,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const { Attachment = AttachmentDefault } = useMessagesContext<
     At,
     Ch,
     Co,
@@ -171,13 +169,8 @@ export const FileAttachmentGroup = <
     Us
   >();
 
-  const {
-    Attachment = AttachmentDefault,
-    onPressInMessage,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-
   const files = propFiles || contextFiles;
-  const onPressIn = propOnPressIn || onPressInMessage;
+  const onPressIn = propOnPressIn || onPressInContext;
 
   if (!files.length) return null;
 

@@ -39,7 +39,12 @@ export type MessageSimplePropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
+  | 'alignment'
+  | 'channel'
+  | 'groupStyles'
+  | 'hasReactions'
+  | 'message'
+  | 'showMessageOverlay'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -66,6 +71,7 @@ const MessageSimpleWithContext = <
     MessageAvatar,
     MessageContent,
     ReactionList,
+    showMessageOverlay,
   } = props;
 
   const {
@@ -101,7 +107,10 @@ const MessageSimpleWithContext = <
       {alignment === 'left' && <MessageAvatar />}
       <MessageContent setMessageContentWidth={setMessageContentWidth} />
       {showReactions && (
-        <ReactionList messageContentWidth={messageContentWidth} />
+        <ReactionList
+          messageContentWidth={messageContentWidth}
+          onPress={() => showMessageOverlay()}
+        />
       )}
     </View>
   );
@@ -218,6 +227,7 @@ export const MessageSimple = <
     groupStyles,
     hasReactions,
     message,
+    showMessageOverlay,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageAvatar, MessageContent, ReactionList } = useMessagesContext<
     At,
@@ -240,6 +250,7 @@ export const MessageSimple = <
         MessageAvatar,
         MessageContent,
         ReactionList,
+        showMessageOverlay,
       }}
       {...props}
     />

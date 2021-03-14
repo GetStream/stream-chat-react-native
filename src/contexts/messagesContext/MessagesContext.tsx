@@ -2,10 +2,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type {
-  GestureResponderEvent,
-  TouchableOpacityProps,
-} from 'react-native';
+import type { TouchableOpacityProps } from 'react-native';
+
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
@@ -23,7 +21,10 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
-import type { MessageProps } from '../../components/Message/Message';
+import type {
+  MessageGestureHandlerPayload,
+  MessageProps,
+} from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
@@ -274,6 +275,10 @@ export type MessagesContextValue<
    */
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
   /**
+   * When false, pop-out animation will be disabled for message bubble, onLongPress
+   */
+  animatedLongPress?: boolean;
+  /**
    * Full override of the block user button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
@@ -442,20 +447,26 @@ export type MessagesContextValue<
    * Double tap message for gesture handler components
    */
   onDoubleTapMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    handleReactionDoubleTap?: (reactionType: string) => Promise<void>,
+    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * onLongPressMessage should be used to cancel onPressInMessage timers
    * if required
    */
-  onLongPressMessage?: (event?: GestureResponderEvent) => void;
+  onLongPressMessage?: (
+    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
   /**
    * Override for press on message attachments
    */
   onPressInMessage?: (
-    event: GestureResponderEvent,
-    defaultOnPress?: () => void,
+    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
+  /**
+   * Override for press of message.
+   */
+  onPressMessage?: (
+    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Full override of the reply button in the Message Actions

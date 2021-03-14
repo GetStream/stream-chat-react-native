@@ -62,6 +62,13 @@ export type MessageContextValue<
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
+  handleDeleteMessage: () => Promise<void>;
+  handleEditMessage: () => void;
+  handleReplyMessage: () => void;
+  handleResendMessage: () => Promise<void>;
+  handleToggleBanUser: () => Promise<void>;
+  handleToggleMuteUser: () => Promise<void>;
+  handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
@@ -84,7 +91,10 @@ export type MessageContextValue<
    *
    * @param event   Event object for onLongPress event
    */
-  onLongPress: (event?: GestureResponderEvent) => void;
+  onLongPress: (
+    event: GestureResponderEvent,
+    defaultGestureHandler?: () => void,
+  ) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -99,7 +109,14 @@ export type MessageContextValue<
    *
    * @param event   Event object for onPress event
    */
-  onPress: (event: GestureResponderEvent) => void;
+  onPress: (
+    event: GestureResponderEvent,
+    defaultGestureHandler?: () => void,
+  ) => void;
+  onPressIn: (
+    event: GestureResponderEvent,
+    defaultGestureHandler?: () => void,
+  ) => void;
   /** The images attached to a message */
   otherAttachments: Attachment<At>[];
   reactions: Reactions;

@@ -199,12 +199,19 @@ export const FileAttachment = <
 >(
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPressIn } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
-    onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (

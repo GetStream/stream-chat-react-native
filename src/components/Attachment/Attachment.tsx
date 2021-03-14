@@ -10,7 +10,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
-import type { GestureResponderEvent } from 'react-native';
 import type { Attachment as AttachmentType } from 'stream-chat';
 
 import type {
@@ -23,6 +22,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { MessageContextValue } from 'src/contexts';
 
 export type ActionHandler = (name: string, value: string) => void;
 
@@ -42,24 +42,15 @@ export type AttachmentPropsWithContext<
   | 'Gallery'
   | 'Giphy'
   | 'UrlPreview'
-> & {
-  /**
-   * The attachment to render
-   */
-  attachment: AttachmentType<At>;
-  /**
-   * onPress override for all attachments
-   */
-  onPressIn?: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['onPressInMessage'];
-};
+> &
+  Partial<
+    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onPressIn'>
+  > & {
+    /**
+     * The attachment to render
+     */
+    attachment: AttachmentType<At>;
+  };
 
 const AttachmentWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -187,15 +178,10 @@ export type AttachmentProps<
     | 'UrlPreview'
   >
 > &
-  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'> & {
-    /**
-     * onPress override for all attachments
-     */
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
-  };
+  Pick<
+    AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'attachment' | 'onPressIn'
+  >;
 
 /**
  * Attachment - The message attachment
@@ -228,7 +214,6 @@ export const Attachment = <
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
-    onPressInMessage,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -245,7 +230,7 @@ export const Attachment = <
     PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
-  const onPressIn = propOnPressIn || onPressInMessage;
+  const onPressIn = propOnPressIn;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
 
   return (

@@ -84,6 +84,8 @@ import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
 
+import { removeReservedFields } from './utils/removeReservedFields';
+
 import {
   GroupType,
   isMessagesWithStylesAndReadBy,
@@ -124,6 +126,32 @@ const prefetchImage = ({
       // do nothing, not a big deal that prefetch failed
     });
   }
+};
+
+export type MessageGestureHandlerPayload<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  actionHandlers: MessageActionHandlers;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  defaultGestureHandler?: () => void;
+  event?: GestureResponderEvent;
+};
+
+export type MessageActionHandlers = {
+  deleteMessage: () => void;
+  editMessage: () => void;
+  reply: () => void;
+  resendMessage: () => void;
+  showMessageOverlay: () => void;
+  toggleBanUser: () => void;
+  toggleMuteUser: () => void;
+  toggleReaction: (reactionType: string) => void;
 };
 
 export type MessagePropsWithContext<
@@ -182,6 +210,8 @@ export type MessagePropsWithContext<
     | 'muteUser'
     | 'onDoubleTapMessage'
     | 'onLongPressMessage'
+    | 'onPressInMessage'
+    | 'onPressMessage'
     | 'OverlayReactionList'
     | 'reactionsEnabled'
     | 'removeMessage'
@@ -222,8 +252,9 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      **/
     onLongPress?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-      event?: GestureResponderEvent,
+      payload: Partial<
+        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      >,
     ) => void;
     /**
      * You can call methods available on the Message
@@ -237,8 +268,15 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      * */
     onPress?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-      event: GestureResponderEvent,
+      payload: Partial<
+        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      >,
+    ) => void;
+
+    onPressIn?: (
+      payload: Partial<
+        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      >,
     ) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
@@ -309,6 +347,9 @@ const MessageWithContext = <
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
+    onPressMessage: onPressMessageProp,
+    onPressIn: onPressInProp,
+    onPressInMessage: onPressInMessageProp,
     onThreadSelect,
     openThread,
     OverlayReactionList,
@@ -576,6 +617,83 @@ const MessageWithContext = <
       }, [] as Reactions)
     : [];
 
+  const handleToggleReaction = async (reactionType: string) => {
+    const messageId = message.id;
+    const ownReaction = !!reactions.find(
+      (reaction) => reaction.own && reaction.type === reactionType,
+    );
+
+    // Change reaction in local state, make API call in background, revert to old message if fails
+    try {
+      if (channel && messageId) {
+        if (ownReaction) {
+          await channel.deleteReaction(messageId, reactionType);
+        } else {
+          await channel.sendReaction(
+            messageId,
+            {
+              type: reactionType,
+            } as Reaction<Re, Us>,
+            { enforce_unique: enforceUniqueReaction },
+          );
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleResendMessage = () => {
+    const messageWithourReservedFields = removeReservedFields(message);
+
+    return retrySendMessage(
+      messageWithourReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
+    );
+  };
+
+  const handleReplyMessage = () => {
+    setQuotedMessageState(message);
+  };
+
+  const isMuted = (client.mutedUsers || []).some(
+    (mute) =>
+      mute.user.id === client.userID && mute.target.id === message.user?.id,
+  );
+
+  const handleToggleMuteUser = async () => {
+    if (!message.user?.id) {
+      return;
+    }
+
+    if (isMuted) {
+      await client.unmuteUser(message.user.id);
+    } else {
+      await client.muteUser(message.user.id);
+    }
+  };
+
+  const handleDeleteMessage = async () => {
+    const data = await client.deleteMessage(message.id);
+    updateMessage(data.message);
+  };
+
+  const handleEditMessage = () => {
+    setEditingState(message);
+  };
+
+  const handleToggleBanUser = async () => {
+    const messageUser = message.user;
+    if (!messageUser) {
+      return;
+    }
+
+    if (messageUser.banned) {
+      await client.unbanUser(messageUser.id);
+    } else {
+      await client.banUser(messageUser.id);
+    }
+  };
+
   const showMessageOverlay = async (
     messageReactions = false,
     error = message.type === 'error' || message.status === 'failed',
@@ -593,11 +711,8 @@ const MessageWithContext = <
               if (handleBlock) {
                 handleBlock(message);
               }
-              if (message.user.banned) {
-                await client.unbanUser(message.user.id);
-              } else {
-                await client.banUser(message.user.id);
-              }
+
+              await handleToggleBanUser();
             }
           },
           icon: <UserDelete pathFill={grey} />,
@@ -635,13 +750,13 @@ const MessageWithContext = <
                 [
                   { onPress: () => setOverlay('none'), text: t('Cancel') },
                   {
-                    onPress: async () => {
+                    onPress: () => {
                       setOverlay('none');
                       if (handleDelete) {
                         handleDelete(message);
                       }
-                      const data = await client.deleteMessage(message.id);
-                      updateMessage(data.message);
+
+                      handleDeleteMessage();
                     },
                     style: 'destructive',
                     text: t('Delete'),
@@ -666,7 +781,7 @@ const MessageWithContext = <
             if (handleEdit) {
               handleEdit(message);
             }
-            setEditingState(message);
+            handleEditMessage();
           },
           icon: <Edit pathFill={grey} />,
           title: t('Edit Message'),
@@ -731,33 +846,12 @@ const MessageWithContext = <
     const handleReaction = !error
       ? selectReaction
         ? selectReaction(message)
-        : async (reactionType: string) => {
+        : (reactionType: string) => {
             if (handleReactionProp) {
               handleReactionProp(message, reactionType);
             }
-            const messageId = message.id;
-            const ownReaction = !!reactions.find(
-              (reaction) => reaction.own && reaction.type === reactionType,
-            );
 
-            // Change reaction in local state, make API call in background, revert to old message if fails
-            try {
-              if (channel && messageId) {
-                if (ownReaction) {
-                  await channel.deleteReaction(messageId, reactionType);
-                } else {
-                  await channel.sendReaction(
-                    messageId,
-                    {
-                      type: reactionType,
-                    } as Reaction<Re, Us>,
-                    { enforce_unique: enforceUniqueReaction },
-                  );
-                }
-              }
-            } catch (err) {
-              console.log(err);
-            }
+            return handleToggleReaction(reactionType);
           }
       : undefined;
 
@@ -770,18 +864,17 @@ const MessageWithContext = <
       : muteUserProp === null
       ? null
       : {
-          action: async () => {
+          action: () => {
             setOverlay('none');
             if (message.user?.id) {
               if (handleMute) {
                 handleMute(message);
               }
-              if (isMuted) {
-                await client.unmuteUser(message.user.id);
-              } else {
-                await client.muteUser(message.user.id);
-              }
+
+              return handleToggleMuteUser();
             }
+
+            return;
           },
           icon: <Mute pathFill={grey} />,
           title: isMuted ? t('Unmute User') : t('Mute User'),
@@ -797,7 +890,7 @@ const MessageWithContext = <
             if (handleReply) {
               handleReply(message);
             }
-            setQuotedMessageState(message);
+            handleReplyMessage();
           },
           icon: <CurveLineLeftUp pathFill={grey} />,
           title: t('Reply'),
@@ -810,27 +903,12 @@ const MessageWithContext = <
       : {
           action: async () => {
             setOverlay('none');
-            const retryMessage = { ...message };
-            const reserved = [
-              'cid',
-              'config',
-              'created_at',
-              'created_by',
-              'id',
-              'last_message_at',
-              'member_count',
-              'type',
-              'updated_at',
-            ];
-            reserved.forEach((key) => {
-              delete retryMessage[key];
-            });
+            const messageWithourReservedFields = removeReservedFields(message);
             if (handleRetry) {
-              handleRetry(retryMessage);
+              handleRetry(messageWithourReservedFields);
             }
-            await retrySendMessage(
-              retryMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
-            );
+
+            await handleResendMessage();
           },
           icon: <SendUp pathFill={accent_blue} />,
           title: t('Resend'),
@@ -959,52 +1037,31 @@ const MessageWithContext = <
     setOverlay('message');
   };
 
+  const actionHandlers: MessageActionHandlers = {
+    deleteMessage: handleDeleteMessage,
+    editMessage: handleEditMessage,
+    reply: handleReplyMessage,
+    resendMessage: handleResendMessage,
+    showMessageOverlay,
+    toggleBanUser: handleToggleBanUser,
+    toggleMuteUser: handleToggleMuteUser,
+    toggleReaction: handleToggleReaction,
+  };
+
   const onLongPressMessage =
     disabled || hasAttachmentActions
       ? () => null
+      : onLongPressMessageProp
+      ? () => onLongPressMessageProp({ actionHandlers, message })
       : onLongPressProp
-      ? (event?: GestureResponderEvent) => onLongPressProp(message, event)
+      ? () => onLongPressProp({ actionHandlers })
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
 
-  const handleReactionDoubleTap =
-    message.type !== 'error' && message.status !== 'failed'
-      ? selectReaction
-        ? selectReaction(message)
-        : async (reactionType: string) => {
-            if (handleReactionProp) {
-              handleReactionProp(message, reactionType);
-            }
-            const messageId = message.id;
-            const ownReaction = !!reactions.find(
-              (reaction) => reaction.own && reaction.type === reactionType,
-            );
-
-            // Change reaction in local state, make API call in background, revert to old message if fails
-            try {
-              if (channel && messageId) {
-                if (ownReaction) {
-                  await channel.deleteReaction(messageId, reactionType);
-                } else {
-                  await channel.sendReaction(
-                    messageId,
-                    {
-                      type: reactionType,
-                    } as Reaction<Re, Us>,
-                    { enforce_unique: enforceUniqueReaction },
-                  );
-                }
-              }
-            } catch (err) {
-              console.log(err);
-            }
-          }
-      : undefined;
-
   const onDoubleTapMessage = () => {
     if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp(message, handleReactionDoubleTap);
+      onDoubleTapMessageProp({ actionHandlers, message });
     }
   };
 
@@ -1018,6 +1075,13 @@ const MessageWithContext = <
     files: attachments.files,
     groupStyles: forwardedGroupStyles,
     handleAction,
+    handleDeleteMessage,
+    handleEditMessage,
+    handleReplyMessage,
+    handleResendMessage,
+    handleToggleBanUser,
+    handleToggleMuteUser,
+    handleToggleReaction,
     hasReactions,
     images: attachments.images,
     isMyMessage,
@@ -1028,23 +1092,33 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
-    onLongPress: animatedLongPress
-      ? (event) => {
-          if (onLongPressMessageProp) {
-            onLongPressMessageProp(event);
-          }
-        }
-      : (event) => {
-          if (onLongPressMessageProp) {
-            onLongPressMessageProp(event);
-          }
-          onLongPressMessage(event);
-        },
+    onLongPress: !animatedLongPress ? onLongPressMessage : () => null,
     onlyEmojis,
     onOpenThread,
-    onPress: onPressProp
-      ? (event: GestureResponderEvent) => onPressProp(message, event)
-      : () => onPress(),
+    onPress: (event) => {
+      onPressProp
+        ? onPressProp({ actionHandlers, defaultGestureHandler: onPress })
+        : onPressMessageProp
+        ? onPressMessageProp({
+            actionHandlers,
+            defaultGestureHandler: onPress,
+            event,
+            message,
+          })
+        : onPress();
+    },
+    onPressIn: (event, defaultGestureHandler) => {
+      onPressInProp
+        ? onPressInProp({ actionHandlers, defaultGestureHandler })
+        : onPressInMessageProp
+        ? onPressInMessageProp({
+            actionHandlers,
+            defaultGestureHandler,
+            event,
+            message,
+          })
+        : undefined;
+    },
     otherAttachments: attachments.other,
     preventPress,
     reactions,

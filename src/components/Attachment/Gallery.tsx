@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  GestureResponderEvent,
   Image,
   ImageProps,
   PixelRatio,
@@ -104,7 +103,12 @@ export type GalleryPropsWithContext<
 > = Pick<ImageGalleryContextValue, 'setImage'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'groupStyles' | 'images' | 'onLongPress' | 'threadList'
+    | 'alignment'
+    | 'groupStyles'
+    | 'images'
+    | 'onLongPress'
+    | 'onPressIn'
+    | 'threadList'
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -114,10 +118,6 @@ export type GalleryPropsWithContext<
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     preventPress?: boolean;
   };
 
@@ -429,11 +429,11 @@ export const Gallery = <
     images: contextImages,
     message,
     onLongPress: contextOnLongPress,
+    onPressIn: contextOnPressIn,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
-    onPressInMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     setBlurType: contextSetBlurType,
@@ -449,7 +449,7 @@ export const Gallery = <
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
-  const onPressIn = propOnPressIn || onPressInMessage;
+  const onPressIn = propOnPressIn || contextOnPressIn;
   const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;

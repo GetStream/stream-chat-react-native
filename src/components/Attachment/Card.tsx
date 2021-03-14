@@ -98,15 +98,14 @@ export type CardPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Attachment<At> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'onLongPress' | 'onPressIn'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     styles?: Partial<{
       authorName: StyleProp<TextStyle>;
       authorNameContainer: StyleProp<ViewStyle>;
@@ -326,13 +325,20 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPressIn } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
     additionalTouchableProps,
     CardCover,
     CardFooter,
     CardHeader,
-    onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
