@@ -379,6 +379,56 @@ export type MessagesContextValue<
   ) => Promise<void>;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
+  /**
+   * Use this prop to override message actions (which pop-up in message overlay).
+   *
+   * You can either completely override the default messageActions object.
+   *
+   * ```
+   * <Channel
+   *   messageActions=[
+   *     {
+   *       action: () => { someAction() };
+   *       title: "Pin Message";
+   *       icon: PinIcon;
+   *       titleStyle: {};
+   *     },
+   *     {
+   *       action: () => { someAction() };
+   *       title: "Delete Message";
+   *       icon: PinIcon;
+   *       titleStyle: {};
+   *     }
+   *   ]
+   * >
+   * </Channel>
+   * ```
+   *
+   * Or you can selectly keep certain action and remove some:
+   *
+   * e.g. Lets say you only want to keep threadReply and copyMessage actions
+   *
+   * ```
+   * <Channel
+   *   messageActions={({
+   *     blockUser,
+   *     copyMessage,
+   *     deleteMessage,
+   *     editMessage,
+   *     flagMessage,
+   *     muteUser,
+   *     reply,
+   *     retry,
+   *     threadReply,
+   *   }) => ([
+   *     threadReply, copyMessage
+   *   ])}
+   * >
+   *  </Channel>
+   *  ```
+   *
+   * @overrideType Function | Array<Objects>
+   */
   messageActions?:
     | (MessageAction | null)[]
     | (({

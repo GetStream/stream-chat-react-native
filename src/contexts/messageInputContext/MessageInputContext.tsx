@@ -364,6 +364,21 @@ export type InputMessageInputContextValue<
         getUsers: () => UserResponse<Us>[];
       }
   >;
+  /**
+   * Custom UI component to override buttons on left side of input box
+   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/InputButtons.tsx),
+   * which contain following components/buttons:
+   *
+   *  - AttachButton
+   *  - CommandsButtom
+   *
+   * You have access to following prop functions:
+   *
+   * - closeAttachmentPicker
+   * - openAttachmentPicker
+   * - openCommandsPicker
+   * - toggleAttachmentPicker
+   */
   InputButtons?: React.ComponentType<
     InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
