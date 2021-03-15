@@ -31,7 +31,7 @@ type MoreOptionsButtonPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
-  handleOnPress?: (event: GestureResponderEvent) => void;
+  handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
 };
 
 const MoreOptionsButtonWithContext = <

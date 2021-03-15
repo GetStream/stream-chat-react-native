@@ -310,18 +310,20 @@ export const AttachmentPicker = React.forwardRef(
       <>
         <BottomSheet
           handleComponent={
-            photoError ? () => null : AttachmentPickerBottomSheetHandle
+            /**
+             * using `undefined` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
+             * as opacity is not an allowed style
+             */
+            photoError ? undefined : AttachmentPickerBottomSheetHandle
           }
-          // @ts-expect-error
           handleHeight={attachmentPickerBottomSheetHandleHeight || 20}
-          initialSnapIndex={-1}
+          index={-1}
           onChange={(index: number) => setCurrentIndex(index)}
           ref={ref}
           snapPoints={[
             attachmentPickerBottomSheetHeight ?? 308,
             screenHeight - topInset,
           ]}
-          style={{ opacity: photoError ? 0 : 1 }}
         >
           <BottomSheetFlatList
             contentContainerStyle={[

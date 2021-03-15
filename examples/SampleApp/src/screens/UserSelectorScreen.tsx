@@ -12,7 +12,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native';
+import { useTheme, version } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
 import { AppContext } from '../context/AppContext';
@@ -20,8 +20,6 @@ import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
-
-import { version } from '../../node_modules/stream-chat-react-native/package.json';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 

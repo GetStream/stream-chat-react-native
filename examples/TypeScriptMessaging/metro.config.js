@@ -133,18 +133,18 @@ function getPolyfillHelper() {
 
 const PATH = require('path');
 const FS = require('fs'),
-  blacklist = require('metro-config/src/defaults/blacklist');
+  exclusionList = require('metro-config/src/defaults/exclusionList');
 
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
-const moduleBlacklist = [
-    new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
-    new RegExp(repoDir + '/examples/NativeMessaging/.*'),
-    new RegExp(repoDir + '/examples/SampleApp/.*'),
-    new RegExp(repoDir + '/expo-package/.*'),
-    new RegExp(repoDir + '/native-package/node_modules/.*'),
-    new RegExp(repoDir + '/node_modules/.*'),
-  ],
+const moduleExclusionList = [
+  new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+  new RegExp(repoDir + '/examples/NativeMessaging/.*'),
+  new RegExp(repoDir + '/examples/SampleApp/.*'),
+  new RegExp(repoDir + '/expo-package/.*'),
+  new RegExp(repoDir + '/native-package/node_modules/.*'),
+  new RegExp(repoDir + '/node_modules/.*'),
+],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)
   alternateRoots = findAlternateRoots(),
@@ -157,7 +157,7 @@ if (alternateRoots && alternateRoots.length)
 
 module.exports = {
   resolver: {
-    blacklistRE: blacklist(moduleBlacklist),
+    blacklistRE: exclusionList(moduleExclusionList),
     extraNodeModules,
     useWatchman: false,
   },

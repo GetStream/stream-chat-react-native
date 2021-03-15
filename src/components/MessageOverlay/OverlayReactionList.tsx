@@ -318,13 +318,10 @@ const OverlayReactionListWithContext = <
   } = useTheme();
 
   const reactionBubbleWidth = useSharedValue(0);
-  const reactionListLayout = useSharedValue(
-    {
-      height: 0,
-      width: 0,
-    },
-    false,
-  );
+  const reactionListLayout = useSharedValue({
+    height: 0,
+    width: 0,
+  });
 
   const { width } = useWindowDimensions();
 

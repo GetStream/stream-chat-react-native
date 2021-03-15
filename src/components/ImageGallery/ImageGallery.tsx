@@ -1199,16 +1199,15 @@ export const ImageGallery = <
         currentBottomSheetIndex={currentBottomSheetIndex}
       />
       <BottomSheet
-        animatedPositionIndex={animatedBottomSheetIndex}
+        animatedIndex={animatedBottomSheetIndex}
         handleComponent={() => (
           <ImageGridHandle
             closeGridView={closeGridView}
             {...imageGalleryCustomComponents?.gridHandle}
           />
         )}
-        // @ts-expect-error
         handleHeight={imageGalleryGridHandleHeight ?? 40}
-        initialSnapIndex={0}
+        index={0}
         onChange={(index: number) => setCurrentBottomSheetIndex(index)}
         ref={bottomSheetRef}
         snapPoints={imageGalleryGridSnapPoints || [0, vh(90)]}

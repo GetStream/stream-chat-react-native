@@ -37,7 +37,7 @@ type CommandsButtonPropsWithContext<
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> &
   Pick<SuggestionsContextValue<Co, Us>, 'suggestions'> & {
     /** Function that opens commands selector */
-    handleOnPress?: (event: GestureResponderEvent) => void;
+    handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   };
 
 export const CommandsButtonWithContext = <

@@ -186,7 +186,7 @@ const MessageOverlayWithContext = <
   const scrollViewRef = useRef<ScrollView>(null);
 
   const messageHeight = useSharedValue(0);
-  const messageLayout = useSharedValue({ x: 0, y: 0 }, false);
+  const messageLayout = useSharedValue({ x: 0, y: 0 });
   const messageWidth = useSharedValue(0);
   const reactionListHeight = useSharedValue(0);
 

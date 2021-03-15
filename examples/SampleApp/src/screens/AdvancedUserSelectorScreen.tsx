@@ -8,12 +8,14 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardCompatibleView, useTheme } from 'stream-chat-react-native';
+import {
+  KeyboardCompatibleView,
+  useTheme,
+  version,
+} from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
-
-import { version } from '../../node_modules/stream-chat-react-native/package.json';
 
 const styles = StyleSheet.create({
   bottomContainer: {
@@ -138,7 +140,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
   const [apiKeyError, setApiKeyError] = useState(false);
   const [userId, setUserId] = useState('');
   const [userIdError, setUserIdError] = useState(false);
-  const [userName, setUserName] = useState();
+  const [userName, setUserName] = useState('');
   const [userToken, setUserToken] = useState('');
   const [userTokenError, setUserTokenError] = useState(false);
 

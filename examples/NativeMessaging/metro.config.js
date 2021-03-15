@@ -30,7 +30,7 @@ function listDirectories(rootPath, cb) {
     if (!stats.isDirectory()) return;
 
     const external = isExternalModule(fullFileName);
-    cb({rootPath, symbolic, external, fullFileName, fileName});
+    cb({ rootPath, symbolic, external, fullFileName, fileName });
   });
 }
 
@@ -52,7 +52,7 @@ function buildFullModuleMap(
 
   listDirectories(
     moduleRoot,
-    ({fileName, fullFileName, symbolic, external}) => {
+    ({ fileName, fullFileName, symbolic, external }) => {
       if (symbolic)
         return buildFullModuleMap(
           resolvePath(fullFileName, 'node_modules'),
@@ -97,7 +97,7 @@ function findAlternateRoots(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(moduleRoot, ({fullFileName, fileName, external}) => {
+  listDirectories(moduleRoot, ({ fullFileName, fileName, external }) => {
     if (fileName.charAt(0) !== '@') {
       if (external) alternateRoots.push(fullFileName);
     } else {
@@ -133,18 +133,18 @@ function getPolyfillHelper() {
 
 const PATH = require('path');
 const FS = require('fs'),
-  blacklist = require('metro-config/src/defaults/blacklist');
+  exclusionList = require('metro-config/src/defaults/exclusionList');
 
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
-const moduleBlacklist = [
-    new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
-    new RegExp(repoDir + '/examples/SampleApp/.*'),
-    new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
-    new RegExp(repoDir + '/expo-package/.*'),
-    new RegExp(repoDir + '/native-package/node_modules/.*'),
-    new RegExp(repoDir + '/node_modules/.*'),
-  ],
+const moduleExclusionList = [
+  new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+  new RegExp(repoDir + '/examples/SampleApp/.*'),
+  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
+  new RegExp(repoDir + '/expo-package/.*'),
+  new RegExp(repoDir + '/native-package/node_modules/.*'),
+  new RegExp(repoDir + '/node_modules/.*'),
+],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)
   alternateRoots = findAlternateRoots(),
@@ -157,7 +157,7 @@ if (alternateRoots && alternateRoots.length)
 
 module.exports = {
   resolver: {
-    blacklistRE: blacklist(moduleBlacklist),
+    blacklistRE: exclusionList(moduleExclusionList),
     extraNodeModules,
     useWatchman: false,
   },

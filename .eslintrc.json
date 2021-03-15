@@ -107,7 +107,7 @@
         "plugin:jest/recommended",
         "plugin:prettier/recommended",
         "plugin:react/recommended",
-        "prettier/@typescript-eslint"
+        "prettier"
       ],
       "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
