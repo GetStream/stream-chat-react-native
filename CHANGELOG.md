@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0] (2021-02-15)
+## [3.1.0] (2021-02-15)
 
 - **🛑 BREAKING**: Removed a prop `handleOnPress` on `Input` component.
 - Added support for new props on `Input` component, which can be used on Channel component as prop to replace undelying input component ([reference](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#how-to-change-the-layout-of-messageinput-component))
