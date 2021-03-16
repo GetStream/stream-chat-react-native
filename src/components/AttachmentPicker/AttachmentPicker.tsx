@@ -306,23 +306,25 @@ export const AttachmentPicker = React.forwardRef(
       return null;
     }
 
+    const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
+
     return (
       <>
         <BottomSheet
           handleComponent={
             /**
-             * using `undefined` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
+             * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
              * as opacity is not an allowed style
              */
-            photoError ? undefined : AttachmentPickerBottomSheetHandle
+            photoError ? null : AttachmentPickerBottomSheetHandle
           }
-          handleHeight={attachmentPickerBottomSheetHandleHeight || 20}
+          handleHeight={handleHeight}
           index={-1}
           onChange={(index: number) => setCurrentIndex(index)}
           ref={ref}
           snapPoints={[
-            attachmentPickerBottomSheetHeight ?? 308,
-            screenHeight - topInset,
+            attachmentPickerBottomSheetHeight ?? 308 - handleHeight,
+            screenHeight - topInset - handleHeight,
           ]}
         >
           <BottomSheetFlatList
