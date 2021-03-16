@@ -696,10 +696,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@gorhom/bottom-sheet@3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.4.0.tgz#22fcdc48e23d4a9be4158930f8e913d0f9640bd3"
-  integrity sha512-akDLrqHt6pG2OJGu9oOpgRyXJFx1+s8/OyziJ89/Gr5XxaBzVLvFKodtLAkj/xdyj8K627ulf36qfh/YSdqdYQ==
+"@gorhom/bottom-sheet@3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.4.1.tgz#649ee59a78796b906789120740c656d891225987"
+  integrity sha512-Xu3VPOzDLvfJfkzM3z5YRESlyZp8TIelgnQO0K2fEY787RvpMKy6h/Bp1cKmk4UT91UW6o1wALTXgQvVzUtt5g==
   dependencies:
     "@gorhom/portal" "^1.0.4"
     invariant "^2.2.4"
@@ -1487,10 +1487,10 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.5.1.tgz#553df1b2458b1208ae798c18e14571ea8daa5065"
-  integrity sha512-mLUu2zoiI+Ebj7YAAJnBagyFW4YDrdx/f3bvkZkmCWMidNN26xNitvq7Jelwz6LXjlVm+fPrWdwAyPJlymtLkQ==
+stream-chat@3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.6.0.tgz#9d702c50f68bbbc42eea709090f5b651dece6b22"
+  integrity sha512-YbQDi9vhZegAks1FbKNiw+GeuuYD8d9FxBL19iYcszjGC5UgwSqkVAFtDWHlYEXir/pT+nhdPc9DEzYFHttmVQ==
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@types/jsonwebtoken" "^8.5.0"

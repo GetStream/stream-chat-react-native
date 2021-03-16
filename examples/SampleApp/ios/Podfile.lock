@@ -355,7 +355,7 @@ PODS:
     - React
   - react-native-cameraroll (4.0.2):
     - React-Core
-  - react-native-document-picker (5.0.1):
+  - react-native-document-picker (5.0.2):
     - React-Core
   - react-native-image-resizer (1.4.3):
     - React-Core
@@ -720,7 +720,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 0ae35a37b20d5e031eb020a69cc5afdbd6406301
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-cameraroll: 1965db75c851b15e77a22ca0ac78e32af6b571ae
-  react-native-document-picker: d6a15c20e1b2d488af459aefff831839e9995927
+  react-native-document-picker: cc847dd5fe2fc51c3a98bd8f2fd1e452db795c48
   react-native-image-resizer: 5dfbf934fe5788c11ed06ebbcdb6e6fb6beec20c
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
