@@ -53,6 +53,11 @@ To use this library you need to ensure you match up with the correct version of 
 
 The best place to start is the [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0). It teaches you how to use this SDK and also shows how to make frequently required changes.
 
+## Free for Makers
+
+Stream is free for most side and hobby projects. To qualify your project/company needs to have < 5 team members and < $10k in monthly revenue.
+For complete pricing details visit our [Chat Pricing Page](https://getstream.io/chat/pricing/)
+
 ## 🔮 Example Apps
 
 This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
