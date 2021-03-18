@@ -15,7 +15,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-export type MessageListContextValue<
+export type PaginatedMessageListContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -58,11 +58,11 @@ export type MessageListContextValue<
   setLoadingMoreRecent: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const MessageListContext = React.createContext(
-  {} as MessageListContextValue,
+export const PaginatedMessageListContext = React.createContext(
+  {} as PaginatedMessageListContextValue,
 );
 
-export const MessageListProvider = <
+export const PaginatedMessageListProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -74,16 +74,16 @@ export const MessageListProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessageListContext.Provider
-    value={(value as unknown) as MessageListContextValue}
+  <PaginatedMessageListContext.Provider
+    value={(value as unknown) as PaginatedMessageListContextValue}
   >
     {children}
-  </MessageListContext.Provider>
+  </PaginatedMessageListContext.Provider>
 );
 
-export const useMessageListContext = <
+export const usePaginatedMessageListContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -92,22 +92,16 @@ export const useMessageListContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() =>
-  (useContext(MessageListContext) as unknown) as MessageListContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  (useContext(
+    PaginatedMessageListContext,
+  ) as unknown) as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if MessageListContextValue
  * typing is desired while using the HOC withMessageListContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessageListContext = <
+export const withPaginatedMessageListContext = <
   P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -119,12 +113,15 @@ export const withMessageListContext = <
 >(
   Component: React.ComponentType<P>,
 ): React.FC<
-  Omit<P, keyof MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>
+  Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>
 > => {
-  const WithMessageListContextComponent = (
-    props: Omit<P, keyof MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+  const WithPaginatedMessageListContextComponent = (
+    props: Omit<
+      P,
+      keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>
+    >,
   ) => {
-    const messageListContext = useMessageListContext<
+    const paginatedMessageListContext = usePaginatedMessageListContext<
       At,
       Ch,
       Co,
@@ -134,10 +131,10 @@ export const withMessageListContext = <
       Us
     >();
 
-    return <Component {...(props as P)} {...messageListContext} />;
+    return <Component {...(props as P)} {...paginatedMessageListContext} />;
   };
-  WithMessageListContextComponent.displayName = `WithMessageListContext${getDisplayName(
+  WithPaginatedMessageListContextComponent.displayName = `WithPaginatedMessageListContext${getDisplayName(
     Component,
   )}`;
-  return WithMessageListContextComponent;
+  return WithPaginatedMessageListContextComponent;
 };

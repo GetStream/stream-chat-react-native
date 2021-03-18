@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { useMessageListContext } from '../../contexts/messageListContext/MessageListContext';
+import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
@@ -73,7 +73,15 @@ export const InlineLoadingMoreIndicator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() => {
-  const { loadingMore } = useMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadingMore } = usePaginatedMessageListContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   return <MemoizedInlineLoadingMoreIndicator loadingMore={loadingMore} />;
 };

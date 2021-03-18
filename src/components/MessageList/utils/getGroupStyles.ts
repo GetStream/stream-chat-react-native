@@ -1,6 +1,6 @@
 import type { GroupType } from '../hooks/useMessageList';
 
-import type { MessageListContextValue } from '../../../contexts/messageListContext/MessageListContext';
+import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
   DefaultAttachmentType,
@@ -23,7 +23,7 @@ export type GetGroupStylesParams<
   Us extends UnknownType = DefaultUserType
 > = {
   messages:
-    | MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
   noGroupByUser?: boolean;
 };

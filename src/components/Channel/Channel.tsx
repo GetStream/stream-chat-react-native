@@ -23,8 +23,8 @@ import {
 
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
-import { useCreateMessageListContext } from './hooks/useCreateMessageListContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
+import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
@@ -89,14 +89,14 @@ import {
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
-  MessageListContextValue,
-  MessageListProvider,
-} from '../../contexts/messageListContext/MessageListContext';
-import {
   MessagesConfig,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  PaginatedMessageListContextValue,
+  PaginatedMessageListProvider,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import {
   SuggestionsContextValue,
   SuggestionsProvider,
@@ -207,7 +207,7 @@ export type ChannelPropsWithContext<
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
-      MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       'messages' | 'loadingMore' | 'loadingMoreRecent'
     >
   > &
@@ -525,7 +525,7 @@ const ChannelWithContext = <
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
-    MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >([]);
 
   const [members, setMembers] = useState<
@@ -1143,7 +1143,7 @@ const ChannelWithContext = <
     },
   );
 
-  const loadMore: MessageListContextValue<
+  const loadMore: PaginatedMessageListContextValue<
     At,
     Ch,
     Co,
@@ -1183,7 +1183,7 @@ const ChannelWithContext = <
     }
   };
 
-  const loadMoreRecent: MessageListContextValue<
+  const loadMoreRecent: PaginatedMessageListContextValue<
     At,
     Ch,
     Co,
@@ -1447,7 +1447,7 @@ const ChannelWithContext = <
     UploadProgressIndicator,
   });
 
-  const messageListContext = useCreateMessageListContext({
+  const messageListContext = useCreatePaginatedMessageListContext({
     hasMore,
     loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : loadingMore,
     loadingMoreRecent:
@@ -1586,7 +1586,7 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <MessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+        <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
           value={messageListContext}
         >
           <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
@@ -1600,7 +1600,7 @@ const ChannelWithContext = <
               </SuggestionsProvider>
             </ThreadProvider>
           </MessagesProvider>
-        </MessageListProvider>
+        </PaginatedMessageListProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

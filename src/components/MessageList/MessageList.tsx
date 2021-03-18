@@ -36,13 +36,13 @@ import {
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
-  MessageListContextValue,
-  useMessageListContext,
-} from '../../contexts/messageListContext/MessageListContext';
-import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  PaginatedMessageListContextValue,
+  usePaginatedMessageListContext,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import {
   ThreadContextValue,
   useThreadContext,
@@ -143,7 +143,7 @@ type MessageListPropsWithContext<
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'isOnline'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
   Pick<
-    MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'loadMore' | 'loadMoreRecent'
   > &
   Pick<
@@ -964,7 +964,7 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { loadMore, loadMoreRecent } = useMessageListContext<
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<
     At,
     Ch,
     Co,

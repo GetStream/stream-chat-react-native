@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { MessageListContextValue } from '../../../contexts/messageListContext/MessageListContext';
+import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -12,7 +12,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-export const useCreateMessageListContext = <
+export const useCreatePaginatedMessageListContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -29,7 +29,7 @@ export const useCreateMessageListContext = <
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
-}: MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const messagesUpdated = messages
     .map(
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
@@ -41,7 +41,7 @@ export const useCreateMessageListContext = <
     )
     .join();
 
-  const messagesContext: MessageListContextValue<
+  const paginatedMessagesContext: PaginatedMessageListContextValue<
     At,
     Ch,
     Co,
@@ -63,5 +63,5 @@ export const useCreateMessageListContext = <
     [hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
   );
 
-  return messagesContext;
+  return paginatedMessagesContext;
 };
