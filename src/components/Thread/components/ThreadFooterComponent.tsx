@@ -11,10 +11,7 @@ import {
   ThreadContextValue,
   useThreadContext,
 } from '../../../contexts/threadContext/ThreadContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { vw } from '../../../utils/utils';
 
 import type {
@@ -57,8 +54,7 @@ type ThreadFooterComponentPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Message'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'> &
-  Pick<TranslationContextValue, 't'>;
+  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
 
 const ThreadFooterComponentWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -71,7 +67,8 @@ const ThreadFooterComponentWithContext = <
 >(
   props: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { Message, t, thread } = props;
+  const { Message, thread } = props;
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -164,7 +161,9 @@ const areEqual = <
   const { thread: nextThread } = nextProps;
 
   const threadEqual =
-    prevThread?.id === nextThread?.id && prevThread?.text === nextThread?.text;
+    prevThread?.id === nextThread?.id &&
+    prevThread?.text === nextThread?.text &&
+    prevThread?.reply_count === nextThread?.reply_count;
   if (!threadEqual) return false;
 
   return true;
@@ -186,13 +185,11 @@ export const ThreadFooterComponent = <
 >() => {
   const { Message } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
 
   return (
     <MemoizedThreadFooter
       {...{
         Message,
-        t,
         thread,
       }}
     />
