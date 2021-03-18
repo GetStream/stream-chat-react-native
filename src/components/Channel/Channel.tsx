@@ -687,6 +687,7 @@ const ChannelWithContext = <
       channel?.off(handleEvent);
     };
   }, [channelId]);
+  
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
     setLoading(true);
