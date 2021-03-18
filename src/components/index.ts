@@ -32,6 +32,7 @@ export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
+export * from './Channel/hooks/useCreatePaginatedMessageListContext';
 export * from './Channel/hooks/useCreateThreadContext';
 export * from './Channel/hooks/useTargetedMessage';
 

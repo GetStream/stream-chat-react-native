@@ -10,6 +10,7 @@ export * from './messageInputContext/hooks/useMessageDetailsForState';
 export * from './messageInputContext/MessageInputContext';
 export * from './messageOverlayContext/MessageOverlayContext';
 export * from './messagesContext/MessagesContext';
+export * from './paginatedMessageListContext/PaginatedMessageListContext';
 export * from './overlayContext/OverlayContext';
 export * from './overlayContext/OverlayProvider';
 export * from './suggestionsContext/SuggestionsContext';
