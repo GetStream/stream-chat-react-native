@@ -23,6 +23,7 @@ import {
 
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
+import { useCreateMessageListContext } from './hooks/useCreateMessageListContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
@@ -87,6 +88,10 @@ import {
   InputMessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessageListContextValue,
+  MessageListProvider,
+} from '../../contexts/messageListContext/MessageListContext';
 import {
   MessagesConfig,
   MessagesContextValue,
@@ -200,6 +205,12 @@ export type ChannelPropsWithContext<
   > &
   Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
+  Partial<
+    Pick<
+      MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'messages' | 'loadingMore' | 'loadingMoreRecent'
+    >
+  > &
   Partial<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -441,6 +452,8 @@ const ChannelWithContext = <
     keyboardVerticalOffset,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
+    loadingMore: loadingMoreProp,
+    loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     messageId,
     maxNumberOfFiles = 10,
@@ -452,6 +465,7 @@ const ChannelWithContext = <
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
+    messages: messagesProp,
     muteUser,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -511,7 +525,7 @@ const ChannelWithContext = <
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >([]);
 
   const [members, setMembers] = useState<
@@ -1129,7 +1143,7 @@ const ChannelWithContext = <
     },
   );
 
-  const loadMore: MessagesContextValue<
+  const loadMore: MessageListContextValue<
     At,
     Ch,
     Co,
@@ -1169,7 +1183,7 @@ const ChannelWithContext = <
     }
   };
 
-  const loadMoreRecent: MessagesContextValue<
+  const loadMoreRecent: MessageListContextValue<
     At,
     Ch,
     Co,
@@ -1433,6 +1447,20 @@ const ChannelWithContext = <
     UploadProgressIndicator,
   });
 
+  const messageListContext = useCreateMessageListContext({
+    hasMore,
+    loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : loadingMore,
+    loadingMoreRecent:
+      loadingMoreRecentProp !== undefined
+        ? loadingMoreRecentProp
+        : loadingMoreRecent,
+    loadMore,
+    loadMoreRecent,
+    messages: messagesProp || messages,
+    setLoadingMore,
+    setLoadingMoreRecent,
+  });
+
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
@@ -1468,13 +1496,8 @@ const ChannelWithContext = <
     handleReply,
     handleRetry,
     handleThreadReply,
-    hasMore,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
-    loadingMore,
-    loadingMoreRecent,
-    loadMore,
-    loadMoreRecent,
     markdownRules,
     Message,
     messageActions,
@@ -1486,7 +1509,6 @@ const ChannelWithContext = <
     MessageList,
     MessageReplies,
     MessageRepliesAvatars,
-    messages,
     MessageSimple,
     MessageStatus,
     MessageSystem,
@@ -1526,6 +1548,7 @@ const ChannelWithContext = <
     closeThread,
     loadMoreThread,
     openThread,
+    setThreadLoadingMore,
     thread,
     threadHasMore,
     threadLoadingMore,
@@ -1563,17 +1586,21 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-          <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-            <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-              <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                value={messageInputContext}
-              >
-                <View style={{ height: '100%' }}>{children}</View>
-              </MessageInputProvider>
-            </SuggestionsProvider>
-          </ThreadProvider>
-        </MessagesProvider>
+        <MessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+          value={messageListContext}
+        >
+          <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
+            <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+              <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                  value={messageInputContext}
+                >
+                  <View style={{ height: '100%' }}>{children}</View>
+                </MessageInputProvider>
+              </SuggestionsProvider>
+            </ThreadProvider>
+          </MessagesProvider>
+        </MessageListProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

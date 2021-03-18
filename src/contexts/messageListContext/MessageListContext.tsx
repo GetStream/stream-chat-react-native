@@ -4,7 +4,6 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { ChannelState } from 'stream-chat';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -16,7 +15,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-export type ThreadContextValue<
+export type MessageListContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -25,20 +24,45 @@ export type ThreadContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  allowThreadMessagesInChannel: boolean;
-  closeThread: () => void;
-  loadMoreThread: () => Promise<void>;
-  openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
-  thread: MessageType<At, Ch, Co, Ev, Me, Re, Us> | null;
-  threadHasMore: boolean;
-  threadLoadingMore: boolean;
-  threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
+  /**
+   * Has more messages to load
+   */
+  hasMore: boolean;
+  /**
+   * Is loading more messages
+   */
+  loadingMore: boolean;
+  /**
+   * Is loading more recent messages
+   */
+  loadingMoreRecent: boolean;
+  /**
+   * Load more messages
+   */
+  loadMore: () => Promise<void>;
+  /**
+   * Load more recent messages
+   */
+  loadMoreRecent: () => Promise<void>;
+  /**
+   * Messages from client state
+   */
+  messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
+  /**
+   * Set loadingMore
+   */
+  setLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * Set loadingMoreRecent
+   */
+  setLoadingMoreRecent: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ThreadContext = React.createContext({} as ThreadContextValue);
+export const MessageListContext = React.createContext(
+  {} as MessageListContextValue,
+);
 
-export const ThreadProvider = <
+export const MessageListProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -50,14 +74,16 @@ export const ThreadProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ThreadContext.Provider value={(value as unknown) as ThreadContextValue}>
+  <MessageListContext.Provider
+    value={(value as unknown) as MessageListContextValue}
+  >
     {children}
-  </ThreadContext.Provider>
+  </MessageListContext.Provider>
 );
 
-export const useThreadContext = <
+export const useMessageListContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -66,7 +92,7 @@ export const useThreadContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() =>
-  (useContext(ThreadContext) as unknown) as ThreadContextValue<
+  (useContext(MessageListContext) as unknown) as MessageListContextValue<
     At,
     Ch,
     Co,
@@ -77,11 +103,11 @@ export const useThreadContext = <
   >;
 
 /**
- * Typescript currently does not support partial inference so if ThreadContext
- * typing is desired while using the HOC withThreadContextContext the Props for the
+ * Typescript currently does not support partial inference so if MessageListContextValue
+ * typing is desired while using the HOC withMessageListContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withThreadContext = <
+export const withMessageListContext = <
   P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -92,16 +118,26 @@ export const withThreadContext = <
   Us extends UnknownType = DefaultUserType
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
-  const WithThreadContextComponent = (
-    props: Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+): React.FC<
+  Omit<P, keyof MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>
+> => {
+  const WithMessageListContextComponent = (
+    props: Omit<P, keyof MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const threadContext = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const messageListContext = useMessageListContext<
+      At,
+      Ch,
+      Co,
+      Ev,
+      Me,
+      Re,
+      Us
+    >();
 
-    return <Component {...(props as P)} {...threadContext} />;
+    return <Component {...(props as P)} {...messageListContext} />;
   };
-  WithThreadContextComponent.displayName = `WithThreadContext${getDisplayName(
+  WithMessageListContextComponent.displayName = `WithMessageListContext${getDisplayName(
     Component,
   )}`;
-  return WithThreadContextComponent;
+  return WithMessageListContextComponent;
 };

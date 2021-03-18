@@ -37,6 +37,10 @@ import {
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
+  MessageListContextValue,
+  useMessageListContext,
+} from '../../contexts/messageListContext/MessageListContext';
+import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -140,15 +144,16 @@ type MessageListPropsWithContext<
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'isOnline'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
   Pick<
+    MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'loadingMoreRecent' | 'loadMore' | 'loadMoreRecent'
+  > &
+  Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
     | 'initialScrollToFirstUnreadMessage'
     | 'InlineUnreadIndicator'
-    | 'loadingMoreRecent'
-    | 'loadMore'
-    | 'loadMoreRecent'
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
@@ -451,7 +456,7 @@ const MessageListWithContext = <
 
   useEffect(() => {
     if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
-      channel.markRead();
+      markRead();
     }
   }, []);
 
@@ -597,7 +602,7 @@ const MessageListWithContext = <
   // 1. FlatList doesn't support onStartReached prop
   // 2. `onEndReached` function prop available on react-native, gets executed
   //    once per content length (and thats actually a nice optimization strategy).
-  //    But it also means, we always need to priotizie onEndReached above our
+  //    But it also means, we always need to prioritize onEndReached above our
   //    logic for `onStartReached`.
   // 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
   //    Its a factor of content length (which is necessary for "real" infinite scroll). But on
@@ -957,9 +962,6 @@ export const MessageList = <
     FlatList,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
-    loadingMoreRecent,
-    loadMore,
-    loadMoreRecent,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -967,6 +969,15 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadingMoreRecent, loadMore, loadMoreRecent } = useMessageListContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { loadMoreThread, thread } = useThreadContext<
     At,
     Ch,

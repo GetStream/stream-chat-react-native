@@ -1,5 +1,5 @@
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
-import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+import type { MessageListContextValue } from '../../../contexts/messageListContext/MessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
   DefaultAttachmentType,
@@ -23,7 +23,7 @@ export const getReadStates = <
 >(
   clientUserId: string | undefined,
   messages:
-    | MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    | MessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'],
   read?: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'],
 ) => {

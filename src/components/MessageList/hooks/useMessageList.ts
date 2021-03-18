@@ -6,7 +6,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../contexts/channelContext/ChannelContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import { useMessageListContext } from '../../../contexts/messageListContext/MessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
@@ -83,7 +83,7 @@ export const useMessageList = <
   const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { messages } = useMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const messageList = threadList ? threadMessages : messages;
