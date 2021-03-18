@@ -13,10 +13,7 @@ import {
   Reactions,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Unknown } from '../../../icons/Unknown';
@@ -87,18 +84,15 @@ export type ReactionListPropsWithContext<
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'onLongPress' | 'reactions' | 'showMessageOverlay'
-> &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'supportedReactions'
-  > & {
-    messageContentWidth: number;
-    fill?: string;
-    radius?: number; // not recommended to change this
-    reactionSize?: number;
-    stroke?: string;
-    strokeSize?: number; // not recommended to change this
-  };
+> & {
+  messageContentWidth: number;
+  supportedReactions: ReactionData[];
+  fill?: string;
+  radius?: number; // not recommended to change this
+  reactionSize?: number;
+  stroke?: string;
+  strokeSize?: number; // not recommended to change this
+};
 
 const ReactionListWithContext = <
   At extends UnknownType = DefaultAttachmentType,

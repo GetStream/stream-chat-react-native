@@ -54,13 +54,8 @@ export const useCreateMessagesContext = <
   handleReply,
   handleRetry,
   handleThreadReply,
-  hasMore,
   initialScrollToFirstUnreadMessage,
   InlineUnreadIndicator,
-  loadingMore,
-  loadingMoreRecent,
-  loadMore,
-  loadMoreRecent,
   markdownRules,
   Message,
   messageActions,
@@ -72,7 +67,6 @@ export const useCreateMessagesContext = <
   MessageList,
   MessageReplies,
   MessageRepliesAvatars,
-  messages,
   MessageSimple,
   MessageStatus,
   MessageSystem,
@@ -107,16 +101,6 @@ export const useCreateMessagesContext = <
   ).length;
   const markdownRulesLength = Object.keys(markdownRules || {}).length;
   const messageContentOrderValue = messageContentOrder.join();
-  const messagesUpdated = messages
-    .map(
-      ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
-        `${deleted_at}${
-          latest_reactions
-            ? latest_reactions.map(({ type }) => type).join()
-            : ''
-        }${reply_count}${status}${updated_at.toISOString()}`,
-    )
-    .join();
   const supportedReactionsLength = supportedReactions.length;
 
   const messagesContext: MessagesContextValue<
@@ -162,13 +146,8 @@ export const useCreateMessagesContext = <
       handleReply,
       handleRetry,
       handleThreadReply,
-      hasMore,
       initialScrollToFirstUnreadMessage,
       InlineUnreadIndicator,
-      loadingMore,
-      loadingMoreRecent,
-      loadMore,
-      loadMoreRecent,
       markdownRules,
       Message,
       messageActions,
@@ -180,7 +159,6 @@ export const useCreateMessagesContext = <
       MessageList,
       MessageReplies,
       MessageRepliesAvatars,
-      messages,
       MessageSimple,
       MessageStatus,
       MessageSystem,
@@ -214,12 +192,9 @@ export const useCreateMessagesContext = <
       additionalTouchablePropsLength,
       disableTypingIndicator,
       dismissKeyboardOnMessageTouch,
-      hasMore,
       initialScrollToFirstUnreadMessage,
-      loadingMore,
       markdownRulesLength,
       messageContentOrderValue,
-      messagesUpdated,
       supportedReactionsLength,
     ],
   );
