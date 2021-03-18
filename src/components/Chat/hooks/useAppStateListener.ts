@@ -45,10 +45,7 @@ export const useAppStateListener = <
   }, [closeConnectionOnBackground]);
 
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
+    if (appState.current === 'background' && nextAppState === 'active') {
       await client.openConnection();
     } else if (
       appState.current.match(/active|inactive/) &&
