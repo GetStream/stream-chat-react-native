@@ -1,6 +1,19 @@
 # Changelog
 
-## [3.1.0] (UNRELEASED)
+## [3.1.2] (2021-02-17)
+
+**NO CODE CHANGE**
+
+Fixed version.json during package publishing, which we use to track the version of RN sdk through
+`client.setUserAgent` call
+
+## [3.1.1] (2021-02-17)
+
+Fixed type definition pointers in package.json
+
+- [Issue #560](https://github.com/GetStream/stream-chat-react-native/issues/560)
+
+## [3.1.0] (2021-02-15)
 
 - **🛑 BREAKING**: Removed a prop `handleOnPress` on `Input` component.
 - Added support for new props on `Input` component, which can be used on Channel component as prop to replace undelying input component ([reference](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#how-to-change-the-layout-of-messageinput-component))
@@ -9,7 +22,59 @@
     - openCommandsPicker (function)
     - toggleAttachmentPicker (function)
 
-- Added support for new prop on `Channel` component - `InputButtons`, to replace the extra buttons on the left on input box.
+- Added support for new prop on `Channel` component - `InputButtons`, to replace the extra buttons on the left on input box [#536](https://github.com/GetStream/stream-chat-react-native/pull/536)
+
+- Added support for `messageActions` prop as callback. Also added support for prop `messageActions` on Channel component [#548](https://github.com/GetStream/stream-chat-react-native/pull/548)
+  Earlier you could override messageActions prop as following:
+
+  ```jsx
+  <Channel
+    messageActions=[
+      {
+        action: () => { /** Some message action logic */ };
+        title: "Pin Message";
+        icon: PinIcon;
+        titleStyle: {};
+      },
+      {
+        action: () => { /** Some message action logic */ };
+        title: "Delete Message";
+        icon: PinIcon;
+        titleStyle: {};
+      }
+    ]
+  >
+    {/** MessageList and MessageInput component here */}
+  </Channel>
+  ```
+
+  But now, you can selectly keep certain action and remove some:
+
+  ```jsx
+  /** Lets say you only want to keep threadReply and copyMessage actions */
+  <Channel
+    messageActions={({
+      blockUser,
+      copyMessage,
+      deleteMessage,
+      editMessage,
+      flagMessage,
+      muteUser,
+      reply,
+      retry,
+      threadReply,
+    }) => ([
+      threadReply, copyMessage
+    ])}
+  >
+    {/** MessageList and MessageInput component here */}
+  </Channel>
+  ```
+
+- Issue fix: make OverlayReactions customizable through props. [c7a83b8](https://github.com/GetStream/stream-chat-react-native/commit/c7a83b87804d9492ce01ef0dfa63fe9b6cc203ad)
+- Issue fix: Image upload for expo and assets-library [5a2d0e8](https://github.com/GetStream/stream-chat-react-native/commit/5a2d0e827dd4a4067058787b49b07c584f3e370c)
+- Issue fix: Compatibility with jest as described in [#508](https://github.com/GetStream/stream-chat-react-native/issues/508) [a172c15](https://github.com/GetStream/stream-chat-react-native/commit/a172c15b1304932051f0f699daf47981e488fde4)
+
 
 ## [3.0.0] (2021-02-23)
 

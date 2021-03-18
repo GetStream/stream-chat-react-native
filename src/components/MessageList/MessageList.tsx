@@ -352,7 +352,11 @@ const MessageListWithContext = <
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
-
+  /**
+   * channel.lastRead throws error if the channel is not initialized.
+   */
+  const getLastReadSafely = () =>
+    channel?.initialized ? channel.lastRead() : undefined;
   /**
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
@@ -360,13 +364,15 @@ const MessageListWithContext = <
   const topMessage = useRef<
     MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined
   >(messageList[messageListLength - 1] || undefined);
-  const channelLastRead = useRef(channel?.lastRead());
+  const channelLastRead = useRef(getLastReadSafely());
 
   const viewableMessages = useRef<string[]>([]);
 
   const isUnreadMessage = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
-    lastRead: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
+    lastRead?: ReturnType<
+      StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
+    >,
   ) =>
     message && lastRead && message.created_at && lastRead < message.created_at;
 
@@ -500,7 +506,7 @@ const MessageListWithContext = <
      * OR if the scroll is already set.
      */
     if (initialScrollToFirstUnreadMessage && !initialScrollSet.current) {
-      channelLastRead.current = channel?.lastRead();
+      channelLastRead.current = getLastReadSafely();
       topMessage.current = messageList[messageListLength - 1];
     }
   }, [messageListLength]);
@@ -520,9 +526,9 @@ const MessageListWithContext = <
     index: number;
     item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   }) => {
-    if (!channel) return null;
+    if (!channel || !channel.initialized) return null;
 
-    const lastRead = channel?.lastRead();
+    const lastRead = getLastReadSafely();
 
     const lastMessage = messageList?.[index + 1];
 
