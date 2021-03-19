@@ -10,15 +10,14 @@ import {
 } from 'react-native';
 
 import {
-  InlineLoadingIndicator,
-  InlineLoadingIndicatorProps,
-} from './InlineLoadingIndicator';
-import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
-import {
   isMessagesWithStylesAndReadBy,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
+import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
+import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
+import { InlineLoadingMoreThreadIndicator } from './InlineLoadingMoreThreadIndicator';
+import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
   AttachmentPickerContextValue,
@@ -40,6 +39,10 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  PaginatedMessageListContextValue,
+  usePaginatedMessageListContext,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import {
   ThreadContextValue,
   useThreadContext,
@@ -145,15 +148,16 @@ type MessageListPropsWithContext<
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'isOnline'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
   Pick<
+    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'loadMore' | 'loadMoreRecent'
+  > &
+  Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
     | 'initialScrollToFirstUnreadMessage'
     | 'InlineUnreadIndicator'
-    | 'loadingMoreRecent'
-    | 'loadMore'
-    | 'loadMoreRecent'
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
@@ -184,23 +188,23 @@ type MessageListPropsWithContext<
       FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
-     * UI component for footer of message list. By default message list will use `InlineLoadingIndicator`
-     * as FooterComponent. You have access to prop `loadingMore` on this component,
-     * if you want to implement your own inline loading indicator.
+     * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
+     * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
+     * from context.
      *
      * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header by default if inverted is true or defaulted
      */
-    FooterComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
+    FooterComponent?: React.ComponentType;
     /**
-     * UI component for header of message list. By default message list will use `InlineLoadingIndicator`
-     * as HeaderComponent. You have access to prop `loadingMore` on this component,
-     * if you want to implement your own inline loading indicator.
+     * UI component for header of message list. By default message list will use `InlineLoadingMoreRecentIndicator`
+     * as HeaderComponent. If you want to implement your own inline loading indicator, you can access `loadingMoreRecent`
+     * from context.
      *
      * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
      * used in MessageList. Should be used for header if inverted is false
      */
-    HeaderComponent?: React.ComponentType<InlineLoadingIndicatorProps>;
+    HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
     /** Turn off grouping of messages by user */
@@ -254,6 +258,9 @@ const MessageListWithContext = <
 >(
   props: MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const LoadingMoreIndicator = props.threadList
+    ? InlineLoadingMoreThreadIndicator
+    : InlineLoadingMoreIndicator;
   const {
     additionalFlatListProps,
     channel,
@@ -264,8 +271,8 @@ const MessageListWithContext = <
     disableTypingIndicator,
     EmptyStateIndicator,
     FlatList,
-    FooterComponent = InlineLoadingIndicator,
-    HeaderComponent = InlineLoadingIndicator,
+    FooterComponent = LoadingMoreIndicator,
+    HeaderComponent = InlineLoadingMoreRecentIndicator,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     inverted = true,
@@ -323,13 +330,10 @@ const MessageListWithContext = <
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
 
-  const [onStartReachedInProgress, setOnStartReachedInProgress] = useState(
-    false,
-  );
-  const [onEndReachedInProgress, setOnEndReachedInProgress] = useState(false);
-
-  // We want to call onEndReached and onStartReached only once, per content length.
-  // We keep track of calls to these functions per content length, with following trakcers.
+  /**
+   * We want to call onEndReached and onStartReached only once, per content length.
+   * We keep track of calls to these functions per content length, with following trackers.
+   */
   const onStartReachedTracker = useRef<Record<number, boolean>>({});
   const onEndReachedTracker = useRef<Record<number, boolean>>({});
 
@@ -462,7 +466,7 @@ const MessageListWithContext = <
 
   useEffect(() => {
     if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
-      channel.markRead();
+      markRead();
     }
   }, [loading]);
 
@@ -608,7 +612,7 @@ const MessageListWithContext = <
   // 1. FlatList doesn't support onStartReached prop
   // 2. `onEndReached` function prop available on react-native, gets executed
   //    once per content length (and thats actually a nice optimization strategy).
-  //    But it also means, we always need to priotizie onEndReached above our
+  //    But it also means, we always need to prioritize onEndReached above our
   //    logic for `onStartReached`.
   // 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
   //    Its a factor of content length (which is necessary for "real" infinite scroll). But on
@@ -637,10 +641,10 @@ const MessageListWithContext = <
     if (messageList?.length) {
       onStartReachedTracker.current[messageList.length] = true;
     }
-    setOnStartReachedInProgress(true);
+
     const callback = () => {
       onStartReachedInPromise.current = null;
-      setOnStartReachedInProgress(false);
+
       return Promise.resolve();
     };
 
@@ -671,11 +675,9 @@ const MessageListWithContext = <
     if (messageList?.length) {
       onEndReachedTracker.current[messageList.length] = true;
     }
-    setOnEndReachedInProgress(true);
 
     const callback = () => {
       onEndReachedInPromise.current = null;
-      setOnEndReachedInProgress(false);
 
       return Promise.resolve();
     };
@@ -689,7 +691,9 @@ const MessageListWithContext = <
         ).then(callback);
       });
     } else {
-      onEndReachedInPromise.current = loadMore().then(callback);
+      onEndReachedInPromise.current = threadList
+        ? loadMoreThread().then(callback)
+        : loadMore().then(callback);
     }
   };
 
@@ -846,14 +850,6 @@ const MessageListWithContext = <
     }
   };
 
-  const renderFooterComponent = () => (
-    <FooterComponent loadingMore={onEndReachedInProgress} />
-  );
-
-  const renderHeaderComponent = () => (
-    <HeaderComponent loadingMore={onStartReachedInProgress} />
-  );
-
   const renderEmptyStateIndicator = () => (
     <View style={styles.flex}>
       <View style={styles.flex} testID='empty-state'>
@@ -885,8 +881,8 @@ const MessageListWithContext = <
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
         ListEmptyComponent={renderEmptyStateIndicator}
-        ListFooterComponent={renderFooterComponent}
-        ListHeaderComponent={renderHeaderComponent}
+        ListFooterComponent={FooterComponent}
+        ListHeaderComponent={HeaderComponent}
         maintainVisibleContentPosition={{
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
@@ -981,9 +977,6 @@ export const MessageList = <
     FlatList,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
-    loadingMoreRecent,
-    loadMore,
-    loadMoreRecent,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -991,6 +984,15 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { loadMoreThread, thread } = useThreadContext<
     At,
     Ch,
@@ -1019,7 +1021,6 @@ export const MessageList = <
         loadChannelAtMessage,
         loading,
         LoadingIndicator,
-        loadingMoreRecent,
         loadMore,
         loadMoreRecent,
         loadMoreThread,

@@ -32,6 +32,7 @@ export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
+export * from './Channel/hooks/useCreatePaginatedMessageListContext';
 export * from './Channel/hooks/useCreateThreadContext';
 export * from './Channel/hooks/useTargetedMessage';
 
@@ -108,9 +109,13 @@ export * from './MessageInput/UploadProgressIndicator';
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
+export * from './MessageList/InlineLoadingMoreIndicator';
+export * from './MessageList/InlineLoadingMoreRecentIndicator';
+export * from './MessageList/InlineLoadingMoreThreadIndicator';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageSystem';
+export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
@@ -125,3 +130,4 @@ export * from './Reply/Reply';
 export * from './Spinner/Spinner';
 
 export * from './Thread/Thread';
+export * from './Thread/components/ThreadFooterComponent';

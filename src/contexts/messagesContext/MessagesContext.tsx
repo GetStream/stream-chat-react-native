@@ -124,7 +124,6 @@ export type MessagesContextValue<
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  hasMore: boolean;
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
@@ -134,10 +133,6 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
-  loadingMore: boolean;
-  loadingMoreRecent: boolean;
-  loadMore: () => Promise<void>;
-  loadMoreRecent: () => Promise<void>;
   Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageAvatar
@@ -178,7 +173,6 @@ export type MessagesContextValue<
   MessageRepliesAvatars: React.ComponentType<
     MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   /**
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSimple.tsx)
