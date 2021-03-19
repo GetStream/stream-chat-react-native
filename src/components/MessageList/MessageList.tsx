@@ -40,6 +40,10 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
+import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -146,6 +150,7 @@ type MessageListPropsWithContext<
     PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'loadMore' | 'loadMoreRecent'
   > &
+  Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'DateHeader'
@@ -286,6 +291,7 @@ const MessageListWithContext = <
     noGroupByUser,
     onListScroll,
     onThreadSelect,
+    overlay,
     reloadChannel,
     ScrollToBottomButton,
     scrollToFirstUnreadThreshold,
@@ -878,6 +884,7 @@ const MessageListWithContext = <
           }
         }}
         renderItem={renderItem}
+        scrollEnabled={overlay === 'none'}
         style={[styles.listContainer, listContainer]}
         testID='message-flat-list'
         viewabilityConfig={{
@@ -979,6 +986,7 @@ export const MessageList = <
     Re,
     Us
   >();
+  const { overlay } = useOverlayContext();
   const { loadMoreThread, thread } = useThreadContext<
     At,
     Ch,
@@ -1015,6 +1023,7 @@ export const MessageList = <
         MessageSystem,
         myMessageTheme,
         NetworkDownIndicator,
+        overlay,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
