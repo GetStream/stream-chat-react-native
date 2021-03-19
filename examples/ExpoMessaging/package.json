@@ -31,7 +31,8 @@
     "react-native-screens": "2.15.0",
     "react-native-svg": "12.1.0",
     "react-native-web": "0.13.12",
-    "stream-chat-expo": "link:../../expo-package"
+    "stream-chat-expo": "link:../../expo-package",
+    "stream-chat-react-native-core": "link:../.."
   },
   "devDependencies": {
     "@babel/core": "7.12.9",
