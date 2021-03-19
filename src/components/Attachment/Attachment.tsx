@@ -12,6 +12,7 @@ import {
 
 import type { Attachment as AttachmentType } from 'stream-chat';
 
+import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,7 +23,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { MessageContextValue } from 'src/contexts';
 
 export type ActionHandler = (name: string, value: string) => void;
 

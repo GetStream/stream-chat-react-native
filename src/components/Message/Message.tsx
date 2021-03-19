@@ -26,6 +26,13 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+import { removeReservedFields } from './utils/removeReservedFields';
+
+import {
+  GroupType,
+  isMessagesWithStylesAndReadBy,
+  MessageType,
+} from '../MessageList/hooks/useMessageList';
 
 import {
   ChannelContextValue,
@@ -82,14 +89,6 @@ import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
-
-import { removeReservedFields } from './utils/removeReservedFields';
-
-import {
-  GroupType,
-  isMessagesWithStylesAndReadBy,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
