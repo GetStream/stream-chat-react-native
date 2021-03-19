@@ -165,12 +165,18 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 };
 
 type ThreadScreenProps = {
+  navigation: StackNavigationProp<ThreadRoute, 'Thread'>;
   route: RouteProp<ThreadRoute, 'Thread'>;
 };
 
-const ThreadScreen: React.FC<ThreadScreenProps> = () => {
+const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { overlay } = useOverlayContext();
+
+  useEffect(() => {
+    navigation.setOptions({ gestureEnabled: overlay === 'none' });
+  }, [overlay]);
 
   return (
     <SafeAreaView>

@@ -1074,8 +1074,8 @@ const MessageWithContext = <
           withTiming(1, { duration: 100 }),
           withTiming(0.98, { duration: 400 }, () => {
             if (pressActive.value) {
-              runOnJS(triggerHaptic)('impactMedium');
               runOnJS(onLongPressMessage)();
+              runOnJS(triggerHaptic)('impactMedium');
             }
           }),
           withTiming(1.02, { duration: 100 }),
