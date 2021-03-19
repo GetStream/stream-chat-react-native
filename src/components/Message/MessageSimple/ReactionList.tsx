@@ -9,7 +9,9 @@ import {
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withDelay,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -73,20 +75,26 @@ const Icon: React.FC<
 
   const showReaction = () => {
     'worklet';
-    scale.value = withSpring(1);
+    scale.value = withSequence(
+      withDelay(250, withTiming(1.5, { duration: 500 })),
+      withTiming(1, { duration: 500 }),
+    );
   };
 
   useEffect(() => {
     showReaction();
   }, []);
 
-  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
-    transform: [
-      {
-        scale: scale.value,
-      },
-    ],
-  }));
+  const animatedStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
+    }),
+    [],
+  );
 
   return (
     <Animated.View style={animatedStyle}>
@@ -178,16 +186,19 @@ const ReactionListWithContext = <
 
   const showReactions = (show: boolean) => {
     'worklet';
-    opacity.value = show ? withSpring(1) : 0;
+    opacity.value = show ? withDelay(250, withTiming(1, { duration: 500 })) : 0;
   };
 
   useEffect(() => {
     showReactions(hasSupportedReactions);
   }, [hasSupportedReactions]);
 
-  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
-    opacity: opacity.value,
-  }));
+  const animatedStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      opacity: opacity.value,
+    }),
+    [],
+  );
 
   if (!hasSupportedReactions) {
     return null;
