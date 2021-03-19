@@ -1101,6 +1101,7 @@ const MessageWithContext = <
   return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
       enabled={animatedLongPress}
+      maxDeltaX={8}
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
       waitFor={doubleTapRef}
