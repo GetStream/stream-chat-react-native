@@ -24,6 +24,7 @@ import {
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
+import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
@@ -92,6 +93,10 @@ import {
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  PaginatedMessageListContextValue,
+  PaginatedMessageListProvider,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import {
   SuggestionsContextValue,
   SuggestionsProvider,
@@ -200,6 +205,12 @@ export type ChannelPropsWithContext<
   > &
   Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
+  Partial<
+    Pick<
+      PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'messages' | 'loadingMore' | 'loadingMoreRecent'
+    >
+  > &
   Partial<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -444,6 +455,8 @@ const ChannelWithContext = <
     keyboardVerticalOffset,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
+    loadingMore: loadingMoreProp,
+    loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     messageId,
     maxNumberOfFiles = 10,
@@ -455,6 +468,7 @@ const ChannelWithContext = <
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
+    messages: messagesProp,
     muteUser,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -515,7 +529,7 @@ const ChannelWithContext = <
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >([]);
 
   const [members, setMembers] = useState<
@@ -549,10 +563,26 @@ const ChannelWithContext = <
 
   const channelId = channel?.id || '';
   useEffect(() => {
-    if (channel) {
+    const initChannel = () => {
+      if (!channel) return;
+
+      /**
+       * Loading channel at first unread message  requires channel to be initialized in the first place,
+       * since we use read state on channel to decide what offset to load channel at.
+       * Also there is no usecase from UX perspective, why one would need loading uninitialized channel at particular message.
+       * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
+       */
+      if (!channel.initialized) {
+        loadChannel();
+        return;
+      }
+
       if (messageId) {
         loadChannelAtMessage({ messageId });
-      } else if (
+        return;
+      }
+
+      if (
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
@@ -560,7 +590,9 @@ const ChannelWithContext = <
       } else {
         loadChannel();
       }
-    }
+    };
+
+    initChannel();
 
     return () => {
       client.off('connection.recovered', handleEvent);
@@ -1133,7 +1165,7 @@ const ChannelWithContext = <
     },
   );
 
-  const loadMore: MessagesContextValue<
+  const loadMore: PaginatedMessageListContextValue<
     At,
     Ch,
     Co,
@@ -1173,7 +1205,7 @@ const ChannelWithContext = <
     }
   };
 
-  const loadMoreRecent: MessagesContextValue<
+  const loadMoreRecent: PaginatedMessageListContextValue<
     At,
     Ch,
     Co,
@@ -1437,6 +1469,20 @@ const ChannelWithContext = <
     UploadProgressIndicator,
   });
 
+  const messageListContext = useCreatePaginatedMessageListContext({
+    hasMore,
+    loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : loadingMore,
+    loadingMoreRecent:
+      loadingMoreRecentProp !== undefined
+        ? loadingMoreRecentProp
+        : loadingMoreRecent,
+    loadMore,
+    loadMoreRecent,
+    messages: messagesProp || messages,
+    setLoadingMore,
+    setLoadingMoreRecent,
+  });
+
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
@@ -1473,13 +1519,8 @@ const ChannelWithContext = <
     handleReply,
     handleRetry,
     handleThreadReply,
-    hasMore,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
-    loadingMore,
-    loadingMoreRecent,
-    loadMore,
-    loadMoreRecent,
     markdownRules,
     Message,
     messageActions,
@@ -1491,7 +1532,6 @@ const ChannelWithContext = <
     MessageList,
     MessageReplies,
     MessageRepliesAvatars,
-    messages,
     MessageSimple,
     MessageStatus,
     MessageSystem,
@@ -1532,6 +1572,7 @@ const ChannelWithContext = <
     closeThread,
     loadMoreThread,
     openThread,
+    setThreadLoadingMore,
     thread,
     threadHasMore,
     threadLoadingMore,
@@ -1569,17 +1610,21 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-          <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-            <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-              <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                value={messageInputContext}
-              >
-                <View style={{ height: '100%' }}>{children}</View>
-              </MessageInputProvider>
-            </SuggestionsProvider>
-          </ThreadProvider>
-        </MessagesProvider>
+        <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+          value={messageListContext}
+        >
+          <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
+            <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+              <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                  value={messageInputContext}
+                >
+                  <View style={{ height: '100%' }}>{children}</View>
+                </MessageInputProvider>
+              </SuggestionsProvider>
+            </ThreadProvider>
+          </MessagesProvider>
+        </PaginatedMessageListProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

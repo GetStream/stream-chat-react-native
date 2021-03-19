@@ -51,7 +51,6 @@ import {
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import {
   MessagesContextValue,
-  MessagesProvider,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
@@ -1246,18 +1245,9 @@ const MessageWithContext = <
                 targetedStyle,
               ]}
             />
-            {/**
-             * MessagesProvider is here to prevent and issue where FlatList
-             * and context re-rendering causes memoization to be skipped.
-             * We will separate messages to another context and keep the
-             * components currently in the same context apart to remove
-             * the need for this in a future PR.
-             */}
-            <MessagesProvider value={messagesContext}>
-              <MessageProvider value={messageContext}>
-                <MessageSimple />
-              </MessageProvider>
-            </MessagesProvider>
+            <MessageProvider value={messageContext}>
+              <MessageSimple />
+            </MessageProvider>
           </Animated.View>
         </TapGestureHandler>
       </Animated.View>

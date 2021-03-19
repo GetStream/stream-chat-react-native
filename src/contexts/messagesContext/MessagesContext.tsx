@@ -125,7 +125,6 @@ export type MessagesContextValue<
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  hasMore: boolean;
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
@@ -135,10 +134,6 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
-  loadingMore: boolean;
-  loadingMoreRecent: boolean;
-  loadMore: () => Promise<void>;
-  loadMoreRecent: () => Promise<void>;
   Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageAvatar
@@ -179,7 +174,6 @@ export type MessagesContextValue<
   MessageRepliesAvatars: React.ComponentType<
     MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   /**
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSimple.tsx)
@@ -384,6 +378,56 @@ export type MessagesContextValue<
   ) => Promise<void>;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
+  /**
+   * Use this prop to override message actions (which pop-up in message overlay).
+   *
+   * You can either completely override the default messageActions object.
+   *
+   * ```
+   * <Channel
+   *   messageActions=[
+   *     {
+   *       action: () => { someAction() };
+   *       title: "Pin Message";
+   *       icon: PinIcon;
+   *       titleStyle: {};
+   *     },
+   *     {
+   *       action: () => { someAction() };
+   *       title: "Delete Message";
+   *       icon: PinIcon;
+   *       titleStyle: {};
+   *     }
+   *   ]
+   * >
+   * </Channel>
+   * ```
+   *
+   * Or you can selectly keep certain action and remove some:
+   *
+   * e.g. Lets say you only want to keep threadReply and copyMessage actions
+   *
+   * ```
+   * <Channel
+   *   messageActions={({
+   *     blockUser,
+   *     copyMessage,
+   *     deleteMessage,
+   *     editMessage,
+   *     flagMessage,
+   *     muteUser,
+   *     reply,
+   *     retry,
+   *     threadReply,
+   *   }) => ([
+   *     threadReply, copyMessage
+   *   ])}
+   * >
+   *  </Channel>
+   *  ```
+   *
+   * @overrideType Function | Array<Objects>
+   */
   messageActions?:
     | (MessageAction | null)[]
     | (({
