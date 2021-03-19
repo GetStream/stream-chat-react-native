@@ -27,6 +27,7 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
+  useOverlayContext,
 } from 'stream-chat-react-native';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
@@ -120,6 +121,11 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { setTopInset } = useAttachmentPickerContext();
+  const { overlay } = useOverlayContext();
+
+  useEffect(() => {
+    navigation.setOptions({ gestureEnabled: overlay === 'none' });
+  }, [overlay]);
 
   useEffect(() => {
     setTopInset(headerHeight);
