@@ -2,10 +2,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { GestureResponderEvent } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
+import type { GestureHandlerPayload } from '../../components/Message/Message';
 import type {
   GroupType,
   MessageType,
@@ -91,10 +91,7 @@ export type MessageContextValue<
    *
    * @param event   Event object for onLongPress event
    */
-  onLongPress: (
-    event: GestureResponderEvent,
-    defaultGestureHandler?: () => void,
-  ) => void;
+  onLongPress: (payload: GestureHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -109,14 +106,8 @@ export type MessageContextValue<
    *
    * @param event   Event object for onPress event
    */
-  onPress: (
-    event: GestureResponderEvent,
-    defaultGestureHandler?: () => void,
-  ) => void;
-  onPressIn: (
-    event: GestureResponderEvent,
-    defaultGestureHandler?: () => void,
-  ) => void;
+  onPress: (payload: GestureHandlerPayload) => void;
+  onPressIn: (payload: GestureHandlerPayload) => void;
   /** The images attached to a message */
   otherAttachments: Attachment<At>[];
   reactions: Reactions;

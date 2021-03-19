@@ -70,27 +70,26 @@ const AttachmentWithContext = <
     FileAttachment,
     Gallery,
     Giphy,
-    onPressIn,
     UrlPreview,
   } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    return <Giphy attachment={attachment} onPressIn={onPressIn} />;
+    return <Giphy attachment={attachment} />;
   }
 
   if (
     (attachment.title_link || attachment.og_scrape_url) &&
     (attachment.image_url || attachment.thumb_url)
   ) {
-    return <UrlPreview onPressIn={onPressIn} {...attachment} />;
+    return <UrlPreview {...attachment} />;
   }
 
   if (attachment.type === 'image') {
     return (
       <>
-        <Gallery images={[attachment]} onPressIn={onPressIn} />
+        <Gallery images={[attachment]} />
         {hasAttachmentActions && (
           <AttachmentActions
             key={`key-actions-${attachment.id}`}
@@ -112,14 +111,14 @@ const AttachmentWithContext = <
   ) {
     return (
       // TODO: Put in video component
-      <Card onPressIn={onPressIn} {...attachment} />
+      <Card {...attachment} />
     );
   }
 
   if (hasAttachmentActions) {
     return (
       <>
-        <Card onPressIn={onPressIn} {...attachment} />
+        <Card {...attachment} />
         <AttachmentActions
           key={`key-actions-${attachment.id}`}
           {...attachment}
@@ -127,7 +126,7 @@ const AttachmentWithContext = <
       </>
     );
   } else {
-    return <Card onPressIn={onPressIn} {...attachment} />;
+    return <Card {...attachment} />;
   }
 };
 

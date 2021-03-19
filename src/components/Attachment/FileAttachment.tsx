@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  GestureResponderEvent,
   Linking,
   StyleProp,
   StyleSheet,
@@ -65,7 +64,10 @@ export type FileAttachmentPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'onLongPress' | 'onPress' | 'onPressIn'
+> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
@@ -73,10 +75,6 @@ export type FileAttachmentPropsWithContext<
     /** The attachment to render */
     attachment: Attachment<At>;
     attachmentSize?: number;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     styles?: Partial<{
       container: StyleProp<ViewStyle>;
       details: StyleProp<ViewStyle>;
@@ -103,6 +101,7 @@ const FileAttachmentWithContext = <
     AttachmentActions,
     FileAttachmentIcon,
     onLongPress,
+    onPress,
     onPressIn,
     styles: stylesProp = {},
   } = props;
@@ -120,15 +119,28 @@ const FileAttachmentWithContext = <
 
   return (
     <TouchableOpacity
-      onLongPress={onLongPress}
-      onPress={() => {
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'fileAttachment',
+          event,
+        });
+      }}
+      onPress={(event) => {
         if (!onPressIn) {
-          defaultOnPress();
+          onPress({
+            defaultHandler: defaultOnPress,
+            emitter: 'fileAttachment',
+            event,
+          });
         }
       }}
       onPressIn={(event) => {
         if (onPressIn) {
-          onPressIn(event, defaultOnPress);
+          onPressIn({
+            defaultHandler: defaultOnPress,
+            emitter: 'fileAttachment',
+            event,
+          });
         }
       }}
       testID='file-attachment'
@@ -181,12 +193,7 @@ export type FileAttachmentProps<
   Pick<
     FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
     'attachment'
-  > & {
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
-  };
+  >;
 
 export const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -199,7 +206,7 @@ export const FileAttachment = <
 >(
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPressIn } = useMessageContext<
+  const { onLongPress, onPress, onPressIn } = useMessageContext<
     At,
     Ch,
     Co,
@@ -221,6 +228,7 @@ export const FileAttachment = <
         AttachmentActions,
         FileAttachmentIcon,
         onLongPress,
+        onPress,
         onPressIn,
       }}
       {...props}

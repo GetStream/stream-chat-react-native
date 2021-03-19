@@ -190,8 +190,18 @@ const ReactionListWithContext = <
 
   return (
     <TouchableOpacity
-      onLongPress={onLongPress}
-      onPress={onPress}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'reactionList',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          emitter: 'reactionList',
+          event,
+        });
+      }}
       style={[
         styles.container,
         {

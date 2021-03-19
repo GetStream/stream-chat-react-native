@@ -127,6 +127,21 @@ const prefetchImage = ({
     });
   }
 };
+export type GestureHandlerPayload = {
+  defaultHandler?: () => void;
+  emitter?:
+    | 'card'
+    | 'fileAttachment'
+    | 'gallery'
+    | 'giphy'
+    | 'message'
+    | 'messageContent'
+    | 'messageReplies'
+    | 'reactionList'
+    | 'textLink'
+    | 'textMention';
+  event?: GestureResponderEvent;
+};
 
 export type MessageGestureHandlerPayload<
   At extends UnknownType = DefaultAttachmentType,
@@ -136,22 +151,20 @@ export type MessageGestureHandlerPayload<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  actionHandlers: MessageActionHandlers;
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  defaultGestureHandler?: () => void;
-  event?: GestureResponderEvent;
+> = GestureHandlerPayload & {
+  actionHandlers?: MessageActionHandlers;
+  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
 };
 
 export type MessageActionHandlers = {
-  deleteMessage: () => void;
+  deleteMessage: () => Promise<void>;
   editMessage: () => void;
   reply: () => void;
-  resendMessage: () => void;
+  resendMessage: () => Promise<void>;
   showMessageOverlay: () => void;
-  toggleBanUser: () => void;
-  toggleMuteUser: () => void;
-  toggleReaction: (reactionType: string) => void;
+  toggleBanUser: () => Promise<void>;
+  toggleMuteUser: () => Promise<void>;
+  toggleReaction: (reactionType: string) => Promise<void>;
 };
 
 export type MessagePropsWithContext<
@@ -459,12 +472,20 @@ const MessageWithContext = <
     >;
     if (error) {
       showMessageOverlay(false, true);
-    } else if (goToMessage && quotedMessage) {
-      pressActive.value = false;
-      cancelAnimation(scale);
-      scale.value = withTiming(1, { duration: 100 });
-      goToMessage(quotedMessage.id);
+    } else if (quotedMessage) {
+      onPressQuotedMessage(quotedMessage);
     }
+  };
+
+  const onPressQuotedMessage = (
+    quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => {
+    if (!goToMessage) return;
+
+    pressActive.value = false;
+    cancelAnimation(scale);
+    scale.value = withTiming(1, { duration: 100 });
+    goToMessage(quotedMessage.id);
   };
 
   const alignment =
@@ -750,13 +771,13 @@ const MessageWithContext = <
                 [
                   { onPress: () => setOverlay('none'), text: t('Cancel') },
                   {
-                    onPress: () => {
+                    onPress: async () => {
                       setOverlay('none');
                       if (handleDelete) {
                         handleDelete(message);
                       }
 
-                      handleDeleteMessage();
+                      await handleDeleteMessage();
                     },
                     style: 'destructive',
                     text: t('Delete'),
@@ -846,12 +867,12 @@ const MessageWithContext = <
     const handleReaction = !error
       ? selectReaction
         ? selectReaction(message)
-        : (reactionType: string) => {
+        : async (reactionType: string) => {
             if (handleReactionProp) {
               handleReactionProp(message, reactionType);
             }
 
-            return handleToggleReaction(reactionType);
+            await handleToggleReaction(reactionType);
           }
       : undefined;
 
@@ -864,17 +885,15 @@ const MessageWithContext = <
       : muteUserProp === null
       ? null
       : {
-          action: () => {
+          action: async () => {
             setOverlay('none');
             if (message.user?.id) {
               if (handleMute) {
                 handleMute(message);
               }
 
-              return handleToggleMuteUser();
+              await handleToggleMuteUser();
             }
-
-            return;
           },
           icon: <Mute pathFill={grey} />,
           title: isMuted ? t('Unmute User') : t('Mute User'),
@@ -1052,7 +1071,13 @@ const MessageWithContext = <
     disabled || hasAttachmentActions
       ? () => null
       : onLongPressMessageProp
-      ? () => onLongPressMessageProp({ actionHandlers, message })
+      ? () =>
+          onLongPressMessageProp({
+            actionHandlers,
+            defaultHandler: showMessageOverlay,
+            emitter: 'message',
+            message,
+          })
       : onLongPressProp
       ? () => onLongPressProp({ actionHandlers })
       : enableLongPress
@@ -1095,29 +1120,45 @@ const MessageWithContext = <
     onLongPress: !animatedLongPress ? onLongPressMessage : () => null,
     onlyEmojis,
     onOpenThread,
-    onPress: (event) => {
+    onPress: (payload) => {
       onPressProp
-        ? onPressProp({ actionHandlers, defaultGestureHandler: onPress })
+        ? onPressProp({
+            actionHandlers,
+            defaultHandler: payload.defaultHandler || onPress,
+            emitter: payload.emitter || 'message',
+            event: payload.event,
+            message,
+          })
         : onPressMessageProp
         ? onPressMessageProp({
             actionHandlers,
-            defaultGestureHandler: onPress,
-            event,
+            defaultHandler: payload.defaultHandler || onPress,
+            emitter: payload.emitter || 'message',
+            event: payload.event,
             message,
           })
+        : payload.defaultHandler
+        ? payload.defaultHandler()
         : onPress();
     },
-    onPressIn: (event, defaultGestureHandler) => {
+    onPressIn: (payload) => {
       onPressInProp
-        ? onPressInProp({ actionHandlers, defaultGestureHandler })
+        ? onPressInProp({
+            actionHandlers,
+            defaultHandler: payload.defaultHandler,
+            emitter: payload.emitter || 'message',
+            event: payload.event,
+            message,
+          })
         : onPressInMessageProp
         ? onPressInMessageProp({
             actionHandlers,
-            defaultGestureHandler,
-            event,
+            defaultHandler: payload.defaultHandler,
+            emitter: payload.emitter || 'message',
+            event: payload.event,
             message,
           })
-        : undefined;
+        : payload.defaultHandler?.();
     },
     otherAttachments: attachments.other,
     preventPress,

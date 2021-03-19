@@ -112,7 +112,7 @@ export type GiphyPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleAction' | 'onLongPress' | 'onPressIn'
+  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -137,6 +137,7 @@ const GiphyWithContext = <
     attachment,
     handleAction,
     onLongPress,
+    onPress,
     onPressIn,
   } = props;
 
@@ -260,8 +261,24 @@ const GiphyWithContext = <
     </View>
   ) : (
     <TouchableOpacity
-      onLongPress={onLongPress}
-      onPressIn={onPressIn}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'giphy',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          emitter: 'giphy',
+          event,
+        });
+      }}
+      onPressIn={(event) => {
+        onPressIn({
+          emitter: 'giphy',
+          event,
+        });
+      }}
       style={[styles.container, container]}
       testID='giphy-attachment'
       {...additionalTouchableProps}
@@ -375,7 +392,7 @@ export const Giphy = <
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, onLongPress, onPressIn } = useMessageContext<
+  const { handleAction, onLongPress, onPress, onPressIn } = useMessageContext<
     At,
     Ch,
     Co,
@@ -400,6 +417,7 @@ export const Giphy = <
         additionalTouchableProps,
         handleAction,
         onLongPress,
+        onPress,
         onPressIn,
       }}
       {...props}

@@ -292,8 +292,24 @@ export const MessageContentWithContext = <
     <TouchableOpacity
       activeOpacity={0.7}
       disabled={disabled}
-      onLongPress={onLongPress}
-      onPress={onPress}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPressIn={(event) => {
+        onPressIn({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
