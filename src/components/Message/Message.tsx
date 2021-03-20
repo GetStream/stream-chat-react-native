@@ -1069,15 +1069,22 @@ const MessageWithContext = <
     disabled || hasAttachmentActions
       ? () => null
       : onLongPressMessageProp
-      ? () =>
+      ? (payload?: GestureHandlerPayload) =>
           onLongPressMessageProp({
             actionHandlers,
-            defaultHandler: showMessageOverlay,
-            emitter: 'message',
+            defaultHandler: payload?.defaultHandler || showMessageOverlay,
+            emitter: payload?.emitter || 'message',
+            event: payload?.event,
             message,
           })
       : onLongPressProp
-      ? () => onLongPressProp({ actionHandlers })
+      ? (payload?: GestureHandlerPayload) =>
+          onLongPressProp({
+            actionHandlers,
+            defaultHandler: payload?.defaultHandler || showMessageOverlay,
+            emitter: payload?.emitter || 'message',
+            event: payload?.event,
+          })
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;

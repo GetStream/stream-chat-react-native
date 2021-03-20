@@ -390,7 +390,6 @@ export const MessageContentWithContext = <
                     <Attachment
                       attachment={attachment}
                       key={`${message.id}-${attachmentIndex}`}
-                      onPressIn={onPressIn}
                     />
                   ));
                 case 'files':
@@ -398,14 +397,12 @@ export const MessageContentWithContext = <
                     <FileAttachmentGroup
                       key={`file_attachment_group_${messageContentOrderIndex}`}
                       messageId={message.id}
-                      onPressIn={onPressIn}
                     />
                   );
                 case 'gallery':
                   return (
                     <Gallery
                       key={`gallery_${messageContentOrderIndex}`}
-                      onPressIn={onPressIn}
                       preventPress={preventPress}
                     />
                   );

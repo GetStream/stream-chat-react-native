@@ -174,23 +174,20 @@ const CardWithContext = <
     <TouchableOpacity
       onLongPress={(event) => {
         onLongPress({
-          emitter: 'fileAttachment',
+          emitter: 'card',
           event,
         });
       }}
       onPress={(event) => {
-        if (!onPressIn) {
-          onPress({
-            defaultHandler: defaultOnPress,
-            emitter: 'card',
-            event,
-          });
-        }
+        onPress({
+          defaultHandler: defaultOnPress,
+          emitter: 'card',
+          event,
+        });
       }}
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
-            defaultHandler: defaultOnPress,
             emitter: 'card',
             event,
           });
