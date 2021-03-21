@@ -1317,14 +1317,29 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-"stream-chat-react-native-core@link:..":
-  version "0.0.0"
-  uid ""
+stream-chat-react-native-core@v3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.1.2.tgz#1a63dc8c68f80745752b38bbf20010d7c7d05c91"
+  integrity sha512-iOz6xhG/mw1OKbK+dcxIliB7zyrtSeDofuJQ4d2Fz8ysQodOfqmJp7fCNmLuGCvgP9z6mDSXrASPmCL4Yo02GQ==
+  dependencies:
+    "@babel/runtime" "7.12.13"
+    "@gorhom/bottom-sheet" "3.0.0-alpha.0"
+    anchorme "^1.1.2"
+    dayjs "1.10.4"
+    file-loader "6.2.0"
+    i18next "19.8.7"
+    lodash-es "4.17.20"
+    metro-react-native-babel-preset "0.65.0"
+    mime-types "2.1.28"
+    path "0.12.7"
+    react-art "^16.8.6"
+    react-native-markdown-package "1.8.1"
+    stream-chat "3.1.2"
 
-stream-chat@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.0.0.tgz#470a648b24d3d905ebc67b61805c1c95377dbc7e"
-  integrity sha512-DyTcGm7iBdAftEbCzxu3cT/iDEuUeLL0AosOTeLZU7MCVwSWdlAhyhKSNB06YC7v6FhAatWOn1kwdJJpkBTUVg==
+stream-chat@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.1.2.tgz#271ff85f5533ae432bc94168bfeffca8efc6b55a"
+  integrity sha512-hIVkycehlJrkG2D+RV77qhZeOjZyas398DNdD8GeQlVB7Li60p+XPAsaeNob7kEptFow2LC2TTUiR4hQDCbufg==
   dependencies:
     "@babel/runtime" "^7.12.13"
     "@types/jsonwebtoken" "^8.5.0"

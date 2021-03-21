@@ -13,6 +13,7 @@ import {
 import {
   ChannelState,
   Channel as ChannelType,
+  ConnectionChangeEvent,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
@@ -591,9 +592,9 @@ const ChannelWithContext = <
     initChannel();
 
     return () => {
-      client.off('connection.recovered', handleEvent);
-      channel?.off?.(handleEvent);
       copyChannelState.cancel();
+      copyReadState.cancel();
+      copyTypingState.cancel();
       loadMoreFinished.cancel();
       loadMoreThreadFinished.cancel();
     };
@@ -627,7 +628,6 @@ const ChannelWithContext = <
   /**
    * CHANNEL METHODS
    */
-
   const markRead: ChannelContextValue<
     At,
     Ch,
@@ -648,6 +648,18 @@ const ChannelWithContext = <
     }
   });
 
+  const copyTypingState = lightThrottle(() => {
+    if (channel) {
+      setTyping({ ...channel.state.typing });
+    }
+  });
+
+  const copyReadState = lightThrottle(() => {
+    if (channel) {
+      setRead({ ...channel.state.read });
+    }
+  });
+
   const copyChannelState = lightThrottle(() => {
     setLoading(false);
     if (channel) {
@@ -659,6 +671,18 @@ const ChannelWithContext = <
       setWatchers({ ...channel.state.watchers });
     }
   });
+
+  const connectionRecoveredHandler = () => {
+    if (channel) {
+      copyChannelState();
+    }
+  };
+
+  const connectionChangedHandler = (event: ConnectionChangeEvent) => {
+    if (event.online) {
+      reloadChannel();
+    }
+  };
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
     if (thread) {
@@ -673,22 +697,28 @@ const ChannelWithContext = <
       setThread(updatedThread);
     }
 
-    if (channel) {
+    if (event.type === 'typing.start' || event.type === 'typing.stop') {
+      copyTypingState();
+    } else if (event.type === 'message.read') {
+      copyReadState();
+    } else if (channel) {
       copyChannelState();
     }
   };
 
-  const listenToChanges = () => {
-    // The more complex sync logic is done in Chat.js
+  useEffect(() => {
+    // The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
     // listen to client.connection.recovered and all channel events
-    client.on('connection.recovered', handleEvent);
-    client.on('connection.changed', (event) => {
-      if (event.online) {
-        reloadChannel();
-      }
-    });
+    client.on('connection.recovered', connectionRecoveredHandler);
+    client.on('connection.changed', connectionChangedHandler);
     channel?.on(handleEvent);
-  };
+
+    return () => {
+      client.off('connection.recovered', connectionRecoveredHandler);
+      client.off('connection.changed', connectionChangedHandler);
+      channel?.off(handleEvent);
+    };
+  }, [channelId]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
@@ -698,7 +728,6 @@ const ChannelWithContext = <
       await queryCall();
       setLastRead(new Date());
       copyChannelState();
-      listenToChanges();
     } catch (err) {
       setError(err);
       setLoading(false);
@@ -822,17 +851,19 @@ const ChannelWithContext = <
     });
 
   const loadChannel = () =>
-    channelQueryCall(() => {
+    channelQueryCall(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
-        channel?.state.clearMessages();
-        return channel?.watch();
+        await channel?.watch();
+        channel?.state.setIsUpToDate(true);
       }
 
       return;
     });
 
-  const reloadChannel = async () =>
-    channel ? await loadChannelAtMessage({ before: 30 }) : undefined;
+  const reloadChannel = () => {
+    channel?.state.clearMessages();
+    return loadChannel();
+  };
 
   /**
    * Makes a query to load messages in channel.
