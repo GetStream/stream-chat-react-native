@@ -197,6 +197,10 @@ export type ChannelPreviewMessengerProps<
     'channel' | 'latestMessagePreview'
   >;
 
+export const MemoizedChannelPreviewMessengerWithContext = React.memo(
+  ChannelPreviewMessengerWithContext,
+) as typeof ChannelPreviewMessengerWithContext;
+
 /**
  * This UI component displays an individual preview item for each channel in a list. It also receives all props
  * from the ChannelPreview component.
@@ -222,7 +226,7 @@ export const ChannelPreviewMessenger = <
     PreviewUnreadCount,
   } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
   return (
-    <ChannelPreviewMessengerWithContext
+    <MemoizedChannelPreviewMessengerWithContext
       {...{
         maxUnreadCount,
         onSelect,

@@ -37,6 +37,10 @@ type Parameters<
   sort: ChannelSort<Ch>;
 };
 
+const DEFAULT_OPTIONS = {
+  message_limit: 10,
+};
+
 export const usePaginatedChannels = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -47,7 +51,7 @@ export const usePaginatedChannels = <
   Us extends UnknownType = DefaultUserType
 >({
   filters = {},
-  options = {},
+  options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -62,11 +66,6 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-
-  const clientConnectionID = client.connectionID;
-  useEffect(() => {
-    channels.map((channel) => channel.watch());
-  }, [clientConnectionID]);
 
   const queryChannels = async (
     queryType = '',

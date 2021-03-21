@@ -159,14 +159,13 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
         ]}
       >
         <View style={styles.leftContainer}>
-          {LeftContent ? (
-            <LeftContent />
-          ) : (
+          {
+            LeftContent ? <LeftContent /> :
             <BackButton
               onBack={onBack}
               showUnreadCountBadge={showUnreadCountBadge}
             />
-          )}
+          }
         </View>
         <View style={styles.centerContainer}>
           <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>
