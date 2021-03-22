@@ -190,8 +190,8 @@ const ReactionListWithContext = <
   };
 
   useEffect(() => {
-    showReactions(hasSupportedReactions);
-  }, [hasSupportedReactions]);
+    showReactions(hasSupportedReactions && messageContentWidth !== 0);
+  }, [hasSupportedReactions, messageContentWidth]);
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(
     () => ({
@@ -200,7 +200,7 @@ const ReactionListWithContext = <
     [],
   );
 
-  if (!hasSupportedReactions) {
+  if (!hasSupportedReactions || messageContentWidth === 0) {
     return null;
   }
 
