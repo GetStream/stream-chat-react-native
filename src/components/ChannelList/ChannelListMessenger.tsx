@@ -104,6 +104,18 @@ const renderItem = <
   item: Channel<At, Ch, Co, Ev, Me, Re, Us>;
 }) => <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> channel={item} />;
 
+const keyExtractor = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  item: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+) => item.cid;
+
 const ChannelListMessengerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -165,6 +177,15 @@ const ChannelListMessengerWithContext = <
     );
   }
 
+  const onEndReached = () => {
+    if (loadNextPage) {
+      loadNextPage();
+    }
+  };
+
+  const ListFooterComponent = () =>
+    channels.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
+
   return (
     <>
       <FlatList
@@ -175,7 +196,7 @@ const ChannelListMessengerWithContext = <
         ]}
         data={channels}
         extraData={forceUpdate}
-        keyExtractor={(item) => item.cid}
+        keyExtractor={keyExtractor}
         ListEmptyComponent={
           loading ? (
             <LoadingIndicator listType='channel' />
@@ -186,16 +207,8 @@ const ChannelListMessengerWithContext = <
         ListFooterComponent={
           loadingNextPage ? <FooterLoadingIndicator /> : undefined
         }
-        ListHeaderComponent={() =>
-          channels.length && ListHeaderComponent ? (
-            <ListHeaderComponent />
-          ) : null
-        }
-        onEndReached={() => {
-          if (loadNextPage) {
-            loadNextPage();
-          }
-        }}
+        ListHeaderComponent={ListFooterComponent}
+        onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
         // @ts-expect-error waiting for this merged PR to be released https://github.com/software-mansion/react-native-gesture-handler/pull/1394
         ref={setFlatListRef}

@@ -270,11 +270,11 @@ PODS:
   - React-jsinspector (0.64.0)
   - react-native-blur (0.8.0):
     - React
-  - react-native-cameraroll (4.0.2):
+  - react-native-cameraroll (4.0.3):
     - React-Core
   - react-native-document-picker (5.0.2):
     - React-Core
-  - react-native-image-resizer (1.4.3):
+  - react-native-image-resizer (1.4.4):
     - React-Core
   - react-native-netinfo (6.0.0):
     - React-Core
@@ -392,7 +392,7 @@ PODS:
     - Yoga
   - RNScreens (2.18.1):
     - React-Core
-  - RNShare (5.1.4):
+  - RNShare (5.1.6):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -604,9 +604,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 06a9c77b56902ae7ffcdd7a4905f664adc5d237b
   React-jsinspector: 0ae35a37b20d5e031eb020a69cc5afdbd6406301
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
-  react-native-cameraroll: 1965db75c851b15e77a22ca0ac78e32af6b571ae
+  react-native-cameraroll: c3496682e8296241cb34529706c462b2152506c1
   react-native-document-picker: cc847dd5fe2fc51c3a98bd8f2fd1e452db795c48
-  react-native-image-resizer: 5dfbf934fe5788c11ed06ebbcdb6e6fb6beec20c
+  react-native-image-resizer: 13ac4af788f88af36d0353a1324401ebabd04fe4
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   React-perflogger: 9c547d8f06b9bf00cb447f2b75e8d7f19b7e02af
@@ -628,7 +628,7 @@ SPEC CHECKSUMS:
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 64f6c5789f82818c07ba3c71864b73619cb23c76
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
-  RNShare: 8af5349f05fc042d230674dd650d19789187ff9c
+  RNShare: 2db8b0346a4859f83d15528602ed5b6120a0452a
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 8c8436d4171c87504c648ae23b1d81242bdf3bbf

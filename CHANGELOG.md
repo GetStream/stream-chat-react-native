@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.2] (2021-02-17)
+
+**NO CODE CHANGE**
+
+Fixed version.json during package publishing, which we use to track the version of RN sdk through
+`client.setUserAgent` call
+
+## [3.1.1] (2021-02-17)
+
+Fixed type definition pointers in package.json
+
+- [Issue #560](https://github.com/GetStream/stream-chat-react-native/issues/560)
+
 ## [3.1.0] (2021-02-15)
 
 - **🛑 BREAKING**: Removed a prop `handleOnPress` on `Input` component.

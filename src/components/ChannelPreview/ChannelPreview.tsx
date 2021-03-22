@@ -65,6 +65,7 @@ const ChannelPreviewWithContext = <
   const [lastMessage, setLastMessage] = useState<
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>
+    | undefined
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
@@ -77,13 +78,20 @@ const ChannelPreviewWithContext = <
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
+
   useEffect(() => {
     if (
       channelLastMessage &&
-      (channelLastMessage.id !== lastMessage.id ||
-        channelLastMessage.updated_at !== lastMessage.updated_at)
+      (channelLastMessage.id !== lastMessage?.id ||
+        channelLastMessage.updated_at !== lastMessage?.updated_at)
     ) {
       setLastMessage(channelLastMessage);
+    }
+
+    const newUnreadCount = channel.countUnread();
+
+    if (newUnreadCount !== unread) {
+      setUnread(newUnreadCount);
     }
   }, [channelLastMessageString]);
 
