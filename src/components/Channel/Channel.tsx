@@ -1471,6 +1471,7 @@ const ChannelWithContext = <
     additionalTextInputProps,
     AttachButton,
     autoCompleteTriggerSettings,
+    channelId,
     clearEditingState,
     clearQuotedMessageState,
     CommandsButton,
@@ -1501,6 +1502,7 @@ const ChannelWithContext = <
   });
 
   const messageListContext = useCreatePaginatedMessageListContext({
+    channelId,
     hasMore,
     loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : loadingMore,
     loadingMoreRecent:
@@ -1525,6 +1527,7 @@ const ChannelWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
+    channelId,
     copyMessage,
     DateHeader,
     deleteMessage,

@@ -30,6 +30,7 @@ export const useCreateMessagesContext = <
   CardCover,
   CardFooter,
   CardHeader,
+  channelId,
   copyMessage,
   DateHeader,
   deleteMessage,
@@ -97,7 +98,12 @@ export const useCreateMessagesContext = <
   TypingIndicatorContainer,
   updateMessage,
   UrlPreview,
-}: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+  /**
+   * To ensure we allow re-render, when channel is changed
+   */
+  channelId?: string;
+}) => {
   const additionalTouchablePropsLength = Object.keys(
     additionalTouchableProps || {},
   ).length;
@@ -194,6 +200,7 @@ export const useCreateMessagesContext = <
     }),
     [
       additionalTouchablePropsLength,
+      channelId,
       disableTypingIndicator,
       dismissKeyboardOnMessageTouch,
       initialScrollToFirstUnreadMessage,
