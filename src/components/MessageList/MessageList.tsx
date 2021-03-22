@@ -115,6 +115,11 @@ const keyExtractor = <
       ? item.created_at
       : item.created_at.toISOString()
     : Date.now().toString());
+
+const flatListViewabilityConfig = {
+  viewAreaCoveragePercentThreshold: 50,
+};
+
 type MessageListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -469,7 +474,7 @@ const MessageListWithContext = <
     if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
       markRead();
     }
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     /**
@@ -732,7 +737,7 @@ const MessageListWithContext = <
 
     const shouldMarkRead =
       !threadList &&
-      isScrollAtBottom &&
+      offset === 0 &&
       channel?.state.isUpToDate &&
       channel.countUnread() > 0;
 
@@ -841,7 +846,34 @@ const MessageListWithContext = <
   const onScrollEndDrag = () =>
     hasMoved && selectedPicker && setHasMoved(false);
 
+  const refCallback = (
+    ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>>,
+  ) => {
+    flatListRef.current = ref;
+
+    if (setFlatListRef) {
+      setFlatListRef(ref);
+    }
+  };
+
+  const renderEmptyStateIndicator = () => (
+    <View style={styles.flex}>
+      <View style={styles.flex} testID='empty-state'>
+        <EmptyStateIndicator listType='message' />
+      </View>
+    </View>
+  );
+
   if (!FlatList) return null;
+
+  if (loading) {
+    return (
+      <View style={styles.flex}>
+        <LoadingIndicator listType='message' />
+      </View>
+    );
+  }
+
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -854,17 +886,7 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={
-          <View style={styles.flex}>
-            {loading ? (
-              <LoadingIndicator listType='message' />
-            ) : (
-              <View style={styles.flex} testID='empty-state'>
-                <EmptyStateIndicator listType='message' />
-              </View>
-            )}
-          </View>
-        }
+        ListEmptyComponent={renderEmptyStateIndicator}
         ListFooterComponent={FooterComponent}
         ListHeaderComponent={HeaderComponent}
         maintainVisibleContentPosition={{
@@ -876,20 +898,12 @@ const MessageListWithContext = <
         onScrollEndDrag={onScrollEndDrag}
         onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={onViewableItemsChanged.current}
-        ref={(ref) => {
-          flatListRef.current = ref;
-
-          if (setFlatListRef) {
-            setFlatListRef(ref);
-          }
-        }}
+        ref={refCallback}
         renderItem={renderItem}
         scrollEnabled={overlay === 'none'}
         style={[styles.listContainer, listContainer]}
         testID='message-flat-list'
-        viewabilityConfig={{
-          viewAreaCoveragePercentThreshold: 50,
-        }}
+        viewabilityConfig={flatListViewabilityConfig}
         {...additionalFlatListProps}
       />
       {!loading && (

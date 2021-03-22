@@ -34,7 +34,8 @@
     "react-native-screens": "2.17.1",
     "react-native-share": "5.1.0",
     "react-native-svg": "12.1.0",
-    "stream-chat-react-native": "link:../../native-package"
+    "stream-chat-react-native": "link:../../native-package",
+    "stream-chat-react-native-core": "link:../.."
   },
   "devDependencies": {
     "@babel/core": "7.12.13",

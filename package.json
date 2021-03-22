@@ -71,7 +71,7 @@
     "path": "0.12.7",
     "react-art": "^16.8.6",
     "react-native-markdown-package": "1.8.1",
-    "stream-chat": "3.1.2"
+    "stream-chat": "3.6.2"
   },
   "peerDependencies": {
     "react": "^16.8.6",
