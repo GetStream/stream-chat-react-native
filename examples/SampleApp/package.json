@@ -7,7 +7,8 @@
     "ios": "npx react-native run-ios",
     "start": "npx react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-community/async-storage": "1.12.1",
@@ -20,6 +21,7 @@
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
     "@stream-io/flat-list-mvcp": "0.0.9",
+    "patch-package": "^6.4.7",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-document-picker": "5.0.0",
