@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogBox, useColorScheme } from 'react-native';
+import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
   DarkTheme,
@@ -106,7 +106,9 @@ const DrawerNavigator: React.FC = () => {
 
   return (
     <Drawer.Navigator
-      screenOptions={{ gestureEnabled: overlay === 'none' }}
+      screenOptions={{
+        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+      }}
       drawerContent={(props) => <MenuDrawer {...props} />}
       drawerStyle={{
         width: 300,
@@ -204,7 +206,10 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ChannelScreen}
         name='ChannelScreen'
-        options={{ gestureEnabled: overlay === 'none', headerShown: false }}
+        options={{
+          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         component={NewDirectMessagingScreen}
@@ -251,7 +256,10 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ThreadScreen}
         name='ThreadScreen'
-        options={{ gestureEnabled: overlay === 'none', headerShown: false }}
+        options={{
+          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );

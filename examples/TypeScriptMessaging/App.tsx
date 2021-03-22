@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, SafeAreaView, View, useColorScheme } from 'react-native';
+import {
+  LogBox,
+  Platform,
+  SafeAreaView,
+  View,
+  useColorScheme,
+} from 'react-native';
 import {
   DarkTheme,
   DefaultTheme,
@@ -124,7 +130,9 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { overlay } = useOverlayContext();
 
   useEffect(() => {
-    navigation.setOptions({ gestureEnabled: overlay === 'none' });
+    navigation.setOptions({
+      gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+    });
   }, [overlay]);
 
   useEffect(() => {
@@ -175,7 +183,9 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { overlay } = useOverlayContext();
 
   useEffect(() => {
-    navigation.setOptions({ gestureEnabled: overlay === 'none' });
+    navigation.setOptions({
+      gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+    });
   }, [overlay]);
 
   return (
