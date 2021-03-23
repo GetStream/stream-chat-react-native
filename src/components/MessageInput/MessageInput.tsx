@@ -143,6 +143,7 @@ type MessageInputPropsWithContext<
     | 'InputButtons'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
+    | 'mentionedUsers'
     | 'MoreOptionsButton'
     | 'numberOfUploads'
     | 'pickFile'
@@ -202,6 +203,7 @@ export const MessageInputWithContext = <
     isValidMessage,
     maxNumberOfFiles,
     members,
+    mentionedUsers,
     numberOfUploads,
     pickFile,
     quotedMessage,
@@ -332,7 +334,17 @@ export const MessageInputWithContext = <
       inputBoxRef.current.focus();
     }
 
-    if (!editing) {
+    /**
+     * Make sure to test `initialValue` functionality, if you are modifying following condition.
+     */
+    if (
+      !editing &&
+      (giphyActive ||
+        fileUploads.length > 0 ||
+        mentionedUsers.length > 0 ||
+        imageUploads.length > 0 ||
+        numberOfUploads > 0)
+    ) {
       resetInput();
     }
   }, [editingExists]);
@@ -626,6 +638,7 @@ const areEqual = <
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
+    mentionedUsers: prevMentionedUsers,
     quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
@@ -642,6 +655,7 @@ const areEqual = <
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
+    mentionedUsers: nextMentionedUsers,
     quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
@@ -693,6 +707,10 @@ const areEqual = <
 
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) return false;
+
+  const mentionedUsersEqual =
+    prevMentionedUsers.length === nextMentionedUsers.length;
+  if (!mentionedUsersEqual) return false;
 
   const suggestionsEqual =
     !!prevSuggestions?.data && !!nextSuggestions?.data
@@ -780,6 +798,7 @@ export const MessageInput = <
     InputButtons,
     isValidMessage,
     maxNumberOfFiles,
+    mentionedUsers,
     MoreOptionsButton,
     numberOfUploads,
     pickFile,
@@ -835,6 +854,7 @@ export const MessageInput = <
         isValidMessage,
         maxNumberOfFiles,
         members,
+        mentionedUsers,
         MoreOptionsButton,
         numberOfUploads,
         pickFile,
