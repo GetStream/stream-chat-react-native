@@ -116,7 +116,6 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
                   ),
           }}
           style={[
-            image,
             size
               ? {
                   borderRadius: size / 2,
@@ -124,6 +123,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
                   width: size,
                 }
               : {},
+            image,
             imageStyle,
           ]}
           testID={testID || 'avatar-image'}
