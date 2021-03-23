@@ -434,6 +434,13 @@ export const MessageInputWithContext = <
     }
   };
 
+  const openMentionsPicker = () => {
+    appendText('@');
+    if (inputBoxRef.current) {
+      inputBoxRef.current.focus();
+    }
+  };
+
   const additionalTextInputContainerProps = {
     editable: disabled ? false : undefined,
     ...additionalTextInputProps,
@@ -497,6 +504,8 @@ export const MessageInputWithContext = <
               getUsers={getUsers}
               openAttachmentPicker={openAttachmentPicker}
               openCommandsPicker={openCommandsPicker}
+              openFilePicker={pickFile}
+              openMentionsPicker={openMentionsPicker}
               toggleAttachmentPicker={toggleAttachmentPicker}
             />
           ) : (
@@ -507,6 +516,8 @@ export const MessageInputWithContext = <
                     closeAttachmentPicker={closeAttachmentPicker}
                     openAttachmentPicker={openAttachmentPicker}
                     openCommandsPicker={openCommandsPicker}
+                    openFilePicker={pickFile}
+                    openMentionsPicker={openMentionsPicker}
                     toggleAttachmentPicker={toggleAttachmentPicker}
                   />
                 )}

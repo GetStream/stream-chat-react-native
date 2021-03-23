@@ -57,6 +57,8 @@ export type InputButtonsWithContextProps<
   closeAttachmentPicker?: () => void;
   openAttachmentPicker?: () => void;
   openCommandsPicker?: () => void;
+  openFilePicker?: () => void;
+  openMentionsPicker?: () => void;
   toggleAttachmentPicker?: () => void;
 };
 
