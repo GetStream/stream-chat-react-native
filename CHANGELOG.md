@@ -1,19 +1,26 @@
 # Changelog
 
-## [3.1.2] (2021-02-17)
+##  [3.2.0] (2021-03-23)
+
+- **🛑 BREAKING**: `messages` and loading conditions are now accessible via the `PaginatedMessageListContext`
+- Allow use of Channel component with uninitialized channel
+- Allow custom config of i18next config
+- UI fixes and animation improvements
+
+## [3.1.2] (2021-03-17)
 
 **NO CODE CHANGE**
 
 Fixed version.json during package publishing, which we use to track the version of RN sdk through
 `client.setUserAgent` call
 
-## [3.1.1] (2021-02-17)
+## [3.1.1] (2021-03-17)
 
 Fixed type definition pointers in package.json
 
 - [Issue #560](https://github.com/GetStream/stream-chat-react-native/issues/560)
 
-## [3.1.0] (2021-02-15)
+## [3.1.0] (2021-03-15)
 
 - **🛑 BREAKING**: Removed a prop `handleOnPress` on `Input` component.
 - Added support for new props on `Input` component, which can be used on Channel component as prop to replace undelying input component ([reference](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#how-to-change-the-layout-of-messageinput-component))
