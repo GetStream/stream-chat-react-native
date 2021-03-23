@@ -166,6 +166,7 @@ registerNativeHandlers({
       throw new Error('Downloading image failed...');
     }
   },
+  SDK: 'stream-chat-react-native',
   shareImage: async ({ type, url }) => {
     try {
       const base64Image = await RNFS.readFile(url, 'base64');
@@ -174,22 +175,22 @@ registerNativeHandlers({
         activityItemSources:
           Platform.OS === 'ios'
             ? [
-                {
-                  item: {
-                    default: {
-                      content: url,
-                      type: 'url',
-                    },
-                  },
-                  linkMetadata: {
-                    icon: url,
-                  },
-                  placeholderItem: {
+              {
+                item: {
+                  default: {
                     content: url,
                     type: 'url',
                   },
                 },
-              ]
+                linkMetadata: {
+                  icon: url,
+                },
+                placeholderItem: {
+                  content: url,
+                  type: 'url',
+                },
+              },
+            ]
             : undefined,
         excludedActivityTypes: [],
         failOnCancel: false,

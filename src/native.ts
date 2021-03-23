@@ -126,6 +126,8 @@ type HapticFeedbackMethod =
 type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
+export let SDK: string;
+
 type Handlers = {
   BlurView?: BlurView;
   compressImage?: CompressImage;
@@ -136,6 +138,7 @@ type Handlers = {
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
   saveFile?: SaveFile;
+  SDK?: string;
   shareImage?: ShareImage;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
@@ -179,6 +182,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.saveFile) {
     saveFile = handlers.saveFile;
+  }
+
+  if (handlers.SDK) {
+    SDK = handlers.SDK;
   }
 
   if (handlers.shareImage) {

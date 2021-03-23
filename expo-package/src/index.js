@@ -133,6 +133,7 @@ registerNativeHandlers({
       throw new Error('Downloading image failed...');
     }
   },
+  SDK: 'stream-chat-expo',
   shareImage: async ({ type, url }) => {
     try {
       await Sharing.shareAsync(url, { mimeType: type, UTI: type });

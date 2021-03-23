@@ -21,6 +21,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../utils/useStreami18n';
 
+import { SDK } from '../../native';
 import { version } from '../../version.json';
 
 import type { Channel } from 'stream-chat';
@@ -183,7 +184,7 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (client.setUserAgent) {
-      client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+      client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
     }

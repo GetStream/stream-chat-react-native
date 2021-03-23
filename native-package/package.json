@@ -11,7 +11,7 @@
   "types": "types/index.d.ts",
   "dependencies": {
     "es6-symbol": "^3.1.3",
-    "stream-chat-react-native-core": "v3.1.2"
+    "stream-chat-react-native-core": "link:../"
   },
   "peerDependencies": {
     "@react-native-community/blur": ">=3.6.0",
