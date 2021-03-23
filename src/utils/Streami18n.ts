@@ -4,7 +4,7 @@ import localeData from 'dayjs/plugin/localeData';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import i18n, { TFunction } from 'i18next';
+import i18n, { FallbackLng, TFunction } from 'i18next';
 
 import enTranslations from '../i18n/en.json';
 import frTranslations from '../i18n/fr.json';
@@ -179,6 +179,16 @@ type Options = {
   language?: string;
   logger?: (msg?: string) => void;
   translationsForLanguage?: typeof enTranslations;
+};
+
+type I18NextConfig = {
+  debug: boolean;
+  fallbackLng: false | FallbackLng;
+  interpolation: { escapeValue: boolean };
+  keySeparator: false | string;
+  lng: string;
+  nsSeparator: false | string;
+  parseMissingKeyHandler: (key: string) => string;
 };
 
 /**
@@ -375,15 +385,7 @@ export class Streami18n {
   currentLanguage: string;
   DateTimeParser: typeof Dayjs | typeof moment;
   isCustomDateTimeParser: boolean;
-  i18nextConfig: {
-    debug: boolean;
-    fallbackLng: false;
-    interpolation: { escapeValue: boolean };
-    keySeparator: false;
-    lng: string;
-    nsSeparator: false;
-    parseMissingKeyHandler: (key: string) => string;
-  };
+  i18nextConfig: I18NextConfig;
 
   /**
    * Constructor accepts following options:
@@ -411,7 +413,10 @@ export class Streami18n {
    *
    * @param {*} options
    */
-  constructor(options: Options = {}) {
+  constructor(
+    options: Options = {},
+    i18nextConfig: Partial<I18NextConfig> = {},
+  ) {
     const finalOptions = {
       ...defaultStreami18nOptions,
       ...options,
@@ -471,6 +476,7 @@ export class Streami18n {
 
         return key;
       },
+      ...i18nextConfig,
     };
 
     this.validateCurrentLanguage();
