@@ -850,14 +850,6 @@ const MessageListWithContext = <
     }
   };
 
-  const renderEmptyStateIndicator = () => (
-    <View style={styles.flex}>
-      <View style={styles.flex} testID='empty-state'>
-        <EmptyStateIndicator listType='message' />
-      </View>
-    </View>
-  );
-
   if (!FlatList) return null;
 
   if (loading) {
@@ -880,7 +872,13 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={renderEmptyStateIndicator}
+        ListEmptyComponent={
+          <View style={styles.flex}>
+            <View style={styles.flex} testID='empty-state'>
+              <EmptyStateIndicator listType='message' />
+            </View>
+          </View>
+        }
         ListFooterComponent={FooterComponent}
         ListHeaderComponent={HeaderComponent}
         maintainVisibleContentPosition={{
