@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ColorValue,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -46,6 +47,11 @@ const styles = StyleSheet.create({
   leftMessageRepliesCurve: {
     borderBottomLeftRadius: 16,
     borderRightColor: 'transparent',
+    ...Platform.select({
+      android: {
+        borderRightWidth: 0,
+      },
+    }),
   },
   messageRepliesCurve: {
     borderTopColor: 'transparent',
@@ -63,6 +69,11 @@ const styles = StyleSheet.create({
   rightMessageRepliesCurve: {
     borderBottomRightRadius: 16,
     borderLeftColor: 'transparent',
+    ...Platform.select({
+      android: {
+        borderLeftWidth: 0,
+      },
+    }),
   },
 });
 

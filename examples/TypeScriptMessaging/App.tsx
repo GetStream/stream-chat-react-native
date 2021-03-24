@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, SafeAreaView, View, useColorScheme } from 'react-native';
+import {
+  LogBox,
+  Platform,
+  SafeAreaView,
+  View,
+  useColorScheme,
+} from 'react-native';
 import {
   DarkTheme,
   DefaultTheme,
@@ -27,6 +33,7 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
+  useOverlayContext,
 } from 'stream-chat-react-native';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
@@ -120,6 +127,13 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
   const { setTopInset } = useAttachmentPickerContext();
+  const { overlay } = useOverlayContext();
+
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+    });
+  }, [overlay]);
 
   useEffect(() => {
     setTopInset(headerHeight);
@@ -159,12 +173,20 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 };
 
 type ThreadScreenProps = {
+  navigation: StackNavigationProp<ThreadRoute, 'Thread'>;
   route: RouteProp<ThreadRoute, 'Thread'>;
 };
 
-const ThreadScreen: React.FC<ThreadScreenProps> = () => {
+const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { overlay } = useOverlayContext();
+
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+    });
+  }, [overlay]);
 
   return (
     <SafeAreaView>

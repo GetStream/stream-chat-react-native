@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   RouteProp,
   useFocusEffect,
@@ -13,14 +7,10 @@ import {
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  Avatar,
   Channel,
   ChannelAvatar,
-  getChannelPreviewDisplayAvatar,
-  GroupAvatar,
   MessageInput,
   MessageList,
-  Spinner,
   ThreadContextValue,
   useChannelPreviewDisplayName,
   useChatContext,

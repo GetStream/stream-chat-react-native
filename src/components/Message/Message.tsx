@@ -1195,8 +1195,8 @@ const MessageWithContext = <
           withTiming(1, { duration: 100 }),
           withTiming(0.98, { duration: 400 }, () => {
             if (pressActive.value) {
-              runOnJS(triggerHaptic)('impactMedium');
               runOnJS(onLongPressMessage)();
+              runOnJS(triggerHaptic)('impactMedium');
             }
           }),
           withTiming(1.02, { duration: 100 }),
@@ -1222,6 +1222,7 @@ const MessageWithContext = <
   return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
       enabled={animatedLongPress}
+      maxDeltaX={8}
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
       waitFor={doubleTapRef}
