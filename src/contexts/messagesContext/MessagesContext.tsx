@@ -488,26 +488,25 @@ export type MessagesContextValue<
    */
   myMessageTheme?: DeepPartial<Theme>;
   /**
-   * Double tap message for gesture handler components
+   * Add double tap handler for message.
    */
   onDoubleTapMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * onLongPressMessage should be used to cancel onPressInMessage timers
-   * if required
+   * Override default handler for onLongPress
    */
   onLongPressMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Override for press on message attachments
+   * Add onPressIn handler for attachments.
    */
   onPressInMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Override for press of message.
+   * Override onPress handler for message.
    */
   onPressMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,

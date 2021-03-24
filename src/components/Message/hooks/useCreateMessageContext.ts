@@ -25,7 +25,6 @@ export const useCreateMessageContext = <
 >({
   actionsEnabled,
   alignment,
-  animatedLongPress,
   canModifyMessage,
   channel,
   disabled,
@@ -88,7 +87,6 @@ export const useCreateMessageContext = <
     () => ({
       actionsEnabled,
       alignment,
-      animatedLongPress,
       canModifyMessage,
       channel,
       disabled,
@@ -127,7 +125,6 @@ export const useCreateMessageContext = <
     [
       actionsEnabled,
       alignment,
-      animatedLongPress,
       disabled,
       groupStylesLength,
       hasReactions,

@@ -198,6 +198,7 @@ export type MessagePropsWithContext<
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'animatedLongPress'
     | 'blockUser'
     | 'copyMessage'
     | 'deleteMessage'
@@ -1094,7 +1095,6 @@ const MessageWithContext = <
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
-    animatedLongPress,
     canModifyMessage,
     channel,
     disabled,

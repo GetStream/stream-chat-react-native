@@ -44,10 +44,6 @@ export type MessageContextValue<
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
   /**
-   * Should use gesture handler to animate longPress
-   */
-  animatedLongPress: boolean;
-  /**
    * Function that returns a boolean indicating whether or not the user can edit/delete the message.
    */
   canModifyMessage: boolean;
