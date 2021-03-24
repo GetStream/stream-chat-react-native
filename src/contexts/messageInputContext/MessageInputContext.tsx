@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
+
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
@@ -21,6 +23,8 @@ import {
   isEditingBoolean,
   useMessageDetailsForState,
 } from './hooks/useMessageDetailsForState';
+
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
 
 import { useChatContext } from '../chatContext/ChatContext';
 import {
@@ -107,6 +111,7 @@ export type LocalMessageInputContext<
       url: string;
     };
   };
+  closeAttachmentPicker: () => void;
   /**
    * An array of file objects which are set for upload. It has the following structure:
    *
@@ -156,6 +161,10 @@ export type LocalMessageInputContext<
   numberOfUploads: number;
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse<Us>) => void;
+  openAttachmentPicker: () => void;
+  openCommandsPicker: () => void;
+  openFilePicker: () => void;
+  openMentionsPicker: () => void;
   pickFile: () => Promise<void>;
   /**
    * Function for removing a file from the upload preview
@@ -170,6 +179,7 @@ export type LocalMessageInputContext<
    */
   removeImage: (id: string) => void;
   resetInput: (pendingAttachments?: Attachment<At>[]) => void;
+  selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
   sendMessage: () => Promise<void>;
   sendMessageAsync: (id: string) => void;
@@ -200,6 +210,7 @@ export type LocalMessageInputContext<
    * Text value of the TextInput
    */
   text: string;
+  toggleAttachmentPicker: () => void;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
@@ -429,6 +440,13 @@ export const MessageInputProvider = <
   value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    closePicker,
+    openPicker,
+    selectedPicker,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
+
   const { channel, giphyEnabled } = useChannelContext<
     At,
     Ch,
@@ -454,7 +472,13 @@ export const MessageInputProvider = <
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(
     false,
   );
-
+  const {
+    editing,
+    hasFilePicker,
+    hasImagePicker,
+    initialValue,
+    maxNumberOfFiles,
+  } = value;
   const {
     fileUploads,
     imageUploads,
@@ -469,8 +493,8 @@ export const MessageInputProvider = <
     showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(
-    value.editing,
-    value.initialValue,
+    editing,
+    initialValue,
   );
 
   const threadId = thread?.id;
@@ -527,6 +551,45 @@ export const MessageInputProvider = <
 
     if (value.onChangeText) {
       value.onChangeText(newText);
+    }
+  };
+
+  const openCommandsPicker = () => {
+    appendText('/');
+    if (inputBoxRef.current) {
+      inputBoxRef.current.focus();
+    }
+  };
+
+  const openMentionsPicker = () => {
+    appendText('@');
+    if (inputBoxRef.current) {
+      inputBoxRef.current.focus();
+    }
+  };
+
+  const openAttachmentPicker = () => {
+    if (hasImagePicker && !fileUploads.length) {
+      Keyboard.dismiss();
+      openPicker();
+      setSelectedPicker('images');
+    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+      pickFile();
+    }
+  };
+
+  const closeAttachmentPicker = () => {
+    if (selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    }
+  };
+
+  const toggleAttachmentPicker = () => {
+    if (selectedPicker) {
+      closeAttachmentPicker();
+    } else {
+      openAttachmentPicker();
     }
   };
 
@@ -1014,6 +1077,7 @@ export const MessageInputProvider = <
     appendText,
     asyncIds,
     asyncUploads,
+    closeAttachmentPicker,
     fileUploads,
     giphyActive,
     imageUploads,
@@ -1023,10 +1087,15 @@ export const MessageInputProvider = <
     numberOfUploads,
     onChange,
     onSelectItem,
+    openAttachmentPicker,
+    openCommandsPicker,
+    openFilePicker: pickFile,
+    openMentionsPicker,
     pickFile,
     removeFile,
     removeImage,
     resetInput,
+    selectedPicker,
     sending,
     sendMessageAsync,
     sendThreadMessageInChannel,
@@ -1044,6 +1113,7 @@ export const MessageInputProvider = <
     showMoreOptions,
     text,
     thread,
+    toggleAttachmentPicker,
     triggerSettings,
     updateMessage,
     uploadFile,

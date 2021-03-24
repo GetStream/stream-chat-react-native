@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
@@ -129,6 +123,7 @@ type MessageInputPropsWithContext<
     | 'CommandsButton'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
+    | 'closeAttachmentPicker'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
@@ -146,6 +141,10 @@ type MessageInputPropsWithContext<
     | 'mentionedUsers'
     | 'MoreOptionsButton'
     | 'numberOfUploads'
+    | 'openAttachmentPicker'
+    | 'openCommandsPicker'
+    | 'openFilePicker'
+    | 'openMentionsPicker'
     | 'pickFile'
     | 'quotedMessage'
     | 'resetInput'
@@ -156,6 +155,7 @@ type MessageInputPropsWithContext<
     | 'setShowMoreOptions'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'toggleAttachmentPicker'
     | 'removeImage'
     | 'uploadNewImage'
     | 'uploadsEnabled'
@@ -182,19 +182,17 @@ export const MessageInputWithContext = <
 ) => {
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
     clearEditingState,
     clearQuotedMessageState,
+    closeAttachmentPicker,
     componentType,
     disabled,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -205,7 +203,6 @@ export const MessageInputWithContext = <
     members,
     mentionedUsers,
     numberOfUploads,
-    pickFile,
     quotedMessage,
     removeImage,
     Reply,
@@ -259,22 +256,16 @@ export const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
-    closePicker,
-    openPicker,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
     setSelectedImages,
-    setSelectedPicker,
   } = useAttachmentPickerContext();
 
   useEffect(() => {
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
 
-    return () => {
-      closePicker();
-      setSelectedPicker(undefined);
-    };
+    return closeAttachmentPicker;
   }, [maxNumberOfFiles]);
 
   const selectedImagesLength = selectedImages.length;
@@ -408,45 +399,6 @@ export const MessageInputWithContext = <
     return result;
   };
 
-  const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
-      Keyboard.dismiss();
-      openPicker();
-      setSelectedPicker('images');
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
-      pickFile();
-    }
-  };
-
-  const closeAttachmentPicker = () => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
-      closePicker();
-    }
-  };
-
-  const toggleAttachmentPicker = () => {
-    if (selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  };
-
-  const openCommandsPicker = () => {
-    appendText('/');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  };
-
-  const openMentionsPicker = () => {
-    appendText('@');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  };
-
   const additionalTextInputContainerProps = {
     editable: disabled ? false : undefined,
     ...additionalTextInputProps,
@@ -506,27 +458,12 @@ export const MessageInputWithContext = <
           {Input ? (
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
-              closeAttachmentPicker={closeAttachmentPicker}
               getUsers={getUsers}
-              openAttachmentPicker={openAttachmentPicker}
-              openCommandsPicker={openCommandsPicker}
-              openFilePicker={pickFile}
-              openMentionsPicker={openMentionsPicker}
-              toggleAttachmentPicker={toggleAttachmentPicker}
             />
           ) : (
             <>
               <View style={[styles.optionsContainer, optionsContainer]}>
-                {InputButtons && (
-                  <InputButtons
-                    closeAttachmentPicker={closeAttachmentPicker}
-                    openAttachmentPicker={openAttachmentPicker}
-                    openCommandsPicker={openCommandsPicker}
-                    openFilePicker={pickFile}
-                    openMentionsPicker={openMentionsPicker}
-                    toggleAttachmentPicker={toggleAttachmentPicker}
-                  />
-                )}
+                {InputButtons && <InputButtons />}
               </View>
               <View
                 style={[
@@ -800,6 +737,7 @@ export const MessageInput = <
     AttachButton,
     clearEditingState,
     clearQuotedMessageState,
+    closeAttachmentPicker,
     CommandsButton,
     editing,
     FileUploadPreview,
@@ -818,6 +756,10 @@ export const MessageInput = <
     mentionedUsers,
     MoreOptionsButton,
     numberOfUploads,
+    openAttachmentPicker,
+    openCommandsPicker,
+    openFilePicker,
+    openMentionsPicker,
     pickFile,
     quotedMessage,
     removeImage,
@@ -829,6 +771,7 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    toggleAttachmentPicker,
     uploadNewImage,
     uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -853,6 +796,7 @@ export const MessageInput = <
         AttachButton,
         clearEditingState,
         clearQuotedMessageState,
+        closeAttachmentPicker,
         CommandsButton,
         componentType,
         disabled,
@@ -874,6 +818,10 @@ export const MessageInput = <
         mentionedUsers,
         MoreOptionsButton,
         numberOfUploads,
+        openAttachmentPicker,
+        openCommandsPicker,
+        openFilePicker,
+        openMentionsPicker,
         pickFile,
         quotedMessage,
         removeImage,
@@ -889,6 +837,7 @@ export const MessageInput = <
         suggestions,
         suggestionsTitle,
         t,
+        toggleAttachmentPicker,
         uploadNewImage,
         uploadsEnabled,
         watchers,
