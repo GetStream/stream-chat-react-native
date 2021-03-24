@@ -336,6 +336,12 @@ export const MessageInputWithContext = <
 
     /**
      * Make sure to test `initialValue` functionality, if you are modifying following condition.
+     *
+     * We have the following condition, to make sure - when user comes out of "editing message" state,
+     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
+     * But it also means, this condition will be fired up on first render, which may result in clearing
+     * the initial value set on input box, through the prop - `initialValue`.
+     * This prop generally gets used for the case of draft message functionality.
      */
     if (
       !editing &&
