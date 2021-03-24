@@ -5,7 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import type { GestureHandlerPayload } from '../../components/Message/Message';
+import type { TouchableHandlerPayload } from '../../components/Message/Message';
 import type {
   GroupType,
   MessageType,
@@ -91,7 +91,7 @@ export type MessageContextValue<
    *
    * @param event   Event object for onLongPress event
    */
-  onLongPress: (payload: GestureHandlerPayload) => void;
+  onLongPress: (payload: TouchableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -106,8 +106,8 @@ export type MessageContextValue<
    *
    * @param event   Event object for onPress event
    */
-  onPress: (payload: GestureHandlerPayload) => void;
-  onPressIn: (payload: GestureHandlerPayload) => void;
+  onPress: (payload: TouchableHandlerPayload) => void;
+  onPressIn: (payload: TouchableHandlerPayload) => void;
   /** The images attached to a message */
   otherAttachments: Attachment<At>[];
   reactions: Reactions;

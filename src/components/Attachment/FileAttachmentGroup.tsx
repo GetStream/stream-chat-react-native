@@ -38,10 +38,7 @@ export type FileAttachmentGroupPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'files' | 'onPressIn'
-> &
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
     /**
      * The unique id for the message with file attachments
@@ -64,13 +61,7 @@ const FileAttachmentGroupWithContext = <
 >(
   props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    Attachment,
-    files,
-    messageId,
-    onPressIn,
-    styles: stylesProp = {},
-  } = props;
+  const { Attachment, files, messageId, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -90,7 +81,7 @@ const FileAttachmentGroupWithContext = <
             stylesProp.attachmentContainer,
           ]}
         >
-          <Attachment attachment={file} onPressIn={onPressIn} />
+          <Attachment attachment={file} />
         </View>
       ))}
     </View>
@@ -152,12 +143,17 @@ export const FileAttachmentGroup = <
 >(
   props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { files: propFiles, messageId, onPressIn: propOnPressIn } = props;
+  const { files: propFiles, messageId } = props;
 
-  const {
-    files: contextFiles,
-    onPressIn: onPressInContext,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { files: contextFiles } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   const { Attachment = AttachmentDefault } = useMessagesContext<
     At,
@@ -170,7 +166,6 @@ export const FileAttachmentGroup = <
   >();
 
   const files = propFiles || contextFiles;
-  const onPressIn = propOnPressIn || onPressInContext;
 
   if (!files.length) return null;
 
@@ -180,7 +175,6 @@ export const FileAttachmentGroup = <
         Attachment,
         files,
         messageId,
-        onPressIn,
       }}
     />
   );

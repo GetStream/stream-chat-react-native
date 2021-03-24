@@ -22,8 +22,8 @@ import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type {
-  MessageGestureHandlerPayload,
   MessageProps,
+  MessageTouchableHandlerPayload,
 } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
@@ -491,26 +491,26 @@ export type MessagesContextValue<
    * Double tap message for gesture handler components
    */
   onDoubleTapMessage?: (
-    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * onLongPressMessage should be used to cancel onPressInMessage timers
    * if required
    */
   onLongPressMessage?: (
-    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Override for press on message attachments
    */
   onPressInMessage?: (
-    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Override for press of message.
    */
   onPressMessage?: (
-    payload: MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Full override of the reply button in the Message Actions

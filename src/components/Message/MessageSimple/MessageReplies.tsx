@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   curveContainer: {
-    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },

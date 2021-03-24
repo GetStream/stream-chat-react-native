@@ -125,7 +125,7 @@ const prefetchImage = ({
     });
   }
 };
-export type GestureHandlerPayload = {
+export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?:
     | 'card'
@@ -141,7 +141,7 @@ export type GestureHandlerPayload = {
   event?: GestureResponderEvent;
 };
 
-export type MessageGestureHandlerPayload<
+export type MessageTouchableHandlerPayload<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -149,7 +149,7 @@ export type MessageGestureHandlerPayload<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = GestureHandlerPayload & {
+> = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
 };
@@ -264,7 +264,7 @@ export type MessagePropsWithContext<
      **/
     onLongPress?: (
       payload: Partial<
-        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
       >,
     ) => void;
     /**
@@ -280,13 +280,13 @@ export type MessagePropsWithContext<
      * */
     onPress?: (
       payload: Partial<
-        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
       >,
     ) => void;
 
     onPressIn?: (
       payload: Partial<
-        MessageGestureHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
       >,
     ) => void;
     /**
@@ -453,6 +453,17 @@ const MessageWithContext = <
     }
   };
 
+  const onPressQuotedMessage = (
+    quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => {
+    if (!goToMessage) return;
+
+    pressActive.value = false;
+    cancelAnimation(scale);
+    scale.value = withTiming(1, { duration: 100 });
+    goToMessage(quotedMessage.id);
+  };
+
   const onPress = (
     error = message.type === 'error' || message.status === 'failed',
   ) => {
@@ -473,17 +484,6 @@ const MessageWithContext = <
     } else if (quotedMessage) {
       onPressQuotedMessage(quotedMessage);
     }
-  };
-
-  const onPressQuotedMessage = (
-    quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
-    if (!goToMessage) return;
-
-    pressActive.value = false;
-    cancelAnimation(scale);
-    scale.value = withTiming(1, { duration: 100 });
-    goToMessage(quotedMessage.id);
   };
 
   const alignment =
@@ -663,10 +663,10 @@ const MessageWithContext = <
   };
 
   const handleResendMessage = () => {
-    const messageWithourReservedFields = removeReservedFields(message);
+    const messageWithoutReservedFields = removeReservedFields(message);
 
     return retrySendMessage(
-      messageWithourReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
+      messageWithoutReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
     );
   };
 
@@ -874,10 +874,6 @@ const MessageWithContext = <
           }
       : undefined;
 
-    const isMuted = (client.mutedUsers || []).some(
-      (mute) =>
-        mute.user.id === client.userID && mute.target.id === message.user?.id,
-    );
     const muteUser = muteUserProp
       ? muteUserProp(message)
       : muteUserProp === null
@@ -920,9 +916,9 @@ const MessageWithContext = <
       : {
           action: async () => {
             setOverlay('none');
-            const messageWithourReservedFields = removeReservedFields(message);
+            const messageWithoutReservedFields = removeReservedFields(message);
             if (handleRetry) {
-              handleRetry(messageWithourReservedFields);
+              handleRetry(messageWithoutReservedFields);
             }
 
             await handleResendMessage();
@@ -1069,7 +1065,7 @@ const MessageWithContext = <
     disabled || hasAttachmentActions
       ? () => null
       : onLongPressMessageProp
-      ? (payload?: GestureHandlerPayload) =>
+      ? (payload?: TouchableHandlerPayload) =>
           onLongPressMessageProp({
             actionHandlers,
             defaultHandler: payload?.defaultHandler || showMessageOverlay,
@@ -1078,7 +1074,7 @@ const MessageWithContext = <
             message,
           })
       : onLongPressProp
-      ? (payload?: GestureHandlerPayload) =>
+      ? (payload?: TouchableHandlerPayload) =>
           onLongPressProp({
             actionHandlers,
             defaultHandler: payload?.defaultHandler || showMessageOverlay,

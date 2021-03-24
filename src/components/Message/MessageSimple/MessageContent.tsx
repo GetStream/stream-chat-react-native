@@ -381,7 +381,6 @@ export const MessageContentWithContext = <
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>
           )}
-          {/* @ts-ignore */}
           {messageContentOrder.map(
             (messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {

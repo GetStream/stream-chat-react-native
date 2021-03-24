@@ -12,7 +12,6 @@ import {
 
 import type { Attachment as AttachmentType } from 'stream-chat';
 
-import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -42,15 +41,12 @@ export type AttachmentPropsWithContext<
   | 'Gallery'
   | 'Giphy'
   | 'UrlPreview'
-> &
-  Partial<
-    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onPressIn'>
-  > & {
-    /**
-     * The attachment to render
-     */
-    attachment: AttachmentType<At>;
-  };
+> & {
+  /**
+   * The attachment to render
+   */
+  attachment: AttachmentType<At>;
+};
 
 const AttachmentWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -177,10 +173,7 @@ export type AttachmentProps<
     | 'UrlPreview'
   >
 > &
-  Pick<
-    AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'attachment' | 'onPressIn'
-  >;
+  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
 
 /**
  * Attachment - The message attachment
@@ -203,7 +196,6 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
-    onPressIn: propOnPressIn,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -229,7 +221,6 @@ export const Attachment = <
     PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
-  const onPressIn = propOnPressIn;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
 
   return (
@@ -241,7 +232,6 @@ export const Attachment = <
         FileAttachment,
         Gallery,
         Giphy,
-        onPressIn,
         UrlPreview,
       }}
     />
