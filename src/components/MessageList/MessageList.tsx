@@ -855,6 +855,11 @@ const MessageListWithContext = <
       setFlatListRef(ref);
     }
   };
+  const renderListEmptyComponent = () => (
+    <View style={styles.flex} testID='empty-state'>
+      <EmptyStateIndicator listType='message' />
+    </View>
+  );
 
   if (!FlatList) return null;
 
@@ -878,13 +883,7 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={
-          <View style={styles.flex}>
-            <View style={styles.flex} testID='empty-state'>
-              <EmptyStateIndicator listType='message' />
-            </View>
-          </View>
-        }
+        ListEmptyComponent={renderListEmptyComponent}
         ListFooterComponent={FooterComponent}
         ListHeaderComponent={HeaderComponent}
         maintainVisibleContentPosition={{
