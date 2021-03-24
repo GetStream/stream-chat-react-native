@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
   },
   curveContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
   },
   leftMessageRepliesCurve: {
     borderBottomLeftRadius: 16,
