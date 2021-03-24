@@ -4,7 +4,8 @@
 
 ###  **🛑 BREAKING**
 
-Following values have been moved from `MessagesContext` a separate context - `PaginatedMessageListContext`
+- Minimum required `stream-chat` version is `3.5.1`.
+- Following values have been moved from `MessagesContext` a separate context - `PaginatedMessageListContext`
   - hasMore
   - messages
   - loadMore
@@ -22,7 +23,9 @@ This is necessary to allow push notifications.
 
 We only send push notification, when user doesn't have any active websocket connection (which is established when you call `client.connectUser`). When your app goes to background, your device will keep the ws connection alive for around 15-20 seconds, and so within this period you won't receive any push notification. Until now, it was upto end user to drop the connection by explicitly calling `client.closeConnection()` or `client.wsConnection.disconnect()`, when app goes to background.
 But from this release, we have moved this functionality to OOTB.
-If you don't have push system configured for your application, you can disable this functionality by adding a prop on Chat component - `closeConnectionOnBackground={false}`
+
+- If you don't have push system configured for your application, you can disable this functionality by adding a prop on Chat component - `closeConnectionOnBackground={false}`
+- As described earlier, please make sure you are on `stream-chat >= 3.5.1`
 
 #### Other
 
