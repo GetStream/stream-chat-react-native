@@ -145,7 +145,7 @@ const nativeHandlers: Handlers = {
   triggerHaptic: fail,
 };
 
-export const registerNativeHandlers = (handlers: Handlers) => {
+export const registerNativeHandlers = (handlers: Partial<Handlers>) => {
   if (handlers.BlurView) {
     nativeHandlers.BlurView = handlers.BlurView;
   }
