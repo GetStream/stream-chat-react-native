@@ -21,6 +21,7 @@ export const useCreatePaginatedMessageListContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >({
+  channelId,
   hasMore,
   loadingMore,
   loadingMoreRecent,
@@ -29,7 +30,9 @@ export const useCreatePaginatedMessageListContext = <
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
-}: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+  channelId?: string;
+}) => {
   const messagesUpdated = messages
     .map(
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
@@ -60,7 +63,7 @@ export const useCreatePaginatedMessageListContext = <
       setLoadingMore,
       setLoadingMoreRecent,
     }),
-    [hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
+    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
   );
 
   return paginatedMessagesContext;

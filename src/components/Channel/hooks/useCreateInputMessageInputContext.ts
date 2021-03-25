@@ -24,6 +24,7 @@ export const useCreateInputMessageInputContext = <
   additionalTextInputProps,
   AttachButton,
   autoCompleteTriggerSettings,
+  channelId,
   clearEditingState,
   clearQuotedMessageState,
   CommandsButton,
@@ -53,7 +54,12 @@ export const useCreateInputMessageInputContext = <
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
   uploadsEnabled,
-}: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+  /**
+   * To ensure we allow re-render, when channel is changed
+   */
+  channelId?: string;
+}) => {
   const editingExists = !!editing;
   const quotedMessageId = quotedMessage
     ? typeof quotedMessage === 'boolean'
@@ -106,6 +112,7 @@ export const useCreateInputMessageInputContext = <
     }),
     [
       compressImageQuality,
+      channelId,
       editingExists,
       initialValue,
       maxMessageLength,

@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
   View,
+  ViewStyle,
 } from 'react-native';
-
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
 import {
@@ -63,13 +70,42 @@ const Icon: React.FC<
   const ReactionIcon =
     supportedReactions.find((reaction) => reaction.type === type)?.Icon ||
     Unknown;
+
+  // @ts-expect-error
+  const scale = useSharedValue(0, false);
+
+  const showReaction = () => {
+    'worklet';
+    scale.value = withSequence(
+      withDelay(250, withTiming(1.5, { duration: 500 })),
+      withTiming(1, { duration: 500 }),
+    );
+  };
+
+  useEffect(() => {
+    showReaction();
+  }, []);
+
+  const animatedStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
+    }),
+    [],
+  );
+
   return (
-    <ReactionIcon
-      height={size}
-      pathFill={pathFill}
-      style={style}
-      width={size}
-    />
+    <Animated.View style={animatedStyle}>
+      <ReactionIcon
+        height={size}
+        pathFill={pathFill}
+        style={style}
+        width={size}
+      />
+    </Animated.View>
   );
 };
 
@@ -138,7 +174,37 @@ const ReactionListWithContext = <
     },
   } = useTheme();
 
+  // @ts-expect-error
+  const opacity = useSharedValue(0, false);
+
   const width = useWindowDimensions().width;
+
+  const supportedReactionTypes = supportedReactions.map(
+    (supportedReaction) => supportedReaction.type,
+  );
+  const hasSupportedReactions = reactions.some((reaction) =>
+    supportedReactionTypes.includes(reaction.type),
+  );
+
+  const showReactions = (show: boolean) => {
+    'worklet';
+    opacity.value = show ? withDelay(250, withTiming(1, { duration: 500 })) : 0;
+  };
+
+  useEffect(() => {
+    showReactions(hasSupportedReactions && messageContentWidth !== 0);
+  }, [hasSupportedReactions, messageContentWidth]);
+
+  const animatedStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      opacity: opacity.value,
+    }),
+    [],
+  );
+
+  if (!hasSupportedReactions || messageContentWidth === 0) {
+    return null;
+  }
 
   const alignmentLeft = alignment === 'left';
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
@@ -171,17 +237,6 @@ const ReactionListWithContext = <
       ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
-  const supportedReactionTypes = supportedReactions.map(
-    (supportedReaction) => supportedReaction.type,
-  );
-  const hasSupportedReactions = reactions.some((reaction) =>
-    supportedReactionTypes.includes(reaction.type),
-  );
-
-  if (!hasSupportedReactions) {
-    return null;
-  }
-
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
@@ -196,7 +251,7 @@ const ReactionListWithContext = <
       ]}
     >
       {reactions.length ? (
-        <View style={StyleSheet.absoluteFill}>
+        <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
           <Svg>
             <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
             <Circle
@@ -259,9 +314,9 @@ const ReactionListWithContext = <
               reactionBubble,
             ]}
           >
-            {reactions.map((reaction, index) => (
+            {reactions.map((reaction) => (
               <Icon
-                key={`${reaction.type}_${index}_${Date.now()}`}
+                key={reaction.type}
                 pathFill={reaction.own ? accent_blue : grey}
                 size={reactionSize / 2}
                 style={middleIcon}
@@ -270,7 +325,7 @@ const ReactionListWithContext = <
               />
             ))}
           </View>
-        </View>
+        </Animated.View>
       ) : null}
     </TouchableOpacity>
   );

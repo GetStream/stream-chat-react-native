@@ -119,7 +119,7 @@ const ThreadWithContext = <
         onThreadDismount();
       }
     },
-    [closeThread, closeThreadOnDismount, onThreadDismount],
+    [],
   );
 
   if (!thread) return null;

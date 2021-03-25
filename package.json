@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -21,7 +21,7 @@
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations",
     "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/src && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
+    "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/lib && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
     "docs": "styleguidist build",
     "docs-server": "styleguidist server",
     "eslint": "eslint '**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
@@ -120,7 +120,7 @@
     "prettier": "2.2.1",
     "react": "17.0.2",
     "react-docgen-typescript": "1.21.0",
-    "react-dom": "17.0.1",
+    "react-dom": "17.0.2",
     "react-native": "0.64.0",
     "react-native-gesture-handler": "1.10.3",
     "react-native-reanimated": "2.0.1",

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogBox, useColorScheme } from 'react-native';
+import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
   DarkTheme,
@@ -11,7 +11,12 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { Chat, OverlayProvider, ThemeProvider } from 'stream-chat-react-native';
+import {
+  Chat,
+  OverlayProvider,
+  ThemeProvider,
+  useOverlayContext,
+} from 'stream-chat-react-native';
 
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
@@ -86,7 +91,7 @@ const App = () => {
           {isConnecting ? (
             <LoadingScreen />
           ) : chatClient ? (
-            <DrawerNavigator chatClient={chatClient} />
+            <DrawerNavigatorWrapper chatClient={chatClient} />
           ) : (
             <UserSelector />
           )}
@@ -96,7 +101,29 @@ const App = () => {
   );
 };
 
-const DrawerNavigator: React.FC<{
+const DrawerNavigator: React.FC = () => {
+  const { overlay } = useOverlayContext();
+
+  return (
+    <Drawer.Navigator
+      screenOptions={{
+        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+      }}
+      drawerContent={(props) => <MenuDrawer {...props} />}
+      drawerStyle={{
+        width: 300,
+      }}
+    >
+      <Drawer.Screen
+        component={HomeScreen}
+        name='HomeScreen'
+        options={{ headerShown: false }}
+      />
+    </Drawer.Navigator>
+  );
+};
+
+const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat<
     LocalAttachmentType,
     LocalChannelType,
@@ -136,18 +163,7 @@ const DrawerNavigator: React.FC<{
       >
         <AppOverlayProvider>
           <UserSearchProvider>
-            <Drawer.Navigator
-              drawerContent={(props) => <MenuDrawer {...props} />}
-              drawerStyle={{
-                width: 300,
-              }}
-            >
-              <Drawer.Screen
-                component={HomeScreen}
-                name='HomeScreen'
-                options={{ headerShown: false }}
-              />
-            </Drawer.Navigator>
+            <DrawerNavigator />
           </UserSearchProvider>
         </AppOverlayProvider>
       </Chat>
@@ -177,66 +193,76 @@ const UserSelector = () => {
 };
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
-const HomeScreen = () => (
-  <Stack.Navigator initialRouteName='ChatScreen'>
-    <Stack.Screen
-      component={ChatScreen}
-      name='ChatScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelScreen}
-      name='ChannelScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={NewDirectMessagingScreen}
-      name='NewDirectMessagingScreen'
-      options={{
-        headerShown: false,
-      }}
-    />
-    <Stack.Screen
-      component={NewGroupChannelAddMemberScreen}
-      name='NewGroupChannelAddMemberScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={NewGroupChannelAssignNameScreen}
-      name='NewGroupChannelAssignNameScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={OneOnOneChannelDetailScreen}
-      name='OneOnOneChannelDetailScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={GroupChannelDetailsScreen}
-      name='GroupChannelDetailsScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelImagesScreen}
-      name='ChannelImagesScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelFilesScreen}
-      name='ChannelFilesScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={SharedGroupsScreen}
-      name='SharedGroupsScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ThreadScreen}
-      name='ThreadScreen'
-      options={{ headerShown: false }}
-    />
-  </Stack.Navigator>
-);
+const HomeScreen = () => {
+  const { overlay } = useOverlayContext();
+
+  return (
+    <Stack.Navigator initialRouteName='ChatScreen'>
+      <Stack.Screen
+        component={ChatScreen}
+        name='ChatScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ChannelScreen}
+        name='ChannelScreen'
+        options={{
+          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        component={NewDirectMessagingScreen}
+        name='NewDirectMessagingScreen'
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        component={NewGroupChannelAddMemberScreen}
+        name='NewGroupChannelAddMemberScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={NewGroupChannelAssignNameScreen}
+        name='NewGroupChannelAssignNameScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={OneOnOneChannelDetailScreen}
+        name='OneOnOneChannelDetailScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={GroupChannelDetailsScreen}
+        name='GroupChannelDetailsScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ChannelImagesScreen}
+        name='ChannelImagesScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ChannelFilesScreen}
+        name='ChannelFilesScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={SharedGroupsScreen}
+        name='SharedGroupsScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ThreadScreen}
+        name='ThreadScreen'
+        options={{
+          gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 export default App;
