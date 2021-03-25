@@ -103,6 +103,7 @@ const filters = useMemo(() => ({
 
 Same applies for all other props:
 
+- theme
 - sort
 - options
 - supportedReactions
