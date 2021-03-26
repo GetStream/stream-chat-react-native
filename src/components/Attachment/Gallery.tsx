@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  GestureResponderEvent,
   Image,
   ImageProps,
   PixelRatio,
@@ -104,7 +103,13 @@ export type GalleryPropsWithContext<
 > = Pick<ImageGalleryContextValue, 'setImage'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'groupStyles' | 'images' | 'onLongPress' | 'threadList'
+    | 'alignment'
+    | 'groupStyles'
+    | 'images'
+    | 'onLongPress'
+    | 'onPress'
+    | 'onPressIn'
+    | 'threadList'
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -114,10 +119,6 @@ export type GalleryPropsWithContext<
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     preventPress?: boolean;
   };
 
@@ -141,6 +142,7 @@ const GalleryWithContext = <
     messageId,
     messageText,
     onLongPress,
+    onPress,
     onPressIn,
     preventPress,
     setBlurType,
@@ -237,15 +239,27 @@ const GalleryWithContext = <
               <TouchableOpacity
                 activeOpacity={0.8}
                 key={`gallery-item-${url}/${rowIndex}/${images.length}`}
-                onLongPress={onLongPress}
-                onPress={() => {
-                  if (!onPressIn && !preventPress) {
-                    defaultOnPress();
+                onLongPress={(event) => {
+                  onLongPress({
+                    emitter: 'gallery',
+                    event,
+                  });
+                }}
+                onPress={(event) => {
+                  if (onPress && !preventPress) {
+                    onPress({
+                      defaultHandler: defaultOnPress,
+                      emitter: 'gallery',
+                      event,
+                    });
                   }
                 }}
                 onPressIn={(event) => {
                   if (onPressIn && !preventPress) {
-                    onPressIn(event, defaultOnPress);
+                    onPressIn({
+                      emitter: 'gallery',
+                      event,
+                    });
                   }
                 }}
                 style={[
@@ -414,6 +428,7 @@ export const Gallery = <
     messageId,
     messageText,
     onLongPress: propOnLongPress,
+    onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress,
     setBlurType: propSetBlurType,
@@ -429,11 +444,12 @@ export const Gallery = <
     images: contextImages,
     message,
     onLongPress: contextOnLongPress,
+    onPress: contextOnPress,
+    onPressIn: contextOnPressIn,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
-    onPressInMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     setBlurType: contextSetBlurType,
@@ -449,7 +465,8 @@ export const Gallery = <
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
-  const onPressIn = propOnPressIn || onPressInMessage;
+  const onPressIn = propOnPressIn || contextOnPressIn;
+  const onPress = propOnPress || contextOnPress;
   const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
@@ -466,6 +483,7 @@ export const Gallery = <
         messageId: messageId || message?.id,
         messageText: messageText || message?.text,
         onLongPress,
+        onPress,
         onPressIn,
         preventPress,
         setBlurType,

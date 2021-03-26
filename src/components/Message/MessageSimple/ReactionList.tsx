@@ -118,7 +118,7 @@ export type ReactionListPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'onLongPress' | 'reactions' | 'showMessageOverlay'
+  'alignment' | 'onLongPress' | 'onPress' | 'reactions' | 'showMessageOverlay'
 > & {
   messageContentWidth: number;
   supportedReactions: ReactionData[];
@@ -145,6 +145,7 @@ const ReactionListWithContext = <
     fill: propFill,
     messageContentWidth,
     onLongPress,
+    onPress,
     radius: propRadius,
     reactions,
     reactionSize: propReactionSize,
@@ -237,8 +238,19 @@ const ReactionListWithContext = <
 
   return (
     <TouchableOpacity
-      onLongPress={onLongPress}
-      onPress={() => showMessageOverlay(true)}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'reactionList',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          defaultHandler: () => showMessageOverlay(true),
+          emitter: 'reactionList',
+          event,
+        });
+      }}
       style={[
         styles.container,
         {
@@ -407,6 +419,7 @@ export const ReactionList = <
   const {
     alignment,
     onLongPress,
+    onPress,
     reactions,
     showMessageOverlay,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -425,6 +438,7 @@ export const ReactionList = <
       {...{
         alignment,
         onLongPress,
+        onPress,
         reactions,
         showMessageOverlay,
         supportedReactions,

@@ -216,6 +216,7 @@ export type ChannelPropsWithContext<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       | 'additionalTouchableProps'
+      | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
       | 'FileAttachmentIcon'
@@ -270,6 +271,7 @@ export type ChannelPropsWithContext<
       | 'onDoubleTapMessage'
       | 'onLongPressMessage'
       | 'onPressInMessage'
+      | 'onPressMessage'
       | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
@@ -385,6 +387,7 @@ const ChannelWithContext = <
   const {
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
+    animatedLongPress,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
     AttachButton = AttachButtonDefault,
@@ -482,6 +485,7 @@ const ChannelWithContext = <
     onChangeText,
     onDoubleTapMessage,
     onLongPressMessage,
+    onPressMessage,
     onPressInMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
@@ -1515,6 +1519,7 @@ const ChannelWithContext = <
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
+    animatedLongPress,
     Attachment,
     AttachmentActions,
     blockUser,
@@ -1570,6 +1575,7 @@ const ChannelWithContext = <
     onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
+    onPressMessage,
     OverlayReactionList,
     ReactionList,
     removeMessage,

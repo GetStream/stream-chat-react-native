@@ -2,10 +2,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { GestureResponderEvent } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
+import type { TouchableHandlerPayload } from '../../components/Message/Message';
 import type {
   GroupType,
   MessageType,
@@ -44,10 +44,6 @@ export type MessageContextValue<
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
   /**
-   * Should use gesture handler to animate longPress
-   */
-  animatedLongPress: boolean;
-  /**
    * Function that returns a boolean indicating whether or not the user can edit/delete the message.
    */
   canModifyMessage: boolean;
@@ -62,6 +58,13 @@ export type MessageContextValue<
   groupStyles: GroupType[];
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
   handleAction: ActionHandler;
+  handleDeleteMessage: () => Promise<void>;
+  handleEditMessage: () => void;
+  handleReplyMessage: () => void;
+  handleResendMessage: () => Promise<void>;
+  handleToggleBanUser: () => Promise<void>;
+  handleToggleMuteUser: () => Promise<void>;
+  handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
@@ -84,7 +87,7 @@ export type MessageContextValue<
    *
    * @param event   Event object for onLongPress event
    */
-  onLongPress: (event?: GestureResponderEvent) => void;
+  onLongPress: (payload: TouchableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -99,7 +102,8 @@ export type MessageContextValue<
    *
    * @param event   Event object for onPress event
    */
-  onPress: (event: GestureResponderEvent) => void;
+  onPress: (payload: TouchableHandlerPayload) => void;
+  onPressIn: (payload: TouchableHandlerPayload) => void;
   /** The images attached to a message */
   otherAttachments: Attachment<At>[];
   reactions: Reactions;
