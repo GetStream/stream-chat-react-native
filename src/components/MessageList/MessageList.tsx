@@ -772,9 +772,7 @@ const MessageListWithContext = <
   };
 
   const goToMessage = (messageId: string) => {
-    const indexOfParentInViewable = viewableMessages.current.indexOf(messageId);
-
-    if (indexOfParentInViewable > -1) {
+    try {
       const indexOfParentInMessageList = messageList.findIndex(
         (message) => message?.id === messageId,
       );
@@ -783,10 +781,9 @@ const MessageListWithContext = <
         flatListRef.current.scrollToIndex({
           index: indexOfParentInMessageList - 1,
         });
+        setTargetedMessage(messageId);
       }
-
-      setTargetedMessage(messageId);
-    } else {
+    } catch (e) {
       loadChannelAtMessage({ messageId });
     }
   };
