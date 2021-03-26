@@ -376,11 +376,6 @@ export const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
-          {message.quoted_message && (
-            <View style={[styles.replyContainer, replyContainer]}>
-              <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
-            </View>
-          )}
           {messageContentOrder.map(
             (messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {
@@ -404,6 +399,19 @@ export const MessageContentWithContext = <
                       key={`gallery_${messageContentOrderIndex}`}
                       preventPress={preventPress}
                     />
+                  );
+                case 'quoted_message':
+                  return (
+                    message.quoted_message && (
+                      <View
+                        key={`quoted_message_${messageContentOrderIndex}`}
+                        style={[styles.replyContainer, replyContainer]}
+                      >
+                        <Reply
+                          styles={{ messageContainer: { maxWidth: vw(60) } }}
+                        />
+                      </View>
+                    )
                   );
                 case 'text':
                 default:

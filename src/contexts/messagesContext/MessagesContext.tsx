@@ -60,7 +60,12 @@ export type MessagesConfig = {
   repliesEnabled?: boolean;
 };
 
-export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
+export type MessageContentType =
+  | 'attachments'
+  | 'files'
+  | 'gallery'
+  | 'quoted_message'
+  | 'text';
 
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
