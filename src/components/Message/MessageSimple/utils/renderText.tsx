@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, Text } from 'react-native';
+import { GestureResponderEvent, Linking, Text } from 'react-native';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
 // @ts-expect-error
@@ -70,7 +70,10 @@ export type RenderTextParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Partial<
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'onLongPress' | 'onPress'
+  >
 > & {
   colors: typeof Colors;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -97,8 +100,9 @@ export const renderText = <
     markdownStyles,
     message,
     onLink: onLinkParams,
-    onLongPress,
+    onLongPress: propOnLongPress,
     onlyEmojis,
+    onPress: propOnPress,
   } = params;
 
   // take the @ mentions and turn them into markdown?
@@ -157,13 +161,28 @@ export const renderText = <
         );
 
   const react: ReactNodeOutput = (node, output, { ...state }) => {
+    const onPress = (event: GestureResponderEvent) => {
+      propOnPress?.({
+        defaultHandler: () => onLink(node.target),
+        emitter: 'textLink',
+        event,
+      });
+    };
+
+    const onLongPress = (event: GestureResponderEvent) => {
+      propOnLongPress?.({
+        emitter: 'textLink',
+        event,
+      });
+    };
+
     state.withinLink = true;
     const link = React.createElement(
       Text,
       {
         key: state.key,
         onLongPress,
-        onPress: () => onLink(node.target),
+        onPress,
         style: styles.autolink,
         suppressHighlighting: true,
       },
@@ -185,17 +204,35 @@ export const renderText = <
 
   const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
   const match: MatchFunction = (source) => regEx.exec(source);
-  const mentionsReact: ReactNodeOutput = (node, output, { ...state }) =>
-    React.createElement(
+
+  const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
+    const onPress = (event: GestureResponderEvent) => {
+      propOnPress?.({
+        emitter: 'textMention',
+        event,
+      });
+    };
+
+    const onLongPress = (event: GestureResponderEvent) => {
+      propOnLongPress?.({
+        emitter: 'textMention',
+        event,
+      });
+    };
+
+    return React.createElement(
       Text,
       {
         key: state.key,
+        onLongPress,
+        onPress,
         style: styles.mentions,
       },
       Array.isArray(node.content)
         ? node.content[0]?.content || ''
         : output(node.content, state),
     );
+  };
 
   const customRules = {
     link: { react },

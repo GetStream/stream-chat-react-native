@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -50,10 +44,6 @@ export type FileAttachmentGroupPropsWithContext<
      * The unique id for the message with file attachments
      */
     messageId: string;
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     styles?: Partial<{
       attachmentContainer: StyleProp<ViewStyle>;
       container: StyleProp<ViewStyle>;
@@ -71,13 +61,7 @@ const FileAttachmentGroupWithContext = <
 >(
   props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    Attachment,
-    files,
-    messageId,
-    onPressIn,
-    styles: stylesProp = {},
-  } = props;
+  const { Attachment, files, messageId, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -97,7 +81,7 @@ const FileAttachmentGroupWithContext = <
             stylesProp.attachmentContainer,
           ]}
         >
-          <Attachment attachment={file} onPressIn={onPressIn} />
+          <Attachment attachment={file} />
         </View>
       ))}
     </View>
@@ -159,7 +143,7 @@ export const FileAttachmentGroup = <
 >(
   props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { files: propFiles, messageId, onPressIn: propOnPressIn } = props;
+  const { files: propFiles, messageId } = props;
 
   const { files: contextFiles } = useMessageContext<
     At,
@@ -171,13 +155,17 @@ export const FileAttachmentGroup = <
     Us
   >();
 
-  const {
-    Attachment = AttachmentDefault,
-    onPressInMessage,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Attachment = AttachmentDefault } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   const files = propFiles || contextFiles;
-  const onPressIn = propOnPressIn || onPressInMessage;
 
   if (!files.length) return null;
 
@@ -187,7 +175,6 @@ export const FileAttachmentGroup = <
         Attachment,
         files,
         messageId,
-        onPressIn,
       }}
     />
   );

@@ -92,6 +92,7 @@ export type MessageContentPropsWithContext<
   | 'onLongPress'
   | 'onlyEmojis'
   | 'onPress'
+  | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
   | 'showMessageStatus'
@@ -152,7 +153,7 @@ export const MessageContentWithContext = <
     onLongPress,
     onlyEmojis,
     onPress,
-    onPressInMessage,
+    onPressIn,
     otherAttachments,
     preventPress,
     repliesEnabled,
@@ -291,8 +292,24 @@ export const MessageContentWithContext = <
     <TouchableOpacity
       activeOpacity={0.7}
       disabled={disabled}
-      onLongPress={onLongPress}
-      onPress={onPress}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPressIn={(event) => {
+        onPressIn({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -372,7 +389,6 @@ export const MessageContentWithContext = <
                     <Attachment
                       attachment={attachment}
                       key={`${message.id}-${attachmentIndex}`}
-                      onPressIn={onPressInMessage}
                     />
                   ));
                 case 'files':
@@ -380,14 +396,12 @@ export const MessageContentWithContext = <
                     <FileAttachmentGroup
                       key={`file_attachment_group_${messageContentOrderIndex}`}
                       messageId={message.id}
-                      onPressIn={onPressInMessage}
                     />
                   );
                 case 'gallery':
                   return (
                     <Gallery
                       key={`gallery_${messageContentOrderIndex}`}
-                      onPressIn={onPressInMessage}
                       preventPress={preventPress}
                     />
                   );
@@ -595,6 +609,7 @@ export const MessageContent = <
     onLongPress,
     onlyEmojis,
     onPress,
+    onPressIn,
     otherAttachments,
     preventPress,
     showMessageStatus,
@@ -610,7 +625,6 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    onPressInMessage,
     repliesEnabled,
     Reply,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -640,7 +654,7 @@ export const MessageContent = <
         onLongPress,
         onlyEmojis,
         onPress,
-        onPressInMessage,
+        onPressIn,
         otherAttachments,
         preventPress,
         repliesEnabled,
