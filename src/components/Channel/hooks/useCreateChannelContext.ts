@@ -27,6 +27,7 @@ export const useCreateChannelContext = <
   enforceUniqueReaction,
   error,
   giphyEnabled,
+  hideDateSeparators,
   isAdmin,
   isModerator,
   isOwner,
@@ -45,7 +46,6 @@ export const useCreateChannelContext = <
   setTargetedMessage,
   StickyHeader,
   targetedMessage,
-  typing,
   typingEventsEnabled,
   watcherCount,
   watchers,
@@ -59,8 +59,6 @@ export const useCreateChannelContext = <
   const readUsersLastReads = readUsers
     .map(({ last_read }) => last_read.toISOString())
     .join();
-
-  const typingValue = Object.keys(typing).join();
 
   const channelContext: ChannelContextValue<
     At,
@@ -78,6 +76,7 @@ export const useCreateChannelContext = <
       enforceUniqueReaction,
       error,
       giphyEnabled,
+      hideDateSeparators,
       isAdmin,
       isModerator,
       isOwner,
@@ -96,7 +95,6 @@ export const useCreateChannelContext = <
       setTargetedMessage,
       StickyHeader,
       targetedMessage,
-      typing,
       typingEventsEnabled,
       watcherCount,
       watchers,
@@ -113,7 +111,6 @@ export const useCreateChannelContext = <
       readUsersLastReads,
       targetedMessage,
       typingEventsEnabled,
-      typingValue,
       watcherCount,
     ],
   );

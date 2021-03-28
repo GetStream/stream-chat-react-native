@@ -34,6 +34,7 @@ export * from './Channel/hooks/useCreateInputMessageInputContext';
 export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreatePaginatedMessageListContext';
 export * from './Channel/hooks/useCreateThreadContext';
+export * from './Channel/hooks/useCreateTypingContext';
 export * from './Channel/hooks/useTargetedMessage';
 
 export * from './ChannelList/ChannelList';
@@ -109,6 +110,7 @@ export * from './MessageInput/UploadProgressIndicator';
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
+export * from './MessageList/InlineDateIndicator';
 export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';
 export * from './MessageList/InlineLoadingMoreThreadIndicator';
@@ -119,6 +121,10 @@ export * from './MessageList/NetworkDownIndicator';
 export * from './MessageList/ScrollToBottomButton';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
+export * from './MessageList/utils/getDateSeparators';
+export * from './MessageList/utils/getGroupStyles';
+export * from './MessageList/utils/getLastReceivedMessage';
+export * from './MessageList/utils/getReadStates';
 
 export * from './MessageOverlay/MessageActions';
 export * from './MessageOverlay/MessageOverlay';

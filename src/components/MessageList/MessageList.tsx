@@ -10,10 +10,11 @@ import {
 } from 'react-native';
 
 import {
-  isMessagesWithStylesAndReadBy,
+  isMessagesWithStylesReadByAndDateSeparator,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
+import { InlineDateIndicator } from './InlineDateIndicator';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreThreadIndicator } from './InlineLoadingMoreThreadIndicator';
@@ -566,7 +567,7 @@ const MessageListWithContext = <
               <Message
                 goToMessage={goToMessage}
                 groupStyles={
-                  isMessagesWithStylesAndReadBy(message)
+                  isMessagesWithStylesReadByAndDateSeparator(message)
                     ? message.groupStyles
                     : []
                 }
@@ -581,6 +582,10 @@ const MessageListWithContext = <
                 threadList={threadList}
               />
             </ThemeProvider>
+            {isMessagesWithStylesReadByAndDateSeparator(message) &&
+              message.dateSeparator && (
+                <InlineDateIndicator date={message.dateSeparator} />
+              )}
             {/* Adding indicator below the messages, since the list is inverted */}
             {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
           </>
@@ -591,7 +596,9 @@ const MessageListWithContext = <
           <Message
             goToMessage={goToMessage}
             groupStyles={
-              isMessagesWithStylesAndReadBy(message) ? message.groupStyles : []
+              isMessagesWithStylesReadByAndDateSeparator(message)
+                ? message.groupStyles
+                : []
             }
             lastReceivedId={
               lastReceivedId === message.id ? lastReceivedId : undefined
@@ -603,6 +610,10 @@ const MessageListWithContext = <
             targetedMessage={targetedMessage === message.id}
             threadList={threadList}
           />
+          {isMessagesWithStylesReadByAndDateSeparator(message) &&
+            message.dateSeparator && (
+              <InlineDateIndicator date={message.dateSeparator} />
+            )}
           {/* Adding indicator below the messages, since the list is inverted */}
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>

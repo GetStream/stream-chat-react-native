@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
+import { isMessagesWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 import {
   MessageContextValue,
@@ -87,7 +87,7 @@ const MessageStatusWithContext = <
   }
 
   if (
-    isMessagesWithStylesAndReadBy(message) &&
+    isMessagesWithStylesReadByAndDateSeparator(message) &&
     !threadList &&
     readEventsEnabled !== false
   ) {
@@ -153,8 +153,10 @@ const areEqual = <
   const messageEqual =
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
-      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy);
+    (isMessagesWithStylesReadByAndDateSeparator(prevMessage) &&
+      prevMessage.readBy) ===
+      (isMessagesWithStylesReadByAndDateSeparator(nextMessage) &&
+        nextMessage.readBy);
   if (!messageEqual) return false;
 
   return true;

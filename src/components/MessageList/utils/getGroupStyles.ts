@@ -1,3 +1,5 @@
+import type { DateSeparators } from './getDateSeparators';
+
 import type { GroupType } from '../hooks/useMessageList';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -22,9 +24,11 @@ export type GetGroupStylesParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  dateSeparators: DateSeparators;
   messages:
     | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
+  hideDateSeparators?: boolean;
   noGroupByUser?: boolean;
 };
 
@@ -39,7 +43,12 @@ export const getGroupStyles = <
 >(
   params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messages, noGroupByUser } = params;
+  const {
+    dateSeparators,
+    hideDateSeparators,
+    messages,
+    noGroupByUser,
+  } = params;
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
   for (let i = 0; i < messages.length; i++) {
@@ -65,7 +74,8 @@ export const getGroupStyles = <
         previousMessage.attachments.length !== 0) ||
       userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
-      !!previousMessage.deleted_at;
+      !!previousMessage.deleted_at ||
+      (!hideDateSeparators && dateSeparators[message.id]);
 
     const isBottomMessage =
       !nextMessage ||
@@ -74,7 +84,8 @@ export const getGroupStyles = <
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
-      !!nextMessage.deleted_at;
+      !!nextMessage.deleted_at ||
+      (!hideDateSeparators && dateSeparators[nextMessage.id]);
 
     /**
      * Add group styles key for top message

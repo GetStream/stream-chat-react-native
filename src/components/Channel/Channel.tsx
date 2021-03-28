@@ -27,6 +27,7 @@ import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessage
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
 import { lightThrottle } from './utils/throttle';
@@ -112,6 +113,10 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import {
+  TypingContextValue,
+  TypingProvider,
+} from '../../contexts/typingContext/TypingContext';
+import {
   LOLReaction,
   LoveReaction,
   ThumbsDownReaction,
@@ -188,6 +193,7 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideDateSeparators'
     | 'LoadingIndicator'
     | 'NetworkDownIndicator'
     | 'StickyHeader'
@@ -442,6 +448,7 @@ const ChannelWithContext = <
     hasCommands = true,
     hasFilePicker = true,
     hasImagePicker = true,
+    hideDateSeparators = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -547,7 +554,7 @@ const ChannelWithContext = <
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
   >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
+    TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
   >({});
   const [watcherCount, setWatcherCount] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
@@ -1440,6 +1447,7 @@ const ChannelWithContext = <
       !!(channel?.getConfig?.()?.commands || [])?.some(
         (command) => command.name === 'giphy',
       ),
+    hideDateSeparators,
     isAdmin,
     isModerator,
     isOwner,
@@ -1457,7 +1465,6 @@ const ChannelWithContext = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    typing,
     watcherCount,
     watchers,
   });
@@ -1607,6 +1614,10 @@ const ChannelWithContext = <
     threadMessages,
   });
 
+  const typingContext = useCreateTypingContext({
+    typing,
+  });
+
   if (!channel || error) {
     return (
       <LoadingErrorIndicator
@@ -1638,21 +1649,25 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
-          value={messageListContext}
-        >
-          <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-            <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-              <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                  value={messageInputContext}
-                >
-                  <View style={{ height: '100%' }}>{children}</View>
-                </MessageInputProvider>
-              </SuggestionsProvider>
-            </ThreadProvider>
-          </MessagesProvider>
-        </PaginatedMessageListProvider>
+        <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
+          <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+            value={messageListContext}
+          >
+            <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us>
+              value={messagesContext}
+            >
+              <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                    value={messageInputContext}
+                  >
+                    <View style={{ height: '100%' }}>{children}</View>
+                  </MessageInputProvider>
+                </SuggestionsProvider>
+              </ThreadProvider>
+            </MessagesProvider>
+          </PaginatedMessageListProvider>
+        </TypingProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

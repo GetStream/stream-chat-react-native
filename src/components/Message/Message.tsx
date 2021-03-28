@@ -85,7 +85,7 @@ import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
 
 import {
   GroupType,
-  isMessagesWithStylesAndReadBy,
+  isMessagesWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 
@@ -1183,8 +1183,10 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
-      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy) &&
+    (isMessagesWithStylesReadByAndDateSeparator(prevMessage) &&
+      prevMessage.readBy) ===
+      (isMessagesWithStylesReadByAndDateSeparator(nextMessage) &&
+        nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&

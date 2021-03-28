@@ -50,6 +50,10 @@ export type ChannelContextValue<
    */
   giphyEnabled: boolean;
   /**
+   * Hide inline date separators on channel
+   */
+  hideDateSeparators: boolean;
+  /**
    * Returns true if the current user has admin privileges
    */
   isAdmin: boolean;
@@ -112,7 +116,6 @@ export type ChannelContextValue<
   scrollToFirstUnreadThreshold: number;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
-  typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
   /**
    *
    * ```json

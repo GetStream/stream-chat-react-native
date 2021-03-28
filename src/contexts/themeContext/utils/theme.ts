@@ -189,6 +189,10 @@ export type Theme = {
     };
     backgroundColor?: string;
   };
+  inlineDateIndicator: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   loadingDots: {
     container: ViewStyle;
     loadingDot: ViewStyle;
@@ -620,6 +624,10 @@ export const defaultTheme: Theme = {
       rightContainer: {},
       usernameText: {},
     },
+  },
+  inlineDateIndicator: {
+    container: {},
+    text: {},
   },
   loadingDots: {
     container: {},
