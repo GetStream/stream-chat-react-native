@@ -116,11 +116,8 @@ type MessageInputPropsWithContext<
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
-    | 'appendText'
     | 'asyncIds'
     | 'asyncUploads'
-    | 'AttachButton'
-    | 'CommandsButton'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
@@ -128,9 +125,6 @@ type MessageInputPropsWithContext<
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
-    | 'hasCommands'
-    | 'hasFilePicker'
-    | 'hasImagePicker'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -139,26 +133,17 @@ type MessageInputPropsWithContext<
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
-    | 'MoreOptionsButton'
     | 'numberOfUploads'
-    | 'openAttachmentPicker'
-    | 'openCommandsPicker'
-    | 'openFilePicker'
-    | 'openMentionsPicker'
-    | 'pickFile'
     | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
     | 'setGiphyActive'
-    | 'setShowMoreOptions'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
-    | 'toggleAttachmentPicker'
     | 'removeImage'
     | 'uploadNewImage'
-    | 'uploadsEnabled'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<
@@ -731,21 +716,15 @@ export const MessageInput = <
 
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
-    AttachButton,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
-    CommandsButton,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasCommands,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -754,13 +733,7 @@ export const MessageInput = <
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
-    MoreOptionsButton,
     numberOfUploads,
-    openAttachmentPicker,
-    openCommandsPicker,
-    openFilePicker,
-    openMentionsPicker,
-    pickFile,
     quotedMessage,
     removeImage,
     resetInput,
@@ -768,12 +741,9 @@ export const MessageInput = <
     sending,
     sendMessageAsync,
     setGiphyActive,
-    setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
-    toggleAttachmentPicker,
     uploadNewImage,
-    uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -790,23 +760,17 @@ export const MessageInput = <
     <MemoizedMessageInput
       {...{
         additionalTextInputProps,
-        appendText,
         asyncIds,
         asyncUploads,
-        AttachButton,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
-        CommandsButton,
         componentType,
         disabled,
         editing,
         FileUploadPreview,
         fileUploads,
         giphyActive,
-        hasCommands,
-        hasFilePicker,
-        hasImagePicker,
         ImageUploadPreview,
         imageUploads,
         Input,
@@ -816,13 +780,7 @@ export const MessageInput = <
         maxNumberOfFiles,
         members,
         mentionedUsers,
-        MoreOptionsButton,
         numberOfUploads,
-        openAttachmentPicker,
-        openCommandsPicker,
-        openFilePicker,
-        openMentionsPicker,
-        pickFile,
         quotedMessage,
         removeImage,
         Reply,
@@ -831,15 +789,12 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setGiphyActive,
-        setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
         suggestionsTitle,
         t,
-        toggleAttachmentPicker,
         uploadNewImage,
-        uploadsEnabled,
         watchers,
       }}
       {...props}

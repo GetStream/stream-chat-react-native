@@ -439,13 +439,13 @@ export const MessageInputProvider = <
 }: PropsWithChildren<{
   value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     closePicker,
     openPicker,
     selectedPicker,
     setSelectedPicker,
   } = useAttachmentPickerContext();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { channel, giphyEnabled } = useChannelContext<
     At,
