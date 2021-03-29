@@ -376,8 +376,6 @@ const MessageListWithContext = <
   >(messageList[messageListLength - 1] || undefined);
   const channelLastRead = useRef(getLastReadSafely());
 
-  const viewableMessages = useRef<string[]>([]);
-
   const isUnreadMessage = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
     lastRead?: ReturnType<
@@ -423,16 +421,6 @@ const MessageListWithContext = <
     }
   };
 
-  /**
-   * We keep track of viewableItems, to implement scrollToMessage functionality.
-   * We can use scrollToIndex only if the message is within viewable limits.
-   */
-  const updateViewableMessages = (viewableItems: ViewToken[]) => {
-    viewableMessages.current = viewableItems.map(
-      (viewableItem) => viewableItem.item.id,
-    );
-  };
-
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
       const lastItem = viewableItems.pop() as {
@@ -459,7 +447,6 @@ const MessageListWithContext = <
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
       if (viewableItems) {
-        updateViewableMessages(viewableItems);
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
       setInitialScrollIfNeeded();
@@ -783,7 +770,7 @@ const MessageListWithContext = <
         });
         setTargetedMessage(messageId);
       }
-    } catch (e) {
+    } catch (_) {
       loadChannelAtMessage({ messageId });
     }
   };
