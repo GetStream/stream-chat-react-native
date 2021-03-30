@@ -36,6 +36,7 @@ import type { MessageTextProps } from '../../components/Message/MessageSimple/Me
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
@@ -129,6 +130,10 @@ export type MessagesContextValue<
    * When true, messageList will be scrolled at first unread message, when opened.
    */
   initialScrollToFirstUnreadMessage: boolean;
+  /**
+   * Message Date Separator Component
+   */
+  InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
    * UI component for InlineUnreadIndicator
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)

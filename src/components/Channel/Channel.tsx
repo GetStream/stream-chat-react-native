@@ -67,6 +67,7 @@ import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
@@ -255,6 +256,7 @@ export type ChannelPropsWithContext<
       | 'handleReply'
       | 'handleRetry'
       | 'handleThreadReply'
+      | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
@@ -455,6 +457,7 @@ const ChannelWithContext = <
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
+    InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
@@ -1561,6 +1564,7 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     markdownRules,
     Message,

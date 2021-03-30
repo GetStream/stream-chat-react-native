@@ -14,7 +14,6 @@ import {
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
-import { InlineDateIndicator } from './InlineDateIndicator';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreThreadIndicator } from './InlineLoadingMoreThreadIndicator';
@@ -84,6 +83,13 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
+    /**
+     * paddingBottom is set to 4 to account for the default date
+     * header and inline indicator alignment. The top margin is 8
+     * on the header but 4 on the inline date, this adjusts the spacing
+     * to allow the "first" inline date to align with the date header.
+     */
+    paddingBottom: 4,
   },
   flex: { flex: 1 },
   listContainer: {
@@ -118,7 +124,7 @@ const keyExtractor = <
     : Date.now().toString());
 
 const flatListViewabilityConfig = {
-  viewAreaCoveragePercentThreshold: 50,
+  viewAreaCoveragePercentThreshold: 1,
 };
 
 type MessageListPropsWithContext<
@@ -163,6 +169,7 @@ type MessageListPropsWithContext<
     | 'disableTypingIndicator'
     | 'FlatList'
     | 'initialScrollToFirstUnreadMessage'
+    | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
     | 'Message'
     | 'ScrollToBottomButton'
@@ -280,6 +287,7 @@ const MessageListWithContext = <
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
     isOnline,
@@ -320,7 +328,7 @@ const MessageListWithContext = <
 
   const {
     colors: { white_snow },
-    messageList: { container, listContainer },
+    messageList: { container, contentContainer, listContainer },
   } = theme;
 
   const modifiedTheme = useMemo(
@@ -584,7 +592,7 @@ const MessageListWithContext = <
             </ThemeProvider>
             {isMessagesWithStylesReadByAndDateSeparator(message) &&
               message.dateSeparator && (
-                <InlineDateIndicator date={message.dateSeparator} />
+                <InlineDateSeparator date={message.dateSeparator} />
               )}
             {/* Adding indicator below the messages, since the list is inverted */}
             {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
@@ -612,7 +620,7 @@ const MessageListWithContext = <
           />
           {isMessagesWithStylesReadByAndDateSeparator(message) &&
             message.dateSeparator && (
-              <InlineDateIndicator date={message.dateSeparator} />
+              <InlineDateSeparator date={message.dateSeparator} />
             )}
           {/* Adding indicator below the messages, since the list is inverted */}
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
@@ -890,7 +898,7 @@ const MessageListWithContext = <
       style={[styles.container, { backgroundColor: white_snow }, container]}
     >
       <FlatList
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
@@ -994,6 +1002,7 @@ export const MessageList = <
     disableTypingIndicator,
     FlatList,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     Message,
     MessageSystem,
@@ -1035,6 +1044,7 @@ export const MessageList = <
         EmptyStateIndicator,
         FlatList,
         initialScrollToFirstUnreadMessage,
+        InlineDateSeparator,
         InlineUnreadIndicator,
         isOnline,
         loadChannelAtMessage,

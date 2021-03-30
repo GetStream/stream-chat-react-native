@@ -110,7 +110,7 @@ export * from './MessageInput/UploadProgressIndicator';
 export * from './MessageList/DateHeader';
 export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
-export * from './MessageList/InlineDateIndicator';
+export * from './MessageList/InlineDateSeparator';
 export * from './MessageList/InlineLoadingMoreIndicator';
 export * from './MessageList/InlineLoadingMoreRecentIndicator';
 export * from './MessageList/InlineLoadingMoreThreadIndicator';

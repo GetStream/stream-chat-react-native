@@ -24,17 +24,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export type InlineDateIndicatorProps = {
+export type InlineDateSeparatorProps = {
   date?: Date;
 };
 
-export const InlineDateIndicator: React.FC<InlineDateIndicatorProps> = ({
+export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({
   date,
 }) => {
   const {
     theme: {
       colors: { overlay_dark, white },
-      inlineDateIndicator: { container, text },
+      inlineDateSeparator: { container, text },
     },
   } = useTheme();
   const { tDateTimeParser } = useTranslationContext();
