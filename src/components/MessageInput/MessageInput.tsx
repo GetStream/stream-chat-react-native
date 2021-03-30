@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
@@ -122,20 +116,15 @@ type MessageInputPropsWithContext<
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
-    | 'appendText'
     | 'asyncIds'
     | 'asyncUploads'
-    | 'AttachButton'
-    | 'CommandsButton'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
+    | 'closeAttachmentPicker'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
-    | 'hasCommands'
-    | 'hasFilePicker'
-    | 'hasImagePicker'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -144,21 +133,17 @@ type MessageInputPropsWithContext<
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
-    | 'MoreOptionsButton'
     | 'numberOfUploads'
-    | 'pickFile'
     | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
     | 'setGiphyActive'
-    | 'setShowMoreOptions'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
     | 'removeImage'
     | 'uploadNewImage'
-    | 'uploadsEnabled'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<
@@ -182,19 +167,17 @@ export const MessageInputWithContext = <
 ) => {
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
     clearEditingState,
     clearQuotedMessageState,
+    closeAttachmentPicker,
     componentType,
     disabled,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -205,7 +188,6 @@ export const MessageInputWithContext = <
     members,
     mentionedUsers,
     numberOfUploads,
-    pickFile,
     quotedMessage,
     removeImage,
     Reply,
@@ -259,23 +241,24 @@ export const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
-    closePicker,
-    openPicker,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
     setSelectedImages,
-    setSelectedPicker,
   } = useAttachmentPickerContext();
 
+  /**
+   * Mounting and un-mounting logic are un-related in following useEffect.
+   * While mounting we want to pass maxNumberOfFiles (which is prop on Channel component)
+   * to AttachmentPicker (on OverlayProvider)
+   *
+   * While un-mounting, we want to close the picker e.g., while navigating away.
+   */
   useEffect(() => {
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
 
-    return () => {
-      closePicker();
-      setSelectedPicker(undefined);
-    };
-  }, [maxNumberOfFiles]);
+    return closeAttachmentPicker;
+  }, []);
 
   const selectedImagesLength = selectedImages.length;
   const imageUploadsLength = imageUploads.length;
@@ -408,45 +391,6 @@ export const MessageInputWithContext = <
     return result;
   };
 
-  const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
-      Keyboard.dismiss();
-      openPicker();
-      setSelectedPicker('images');
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
-      pickFile();
-    }
-  };
-
-  const closeAttachmentPicker = () => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
-      closePicker();
-    }
-  };
-
-  const toggleAttachmentPicker = () => {
-    if (selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  };
-
-  const openCommandsPicker = () => {
-    appendText('/');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  };
-
-  const openMentionsPicker = () => {
-    appendText('@');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
-  };
-
   const additionalTextInputContainerProps = {
     editable: disabled ? false : undefined,
     ...additionalTextInputProps,
@@ -506,27 +450,12 @@ export const MessageInputWithContext = <
           {Input ? (
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
-              closeAttachmentPicker={closeAttachmentPicker}
               getUsers={getUsers}
-              openAttachmentPicker={openAttachmentPicker}
-              openCommandsPicker={openCommandsPicker}
-              openFilePicker={pickFile}
-              openMentionsPicker={openMentionsPicker}
-              toggleAttachmentPicker={toggleAttachmentPicker}
             />
           ) : (
             <>
               <View style={[styles.optionsContainer, optionsContainer]}>
-                {InputButtons && (
-                  <InputButtons
-                    closeAttachmentPicker={closeAttachmentPicker}
-                    openAttachmentPicker={openAttachmentPicker}
-                    openCommandsPicker={openCommandsPicker}
-                    openFilePicker={pickFile}
-                    openMentionsPicker={openMentionsPicker}
-                    toggleAttachmentPicker={toggleAttachmentPicker}
-                  />
-                )}
+                {InputButtons && <InputButtons />}
               </View>
               <View
                 style={[
@@ -794,20 +723,15 @@ export const MessageInput = <
 
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
-    AttachButton,
     clearEditingState,
     clearQuotedMessageState,
-    CommandsButton,
+    closeAttachmentPicker,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasCommands,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -816,9 +740,7 @@ export const MessageInput = <
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
-    MoreOptionsButton,
     numberOfUploads,
-    pickFile,
     quotedMessage,
     removeImage,
     resetInput,
@@ -826,11 +748,9 @@ export const MessageInput = <
     sending,
     sendMessageAsync,
     setGiphyActive,
-    setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-    uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -847,22 +767,17 @@ export const MessageInput = <
     <MemoizedMessageInput
       {...{
         additionalTextInputProps,
-        appendText,
         asyncIds,
         asyncUploads,
-        AttachButton,
         clearEditingState,
         clearQuotedMessageState,
-        CommandsButton,
+        closeAttachmentPicker,
         componentType,
         disabled,
         editing,
         FileUploadPreview,
         fileUploads,
         giphyActive,
-        hasCommands,
-        hasFilePicker,
-        hasImagePicker,
         ImageUploadPreview,
         imageUploads,
         Input,
@@ -872,9 +787,7 @@ export const MessageInput = <
         maxNumberOfFiles,
         members,
         mentionedUsers,
-        MoreOptionsButton,
         numberOfUploads,
-        pickFile,
         quotedMessage,
         removeImage,
         Reply,
@@ -883,14 +796,12 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setGiphyActive,
-        setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
         suggestionsTitle,
         t,
         uploadNewImage,
-        uploadsEnabled,
         watchers,
       }}
       {...props}
