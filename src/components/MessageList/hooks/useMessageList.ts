@@ -126,6 +126,7 @@ export const useMessageList = <
     hideDateSeparators,
     messages: messageList,
     noGroupByUser,
+    userId: client.userID,
   });
 
   const readData = getReadStates(client.userID, messageList, readList);

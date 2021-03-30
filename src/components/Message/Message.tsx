@@ -588,13 +588,6 @@ const MessageWithContext = <
     }
   });
 
-  const forwardedGroupStyles =
-    !!reactionsEnabled &&
-    message.latest_reactions &&
-    message.latest_reactions.length > 0
-      ? (['bottom'] as GroupType[])
-      : groupStyles;
-
   const onlyEmojis =
     !attachments.files.length &&
     !attachments.images.length &&
@@ -1099,7 +1092,7 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
-    groupStyles: forwardedGroupStyles,
+    groupStyles,
     handleAction,
     handleDeleteMessage,
     handleEditMessage,
@@ -1112,8 +1105,7 @@ const MessageWithContext = <
     images: attachments.images,
     isMyMessage,
     lastGroupMessage:
-      forwardedGroupStyles?.[0] === 'single' ||
-      forwardedGroupStyles?.[0] === 'bottom',
+      groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
     members,
     message,

@@ -48,9 +48,13 @@ export const getDateSeparators = <
     return dateSeparators;
   }
 
-  for (let i = 0; i < messages.length; i++) {
-    const previousMessage = messages[i - 1];
-    const message = messages[i];
+  const messagesWithoutDeletedOrRead = messages.filter(
+    (message) => !message.deleted_at && message.type !== 'message.read',
+  );
+
+  for (let i = 0; i < messagesWithoutDeletedOrRead.length; i++) {
+    const previousMessage = messagesWithoutDeletedOrRead[i - 1];
+    const message = messagesWithoutDeletedOrRead[i];
 
     if (message.type === 'message.read' || message.deleted_at) {
       continue;

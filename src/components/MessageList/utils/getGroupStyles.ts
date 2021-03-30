@@ -30,6 +30,7 @@ export type GetGroupStylesParams<
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
   hideDateSeparators?: boolean;
   noGroupByUser?: boolean;
+  userId?: string;
 };
 
 export const getGroupStyles = <
@@ -48,13 +49,18 @@ export const getGroupStyles = <
     hideDateSeparators,
     messages,
     noGroupByUser,
+    userId,
   } = params;
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  for (let i = 0; i < messages.length; i++) {
-    const previousMessage = messages[i - 1];
-    const message = messages[i];
-    const nextMessage = messages[i + 1];
+  const messagesFilteredForNonUser = messages.filter(
+    (message) => !message.deleted_at || userId === message.user?.id,
+  );
+
+  for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
+    const previousMessage = messagesFilteredForNonUser[i - 1];
+    const message = messagesFilteredForNonUser[i];
+    const nextMessage = messagesFilteredForNonUser[i + 1];
     const groupStyles: GroupType[] = [];
 
     const userId = message?.user?.id || null;
@@ -62,8 +68,6 @@ export const getGroupStyles = <
     const isTopMessage =
       !previousMessage ||
       previousMessage.type === 'system' ||
-      (previousMessage.attachments &&
-        previousMessage.attachments.length !== 0) ||
       userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
       !!previousMessage.deleted_at ||
@@ -72,7 +76,6 @@ export const getGroupStyles = <
     const isBottomMessage =
       !nextMessage ||
       nextMessage.type === 'system' ||
-      (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
       !!nextMessage.deleted_at ||
@@ -113,14 +116,6 @@ export const getGroupStyles = <
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('middle');
       }
-    }
-
-    /**
-     * If there are attachments add the key for single
-     */
-    if (message.attachments && message.attachments.length !== 0) {
-      groupStyles.splice(0, groupStyles.length);
-      groupStyles.push('single');
     }
 
     /**
