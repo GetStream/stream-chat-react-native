@@ -52,11 +52,7 @@ export const getDateSeparators = <
     const previousMessage = messages[i - 1];
     const message = messages[i];
 
-    if (
-      message.type === 'channel.event' ||
-      message.type === 'message.read' ||
-      message.deleted_at
-    ) {
+    if (message.type === 'message.read' || message.deleted_at) {
       continue;
     }
 

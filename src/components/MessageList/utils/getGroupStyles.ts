@@ -57,19 +57,11 @@ export const getGroupStyles = <
     const nextMessage = messages[i + 1];
     const groupStyles: GroupType[] = [];
 
-    /**
-     * Skip event and date messages
-     */
-    if (message.type === 'channel.event') {
-      continue;
-    }
-
     const userId = message?.user?.id || null;
 
     const isTopMessage =
       !previousMessage ||
       previousMessage.type === 'system' ||
-      previousMessage.type === 'channel.event' ||
       (previousMessage.attachments &&
         previousMessage.attachments.length !== 0) ||
       userId !== previousMessage?.user?.id ||
@@ -80,7 +72,6 @@ export const getGroupStyles = <
     const isBottomMessage =
       !nextMessage ||
       nextMessage.type === 'system' ||
-      nextMessage.type === 'channel.event' ||
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
