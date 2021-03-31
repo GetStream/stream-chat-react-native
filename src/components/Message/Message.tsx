@@ -29,8 +29,7 @@ import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
-  GroupType,
-  isMessagesWithStylesReadByAndDateSeparator,
+  isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 
@@ -1292,9 +1291,9 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    (isMessagesWithStylesReadByAndDateSeparator(prevMessage) &&
+    (isMessageWithStylesReadByAndDateSeparator(prevMessage) &&
       prevMessage.readBy) ===
-      (isMessagesWithStylesReadByAndDateSeparator(nextMessage) &&
+      (isMessageWithStylesReadByAndDateSeparator(nextMessage) &&
         nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&

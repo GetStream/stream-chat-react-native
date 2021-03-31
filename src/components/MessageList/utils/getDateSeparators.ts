@@ -48,17 +48,13 @@ export const getDateSeparators = <
     return dateSeparators;
   }
 
-  const messagesWithoutDeletedOrRead = messages.filter(
-    (message) => !message.deleted_at && message.type !== 'message.read',
+  const messagesWithoutDeleted = messages.filter(
+    (message) => !message.deleted_at,
   );
 
-  for (let i = 0; i < messagesWithoutDeletedOrRead.length; i++) {
-    const previousMessage = messagesWithoutDeletedOrRead[i - 1];
-    const message = messagesWithoutDeletedOrRead[i];
-
-    if (message.type === 'message.read' || message.deleted_at) {
-      continue;
-    }
+  for (let i = 0; i < messagesWithoutDeleted.length; i++) {
+    const previousMessage = messagesWithoutDeleted[i - 1];
+    const message = messagesWithoutDeleted[i];
 
     const messageDate = message.created_at.getDay();
 

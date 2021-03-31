@@ -57,7 +57,7 @@ export type MessageType<
   | MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>;
 
 // Type guards to check MessageType
-export const isMessagesWithStylesReadByAndDateSeparator = <
+export const isMessageWithStylesReadByAndDateSeparator = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

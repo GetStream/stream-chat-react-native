@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import {
-  isMessagesWithStylesReadByAndDateSeparator,
+  isMessageWithStylesReadByAndDateSeparator,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
@@ -565,60 +565,31 @@ const MessageListWithContext = <
       );
     }
 
-    if (message.type !== 'message.read') {
-      const wrapMessageInTheme =
-        client.userID === message.user?.id && !!myMessageTheme;
-      if (wrapMessageInTheme) {
-        return (
-          <>
-            <ThemeProvider mergedStyle={modifiedTheme}>
-              <Message
-                goToMessage={goToMessage}
-                groupStyles={
-                  isMessagesWithStylesReadByAndDateSeparator(message)
-                    ? message.groupStyles
-                    : []
-                }
-                lastReceivedId={
-                  lastReceivedId === message.id ? lastReceivedId : undefined
-                }
-                message={message}
-                onThreadSelect={onThreadSelect}
-                showUnreadUnderlay={showUnreadUnderlay}
-                style={styles.messagePadding}
-                targetedMessage={targetedMessage === message.id}
-                threadList={threadList}
-              />
-            </ThemeProvider>
-            {isMessagesWithStylesReadByAndDateSeparator(message) &&
-              message.dateSeparator && (
-                <InlineDateSeparator date={message.dateSeparator} />
-              )}
-            {/* Adding indicator below the messages, since the list is inverted */}
-            {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-          </>
-        );
-      }
+    const wrapMessageInTheme =
+      client.userID === message.user?.id && !!myMessageTheme;
+    if (wrapMessageInTheme) {
       return (
         <>
-          <Message
-            goToMessage={goToMessage}
-            groupStyles={
-              isMessagesWithStylesReadByAndDateSeparator(message)
-                ? message.groupStyles
-                : []
-            }
-            lastReceivedId={
-              lastReceivedId === message.id ? lastReceivedId : undefined
-            }
-            message={message}
-            onThreadSelect={onThreadSelect}
-            showUnreadUnderlay={showUnreadUnderlay}
-            style={styles.messagePadding}
-            targetedMessage={targetedMessage === message.id}
-            threadList={threadList}
-          />
-          {isMessagesWithStylesReadByAndDateSeparator(message) &&
+          <ThemeProvider mergedStyle={modifiedTheme}>
+            <Message
+              goToMessage={goToMessage}
+              groupStyles={
+                isMessageWithStylesReadByAndDateSeparator(message)
+                  ? message.groupStyles
+                  : []
+              }
+              lastReceivedId={
+                lastReceivedId === message.id ? lastReceivedId : undefined
+              }
+              message={message}
+              onThreadSelect={onThreadSelect}
+              showUnreadUnderlay={showUnreadUnderlay}
+              style={styles.messagePadding}
+              targetedMessage={targetedMessage === message.id}
+              threadList={threadList}
+            />
+          </ThemeProvider>
+          {isMessageWithStylesReadByAndDateSeparator(message) &&
             message.dateSeparator && (
               <InlineDateSeparator date={message.dateSeparator} />
             )}
@@ -628,7 +599,33 @@ const MessageListWithContext = <
       );
     }
 
-    return null;
+    return (
+      <>
+        <Message
+          goToMessage={goToMessage}
+          groupStyles={
+            isMessageWithStylesReadByAndDateSeparator(message)
+              ? message.groupStyles
+              : []
+          }
+          lastReceivedId={
+            lastReceivedId === message.id ? lastReceivedId : undefined
+          }
+          message={message}
+          onThreadSelect={onThreadSelect}
+          showUnreadUnderlay={showUnreadUnderlay}
+          style={styles.messagePadding}
+          targetedMessage={targetedMessage === message.id}
+          threadList={threadList}
+        />
+        {isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && (
+            <InlineDateSeparator date={message.dateSeparator} />
+          )}
+        {/* Adding indicator below the messages, since the list is inverted */}
+        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+      </>
+    );
   };
 
   //
