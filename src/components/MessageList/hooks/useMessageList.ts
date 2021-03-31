@@ -119,6 +119,7 @@ export const useMessageList = <
   const dateSeparators = getDateSeparators<At, Ch, Co, Ev, Me, Re, Us>({
     hideDateSeparators,
     messages: messageList,
+    userId: client.userID,
   });
 
   const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({

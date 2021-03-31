@@ -24,6 +24,7 @@ export type GetDateSeparatorsParams<
     | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
   hideDateSeparators?: boolean;
+  userId?: string;
 };
 
 export type DateSeparators = {
@@ -41,7 +42,7 @@ export const getDateSeparators = <
 >(
   params: GetDateSeparatorsParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { hideDateSeparators, messages } = params;
+  const { hideDateSeparators, messages, userId } = params;
   const dateSeparators: DateSeparators = {};
 
   if (hideDateSeparators) {
@@ -49,7 +50,7 @@ export const getDateSeparators = <
   }
 
   const messagesWithoutDeleted = messages.filter(
-    (message) => !message.deleted_at,
+    (message) => !message.deleted_at || userId === message.user?.id,
   );
 
   for (let i = 0; i < messagesWithoutDeleted.length; i++) {
