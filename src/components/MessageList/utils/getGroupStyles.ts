@@ -29,6 +29,7 @@ export type GetGroupStylesParams<
     | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
   hideDateSeparators?: boolean;
+  maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
   userId?: string;
 };
@@ -47,6 +48,7 @@ export const getGroupStyles = <
   const {
     dateSeparators,
     hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
     messages,
     noGroupByUser,
     userId,
@@ -79,7 +81,10 @@ export const getGroupStyles = <
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
       !!nextMessage.deleted_at ||
-      (!hideDateSeparators && dateSeparators[nextMessage.id]);
+      (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
+      (maxTimeBetweenGroupedMessages !== undefined &&
+        nextMessage.created_at.getTime() - message.created_at.getTime() >
+          maxTimeBetweenGroupedMessages);
 
     /**
      * Add group styles key for top message

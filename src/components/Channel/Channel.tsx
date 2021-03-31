@@ -196,6 +196,7 @@ export type ChannelPropsWithContext<
     | 'giphyEnabled'
     | 'hideDateSeparators'
     | 'LoadingIndicator'
+    | 'maxTimeBetweenGroupedMessages'
     | 'NetworkDownIndicator'
     | 'StickyHeader'
   >
@@ -471,6 +472,7 @@ const ChannelWithContext = <
     markdownRules,
     messageId,
     maxNumberOfFiles = 10,
+    maxTimeBetweenGroupedMessages,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
@@ -1463,6 +1465,7 @@ const ChannelWithContext = <
     loading,
     LoadingIndicator,
     markRead,
+    maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
     read,

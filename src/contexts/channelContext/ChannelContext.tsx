@@ -166,6 +166,11 @@ export type ChannelContextValue<
   disabled?: boolean;
   lastRead?: Date;
   /**
+   * Maximum time in milliseconds that should occur between messages
+   * to still consider them grouped together
+   */
+  maxTimeBetweenGroupedMessages?: number;
+  /**
    * Custom UI component for sticky header of channel.
    *
    * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)

@@ -91,15 +91,11 @@ export const useMessageList = <
 ) => {
   const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { hideDateSeparators, read } = useChannelContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
+    read,
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = usePaginatedMessageListContext<
     At,
     Ch,
@@ -125,6 +121,7 @@ export const useMessageList = <
   const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({
     dateSeparators,
     hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
     messages: messageList,
     noGroupByUser,
     userId: client.userID,
