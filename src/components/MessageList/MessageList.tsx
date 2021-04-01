@@ -479,7 +479,7 @@ const MessageListWithContext = <
      * 2. Message was sent by me (current logged in user)
      */
     const scrollToBottomIfNeeded = () => {
-      if (!client || !channel) {
+      if (!client || !channel || messageList.length === 0) {
         return;
       }
 
