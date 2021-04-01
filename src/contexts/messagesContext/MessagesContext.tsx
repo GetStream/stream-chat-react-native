@@ -2,10 +2,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type {
-  GestureResponderEvent,
-  TouchableOpacityProps,
-} from 'react-native';
+import type { TouchableOpacityProps } from 'react-native';
+
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
@@ -23,7 +21,10 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
-import type { MessageProps } from '../../components/Message/Message';
+import type {
+  MessageProps,
+  MessageTouchableHandlerPayload,
+} from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
@@ -35,6 +36,7 @@ import type { MessageTextProps } from '../../components/Message/MessageSimple/Me
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
@@ -128,6 +130,10 @@ export type MessagesContextValue<
    * When true, messageList will be scrolled at first unread message, when opened.
    */
   initialScrollToFirstUnreadMessage: boolean;
+  /**
+   * Message Date Separator Component
+   */
+  InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
    * UI component for InlineUnreadIndicator
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
@@ -267,6 +273,10 @@ export type MessagesContextValue<
    * @overrideType Object
    */
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
+  /**
+   * When false, pop-out animation will be disabled for message bubble, onLongPress
+   */
+  animatedLongPress?: boolean;
   /**
    * Full override of the block user button in the Message Actions
    *
@@ -483,23 +493,28 @@ export type MessagesContextValue<
    */
   myMessageTheme?: DeepPartial<Theme>;
   /**
-   * Double tap message for gesture handler components
+   * Add double tap handler for message.
    */
   onDoubleTapMessage?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    handleReactionDoubleTap?: (reactionType: string) => Promise<void>,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * onLongPressMessage should be used to cancel onPressInMessage timers
-   * if required
+   * Override default handler for onLongPress
    */
-  onLongPressMessage?: (event?: GestureResponderEvent) => void;
+  onLongPressMessage?: (
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
   /**
-   * Override for press on message attachments
+   * Add onPressIn handler for attachments.
    */
   onPressInMessage?: (
-    event: GestureResponderEvent,
-    defaultOnPress?: () => void,
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
+  /**
+   * Override onPress handler for message.
+   */
+  onPressMessage?: (
+    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Full override of the reply button in the Message Actions

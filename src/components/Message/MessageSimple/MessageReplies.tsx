@@ -85,7 +85,12 @@ export type MessageRepliesPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'message' | 'onLongPress' | 'onOpenThread' | 'threadList'
+  | 'alignment'
+  | 'message'
+  | 'onLongPress'
+  | 'onPress'
+  | 'onOpenThread'
+  | 'threadList'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -114,6 +119,7 @@ const MessageRepliesWithContext = <
     noBorder,
     onLongPress,
     onOpenThread,
+    onPress,
     repliesCurveColor,
     t,
     threadList,
@@ -148,8 +154,19 @@ const MessageRepliesWithContext = <
         </>
       )}
       <TouchableOpacity
-        onLongPress={onLongPress}
-        onPress={onOpenThread}
+        onLongPress={(event) => {
+          onLongPress({
+            emitter: 'messageReplies',
+            event,
+          });
+        }}
+        onPress={(event) => {
+          onPress({
+            defaultHandler: onOpenThread,
+            emitter: 'messageReplies',
+            event,
+          });
+        }}
         style={[styles.container, container]}
         testID='message-replies'
       >
@@ -258,6 +275,7 @@ export const MessageReplies = <
     message,
     onLongPress,
     onOpenThread,
+    onPress,
     threadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageRepliesAvatars } = useMessagesContext<
@@ -279,6 +297,7 @@ export const MessageReplies = <
         MessageRepliesAvatars,
         onLongPress,
         onOpenThread,
+        onPress,
         t,
         threadList,
       }}

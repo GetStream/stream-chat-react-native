@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import {
-  isMessagesWithStylesAndReadBy,
+  isMessageWithStylesReadByAndDateSeparator,
   MessageType,
   useMessageList,
 } from './hooks/useMessageList';
@@ -83,6 +83,13 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
+    /**
+     * paddingBottom is set to 4 to account for the default date
+     * header and inline indicator alignment. The top margin is 8
+     * on the header but 4 on the inline date, this adjusts the spacing
+     * to allow the "first" inline date to align with the date header.
+     */
+    paddingBottom: 4,
   },
   flex: { flex: 1 },
   listContainer: {
@@ -117,7 +124,7 @@ const keyExtractor = <
     : Date.now().toString());
 
 const flatListViewabilityConfig = {
-  viewAreaCoveragePercentThreshold: 50,
+  viewAreaCoveragePercentThreshold: 1,
 };
 
 type MessageListPropsWithContext<
@@ -162,6 +169,7 @@ type MessageListPropsWithContext<
     | 'disableTypingIndicator'
     | 'FlatList'
     | 'initialScrollToFirstUnreadMessage'
+    | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
     | 'Message'
     | 'ScrollToBottomButton'
@@ -279,6 +287,7 @@ const MessageListWithContext = <
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
     isOnline,
@@ -319,7 +328,7 @@ const MessageListWithContext = <
 
   const {
     colors: { white_snow },
-    messageList: { container, listContainer },
+    messageList: { container, contentContainer, listContainer },
   } = theme;
 
   const modifiedTheme = useMemo(
@@ -376,8 +385,6 @@ const MessageListWithContext = <
   >(messageList[messageListLength - 1] || undefined);
   const channelLastRead = useRef(getLastReadSafely());
 
-  const viewableMessages = useRef<string[]>([]);
-
   const isUnreadMessage = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
     lastRead?: ReturnType<
@@ -423,16 +430,6 @@ const MessageListWithContext = <
     }
   };
 
-  /**
-   * We keep track of viewableItems, to implement scrollToMessage functionality.
-   * We can use scrollToIndex only if the message is within viewable limits.
-   */
-  const updateViewableMessages = (viewableItems: ViewToken[]) => {
-    viewableMessages.current = viewableItems.map(
-      (viewableItem) => viewableItem.item.id,
-    );
-  };
-
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
       const lastItem = viewableItems.pop() as {
@@ -459,7 +456,6 @@ const MessageListWithContext = <
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
       if (viewableItems) {
-        updateViewableMessages(viewableItems);
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
       setInitialScrollIfNeeded();
@@ -556,42 +552,17 @@ const MessageListWithContext = <
       );
     }
 
-    if (message.type !== 'message.read') {
-      const wrapMessageInTheme =
-        client.userID === message.user?.id && !!myMessageTheme;
-      if (wrapMessageInTheme) {
-        return (
-          <>
-            <ThemeProvider mergedStyle={modifiedTheme}>
-              <Message
-                goToMessage={goToMessage}
-                groupStyles={
-                  isMessagesWithStylesAndReadBy(message)
-                    ? message.groupStyles
-                    : []
-                }
-                lastReceivedId={
-                  lastReceivedId === message.id ? lastReceivedId : undefined
-                }
-                message={message}
-                onThreadSelect={onThreadSelect}
-                showUnreadUnderlay={showUnreadUnderlay}
-                style={styles.messagePadding}
-                targetedMessage={targetedMessage === message.id}
-                threadList={threadList}
-              />
-            </ThemeProvider>
-            {/* Adding indicator below the messages, since the list is inverted */}
-            {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-          </>
-        );
-      }
-      return (
-        <>
+    const wrapMessageInTheme =
+      client.userID === message.user?.id && !!myMessageTheme;
+    return wrapMessageInTheme ? (
+      <>
+        <ThemeProvider mergedStyle={modifiedTheme}>
           <Message
             goToMessage={goToMessage}
             groupStyles={
-              isMessagesWithStylesAndReadBy(message) ? message.groupStyles : []
+              isMessageWithStylesReadByAndDateSeparator(message)
+                ? message.groupStyles
+                : []
             }
             lastReceivedId={
               lastReceivedId === message.id ? lastReceivedId : undefined
@@ -603,13 +574,41 @@ const MessageListWithContext = <
             targetedMessage={targetedMessage === message.id}
             threadList={threadList}
           />
-          {/* Adding indicator below the messages, since the list is inverted */}
-          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-        </>
-      );
-    }
-
-    return null;
+        </ThemeProvider>
+        {isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && (
+            <InlineDateSeparator date={message.dateSeparator} />
+          )}
+        {/* Adding indicator below the messages, since the list is inverted */}
+        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+      </>
+    ) : (
+      <>
+        <Message
+          goToMessage={goToMessage}
+          groupStyles={
+            isMessageWithStylesReadByAndDateSeparator(message)
+              ? message.groupStyles
+              : []
+          }
+          lastReceivedId={
+            lastReceivedId === message.id ? lastReceivedId : undefined
+          }
+          message={message}
+          onThreadSelect={onThreadSelect}
+          showUnreadUnderlay={showUnreadUnderlay}
+          style={styles.messagePadding}
+          targetedMessage={targetedMessage === message.id}
+          threadList={threadList}
+        />
+        {isMessageWithStylesReadByAndDateSeparator(message) &&
+          message.dateSeparator && (
+            <InlineDateSeparator date={message.dateSeparator} />
+          )}
+        {/* Adding indicator below the messages, since the list is inverted */}
+        {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+      </>
+    );
   };
 
   //
@@ -772,9 +771,7 @@ const MessageListWithContext = <
   };
 
   const goToMessage = (messageId: string) => {
-    const indexOfParentInViewable = viewableMessages.current.indexOf(messageId);
-
-    if (indexOfParentInViewable > -1) {
+    try {
       const indexOfParentInMessageList = messageList.findIndex(
         (message) => message?.id === messageId,
       );
@@ -783,10 +780,9 @@ const MessageListWithContext = <
         flatListRef.current.scrollToIndex({
           index: indexOfParentInMessageList - 1,
         });
+        setTargetedMessage(messageId);
       }
-
-      setTargetedMessage(messageId);
-    } else {
+    } catch (_) {
       loadChannelAtMessage({ messageId });
     }
   };
@@ -876,7 +872,7 @@ const MessageListWithContext = <
       style={[styles.container, { backgroundColor: white_snow }, container]}
     >
       <FlatList
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
@@ -980,6 +976,7 @@ export const MessageList = <
     disableTypingIndicator,
     FlatList,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     Message,
     MessageSystem,
@@ -1021,6 +1018,7 @@ export const MessageList = <
         EmptyStateIndicator,
         FlatList,
         initialScrollToFirstUnreadMessage,
+        InlineDateSeparator,
         InlineUnreadIndicator,
         isOnline,
         loadChannelAtMessage,

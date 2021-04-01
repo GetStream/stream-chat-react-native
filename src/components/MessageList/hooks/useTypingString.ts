@@ -1,6 +1,6 @@
-import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useTypingContext } from '../../../contexts/typingContext/TypingContext';
 
 import type {
   DefaultAttachmentType,
@@ -22,9 +22,9 @@ export const useTypingString = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() => {
-  const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
+  const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const typingKeys = Object.keys(typing);
   const nonSelfUsers: string[] = [];
