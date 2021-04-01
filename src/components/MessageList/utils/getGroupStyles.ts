@@ -78,7 +78,8 @@ export const getGroupStyles = <
       userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
       !!previousMessage.deleted_at ||
-      (!hideDateSeparators && dateSeparators[message.id]);
+      (!hideDateSeparators && dateSeparators[message.id]) ||
+      messageGroupStyles[previousMessage.id]?.includes('bottom');
 
     const isBottomMessage =
       !nextMessage ||
