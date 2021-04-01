@@ -6,7 +6,6 @@ import React, {
   useState,
 } from 'react';
 import { Keyboard } from 'react-native';
-
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
@@ -25,7 +24,6 @@ import {
 } from './hooks/useMessageDetailsForState';
 
 import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
-
 import { useChatContext } from '../chatContext/ChatContext';
 import {
   ChannelContextValue,
