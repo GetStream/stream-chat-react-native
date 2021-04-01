@@ -27,6 +27,7 @@ import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessage
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
 import { lightThrottle } from './utils/throttle';
@@ -66,6 +67,7 @@ import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
@@ -111,6 +113,10 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import {
+  TypingContextValue,
+  TypingProvider,
+} from '../../contexts/typingContext/TypingContext';
 import {
   LOLReaction,
   LoveReaction,
@@ -188,7 +194,9 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideDateSeparators'
     | 'LoadingIndicator'
+    | 'maxTimeBetweenGroupedMessages'
     | 'NetworkDownIndicator'
     | 'StickyHeader'
   >
@@ -249,6 +257,7 @@ export type ChannelPropsWithContext<
       | 'handleReply'
       | 'handleRetry'
       | 'handleThreadReply'
+      | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
@@ -445,9 +454,11 @@ const ChannelWithContext = <
     hasCommands = true,
     hasFilePicker = true,
     hasImagePicker = true,
+    hideDateSeparators = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
+    InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
@@ -461,6 +472,7 @@ const ChannelWithContext = <
     markdownRules,
     messageId,
     maxNumberOfFiles = 10,
+    maxTimeBetweenGroupedMessages,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
@@ -551,7 +563,7 @@ const ChannelWithContext = <
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
   >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
+    TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
   >({});
   const [watcherCount, setWatcherCount] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
@@ -1444,6 +1456,7 @@ const ChannelWithContext = <
       !!(channel?.getConfig?.()?.commands || [])?.some(
         (command) => command.name === 'giphy',
       ),
+    hideDateSeparators,
     isAdmin,
     isModerator,
     isOwner,
@@ -1452,6 +1465,7 @@ const ChannelWithContext = <
     loading,
     LoadingIndicator,
     markRead,
+    maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
     read,
@@ -1461,7 +1475,6 @@ const ChannelWithContext = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    typing,
     watcherCount,
     watchers,
   });
@@ -1554,6 +1567,7 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     markdownRules,
     Message,
@@ -1613,6 +1627,10 @@ const ChannelWithContext = <
     threadMessages,
   });
 
+  const typingContext = useCreateTypingContext({
+    typing,
+  });
+
   if (!channel || error) {
     return (
       <LoadingErrorIndicator
@@ -1644,21 +1662,25 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
-          value={messageListContext}
-        >
-          <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-            <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-              <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                  value={messageInputContext}
-                >
-                  <View style={{ height: '100%' }}>{children}</View>
-                </MessageInputProvider>
-              </SuggestionsProvider>
-            </ThreadProvider>
-          </MessagesProvider>
-        </PaginatedMessageListProvider>
+        <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
+          <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+            value={messageListContext}
+          >
+            <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us>
+              value={messagesContext}
+            >
+              <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                    value={messageInputContext}
+                  >
+                    <View style={{ height: '100%' }}>{children}</View>
+                  </MessageInputProvider>
+                </SuggestionsProvider>
+              </ThreadProvider>
+            </MessagesProvider>
+          </PaginatedMessageListProvider>
+        </TypingProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

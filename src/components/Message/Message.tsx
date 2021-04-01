@@ -29,8 +29,7 @@ import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
-  GroupType,
-  isMessagesWithStylesAndReadBy,
+  isMessageWithStylesReadByAndDateSeparator,
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 
@@ -588,13 +587,6 @@ const MessageWithContext = <
     }
   });
 
-  const forwardedGroupStyles =
-    !!reactionsEnabled &&
-    message.latest_reactions &&
-    message.latest_reactions.length > 0
-      ? (['bottom'] as GroupType[])
-      : groupStyles;
-
   const onlyEmojis =
     !attachments.files.length &&
     !attachments.images.length &&
@@ -1099,7 +1091,7 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
-    groupStyles: forwardedGroupStyles,
+    groupStyles,
     handleAction,
     handleDeleteMessage,
     handleEditMessage,
@@ -1112,8 +1104,7 @@ const MessageWithContext = <
     images: attachments.images,
     isMyMessage,
     lastGroupMessage:
-      forwardedGroupStyles?.[0] === 'single' ||
-      forwardedGroupStyles?.[0] === 'bottom',
+      groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
     members,
     message,
@@ -1300,8 +1291,10 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
-      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy) &&
+    (isMessageWithStylesReadByAndDateSeparator(prevMessage) &&
+      prevMessage.readBy) ===
+      (isMessageWithStylesReadByAndDateSeparator(nextMessage) &&
+        nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&

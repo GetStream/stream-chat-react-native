@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
+import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
@@ -67,7 +67,8 @@ export const useCreateMessageContext = <
   const latestReactions = message.latest_reactions
     ? message.latest_reactions
     : undefined;
-  const readBy = isMessagesWithStylesAndReadBy(message) && message.readBy;
+  const readBy =
+    isMessageWithStylesReadByAndDateSeparator(message) && message.readBy;
   const messageValue = `${
     latestReactions ? latestReactions.map(({ type }) => type).join() : ''
   }${message.updated_at}${message.deleted_at}${readBy}${message.status}${

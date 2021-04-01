@@ -189,6 +189,10 @@ export type Theme = {
     };
     backgroundColor?: string;
   };
+  inlineDateSeparator: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   loadingDots: {
     container: ViewStyle;
     loadingDot: ViewStyle;
@@ -286,6 +290,7 @@ export type Theme = {
   };
   messageList: {
     container: ViewStyle;
+    contentContainer: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     inlineUnreadIndicator: {
@@ -621,6 +626,10 @@ export const defaultTheme: Theme = {
       usernameText: {},
     },
   },
+  inlineDateSeparator: {
+    container: {},
+    text: {},
+  },
   loadingDots: {
     container: {},
     loadingDot: {},
@@ -718,6 +727,7 @@ export const defaultTheme: Theme = {
   },
   messageList: {
     container: {},
+    contentContainer: {},
     errorNotification: {},
     errorNotificationText: {},
     inlineUnreadIndicator: {

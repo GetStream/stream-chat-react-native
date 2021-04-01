@@ -1,3 +1,5 @@
+import type { DateSeparators } from './getDateSeparators';
+
 import type { GroupType } from '../hooks/useMessageList';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -12,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { FormatMessageResponse } from 'stream-chat';
 
 export type GetGroupStylesParams<
   At extends UnknownType = DefaultAttachmentType,
@@ -22,10 +25,14 @@ export type GetGroupStylesParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  dateSeparators: DateSeparators;
   messages:
     | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
+  hideDateSeparators?: boolean;
+  maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
+  userId?: string;
 };
 
 export const getGroupStyles = <
@@ -39,42 +46,51 @@ export const getGroupStyles = <
 >(
   params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messages, noGroupByUser } = params;
+  const {
+    dateSeparators,
+    hideDateSeparators,
+    maxTimeBetweenGroupedMessages,
+    messages,
+    noGroupByUser,
+    userId,
+  } = params;
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  for (let i = 0; i < messages.length; i++) {
-    const previousMessage = messages[i - 1];
-    const message = messages[i];
-    const nextMessage = messages[i + 1];
-    const groupStyles: GroupType[] = [];
+  const messagesFilteredForNonUser = messages.filter(
+    (message) => !message.deleted_at || userId === message.user?.id,
+  );
 
-    /**
-     * Skip event and date messages
-     */
-    if (message.type === 'channel.event') {
-      continue;
-    }
+  for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
+    const previousMessage = messagesFilteredForNonUser[i - 1] as
+      | typeof messagesFilteredForNonUser[0]
+      | undefined;
+    const message = messagesFilteredForNonUser[i];
+    const nextMessage = messagesFilteredForNonUser[i + 1] as
+      | typeof messagesFilteredForNonUser[0]
+      | undefined;
+    const groupStyles: GroupType[] = [];
 
     const userId = message?.user?.id || null;
 
     const isTopMessage =
       !previousMessage ||
       previousMessage.type === 'system' ||
-      previousMessage.type === 'channel.event' ||
-      (previousMessage.attachments &&
-        previousMessage.attachments.length !== 0) ||
       userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
-      !!previousMessage.deleted_at;
+      !!previousMessage.deleted_at ||
+      (!hideDateSeparators && dateSeparators[message.id]) ||
+      messageGroupStyles[previousMessage.id]?.includes('bottom');
 
     const isBottomMessage =
       !nextMessage ||
       nextMessage.type === 'system' ||
-      nextMessage.type === 'channel.event' ||
-      (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
-      !!nextMessage.deleted_at;
+      !!nextMessage.deleted_at ||
+      (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
+      (maxTimeBetweenGroupedMessages !== undefined &&
+        nextMessage.created_at.getTime() - message.created_at.getTime() >
+          maxTimeBetweenGroupedMessages);
 
     /**
      * Add group styles key for top message
@@ -111,14 +127,6 @@ export const getGroupStyles = <
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('middle');
       }
-    }
-
-    /**
-     * If there are attachments add the key for single
-     */
-    if (message.attachments && message.attachments.length !== 0) {
-      groupStyles.splice(0, groupStyles.length);
-      groupStyles.push('single');
     }
 
     /**
