@@ -14,7 +14,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type { FormatMessageResponse } from 'stream-chat';
 
 export type GetGroupStylesParams<
   At extends UnknownType = DefaultAttachmentType,
