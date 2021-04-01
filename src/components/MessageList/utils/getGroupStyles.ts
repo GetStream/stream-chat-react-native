@@ -14,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { FormatMessageResponse } from 'stream-chat';
 
 export type GetGroupStylesParams<
   At extends UnknownType = DefaultAttachmentType,
@@ -60,9 +61,13 @@ export const getGroupStyles = <
   );
 
   for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
-    const previousMessage = messagesFilteredForNonUser[i - 1];
+    const previousMessage = messagesFilteredForNonUser[i - 1] as
+      | typeof messagesFilteredForNonUser[0]
+      | undefined;
     const message = messagesFilteredForNonUser[i];
-    const nextMessage = messagesFilteredForNonUser[i + 1];
+    const nextMessage = messagesFilteredForNonUser[i + 1] as
+      | typeof messagesFilteredForNonUser[0]
+      | undefined;
     const groupStyles: GroupType[] = [];
 
     const userId = message?.user?.id || null;
