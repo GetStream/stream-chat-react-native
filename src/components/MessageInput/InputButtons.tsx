@@ -49,16 +49,14 @@ export type InputButtonsWithContextProps<
   | 'hasFilePicker'
   | 'hasImagePicker'
   | 'MoreOptionsButton'
+  | 'openCommandsPicker'
+  | 'selectedPicker'
   | 'setShowMoreOptions'
   | 'showMoreOptions'
   | 'text'
+  | 'toggleAttachmentPicker'
   | 'uploadsEnabled'
-> & {
-  closeAttachmentPicker?: () => void;
-  openAttachmentPicker?: () => void;
-  openCommandsPicker?: () => void;
-  toggleAttachmentPicker?: () => void;
-};
+>;
 
 export const InputButtonsWithContext = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -137,6 +135,7 @@ const areEqual = <
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
+    selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
     text: prevText,
     uploadsEnabled: prevUploadsEnabled,
@@ -146,6 +145,7 @@ const areEqual = <
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
+    selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
     text: nextText,
     uploadsEnabled: nextUploadsEnabled,
@@ -164,6 +164,9 @@ const areEqual = <
   }
 
   if (prevUploadsEnabled !== nextUploadsEnabled) {
+    return false;
+  }
+  if (prevSelectedPicker !== nextSelectedPicker) {
     return false;
   }
 
@@ -202,9 +205,12 @@ export const InputButtons = <
     hasFilePicker,
     hasImagePicker,
     MoreOptionsButton,
+    openCommandsPicker,
+    selectedPicker,
     setShowMoreOptions,
     showMoreOptions,
     text,
+    toggleAttachmentPicker,
     uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -218,9 +224,12 @@ export const InputButtons = <
         hasFilePicker,
         hasImagePicker,
         MoreOptionsButton,
+        openCommandsPicker,
+        selectedPicker,
         setShowMoreOptions,
         showMoreOptions,
         text,
+        toggleAttachmentPicker,
         uploadsEnabled,
       }}
       {...props}

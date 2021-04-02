@@ -479,7 +479,7 @@ const MessageListWithContext = <
      * 2. Message was sent by me (current logged in user)
      */
     const scrollToBottomIfNeeded = () => {
-      if (!client || !channel) {
+      if (!client || !channel || messageList.length === 0) {
         return;
       }
 
@@ -851,12 +851,9 @@ const MessageListWithContext = <
       setFlatListRef(ref);
     }
   };
-
-  const renderEmptyStateIndicator = () => (
-    <View style={styles.flex}>
-      <View style={styles.flex} testID='empty-state'>
-        <EmptyStateIndicator listType='message' />
-      </View>
+  const renderListEmptyComponent = () => (
+    <View style={styles.flex} testID='empty-state'>
+      <EmptyStateIndicator listType='message' />
     </View>
   );
 
@@ -882,7 +879,7 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
-        ListEmptyComponent={renderEmptyStateIndicator}
+        ListEmptyComponent={renderListEmptyComponent}
         ListFooterComponent={FooterComponent}
         ListHeaderComponent={HeaderComponent}
         maintainVisibleContentPosition={{
