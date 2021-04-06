@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
   },
   flex: { flex: 1 },
+  invert: { transform: [{ scaleY: -1 }] },
   listContainer: {
     flex: 1,
     width: '100%',
@@ -852,7 +853,7 @@ const MessageListWithContext = <
     }
   };
   const renderListEmptyComponent = () => (
-    <View style={styles.flex} testID='empty-state'>
+    <View style={[styles.flex, styles.invert]} testID='empty-state'>
       <EmptyStateIndicator listType='message' />
     </View>
   );
