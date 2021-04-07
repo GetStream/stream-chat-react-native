@@ -1,5 +1,71 @@
 # Changelog
 
+##  [3.3.0] (2021-04-07)
+
+### New Additions
+
+- Added inline date separators, which can be customized by adding your own UI component [#581](https://github.com/GetStream/stream-chat-react-native/pull/581/files)
+
+  ```jsx
+  <Channel
+    InlineDateSeparator={({ date }) => { /** Your custom UI */ }}
+    maxTimeBetweenGroupedMessages={40000} // number of ms, after which further messages will be considered part of new group.
+  >
+  ```
+
+- Added ability to override default onLongPress, onPress, onPressIn and onDoubleTap handlers using following props on Channel component:
+
+  - onLongPressMessage
+  - onPressMessage
+  - onPressInMessage
+  - onDoubleTapMessage
+
+  You will have access to payload of that handler as param:
+
+  ```jsx
+  <Channel
+    ...
+    onLongPressMessage={({
+      actionHandlers: {
+          deleteMessage, // () => Promise<void>;
+          editMessage, // () => void;
+          reply, // () => void;
+          resendMessage, // () => Promise<void>;
+          showMessageOverlay, // () => void;
+          toggleBanUser, // () => Promise<void>;
+          toggleMuteUser, // () => Promise<void>;
+          toggleReaction, // (reactionType: string) => Promise<void>;
+      },
+      defaultHandler, // () => void
+      event, // any event object corresponding to touchable feedback
+      emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
+      message // message object on which longPress occured
+    }) => {
+      /** Your custom action */
+    }}
+  />
+  ```
+
+###  **🛑 BREAKING**
+
+- Following props are no longer accessible on `Input` component (which is used to customize underlying input box). They should be accessed from `MessageInputContext` (or corresponding hook - `useMessageInputContext`)
+
+  - openAttachmentPicker
+  - closeAttachmentPicker
+  - toggleAttachmentPicker
+  - openCommandsPicker
+  - openMentionsPicker
+  - openFilePicker
+
+- Value `typing` (which is list of users who are typing), has been moved from `ChannelContext` to its own separate context - `TypingContext` [c450719](https://github.com/GetStream/stream-chat-react-native/commit/c4507194956360ae27731fc81fed1d7dc1ed1861)
+
+
+### Fixes
+
+- [#522](https://github.com/GetStream/stream-chat-react-native/issues/522) `initialValue` not being set for inputbox [63b3d79](https://github.com/GetStream/stream-chat-react-native/pull/572/commits/63b3d7995b30dccf23aece51cbc7479388890fd0)
+- Fixed goToMessage functionality (when you press on quotedMessage) in MessageList [#580](https://github.com/GetStream/stream-chat-react-native/pull/580)
+- Fixed image picker not loading when swapping from keyboard [a180ad4](https://github.com/GetStream/stream-chat-react-native/commit/a180ad43fb1766f0252467c4d6aec84ca7c9e26d)
+
 ##  [3.2.0] (2021-03-23)
 
 ###  **🛑 BREAKING**
