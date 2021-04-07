@@ -2,7 +2,7 @@
 
 ##  [3.3.0] (2021-04-07)
 
-### New Additions
+### New Features 🎉
 
 - Added inline date separators, which can be customized by adding your own UI component [#581](https://github.com/GetStream/stream-chat-react-native/pull/581/files)
 
