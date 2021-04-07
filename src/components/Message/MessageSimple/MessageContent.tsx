@@ -120,7 +120,7 @@ export type MessageContentPropsWithContext<
 /**
  * Child of MessageSimple that displays a message's content
  */
-export const MessageContentWithContext = <
+const MessageContentWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -305,7 +305,7 @@ export const MessageContentWithContext = <
         });
       }}
       onPressIn={(event) => {
-        onPressIn({
+        onPressIn?.({
           emitter: 'messageContent',
           event,
         });

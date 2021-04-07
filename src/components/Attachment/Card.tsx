@@ -179,15 +179,18 @@ const CardWithContext = <
         });
       }}
       onPress={(event) => {
-        onPress({
-          defaultHandler: defaultOnPress,
-          emitter: 'card',
-          event,
-        });
+        if (!onPressIn) {
+          onPress({
+            defaultHandler: defaultOnPress,
+            emitter: 'card',
+            event,
+          });
+        }
       }}
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            defaultHandler: defaultOnPress,
             emitter: 'card',
             event,
           });

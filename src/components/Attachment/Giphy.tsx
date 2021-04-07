@@ -274,7 +274,7 @@ const GiphyWithContext = <
         });
       }}
       onPressIn={(event) => {
-        onPressIn({
+        onPressIn?.({
           emitter: 'giphy',
           event,
         });

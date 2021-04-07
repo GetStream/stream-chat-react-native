@@ -86,7 +86,7 @@ type ReplyPropsWithContext<
     }>;
   };
 
-export const ReplyWithContext = <
+const ReplyWithContext = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

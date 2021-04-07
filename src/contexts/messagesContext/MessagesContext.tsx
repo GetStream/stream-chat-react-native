@@ -131,7 +131,8 @@ export type MessagesContextValue<
    */
   initialScrollToFirstUnreadMessage: boolean;
   /**
-   * Message Date Separator Component
+   * UI component for Message Date Separator Component
+   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/InlineDateSeparator.tsx)
    */
   InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
@@ -494,24 +495,113 @@ export type MessagesContextValue<
   myMessageTheme?: DeepPartial<Theme>;
   /**
    * Add double tap handler for message.
+   *
+   * ```
+   * <Channel
+   *  onDoubleTapMessage={({
+   *    actionHandlers: {
+   *        deleteMessage, // () => Promise<void>;
+   *        editMessage, // () => void;
+   *        reply, // () => void;
+   *        resendMessage, // () => Promise<void>;
+   *        showMessageOverlay, // () => void;
+   *        toggleBanUser, // () => Promise<void>;
+   *        toggleMuteUser, // () => Promise<void>;
+   *        toggleReaction, // (reactionType: string) => Promise<void>;
+   *    },
+   *    message // message object on which longPress occured
+   *  }) => {
+   *    // Your custom action
+   *  }}
+   * />
+   * ```
    */
   onDoubleTapMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Override default handler for onLongPress
+   * Override default handler for onLongPress on message. You have access to payload of that handler as param:
+   *
+   * ```
+   * <Channel
+   *  onLongPressMessage={({
+   *    actionHandlers: {
+   *        deleteMessage, // () => Promise<void>;
+   *        editMessage, // () => void;
+   *        reply, // () => void;
+   *        resendMessage, // () => Promise<void>;
+   *        showMessageOverlay, // () => void;
+   *        toggleBanUser, // () => Promise<void>;
+   *        toggleMuteUser, // () => Promise<void>;
+   *        toggleReaction, // (reactionType: string) => Promise<void>;
+   *    },
+   *    defaultHandler, // () => void
+   *    event, // any event object corresponding to touchable feedback
+   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
+   *    message // message object on which longPress occured
+   *  }) => {
+   *    // Your custom action
+   *  }}
+   * />
+   * ```
    */
   onLongPressMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Add onPressIn handler for attachments.
+   * Add onPressIn handler for attachments. You have access to payload of that handler as param:
+   *
+   * ```
+   * <Channel
+   *  onPressInMessage={({
+   *    actionHandlers: {
+   *        deleteMessage, // () => Promise<void>;
+   *        editMessage, // () => void;
+   *        reply, // () => void;
+   *        resendMessage, // () => Promise<void>;
+   *        showMessageOverlay, // () => void;
+   *        toggleBanUser, // () => Promise<void>;
+   *        toggleMuteUser, // () => Promise<void>;
+   *        toggleReaction, // (reactionType: string) => Promise<void>;
+   *    },
+   *    defaultHandler, // () => void
+   *    event, // any event object corresponding to touchable feedback
+   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
+   *    message // message object on which longPress occured
+   *  }) => {
+   *    // Your custom action
+   *  }}
+   * />
+   * ```
    */
   onPressInMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Override onPress handler for message.
+   * Override onPress handler for message. You have access to payload of that handler as param:
+   *
+   * ```
+   * <Channel
+   *  onPressMessage={({
+   *    actionHandlers: {
+   *        deleteMessage, // () => Promise<void>;
+   *        editMessage, // () => void;
+   *        reply, // () => void;
+   *        resendMessage, // () => Promise<void>;
+   *        showMessageOverlay, // () => void;
+   *        toggleBanUser, // () => Promise<void>;
+   *        toggleMuteUser, // () => Promise<void>;
+   *        toggleReaction, // (reactionType: string) => Promise<void>;
+   *    },
+   *    defaultHandler, // () => void
+   *    event, // any event object corresponding to touchable feedback
+   *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
+   *    message // message object on which longPress occured
+   *  }) => {
+   *    // Your custom action
+   *  }}
+   * />
+   * ```
    */
   onPressMessage?: (
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,

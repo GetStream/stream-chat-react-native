@@ -103,7 +103,7 @@ export type MessageContextValue<
    * @param event   Event object for onPress event
    */
   onPress: (payload: TouchableHandlerPayload) => void;
-  onPressIn: (payload: TouchableHandlerPayload) => void;
+  onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<At>[];
   reactions: Reactions;

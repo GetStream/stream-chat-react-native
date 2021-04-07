@@ -246,7 +246,7 @@ const GalleryWithContext = <
                   });
                 }}
                 onPress={(event) => {
-                  if (onPress && !preventPress) {
+                  if (!onPressIn && !preventPress) {
                     onPress({
                       defaultHandler: defaultOnPress,
                       emitter: 'gallery',
@@ -257,6 +257,7 @@ const GalleryWithContext = <
                 onPressIn={(event) => {
                   if (onPressIn && !preventPress) {
                     onPressIn({
+                      defaultHandler: defaultOnPress,
                       emitter: 'gallery',
                       event,
                     });

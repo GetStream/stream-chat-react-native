@@ -40,7 +40,7 @@ type CommandsButtonPropsWithContext<
     handleOnPress?: (event: GestureResponderEvent) => void;
   };
 
-export const CommandsButtonWithContext = <
+const CommandsButtonWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

@@ -154,7 +154,7 @@ type MessageInputPropsWithContext<
     threadList?: boolean;
   };
 
-export const MessageInputWithContext = <
+const MessageInputWithContext = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

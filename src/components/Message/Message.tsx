@@ -1133,25 +1133,27 @@ const MessageWithContext = <
         ? payload.defaultHandler()
         : onPress();
     },
-    onPressIn: (payload) => {
-      onPressInProp
-        ? onPressInProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : onPressInMessageProp
-        ? onPressInMessageProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : payload.defaultHandler?.();
-    },
+    onPressIn:
+      onPressInProp || onPressInMessageProp
+        ? (payload) => {
+            onPressInProp
+              ? onPressInProp({
+                  actionHandlers,
+                  defaultHandler: payload.defaultHandler,
+                  emitter: payload.emitter || 'message',
+                  event: payload.event,
+                  message,
+                })
+              : onPressInMessageProp &&
+                onPressInMessageProp({
+                  actionHandlers,
+                  defaultHandler: payload.defaultHandler,
+                  emitter: payload.emitter || 'message',
+                  event: payload.event,
+                  message,
+                });
+          }
+        : null,
     otherAttachments: attachments.other,
     preventPress,
     reactions,
