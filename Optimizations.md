@@ -1,10 +1,10 @@
 # Best practices and performance optimizations
 
-React Native Chat SDK provides quite feature rich and performant components. But for your application, you may not need all the features that we provide and there is a room for you to add some additional optimizations. Here we have jotted down the list of things, you should take a look at - to see if you can push the performance a little further:
+React Native Chat SDK provides feature rich and performant components. But for your application, you may not need all the features that we provide and there is a room for you to add some additional optimizations. Here we have jotted down the list of things, you should take a look at - to see if you can push the performance a little further:
 
 ## Markdown
 
-By default our message components have built in support for rendering markdown. But markdown can also comes with little performance hit, because of all the parsing that happens underneath. So if you don't need a support for markdown you can just turn it off as following:
+By default our message components have built in support for rendering markdown. But markdown also comes with a little performance hit, because of all the parsing that happens underneath. So if you don't need support for markdown you can just turn it off:
 
 ```js
 const TextComponent = ({ message }) => <Text>{message.text}</Text>;
@@ -21,10 +21,11 @@ const TextComponent = ({ message }) => <Text>{message.text}</Text>;
 
 - **Android specific**
 
-  For Android, we are using this separate package (built in-house) - [flat-list-mvcp](https://github.com/GetStream/flat-list-mvcp#maintainvisiblecontentposition-prop-support-for-android-react-native), to enable bidirectional scroll on FlatList (within `MessageList` component only). Bidirectional scroll was introduced to support quoted message feature.
-  Although it works fine, its still an additional wrapper around FlatList. And it comes with some small performance hit. So you if you are not using following features in your chat application, you can simply switch to using FlatList from react-native directly
+  For Android, we are using a separate package (built in-house) - [flat-list-mvcp](https://github.com/GetStream/flat-list-mvcp#maintainvisiblecontentposition-prop-support-for-android-react-native), to enable bidirectional scrolling on the FlatList component (within the `MessageList` component only). Bidirectional scrolling was introduced to support the quoted message feature.
+  Although it works fine, it's still an additional wrapper around FlatList. And therefore comes with a small performance hit. So if you are not using the following features in your chat application, you can simply switch to using FlatList from react-native directly
 
   - Quoted message - Please check our docs on how to enable/disable certain message action [here](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#how-to-customize-message-actions)
+  
   - `initialScrollToFirstUnreadMessage` prop on Channel component.
 
   ```js
@@ -41,12 +42,12 @@ const TextComponent = ({ message }) => <Text>{message.text}</Text>;
 
 - **additionalFlatListProps**
 
-  Its possible to provide additional props to underlying FlatList of ChannelList or Channel, via prop `additionalFlatListProps`. In this case please follow recommended guidelines by react-native - https://reactnative.dev/docs/optimizing-flatlist-configuration#avoid-anonymous-function-on-renderitem
+  It's possible to provide additional props to the underlying FlatList of ChannelList or Channel, via the prop `additionalFlatListProps`. In this case please follow the recommended guidelines from react-native - https://reactnative.dev/docs/optimizing-flatlist-configuration#avoid-anonymous-function-on-renderitem
 
 
 ## Props
 
-Components in this SDK are highly customizable, through props. Whenever you add a prop, please follow following guidelines:
+Components in this SDK are highly customizable through props. Whenever you add a prop, please follow the following guidelines:
 
 - Avoid anonymous functions
 
@@ -72,7 +73,7 @@ const CustomMessageStatus = () => {/** Some rendering logic */};
  >
 ```
 
-- Memoize the js objects/arrays, before you passing it to chat components. This helps us in avoiding un-necessary rerenders within component hierarchy.
+- Memoize the js objects/arrays, before passing them into chat components. This helps us in avoiding un-necessary re-renders within the component hierarchy.
 
 ```js
 
@@ -113,17 +114,17 @@ Same applies for all other props:
 
 ## Livestream applications
 
-Livestream applications usually have to deal with most traffic, in terms of incoming messages. In such cases, its strongly adviced to turn off following features from dashboard:
+Livestream applications usually have to deal with significant traffic in terms of incoming messages. In such cases, it's strongly advised to turn off the following features from the dashboard:
 
 - read receipts (read event)
 - typing indicators (typing events)
 - presence indicators (connect events)
 
-On dashboard, you can simply toggle off events related to these features, as shown in following screenshot:
+On the dashboard, you can simply toggle off events related to these features, as shown in following screenshot:
 
 ![Screenshot 2021-03-25 at 12 53 20](https://user-images.githubusercontent.com/11586388/112468911-1e0a3500-8d69-11eb-9b09-4d336a13c363.png)
 
 ## Best practices
 
-Also we have a best practices guide for general Stream chat applications, please give it a read:
+We also have a best practices guide for general Stream Chat applications, please give it a read:
 https://getstream.io/chat/docs/javascript/application_region/?language=javascript
