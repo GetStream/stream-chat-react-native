@@ -143,41 +143,25 @@ const queryMembers = async <
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
 ): Promise<void> => {
-  await queryMembersDebounced(channel, query, onReady);
+  if (typeof query === 'string') {
+    const response = (await ((channel as unknown) as Channel).queryMembers({
+      name: { $autocomplete: query },
+    })) as ChannelMemberAPIResponse<Us>;
+
+    const users: SuggestionUser<Us>[] = [];
+    response.members.forEach(
+      (member) => isUserResponse(member.user) && users.push(member.user),
+    );
+    if (onReady && users) {
+      onReady(users);
+    }
+  }
 };
 
-const queryMembersDebounced = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser<Us>['name'],
-  onReady?: (users: SuggestionUser<Us>[]) => void,
-): DebouncedFunc<() => Promise<void>> =>
-  debounce(
-    async () => {
-      if (typeof query === 'string') {
-        const response = (await ((channel as unknown) as Channel).queryMembers({
-          name: { $autocomplete: query },
-        })) as ChannelMemberAPIResponse<Us>;
-
-        const users: SuggestionUser<Us>[] = [];
-        response.members.forEach(
-          (member) => isUserResponse(member.user) && users.push(member.user),
-        );
-        if (onReady && users) {
-          onReady(users);
-        }
-      }
-    },
-    200,
-    { leading: false, trailing: true },
-  );
+export const queryMembersDebounced = debounce(queryMembers, 200, {
+  leading: false,
+  trailing: true,
+});
 
 export const isCommandTrigger = (trigger: Trigger): trigger is '/' =>
   trigger === '/';
@@ -237,7 +221,7 @@ export type TriggerSettings<
         data: SuggestionUser<Us>[],
         q: SuggestionUser<Us>['name'],
       ) => void,
-    ) => SuggestionUser<Us>[] | Promise<void>;
+    ) => SuggestionUser<Us>[] | Promise<void> | void;
     output: (
       entity: SuggestionUser<Us>,
     ) => {
@@ -247,6 +231,20 @@ export type TriggerSettings<
     };
   };
 };
+
+export type QueryMembersFunction<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = (
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  query: SuggestionUser<Us>['name'],
+  onReady?: (users: SuggestionUser<Us>[]) => void,
+) => Promise<void>;
 
 export type ACITriggerSettingsParams<
   At extends UnknownType = DefaultAttachmentType,
@@ -407,7 +405,9 @@ export const ACITriggerSettings = <
         return data;
       }
 
-      return queryMembers(channel, query, (data) => {
+      return (queryMembersDebounced as DebouncedFunc<
+        QueryMembersFunction<At, Ch, Co, Ev, Me, Re, Us>
+      >)(channel, query, (data) => {
         if (onReady) {
           onReady(data, query);
         }
