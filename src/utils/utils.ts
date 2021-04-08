@@ -232,6 +232,19 @@ export type TriggerSettings<
   };
 };
 
+export type ACITriggerSettingsParams<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
+};
+
 export type QueryMembersFunction<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -245,19 +258,6 @@ export type QueryMembersFunction<
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
 ) => Promise<void>;
-
-export type ACITriggerSettingsParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
-};
 
 /**
  * ACI = AutoCompleteInput
