@@ -64,6 +64,7 @@ export type MessageTextContainerPropsWithContext<
     'markdownRules' | 'MessageText'
   > & {
     markdownStyles?: MarkdownStyle;
+    messageOverlay?: boolean;
     styles?: Partial<{
       textContainer: StyleProp<ViewStyle>;
     }>;
@@ -86,6 +87,7 @@ const MessageTextContainerWithContext = <
     markdownRules,
     markdownStyles: markdownStylesProp = {},
     message,
+    messageOverlay,
     MessageText,
     onLongPress,
     onlyEmojis,
@@ -125,6 +127,7 @@ const MessageTextContainerWithContext = <
             ...(onlyEmojis ? onlyEmojiMarkdown : {}),
           },
           message,
+          messageOverlay,
           onLongPress,
           onlyEmojis,
           onPress,

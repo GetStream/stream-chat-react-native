@@ -544,6 +544,7 @@ const MessageOverlayWithContext = <
                                         >
                                           key={`message_text_container_${messageContentOrderIndex}`}
                                           message={message}
+                                          messageOverlay
                                           onlyEmojis={onlyEmojis}
                                         />
                                       );

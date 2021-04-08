@@ -79,6 +79,7 @@ export type RenderTextParams<
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
+  messageOverlay?: boolean;
   onLink?: (url: string) => Promise<void>;
   onlyEmojis?: boolean;
 };
@@ -99,6 +100,7 @@ export const renderText = <
     markdownRules,
     markdownStyles,
     message,
+    messageOverlay,
     onLink: onLinkParams,
     onLongPress: propOnLongPress,
     onlyEmojis,
@@ -252,7 +254,9 @@ export const renderText = <
 
   return (
     <Markdown
-      key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}`}
+      key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}-${
+        messageOverlay ? JSON.stringify(markdownStyles) : undefined
+      }`}
       onLink={onLink}
       rules={{
         ...customRules,
