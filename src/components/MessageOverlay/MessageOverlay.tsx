@@ -575,6 +575,9 @@ const MessageOverlayWithContext = <
                                 }),
                               )}
                               showScreen={showScreen}
+                              supportedReactions={
+                                messagesContext?.supportedReactions
+                              }
                               title={messageReactionTitle}
                             />
                           ) : null}
