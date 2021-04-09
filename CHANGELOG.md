@@ -1,5 +1,19 @@
 # Changelog
 
+##  [3.3.1] (2021-04-09)
+
+- Fixed `supportedReactions` prop support on `OverlayReactions` [#594](https://github.com/GetStream/stream-chat-react-native/pull/594/files)
+- Fixed mentions autocomplete functionality for channels with > 100 members [e8c93d3](https://github.com/GetStream/stream-chat-react-native/commit/e8c93d39825ecf7e3fb01dc6da8a1096cef50bf3)
+- Fixed theming issue on overlay for sent message (or my message) [7f11364](https://github.com/GetStream/stream-chat-react-native/commit/7f113649975620391dca1ff447e70ae89c08b5bb)
+- Exporting following components and hooks from SDK
+  - ChannelListLoadingIndicator
+  - ChannelPreviewMessage
+  - ChannelPreviewStatus
+  - ChannelPreviewTitle
+  - ChannelPreviewUnreadCount
+  - InputButtons
+  - useAppStateListener
+
 ##  [3.3.0] (2021-04-07)
 
 ### New Features 🎉
