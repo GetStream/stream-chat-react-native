@@ -577,6 +577,7 @@ const areEqual = <
   nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    additionalTextInputProps: prevAdditionalTextInputProps,
     asyncUploads: prevAsyncUploads,
     disabled: prevDisabled,
     editing: prevEditing,
@@ -594,6 +595,7 @@ const areEqual = <
     threadList: prevThreadList,
   } = prevProps;
   const {
+    additionalTextInputProps: nextAdditionalTextInputProps,
     asyncUploads: nextAsyncUploads,
     disabled: nextDisabled,
     editing: nextEditing,
@@ -613,6 +615,10 @@ const areEqual = <
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
+
+  const additionalTextInputPropsEven =
+    prevAdditionalTextInputProps === nextAdditionalTextInputProps;
+  if (!additionalTextInputPropsEven) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
