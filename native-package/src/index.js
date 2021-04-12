@@ -73,7 +73,7 @@ registerNativeHandlers({
               title: 'Photos Access',
             },
           );
-          if (granted !== PermissionsAndroid.PERMISSIONS.GRANTED) {
+          if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
             throw new Error('getPhotos Error');
           }
         }
@@ -175,22 +175,22 @@ registerNativeHandlers({
         activityItemSources:
           Platform.OS === 'ios'
             ? [
-              {
-                item: {
-                  default: {
+                {
+                  item: {
+                    default: {
+                      content: url,
+                      type: 'url',
+                    },
+                  },
+                  linkMetadata: {
+                    icon: url,
+                  },
+                  placeholderItem: {
                     content: url,
                     type: 'url',
                   },
                 },
-                linkMetadata: {
-                  icon: url,
-                },
-                placeholderItem: {
-                  content: url,
-                  type: 'url',
-                },
-              },
-            ]
+              ]
             : undefined,
         excludedActivityTypes: [],
         failOnCancel: false,
