@@ -1,5 +1,10 @@
 # Changelog
 
+##  [3.3.2] (2021-04-13)
+
+- Allow re-rerendering of MessageInput component, on changes to `additionalTextInputProps` [1b95a64](https://github.com/GetStream/stream-chat-react-native/commit/1b95a64f15642829d2b4296615c2d8572065f213)
+- Fixed Android camera permissions check [5b77516](https://github.com/GetStream/stream-chat-react-native/commit/5b775160b814c9d69fdb5f9879662c76064581af)
+
 ##  [3.3.1] (2021-04-09)
 
 - Fixed `supportedReactions` prop support on `OverlayReactions` [#594](https://github.com/GetStream/stream-chat-react-native/pull/594/files)
