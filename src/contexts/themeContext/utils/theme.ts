@@ -465,6 +465,7 @@ export type Theme = {
       radius: number;
       reaction: ViewStyle;
       reactionList: ViewStyle;
+      reactionSize: number;
     };
   };
   reply: {
@@ -936,6 +937,7 @@ export const defaultTheme: Theme = {
       radius: 2.5,
       reaction: {},
       reactionList: {},
+      reactionSize: 24,
     },
   },
   reply: {
