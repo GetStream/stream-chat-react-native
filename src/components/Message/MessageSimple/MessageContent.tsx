@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import merge from 'lodash/merge';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -107,6 +106,7 @@ export type MessageContentPropsWithContext<
     | 'Gallery'
     | 'MessageFooter'
     | 'MessageHeader'
+    | 'MessageDeleted'
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
@@ -146,6 +146,7 @@ const MessageContentWithContext = <
     members,
     message,
     messageContentOrder,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -169,7 +170,6 @@ const MessageContentWithContext = <
       colors: {
         accent_red,
         blue_alice,
-        grey,
         grey_gainsboro,
         grey_whisper,
         transparent,
@@ -178,9 +178,6 @@ const MessageContentWithContext = <
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
           containerInner,
-          deletedContainer,
-          deletedContainerInner,
-          deletedText,
           errorContainer,
           errorIcon,
           errorIconContainer,
@@ -227,50 +224,12 @@ const MessageContentWithContext = <
 
   if (message.deleted_at) {
     return (
-      <View
+      <MessageDeleted
+        getDateText={getDateText}
+        groupStyle={groupStyle}
+        noBorder={noBorder}
         onLayout={onLayout}
-        style={[
-          alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
-          deletedContainer,
-        ]}
-      >
-        <View
-          style={[
-            styles.containerInner,
-            {
-              backgroundColor: grey_whisper,
-              borderBottomLeftRadius:
-                groupStyle === 'left_bottom' || groupStyle === 'left_single'
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                groupStyle === 'right_bottom' || groupStyle === 'right_single'
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: grey_whisper,
-            },
-            noBorder ? { borderWidth: 0 } : {},
-            deletedContainerInner,
-          ]}
-          testID='message-content-wrapper'
-        >
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-            markdownStyles={merge({ em: { color: grey } }, deletedText)}
-            message={{ ...message, text: '_Message deleted_' }}
-          />
-        </View>
-        <MessageFooter
-          alignment={alignment}
-          formattedDate={getDateText(formatDate)}
-          isDeleted
-          members={members}
-          message={message}
-          MessageStatus={MessageStatus}
-          otherAttachments={otherAttachments}
-          showMessageStatus={showMessageStatus}
-          testID='message-footer'
-        />
-      </View>
+      />
     );
   }
 
@@ -621,6 +580,7 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -647,6 +607,7 @@ export const MessageContent = <
         members,
         message,
         messageContentOrder,
+        MessageDeleted,
         MessageFooter,
         MessageHeader,
         MessageReplies,

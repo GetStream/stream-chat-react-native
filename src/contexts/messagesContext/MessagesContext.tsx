@@ -29,6 +29,7 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
+import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
@@ -157,6 +158,13 @@ export type MessagesContextValue<
   >;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
+  /**
+   * UI component for MessageDeleted
+   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageDeleted.tsx)
+   */
+  MessageDeleted: React.ComponentType<
+    MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom message footer component
    */

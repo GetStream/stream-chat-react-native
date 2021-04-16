@@ -52,6 +52,7 @@ import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
+import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
@@ -263,6 +264,7 @@ export type ChannelPropsWithContext<
       | 'Message'
       | 'messageActions'
       | 'MessageAvatar'
+      | 'MessageDeleted'
       | 'MessageContent'
       | 'messageContentOrder'
       | 'MessageFooter'
@@ -478,6 +480,7 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
+    MessageDeleted = MessageDeletedDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
@@ -1575,6 +1578,7 @@ const ChannelWithContext = <
     MessageAvatar,
     MessageContent,
     messageContentOrder,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageList,
