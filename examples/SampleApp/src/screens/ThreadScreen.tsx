@@ -6,11 +6,15 @@ import {
   Thread,
   useAttachmentPickerContext,
   useTheme,
+  ThreadContextValue,
+  useTypingString,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
+
+import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import type {
   LocalAttachmentType,
@@ -34,6 +38,31 @@ type ThreadScreenRouteProp = RouteProp<StackNavigatorParamList, 'ThreadScreen'>;
 type ThreadScreenProps = {
   route: ThreadScreenRouteProp;
 };
+
+export type ThreadHeaderProps = {
+  thread: ThreadContextValue<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >['thread'];
+};
+
+const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
+  const typing = useTypingString();
+
+  return (
+    <ScreenHeader
+      inSafeArea
+      titleText='Thread Reply'
+      subtitleText={typing ? typing : `with ${thread?.user?.name}`}
+    />
+  );
+};
+
 export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   route: {
     params: { channel, thread },
@@ -45,6 +74,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     },
   } = useTheme();
   const { setSelectedImages } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setSelectedImages([]);
+    return () => setSelectedImages([]);
+  }, []);
 
   useEffect(() => {
     setSelectedImages([]);
@@ -68,11 +102,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         thread={thread}
       >
         <View style={styles.container}>
-          <ScreenHeader
-            inSafeArea
-            subtitleText={`with ${thread?.user?.name}`}
-            titleText='Thread Reply'
-          />
+          <ThreadHeader thread={thread} />
           <Thread<
             LocalAttachmentType,
             LocalChannelType,
