@@ -101,8 +101,9 @@ export const ConfirmationBottomSheet: React.FC = () => {
           },
         ]}
       >
+        {/* using onPressOut instead of onPress works with touchables inside absolutely positioned parents and gives the same opacity feedback  */}
         <TouchableOpacity
-          onPress={() => {
+          onPressOut={() => {
             setOverlay('none');
             reset();
           }}
@@ -110,7 +111,10 @@ export const ConfirmationBottomSheet: React.FC = () => {
         >
           <Text style={{ color: grey }}>{cancelText}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight}>
+        <TouchableOpacity
+          onPressOut={onConfirm}
+          style={styles.actionButtonRight}
+        >
           <Text style={{ color: accent_red }}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
