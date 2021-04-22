@@ -26,7 +26,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { removeReservedFields } from './utils/removeReservedFields';
+import { removeReservedFields } from '../../utils/removeMessageReservedFields';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -655,13 +655,8 @@ const MessageWithContext = <
     }
   };
 
-  const handleResendMessage = () => {
-    const messageWithoutReservedFields = removeReservedFields(message);
-
-    return retrySendMessage(
-      messageWithoutReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
-  };
+  const handleResendMessage = () =>
+    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const handleReplyMessage = () => {
     setQuotedMessageState(message);

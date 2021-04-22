@@ -126,6 +126,7 @@ import {
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
 import { generateRandomId, ReactionData } from '../../utils/utils';
+import { removeReservedFields } from '../../utils/removeMessageReservedFields';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 
@@ -1031,6 +1032,22 @@ const ChannelWithContext = <
     }
   };
 
+  const replaceMessage = (
+    oldMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    newMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+  ) => {
+    if (channel) {
+      channel.state.removeMessage(oldMessage);
+      channel.state.addMessageSorted(newMessage, true);
+      if (thread && newMessage.parent_id) {
+        const threadMessages =
+          channel.state.threads[newMessage.parent_id] || [];
+        setThreadMessages(threadMessages);
+      }
+      setMessages(channel.state.messages);
+    }
+  };
+
   const createMessagePreview = ({
     attachments,
     mentioned_users,
@@ -1084,6 +1101,7 @@ const ChannelWithContext = <
 
   const sendMessageRequest = async (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    retrying?: boolean,
   ) => {
     const {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1114,7 +1132,7 @@ const ChannelWithContext = <
 
     const messageData = {
       attachments,
-      id,
+      id: retrying ? undefined : id,
       mentioned_users:
         mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
       parent_id,
@@ -1143,7 +1161,11 @@ const ChannelWithContext = <
 
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
-        updateMessage(messageResponse.message);
+        if (retrying) {
+          replaceMessage(message, messageResponse.message);
+        } else {
+          updateMessage(messageResponse.message);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -1191,9 +1213,16 @@ const ChannelWithContext = <
     Re,
     Us
   >['retrySendMessage'] = async (message) => {
-    message = { ...message, status: 'sending' };
-    updateMessage(message);
-    await sendMessageRequest(message);
+    const messageWithoutReservedFields = removeReservedFields(message);
+
+    const statusPendingMessage = {
+      ...messageWithoutReservedFields,
+      id: message.id,
+      status: 'sending',
+    };
+
+    updateMessage(statusPendingMessage);
+    await sendMessageRequest(statusPendingMessage, true);
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
