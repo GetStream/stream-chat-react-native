@@ -1,19 +1,21 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { filterTypingUsers } from './utils/filterTypingUsers';
+
 import {
   ChatContextValue,
   useChatContext,
 } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
-  TypingContextValue,
-  useTypingContext,
-} from '../../contexts/typingContext/TypingContext';
-import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
+import {
+  TypingContextValue,
+  useTypingContext,
+} from '../../contexts/typingContext/TypingContext';
 
 import type {
   DefaultAttachmentType,
@@ -25,8 +27,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-import { filterTypingUsers } from './utils/filterTypingUsers';
 
 const styles = StyleSheet.create({
   container: {

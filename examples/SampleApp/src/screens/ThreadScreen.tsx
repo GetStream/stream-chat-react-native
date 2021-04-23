@@ -14,8 +14,6 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
 
-import type { Channel as StreamChatChannel } from 'stream-chat';
-
 import type {
   LocalAttachmentType,
   LocalChannelType,
