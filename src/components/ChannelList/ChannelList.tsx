@@ -13,14 +13,14 @@ import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
 import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
+import { useChannelVisible } from './hooks/listeners/useChannelVisible';
 import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
-import { useChannelVisible } from './hooks/listeners/useChannelVisible';
+import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
+import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';

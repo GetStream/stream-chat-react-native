@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import uniqBy from 'lodash/uniqBy';
-import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { getChannel } from '../../utils';
+
+import type { Channel, Event } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
