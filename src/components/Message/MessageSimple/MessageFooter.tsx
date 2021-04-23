@@ -1,17 +1,19 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
+
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
-import type { Attachment, ChannelMemberResponse } from 'stream-chat';
-
-import type { MessageStatusPropsWithContext } from './MessageStatus';
-
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
-import type { Alignment } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -23,7 +25,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-export type MessageFooterProps<
+type MessageFooterContextProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -31,24 +33,38 @@ export type MessageFooterProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  alignment: Alignment;
-  formattedDate: string | Date;
-  members: {
-    [key: string]: ChannelMemberResponse<Us>;
-  };
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  MessageStatus: React.ComponentType<
-    Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'alignment'
+  | 'members'
+  | 'message'
+  | 'otherAttachments'
+  | 'showMessageStatus'
+  | 'lastGroupMessage'
+> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'MessageStatus' | 'MessageFooter'
   >;
-  otherAttachments: Attachment<At>[];
+
+type MessageFooterComponentProps = {
+  formattedDate: string | Date;
   testID: string;
   isDeleted?: boolean;
-  lastGroupMessage?: boolean;
-  showMessageStatus?: boolean;
 };
 
-export const MessageFooter = <
+type MessageFooterPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = MessageFooterComponentProps &
+  MessageFooterContextProps<At, Ch, Co, Ev, Me, Re, Us>;
+
+const MessageFooterWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -57,7 +73,7 @@ export const MessageFooter = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     alignment,
@@ -152,5 +168,119 @@ export const MessageFooter = <
         {formattedDate}
       </Text>
     </View>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    alignment: prevAlignment,
+    formattedDate: prevFormattedDate,
+    members: prevMembers,
+    message: prevMessage,
+    otherAttachments: prevOtherAttachments,
+    showMessageStatus: prevShowMessageStatus,
+  } = prevProps;
+  const {
+    alignment: nextAlignment,
+    formattedDate: nextFormattedDate,
+    members: nextMembers,
+    message: nextMessage,
+    otherAttachments: nextOtherAttachments,
+    showMessageStatus: nextShowMessageStatus,
+  } = nextProps;
+
+  const alignmentEqual = prevAlignment === nextAlignment;
+  if (!alignmentEqual) return false;
+
+  const membersEqual = prevMembers === nextMembers;
+  if (!membersEqual) return false;
+
+  const messageEqual = prevMessage === nextMessage;
+  if (!messageEqual) return false;
+
+  const otherAttachmentsEqual = prevOtherAttachments === nextOtherAttachments;
+  if (!otherAttachmentsEqual) return false;
+
+  const showMessageStatusEqual =
+    prevShowMessageStatus === nextShowMessageStatus;
+  if (!showMessageStatusEqual) return false;
+
+  const formattedDateEqual = prevFormattedDate === nextFormattedDate;
+  if (!formattedDateEqual) return false;
+
+  return true;
+};
+
+const MemoizedMessageFooter = React.memo(
+  MessageFooterWithContext,
+  areEqual,
+) as typeof MessageFooterWithContext;
+
+export type MessageFooterProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = MessageFooterComponentProps &
+  Partial<MessageFooterContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+
+export const MessageFooter = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    alignment,
+    lastGroupMessage,
+    members,
+    message,
+    otherAttachments,
+    showMessageStatus,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const { MessageFooter, MessageStatus } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
+  return (
+    <MemoizedMessageFooter
+      {...{
+        alignment,
+        lastGroupMessage,
+        members,
+        message,
+        MessageFooter,
+        MessageStatus,
+        otherAttachments,
+        showMessageStatus,
+      }}
+      {...props}
+    />
   );
 };

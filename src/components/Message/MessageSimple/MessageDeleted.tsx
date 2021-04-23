@@ -13,7 +13,6 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 
 import type {
   DefaultAttachmentType,
@@ -51,17 +50,12 @@ type MessageDeletedContextProps<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'members' | 'message' | 'otherAttachments' | 'showMessageStatus'
+  'alignment' | 'message'
 > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'formatDate' | 'MessageStatus' | 'MessageFooter'
-  >;
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'>;
 
 type MessageDeletedComponentProps = {
-  getDateText: (
-    formatter?: ((date: TDateTimeParserInput) => string) | undefined,
-  ) => string | Date;
+  formattedDate: string | Date;
   groupStyle: string;
   noBorder: boolean;
   onLayout: (event: LayoutChangeEvent) => void;
@@ -91,26 +85,17 @@ const MessageDeletedWithContext = <
 ) => {
   const {
     alignment,
-    formatDate,
-    getDateText,
+    formattedDate,
     groupStyle,
-    members,
     message,
     MessageFooter,
-    MessageStatus,
     noBorder,
     onLayout,
-    otherAttachments,
-    showMessageStatus,
   } = props;
 
   const {
     theme: {
-      colors: {
-        grey,
-
-        grey_whisper,
-      },
+      colors: { grey, grey_whisper },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS },
@@ -156,14 +141,8 @@ const MessageDeletedWithContext = <
         />
       </View>
       <MessageFooter
-        alignment={alignment}
-        formattedDate={getDateText(formatDate)}
+        formattedDate={formattedDate}
         isDeleted
-        members={members}
-        message={message}
-        MessageStatus={MessageStatus}
-        otherAttachments={otherAttachments}
-        showMessageStatus={showMessageStatus}
         testID='message-footer'
       />
     </View>
@@ -184,39 +163,23 @@ const areEqual = <
 ) => {
   const {
     alignment: prevAlignment,
-    formatDate: prevFormatDate,
-    members: prevMembers,
+    formattedDate: prevFormattedDate,
     message: prevMessage,
-    otherAttachments: prevOtherAttachments,
-    showMessageStatus: prevShowMessageStatus,
   } = prevProps;
   const {
     alignment: nextAlignment,
-    formatDate: nextFormatDate,
-    members: nextMembers,
+    formattedDate: nextFormattedDate,
     message: nextMessage,
-    otherAttachments: nextOtherAttachments,
-    showMessageStatus: nextShowMessageStatus,
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
 
-  const membersEqual = prevMembers === nextMembers;
-  if (!membersEqual) return false;
-
   const messageEqual = prevMessage === nextMessage;
   if (!messageEqual) return false;
 
-  const otherAttachmentsEqual = prevOtherAttachments === nextOtherAttachments;
-  if (!otherAttachmentsEqual) return false;
-
-  const showMessageStatusEqual =
-    prevShowMessageStatus === nextShowMessageStatus;
-  if (!showMessageStatusEqual) return false;
-
-  const formatDateEqual = prevFormatDate === nextFormatDate;
-  if (!formatDateEqual) return false;
+  const formattedDateEqual = prevFormattedDate === nextFormattedDate;
+  if (!formattedDateEqual) return false;
 
   return true;
 };
@@ -248,15 +211,7 @@ export const MessageDeleted = <
 >(
   props: MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    members,
-    message,
-    otherAttachments,
-    showMessageStatus,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const { formatDate, MessageFooter, MessageStatus } = useMessagesContext<
+  const { alignment, message } = useMessageContext<
     At,
     Ch,
     Co,
@@ -266,17 +221,14 @@ export const MessageDeleted = <
     Us
   >();
 
+  const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+
   return (
     <MemoizedMessageDeleted
       {...{
         alignment,
-        formatDate,
-        members,
         message,
         MessageFooter,
-        MessageStatus,
-        otherAttachments,
-        showMessageStatus,
       }}
       {...props}
     />

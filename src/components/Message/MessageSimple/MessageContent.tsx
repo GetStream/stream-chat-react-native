@@ -225,7 +225,7 @@ const MessageContentWithContext = <
   if (message.deleted_at) {
     return (
       <MessageDeleted
-        getDateText={getDateText}
+        formattedDate={getDateText(formatDate)}
         groupStyle={groupStyle}
         noBorder={noBorder}
         onLayout={onLayout}
@@ -391,14 +391,8 @@ const MessageContentWithContext = <
         />
       )}
       <MessageFooter
-        alignment={alignment}
         formattedDate={getDateText(formatDate)}
-        lastGroupMessage={lastGroupMessage}
-        members={members}
-        message={message}
-        MessageStatus={MessageStatus}
-        otherAttachments={otherAttachments}
-        showMessageStatus={showMessageStatus}
+        isDeleted={!!message.deleted_at}
         testID='message-footer'
       />
     </TouchableOpacity>
