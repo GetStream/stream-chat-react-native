@@ -324,11 +324,6 @@ export const ChannelList = <
     setChannels,
   });
 
-  useChannelVisible({
-    onChannelVisible,
-    setChannels,
-  });
-
   useChannelTruncated({
     onChannelTruncated,
     refreshList,
@@ -338,6 +333,11 @@ export const ChannelList = <
 
   useChannelUpdated({
     onChannelUpdated,
+    setChannels,
+  });
+
+  useChannelVisible({
+    onChannelVisible,
     setChannels,
   });
 
