@@ -248,17 +248,17 @@ const MessageInputWithContext = <
   } = useAttachmentPickerContext();
 
   /**
-   * Mounting and un-mounting logic are un-related in following useEffect.
    * While mounting we want to pass maxNumberOfFiles (which is prop on Channel component)
    * to AttachmentPicker (on OverlayProvider)
-   *
-   * While un-mounting, we want to close the picker e.g., while navigating away.
    */
   useEffect(() => {
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
-
-    return closeAttachmentPicker;
   }, []);
+
+  /**
+   * While un-mounting, we want to close the picker e.g., while navigating away.
+   */
+  useEffect(() => closeAttachmentPicker, [closeAttachmentPicker]);
 
   const selectedImagesLength = selectedImages.length;
   const imageUploadsLength = imageUploads.length;
