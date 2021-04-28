@@ -577,9 +577,7 @@ export const MessageInputProvider = <
   };
 
   const closeAttachmentPicker = () => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
-    }
+    setSelectedPicker(undefined);
     closePicker();
   };
 
