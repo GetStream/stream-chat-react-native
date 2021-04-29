@@ -1510,6 +1510,7 @@ const ChannelWithContext = <
     sendImageAsync,
     sendMessage,
     setInputRef,
+    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
   });
