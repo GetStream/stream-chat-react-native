@@ -203,13 +203,22 @@ const areEqual = <
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
 
-  const membersEqual = prevMembers === nextMembers;
+  const membersEqual =
+    Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
 
-  const messageEqual = prevMessage === nextMessage;
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.reply_count === nextMessage.reply_count &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
-  const otherAttachmentsEqual = prevOtherAttachments === nextOtherAttachments;
+  const otherAttachmentsEqual =
+    prevOtherAttachments.length === nextOtherAttachments.length &&
+    prevOtherAttachments?.[0]?.actions?.length ===
+      nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
 
   const showMessageStatusEqual =
