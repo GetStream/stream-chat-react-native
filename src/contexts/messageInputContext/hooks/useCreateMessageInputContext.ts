@@ -202,7 +202,6 @@ export const useCreateMessageInputContext = <
       uploadsEnabled,
     }),
     [
-      sendThreadMessageInChannel,
       editingExists,
       fileUploadsValue,
       giphyActive,
@@ -211,6 +210,7 @@ export const useCreateMessageInputContext = <
       mentionedUsersLength,
       quotedMessageId,
       selectedPicker,
+      sendThreadMessageInChannel,
       showMoreOptions,
       text,
       threadId,

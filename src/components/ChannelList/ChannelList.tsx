@@ -13,13 +13,14 @@ import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
 import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
+import { useChannelVisible } from './hooks/listeners/useChannelVisible';
 import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
+import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
+import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
@@ -175,6 +176,20 @@ export type ChannelListProps<
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
+   * Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
+   *
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.visible` event
+   *
+   * @overrideType Function
+   * */
+  onChannelVisible?: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
+    >,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
+  /**
    * Override the default listener/handler for event `notification.message_new`
    * This event is received on channel, which is not being watched.
    *
@@ -256,6 +271,7 @@ export const ChannelList = <
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
+    onChannelVisible,
     onChannelTruncated,
     onChannelUpdated,
     onMessageNew,
@@ -317,6 +333,11 @@ export const ChannelList = <
 
   useChannelUpdated({
     onChannelUpdated,
+    setChannels,
+  });
+
+  useChannelVisible({
+    onChannelVisible,
     setChannels,
   });
 

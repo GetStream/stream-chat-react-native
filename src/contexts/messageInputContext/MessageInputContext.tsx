@@ -580,10 +580,8 @@ export const MessageInputProvider = <
   };
 
   const closeAttachmentPicker = () => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
-      closePicker();
-    }
+    setSelectedPicker(undefined);
+    closePicker();
   };
 
   const toggleAttachmentPicker = () => {

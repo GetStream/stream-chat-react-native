@@ -120,9 +120,17 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
   const { setBlurType, setOverlay } = useOverlayContext();
 
   const parsedDate = tDateTimeParser(photo?.created_at);
+
+  /**
+   * .calendar is required on moment types, but in reality it
+   * is unavailable on first render. We therefore check if it
+   * is available and call it, otherwise we call .fromNow.
+   */
   const date =
     parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar()
+      ? parsedDate.calendar
+        ? parsedDate.calendar()
+        : parsedDate.fromNow()
       : parsedDate;
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
