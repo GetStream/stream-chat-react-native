@@ -4,10 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
   Thread,
+  ThreadContextValue,
   useAttachmentPickerContext,
   useTheme,
   useTypingString,
-  ThreadContextValue,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
