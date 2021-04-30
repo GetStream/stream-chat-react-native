@@ -78,11 +78,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     return () => setSelectedImages([]);
   }, []);
 
-  useEffect(() => {
-    setSelectedImages([]);
-    return () => setSelectedImages([]);
-  }, []);
-
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <Channel<
