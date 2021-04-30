@@ -6,8 +6,8 @@ import {
   Thread,
   useAttachmentPickerContext,
   useTheme,
-  ThreadContextValue,
   useTypingString,
+  ThreadContextValue,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
