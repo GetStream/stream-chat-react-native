@@ -1,6 +1,7 @@
 ---
-title: Hello Stream Chat
+id: hello_stream_chat
 sidebar_position: 2
+title: Hello Stream Chat
 ---
 
 import Tabs from '@theme/Tabs';
@@ -30,7 +31,8 @@ const client = StreamChat.getInstance('api_key');
 ```
 
 :::note
-Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.
+
+**Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.**
 <br />
 This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and retrieve it wherever you need it on your app to perform API calls.
 After calling it once, any following <code>getInstance</code> call will return the initial StreamChat instance.
@@ -42,6 +44,7 @@ Stream Chat is backward compatible. Users can continue using <code>new StreamCha
 ```typescript
 const client = new StreamChat('api_key');
 ```
+
 :::
 
 There are multiple ways to access the client throughout your application. You can store the client in a [`context`](https://reactjs.org/docs/context.html).
@@ -98,7 +101,9 @@ A channel must be initialized with either an `id` or a list of members for the c
 If you provide a list of members an `id` will be auto-generated on backend for the channel.
 
 :::note
+
 You can't add or remove members from channel created using a list of members.
+
 :::
 
 You can also add additional custom data to a channel.
@@ -148,7 +153,9 @@ await channel.create();
 ```
 
 :::note
+
 For on the fly channel creation you would instead call the `watch` function on the channel as this both creates the channel and subscribes the client to channel updates.
+
 :::
 
 ## Configuring UI Components
@@ -206,7 +213,7 @@ For additional information on the `Chat` component check the [Chat component doc
       <Chat client={client}>
         {/** App components */}
       </Chat>
-    </OverlayProvider>
+    </OverlayProvider>;
   ```
 
 </TabItem>
@@ -221,7 +228,7 @@ For additional information on the `Chat` component check the [Chat component doc
   export const Screen = () =>
     <Chat client={client}>
       {/** App components */}
-    </Chat>
+    </Chat>;
   ```
 
   ```tsx
@@ -231,7 +238,7 @@ For additional information on the `Chat` component check the [Chat component doc
   export const App = () =>
     <OverlayProvider topInset={0}>
       <Screen />
-    </OverlayProvider>
+    </OverlayProvider>;
   ```
 
 </TabItem>
@@ -260,7 +267,7 @@ export const App = () =>
     <Chat client={client}>
       <ChannelList />
     </Chat>
-  </OverlayProvider>
+  </OverlayProvider>;
 ```
 
 These three components in conjunction will provide a [`FlatList`](https://reactnative.dev/docs/flatlist) of all channels available to the connected user.
