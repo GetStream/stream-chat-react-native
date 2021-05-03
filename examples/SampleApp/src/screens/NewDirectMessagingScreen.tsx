@@ -27,7 +27,11 @@ import { AppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import type {
+  Channel as StreamChatChannel,
+  Message as StreamMessage,
+  SendMessageAPIResponse,
+} from 'stream-chat';
 
 import type {
   LocalAttachmentType,
@@ -222,8 +226,13 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
    *
    * 2. And then navigate to ChannelScreen
    */
-  const customSendMessage = async () => {
-    if (!currentChannel?.current) return;
+  const customSendMessage = async (
+    _: string,
+    message: StreamMessage,
+  ): Promise<SendMessageAPIResponse> => {
+    if (!currentChannel?.current) {
+      throw new Error('Missing current channel');
+    }
 
     if (isDraft.current) {
       currentChannel.current.initialized = false;
@@ -231,15 +240,18 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     }
 
     try {
-      await currentChannel.current.sendMessage({
-        text: messageInputText,
+      const response = await currentChannel.current.sendMessage({
+        text: message.text,
       });
 
       navigation.replace('ChannelScreen', {
         channelId: currentChannel.current.id,
       });
+
+      return response;
     } catch (e) {
       Alert.alert('Error sending a message');
+      throw e;
     }
   };
 
@@ -396,7 +408,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         onChangeText={setMessageInputText}
-        sendMessage={customSendMessage}
+        doSendMessageRequest={customSendMessage}
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
         {renderUserSearch({ inSafeArea: true })}
