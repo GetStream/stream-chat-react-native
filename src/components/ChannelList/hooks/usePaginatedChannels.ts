@@ -136,7 +136,7 @@ export const usePaginatedChannels = <
   const reloadList = () => queryChannels('reload');
 
   /**
-   * Equality check using stringified filters ensure that we don't make un-necessary queryChannels api calls
+   * Equality check using stringified filters/sort ensure that we don't make un-necessary queryChannels api calls
    * for the scenario:
    *
    * <ChannelList
@@ -151,10 +151,11 @@ export const usePaginatedChannels = <
    * in return will trigger useEffect. To avoid this, we can add a value check.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
+  const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
     reloadList();
-  }, [filterStr]);
+  }, [filterStr, sortStr]);
 
   return {
     channels,
