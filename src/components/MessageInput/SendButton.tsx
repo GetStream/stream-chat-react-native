@@ -48,9 +48,9 @@ const SendButtonWithContext = <
   const {
     disabled = false,
     giphyActive,
+    SendDisabled,
+    SendEnabled,
     sendMessage,
-    SendRight,
-    SendUp,
   } = props;
   const {
     theme: {
@@ -67,8 +67,8 @@ const SendButtonWithContext = <
       testID='send-button'
     >
       {giphyActive && <Search pathFill={accent_blue} />}
-      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
-      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
+      {!giphyActive && disabled && <SendDisabled pathFill={grey_gainsboro} />}
+      {!giphyActive && !disabled && <SendEnabled pathFill={accent_blue} />}
     </TouchableOpacity>
   );
 };

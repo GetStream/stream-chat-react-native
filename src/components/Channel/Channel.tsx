@@ -65,7 +65,7 @@ import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButton
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { SendRight } from '../../icons/SendRight';
-import { SendUp } from '../../icons/SendRight';
+import { SendUp } from '../../icons/SendUp';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
