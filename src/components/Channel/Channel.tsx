@@ -65,6 +65,9 @@ import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { Search as SearchDefault } from '../../icons/Search';
+import { SendRight } from '../../icons/SendRight';
+import { SendUp } from '../../icons/SendUp';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
@@ -508,8 +511,11 @@ const ChannelWithContext = <
     Reply = ReplyDefault,
     reply,
     retry,
+    Search = SearchDefault,
     selectReaction,
     SendButton = SendButtonDefault,
+    SendDisabled = SendRight,
+    SendEnabled = SendUp,
     sendImageAsync = false,
     setInputRef,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
@@ -1509,7 +1515,10 @@ const ChannelWithContext = <
     numberOfLines,
     onChangeText,
     quotedMessage,
+    Search,
     SendButton,
+    SendDisabled,
+    SendEnabled,
     sendImageAsync,
     sendMessage,
     setInputRef,
