@@ -69,7 +69,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { IconProps } from 'src/icons';
 
 export type FileUpload = {
   file: {
@@ -292,10 +291,8 @@ export type InputMessageInputContextValue<
   quotedMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component for send button search state.
-   *
-   * Accepts `IconProps`
    */
-  Search: React.ComponentType<IconProps>;
+  Search: React.ComponentType;
   /**
    * Custom UI component for send button.
    *
@@ -304,16 +301,12 @@ export type InputMessageInputContextValue<
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component for send button disabled state.
-   *
-   * Accepts `IconProps`
    */
-  SendDisabled: React.ComponentType<IconProps>;
+  SendDisabled: React.Component;
   /**
    * Custom UI component for send button enabled state.
-   *
-   * Accepts `IconProps`
    */
-  SendEnabled: React.ComponentType<IconProps>;
+  SendEnabled: React.Component;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   /**
