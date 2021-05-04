@@ -64,6 +64,7 @@ import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { Search as SearchDefault } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
@@ -396,6 +397,13 @@ const ChannelWithContext = <
   props: PropsWithChildren<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
+    theme: {
+      channel: { selectChannel },
+      colors: { accent_blue, black, grey_gainsboro },
+    },
+  } = useTheme();
+
+  const {
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
     animatedLongPress,
@@ -507,10 +515,11 @@ const ChannelWithContext = <
     Reply = ReplyDefault,
     reply,
     retry,
+    Search = SearchDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    SendDisabled = SendRight,
-    SendEnabled = SendUp,
+    SendDisabled = <SendRight pathFill={grey_gainsboro} />,
+    SendEnabled = <SendUp pathFill={accent_blue} />,
     sendImageAsync = false,
     setInputRef,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
@@ -525,13 +534,6 @@ const ChannelWithContext = <
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
   } = props;
-
-  const {
-    theme: {
-      channel: { selectChannel },
-      colors: { black },
-    },
-  } = useTheme();
 
   const [editing, setEditing] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
@@ -1510,6 +1512,7 @@ const ChannelWithContext = <
     numberOfLines,
     onChangeText,
     quotedMessage,
+    Search,
     SendButton,
     SendDisabled,
     SendEnabled,

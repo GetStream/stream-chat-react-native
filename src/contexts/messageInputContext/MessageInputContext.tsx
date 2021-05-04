@@ -291,12 +291,28 @@ export type InputMessageInputContextValue<
   numberOfLines: number;
   quotedMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
+   * Custom UI component for send button search state.
+   *
+   * Accepts `IconProps`
+   */
+  Search: React.ComponentType<IconProps>;
+  /**
    * Custom UI component for send button.
    *
    * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
    */
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component for send button disabled state.
+   *
+   * Accepts `IconProps`
+   */
   SendDisabled: React.ComponentType<IconProps>;
+  /**
+   * Custom UI component for send button enabled state.
+   *
+   * Accepts `IconProps`
+   */
   SendEnabled: React.ComponentType<IconProps>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
