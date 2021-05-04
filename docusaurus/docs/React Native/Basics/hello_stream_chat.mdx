@@ -30,7 +30,7 @@ import { StreamChat } from 'stream-chat';
 const client = StreamChat.getInstance('api_key');
 ```
 
-:::note
+:::caution
 
 **Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.**
 <br />
@@ -40,10 +40,14 @@ This will prevent you from accidentally creating multiple StreamChat instances, 
 <br /><br />
 
 Stream Chat is backward compatible. Users can continue using <code>new StreamChat()</code> if desired.
+<br />
 
 ```typescript
 const client = new StreamChat('api_key');
 ```
+
+Calling <code>new StreamChat()</code> repeatedly will create new copies of the client and in turn new WebSocket connections when <code>connectUser</code> is called.
+If you are using <code>new StreamChat()</code> you need to be vigilant about your use to ensure you are not creating multiple WebSocket connections unnecessarily. 
 
 :::
 

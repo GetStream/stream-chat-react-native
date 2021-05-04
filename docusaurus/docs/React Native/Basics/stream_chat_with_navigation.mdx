@@ -121,7 +121,7 @@ Part of the construction of the `AttachmentPicker` is a bottom-sheet provided by
 This bottom-sheet provides a grid of images in a scrollable list that can be lifted up to make selecting images easier.
 The placement of the `AttachmentPicker` is dependant on two values, the `bottomInset` and the `topInset`.
 
-### topInset
+### Top Inset
 
 `topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
 `topInset` can be set to 0 to cover the entire screen, or the [top safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control) if desired.
@@ -153,7 +153,7 @@ useEffect(() => {
 
 :::
 
-### bottomInset
+### Bottom Inset
 
 `bottomInset` is used to adjust the height of the `AttachmentPicker` menu to align properly with the bottom-sheet when open.
 This is the height between the bottom of the <!-- TODO: Change to new docs for links -->`MessageInput` container and the bottom of the screen.
@@ -207,3 +207,83 @@ export const App = () =>
 ### Resetting Selected Items
 
 ## Image Gallery
+
+The `ImageGallery` is populated by the <!-- TODO: Change to new docs for links -->`MessageList` component.
+`MessageList` utilizes information provided by both the `ThreadContext` and `threadList` prop to determine if the `ImageGallery` should be updated.
+If there is both a `thread` provided by the `ThreadContext` and the `threadList` prop is `true` on `MessageList`, or both values are falsy, the `ImageGallery` is updated appropriately.
+
+In practice this means that if you implement a screen for the main `Channel`, and another for `Thread` that is navigated to `onThreadSelect`, you need to indicate to the main `Channel` it should not update the `ImageGallery` while the `Thread` screen is present.
+To do this the main `Channel` component should be given the appropriate `thread` when the `Thread` screen shown, then the `thread` removed when navigating back to the main `Channel` screen.
+
+This can be done by keeping the current `thread` in a `context` and setting it `onThreadSelect`, then removing it `onThreadDismount`.
+Alternatively if a user only has a single path to and from the `Channel` screen to the `Thread` screen and back you can accomplish the same result using a local state and the `useFocusEffect` hook from React Navigation.
+
+<Tabs
+  defaultValue='context'
+  values={[
+    { label: 'context', value: 'context' },
+    { label: 'useFocusEffect', value: 'useFocusEffect' },
+  ]}
+>
+<TabItem value='context'>
+
+  ```tsx
+  export const ThreadScreen = () => {
+    const { channel } = useAppChannel()
+    const { setThread, thread } = useAppThread()
+
+    return (
+      <Channel channel={channel} thread={thread}>
+        <Thread onThreadDismount={() => setThread(undefined)}/>
+      </Channel>
+    )
+  };
+  ```
+
+  ```tsx
+  export const ChannelScreen = () => {
+    const { channel } = useAppChannel()
+    const { setThread, thread } = useAppThread()
+
+    return (
+      <Channel channel={channel} thread={thread}>
+        <MessageList
+          onThreadSelect={(selectedThread) => {
+            setThread(selectedThread);
+            navigation.navigate('ThreadScreen');
+          }}
+        />
+        <MessageInput />
+      </Channel>
+    )
+  };
+  ```
+
+</TabItem>
+<TabItem value='useFocusEffect'>
+
+  ```tsx
+  export const ChannelScreen = () => {
+    const { channel } = useAppChannel()
+    const [selectedThread, setSelectedThread] = useState<MessageType>()
+    
+    useFocusEffect(() => {
+      setSelectedThread(undefined);
+    });
+
+    return (
+      <Channel channel={channel} thread={selectedThread}>
+        <MessageList
+          onThreadSelect={(thread) => {
+            setSelectedThread(thread);
+            navigation.navigate('ThreadScreen', { thread });
+          }}
+        />
+        <MessageInput />
+      </Channel>
+    )
+  };
+  ```
+
+</TabItem>
+</Tabs>
