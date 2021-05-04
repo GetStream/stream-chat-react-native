@@ -292,7 +292,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button search state.
    */
-  Search: React.ComponentType;
+  Search: JSX.Element;
   /**
    * Custom UI component for send button.
    *
@@ -302,11 +302,11 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button disabled state.
    */
-  SendDisabled: React.Component;
+  SendDisabled: JSX.Element;
   /**
    * Custom UI component for send button enabled state.
    */
-  SendEnabled: React.Component;
+  SendEnabled: JSX.Element;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   /**
