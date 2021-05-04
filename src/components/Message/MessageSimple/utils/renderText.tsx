@@ -69,11 +69,9 @@ export type RenderTextParams<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'onLongPress' | 'onPress'
-  >
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'onLongPress' | 'onPress'
 > & {
   colors: typeof Colors;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -212,6 +210,7 @@ export const renderText = <
       propOnPress?.({
         emitter: 'textMention',
         event,
+        mentionedUserName: node.content[0]?.content,
       });
     };
 
@@ -219,6 +218,7 @@ export const renderText = <
       propOnLongPress?.({
         emitter: 'textMention',
         event,
+        mentionedUserName: node.content[0]?.content,
       });
     };
 

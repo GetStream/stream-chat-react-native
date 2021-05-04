@@ -22,3 +22,7 @@ export type DefaultUserType = UnknownType & {
 };
 
 export type UnknownType = Record<string, unknown>;
+
+export type DistributiveOmit<T, K extends string> = T extends UnknownType
+  ? Omit<T, K>
+  : never;

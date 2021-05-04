@@ -97,6 +97,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  DistributiveOmit,
   UnknownType,
 } from '../../types/types';
 
@@ -140,7 +141,7 @@ export type TouchableHandlerPayload = {
   event?: GestureResponderEvent;
 };
 
-export type MessageTouchableHandlerPayload<
+export type DefaultMessageTouchableHandlerPayload<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -149,9 +150,34 @@ export type MessageTouchableHandlerPayload<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = TouchableHandlerPayload & {
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   actionHandlers?: MessageActionHandlers;
-  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
 };
+
+export type MentionedUserTouchableHandlerPayload<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = DefaultMessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us> & {
+  emitter: 'textMention';
+  mentionedUserName: string;
+};
+
+export type MessageTouchableHandlerPayload<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> =
+  | DefaultMessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+  | MentionedUserTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>;
 
 export type MessageActionHandlers = {
   deleteMessage: () => Promise<void>;
@@ -263,8 +289,9 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      **/
     onLongPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      payload: DistributiveOmit<
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+        'message'
       >,
     ) => void;
     /**
@@ -279,14 +306,16 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      * */
     onPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      payload: DistributiveOmit<
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+        'message'
       >,
     ) => void;
 
     onPressIn?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
+      payload: DistributiveOmit<
+        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
+        'message'
       >,
     ) => void;
     /**
@@ -1058,22 +1087,40 @@ const MessageWithContext = <
     disabled || hasAttachmentActions
       ? () => null
       : onLongPressMessageProp
-      ? (payload?: TouchableHandlerPayload) =>
+      ? (payload: TouchableHandlerPayload = {}) => {
+          const {
+            defaultHandler = showMessageOverlay,
+            emitter = 'message',
+            event,
+            ...customPayload
+          } = payload;
+
           onLongPressMessageProp({
             actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
+            defaultHandler,
+            emitter,
+            event,
             message,
-          })
+            ...customPayload,
+          });
+        }
       : onLongPressProp
-      ? (payload?: TouchableHandlerPayload) =>
+      ? (payload: TouchableHandlerPayload = {}) => {
+          const {
+            defaultHandler = showMessageOverlay,
+            emitter = 'message',
+            event,
+            ...customPayload
+          } = payload;
+
           onLongPressProp({
             actionHandlers,
-            defaultHandler: payload?.defaultHandler || showMessageOverlay,
-            emitter: payload?.emitter || 'message',
-            event: payload?.event,
-          })
+            defaultHandler,
+            emitter,
+            event,
+            ...customPayload,
+          });
+        }
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
@@ -1113,25 +1160,30 @@ const MessageWithContext = <
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
+      const {
+        defaultHandler = onPress,
+        emitter = 'message',
+        event,
+        ...customPayload
+      } = payload;
       onPressProp
         ? onPressProp({
             actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
+            defaultHandler,
+            emitter,
+            event,
+            ...customPayload,
           })
         : onPressMessageProp
         ? onPressMessageProp({
             actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
+            defaultHandler,
+            emitter,
+            event,
             message,
+            ...customPayload,
           })
-        : payload.defaultHandler
-        ? payload.defaultHandler()
-        : onPress();
+        : defaultHandler();
     },
     onPressIn:
       onPressInProp || onPressInMessageProp
@@ -1142,7 +1194,6 @@ const MessageWithContext = <
                   defaultHandler: payload.defaultHandler,
                   emitter: payload.emitter || 'message',
                   event: payload.event,
-                  message,
                 })
               : onPressInMessageProp &&
                 onPressInMessageProp({
