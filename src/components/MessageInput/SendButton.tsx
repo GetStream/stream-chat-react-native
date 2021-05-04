@@ -7,8 +7,6 @@ import {
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Search } from '../../icons/Search';
-import { SendRight } from '../../icons/SendRight';
-import { SendUp } from '../../icons/SendUp';
 
 import type {
   DefaultAttachmentType,
@@ -31,7 +29,7 @@ type SendButtonPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'giphyActive' | 'sendMessage'
+  'giphyActive' | 'sendMessage' | 'SendEnabled' | 'SendDisabled'
 > & {
   /** Disables the button */ disabled: boolean;
 };
@@ -47,7 +45,13 @@ const SendButtonWithContext = <
 >(
   props: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled = false, giphyActive, sendMessage } = props;
+  const {
+    disabled = false,
+    giphyActive,
+    sendMessage,
+    SendRight,
+    SendUp,
+  } = props;
   const {
     theme: {
       colors: { accent_blue, grey_gainsboro },
@@ -133,19 +137,16 @@ export const SendButton = <
 >(
   props: SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    giphyActive,
+    SendDisabled,
+    SendEnabled,
+    sendMessage,
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedSendButton
-      {...{ giphyActive, sendMessage }}
+      {...{ giphyActive, SendDisabled, SendEnabled, sendMessage }}
       {...props}
       {...{ disabled: props.disabled || false }}
     />

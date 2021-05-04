@@ -69,6 +69,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { IconProps } from 'src/icons';
 
 export type FileUpload = {
   file: {
@@ -295,6 +296,8 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
    */
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  SendDisabled: React.ComponentType<IconProps>;
+  SendEnabled: React.ComponentType<IconProps>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   /**
