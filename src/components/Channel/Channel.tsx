@@ -397,13 +397,6 @@ const ChannelWithContext = <
   props: PropsWithChildren<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
-    theme: {
-      channel: { selectChannel },
-      colors: { accent_blue, black, grey_gainsboro },
-    },
-  } = useTheme();
-
-  const {
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
     animatedLongPress,
@@ -518,8 +511,8 @@ const ChannelWithContext = <
     Search = SearchDefault,
     selectReaction,
     SendButton = SendButtonDefault,
-    SendDisabled = <SendRight pathFill={grey_gainsboro} />,
-    SendEnabled = <SendUp pathFill={accent_blue} />,
+    SendDisabled = SendRight,
+    SendEnabled = SendUp,
     sendImageAsync = false,
     setInputRef,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
@@ -534,6 +527,13 @@ const ChannelWithContext = <
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
   } = props;
+
+  const {
+    theme: {
+      channel: { selectChannel },
+      colors: { black },
+    },
+  } = useTheme();
 
   const [editing, setEditing] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
