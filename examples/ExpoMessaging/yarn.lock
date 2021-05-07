@@ -983,13 +983,6 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.12.13":
-  version "7.13.9"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.13.9.tgz#97dbe2116e2630c489f22e0656decd60aaa1fcee"
-  integrity sha512-aY2kU+xgJ3dJ1eU6FMB9EH8dIe8dmusF1xEku52joLvw6eAFN0AI+WxCLDnpev2LEejWBAy2sBvBOBAjI3zmvA==
-  dependencies:
-    regenerator-runtime "^0.13.4"
-
 "@babel/runtime@^7.13.10":
   version "7.13.10"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.13.10.tgz#47d42a57b6095f4468da440388fdbad8bebf0d7d"
@@ -3624,15 +3617,6 @@ foreach@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
   integrity sha1-C+4AUBiusmDQo6865ljdATbsG5k=
-
-form-data@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.0.tgz#31b7e39c85f1355b7139ee0c647cf0de7f83c682"
-  integrity sha512-CKMFDglpbMi6PyN+brwB9Q/GOw0eAnsrEZDgcsH5Krhz5Od/haKHAX0NmQfha2zPPz0JpWzA7GJHGSnvCRLWsg==
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "^1.0.8"
-    mime-types "^2.1.12"
 
 form-data@^4.0.0:
   version "4.0.0"
@@ -6535,17 +6519,12 @@ stream-buffers@~2.2.0:
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
 "stream-chat-expo@link:../../expo-package":
-  version "0.0.0"
-  uid ""
+  version "3.3.3"
+  dependencies:
+    stream-chat-react-native-core v3.3.3
 
 "stream-chat-react-native-core@link:../..":
-  version "0.0.0"
-  uid ""
-
-stream-chat-react-native-core@v3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.1.2.tgz#1a63dc8c68f80745752b38bbf20010d7c7d05c91"
-  integrity sha512-iOz6xhG/mw1OKbK+dcxIliB7zyrtSeDofuJQ4d2Fz8ysQodOfqmJp7fCNmLuGCvgP9z6mDSXrASPmCL4Yo02GQ==
+  version "3.3.3"
   dependencies:
     "@babel/runtime" "7.12.13"
     "@gorhom/bottom-sheet" "3.0.0-alpha.0"
@@ -6559,22 +6538,26 @@ stream-chat-react-native-core@v3.1.2:
     path "0.12.7"
     react-art "^16.8.6"
     react-native-markdown-package "1.8.1"
-    stream-chat "3.1.2"
+    stream-chat "3.6.2"
 
-stream-chat@3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.1.2.tgz#271ff85f5533ae432bc94168bfeffca8efc6b55a"
-  integrity sha512-hIVkycehlJrkG2D+RV77qhZeOjZyas398DNdD8GeQlVB7Li60p+XPAsaeNob7kEptFow2LC2TTUiR4hQDCbufg==
+stream-chat-react-native-core@v3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.3.3.tgz#751013e44ae401576091cd7ae793ccb3dae09cdb"
+  integrity sha512-zp9MlSx2a1ZotLfeEWxcQFRjqoBaD/J9yD6mYxcqaavltuYVv6GINal1/FAc0WkGC2Mq1x615yU/VNmg5HIY+Q==
   dependencies:
-    "@babel/runtime" "^7.12.13"
-    "@types/jsonwebtoken" "^8.5.0"
-    "@types/ws" "^7.4.0"
-    axios "^0.21.1"
-    base64-js "^1.5.1"
-    form-data "^3.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "^8.5.1"
-    ws "^7.4.3"
+    "@babel/runtime" "7.12.13"
+    "@gorhom/bottom-sheet" "3.0.0-alpha.0"
+    anchorme "^1.1.2"
+    dayjs "1.10.4"
+    file-loader "6.2.0"
+    i18next "19.8.7"
+    lodash-es "4.17.20"
+    metro-react-native-babel-preset "0.65.0"
+    mime-types "2.1.28"
+    path "0.12.7"
+    react-art "^16.8.6"
+    react-native-markdown-package "1.8.1"
+    stream-chat "3.6.2"
 
 stream-chat@3.6.2:
   version "3.6.2"
@@ -6835,9 +6818,9 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 ua-parser-js@^0.7.18:
-  version "0.7.23"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.23.tgz#704d67f951e13195fbcd3d78818577f5bc1d547b"
-  integrity sha512-m4hvMLxgGHXG3O3fQVAyyAQpZzDOvwnhOTjYz5Xmr7r/+LpkNy3vJXdVRWgd1TkAb7NGROZuSy96CrlNVjA7KA==
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.28.tgz#8ba04e653f35ce210239c64661685bf9121dec31"
+  integrity sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==
 
 uglify-es@^3.1.9:
   version "3.3.9"
@@ -7179,11 +7162,6 @@ ws@^7:
   version "7.4.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
   integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==
-
-ws@^7.4.3:
-  version "7.4.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.3.tgz#1f9643de34a543b8edb124bdcbc457ae55a6e5cd"
-  integrity sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==
 
 ws@^7.4.4:
   version "7.4.4"
