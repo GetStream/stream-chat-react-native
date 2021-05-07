@@ -145,7 +145,10 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'Reply' | 'quoteRepliesEnabled'
+  > &
   Pick<
     SuggestionsContextValue<Co, Us>,
     'componentType' | 'suggestions' | 'suggestionsTitle'
@@ -189,6 +192,7 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    quoteRepliesEnabled,
     removeImage,
     Reply,
     resetInput,
@@ -467,7 +471,9 @@ const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {((typeof editing !== 'boolean' && editing?.quoted_message) ||
+                {((typeof editing !== 'boolean' &&
+                  quoteRepliesEnabled &&
+                  editing?.quoted_message) ||
                   quotedMessage) && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
@@ -759,7 +765,15 @@ export const MessageInput = <
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { quoteRepliesEnabled, Reply } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   const {
     componentType,
@@ -795,6 +809,7 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
+        quoteRepliesEnabled,
         removeImage,
         Reply,
         resetInput,

@@ -110,8 +110,9 @@ export type MessageContentPropsWithContext<
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
-    | 'repliesEnabled'
+    | 'quoteRepliesEnabled'
     | 'Reply'
+    | 'threadRepliesEnabled'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -157,12 +158,13 @@ const MessageContentWithContext = <
     onPressIn,
     otherAttachments,
     preventPress,
-    repliesEnabled,
+    quoteRepliesEnabled,
     Reply,
     setMessageContentWidth,
     showMessageStatus,
     tDateTimeParser,
     threadList,
+    threadRepliesEnabled,
   } = props;
 
   const {
@@ -296,7 +298,7 @@ const MessageContentWithContext = <
         />
       )}
       <View onLayout={onLayout} style={wrapper}>
-        {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
+        {hasThreadReplies && !threadList && threadRepliesEnabled && !noBorder && (
           <View
             style={[
               styles.replyBorder,
@@ -335,7 +337,7 @@ const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
-          {message.quoted_message && (
+          {message.quoted_message && quoteRepliesEnabled && (
             <View style={[styles.replyContainer, replyContainer]}>
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>
@@ -384,7 +386,7 @@ const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {repliesEnabled && (
+      {threadRepliesEnabled && (
         <MessageReplies
           noBorder={noBorder}
           repliesCurveColor={repliesCurveColor}
@@ -579,8 +581,9 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    repliesEnabled,
+    quoteRepliesEnabled,
     Reply,
+    threadRepliesEnabled,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
@@ -612,12 +615,13 @@ export const MessageContent = <
         onPressIn,
         otherAttachments,
         preventPress,
-        repliesEnabled,
+        quoteRepliesEnabled,
         Reply,
         showMessageStatus,
         t,
         tDateTimeParser,
         threadList,
+        threadRepliesEnabled,
       }}
       {...props}
     />

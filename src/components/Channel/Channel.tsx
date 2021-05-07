@@ -982,8 +982,9 @@ const ChannelWithContext = <
    * Channel configs for use in disabling local functionality
    */
   const messagesConfig = {
+    quoteRepliesEnabled: true,
     reactionsEnabled: true,
-    repliesEnabled: true,
+    threadRepliesEnabled: true,
   } as MessagesConfig;
   const channelConfig = {
     readEventsEnabled: true,
@@ -1006,7 +1007,9 @@ const ChannelWithContext = <
     inputConfig.maxMessageLength = maxMessageLength;
     inputConfig.uploadsEnabled = uploads;
     messagesConfig.reactionsEnabled = reactions;
-    messagesConfig.repliesEnabled = replies;
+    // replace with backend flag once its ready
+    messagesConfig.quoteRepliesEnabled = true;
+    messagesConfig.threadRepliesEnabled = replies;
   }
 
   /**
