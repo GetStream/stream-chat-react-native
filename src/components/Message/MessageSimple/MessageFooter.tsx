@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import {
+  Alignment,
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -14,6 +15,13 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
+import type { Attachment } from 'stream-chat';
+
+import type { MessageStatusProps } from './MessageStatus';
+
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
+
+import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,7 +33,12 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-type MessageFooterContextProps<
+type MessageFooterComponentProps = {
+  formattedDate: string | Date;
+  isDeleted?: boolean;
+};
+
+type MessageFooterPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -42,27 +55,8 @@ type MessageFooterContextProps<
   | 'showMessageStatus'
   | 'lastGroupMessage'
 > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'MessageStatus' | 'MessageFooter'
-  >;
-
-type MessageFooterComponentProps = {
-  formattedDate: string | Date;
-  testID: string;
-  isDeleted?: boolean;
-};
-
-type MessageFooterPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = MessageFooterComponentProps &
-  MessageFooterContextProps<At, Ch, Co, Ev, Me, Re, Us>;
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageStatus'> &
+  MessageFooterComponentProps;
 
 const MessageFooterWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -85,7 +79,6 @@ const MessageFooterWithContext = <
     MessageStatus,
     otherAttachments,
     showMessageStatus,
-    testID,
   } = props;
 
   const {
@@ -106,7 +99,7 @@ const MessageFooterWithContext = <
 
   if (isDeleted) {
     return (
-      <View style={metaContainer} testID={testID}>
+      <View style={metaContainer} testID='message-footer'>
         <Eye pathFill={isDeleted ? undefined : grey} {...eyeIcon} />
         <Text
           style={[
@@ -244,8 +237,17 @@ export type MessageFooterProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = MessageFooterComponentProps &
-  Partial<MessageFooterContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'members'>> &
+  MessageFooterComponentProps & {
+    alignment?: Alignment;
+    lastGroupMessage?: boolean;
+    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    MessageStatus?: React.ComponentType<
+      MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>
+    >;
+    otherAttachments?: Attachment<At>[];
+    showMessageStatus?: boolean;
+  };
 
 export const MessageFooter = <
   At extends UnknownType = DefaultAttachmentType,
@@ -267,15 +269,7 @@ export const MessageFooter = <
     showMessageStatus,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { MessageFooter, MessageStatus } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { MessageStatus } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageFooter
@@ -284,7 +278,6 @@ export const MessageFooter = <
         lastGroupMessage,
         members,
         message,
-        MessageFooter,
         MessageStatus,
         otherAttachments,
         showMessageStatus,
