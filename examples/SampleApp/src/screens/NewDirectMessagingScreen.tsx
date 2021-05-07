@@ -229,7 +229,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   const customSendMessage = async (
     _: string,
     message: StreamMessage,
-  ): Promise<SendMessageAPIResponse> => {
+  ) => {
     if (!currentChannel?.current) {
       throw new Error('Missing current channel');
     }
@@ -239,20 +239,15 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       await currentChannel.current.query({});
     }
 
-    try {
-      const response = await currentChannel.current.sendMessage({
-        text: message.text,
-      });
+    const response = await currentChannel.current.sendMessage({
+      text: message.text,
+    });
 
-      navigation.replace('ChannelScreen', {
-        channelId: currentChannel.current.id,
-      });
+    navigation.replace('ChannelScreen', {
+      channelId: currentChannel.current.id,
+    });
 
-      return response;
-    } catch (e) {
-      Alert.alert('Error sending a message');
-      throw e;
-    }
+    return response;
   };
 
   const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
