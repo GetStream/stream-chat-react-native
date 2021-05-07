@@ -408,6 +408,13 @@ const MessageWithContext = <
   const doubleTapRef = useRef<TapGestureHandler>(null);
   const pressActive = useSharedValue(false);
   const scale = useSharedValue(1);
+  useEffect(
+    () => () => {
+      pressActive.value = false;
+      cancelAnimation(scale);
+    },
+    [],
+  );
   const scaleStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       transform: [
