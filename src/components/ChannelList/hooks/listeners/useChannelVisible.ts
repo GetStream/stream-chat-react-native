@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import uniqBy from 'lodash/uniqBy';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { getChannel } from '../../utils';
+
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { Channel, Event } from 'stream-chat';
 

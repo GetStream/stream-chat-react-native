@@ -292,7 +292,6 @@ const MessageContentWithContext = <
           MessageStatus={MessageStatus}
           otherAttachments={otherAttachments}
           showMessageStatus={showMessageStatus}
-          testID='message-header'
         />
       )}
       <View onLayout={onLayout} style={wrapper}>
@@ -393,7 +392,6 @@ const MessageContentWithContext = <
       <MessageFooter
         formattedDate={getDateText(formatDate)}
         isDeleted={!!message.deleted_at}
-        testID='message-footer'
       />
     </TouchableOpacity>
   );

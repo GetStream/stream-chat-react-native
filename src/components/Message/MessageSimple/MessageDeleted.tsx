@@ -5,6 +5,7 @@ import merge from 'lodash/merge';
 import { MessageTextContainer } from './MessageTextContainer';
 
 import {
+  Alignment,
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
@@ -13,6 +14,10 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+
+import type { MessageFooterProps } from './MessageFooter';
+
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -40,20 +45,6 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageDeletedContextProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'message'
-> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'>;
-
 type MessageDeletedComponentProps = {
   formattedDate: string | Date;
   groupStyle: string;
@@ -69,8 +60,12 @@ type MessageDeletedPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = MessageDeletedComponentProps &
-  MessageDeletedContextProps<At, Ch, Co, Ev, Me, Re, Us>;
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'message'
+> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'> &
+  MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -140,11 +135,7 @@ const MessageDeletedWithContext = <
           message={{ ...message, text: '_Message deleted_' }}
         />
       </View>
-      <MessageFooter
-        formattedDate={formattedDate}
-        isDeleted
-        testID='message-footer'
-      />
+      <MessageFooter formattedDate={formattedDate} isDeleted />
     </View>
   );
 };
@@ -202,8 +193,13 @@ export type MessageDeletedProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = MessageDeletedComponentProps &
-  Partial<MessageDeletedContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+> = MessageDeletedComponentProps & {
+  alignment?: Alignment;
+  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  MessageFooter?: React.ComponentType<
+    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+};
 
 export const MessageDeleted = <
   At extends UnknownType = DefaultAttachmentType,
