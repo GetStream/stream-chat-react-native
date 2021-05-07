@@ -737,7 +737,7 @@ const ChannelWithContext = <
       client.off('connection.changed', connectionChangedHandler);
       channel?.off(handleEvent);
     };
-  }, [channelId]);
+  }, [channelId, connectionRecoveredHandler, handleEvent]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
@@ -1579,7 +1579,6 @@ const ChannelWithContext = <
     MessageAvatar,
     MessageContent,
     messageContentOrder,
-    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageList,
