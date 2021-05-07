@@ -128,6 +128,16 @@ export const App = () => (
 
 ## Keyboard
 
+The `Channel` component contains a <!-- TODO: Change to new docs for links -->`KeyboardCompatibleView` that, like [the standard React Native `KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview), needs a `keyboardVerticalOffset` to account for distance between the top of the user screen and the react native view.
+This height in most cases with React Navigation in conjunction with Stream Chat is the header height of React Navigation.
+This can be accessed from React Navigation using the `useHeaderHeight` hook from `@react-navigation/stack`, and given as a prop to `Channel`.
+
+```tsx
+  const headerHeight = useHeaderHeight();
+
+  <Channel keyboardVerticalOffset={headerHeight}>
+```
+
 ## Attachment Picker
 
 The `AttachmentPicker` is a keyboard-esk view that allows a user to attach photos and files.
@@ -222,7 +232,16 @@ export const App = () => (
 
 ### Resetting Selected Images
 
-The selected images in the `AttachmentPicker` are tightly coupled to the
+The selected images in the `AttachmentPicker` are tightly coupled to the `MessageInput`.
+As there is only one `AttachmentPicker` in the navigation stack, but multiple `MessageInput`'s can exist, there are details around the setup that must be implemented correctly.
+For the typical navigation setup clearing the selected images is handled out of the box.
+For this to function properly your usage of the `Channel` component must include the usage of `thread` when appropriate.
+Failing to do this will result in unintentional behavior, such as excess image uploads as the selected images will be uploaded twice when selected if the `thread` state is not properly kept.
+
+In more complex scenarios where more than one `Channel` could potentially be rendered in multiple tabs a different approach would be necessary.
+It is suggested that you architect an approach best for your specific scenario.
+
+The `setSelectedImages` function can be pulled off of the `useAttachmentPickerContext` for granular control of the `AttachmentPicker` images.
 
 ## Image Gallery
 
@@ -234,7 +253,7 @@ In practice this means that if you implement a screen for the main `Channel`, an
 To do this the main `Channel` component should be given the appropriate `thread` when the `Thread` screen shown, then the `thread` removed when navigating back to the main `Channel` screen.
 
 This can be done by keeping the current `thread` in a `context` and setting it `onThreadSelect`, then removing it `onThreadDismount`.
-Alternatively if a user only has a single path to and from the `Channel` screen to the `Thread` screen and back you can accomplish the same result using a local state and the `useFocusEffect` hook from React Navigation.
+Alternatively if a user only has a single path to and from the `Channel` screen to the `Thread` screen and back you can accomplish the same result using a local state and the [`useFocusEffect`](https://reactnavigation.org/docs/use-focus-effect/) hook from React Navigation.
 
 <Tabs
   defaultValue='context'
