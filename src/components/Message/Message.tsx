@@ -26,7 +26,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
-import { removeReservedFields } from '../../utils/removeMessageReservedFields';
+import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,

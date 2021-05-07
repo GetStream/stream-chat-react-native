@@ -127,7 +127,6 @@ import {
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
 import { generateRandomId, ReactionData } from '../../utils/utils';
-import { removeReservedFields } from '../../utils/removeMessageReservedFields';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 
@@ -1216,11 +1215,8 @@ const ChannelWithContext = <
     Re,
     Us
   >['retrySendMessage'] = async (message) => {
-    const messageWithoutReservedFields = removeReservedFields(message);
-
     const statusPendingMessage = {
-      ...messageWithoutReservedFields,
-      id: message.id,
+      ...message,
       status: 'sending',
     };
 
