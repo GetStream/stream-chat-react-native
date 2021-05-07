@@ -297,6 +297,9 @@ export type InputMessageInputContextValue<
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
+  setQuotedMessageState: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -544,7 +547,10 @@ export const MessageInputProvider = <
     setText(newText);
 
     if (newText && channel) {
-      logChatPromiseExecution(channel.keystroke(), 'start typing event');
+      logChatPromiseExecution(
+        channel.keystroke(thread?.id),
+        'start typing event',
+      );
     }
 
     if (value.onChangeText) {
@@ -740,25 +746,27 @@ export const MessageInputProvider = <
       sending.current = false;
     } else {
       try {
-        value
-          .sendMessage(({
-            attachments,
-            mentioned_users: uniq(mentionedUsers),
-            /** Parent message id - in case of thread */
-            parent_id: thread?.id,
-            quoted_message_id:
-              typeof value.quotedMessage === 'boolean'
-                ? undefined
-                : value.quotedMessage.id,
-            show_in_channel: sendThreadMessageInChannel || undefined,
-            text: prevText,
-          } as unknown) as StreamMessage<At, Me, Us>)
-          .then(value.clearQuotedMessageState);
+        value.sendMessage(({
+          attachments,
+          mentioned_users: uniq(mentionedUsers),
+          /** Parent message id - in case of thread */
+          parent_id: thread?.id,
+          quoted_message_id:
+            typeof value.quotedMessage === 'boolean'
+              ? undefined
+              : value.quotedMessage.id,
+          show_in_channel: sendThreadMessageInChannel || undefined,
+          text: prevText,
+        } as unknown) as StreamMessage<At, Me, Us>);
 
+        value.clearQuotedMessageState();
         sending.current = false;
         resetInput(attachments);
       } catch (_error) {
         sending.current = false;
+        if (value.quotedMessage && typeof value.quotedMessage !== 'boolean') {
+          value.setQuotedMessageState(value.quotedMessage);
+        }
         setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
         console.log('Failed to send message');
       }

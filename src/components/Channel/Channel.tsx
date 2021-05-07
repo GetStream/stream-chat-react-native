@@ -51,6 +51,7 @@ import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../Keyb
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
+import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
@@ -227,7 +228,6 @@ export type ChannelPropsWithContext<
       | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
-      | 'FileAttachmentIcon'
       | 'blockUser'
       | 'Card'
       | 'CardCover'
@@ -240,6 +240,7 @@ export type ChannelPropsWithContext<
       | 'dismissKeyboardOnMessageTouch'
       | 'editMessage'
       | 'FileAttachment'
+      | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
       | 'flagMessage'
       | 'FlatList'
@@ -265,10 +266,10 @@ export type ChannelPropsWithContext<
       | 'MessageAvatar'
       | 'MessageContent'
       | 'messageContentOrder'
+      | 'MessageDeleted'
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
-      | 'ScrollToBottomButton'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -286,6 +287,7 @@ export type ChannelPropsWithContext<
       | 'Reply'
       | 'reply'
       | 'retry'
+      | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
       | 'threadReply'
@@ -478,6 +480,7 @@ const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
+    MessageDeleted = MessageDeletedDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
@@ -734,7 +737,7 @@ const ChannelWithContext = <
       client.off('connection.changed', connectionChangedHandler);
       channel?.off(handleEvent);
     };
-  }, [channelId]);
+  }, [channelId, connectionRecoveredHandler, handleEvent]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
@@ -1510,6 +1513,7 @@ const ChannelWithContext = <
     sendImageAsync,
     sendMessage,
     setInputRef,
+    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
   });
