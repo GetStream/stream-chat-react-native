@@ -996,9 +996,9 @@ lodash.once@^4.0.0:
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
 
 lodash@^4.17.15, lodash@^4.17.19:
-  version "4.17.20"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
-  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
   version "1.4.0"
@@ -1278,9 +1278,24 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-"stream-chat-react-native-core@link:..":
-  version "0.0.0"
-  uid ""
+stream-chat-react-native-core@v3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.3.3.tgz#751013e44ae401576091cd7ae793ccb3dae09cdb"
+  integrity sha512-zp9MlSx2a1ZotLfeEWxcQFRjqoBaD/J9yD6mYxcqaavltuYVv6GINal1/FAc0WkGC2Mq1x615yU/VNmg5HIY+Q==
+  dependencies:
+    "@babel/runtime" "7.12.13"
+    "@gorhom/bottom-sheet" "3.0.0-alpha.0"
+    anchorme "^1.1.2"
+    dayjs "1.10.4"
+    file-loader "6.2.0"
+    i18next "19.8.7"
+    lodash-es "4.17.20"
+    metro-react-native-babel-preset "0.65.0"
+    mime-types "2.1.28"
+    path "0.12.7"
+    react-art "^16.8.6"
+    react-native-markdown-package "1.8.1"
+    stream-chat "3.6.2"
 
 stream-chat@3.6.2:
   version "3.6.2"
