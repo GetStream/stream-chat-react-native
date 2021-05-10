@@ -1,0 +1,278 @@
+---
+id: internationalization
+sidebar_position: 4
+title: Internationalization
+---
+
+Static translations inside of the Stream Chat for React Native components are provided by `Streami18n`.
+`Streami18n` is a class that uses a configuration of [i18next](https://www.i18next.com/) with a subset of the functionality exposed.
+`Streami18n` is provided by `stream-chat-react-native` and can be imported from the library.
+
+```ts
+import { Streami18n } from 'stream-chat-react-native';
+```
+
+## Instantiation
+
+To create an instance of `Streami18n` you simply need to instantiate the class.
+No parameters are required, this will default to English (en).
+
+```ts
+const streami18n = new Streami18n();
+```
+
+`Streami18n` accepts two parameters when being instantiated, [`options`](#options) and [`i18nextConfig`](#i18nextconfig).
+These parameters allow you to modify the `Streami18n` instance to your preferences.
+
+```ts
+const streami18n = new Streami18n(options, i18nextConfig);
+```
+
+## Usage
+
+If you choose to use the default English settings with Day.js you do not need to deal directly with an instance of `Streami18n`, this is taken care of for you.
+
+If you choose to change the language, translation, or date handling, you will need to provide your modified instance of `Streami18n` to the component library.
+Two components require your custom instance of `Streami18n` to properly pass your translation and time-date functions to the component library, `OverlayProvider` and <!-- TODO: Change to new docs for links -->`Chat`.
+Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
+Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
+
+```tsx
+import { StreamChat } from 'stream-chat'; 
+import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+const streami18n = new Streami18n({ language: 'nl' });
+
+export const App = () =>
+  <OverlayProvider i18nInstance={streami18n} topInset={0}>
+    <Chat client={client} i18nInstance={streami18n}>
+      {/** App components */}
+    </Chat>
+  </OverlayProvider>;
+```
+
+## Languages
+
+The default language for `Streami18n` is English (en).
+Currently seven total languages are provided out of the box.
+
+- English (en)
+- Dutch (nl)
+- Russian (ru)
+- Turkish (tr)
+- French (fr)
+- Italian (it)
+- Hindi (hi)
+
+## Options
+
+`options` is the first optional parameter passed to `Streami18n`, it is an object with all keys being optional.
+
+### `DateTimeParser`
+
+Used for translating dates and times into the desired local format.
+Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be used.
+Day.js is a dependency of the repo and used by default.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| Dayjs \| Moment | `Dayjs` |
+
+### `dayjsLocaleConfigForLanguage`
+
+You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
+To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
+
+| TYPE |
+|- -|
+| object |
+
+### `debug`
+
+Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| boolean | `false` |
+
+### `disableDateTimeTranslations`
+
+Use the default English language date-times instead of those dictated by the language set.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| boolean | `false` |
+
+### `language`
+
+Language code for language to be used.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| string | `en` |
+
+### `logger`
+
+Function to log warnings & errors from `Streami18n`.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| `(msg?: string) => void` | `console.warn` |
+
+### `translationsForLanguage`
+
+Allows you to override the provided translations for given keys.
+
+```ts
+const streami18n = new Streami18n({
+  language: 'nl',
+  translationsForLanguage: {
+    'Nothing yet...': 'Nog Niet...',
+    '{{ firstUser }} and {{ secondUser }} are typing...':
+      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+  },
+});
+```
+
+| TYPE |
+|- -|
+| object |
+
+## I18NextConfig
+
+`i18NextConfig` is the second optional parameter passed to `Streami18n`, it is an object with all keys being optional.
+`i18nextConfig` is used in the instantiation of the i18next instance and mostly aligns with the [i18next options](https://www.i18next.com/translation-function/essentials#overview-options).
+
+### `debug`
+
+Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
+This overrides the [`debug` key on options](#debug) if provided.
+
+| TYPE |
+|- -|
+| boolean |
+
+### `fallbackLng`
+
+Fallback language setting for for i18next.
+
+| TYPE |
+|- -|
+| [`FallbackLng`](https://www.i18next.com/principles/fallback#fallback) |
+
+### `interpolation`
+
+i18next interpolation setting for integrating dynamic values into translations.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
+
+### `keySeparator`
+
+Override character to separate keys.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| string \| boolean | `false` |
+
+### `lng`
+
+Override language to use.
+
+| TYPE |
+|- -|
+| string |
+
+### `nsSeparator`
+
+Override character to split namespace from key.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| string \| boolean | `false` |
+
+### `parseMissingKeyHandler`
+
+Function to handle keys missing translations for the selected language.
+
+| TYPE | DEFAULT |
+|- -|- -|
+| `(key: string) => string` | `(key) => key` |
+
+## Methods
+
+### `getAvailableLanguages`
+
+Returns an array of language code strings corresponding to available languages.
+
+```ts
+const availableLanguages = streami18n.getAvailableLanguages();
+```
+
+### `geti18Instance`
+
+Returns instance of i18next used within the `Streami18n` instance.
+
+```ts
+const i18n = streami18n.geti18Instance();
+```
+
+### `getTranslations`
+
+Returns the current translations dictionaries for all languages.
+
+```ts
+const translations = streami18n.getTranslations();
+```
+
+### `getTranslators`
+
+Asynchronous function that returns the current translator functions.
+
+```ts
+const { t, tDateTimeParser } = await streami18n.getTranslators();
+```
+
+### `registerTranslation`
+
+Allows you to register a custom translation, this will override a translation if one already exists for the given language code.
+The third parameter, which is optional, is a Day.js locale, which is structured the same as [dayjsLocaleConfigForLanguage](#dayjslocaleconfigforlanguage).
+
+It is suggested you look at the [`enTranslations` json file](https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n) exported from `stream-chat-react-native` for a current list of used translation keys.
+
+```ts
+streami18n.registerTranslation(
+  'mr',
+  {
+    'Nothing yet...': 'काहीही नाही  ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...':
+      '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत',
+  }
+);
+```
+
+#### Parameters
+
+| NAME | TYPE | REQUIRED |
+|- -|- -|- -|
+| language | string | :heavy_check_mark: |
+| translation | object | :heavy_check_mark: |
+| customDayjsLocale | object | |
+
+### `setLanguage`
+
+Asynchronous function that changes the current language and returns the new translation function.
+If not initialized `undefined` will be returned.
+If the language fails to update the current translation function will be returned.
+
+```ts
+const t = await streami18n.setLanguage('nl');
+```
+
+#### Parameters
+
+| NAME | TYPE | REQUIRED |
+|- -|- -|- -|
+| language | string | :heavy_check_mark: |
