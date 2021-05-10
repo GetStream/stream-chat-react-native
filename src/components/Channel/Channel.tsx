@@ -1579,6 +1579,7 @@ const ChannelWithContext = <
     MessageAvatar,
     MessageContent,
     messageContentOrder,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageList,
