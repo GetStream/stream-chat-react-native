@@ -699,7 +699,7 @@ const ChannelWithContext = <
 
   const connectionChangedHandler = (event: ConnectionChangeEvent) => {
     if (event.online) {
-      reloadChannel();
+      refreshChannel();
     }
   };
 
@@ -878,6 +878,72 @@ const ChannelWithContext = <
 
       return;
     });
+
+  const refreshChannel = async () => {
+    if (!channel) return;
+    setError(false);
+    try {
+      const state = await channel?.watch({
+        messages: {
+          limit: messages.length + 100,
+        },
+      });
+
+      const ol_topMessage = messages[0];
+      const ol_bottomMessage = messages[messages.length - 1];
+
+      const nl_topMessage = state.messages[0];
+      const nl_bottomMessage = state.messages[state.messages.length - 1];
+
+      /** Case 1 */
+      if (state.messages.length === 0 || !nl_topMessage) {
+        /** Channel was truncated */
+        channel.state.clearMessages();
+        channel.state.setIsUpToDate(true);
+        copyChannelState();
+        return;
+      }
+
+      if (!messages) {
+        channel.state.setIsUpToDate(true);
+        copyChannelState();
+        return;
+      }
+
+      const ol_topMessage_createdAt = messages[0]?.created_at;
+      const ol_bottomMessage_createdAt =
+        messages[messages.length - 1].created_at;
+      const nl_topMessage_createdAt = nl_topMessage.created_at
+        ? new Date(nl_topMessage.created_at)
+        : new Date();
+      const nl_bottomMessage_createdAt = nl_bottomMessage.created_at
+        ? new Date(nl_bottomMessage.created_at)
+        : new Date();
+
+      let finalMessages = [];
+
+      if (
+        nl_topMessage_createdAt < ol_topMessage_createdAt &&
+        nl_bottomMessage_createdAt > ol_bottomMessage_createdAt
+      ) {
+        const index = messages.findIndex((m) => m.id === ol_topMessage.id);
+        finalMessages = state.messages.slice(index);
+      } else {
+        finalMessages = state.messages;
+      }
+
+      channel.state.setIsUpToDate(true);
+      channel.state.clearMessages();
+
+      channel.state.addMessagesSorted(finalMessages);
+      setHasMore(true);
+      copyChannelState();
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+      setLastRead(new Date());
+    }
+  };
 
   const reloadChannel = () => {
     channel?.state.clearMessages();
@@ -1206,6 +1272,7 @@ const ChannelWithContext = <
       newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
     ) => {
       setLoadingMore(false);
+      setError(false);
       setHasMore(updatedHasMore);
       setMessages(newMessages);
     },
@@ -1290,6 +1357,7 @@ const ChannelWithContext = <
     (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
       setLoadingMoreRecent(false);
       setMessages(newMessages);
+      setError(false);
     },
   );
 
@@ -1636,7 +1704,7 @@ const ChannelWithContext = <
     typing,
   });
 
-  if (!channel || error) {
+  if (!channel || (error && messages.length === 0)) {
     return (
       <LoadingErrorIndicator
         error={error}

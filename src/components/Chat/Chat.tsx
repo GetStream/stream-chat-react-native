@@ -177,10 +177,10 @@ const ChatWithContext = <
     Us
   >(client);
 
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
-    client,
-    closeConnectionOnBackground,
-  );
+  // useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
+  //   client,
+  //   closeConnectionOnBackground,
+  // );
 
   useEffect(() => {
     if (client.setUserAgent) {

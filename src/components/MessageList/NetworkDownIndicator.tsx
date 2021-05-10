@@ -18,8 +18,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+export type NetworkDownIndicatorProps = {
+  text?: string;
+};
 
-export const NetworkDownIndicator = () => {
+export const NetworkDownIndicator = ({ text }: NetworkDownIndicatorProps) => {
   const {
     theme: {
       colors: { grey },
@@ -38,7 +41,7 @@ export const NetworkDownIndicator = () => {
       testID='error-notification'
     >
       <Text style={[styles.errorNotificationText, errorNotificationText]}>
-        {t('Reconnecting...')}
+        {text || t('Reconnecting...')}
       </Text>
     </View>
   );

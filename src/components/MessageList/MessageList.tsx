@@ -62,7 +62,10 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Channel as StreamChannel } from 'stream-chat';
+import type {
+  FormatMessageResponse,
+  Channel as StreamChannel,
+} from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -284,6 +287,7 @@ const MessageListWithContext = <
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
+    error,
     FlatList,
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
@@ -342,6 +346,15 @@ const MessageListWithContext = <
     noGroupByUser,
     threadList,
   });
+  const messageListLengthBeforeUpdate = useRef(0);
+  const oldestMessageBeforeUpdate = useRef<FormatMessageResponse<
+    At,
+    Ch,
+    Co,
+    Me,
+    Re,
+    Us
+  > | null>(null);
   const messageListLength = messageList.length;
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
@@ -492,7 +505,13 @@ const MessageListWithContext = <
       setLastReceivedId(lastReceivedMessage?.id);
 
       // Scroll down when it's your own message that you added..
-      if (hasNewMessage && isMyMessage) {
+      if (
+        (hasNewMessage && isMyMessage) ||
+        messageListLengthBeforeUpdate.current > messageListLength ||
+        (oldestMessageBeforeUpdate.current?.created_at &&
+          oldestMessageBeforeUpdate.current.created_at <
+            channel.state.messages[0].created_at)
+      ) {
         if (flatListRef.current) {
           flatListRef.current.scrollToIndex({ index: 0 });
         }
@@ -516,6 +535,8 @@ const MessageListWithContext = <
       channelLastRead.current = getLastReadSafely();
       topMessage.current = messageList[messageListLength - 1];
     }
+    messageListLengthBeforeUpdate.current = messageListLength;
+    oldestMessageBeforeUpdate.current = channel?.state.messages[0] || null;
   }, [messageListLength]);
 
   useEffect(() => {
@@ -758,6 +779,9 @@ const MessageListWithContext = <
 
   const goToNewMessages = async () => {
     if (!channel?.state.isUpToDate) {
+      onStartReachedTracker.current = [];
+      onEndReachedTracker.current = [];
+
       await reloadChannel();
     } else if (flatListRef.current) {
       flatListRef.current.scrollToIndex({
@@ -785,6 +809,8 @@ const MessageListWithContext = <
       }
     } catch (_) {
       loadChannelAtMessage({ messageId });
+      onStartReachedTracker.current = [];
+      onEndReachedTracker.current = [];
     }
   };
 
@@ -923,7 +949,13 @@ const MessageListWithContext = <
           />
         </>
       )}
-      {!isOnline && <NetworkDownIndicator />}
+      {(!isOnline || error) && (
+        <NetworkDownIndicator
+          text={
+            !isOnline ? 'reconnecting ...' : error ? 'An error occured' : ''
+          }
+        />
+      )}
     </View>
   );
 };
@@ -958,6 +990,7 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    error,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -1017,6 +1050,7 @@ export const MessageList = <
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
+        error,
         FlatList,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,

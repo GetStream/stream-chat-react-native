@@ -16,6 +16,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { NetworkDownIndicatorProps } from 'src/components';
 
 export type ChannelConfig = {
   readEventsEnabled?: boolean;
@@ -107,7 +108,7 @@ export type ChannelContextValue<
   /**
    * Custom network down indicator to override the Stream default
    */
-  NetworkDownIndicator: React.ComponentType;
+  NetworkDownIndicator: React.ComponentType<NetworkDownIndicatorProps>;
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void>;
   /**
