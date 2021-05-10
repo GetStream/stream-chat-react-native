@@ -178,7 +178,7 @@ type Options = {
   disableDateTimeTranslations?: boolean;
   language?: string;
   logger?: (msg?: string) => void;
-  translationsForLanguage?: typeof enTranslations;
+  translationsForLanguage?: Partial<typeof enTranslations>;
 };
 
 type I18NextConfig = {
@@ -358,7 +358,7 @@ export class Streami18n {
 
   translations: {
     [key: string]: {
-      [key: string]: typeof enTranslations | UnknownType;
+      [key: string]: Partial<typeof enTranslations> | UnknownType;
     };
   } = {
     en: { [defaultNS]: enTranslations },
@@ -452,7 +452,14 @@ export class Streami18n {
 
     if (translationsForLanguage) {
       this.translations[this.currentLanguage] = {
-        [defaultNS]: translationsForLanguage,
+        [defaultNS]:
+          this.translations[this.currentLanguage] &&
+          this.translations[this.currentLanguage][defaultNS]
+            ? {
+                ...this.translations[this.currentLanguage][defaultNS],
+                ...translationsForLanguage,
+              }
+            : translationsForLanguage,
       };
     }
 
@@ -592,7 +599,7 @@ export class Streami18n {
    */
   registerTranslation(
     language: string,
-    translation: typeof enTranslations,
+    translation: Partial<typeof enTranslations> | UnknownType,
     customDayjsLocale?: Partial<ILocale>,
   ) {
     if (!translation) {
