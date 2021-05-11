@@ -179,6 +179,7 @@ const areEqual = <
   const {
     alignment: prevAlignment,
     formattedDate: prevFormattedDate,
+    lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
     otherAttachments: prevOtherAttachments,
@@ -187,6 +188,7 @@ const areEqual = <
   const {
     alignment: nextAlignment,
     formattedDate: nextFormattedDate,
+    lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
     otherAttachments: nextOtherAttachments,
@@ -199,6 +201,9 @@ const areEqual = <
   const membersEqual =
     Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
+
+  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
