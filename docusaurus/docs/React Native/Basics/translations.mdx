@@ -1,7 +1,7 @@
 ---
-id: internationalization
+id: translations
 sidebar_position: 4
-title: Internationalization
+title: Translations / i18n
 ---
 
 Static translations inside of the Stream Chat for React Native components are provided by `Streami18n`.
@@ -69,7 +69,7 @@ Currently seven total languages are provided out of the box.
 
 `options` is the first optional parameter passed to `Streami18n`, it is an object with all keys being optional.
 
-### `DateTimeParser`
+### DateTimeParser
 
 Used for translating dates and times into the desired local format.
 Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be used.
@@ -79,7 +79,7 @@ Day.js is a dependency of the repo and used by default.
 |- -|- -|
 | Dayjs \| Moment | `Dayjs` |
 
-### `dayjsLocaleConfigForLanguage`
+### dayjsLocaleConfigForLanguage
 
 You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
 To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
@@ -88,7 +88,7 @@ To allow accessability to this option when using the default Day.js instance you
 |- -|
 | object |
 
-### `debug`
+### debug
 
 Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
 
@@ -96,7 +96,7 @@ Enable [debug mode](https://www.i18next.com/overview/configuration-options#loggi
 |- -|- -|
 | boolean | `false` |
 
-### `disableDateTimeTranslations`
+### disableDateTimeTranslations
 
 Use the default English language date-times instead of those dictated by the language set.
 
@@ -104,7 +104,7 @@ Use the default English language date-times instead of those dictated by the lan
 |- -|- -|
 | boolean | `false` |
 
-### `language`
+### language
 
 Language code for language to be used.
 
@@ -112,7 +112,7 @@ Language code for language to be used.
 |- -|- -|
 | string | `en` |
 
-### `logger`
+### logger
 
 Function to log warnings & errors from `Streami18n`.
 
@@ -120,7 +120,7 @@ Function to log warnings & errors from `Streami18n`.
 |- -|- -|
 | `(msg?: string) => void` | `console.warn` |
 
-### `translationsForLanguage`
+### translationsForLanguage
 
 Allows you to override the provided translations for given keys.
 
@@ -144,7 +144,7 @@ const streami18n = new Streami18n({
 `i18NextConfig` is the second optional parameter passed to `Streami18n`, it is an object with all keys being optional.
 `i18nextConfig` is used in the instantiation of the i18next instance and mostly aligns with the [i18next options](https://www.i18next.com/translation-function/essentials#overview-options).
 
-### `debug`
+### debug
 
 Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
 This overrides the [`debug` key on options](#debug) if provided.
@@ -153,7 +153,7 @@ This overrides the [`debug` key on options](#debug) if provided.
 |- -|
 | boolean |
 
-### `fallbackLng`
+### fallbackLng
 
 Fallback language setting for for i18next.
 
@@ -161,7 +161,7 @@ Fallback language setting for for i18next.
 |- -|
 | [`FallbackLng`](https://www.i18next.com/principles/fallback#fallback) |
 
-### `interpolation`
+### interpolation
 
 i18next interpolation setting for integrating dynamic values into translations.
 
@@ -169,7 +169,7 @@ i18next interpolation setting for integrating dynamic values into translations.
 |- -|- -|
 | [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
 
-### `keySeparator`
+### keySeparator
 
 Override character to separate keys.
 
@@ -177,7 +177,7 @@ Override character to separate keys.
 |- -|- -|
 | string \| boolean | `false` |
 
-### `lng`
+### lng
 
 Override language to use.
 
@@ -185,7 +185,7 @@ Override language to use.
 |- -|
 | string |
 
-### `nsSeparator`
+### nsSeparator
 
 Override character to split namespace from key.
 
@@ -193,7 +193,7 @@ Override character to split namespace from key.
 |- -|- -|
 | string \| boolean | `false` |
 
-### `parseMissingKeyHandler`
+### parseMissingKeyHandler
 
 Function to handle keys missing translations for the selected language.
 
@@ -203,7 +203,7 @@ Function to handle keys missing translations for the selected language.
 
 ## Methods
 
-### `getAvailableLanguages`
+### getAvailableLanguages
 
 Returns an array of language code strings corresponding to available languages.
 
@@ -211,7 +211,7 @@ Returns an array of language code strings corresponding to available languages.
 const availableLanguages = streami18n.getAvailableLanguages();
 ```
 
-### `geti18Instance`
+### geti18Instance
 
 Returns instance of i18next used within the `Streami18n` instance.
 
@@ -219,7 +219,7 @@ Returns instance of i18next used within the `Streami18n` instance.
 const i18n = streami18n.geti18Instance();
 ```
 
-### `getTranslations`
+### getTranslations
 
 Returns the current translations dictionaries for all languages.
 
@@ -227,7 +227,7 @@ Returns the current translations dictionaries for all languages.
 const translations = streami18n.getTranslations();
 ```
 
-### `getTranslators`
+### getTranslators
 
 Asynchronous function that returns the current translator functions.
 
@@ -235,7 +235,7 @@ Asynchronous function that returns the current translator functions.
 const { t, tDateTimeParser } = await streami18n.getTranslators();
 ```
 
-### `registerTranslation`
+### registerTranslation
 
 Allows you to register a custom translation, this will override a translation if one already exists for the given language code.
 The third parameter, which is optional, is a Day.js locale, which is structured the same as [dayjsLocaleConfigForLanguage](#dayjslocaleconfigforlanguage).
@@ -261,7 +261,7 @@ streami18n.registerTranslation(
 | translation | object | :heavy_check_mark: |
 | customDayjsLocale | object | |
 
-### `setLanguage`
+### setLanguage
 
 Asynchronous function that changes the current language and returns the new translation function.
 If not initialized `undefined` will be returned.

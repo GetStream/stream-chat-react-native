@@ -24,32 +24,11 @@ Stream Chat for React Native uses [`stream-chat`](https://github.com/GetStream/s
 To start you must get an instance of Stream Chat, for this you will need an api key.
 To create one you can sign up for a [free 30-day trial](https://getstream.io/chat/trial/) of Stream Chat, no CC is required.
 
-```typescript
+```ts
 import { StreamChat } from 'stream-chat'; 
 
 const client = StreamChat.getInstance('api_key');
 ```
-
-:::caution
-
-**Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.**
-<br />
-This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and retrieve it wherever you need it on your app to perform API calls.
-After calling it once, any following <code>getInstance</code> call will return the initial StreamChat instance.
-This will prevent you from accidentally creating multiple StreamChat instances, opening multiple WebSockets, and driving up your concurrent connections unnecessarily.
-<br /><br />
-
-Stream Chat is backward compatible. Users can continue using <code>new StreamChat()</code> if desired.
-<br />
-
-```typescript
-const client = new StreamChat('api_key');
-```
-
-Calling <code>new StreamChat()</code> repeatedly will create new copies of the client and in turn new WebSocket connections when <code>connectUser</code> is called.
-If you are using <code>new StreamChat()</code> you need to be vigilant about your use to ensure you are not creating multiple WebSocket connections unnecessarily. 
-
-:::
 
 There are multiple ways to access the client throughout your application. You can store the client in a [`context`](https://reactjs.org/docs/context.html).
 Create your own class. Or using the Singleton structure you can call `getInstance` when required.
@@ -64,7 +43,7 @@ For the purpose of this guide we will assume you have created and retrieved a `u
 To connect a user a the `connectUser` function should be called and provided with the user object and `user_token`.
 Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.  
 
-```typescript
+```ts
 await client.connectUser( 
     { 
         id: 'jlahey', 
@@ -77,10 +56,10 @@ await client.connectUser(
 
 It is recommended to not repeatedly call `connectUser` unnecessarily, multiple calls to `connectUser` will result in warnings, and attempting to call `connectUser` before disconnecting a current user will throw an Error.
 
-To disconnect a user you can call `disconnect` on the client.
+To disconnect a user you can call `disconnectUser` on the client.
 
-```typescript
-await client.disconnect();
+```ts
+await client.disconnectUser();
 ```
 
 ## Creating a Channel
@@ -125,7 +104,7 @@ For the purpose of this guide you should create a `channel` as you see fit utili
 >
 <TabItem value='channelId'>
 
-  ```typescript
+  ```ts
   /**
    *  Channel created using a channel id
    */
@@ -137,7 +116,7 @@ For the purpose of this guide you should create a `channel` as you see fit utili
 </TabItem>
 <TabItem value='members'>
 
-  ```typescript
+  ```ts
   /**
    *  Channel created using a members list
    */
@@ -152,7 +131,7 @@ For the purpose of this guide you should create a `channel` as you see fit utili
 
 To create this channel on the server you must call `create` on the new channel instance.
 
-```typescript
+```ts
 await channel.create();
 ```
 
