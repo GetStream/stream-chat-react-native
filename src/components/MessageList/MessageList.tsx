@@ -479,7 +479,11 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
+    if (
+      !loading &&
+      channel &&
+      channel.countUnread() <= scrollToFirstUnreadThreshold
+    ) {
       markRead();
     }
   }, [loading]);
@@ -833,27 +837,27 @@ const MessageListWithContext = <
   };
 
   const goToMessage = (messageId: string) => {
-      const indexOfParentInMessageList = messageList.findIndex(
-        (message) => message?.id === messageId,
-      );
+    const indexOfParentInMessageList = messageList.findIndex(
+      (message) => message?.id === messageId,
+    );
     if (indexOfParentInMessageList > -1) {
       try {
-      if (flatListRef.current) {
-        flatListRef.current.scrollToIndex({
+        if (flatListRef.current) {
+          flatListRef.current.scrollToIndex({
             index: indexOfParentInMessageList,
             viewPosition: 0.5,
-        });
-        setTargetedMessage(messageId);
+          });
+          setTargetedMessage(messageId);
 
           return;
-      }
-    } catch (_) {
+        }
+      } catch (_) {
         // do nothing;
       }
     }
 
-      loadChannelAtMessage({ messageId });
-      resetPaginationTrackers();
+    loadChannelAtMessage({ messageId });
+    resetPaginationTrackers();
   };
 
   const messagesWithImages = messageList.filter((message) => {
