@@ -490,6 +490,12 @@ const MessageListWithContext = <
 
   useEffect(() => {
     const topMessageAfterUpdate = channel?.state.messages[0];
+    const lastReceivedMessage = getLastReceivedMessage(messageList);
+
+    const hasNewMessage = lastReceivedId !== lastReceivedMessage?.id;
+    const isMyMessage = lastReceivedMessage?.user?.id === client.userID;
+
+    setLastReceivedId(lastReceivedMessage?.id);
 
     /**
      * Scroll down when
@@ -501,13 +507,6 @@ const MessageListWithContext = <
       if (!client || !channel || messageList.length === 0) {
         return;
       }
-
-      const lastReceivedMessage = getLastReceivedMessage(messageList);
-
-      const hasNewMessage = lastReceivedId !== lastReceivedMessage?.id;
-      const isMyMessage = lastReceivedMessage?.user?.id === client.userID;
-
-      setLastReceivedId(lastReceivedMessage?.id);
 
       if (
         (hasNewMessage && isMyMessage) ||
@@ -603,7 +602,9 @@ const MessageListWithContext = <
                 : []
             }
             lastReceivedId={
-              lastReceivedId === message.id ? lastReceivedId : undefined
+              lastReceivedId === message.id || message.quoted_message_id
+                ? lastReceivedId
+                : undefined
             }
             message={message}
             onThreadSelect={onThreadSelect}
@@ -630,7 +631,9 @@ const MessageListWithContext = <
               : []
           }
           lastReceivedId={
-            lastReceivedId === message.id ? lastReceivedId : undefined
+            lastReceivedId === message.id || message.quoted_message_id
+              ? lastReceivedId
+              : undefined
           }
           message={message}
           onThreadSelect={onThreadSelect}
@@ -835,11 +838,11 @@ const MessageListWithContext = <
       markRead();
     }
   };
-
   const goToMessage = (messageId: string) => {
     const indexOfParentInMessageList = messageList.findIndex(
       (message) => message?.id === messageId,
     );
+
     if (indexOfParentInMessageList > -1) {
       try {
         if (flatListRef.current) {

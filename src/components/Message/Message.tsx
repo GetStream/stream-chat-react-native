@@ -1300,7 +1300,9 @@ const areEqual = <
     (prevLastReceivedId === prevMessage.id ||
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
-      nextLastReceivedId === nextMessage.id);
+      nextLastReceivedId === nextMessage.id ||
+      (prevMessage.quoted_message_id && nextMessage.quoted_message_id));
+
   if (lastReceivedIdChangedAndMatters) return false;
 
   const messageEqual =

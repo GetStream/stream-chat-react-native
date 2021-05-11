@@ -85,6 +85,7 @@ export type MessageContentPropsWithContext<
   | 'hasReactions'
   | 'isMyMessage'
   | 'lastGroupMessage'
+  | 'lastReceivedId'
   | 'members'
   | 'message'
   | 'messageContentOrder'
@@ -413,6 +414,7 @@ const areEqual = <
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     lastGroupMessage: prevLastGroupMessage,
+    lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
@@ -425,6 +427,7 @@ const areEqual = <
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     lastGroupMessage: nextLastGroupMessage,
+    lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
@@ -433,6 +436,13 @@ const areEqual = <
     t: nextT,
     tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
+
+  const lastReceivedIdChangedAndMatters =
+    prevLastReceivedId !== nextLastReceivedId &&
+    prevMessage.quoted_message_id &&
+    nextMessage.quoted_message_id;
+
+  if (lastReceivedIdChangedAndMatters) return false;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
   if (!hasReactionsEqual) return false;
@@ -554,6 +564,7 @@ export const MessageContent = <
     hasReactions,
     isMyMessage,
     lastGroupMessage,
+    lastReceivedId,
     members,
     message,
     messageContentOrder,
@@ -596,6 +607,7 @@ export const MessageContent = <
         hasReactions,
         isMyMessage,
         lastGroupMessage,
+        lastReceivedId,
         members,
         message,
         messageContentOrder,
