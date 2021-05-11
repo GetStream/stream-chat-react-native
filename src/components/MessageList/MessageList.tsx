@@ -363,6 +363,7 @@ const MessageListWithContext = <
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const initialScrollSet = useRef<boolean>(false);
+  const channelResyncScrollSet = useRef<boolean>(true);
 
   const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
@@ -469,6 +470,11 @@ const MessageListWithContext = <
     },
   );
 
+  const resetPaginationTrackers = () => {
+    onStartReachedTracker.current = {};
+    onEndReachedTracker.current = {};
+  };
+
   useEffect(() => {
     setScrollToBottomButtonVisible(false);
   }, [disabled]);
@@ -483,9 +489,10 @@ const MessageListWithContext = <
     const topMessageAfterUpdate = channel?.state.messages[0];
 
     /**
-     * Scroll to bottom only if:
-     * 1. Channel has received a new message AND
-     * 2. Message was sent by me (current logged in user)
+     * Scroll down when
+     * 1. you send a new message to channel
+     * 2. new message list is small than the one before update - channel has resynced
+     * 3. created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
      */
     const scrollToBottomIfNeeded = () => {
       if (!client || !channel || messageList.length === 0) {
@@ -499,12 +506,6 @@ const MessageListWithContext = <
 
       setLastReceivedId(lastReceivedMessage?.id);
 
-      /**
-       * Scroll down when
-       * 1. you send a new message to channel
-       * 2. new message list is small than the one before update - channel has resynced
-       * 3. created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
-       */
       if (
         (hasNewMessage && isMyMessage) ||
         messageListLength < messageListLengthBeforeUpdate.current ||
@@ -513,12 +514,21 @@ const MessageListWithContext = <
           topMessageBeforeUpdate.current.created_at <
             topMessageAfterUpdate.created_at)
       ) {
+        channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
+        resetPaginationTrackers();
+
+        if (flatListRef.current) {
+          flatListRef.current?.scrollToOffset({
+            offset: 0,
+          });
+        }
         setTimeout(() => {
-          if (flatListRef.current) {
-            flatListRef.current?.scrollToIndex({ index: 0 });
+          channelResyncScrollSet.current = true;
+          if (channel.countUnread() > 0) {
+            markRead();
           }
-        });
+        }, 500);
       }
     };
 
@@ -757,7 +767,11 @@ const MessageListWithContext = <
    *    |-> if channel is unread, call markRead().
    */
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
-    if (!channel || !initialScrollSet.current) {
+    if (
+      !channel ||
+      !initialScrollSet.current ||
+      !channelResyncScrollSet.current
+    ) {
       return;
     }
 
@@ -783,7 +797,7 @@ const MessageListWithContext = <
 
     const shouldMarkRead =
       !threadList &&
-      offset === 0 &&
+      offset <= 0 &&
       channel?.state.isUpToDate &&
       channel.countUnread() > 0;
 
@@ -804,8 +818,7 @@ const MessageListWithContext = <
 
   const goToNewMessages = async () => {
     if (!channel?.state.isUpToDate) {
-      onStartReachedTracker.current = {};
-      onEndReachedTracker.current = {};
+      resetPaginationTrackers();
 
       await reloadChannel();
     } else if (flatListRef.current) {
@@ -834,8 +847,7 @@ const MessageListWithContext = <
       }
     } catch (_) {
       loadChannelAtMessage({ messageId });
-      onStartReachedTracker.current = {};
-      onEndReachedTracker.current = {};
+      resetPaginationTrackers();
     }
   };
 

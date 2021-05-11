@@ -885,7 +885,10 @@ const ChannelWithContext = <
 
     try {
       setError(false);
-      /** Maintain the scroll position upto 30 new messages */
+      /**
+       * Allow a buffer of 30 new messages, so that MessageList won't move its scroll position,
+       * giving smooth user experience.
+       */
       const state = await channel.watch({
         messages: {
           limit: messages.length + 30,
