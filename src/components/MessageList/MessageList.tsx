@@ -427,7 +427,6 @@ const MessageListWithContext = <
       flatListRef.current
     ) {
       flatListRef.current.scrollToOffset({
-        animated: true,
         offset: 50,
       });
       setTimeout(() => {
@@ -822,8 +821,8 @@ const MessageListWithContext = <
 
       await reloadChannel();
     } else if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({
-        index: 0,
+      flatListRef.current.scrollToOffset({
+        offset: 0,
       });
     }
 
@@ -834,21 +833,27 @@ const MessageListWithContext = <
   };
 
   const goToMessage = (messageId: string) => {
-    try {
       const indexOfParentInMessageList = messageList.findIndex(
         (message) => message?.id === messageId,
       );
-
+    if (indexOfParentInMessageList > -1) {
+      try {
       if (flatListRef.current) {
         flatListRef.current.scrollToIndex({
-          index: indexOfParentInMessageList - 1,
+            index: indexOfParentInMessageList,
+            viewPosition: 0.5,
         });
         setTargetedMessage(messageId);
+
+          return;
       }
     } catch (_) {
+        // do nothing;
+      }
+    }
+
       loadChannelAtMessage({ messageId });
       resetPaginationTrackers();
-    }
   };
 
   const messagesWithImages = messageList.filter((message) => {
