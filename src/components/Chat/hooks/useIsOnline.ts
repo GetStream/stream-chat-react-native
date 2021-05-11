@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { NetInfo } from '../../../native';
 
@@ -15,8 +15,14 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { AppState, AppStateStatus } from 'react-native';
+import { useAppStateListener } from './useAppStateListener';
 
+/**
+ * Disconnect the websocket connection when app goes to background,
+ * and reconnect when app comes to foreground.
+ * We do this to make sure, user receives push notifications when app is in the background.
+ * You can't receive push notification until you have active websocket connection.
+ */
 export const useIsOnline = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -37,45 +43,31 @@ export const useIsOnline = <
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   const clientExits = !!client;
-  const appState = useRef(AppState.currentState);
 
-  useEffect(() => {
-    closeConnectionOnBackground &&
-      AppState.addEventListener('change', handleAppStateChange);
-
-    return () => {
-      closeConnectionOnBackground &&
-        AppState.removeEventListener('change', handleAppStateChange);
-    };
-  }, [closeConnectionOnBackground]);
-
-  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    if (appState.current === 'background' && nextAppState === 'active') {
-      setTimeout(async () => {
-        await client.openConnection();
-      }, 3000);
-    } else if (
-      appState.current.match(/active|inactive/) &&
-      nextAppState === 'background'
-    ) {
-      await client.closeConnection();
-      setIsOnline(false);
-
-      for (const cid in client.activeChannels) {
-        const channel = client.activeChannels[cid];
-        channel.state.setIsUpToDate(false);
+  const onBackground = closeConnectionOnBackground
+    ? () => {
+        for (const cid in client.activeChannels) {
+          const channel = client.activeChannels[cid];
+          channel?.state.setIsUpToDate(false);
+        }
+        client.closeConnection();
+        setIsOnline(false);
       }
-    }
+    : undefined;
 
-    appState.current = nextAppState;
-  };
+  const onForeground = closeConnectionOnBackground
+    ? () => {
+        client.openConnection();
+      }
+    : undefined;
+
+  useAppStateListener(onForeground, onBackground);
 
   useEffect(() => {
     const handleChangedEvent = (
       event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>,
     ) => {
       setConnectionRecovering(!event.online);
-      console.log('setting ', event.online);
       setIsOnline(event.online || false);
     };
 

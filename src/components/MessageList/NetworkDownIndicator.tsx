@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -18,11 +20,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-export type NetworkDownIndicatorProps = {
-  text?: string;
-};
 
-export const NetworkDownIndicator = ({ text }: NetworkDownIndicatorProps) => {
+export const NetworkDownIndicator = () => {
   const {
     theme: {
       colors: { grey },
@@ -30,6 +29,12 @@ export const NetworkDownIndicator = ({ text }: NetworkDownIndicatorProps) => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
+  const { isOnline } = useChatContext();
+  const { error } = useChannelContext();
+
+  if (isOnline && !error) {
+    return null;
+  }
 
   return (
     <View
@@ -41,7 +46,11 @@ export const NetworkDownIndicator = ({ text }: NetworkDownIndicatorProps) => {
       testID='error-notification'
     >
       <Text style={[styles.errorNotificationText, errorNotificationText]}>
-        {text || t('Reconnecting...')}
+        {!isOnline
+          ? t('Reconnecting...')
+          : error
+          ? t('Error loading messages for this channel...')
+          : ''}
       </Text>
     </View>
   );

@@ -160,7 +160,7 @@ type MessageListPropsWithContext<
     | 'targetedMessage'
     | 'typingEventsEnabled'
   > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'isOnline'> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
   Pick<
     PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -287,7 +287,6 @@ const MessageListWithContext = <
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
-    error,
     FlatList,
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
@@ -295,7 +294,6 @@ const MessageListWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
-    isOnline,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -347,14 +345,6 @@ const MessageListWithContext = <
     threadList,
   });
   const messageListLengthBeforeUpdate = useRef(0);
-  const oldestMessageBeforeUpdate = useRef<FormatMessageResponse<
-    At,
-    Ch,
-    Co,
-    Me,
-    Re,
-    Us
-  > | null>(null);
   const messageListLength = messageList.length;
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
@@ -394,9 +384,10 @@ const MessageListWithContext = <
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessage = useRef<
-    MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined
-  >(messageList[messageListLength - 1] || undefined);
+  const topMessageBeforeUpdate = useRef<
+    FormatMessageResponse<At, Ch, Co, Me, Re, Us>
+  >();
+
   const channelLastRead = useRef(getLastReadSafely());
 
   const isUnreadMessage = (
@@ -418,7 +409,9 @@ const MessageListWithContext = <
       initialScrollSet.current = true;
       return;
     }
-    if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
+    if (
+      isUnreadMessage(topMessageBeforeUpdate.current, channelLastRead.current)
+    ) {
       if (flatListRef.current) {
         flatListRef.current.scrollToEnd();
       }
@@ -487,6 +480,8 @@ const MessageListWithContext = <
   }, [loading]);
 
   useEffect(() => {
+    const topMessageAfterUpdate = channel?.state.messages[0];
+
     /**
      * Scroll to bottom only if:
      * 1. Channel has received a new message AND
@@ -504,18 +499,26 @@ const MessageListWithContext = <
 
       setLastReceivedId(lastReceivedMessage?.id);
 
-      // Scroll down when it's your own message that you added..
+      /**
+       * Scroll down when
+       * 1. you send a new message to channel
+       * 2. new message list is small than the one before update - channel has resynced
+       * 3. created_at timestamp of top message before update is lesser than created_at timestamp of top message after update - channel has resynced
+       */
       if (
         (hasNewMessage && isMyMessage) ||
-        messageListLengthBeforeUpdate.current > messageListLength ||
-        (oldestMessageBeforeUpdate.current?.created_at &&
-          oldestMessageBeforeUpdate.current.created_at <
-            channel.state.messages[0].created_at)
+        messageListLength < messageListLengthBeforeUpdate.current ||
+        (topMessageBeforeUpdate.current &&
+          topMessageAfterUpdate &&
+          topMessageBeforeUpdate.current.created_at <
+            topMessageAfterUpdate.created_at)
       ) {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToIndex({ index: 0 });
-        }
         setScrollToBottomButtonVisible(false);
+        setTimeout(() => {
+          if (flatListRef.current) {
+            flatListRef.current?.scrollToIndex({ index: 0 });
+          }
+        });
       }
     };
 
@@ -533,10 +536,10 @@ const MessageListWithContext = <
      */
     if (initialScrollToFirstUnreadMessage && !initialScrollSet.current) {
       channelLastRead.current = getLastReadSafely();
-      topMessage.current = messageList[messageListLength - 1];
     }
+
     messageListLengthBeforeUpdate.current = messageListLength;
-    oldestMessageBeforeUpdate.current = channel?.state.messages[0] || null;
+    topMessageBeforeUpdate.current = topMessageAfterUpdate;
   }, [messageListLength]);
 
   useEffect(() => {
@@ -675,13 +678,24 @@ const MessageListWithContext = <
       return Promise.resolve();
     };
 
+    const onError = () => {
+      /** Release the onStartReached trigger after 2 seconds, to try again */
+      setTimeout(() => {
+        onStartReachedTracker.current = {};
+      }, 2000);
+    };
+
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
       onEndReachedInPromise.current.finally(() => {
-        onStartReachedInPromise.current = loadMoreRecent().then(callback);
+        onStartReachedInPromise.current = loadMoreRecent()
+          .then(callback)
+          .catch(onError);
       });
     } else {
-      onStartReachedInPromise.current = loadMoreRecent().then(callback);
+      onStartReachedInPromise.current = loadMoreRecent()
+        .then(callback)
+        .catch(onError);
     }
   };
 
@@ -705,8 +719,14 @@ const MessageListWithContext = <
 
     const callback = () => {
       onEndReachedInPromise.current = null;
-
       return Promise.resolve();
+    };
+
+    const onError = () => {
+      /** Release the onEndReachedTracker trigger after 2 seconds, to try again */
+      setTimeout(() => {
+        onEndReachedTracker.current = {};
+      }, 2000);
     };
 
     // If onStartReached is in progress, better to wait for it to finish for smooth UX
@@ -715,12 +735,17 @@ const MessageListWithContext = <
         onEndReachedInPromise.current = (threadList
           ? loadMoreThread()
           : loadMore()
-        ).then(callback);
+        )
+          .then(callback)
+          .catch(onError);
       });
     } else {
-      onEndReachedInPromise.current = threadList
-        ? loadMoreThread().then(callback)
-        : loadMore().then(callback);
+      onEndReachedInPromise.current = (threadList
+        ? loadMoreThread()
+        : loadMore()
+      )
+        .then(callback)
+        .catch(onError);
     }
   };
 
@@ -779,8 +804,8 @@ const MessageListWithContext = <
 
   const goToNewMessages = async () => {
     if (!channel?.state.isUpToDate) {
-      onStartReachedTracker.current = [];
-      onEndReachedTracker.current = [];
+      onStartReachedTracker.current = {};
+      onEndReachedTracker.current = {};
 
       await reloadChannel();
     } else if (flatListRef.current) {
@@ -809,8 +834,8 @@ const MessageListWithContext = <
       }
     } catch (_) {
       loadChannelAtMessage({ messageId });
-      onStartReachedTracker.current = [];
-      onEndReachedTracker.current = [];
+      onStartReachedTracker.current = {};
+      onEndReachedTracker.current = {};
     }
   };
 
@@ -949,13 +974,7 @@ const MessageListWithContext = <
           />
         </>
       )}
-      {(!isOnline || error) && (
-        <NetworkDownIndicator
-          text={
-            !isOnline ? 'reconnecting ...' : error ? 'An error occured' : ''
-          }
-        />
-      )}
+      <NetworkDownIndicator />
     </View>
   );
 };
@@ -1003,7 +1022,7 @@ export const MessageList = <
     targetedMessage,
     typingEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     DateHeader,
@@ -1055,7 +1074,6 @@ export const MessageList = <
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
-        isOnline,
         loadChannelAtMessage,
         loading,
         LoadingIndicator,

@@ -94,6 +94,8 @@ export const usePaginatedChannels = <
         newOptions,
       );
 
+      channelQueryResponse.forEach((c) => c.state.setIsUpToDate(true));
+
       const newChannels =
         queryType === 'reload' || queryType === 'refresh'
           ? channelQueryResponse

@@ -22,7 +22,6 @@
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "noUncheckedIndexedAccess": true,
     "strict": true,
     "target": "esnext",
     "allowSyntheticDefaultImports": true,

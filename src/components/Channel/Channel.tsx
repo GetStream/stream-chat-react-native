@@ -699,7 +699,7 @@ const ChannelWithContext = <
 
   const connectionChangedHandler = (event: ConnectionChangeEvent) => {
     if (event.online) {
-      refreshChannel();
+      resyncChannel();
     }
   };
 
@@ -746,6 +746,7 @@ const ChannelWithContext = <
     try {
       await queryCall();
       setLastRead(new Date());
+      setHasMore(true);
       copyChannelState();
     } catch (err) {
       setError(err);
@@ -879,69 +880,74 @@ const ChannelWithContext = <
       return;
     });
 
-  const refreshChannel = async () => {
+  const resyncChannel = async () => {
     if (!channel) return;
-    setError(false);
+
     try {
-      const state = await channel?.watch({
+      setError(false);
+      /** Maintain the scroll position upto 30 new messages */
+      const state = await channel.watch({
         messages: {
-          limit: messages.length + 100,
+          limit: messages.length + 30,
         },
       });
 
       const ol_topMessage = messages[0];
+      const ol_topMessage_id = messages[0]?.id;
       const ol_bottomMessage = messages[messages.length - 1];
 
       const nl_topMessage = state.messages[0];
       const nl_bottomMessage = state.messages[state.messages.length - 1];
 
-      /** Case 1 */
-      if (state.messages.length === 0 || !nl_topMessage) {
+      if (
+        !ol_topMessage || // previous list was empty
+        !ol_bottomMessage || // previous list was empty
+        !nl_topMessage || // new list is truncated
+        !nl_bottomMessage // new list is truncated
+      ) {
         /** Channel was truncated */
         channel.state.clearMessages();
         channel.state.setIsUpToDate(true);
+        channel.state.addMessagesSorted(state.messages);
         copyChannelState();
         return;
       }
 
-      if (!messages) {
-        channel.state.setIsUpToDate(true);
-        copyChannelState();
-        return;
-      }
-
-      const ol_topMessage_createdAt = messages[0]?.created_at;
-      const ol_bottomMessage_createdAt =
-        messages[messages.length - 1].created_at;
+      const ol_topMessage_createdAt = ol_topMessage.created_at;
+      const ol_bottomMessage_createdAt = ol_bottomMessage.created_at;
       const nl_topMessage_createdAt = nl_topMessage.created_at
         ? new Date(nl_topMessage.created_at)
         : new Date();
-      const nl_bottomMessage_createdAt = nl_bottomMessage.created_at
+      const nl_bottomMessage_createdAt = nl_bottomMessage?.created_at
         ? new Date(nl_bottomMessage.created_at)
         : new Date();
 
       let finalMessages = [];
 
       if (
+        ol_topMessage &&
+        ol_topMessage_createdAt &&
+        ol_bottomMessage_createdAt &&
         nl_topMessage_createdAt < ol_topMessage_createdAt &&
-        nl_bottomMessage_createdAt > ol_bottomMessage_createdAt
+        nl_bottomMessage_createdAt >= ol_bottomMessage_createdAt
       ) {
-        const index = messages.findIndex((m) => m.id === ol_topMessage.id);
+        const index = state.messages.findIndex(
+          (m) => m.id === ol_topMessage_id,
+        );
         finalMessages = state.messages.slice(index);
       } else {
         finalMessages = state.messages;
       }
 
       channel.state.setIsUpToDate(true);
-      channel.state.clearMessages();
 
+      channel.state.clearMessages();
       channel.state.addMessagesSorted(finalMessages);
       setHasMore(true);
       copyChannelState();
     } catch (err) {
       setError(err);
       setLoading(false);
-      setLastRead(new Date());
     }
   };
 
@@ -1287,7 +1293,9 @@ const ChannelWithContext = <
     Re,
     Us
   >['loadMore'] = async () => {
-    if (loadingMore || hasMore === false) return;
+    if (loadingMore || hasMore === false) {
+      return;
+    }
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -1314,7 +1322,9 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      return setLoadingMore(false);
+      setError(err);
+      setLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1347,8 +1357,9 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
+      setError(err);
       setLoadingMoreRecent(false);
-      return;
+      throw err;
     }
   };
 
@@ -1709,9 +1720,7 @@ const ChannelWithContext = <
       <LoadingErrorIndicator
         error={error}
         listType='message'
-        retry={() => {
-          loadMore();
-        }}
+        retry={reloadChannel}
       />
     );
   }
