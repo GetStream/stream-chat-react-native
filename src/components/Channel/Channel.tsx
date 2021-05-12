@@ -883,8 +883,8 @@ const ChannelWithContext = <
   const resyncChannel = async () => {
     if (!channel) return;
 
+    setError(false);
     try {
-      setError(false);
       /**
        * Allow a buffer of 30 new messages, so that MessageList won't move its scroll position,
        * giving smooth user experience.
@@ -935,7 +935,7 @@ const ChannelWithContext = <
         newListBottomMessageCreatedAt >= oldListBottomMessageCreatedAt
       ) {
         const index = state.messages.findIndex(
-          (m) => m.id === oldListTopMessageId,
+          (message) => message.id === oldListTopMessageId,
         );
         finalMessages = state.messages.slice(index);
       } else {
