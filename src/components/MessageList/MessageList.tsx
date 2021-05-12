@@ -345,7 +345,16 @@ const MessageListWithContext = <
     threadList,
   });
   const messageListLengthBeforeUpdate = useRef(0);
-  const messageListLength = messageList.length;
+  const messageListLengthAfterUpdate = messageList.length;
+
+  /**
+   * We need topMessage and channelLastRead values to set the initial scroll position.
+   * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
+   */
+  const topMessageBeforeUpdate = useRef<
+    FormatMessageResponse<At, Ch, Co, Me, Re, Us>
+  >();
+  const topMessageAfterUpdate = channel?.state.messages[0];
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
 
@@ -381,13 +390,6 @@ const MessageListWithContext = <
    */
   const getLastReadSafely = () =>
     channel?.initialized ? channel.lastRead() : undefined;
-  /**
-   * We need topMessage and channelLastRead values to set the initial scroll position.
-   * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
-   */
-  const topMessageBeforeUpdate = useRef<
-    FormatMessageResponse<At, Ch, Co, Me, Re, Us>
-  >();
 
   const channelLastRead = useRef(getLastReadSafely());
 
@@ -489,7 +491,6 @@ const MessageListWithContext = <
   }, [loading]);
 
   useEffect(() => {
-    const topMessageAfterUpdate = channel?.state.messages[0];
     const lastReceivedMessage = getLastReceivedMessage(messageList);
 
     const hasNewMessage = lastReceivedId !== lastReceivedMessage?.id;
@@ -510,7 +511,7 @@ const MessageListWithContext = <
 
       if (
         (hasNewMessage && isMyMessage) ||
-        messageListLength < messageListLengthBeforeUpdate.current ||
+        messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current ||
         (topMessageBeforeUpdate.current &&
           topMessageAfterUpdate &&
           topMessageBeforeUpdate.current.created_at <
@@ -521,8 +522,10 @@ const MessageListWithContext = <
         resetPaginationTrackers();
 
         if (flatListRef.current) {
-          flatListRef.current?.scrollToOffset({
-            offset: 0,
+          setTimeout(() => {
+            flatListRef.current?.scrollToOffset({
+              offset: 0,
+            });
           });
         }
         setTimeout(() => {
@@ -550,9 +553,9 @@ const MessageListWithContext = <
       channelLastRead.current = getLastReadSafely();
     }
 
-    messageListLengthBeforeUpdate.current = messageListLength;
+    messageListLengthBeforeUpdate.current = messageListLengthAfterUpdate;
     topMessageBeforeUpdate.current = topMessageAfterUpdate;
-  }, [messageListLength]);
+  }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
     if (!channel?.state.isUpToDate && autoscrollToTop) {
@@ -560,7 +563,7 @@ const MessageListWithContext = <
     } else if (channel?.state.isUpToDate && !autoscrollToTop) {
       setAutoscrollToTop(true);
     }
-  }, [messageListLength]);
+  }, [messageListLengthAfterUpdate]);
 
   const renderItem = ({
     index,
@@ -980,7 +983,7 @@ const MessageListWithContext = <
           <View style={styles.stickyHeader}>
             {StickyHeader ? (
               <StickyHeader dateString={stickyHeaderDateToRender} />
-            ) : messageListLength ? (
+            ) : messageListLengthAfterUpdate ? (
               <DateHeader dateString={stickyHeaderDateToRender} />
             ) : null}
           </View>
