@@ -585,7 +585,7 @@ const ChannelWithContext = <
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
        * since we use read state on channel to decide what offset to load channel at.
-       * Also there is no usecase from UX perspective, why one would need loading uninitialized channel at particular message.
+       * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
       if (!channel.initialized) {

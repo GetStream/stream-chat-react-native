@@ -96,7 +96,7 @@ const MessageSimpleWithContext = <
         },
         container,
       ]}
-      testID={'message-simple-wrapper'}
+      testID='message-simple-wrapper'
     >
       {alignment === 'left' && <MessageAvatar />}
       <MessageContent setMessageContentWidth={setMessageContentWidth} />
