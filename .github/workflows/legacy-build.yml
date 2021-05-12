@@ -1,13 +1,11 @@
 name: build
 
 on:
-  pull_request:
+  push:
     branches:
       - master
-    types: [closed]
 jobs:
-  build_and_deploy_ios_testflight_qa:
-    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'deploy') }}
+  build_and_deploy_ios_firebase:
     runs-on: [macos-latest]
     steps:
       - uses: actions/checkout@v2
@@ -15,6 +13,8 @@ jobs:
         run: |
           cd examples/SampleApp/ios
           bundle update --bundler
+      - name: Install firebase-tools
+        run: npm install -g firebase-tools
       - name: RN setup
         run: |
           yarn;
@@ -24,19 +24,16 @@ jobs:
           yarn;
           cd ios
           pod install
-      - name: Build and release Testflight QA
+      - name: Build and release Firebase
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           cd examples/SampleApp/ios
-          bundle exec fastlane deploy_to_testflight_qa
+          bundle exec fastlane deploy_to_firebase
 
-  build_and_deploy_android_s3:
-    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'deploy') }}
+  build_and_deploy_android_firebase:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -59,14 +56,10 @@ jobs:
           yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest tmp
           cd android
           rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Deploy
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Upload APK
-        run: |
-          cp examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk rn-sample-app.apk
-          aws s3 cp rn-sample-app.apk s3://${{ secrets.AWS_S3_BUCKET }} --sse AES256
+          appId: ${{secrets.ANDROID_FIREBASE_APP_ID}}
+          token: ${{secrets.FIREBASE_TOKEN}}
+          groups: android-react-native-testers
+          file: examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk
