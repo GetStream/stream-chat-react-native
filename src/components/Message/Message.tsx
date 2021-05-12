@@ -1103,6 +1103,7 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
+    goToMessage,
     groupStyles,
     handleAction,
     handleDeleteMessage,
@@ -1277,6 +1278,7 @@ const areEqual = <
 ) => {
   const {
     channel: prevChannel,
+    goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
     showUnreadUnderlay: prevShowUnreadUnderlay,
@@ -1285,6 +1287,7 @@ const areEqual = <
   } = prevProps;
   const {
     channel: nextChannel,
+    goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
     showUnreadUnderlay: nextShowUnreadUnderlay,
@@ -1295,21 +1298,19 @@ const areEqual = <
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
 
-  /**
-   * We need to allow re-render when lastReceivedId changes, for following cases
-   * 1. updating the status (seen status) on latest message in list
-   * 2. updating quoted messages. Because when you press the quoted message, it makes a call
-   *    to `goToMessage` function, which is dependent on message list (length specifically).
-   */
   const lastReceivedIdChangedAndMatters =
     prevLastReceivedId !== nextLastReceivedId &&
     (prevLastReceivedId === prevMessage.id ||
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
-      nextLastReceivedId === nextMessage.id ||
-      (prevMessage.quoted_message_id && nextMessage.quoted_message_id));
+      nextLastReceivedId === nextMessage.id);
 
   if (lastReceivedIdChangedAndMatters) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&

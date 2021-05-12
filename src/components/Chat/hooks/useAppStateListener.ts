@@ -11,20 +11,24 @@ export const useAppStateListener = (
   useEffect(() => {
     listenerExists && AppState.addEventListener('change', handleAppStateChange);
 
-    return () => {
+    return () =>
       listenerExists &&
-        AppState.removeEventListener('change', handleAppStateChange);
-    };
+      AppState.removeEventListener('change', handleAppStateChange);
   }, []);
 
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (appState.current === 'background' && nextAppState === 'active') {
-      onForeground?.();
+    if (
+      appState.current === 'background' &&
+      nextAppState === 'active' &&
+      onForeground
+    ) {
+      onForeground();
     } else if (
       appState.current.match(/active|inactive/) &&
-      nextAppState === 'background'
+      nextAppState === 'background' &&
+      onBackground
     ) {
-      onBackground?.();
+      onBackground();
     }
     appState.current = nextAppState;
   };

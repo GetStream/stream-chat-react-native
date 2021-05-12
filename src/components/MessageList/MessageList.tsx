@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   FlatListProps,
   FlatList as FlatListType,
@@ -522,13 +528,13 @@ const MessageListWithContext = <
         setScrollToBottomButtonVisible(false);
         resetPaginationTrackers();
 
-        if (flatListRef.current) {
-          setTimeout(() => {
+        setTimeout(
+          () =>
             flatListRef.current?.scrollToOffset({
               offset: 0,
-            });
-          });
-        }
+            }),
+          50,
+        );
         setTimeout(() => {
           channelResyncScrollSet.current = true;
           if (channel.countUnread() > 0) {
@@ -606,9 +612,7 @@ const MessageListWithContext = <
                 : []
             }
             lastReceivedId={
-              lastReceivedId === message.id || message.quoted_message_id
-                ? lastReceivedId
-                : undefined
+              lastReceivedId === message.id ? lastReceivedId : undefined
             }
             message={message}
             onThreadSelect={onThreadSelect}
@@ -842,30 +846,34 @@ const MessageListWithContext = <
       markRead();
     }
   };
-  const goToMessage = (messageId: string) => {
-    const indexOfParentInMessageList = messageList.findIndex(
-      (message) => message?.id === messageId,
-    );
 
-    if (indexOfParentInMessageList > -1) {
-      try {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToIndex({
-            index: indexOfParentInMessageList,
-            viewPosition: 0.5,
-          });
-          setTargetedMessage(messageId);
+  const goToMessage = useCallback(
+    (messageId: string) => {
+      const indexOfParentInMessageList = messageList.findIndex(
+        (message) => message?.id === messageId,
+      );
 
-          return;
+      if (indexOfParentInMessageList > -1) {
+        try {
+          if (flatListRef.current) {
+            flatListRef.current.scrollToIndex({
+              index: indexOfParentInMessageList,
+              viewPosition: 0.5,
+            });
+            setTargetedMessage(messageId);
+
+            return;
+          }
+        } catch (_) {
+          // do nothing;
         }
-      } catch (_) {
-        // do nothing;
       }
-    }
 
-    loadChannelAtMessage({ messageId });
-    resetPaginationTrackers();
-  };
+      loadChannelAtMessage({ messageId });
+      resetPaginationTrackers();
+    },
+    [messageListLengthAfterUpdate, lastReceivedId],
+  );
 
   const messagesWithImages = messageList.filter((message) => {
     if (!message.deleted_at && message.attachments) {

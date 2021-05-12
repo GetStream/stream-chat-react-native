@@ -111,6 +111,7 @@ export type MessageContextValue<
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
+  goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;
   /** Prevent message being pressed for image viewer view */

@@ -895,18 +895,18 @@ const ChannelWithContext = <
         },
       });
 
-      const ol_topMessage = messages[0];
-      const ol_topMessage_id = messages[0]?.id;
-      const ol_bottomMessage = messages[messages.length - 1];
+      const oldListTopMessage = messages[0];
+      const oldListTopMessageId = messages[0]?.id;
+      const oldListBottomMessage = messages[messages.length - 1];
 
-      const nl_topMessage = state.messages[0];
-      const nl_bottomMessage = state.messages[state.messages.length - 1];
+      const newListTopMessage = state.messages[0];
+      const newListBottomMessage = state.messages[state.messages.length - 1];
 
       if (
-        !ol_topMessage || // previous list was empty
-        !ol_bottomMessage || // previous list was empty
-        !nl_topMessage || // new list is truncated
-        !nl_bottomMessage // new list is truncated
+        !oldListTopMessage || // previous list was empty
+        !oldListBottomMessage || // previous list was empty
+        !newListTopMessage || // new list is truncated
+        !newListBottomMessage // new list is truncated
       ) {
         /** Channel was truncated */
         channel.state.clearMessages();
@@ -916,26 +916,26 @@ const ChannelWithContext = <
         return;
       }
 
-      const ol_topMessage_createdAt = ol_topMessage.created_at;
-      const ol_bottomMessage_createdAt = ol_bottomMessage.created_at;
-      const nl_topMessage_createdAt = nl_topMessage.created_at
-        ? new Date(nl_topMessage.created_at)
+      const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
+      const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
+      const newListTopMessageCreatedAt = newListTopMessage.created_at
+        ? new Date(newListTopMessage.created_at)
         : new Date();
-      const nl_bottomMessage_createdAt = nl_bottomMessage?.created_at
-        ? new Date(nl_bottomMessage.created_at)
+      const newListBottomMessageCreatedAt = newListBottomMessage?.created_at
+        ? new Date(newListBottomMessage.created_at)
         : new Date();
 
       let finalMessages = [];
 
       if (
-        ol_topMessage &&
-        ol_topMessage_createdAt &&
-        ol_bottomMessage_createdAt &&
-        nl_topMessage_createdAt < ol_topMessage_createdAt &&
-        nl_bottomMessage_createdAt >= ol_bottomMessage_createdAt
+        oldListTopMessage &&
+        oldListTopMessageCreatedAt &&
+        oldListBottomMessageCreatedAt &&
+        newListTopMessageCreatedAt < oldListTopMessageCreatedAt &&
+        newListBottomMessageCreatedAt >= oldListBottomMessageCreatedAt
       ) {
         const index = state.messages.findIndex(
-          (m) => m.id === ol_topMessage_id,
+          (m) => m.id === oldListTopMessageId,
         );
         finalMessages = state.messages.slice(index);
       } else {

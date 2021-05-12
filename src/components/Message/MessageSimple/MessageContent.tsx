@@ -81,11 +81,11 @@ export type MessageContentPropsWithContext<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
   | 'disabled'
+  | 'goToMessage'
   | 'groupStyles'
   | 'hasReactions'
   | 'isMyMessage'
   | 'lastGroupMessage'
-  | 'lastReceivedId'
   | 'members'
   | 'message'
   | 'messageContentOrder'
@@ -411,10 +411,10 @@ const areEqual = <
   nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     lastGroupMessage: prevLastGroupMessage,
-    lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
     messageContentOrder: prevMessageContentOrder,
@@ -424,10 +424,10 @@ const areEqual = <
     tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     lastGroupMessage: nextLastGroupMessage,
-    lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
     messageContentOrder: nextMessageContentOrder,
@@ -443,18 +443,10 @@ const areEqual = <
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
 
-  /**
-   * We need to allow re-render when lastReceivedId changes, for following cases
-   * 1. updating the status (seen status) on latest message in list
-   * 2. updating quoted messages. Because when you press the quoted message, it makes a call
-   *    to `goToMessage` function, which is dependent on message list (length specifically).
-   */
-  const lastReceivedIdChangedAndMatters =
-    prevLastReceivedId !== nextLastReceivedId &&
-    prevMessage.quoted_message_id &&
-    nextMessage.quoted_message_id;
+  const goToMessageChangedAndMatters =
+    prevGoToMessage !== nextGoToMessage && nextMessage.quoted_message_id;
 
-  if (lastReceivedIdChangedAndMatters) return false;
+  if (goToMessageChangedAndMatters) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
