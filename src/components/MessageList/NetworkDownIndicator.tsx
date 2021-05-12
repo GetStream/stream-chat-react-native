@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
@@ -22,6 +23,8 @@ const styles = StyleSheet.create({
 });
 
 export const NetworkDownIndicator = () => {
+  const { error } = useChannelContext();
+  const { isOnline } = useChatContext();
   const {
     theme: {
       colors: { grey },
@@ -29,8 +32,6 @@ export const NetworkDownIndicator = () => {
     },
   } = useTheme();
   const { t } = useTranslationContext();
-  const { isOnline } = useChatContext();
-  const { error } = useChannelContext();
 
   if (isOnline && !error) {
     return null;

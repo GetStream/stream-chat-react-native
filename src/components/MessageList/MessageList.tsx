@@ -371,6 +371,7 @@ const MessageListWithContext = <
   const flatListRef = useRef<FlatListType<
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
+
   const initialScrollSet = useRef<boolean>(false);
   const channelResyncScrollSet = useRef<boolean>(true);
 
@@ -655,23 +656,23 @@ const MessageListWithContext = <
     );
   };
 
-  //
-  // We are keeping full control on message pagination, and not relying on react-native for it.
-  // The reasons being,
-  // 1. FlatList doesn't support onStartReached prop
-  // 2. `onEndReached` function prop available on react-native, gets executed
-  //    once per content length (and thats actually a nice optimization strategy).
-  //    But it also means, we always need to prioritize onEndReached above our
-  //    logic for `onStartReached`.
-  // 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
-  //    Its a factor of content length (which is necessary for "real" infinite scroll). But on
-  //    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
-  //    too early during scroll, which we don't really need. So we are going to instead
-  //    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
-  //
-  // We are still gonna keep the optimization, which react-native does - only call onEndReached
-  // once per content length.
-  //
+  /**
+   * We are keeping full control on message pagination, and not relying on react-native for it.
+   * The reasons being,
+   * 1. FlatList doesn't support onStartReached prop
+   * 2. `onEndReached` function prop available on react-native, gets executed
+   *    once per content length (and thats actually a nice optimization strategy).
+   *    But it also means, we always need to prioritize onEndReached above our
+   *    logic for `onStartReached`.
+   * 3. `onEndReachedThreshold` prop decides - at which scroll position to call `onEndReached`.
+   *    Its a factor of content length (which is necessary for "real" infinite scroll). But on
+   *    the other hand, it also makes calls to `onEndReached` (and this `channel.query`) way
+   *    too early during scroll, which we don't really need. So we are going to instead
+   *    keep some fixed offset distance, to decide when to call `loadMore` or `loadMoreRecent`.
+   *
+   * We are still gonna keep the optimization, which react-native does - only call onEndReached
+   * once per content length.
+   */
 
   /**
    * 1. Makes a call to `loadMoreRecent` function, which queries more recent messages.

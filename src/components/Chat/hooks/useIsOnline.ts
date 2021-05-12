@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useAppStateListener } from './useAppStateListener';
 import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
@@ -15,7 +16,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { useAppStateListener } from './useAppStateListener';
 
 /**
  * Disconnect the websocket connection when app goes to background,

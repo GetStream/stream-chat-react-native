@@ -437,18 +437,24 @@ const areEqual = <
     tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
 
+  const hasReactionsEqual = prevHasReactions === nextHasReactions;
+  if (!hasReactionsEqual) return false;
+
+  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
+  /**
+   * We need to allow re-render when lastReceivedId changes, for following cases
+   * 1. updating the status (seen status) on latest message in list
+   * 2. updating quoted messages. Because when you press the quoted message, it makes a call
+   *    to `goToMessage` function, which is dependent on message list (length specifically).
+   */
   const lastReceivedIdChangedAndMatters =
     prevLastReceivedId !== nextLastReceivedId &&
     prevMessage.quoted_message_id &&
     nextMessage.quoted_message_id;
 
   if (lastReceivedIdChangedAndMatters) return false;
-
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  if (!hasReactionsEqual) return false;
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
