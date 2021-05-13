@@ -1508,24 +1508,63 @@ const ChannelWithContext = <
     Re,
     Us
   >['loadMoreThread'] = async () => {
-    if (threadLoadingMore || !thread?.id) return;
+    if (threadLoadingMore || !thread?.id) {
+      return;
+    }
     setThreadLoadingMore(true);
 
-    if (channel) {
+    try {
+      if (channel) {
+        const parentID = thread.id;
+
+        /**
+         * In the channel is re-initializing, then threads may get wiped out during the process
+         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
+         * preserve the messages on active thread, so lets simply copy messages from UI state to
+         * `channel.state`.
+         */
+        channel.state.threads[parentID] = threadMessages;
+        const oldestMessageID = threadMessages?.[0]?.id;
+
+        const limit = 50;
+        const queryResponse = await channel.getReplies(parentID, {
+          id_lt: oldestMessageID,
+          limit,
+        });
+
+        const updatedHasMore = queryResponse.messages.length === limit;
+        const updatedThreadMessages = channel.state.threads[parentID] || [];
+        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
+    }
+  };
+
+  const reloadThread = async () => {
+    if (!channel || !thread?.id) return;
+
+    setThreadLoadingMore(true);
+    try {
       const parentID = thread.id;
 
-      const oldMessages = channel.state.threads[parentID] || [];
-      const oldestMessageID = oldMessages?.[0]?.id;
-
       const limit = 50;
+      channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
-        id_lt: oldestMessageID,
-        limit,
+        limit: 50,
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
       const updatedThreadMessages = channel.state.threads[parentID] || [];
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+    } catch (err) {
+      console.warn('Thread loading request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1707,6 +1746,7 @@ const ChannelWithContext = <
     closeThread,
     loadMoreThread,
     openThread,
+    reloadThread,
     setThreadLoadingMore,
     thread,
     threadHasMore,

@@ -68,10 +68,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type {
-  FormatMessageResponse,
-  Channel as StreamChannel,
-} from 'stream-chat';
+import type { Channel as StreamChannel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -358,9 +355,9 @@ const MessageListWithContext = <
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
   const topMessageBeforeUpdate = useRef<
-    FormatMessageResponse<At, Ch, Co, Me, Re, Us>
+    MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >();
-  const topMessageAfterUpdate = channel?.state.messages[0];
+  const topMessageAfterUpdate = messageList[messageList.length - 1];
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
 
@@ -519,8 +516,8 @@ const MessageListWithContext = <
       if (
         (hasNewMessage && isMyMessage) ||
         messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current ||
-        (topMessageBeforeUpdate.current &&
-          topMessageAfterUpdate &&
+        (topMessageBeforeUpdate.current?.created_at &&
+          topMessageAfterUpdate?.created_at &&
           topMessageBeforeUpdate.current.created_at <
             topMessageAfterUpdate.created_at)
       ) {
@@ -544,11 +541,10 @@ const MessageListWithContext = <
       }
     };
 
-    // If channel is not upto date, then always display scrollToBottom button.
-    if (!channel?.state.isUpToDate && !scrollToBottomButtonVisible) {
-      setScrollToBottomButtonVisible(true);
-    } else if (channel?.state.isUpToDate) {
+    if (threadList || channel?.state.isUpToDate) {
       scrollToBottomIfNeeded();
+    } else if (!scrollToBottomButtonVisible) {
+      setScrollToBottomButtonVisible(true);
     }
 
     /**
@@ -1006,7 +1002,7 @@ const MessageListWithContext = <
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
-            unreadCount={channel?.countUnread()}
+            unreadCount={threadList ? 0 : channel?.countUnread()}
           />
         </>
       )}
