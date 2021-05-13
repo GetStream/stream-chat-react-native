@@ -547,7 +547,10 @@ export const MessageInputProvider = <
     setText(newText);
 
     if (newText && channel) {
-      logChatPromiseExecution(channel.keystroke(), 'start typing event');
+      logChatPromiseExecution(
+        channel.keystroke(thread?.id),
+        'start typing event',
+      );
     }
 
     if (value.onChangeText) {

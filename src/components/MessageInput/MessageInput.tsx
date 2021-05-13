@@ -24,6 +24,10 @@ import {
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../contexts/threadContext/ThreadContext';
+import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
@@ -150,6 +154,7 @@ type MessageInputPropsWithContext<
     SuggestionsContextValue<Co, Us>,
     'componentType' | 'suggestions' | 'suggestionsTitle'
   > &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
@@ -200,6 +205,7 @@ const MessageInputWithContext = <
     suggestions,
     suggestionsTitle,
     t,
+    thread,
     threadList,
     uploadNewImage,
     watchers,
@@ -260,54 +266,85 @@ const MessageInputWithContext = <
     return closeAttachmentPicker;
   }, []);
 
-  const selectedImagesLength = selectedImages.length;
-  const imageUploadsLength = imageUploads.length;
+  const [hasResetImages, setHasResetImages] = useState(false);
+  const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
+  const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
+
   useEffect(() => {
-    if (selectedImagesLength > imageUploadsLength) {
-      const imagesToUpload = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
+    setSelectedImages([]);
+    if (imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+    return () => setSelectedImages([]);
+  }, []);
+
+  useEffect(() => {
+    if (
+      hasResetImages === false &&
+      imageUploadsLength === 0 &&
+      selectedImagesLength === 0
+    ) {
+      setHasResetImages(true);
+    }
+  }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (imagesForInput === false && imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+  }, [imagesForInput]);
+
+  useEffect(() => {
+    if (imagesForInput) {
+      if (selectedImagesLength > imageUploadsLength) {
+        const imagesToUpload = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri ||
+              imageUpload.url === selectedImage.uri,
+          );
+          return !uploadedImage;
+        });
+        imagesToUpload.forEach((image) => uploadNewImage(image));
+      } else if (selectedImagesLength < imageUploadsLength) {
+        const imagesToRemove = imageUploads.filter(
           (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+            !selectedImages.find(
+              (selectedImage) =>
+                selectedImage.uri === imageUpload.file.uri ||
+                selectedImage.uri === imageUpload.url,
+            ),
         );
-        return !uploadedImage;
-      });
-      imagesToUpload.forEach((image) => uploadNewImage(image));
-    } else if (selectedImagesLength < imageUploadsLength) {
-      const imagesToRemove = imageUploads.filter(
-        (imageUpload) =>
-          !selectedImages.find(
-            (selectedImage) =>
-              selectedImage.uri === imageUpload.file.uri ||
-              selectedImage.uri === imageUpload.url,
-          ),
-      );
-      imagesToRemove.forEach((image) => removeImage(image.id));
+        imagesToRemove.forEach((image) => removeImage(image.id));
+      }
     }
   }, [selectedImagesLength]);
 
   useEffect(() => {
-    if (imageUploadsLength < selectedImagesLength) {
-      const updatedSelectedImages = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
-          (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+    if (imagesForInput) {
+      if (imageUploadsLength < selectedImagesLength) {
+        const updatedSelectedImages = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri ||
+              imageUpload.url === selectedImage.uri,
+          );
+          return uploadedImage;
+        });
+        setSelectedImages(updatedSelectedImages);
+      } else if (imageUploadsLength > selectedImagesLength) {
+        setSelectedImages(
+          imageUploads
+            .map((imageUpload) => ({
+              height: imageUpload.file.height,
+              source: imageUpload.file.source,
+              uri: imageUpload.url,
+              width: imageUpload.file.width,
+            }))
+            .filter(Boolean) as Asset[],
         );
-        return uploadedImage;
-      });
-      setSelectedImages(updatedSelectedImages);
-    } else if (imageUploadsLength > selectedImagesLength) {
-      setSelectedImages(
-        imageUploads
-          .map((imageUpload) => ({
-            height: imageUpload.file.height,
-            source: imageUpload.file.source,
-            uri: imageUpload.url,
-            width: imageUpload.file.width,
-          }))
-          .filter(Boolean) as Asset[],
-      );
+      }
     }
   }, [imageUploadsLength]);
 
@@ -592,6 +629,7 @@ const areEqual = <
     suggestions: prevSuggestions,
     suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
+    thread: prevThread,
     threadList: prevThreadList,
   } = prevProps;
   const {
@@ -610,6 +648,7 @@ const areEqual = <
     suggestions: nextSuggestions,
     suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
+    thread: nextThread,
     threadList: nextThreadList,
   } = nextProps;
 
@@ -675,6 +714,12 @@ const areEqual = <
 
   const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
   if (!suggestionsTitleEqual) return false;
+
+  const threadEqual =
+    prevThread?.id === nextThread?.id &&
+    prevThread?.text === nextThread?.text &&
+    prevThread?.reply_count === nextThread?.reply_count;
+  if (!threadEqual) return false;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
@@ -767,6 +812,8 @@ export const MessageInput = <
     suggestionsTitle,
   } = useSuggestionsContext<Co, Us>();
 
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+
   const { t } = useTranslationContext();
 
   return (
@@ -807,6 +854,7 @@ export const MessageInput = <
         suggestions,
         suggestionsTitle,
         t,
+        thread,
         uploadNewImage,
         watchers,
       }}

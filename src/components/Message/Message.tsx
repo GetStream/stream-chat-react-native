@@ -408,6 +408,18 @@ const MessageWithContext = <
   const doubleTapRef = useRef<TapGestureHandler>(null);
   const pressActive = useSharedValue(false);
   const scale = useSharedValue(1);
+
+  /**
+   * This is a cleanup effect to prevent the onLongPress
+   * handler from being called if the component has dismounted.
+   */
+  useEffect(
+    () => () => {
+      pressActive.value = false;
+      cancelAnimation(scale);
+    },
+    [],
+  );
   const scaleStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       transform: [

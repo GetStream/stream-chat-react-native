@@ -228,7 +228,6 @@ export type ChannelPropsWithContext<
       | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
-      | 'FileAttachmentIcon'
       | 'blockUser'
       | 'Card'
       | 'CardCover'
@@ -241,6 +240,7 @@ export type ChannelPropsWithContext<
       | 'dismissKeyboardOnMessageTouch'
       | 'editMessage'
       | 'FileAttachment'
+      | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
       | 'flagMessage'
       | 'FlatList'
@@ -264,13 +264,12 @@ export type ChannelPropsWithContext<
       | 'Message'
       | 'messageActions'
       | 'MessageAvatar'
-      | 'MessageDeleted'
       | 'MessageContent'
       | 'messageContentOrder'
+      | 'MessageDeleted'
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
-      | 'ScrollToBottomButton'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -288,6 +287,7 @@ export type ChannelPropsWithContext<
       | 'Reply'
       | 'reply'
       | 'retry'
+      | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
       | 'threadReply'
@@ -737,7 +737,7 @@ const ChannelWithContext = <
       client.off('connection.changed', connectionChangedHandler);
       channel?.off(handleEvent);
     };
-  }, [channelId]);
+  }, [channelId, connectionRecoveredHandler, handleEvent]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
