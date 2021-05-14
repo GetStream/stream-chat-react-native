@@ -667,13 +667,8 @@ const MessageWithContext = <
     }
   };
 
-  const handleResendMessage = () => {
-    const messageWithoutReservedFields = removeReservedFields(message);
-
-    return retrySendMessage(
-      messageWithoutReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
-  };
+  const handleResendMessage = () =>
+    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const handleReplyMessage = () => {
     setQuotedMessageState(message);
