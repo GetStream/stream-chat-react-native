@@ -1,14 +1,9 @@
-import { useNavigation } from '@react-navigation/core';
 import React from 'react';
 import { Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/core';
+
 import {
-  MessageInputContextValue,
-  useMessageInputContext,
-  useTheme,
-  Search,
-  SendRight,
-  SendUp,
   DefaultAttachmentType,
   DefaultChannelType,
   DefaultCommandType,
@@ -16,9 +11,18 @@ import {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  MessageInputContextValue,
+  Search,
+  SendRight,
+  SendUp,
   UnknownType,
   useChannelContext,
+  useMessageInputContext,
+  useTheme,
 } from 'stream-chat-react-native';
+
+import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
+
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -28,8 +32,8 @@ import {
   LocalReactionType,
   LocalUserType,
 } from '../types';
-import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
-type SendButtonPropsWithContext<
+
+type NewDirectMessagingSendButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -43,6 +47,7 @@ type SendButtonPropsWithContext<
 > & {
   /** Disables the button */ disabled: boolean;
 };
+
 const SendButtonWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -52,7 +57,15 @@ const SendButtonWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
 ) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
@@ -83,8 +96,24 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  prevProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
+  nextProps: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
 ) => {
   const {
     disabled: prevDisabled,
@@ -104,7 +133,7 @@ const areEqual = <
   if (!sendMessageEqual) return false;
   return true;
 };
-const MemoizedSendButton = React.memo(
+const MemoizedNewDirectMessagingSendButton = React.memo(
   SendButtonWithContext,
   areEqual,
 ) as typeof SendButtonWithContext;
@@ -116,11 +145,13 @@ export type SendButtonProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<
+  NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
+>;
 /**
  * UI Component for send button in MessageInput component.
  */
-export const NewSendButton = (
+export const NewDirectMessagingSendButton = (
   props: SendButtonProps<
     LocalAttachmentType,
     LocalChannelType,
@@ -164,7 +195,7 @@ export const NewSendButton = (
     }
   };
   return (
-    <MemoizedSendButton<
+    <MemoizedNewDirectMessagingSendButton<
       LocalAttachmentType,
       LocalChannelType,
       LocalCommandType,
@@ -179,4 +210,4 @@ export const NewSendButton = (
     />
   );
 };
-NewSendButton.displayName = 'SendButton{messageInput}';
+NewDirectMessagingSendButton.displayName = 'SendButton{messageInput}';

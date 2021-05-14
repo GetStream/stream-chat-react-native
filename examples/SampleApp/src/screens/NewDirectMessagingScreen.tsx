@@ -37,7 +37,7 @@ import { useUserSearchContext } from '../context/UserSearchContext';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
-import { NewSendButton } from '../components/NewDirectMessagingSendButton';
+import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type {
   LocalAttachmentType,
   LocalChannelType,
@@ -378,7 +378,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         onChangeText={setMessageInputText}
-        SendButton={NewSendButton}
+        SendButton={NewDirectMessagingSendButton}
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
         {renderUserSearch({ inSafeArea: true })}
