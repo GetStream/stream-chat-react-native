@@ -58,8 +58,9 @@ import type {
 import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
+  quoteRepliesEnabled?: boolean;
   reactionsEnabled?: boolean;
-  repliesEnabled?: boolean;
+  threadRepliesEnabled?: boolean;
 };
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
@@ -457,9 +458,10 @@ export type MessagesContextValue<
         message,
         messageReactions,
         muteUser,
-        repliesEnabled,
+        quoteRepliesEnabled,
         reply,
         retry,
+        threadRepliesEnabled,
         threadReply,
       }: {
         blockUser: MessageAction | null;
@@ -477,7 +479,8 @@ export type MessagesContextValue<
         reply: MessageAction | null;
         retry: MessageAction | null;
         threadReply: MessageAction | null;
-        repliesEnabled?: boolean;
+        quoteRepliesEnabled?: boolean;
+        threadRepliesEnabled?: boolean;
       }) => (MessageAction | null)[] | undefined);
   /**
    * Custom message header component

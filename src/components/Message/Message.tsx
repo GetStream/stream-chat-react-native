@@ -224,9 +224,9 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'quoteRepliesEnabled'
     | 'reactionsEnabled'
     | 'removeMessage'
-    | 'repliesEnabled'
     | 'reply'
     | 'retry'
     | 'retrySendMessage'
@@ -234,6 +234,7 @@ export type MessagePropsWithContext<
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
+    | 'threadRepliesEnabled'
     | 'threadReply'
     | 'updateMessage'
   > &
@@ -365,10 +366,10 @@ const MessageWithContext = <
     openThread,
     OverlayReactionList,
     preventPress,
+    quoteRepliesEnabled,
     reactionsEnabled,
     readEventsEnabled,
     removeMessage,
-    repliesEnabled,
     reply: replyProp,
     retry: retryProp,
     retrySendMessage,
@@ -385,6 +386,7 @@ const MessageWithContext = <
     t,
     targetedMessage,
     threadList = false,
+    threadRepliesEnabled,
     threadReply: threadReplyProp,
     updateMessage,
   } = props;
@@ -965,9 +967,10 @@ const MessageWithContext = <
             message,
             messageReactions,
             muteUser,
-            repliesEnabled,
+            quoteRepliesEnabled,
             reply,
             retry,
+            threadRepliesEnabled,
             threadReply,
           })
         : messageActionsProp
@@ -986,17 +989,33 @@ const MessageWithContext = <
             ? [editMessage, deleteMessage]
             : [flagMessage]
           : message.text
-          ? repliesEnabled
+          ? quoteRepliesEnabled
+            ? threadRepliesEnabled
+              ? isMyMessage
+                ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
+                : [reply, threadReply, copyMessage, flagMessage]
+              : isMyMessage
+              ? [reply, editMessage, copyMessage, deleteMessage]
+              : [reply, copyMessage, flagMessage]
+            : threadRepliesEnabled
             ? isMyMessage
-              ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
-              : [reply, threadReply, copyMessage, flagMessage]
+              ? [threadReply, editMessage, copyMessage, deleteMessage]
+              : [threadReply, copyMessage]
             : isMyMessage
             ? [editMessage, copyMessage, deleteMessage]
             : [copyMessage]
-          : repliesEnabled
+          : quoteRepliesEnabled
+          ? threadRepliesEnabled
+            ? isMyMessage
+              ? [reply, threadReply, editMessage, deleteMessage]
+              : [reply, threadReply, flagMessage]
+            : isMyMessage
+            ? [reply, editMessage, deleteMessage]
+            : [reply, flagMessage]
+          : threadRepliesEnabled
           ? isMyMessage
-            ? [reply, threadReply, editMessage, deleteMessage]
-            : [reply, threadReply, flagMessage]
+            ? [threadReply, editMessage, deleteMessage]
+            : [threadReply, flagMessage]
           : isMyMessage
           ? [editMessage, deleteMessage]
           : [flagMessage]
@@ -1009,24 +1028,40 @@ const MessageWithContext = <
           ? [deleteMessage]
           : [muteUser, blockUser, flagMessage]
         : message.text
-        ? repliesEnabled
+        ? quoteRepliesEnabled
+          ? threadRepliesEnabled
+            ? isMyMessage
+              ? [reply, threadReply, copyMessage, deleteMessage]
+              : [
+                  reply,
+                  threadReply,
+                  copyMessage,
+                  muteUser,
+                  flagMessage,
+                  blockUser,
+                ]
+            : isMyMessage
+            ? [reply, copyMessage, deleteMessage]
+            : [reply, copyMessage, muteUser, flagMessage, blockUser]
+          : threadRepliesEnabled
           ? isMyMessage
-            ? [reply, threadReply, copyMessage, deleteMessage]
-            : [
-                reply,
-                threadReply,
-                copyMessage,
-                muteUser,
-                flagMessage,
-                blockUser,
-              ]
+            ? [threadReply, copyMessage, deleteMessage]
+            : [threadReply, copyMessage, muteUser, flagMessage, blockUser]
           : isMyMessage
           ? [copyMessage, deleteMessage]
           : [copyMessage, muteUser, flagMessage, blockUser]
-        : repliesEnabled
+        : quoteRepliesEnabled
+        ? threadRepliesEnabled
+          ? isMyMessage
+            ? [reply, threadReply, deleteMessage]
+            : [reply, threadReply, muteUser, blockUser]
+          : isMyMessage
+          ? [reply, deleteMessage]
+          : [reply, muteUser, blockUser]
+        : threadRepliesEnabled
         ? isMyMessage
-          ? [reply, threadReply, deleteMessage]
-          : [reply, threadReply, muteUser, blockUser]
+          ? [threadReply, deleteMessage]
+          : [threadReply, muteUser, blockUser]
         : isMyMessage
         ? [deleteMessage]
         : [muteUser, blockUser];

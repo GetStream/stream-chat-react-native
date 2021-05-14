@@ -385,7 +385,7 @@ export type ChannelPropsWithContext<
     messageId?: string;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
-    repliesEnabled?: boolean;
+    threadRepliesEnabled?: boolean;
     typingEventsEnabled?: boolean;
     uploadsEnabled?: boolean;
   };
@@ -513,7 +513,6 @@ const ChannelWithContext = <
     ReactionList = ReactionListDefault,
     reactionsEnabled: reactionsEnabledProp,
     readEventsEnabled: readEventsEnabledProp,
-    repliesEnabled: repliesEnabledProp,
     Reply = ReplyDefault,
     reply,
     retry,
@@ -527,6 +526,7 @@ const ChannelWithContext = <
     supportedReactions = reactionData,
     t,
     thread: threadProps,
+    threadRepliesEnabled: threadRepliesEnabledProp,
     threadReply,
     typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
@@ -597,7 +597,7 @@ const ChannelWithContext = <
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
        * since we use read state on channel to decide what offset to load channel at.
-       * Also there is no usecase from UX perspective, why one would need loading uninitialized channel at particular message.
+       * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
       if (!channel.initialized) {
@@ -738,8 +738,10 @@ const ChannelWithContext = <
   };
 
   useEffect(() => {
-    // The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
-    // listen to client.connection.recovered and all channel events
+    /**
+     * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
+     * listen to client.connection.recovered and all channel events
+     */
     client.on('connection.recovered', connectionRecoveredHandler);
     client.on('connection.changed', connectionChangedHandler);
     channel?.on(handleEvent);
@@ -991,33 +993,36 @@ const ChannelWithContext = <
   };
 
   /**
-   * Channel configs for use in disabling local functionality
+   * Channel configs for use in disabling local functionality.
+   * Nullish coalescing is used to give first priority to props to override
+   * the server settings. Then priority to server settings to override defaults.
    */
   const clientChannelConfig =
     typeof channel?.getConfig === 'function' ? channel.getConfig() : undefined;
 
-  /**
-   * Nullish coalescing is used to give first priority to props to override
-   * the server settings. Then priority to server settings to override defaults.
-   */
-  const messagesConfig = {
+  const messagesConfig: MessagesConfig = {
+    /**
+     * Replace with backend flag once its ready
+     */
+    quoteRepliesEnabled: true,
     reactionsEnabled:
       reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
-    repliesEnabled: repliesEnabledProp ?? clientChannelConfig?.replies ?? true,
-  } as MessagesConfig;
-  const channelConfig = {
+    threadRepliesEnabled:
+      threadRepliesEnabledProp ?? clientChannelConfig?.replies ?? true,
+  };
+  const channelConfig: ChannelConfig = {
     readEventsEnabled:
       readEventsEnabledProp ?? clientChannelConfig?.read_events ?? true,
     typingEventsEnabled:
       typingEventsEnabledProp ?? clientChannelConfig?.typing_events ?? true,
-  } as ChannelConfig;
-  const inputConfig = {
+  };
+  const inputConfig: InputConfig = {
     maxMessageLength:
       maxMessageLengthProp ??
       clientChannelConfig?.max_message_length ??
       undefined,
     uploadsEnabled: uploadsEnabledProp ?? clientChannelConfig?.uploads ?? true,
-  } as InputConfig;
+  };
 
   /**
    * MESSAGE METHODS

@@ -460,31 +460,33 @@ const MessageOverlayWithContext = <
                                 containerInner,
                               ]}
                             >
-                              {message.quoted_message && Reply && (
-                                <View
-                                  style={[
-                                    styles.replyContainer,
-                                    replyContainer,
-                                  ]}
-                                >
-                                  <Reply
-                                    quotedMessage={
-                                      message.quoted_message as ReplyProps<
-                                        At,
-                                        Ch,
-                                        Co,
-                                        Ev,
-                                        Me,
-                                        Re,
-                                        Us
-                                      >['quotedMessage']
-                                    }
-                                    styles={{
-                                      messageContainer: { maxWidth: vw(60) },
-                                    }}
-                                  />
-                                </View>
-                              )}
+                              {messagesContext?.quoteRepliesEnabled &&
+                                message.quoted_message &&
+                                Reply && (
+                                  <View
+                                    style={[
+                                      styles.replyContainer,
+                                      replyContainer,
+                                    ]}
+                                  >
+                                    <Reply
+                                      quotedMessage={
+                                        message.quoted_message as ReplyProps<
+                                          At,
+                                          Ch,
+                                          Co,
+                                          Ev,
+                                          Me,
+                                          Re,
+                                          Us
+                                        >['quotedMessage']
+                                      }
+                                      styles={{
+                                        messageContainer: { maxWidth: vw(60) },
+                                      }}
+                                    />
+                                  </View>
+                                )}
                               {messagesContext?.messageContentOrder?.map(
                                 (
                                   messageContentType,
