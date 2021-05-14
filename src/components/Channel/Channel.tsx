@@ -381,7 +381,13 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    maxMessageLength?: number;
     messageId?: string;
+    reactionsEnabled?: boolean;
+    readEventsEnabled?: boolean;
+    repliesEnabled?: boolean;
+    typingEventsEnabled?: boolean;
+    uploadsEnabled?: boolean;
   };
 
 const ChannelWithContext = <
@@ -404,7 +410,6 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
-    FileAttachmentIcon = FileIconDefault,
     autoCompleteTriggerSettings,
     blockUser,
     Card = CardDefault,
@@ -433,6 +438,7 @@ const ChannelWithContext = <
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
+    FileAttachmentIcon = FileIconDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
     flagMessage,
@@ -473,6 +479,7 @@ const ChannelWithContext = <
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
     messageId,
+    maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
     Message = MessageDefault,
@@ -484,18 +491,17 @@ const ChannelWithContext = <
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
-    messages: messagesProp,
-    muteUser,
-    myMessageTheme,
-    NetworkDownIndicator = NetworkDownIndicatorDefault,
-    ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
+    messages: messagesProp,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
+    muteUser,
+    myMessageTheme,
+    NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
     onDoubleTapMessage,
@@ -505,9 +511,13 @@ const ChannelWithContext = <
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     ReactionList = ReactionListDefault,
+    reactionsEnabled: reactionsEnabledProp,
+    readEventsEnabled: readEventsEnabledProp,
+    repliesEnabled: repliesEnabledProp,
     Reply = ReplyDefault,
     reply,
     retry,
+    ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
@@ -518,10 +528,12 @@ const ChannelWithContext = <
     t,
     thread: threadProps,
     threadReply,
+    typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     updateSuggestions,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
+    uploadsEnabled: uploadsEnabledProp,
     UrlPreview = CardDefault,
   } = props;
 
@@ -981,33 +993,31 @@ const ChannelWithContext = <
   /**
    * Channel configs for use in disabling local functionality
    */
+  const clientChannelConfig =
+    typeof channel?.getConfig === 'function' ? channel.getConfig() : undefined;
+
+  /**
+   * Nullish coalescing is used to give first priority to props to override
+   * the server settings. Then priority to server settings to override defaults.
+   */
   const messagesConfig = {
-    reactionsEnabled: true,
-    repliesEnabled: true,
+    reactionsEnabled:
+      reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
+    repliesEnabled: repliesEnabledProp ?? clientChannelConfig?.replies ?? true,
   } as MessagesConfig;
   const channelConfig = {
-    readEventsEnabled: true,
-    typingEventsEnabled: true,
+    readEventsEnabled:
+      readEventsEnabledProp ?? clientChannelConfig?.read_events ?? true,
+    typingEventsEnabled:
+      typingEventsEnabledProp ?? clientChannelConfig?.typing_events ?? true,
   } as ChannelConfig;
   const inputConfig = {
-    maxMessageLength: undefined,
-    uploadsEnabled: true,
+    maxMessageLength:
+      maxMessageLengthProp ??
+      clientChannelConfig?.max_message_length ??
+      undefined,
+    uploadsEnabled: uploadsEnabledProp ?? clientChannelConfig?.uploads ?? true,
   } as InputConfig;
-  if (typeof channel?.getConfig === 'function') {
-    const clientChannelConfig = channel.getConfig();
-    const maxMessageLength = clientChannelConfig?.max_message_length;
-    const reactions = clientChannelConfig?.reactions;
-    const readEvents = clientChannelConfig?.read_events;
-    const replies = clientChannelConfig?.replies;
-    const typingEvents = clientChannelConfig?.typing_events;
-    const uploads = clientChannelConfig?.uploads;
-    channelConfig.readEventsEnabled = readEvents;
-    channelConfig.typingEventsEnabled = typingEvents;
-    inputConfig.maxMessageLength = maxMessageLength;
-    inputConfig.uploadsEnabled = uploads;
-    messagesConfig.reactionsEnabled = reactions;
-    messagesConfig.repliesEnabled = replies;
-  }
 
   /**
    * MESSAGE METHODS
