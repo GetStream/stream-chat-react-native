@@ -954,10 +954,11 @@ const ChannelWithContext = <
     }
   };
 
-  const reloadChannel = () => {
-    channel?.state.clearMessages();
-    return loadChannel();
-  };
+  const reloadChannel = () =>
+    channelQueryCall(async () => {
+      await channel?.watch();
+      channel?.state.setIsUpToDate(true);
+    });
 
   /**
    * Makes a query to load messages in channel.

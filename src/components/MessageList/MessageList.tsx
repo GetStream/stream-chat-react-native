@@ -868,7 +868,7 @@ const MessageListWithContext = <
       loadChannelAtMessage({ messageId });
       resetPaginationTrackers();
     },
-    [messageListLengthAfterUpdate, lastReceivedId],
+    [messageListLengthAfterUpdate],
   );
 
   const messagesWithImages = messageList.filter((message) => {

@@ -444,7 +444,7 @@ const areEqual = <
   if (!lastGroupMessageEqual) return false;
 
   const goToMessageChangedAndMatters =
-    prevGoToMessage !== nextGoToMessage && nextMessage.quoted_message_id;
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
 
   if (goToMessageChangedAndMatters) return false;
 
