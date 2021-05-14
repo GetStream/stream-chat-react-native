@@ -129,6 +129,7 @@ export const useCreateMessageContext = <
       actionsEnabled,
       alignment,
       disabled,
+      goToMessage,
       groupStylesLength,
       hasReactions,
       lastGroupMessage,

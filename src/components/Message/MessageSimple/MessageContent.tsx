@@ -558,6 +558,7 @@ export const MessageContent = <
   const {
     alignment,
     disabled,
+    goToMessage,
     groupStyles,
     hasReactions,
     isMyMessage,
@@ -601,6 +602,7 @@ export const MessageContent = <
         FileAttachmentGroup,
         formatDate,
         Gallery,
+        goToMessage,
         groupStyles,
         hasReactions,
         isMyMessage,
