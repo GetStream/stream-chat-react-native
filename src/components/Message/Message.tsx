@@ -1103,6 +1103,7 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
+    goToMessage,
     groupStyles,
     handleAction,
     handleDeleteMessage,
@@ -1277,6 +1278,7 @@ const areEqual = <
 ) => {
   const {
     channel: prevChannel,
+    goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
     showUnreadUnderlay: prevShowUnreadUnderlay,
@@ -1285,6 +1287,7 @@ const areEqual = <
   } = prevProps;
   const {
     channel: nextChannel,
+    goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
     showUnreadUnderlay: nextShowUnreadUnderlay,
@@ -1301,7 +1304,13 @@ const areEqual = <
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
+
   if (lastReceivedIdChangedAndMatters) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&

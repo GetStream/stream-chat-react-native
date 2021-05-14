@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
-import { useAppStateListener } from './hooks/useAppStateListener';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
@@ -175,12 +174,7 @@ const ChatWithContext = <
     Me,
     Re,
     Us
-  >(client);
-
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
-    client,
-    closeConnectionOnBackground,
-  );
+  >(client, closeConnectionOnBackground);
 
   useEffect(() => {
     if (client.setUserAgent) {

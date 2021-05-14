@@ -81,6 +81,7 @@ export type MessageContentPropsWithContext<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
   | 'disabled'
+  | 'goToMessage'
   | 'groupStyles'
   | 'hasReactions'
   | 'isMyMessage'
@@ -410,6 +411,7 @@ const areEqual = <
   nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     lastGroupMessage: prevLastGroupMessage,
@@ -422,6 +424,7 @@ const areEqual = <
     tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     lastGroupMessage: nextLastGroupMessage,
@@ -439,6 +442,11 @@ const areEqual = <
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
@@ -550,10 +558,12 @@ export const MessageContent = <
   const {
     alignment,
     disabled,
+    goToMessage,
     groupStyles,
     hasReactions,
     isMyMessage,
     lastGroupMessage,
+    lastReceivedId,
     members,
     message,
     messageContentOrder,
@@ -592,10 +602,12 @@ export const MessageContent = <
         FileAttachmentGroup,
         formatDate,
         Gallery,
+        goToMessage,
         groupStyles,
         hasReactions,
         isMyMessage,
         lastGroupMessage,
+        lastReceivedId,
         members,
         message,
         messageContentOrder,

@@ -699,7 +699,7 @@ const ChannelWithContext = <
 
   const connectionChangedHandler = (event: ConnectionChangeEvent) => {
     if (event.online) {
-      reloadChannel();
+      resyncChannel();
     }
   };
 
@@ -746,6 +746,7 @@ const ChannelWithContext = <
     try {
       await queryCall();
       setLastRead(new Date());
+      setHasMore(true);
       copyChannelState();
     } catch (err) {
       setError(err);
@@ -879,10 +880,85 @@ const ChannelWithContext = <
       return;
     });
 
-  const reloadChannel = () => {
-    channel?.state.clearMessages();
-    return loadChannel();
+  const resyncChannel = async () => {
+    if (!channel) return;
+
+    setError(false);
+    try {
+      /**
+       * Allow a buffer of 30 new messages, so that MessageList won't move its scroll position,
+       * giving smooth user experience.
+       */
+      const state = await channel.watch({
+        messages: {
+          limit: messages.length + 30,
+        },
+      });
+
+      const oldListTopMessage = messages[0];
+      const oldListTopMessageId = messages[0]?.id;
+      const oldListBottomMessage = messages[messages.length - 1];
+
+      const newListTopMessage = state.messages[0];
+      const newListBottomMessage = state.messages[state.messages.length - 1];
+
+      if (
+        !oldListTopMessage || // previous list was empty
+        !oldListBottomMessage || // previous list was empty
+        !newListTopMessage || // new list is truncated
+        !newListBottomMessage // new list is truncated
+      ) {
+        /** Channel was truncated */
+        channel.state.clearMessages();
+        channel.state.setIsUpToDate(true);
+        channel.state.addMessagesSorted(state.messages);
+        copyChannelState();
+        return;
+      }
+
+      const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
+      const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
+      const newListTopMessageCreatedAt = newListTopMessage.created_at
+        ? new Date(newListTopMessage.created_at)
+        : new Date();
+      const newListBottomMessageCreatedAt = newListBottomMessage?.created_at
+        ? new Date(newListBottomMessage.created_at)
+        : new Date();
+
+      let finalMessages = [];
+
+      if (
+        oldListTopMessage &&
+        oldListTopMessageCreatedAt &&
+        oldListBottomMessageCreatedAt &&
+        newListTopMessageCreatedAt < oldListTopMessageCreatedAt &&
+        newListBottomMessageCreatedAt >= oldListBottomMessageCreatedAt
+      ) {
+        const index = state.messages.findIndex(
+          (message) => message.id === oldListTopMessageId,
+        );
+        finalMessages = state.messages.slice(index);
+      } else {
+        finalMessages = state.messages;
+      }
+
+      channel.state.setIsUpToDate(true);
+
+      channel.state.clearMessages();
+      channel.state.addMessagesSorted(finalMessages);
+      setHasMore(true);
+      copyChannelState();
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+    }
   };
+
+  const reloadChannel = () =>
+    channelQueryCall(async () => {
+      await channel?.watch();
+      channel?.state.setIsUpToDate(true);
+    });
 
   /**
    * Makes a query to load messages in channel.
@@ -1206,6 +1282,7 @@ const ChannelWithContext = <
       newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
     ) => {
       setLoadingMore(false);
+      setError(false);
       setHasMore(updatedHasMore);
       setMessages(newMessages);
     },
@@ -1220,7 +1297,9 @@ const ChannelWithContext = <
     Re,
     Us
   >['loadMore'] = async () => {
-    if (loadingMore || hasMore === false) return;
+    if (loadingMore || hasMore === false) {
+      return;
+    }
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -1247,7 +1326,9 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      return setLoadingMore(false);
+      setError(err);
+      setLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1280,8 +1361,9 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
+      setError(err);
       setLoadingMoreRecent(false);
-      return;
+      throw err;
     }
   };
 
@@ -1290,6 +1372,7 @@ const ChannelWithContext = <
     (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
       setLoadingMoreRecent(false);
       setMessages(newMessages);
+      setError(false);
     },
   );
 
@@ -1426,24 +1509,63 @@ const ChannelWithContext = <
     Re,
     Us
   >['loadMoreThread'] = async () => {
-    if (threadLoadingMore || !thread?.id) return;
+    if (threadLoadingMore || !thread?.id) {
+      return;
+    }
     setThreadLoadingMore(true);
 
-    if (channel) {
+    try {
+      if (channel) {
+        const parentID = thread.id;
+
+        /**
+         * In the channel is re-initializing, then threads may get wiped out during the process
+         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
+         * preserve the messages on active thread, so lets simply copy messages from UI state to
+         * `channel.state`.
+         */
+        channel.state.threads[parentID] = threadMessages;
+        const oldestMessageID = threadMessages?.[0]?.id;
+
+        const limit = 50;
+        const queryResponse = await channel.getReplies(parentID, {
+          id_lt: oldestMessageID,
+          limit,
+        });
+
+        const updatedHasMore = queryResponse.messages.length === limit;
+        const updatedThreadMessages = channel.state.threads[parentID] || [];
+        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
+    }
+  };
+
+  const reloadThread = async () => {
+    if (!channel || !thread?.id) return;
+
+    setThreadLoadingMore(true);
+    try {
       const parentID = thread.id;
 
-      const oldMessages = channel.state.threads[parentID] || [];
-      const oldestMessageID = oldMessages?.[0]?.id;
-
       const limit = 50;
+      channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
-        id_lt: oldestMessageID,
-        limit,
+        limit: 50,
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
       const updatedThreadMessages = channel.state.threads[parentID] || [];
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+    } catch (err) {
+      console.warn('Thread loading request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1625,6 +1747,7 @@ const ChannelWithContext = <
     closeThread,
     loadMoreThread,
     openThread,
+    reloadThread,
     setThreadLoadingMore,
     thread,
     threadHasMore,
@@ -1636,14 +1759,12 @@ const ChannelWithContext = <
     typing,
   });
 
-  if (!channel || error) {
+  if (!channel || (error && messages.length === 0)) {
     return (
       <LoadingErrorIndicator
         error={error}
         listType='message'
-        retry={() => {
-          loadMore();
-        }}
+        retry={reloadChannel}
       />
     );
   }

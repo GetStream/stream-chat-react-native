@@ -25,6 +25,7 @@ export const useCreateThreadContext = <
   closeThread,
   loadMoreThread,
   openThread,
+  reloadThread,
   setThreadLoadingMore,
   thread,
   threadHasMore,
@@ -50,6 +51,7 @@ export const useCreateThreadContext = <
       closeThread,
       loadMoreThread,
       openThread,
+      reloadThread,
       setThreadLoadingMore,
       thread,
       threadHasMore,
@@ -58,6 +60,7 @@ export const useCreateThreadContext = <
     }),
     [
       allowThreadMessagesInChannel,
+      loadMoreThread,
       threadHasMore,
       threadId,
       threadLoadingMore,
