@@ -25,32 +25,32 @@ jobs:
             git clone --single-branch --branch "$TARGET_BRANCH" "https://$GITHUB_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
             ls -la "$CLONE_DIR"
 
-            # Creating an array of SDK names from the local docusaurus/docs dir
             SDKs=(`find ./$SOURCE_DIRECTORY/docs -maxdepth 1 -mindepth 1 -type d | awk -F'/' '{print $4}'`)
-
-            # Looping through the SDKs to rsync custom files within the docusaurus dir for each SDK
-            # Skipping any custom plugins as we don't want custom plugins pushed to the main docusaurus repo for builds.
-            # Custom plugins should only be locally used for markdown generation
-            # Also rsync the docusaurus/docs/SDK dir to get a full sync of the current SDK being pushed to the main docusaurus repo
             for sdk in "${SDKs[@]}"
             do
-              echo "Deleting all contents of $sdk in target git repository and copying current over"
               SDK_NO_SPACES="${sdk/ /}"
-              rsync -avPh --delete --exclude='*plugin.js' --include="*$SDK_NO_SPACES*" --exclude='*' "$SOURCE_DIRECTORY/" "$CLONE_DIR/$SOURCE_DIRECTORY"
-              rsync -avPh --delete "$SOURCE_DIRECTORY/docs/$sdk/" "$CLONE_DIR/$SOURCE_DIRECTORY/docs/$sdk"
+              echo "Deleting all contents of $sdk in target git repository and copying current over"
+              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 1 -mindepth 1 -type f -iname '*$SDK_NO_SPACES*' -exec rm -rf {} \;
+              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 2 -mindepth 1 -type d -iname '*$SDK_NO_SPACES*' -exec rm -rf {} \;
             done
+            cp -ra "$SOURCE_DIRECTORY"/. "$CLONE_DIR/$SOURCE_DIRECTORY"
+            cd "$CLONE_DIR"
 
             ORIGIN_COMMIT="https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
             COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"
             COMMIT_MESSAGE="${COMMIT_MESSAGE/\$GITHUB_REF/$GITHUB_REF}"
 
+            echo "git add:"
             git add .
 
+            echo "git status:"
             git status
 
+            echo "git diff-index:"
             # git diff-index : to avoid the git commit failing if there are no changes to be committed
             git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
 
+            echo "git push origin:"
             # --set-upstream: sets default branch when pushing to a branch that does not exist
             git push origin --set-upstream "$TARGET_BRANCH"
         env:
