@@ -224,7 +224,7 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
-    | 'quoteRepliesEnabled'
+    | 'quotedRepliesEnabled'
     | 'reactionsEnabled'
     | 'removeMessage'
     | 'reply'
@@ -366,7 +366,7 @@ const MessageWithContext = <
     openThread,
     OverlayReactionList,
     preventPress,
-    quoteRepliesEnabled,
+    quotedRepliesEnabled,
     reactionsEnabled,
     readEventsEnabled,
     removeMessage,
@@ -967,7 +967,7 @@ const MessageWithContext = <
             message,
             messageReactions,
             muteUser,
-            quoteRepliesEnabled,
+            quotedRepliesEnabled,
             reply,
             retry,
             threadRepliesEnabled,
@@ -989,7 +989,7 @@ const MessageWithContext = <
             ? [editMessage, deleteMessage]
             : [flagMessage]
           : message.text
-          ? quoteRepliesEnabled
+          ? quotedRepliesEnabled
             ? threadRepliesEnabled
               ? isMyMessage
                 ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
@@ -1004,7 +1004,7 @@ const MessageWithContext = <
             : isMyMessage
             ? [editMessage, copyMessage, deleteMessage]
             : [copyMessage]
-          : quoteRepliesEnabled
+          : quotedRepliesEnabled
           ? threadRepliesEnabled
             ? isMyMessage
               ? [reply, threadReply, editMessage, deleteMessage]
@@ -1028,7 +1028,7 @@ const MessageWithContext = <
           ? [deleteMessage]
           : [muteUser, blockUser, flagMessage]
         : message.text
-        ? quoteRepliesEnabled
+        ? quotedRepliesEnabled
           ? threadRepliesEnabled
             ? isMyMessage
               ? [reply, threadReply, copyMessage, deleteMessage]
@@ -1050,7 +1050,7 @@ const MessageWithContext = <
           : isMyMessage
           ? [copyMessage, deleteMessage]
           : [copyMessage, muteUser, flagMessage, blockUser]
-        : quoteRepliesEnabled
+        : quotedRepliesEnabled
         ? threadRepliesEnabled
           ? isMyMessage
             ? [reply, threadReply, deleteMessage]

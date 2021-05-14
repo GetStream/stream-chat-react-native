@@ -1004,7 +1004,7 @@ const ChannelWithContext = <
     /**
      * Replace with backend flag once its ready
      */
-    quoteRepliesEnabled: true,
+    quotedRepliesEnabled: true,
     reactionsEnabled:
       reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
     threadRepliesEnabled:

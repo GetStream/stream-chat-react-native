@@ -58,7 +58,7 @@ import type {
 import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
-  quoteRepliesEnabled?: boolean;
+  quotedRepliesEnabled?: boolean;
   reactionsEnabled?: boolean;
   threadRepliesEnabled?: boolean;
 };
@@ -458,7 +458,7 @@ export type MessagesContextValue<
         message,
         messageReactions,
         muteUser,
-        quoteRepliesEnabled,
+        quotedRepliesEnabled,
         reply,
         retry,
         threadRepliesEnabled,
@@ -479,7 +479,7 @@ export type MessagesContextValue<
         reply: MessageAction | null;
         retry: MessageAction | null;
         threadReply: MessageAction | null;
-        quoteRepliesEnabled?: boolean;
+        quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
       }) => (MessageAction | null)[] | undefined);
   /**

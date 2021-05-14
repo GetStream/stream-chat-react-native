@@ -460,7 +460,7 @@ const MessageOverlayWithContext = <
                                 containerInner,
                               ]}
                             >
-                              {messagesContext?.quoteRepliesEnabled &&
+                              {messagesContext?.quotedRepliesEnabled &&
                                 message.quoted_message &&
                                 Reply && (
                                   <View

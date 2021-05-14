@@ -110,7 +110,7 @@ export type MessageContentPropsWithContext<
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
-    | 'quoteRepliesEnabled'
+    | 'quotedRepliesEnabled'
     | 'Reply'
     | 'threadRepliesEnabled'
   > &
@@ -158,7 +158,7 @@ const MessageContentWithContext = <
     onPressIn,
     otherAttachments,
     preventPress,
-    quoteRepliesEnabled,
+    quotedRepliesEnabled,
     Reply,
     setMessageContentWidth,
     showMessageStatus,
@@ -336,7 +336,7 @@ const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
-          {message.quoted_message && quoteRepliesEnabled && (
+          {message.quoted_message && quotedRepliesEnabled && (
             <View style={[styles.replyContainer, replyContainer]}>
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>
@@ -579,7 +579,7 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    quoteRepliesEnabled,
+    quotedRepliesEnabled,
     Reply,
     threadRepliesEnabled,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -613,7 +613,7 @@ export const MessageContent = <
         onPressIn,
         otherAttachments,
         preventPress,
-        quoteRepliesEnabled,
+        quotedRepliesEnabled,
         Reply,
         showMessageStatus,
         t,
