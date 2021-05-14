@@ -74,6 +74,7 @@ const SendButtonWithContext = <
       messageInput: { sendButton },
     },
   } = useTheme();
+
   return (
     <TouchableOpacity
       disabled={disabled}
@@ -87,6 +88,7 @@ const SendButtonWithContext = <
     </TouchableOpacity>
   );
 };
+
 const areEqual = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -125,18 +127,24 @@ const areEqual = <
     giphyActive: nextGiphyActive,
     sendMessage: nextSendMessage,
   } = nextProps;
+
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
+
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
   if (!giphyActiveEqual) return false;
+
   const sendMessageEqual = prevSendMessage === nextSendMessage;
   if (!sendMessageEqual) return false;
+
   return true;
 };
+
 const MemoizedNewDirectMessagingSendButton = React.memo(
   SendButtonWithContext,
   areEqual,
 ) as typeof SendButtonWithContext;
+
 export type SendButtonProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -148,6 +156,7 @@ export type SendButtonProps<
 > = Partial<
   NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
 >;
+
 /**
  * UI Component for send button in MessageInput component.
  */
@@ -172,6 +181,7 @@ export const NewDirectMessagingSendButton = (
     LocalReactionType,
     LocalUserType
   >();
+
   const { giphyActive, text } = useMessageInputContext<
     LocalAttachmentType,
     LocalChannelType,
@@ -181,6 +191,7 @@ export const NewDirectMessagingSendButton = (
     LocalReactionType,
     LocalUserType
   >();
+
   const sendMessage = async () => {
     if (!channel) return;
     channel.initialized = false;
@@ -194,6 +205,7 @@ export const NewDirectMessagingSendButton = (
       Alert.alert('Error sending a message');
     }
   };
+
   return (
     <MemoizedNewDirectMessagingSendButton<
       LocalAttachmentType,
@@ -210,4 +222,3 @@ export const NewDirectMessagingSendButton = (
     />
   );
 };
-NewDirectMessagingSendButton.displayName = 'SendButton{messageInput}';
