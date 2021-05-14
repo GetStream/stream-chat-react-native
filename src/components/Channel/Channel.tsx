@@ -1296,7 +1296,7 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = async () => {
+  >['loadMore'] = async (limit = 20) => {
     if (loadingMore || hasMore === false) {
       return;
     }
@@ -1313,7 +1313,6 @@ const ChannelWithContext = <
     }
 
     const oldestID = oldestMessage && oldestMessage.id;
-    const limit = 20;
 
     try {
       if (channel) {
@@ -1340,7 +1339,7 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMoreRecent'] = async () => {
+  >['loadMoreRecent'] = async (limit = 5) => {
     if (channel?.state.isUpToDate) {
       return;
     }
@@ -1356,7 +1355,7 @@ const ChannelWithContext = <
 
     try {
       if (channel) {
-        await queryAfterMessage(recentMessage.id);
+        await queryAfterMessage(recentMessage.id, limit);
         loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {

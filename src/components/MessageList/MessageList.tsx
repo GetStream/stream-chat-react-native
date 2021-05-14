@@ -8,7 +8,6 @@ import React, {
 import {
   FlatListProps,
   FlatList as FlatListType,
-  Platform,
   ScrollViewProps,
   StyleSheet,
   View,
@@ -425,19 +424,6 @@ const MessageListWithContext = <
       setTimeout(() => {
         initialScrollSet.current = true;
       }, 500);
-    } else if (
-      // On android, you can't overscroll. So we are going to scroll up just a little
-      // which gives user some offset to scroll down and trigger onStartReached.
-      Platform.OS === 'android' &&
-      !channel?.state.isUpToDate &&
-      flatListRef.current
-    ) {
-      flatListRef.current.scrollToOffset({
-        offset: 50,
-      });
-      setTimeout(() => {
-        initialScrollSet.current = true;
-      }, 500);
     } else if (!initialScrollSet.current) {
       initialScrollSet.current = true;
     }
@@ -545,6 +531,19 @@ const MessageListWithContext = <
       scrollToBottomIfNeeded();
     } else if (!scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
+    }
+
+    if (
+      !channel?.state.isUpToDate &&
+      flatListRef.current &&
+      messageListLengthBeforeUpdate.current === 0 &&
+      messageListLengthAfterUpdate < 10
+    ) {
+      /**
+       * Trigger onStartReached on first load, if messages are not enough to fill the screen.
+       * This is important especially for android, where you can't overscroll.
+       */
+      maybeCallOnStartReached(10);
     }
 
     /**
@@ -679,7 +678,7 @@ const MessageListWithContext = <
    * 2. Ensures that we call `loadMoreRecent`, once per content length
    * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
-  const maybeCallOnStartReached = () => {
+  const maybeCallOnStartReached = (limit?: number) => {
     // If onStartReached has already been called for given data length, then ignore.
     if (
       messageList?.length &&
@@ -708,12 +707,12 @@ const MessageListWithContext = <
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
       onEndReachedInPromise.current.finally(() => {
-        onStartReachedInPromise.current = loadMoreRecent()
+        onStartReachedInPromise.current = loadMoreRecent(limit)
           .then(callback)
           .catch(onError);
       });
     } else {
-      onStartReachedInPromise.current = loadMoreRecent()
+      onStartReachedInPromise.current = loadMoreRecent(limit)
         .then(callback)
         .catch(onError);
     }
