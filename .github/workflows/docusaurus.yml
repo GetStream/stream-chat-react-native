@@ -22,7 +22,7 @@ jobs:
             # Setup git
             git config --global user.email ""
             git config --global user.name "$DESTINATION_GITHUB_USERNAME"
-            git clone --single-branch --branch "$TARGET_BRANCH" "https://$GITHUB_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
+            git clone --single-branch --branch "$TARGET_BRANCH" "https://$DOCUSAURUS_GH_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
             ls -la "$CLONE_DIR"
 
             SDKs=(`find ./$SOURCE_DIRECTORY/docs -maxdepth 1 -mindepth 1 -type d | awk -F'/' '{print $4}'`)
@@ -58,6 +58,6 @@ jobs:
             COMMIT_MESSAGE: Update from ORIGIN_COMMIT
             DESTINATION_GITHUB_USERNAME: GetStream
             DESTINATION_REPOSITORY_NAME: stream-chat-docusaurus
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
             SOURCE_DIRECTORY: docusaurus
             TARGET_BRANCH: main
