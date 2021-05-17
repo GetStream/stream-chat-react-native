@@ -37,7 +37,7 @@ export type ChannelListMessengerPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Omit<
   ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'hasNextPage'
@@ -61,7 +61,7 @@ const StatusIndicator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
   const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
@@ -97,7 +97,7 @@ const renderItem = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   item,
 }: {
@@ -111,7 +111,7 @@ const keyExtractor = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   item: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => item.cid;
@@ -123,7 +123,7 @@ const ChannelListMessengerWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -232,7 +232,7 @@ export type ChannelListMessengerProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -248,7 +248,7 @@ export const ChannelListMessenger = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

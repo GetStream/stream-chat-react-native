@@ -71,8 +71,7 @@ const Icon: React.FC<
     supportedReactions.find((reaction) => reaction.type === type)?.Icon ||
     Unknown;
 
-  // @ts-expect-error
-  const scale = useSharedValue(0, false);
+  const scale = useSharedValue(0);
 
   const showReaction = () => {
     'worklet';
@@ -116,7 +115,7 @@ export type ReactionListPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'onLongPress' | 'onPress' | 'reactions' | 'showMessageOverlay'
@@ -137,7 +136,7 @@ const ReactionListWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -175,8 +174,7 @@ const ReactionListWithContext = <
     },
   } = useTheme();
 
-  // @ts-expect-error
-  const opacity = useSharedValue(0, false);
+  const opacity = useSharedValue(0);
 
   const width = useWindowDimensions().width;
 
@@ -350,7 +348,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -392,7 +390,7 @@ export type ReactionListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
   Omit<
     ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -414,26 +412,14 @@ export const ReactionList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    onLongPress,
-    onPress,
-    reactions,
-    showMessageOverlay,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { alignment, onLongPress, onPress, reactions, showMessageOverlay } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { supportedReactions } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedReactionList

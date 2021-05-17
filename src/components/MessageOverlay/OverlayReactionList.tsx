@@ -107,7 +107,7 @@ type ReactionButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
@@ -126,7 +126,7 @@ export const ReactionButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: ReactionButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -271,7 +271,7 @@ export type OverlayReactionListPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'handleReaction' | 'messagesContext'
@@ -295,7 +295,7 @@ const OverlayReactionListWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -322,14 +322,10 @@ const OverlayReactionListWithContext = <
   } = useTheme();
 
   const reactionBubbleWidth = useSharedValue(0);
-  const reactionListLayout = useSharedValue(
-    {
-      height: 0,
-      width: 0,
-    },
-    // @ts-expect-error
-    false,
-  );
+  const reactionListLayout = useSharedValue({
+    height: 0,
+    width: 0,
+  });
 
   const { width } = useWindowDimensions();
 
@@ -455,7 +451,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -497,7 +493,7 @@ export type OverlayReactionListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Omit<
   OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'setOverlay' | 'supportedReactions'
@@ -519,20 +515,13 @@ export const OverlayReactionList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { supportedReactions } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
 
   return (

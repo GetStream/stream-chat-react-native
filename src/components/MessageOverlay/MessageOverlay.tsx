@@ -102,7 +102,7 @@ export type MessageOverlayPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'MessageActions' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
@@ -120,7 +120,7 @@ const MessageOverlayWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -188,8 +188,7 @@ const MessageOverlayWithContext = <
   const scrollViewRef = useRef<ScrollView>(null);
 
   const messageHeight = useSharedValue(0);
-  // @ts-expect-error
-  const messageLayout = useSharedValue({ x: 0, y: 0 }, false);
+  const messageLayout = useSharedValue({ x: 0, y: 0 });
   const messageWidth = useSharedValue(0);
   const reactionListHeight = useSharedValue(0);
 
@@ -604,7 +603,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -659,7 +658,7 @@ export type MessageOverlayProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Partial<
   Omit<
     MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -681,17 +680,12 @@ export const MessageOverlay = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    data,
-    MessageActions,
-    OverlayReactionList,
-    OverlayReactions,
-    reset,
-  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data, MessageActions, OverlayReactionList, OverlayReactions, reset } =
+    useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {

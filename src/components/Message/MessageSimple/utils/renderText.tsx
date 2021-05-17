@@ -68,7 +68,7 @@ export type RenderTextParams<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -91,7 +91,7 @@ export const renderText = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
