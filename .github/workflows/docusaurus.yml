@@ -21,8 +21,8 @@ jobs:
             echo "Cloning destination git repository"
             # Setup git
             git config --global user.email ""
-            git config --global user.name "$DESTINATION_GITHUB_USERNAME"
-            git clone --single-branch --branch "$TARGET_BRANCH" "https://$DOCUSAURUS_GH_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
+            git config --global user.name "$USER_NAME"
+            git clone --single-branch --branch "$TARGET_BRANCH" "https://$USER_NAME:$DOCUSAURUS_GH_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" "$CLONE_DIR"
             ls -la "$CLONE_DIR"
 
             SDKs=(`find ./$SOURCE_DIRECTORY/docs -maxdepth 1 -mindepth 1 -type d | awk -F'/' '{print $4}'`)
@@ -51,9 +51,9 @@ jobs:
             # git diff-index : to avoid the git commit failing if there are no changes to be committed
             git diff-index --quiet HEAD || git commit --message "$COMMIT_MESSAGE"
 
-            echo "git push origin:"
+            echo "git push:"
             # --set-upstream: sets default branch when pushing to a branch that does not exist
-            git push origin --set-upstream "$TARGET_BRANCH"
+            git push "https://$USER_NAME:$DOCUSAURUS_GH_TOKEN@github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git" --set-upstream "$TARGET_BRANCH"
         env:
             COMMIT_MESSAGE: Update from ORIGIN_COMMIT
             DESTINATION_GITHUB_USERNAME: GetStream
@@ -61,3 +61,4 @@ jobs:
             DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}
             SOURCE_DIRECTORY: docusaurus
             TARGET_BRANCH: main
+            USER_NAME: stream-ci-bot
