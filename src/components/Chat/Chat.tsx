@@ -5,6 +5,7 @@ import Dayjs from 'dayjs';
 import { useAppStateListener } from './hooks/useAppStateListener';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
+import { useMutedUsers } from './hooks/useMutedUsers';
 
 import {
   ChatContextValue,
@@ -163,10 +164,22 @@ const ChatWithContext = <
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
-  // Setup translators
+  /**
+   * Setup translators
+   */
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
-  // Setup connection event listeners
+  /**
+   * Handle appState change
+   */
+  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
+    client,
+    closeConnectionOnBackground,
+  );
+
+  /**
+   * Setup connection event listeners
+   */
   const { connectionRecovering, isOnline } = useIsOnline<
     At,
     Ch,
@@ -177,10 +190,10 @@ const ChatWithContext = <
     Us
   >(client);
 
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
-    client,
-    closeConnectionOnBackground,
-  );
+  /**
+   * Setup muted user listener
+   */
+  const mutedUsers = useMutedUsers<At, Ch, Co, Ev, Me, Re, Us>(client);
 
   useEffect(() => {
     if (client.setUserAgent) {
@@ -198,6 +211,7 @@ const ChatWithContext = <
     client,
     connectionRecovering,
     isOnline,
+    mutedUsers,
     setActiveChannel,
   });
 

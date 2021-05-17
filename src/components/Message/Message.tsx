@@ -26,6 +26,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+import { messageActions as defaultMessageActions } from './utils/messageActions';
 import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
@@ -179,11 +180,10 @@ export type MessagePropsWithContext<
   | 'enforceUniqueReaction'
   | 'isAdmin'
   | 'isModerator'
-  | 'isOwner'
   | 'members'
   | 'readEventsEnabled'
 > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
   Partial<
     Omit<
@@ -346,11 +346,10 @@ const MessageWithContext = <
     handleThreadReply,
     isAdmin,
     isModerator,
-    isOwner,
     lastReceivedId,
     members,
     message,
-    messageActions: messageActionsProp,
+    messageActions: messageActionsProp = defaultMessageActions,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
@@ -451,7 +450,7 @@ const MessageWithContext = <
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
-  const canModifyMessage = isMyMessage || isModerator || isOwner || isAdmin;
+  const canModifyMessage = isMyMessage || isModerator || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -953,8 +952,9 @@ const MessageWithContext = <
     const isThreadMessage = threadList || !!message.parent_id;
 
     const messageActions =
-      typeof messageActionsProp === 'function'
-        ? messageActionsProp({
+      typeof messageActionsProp !== 'function'
+        ? messageActionsProp
+        : messageActionsProp({
             blockUser,
             canModifyMessage,
             copyMessage,
@@ -972,99 +972,7 @@ const MessageWithContext = <
             retry,
             threadRepliesEnabled,
             threadReply,
-          })
-        : messageActionsProp
-        ? messageActionsProp
-        : error && isMyMessage
-        ? [retry, editMessage, deleteMessage]
-        : messageReactions
-        ? undefined
-        : canModifyMessage
-        ? isThreadMessage
-          ? message.text
-            ? isMyMessage
-              ? [editMessage, copyMessage, deleteMessage]
-              : [copyMessage, flagMessage]
-            : isMyMessage
-            ? [editMessage, deleteMessage]
-            : [flagMessage]
-          : message.text
-          ? quotedRepliesEnabled
-            ? threadRepliesEnabled
-              ? isMyMessage
-                ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
-                : [reply, threadReply, copyMessage, flagMessage]
-              : isMyMessage
-              ? [reply, editMessage, copyMessage, deleteMessage]
-              : [reply, copyMessage, flagMessage]
-            : threadRepliesEnabled
-            ? isMyMessage
-              ? [threadReply, editMessage, copyMessage, deleteMessage]
-              : [threadReply, copyMessage]
-            : isMyMessage
-            ? [editMessage, copyMessage, deleteMessage]
-            : [copyMessage]
-          : quotedRepliesEnabled
-          ? threadRepliesEnabled
-            ? isMyMessage
-              ? [reply, threadReply, editMessage, deleteMessage]
-              : [reply, threadReply, flagMessage]
-            : isMyMessage
-            ? [reply, editMessage, deleteMessage]
-            : [reply, flagMessage]
-          : threadRepliesEnabled
-          ? isMyMessage
-            ? [threadReply, editMessage, deleteMessage]
-            : [threadReply, flagMessage]
-          : isMyMessage
-          ? [editMessage, deleteMessage]
-          : [flagMessage]
-        : isThreadMessage
-        ? message.text
-          ? isMyMessage
-            ? [copyMessage, deleteMessage]
-            : [copyMessage, muteUser, flagMessage, blockUser]
-          : isMyMessage
-          ? [deleteMessage]
-          : [muteUser, blockUser, flagMessage]
-        : message.text
-        ? quotedRepliesEnabled
-          ? threadRepliesEnabled
-            ? isMyMessage
-              ? [reply, threadReply, copyMessage, deleteMessage]
-              : [
-                  reply,
-                  threadReply,
-                  copyMessage,
-                  muteUser,
-                  flagMessage,
-                  blockUser,
-                ]
-            : isMyMessage
-            ? [reply, copyMessage, deleteMessage]
-            : [reply, copyMessage, muteUser, flagMessage, blockUser]
-          : threadRepliesEnabled
-          ? isMyMessage
-            ? [threadReply, copyMessage, deleteMessage]
-            : [threadReply, copyMessage, muteUser, flagMessage, blockUser]
-          : isMyMessage
-          ? [copyMessage, deleteMessage]
-          : [copyMessage, muteUser, flagMessage, blockUser]
-        : quotedRepliesEnabled
-        ? threadRepliesEnabled
-          ? isMyMessage
-            ? [reply, threadReply, deleteMessage]
-            : [reply, threadReply, muteUser, blockUser]
-          : isMyMessage
-          ? [reply, deleteMessage]
-          : [reply, muteUser, blockUser]
-        : threadRepliesEnabled
-        ? isMyMessage
-          ? [threadReply, deleteMessage]
-          : [threadReply, muteUser, blockUser]
-        : isMyMessage
-        ? [deleteMessage]
-        : [muteUser, blockUser];
+          });
 
     setData({
       alignment,
@@ -1311,17 +1219,17 @@ const areEqual = <
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    channel: prevChannel,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
+    mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
     targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
-    channel: nextChannel,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
+    mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
     targetedMessage: nextTargetedMessage,
@@ -1382,9 +1290,13 @@ const areEqual = <
   if (!latestReactionsEqual) return false;
 
   const mutedUserSame =
-    !!prevChannel &&
-    !!nextChannel &&
-    prevChannel.state.mutedUsers.length === nextChannel.state.mutedUsers.length;
+    prevMutedUsers.length === nextMutedUsers.length ||
+    prevMutedUsers.some(
+      (mutedUser) => mutedUser.target.id === prevMessage.user?.id,
+    ) ===
+      nextMutedUsers.some(
+        (mutedUser) => mutedUser.target.id === nextMessage.user?.id,
+      );
   if (!mutedUserSame) return false;
 
   const showUnreadUnderlayEqual =
@@ -1447,11 +1359,10 @@ export const Message = <
     enforceUniqueReaction,
     isAdmin,
     isModerator,
-    isOwner,
     members,
     readEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -1470,9 +1381,9 @@ export const Message = <
         enforceUniqueReaction,
         isAdmin,
         isModerator,
-        isOwner,
         members,
         messagesContext,
+        mutedUsers,
         openThread,
         readEventsEnabled,
         setData,
