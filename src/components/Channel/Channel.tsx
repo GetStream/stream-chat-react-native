@@ -383,6 +383,7 @@ export type ChannelPropsWithContext<
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
     maxMessageLength?: number;
     messageId?: string;
+    quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
     threadRepliesEnabled?: boolean;
@@ -510,6 +511,7 @@ const ChannelWithContext = <
     onPressInMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
+    quotedRepliesEnabled: quotedRepliesEnabledProp,
     ReactionList = ReactionListDefault,
     reactionsEnabled: reactionsEnabledProp,
     readEventsEnabled: readEventsEnabledProp,
@@ -1004,7 +1006,7 @@ const ChannelWithContext = <
     /**
      * Replace with backend flag once its ready
      */
-    quotedRepliesEnabled: true,
+    quotedRepliesEnabled: quotedRepliesEnabledProp ?? true,
     reactionsEnabled:
       reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
     threadRepliesEnabled:
