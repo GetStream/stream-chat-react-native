@@ -28,10 +28,10 @@ jobs:
             SDKs=(`find ./$SOURCE_DIRECTORY/docs -maxdepth 1 -mindepth 1 -type d | awk -F'/' '{print $4}'`)
             for sdk in "${SDKs[@]}"
             do
-              SDK_NO_SPACES="${sdk/ /}"
               echo "Deleting all contents of $sdk in target git repository and copying current over"
-              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 1 -mindepth 1 -type f -iname '*$SDK_NO_SPACES*' -exec rm -rf {} \;
-              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 2 -mindepth 1 -type d -iname '*$SDK_NO_SPACES*' -exec rm -rf {} \;
+              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 1 -mindepth 1 -type f -iname "*${sdk/ /}*" -exec rm -rf {} \;
+              find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 2 -mindepth 1 -type d -iname "*${sdk/ /}*" -exec rm -rf {} \;
+              ls -la $CLONE_DIR/$SOURCE_DIRECTORY
             done
             cp -a "$SOURCE_DIRECTORY"/. "$CLONE_DIR/$SOURCE_DIRECTORY"
             find $CLONE_DIR/$SOURCE_DIRECTORY -maxdepth 1 -mindepth 1 -type f -iname '*plugin.js' -exec rm -f {} \; # remove any custom plugins
