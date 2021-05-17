@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  GestureResponderEvent,
   Image,
   ImageStyle,
   Linking,
@@ -98,15 +97,14 @@ export type CardPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Attachment<At> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'onLongPress' | 'onPress' | 'onPressIn'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
     styles?: Partial<{
       authorName: StyleProp<TextStyle>;
       authorNameContainer: StyleProp<ViewStyle>;
@@ -141,6 +139,7 @@ const CardWithContext = <
     image_url,
     og_scrape_url,
     onLongPress,
+    onPress,
     onPressIn,
     styles: stylesProp = {},
     text,
@@ -173,15 +172,28 @@ const CardWithContext = <
 
   return (
     <TouchableOpacity
-      onLongPress={onLongPress}
-      onPress={() => {
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'card',
+          event,
+        });
+      }}
+      onPress={(event) => {
         if (!onPressIn) {
-          defaultOnPress();
+          onPress({
+            defaultHandler: defaultOnPress,
+            emitter: 'card',
+            event,
+          });
         }
       }}
       onPressIn={(event) => {
         if (onPressIn) {
-          onPressIn(event, defaultOnPress);
+          onPressIn({
+            defaultHandler: defaultOnPress,
+            emitter: 'card',
+            event,
+          });
         }
       }}
       style={[styles.container, container, stylesProp.container]}
@@ -300,17 +312,15 @@ export type CardProps<
   Us extends UnknownType = DefaultUserType
 > = Attachment<At> &
   Partial<
-    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+    Pick<
+      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'onLongPress' | 'onPress' | 'onPressIn'
+    > &
       Pick<
         MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
       >
-  > & {
-    onPressIn?: (
-      event: GestureResponderEvent,
-      defaultOnPress?: () => void,
-    ) => void;
-  };
+  >;
 
 /**
  * UI component for card in attachments.
@@ -326,13 +336,20 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPress, onPressIn } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
     additionalTouchableProps,
     CardCover,
     CardFooter,
     CardHeader,
-    onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -343,6 +360,7 @@ export const Card = <
         CardFooter,
         CardHeader,
         onLongPress,
+        onPress,
         onPressIn,
       }}
       {...props}

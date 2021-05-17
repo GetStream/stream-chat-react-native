@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
@@ -29,6 +23,10 @@ import {
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -122,20 +120,15 @@ type MessageInputPropsWithContext<
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
-    | 'appendText'
     | 'asyncIds'
     | 'asyncUploads'
-    | 'AttachButton'
-    | 'CommandsButton'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
+    | 'closeAttachmentPicker'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
-    | 'hasCommands'
-    | 'hasFilePicker'
-    | 'hasImagePicker'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -143,32 +136,30 @@ type MessageInputPropsWithContext<
     | 'InputButtons'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
-    | 'MoreOptionsButton'
+    | 'mentionedUsers'
     | 'numberOfUploads'
-    | 'pickFile'
     | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
     | 'setGiphyActive'
-    | 'setShowMoreOptions'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
     | 'removeImage'
     | 'uploadNewImage'
-    | 'uploadsEnabled'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<
     SuggestionsContextValue<Co, Us>,
     'componentType' | 'suggestions' | 'suggestionsTitle'
   > &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
 
-export const MessageInputWithContext = <
+const MessageInputWithContext = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -181,19 +172,17 @@ export const MessageInputWithContext = <
 ) => {
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
     clearEditingState,
     clearQuotedMessageState,
+    closeAttachmentPicker,
     componentType,
     disabled,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -202,8 +191,8 @@ export const MessageInputWithContext = <
     isValidMessage,
     maxNumberOfFiles,
     members,
+    mentionedUsers,
     numberOfUploads,
-    pickFile,
     quotedMessage,
     removeImage,
     Reply,
@@ -216,6 +205,7 @@ export const MessageInputWithContext = <
     suggestions,
     suggestionsTitle,
     t,
+    thread,
     threadList,
     uploadNewImage,
     watchers,
@@ -257,72 +247,104 @@ export const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
-    closePicker,
-    openPicker,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
     setSelectedImages,
-    setSelectedPicker,
   } = useAttachmentPickerContext();
 
+  /**
+   * Mounting and un-mounting logic are un-related in following useEffect.
+   * While mounting we want to pass maxNumberOfFiles (which is prop on Channel component)
+   * to AttachmentPicker (on OverlayProvider)
+   *
+   * While un-mounting, we want to close the picker e.g., while navigating away.
+   */
   useEffect(() => {
     setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
 
-    return () => {
-      closePicker();
-      setSelectedPicker(undefined);
-    };
-  }, [maxNumberOfFiles]);
+    return closeAttachmentPicker;
+  }, []);
 
-  const selectedImagesLength = selectedImages.length;
-  const imageUploadsLength = imageUploads.length;
+  const [hasResetImages, setHasResetImages] = useState(false);
+  const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
+  const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
+
   useEffect(() => {
-    if (selectedImagesLength > imageUploadsLength) {
-      const imagesToUpload = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
+    setSelectedImages([]);
+    if (imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+    return () => setSelectedImages([]);
+  }, []);
+
+  useEffect(() => {
+    if (
+      hasResetImages === false &&
+      imageUploadsLength === 0 &&
+      selectedImagesLength === 0
+    ) {
+      setHasResetImages(true);
+    }
+  }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (imagesForInput === false && imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+  }, [imagesForInput]);
+
+  useEffect(() => {
+    if (imagesForInput) {
+      if (selectedImagesLength > imageUploadsLength) {
+        const imagesToUpload = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri ||
+              imageUpload.url === selectedImage.uri,
+          );
+          return !uploadedImage;
+        });
+        imagesToUpload.forEach((image) => uploadNewImage(image));
+      } else if (selectedImagesLength < imageUploadsLength) {
+        const imagesToRemove = imageUploads.filter(
           (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+            !selectedImages.find(
+              (selectedImage) =>
+                selectedImage.uri === imageUpload.file.uri ||
+                selectedImage.uri === imageUpload.url,
+            ),
         );
-        return !uploadedImage;
-      });
-      imagesToUpload.forEach((image) => uploadNewImage(image));
-    } else if (selectedImagesLength < imageUploadsLength) {
-      const imagesToRemove = imageUploads.filter(
-        (imageUpload) =>
-          !selectedImages.find(
-            (selectedImage) =>
-              selectedImage.uri === imageUpload.file.uri ||
-              selectedImage.uri === imageUpload.url,
-          ),
-      );
-      imagesToRemove.forEach((image) => removeImage(image.id));
+        imagesToRemove.forEach((image) => removeImage(image.id));
+      }
     }
   }, [selectedImagesLength]);
 
   useEffect(() => {
-    if (imageUploadsLength < selectedImagesLength) {
-      const updatedSelectedImages = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
-          (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+    if (imagesForInput) {
+      if (imageUploadsLength < selectedImagesLength) {
+        const updatedSelectedImages = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri ||
+              imageUpload.url === selectedImage.uri,
+          );
+          return uploadedImage;
+        });
+        setSelectedImages(updatedSelectedImages);
+      } else if (imageUploadsLength > selectedImagesLength) {
+        setSelectedImages(
+          imageUploads
+            .map((imageUpload) => ({
+              height: imageUpload.file.height,
+              source: imageUpload.file.source,
+              uri: imageUpload.url,
+              width: imageUpload.file.width,
+            }))
+            .filter(Boolean) as Asset[],
         );
-        return uploadedImage;
-      });
-      setSelectedImages(updatedSelectedImages);
-    } else if (imageUploadsLength > selectedImagesLength) {
-      setSelectedImages(
-        imageUploads
-          .map((imageUpload) => ({
-            height: imageUpload.file.height,
-            source: imageUpload.file.source,
-            uri: imageUpload.url,
-            width: imageUpload.file.width,
-          }))
-          .filter(Boolean) as Asset[],
-      );
+      }
     }
   }, [imageUploadsLength]);
 
@@ -332,7 +354,23 @@ export const MessageInputWithContext = <
       inputBoxRef.current.focus();
     }
 
-    if (!editing) {
+    /**
+     * Make sure to test `initialValue` functionality, if you are modifying following condition.
+     *
+     * We have the following condition, to make sure - when user comes out of "editing message" state,
+     * we wipe out all the state around message input such as text, mentioned users, image uploads etc.
+     * But it also means, this condition will be fired up on first render, which may result in clearing
+     * the initial value set on input box, through the prop - `initialValue`.
+     * This prop generally gets used for the case of draft message functionality.
+     */
+    if (
+      !editing &&
+      (giphyActive ||
+        fileUploads.length > 0 ||
+        mentionedUsers.length > 0 ||
+        imageUploads.length > 0 ||
+        numberOfUploads > 0)
+    ) {
       resetInput();
     }
   }, [editingExists]);
@@ -388,38 +426,6 @@ export const MessageInputWithContext = <
     }
 
     return result;
-  };
-
-  const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
-      Keyboard.dismiss();
-      openPicker();
-      setSelectedPicker('images');
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
-      pickFile();
-    }
-  };
-
-  const closeAttachmentPicker = () => {
-    if (selectedPicker) {
-      setSelectedPicker(undefined);
-      closePicker();
-    }
-  };
-
-  const toggleAttachmentPicker = () => {
-    if (selectedPicker) {
-      closeAttachmentPicker();
-    } else {
-      openAttachmentPicker();
-    }
-  };
-
-  const openCommandsPicker = () => {
-    appendText('/');
-    if (inputBoxRef.current) {
-      inputBoxRef.current.focus();
-    }
   };
 
   const additionalTextInputContainerProps = {
@@ -481,23 +487,12 @@ export const MessageInputWithContext = <
           {Input ? (
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
-              closeAttachmentPicker={closeAttachmentPicker}
               getUsers={getUsers}
-              openAttachmentPicker={openAttachmentPicker}
-              openCommandsPicker={openCommandsPicker}
-              toggleAttachmentPicker={toggleAttachmentPicker}
             />
           ) : (
             <>
               <View style={[styles.optionsContainer, optionsContainer]}>
-                {InputButtons && (
-                  <InputButtons
-                    closeAttachmentPicker={closeAttachmentPicker}
-                    openAttachmentPicker={openAttachmentPicker}
-                    openCommandsPicker={openCommandsPicker}
-                    toggleAttachmentPicker={toggleAttachmentPicker}
-                  />
-                )}
+                {InputButtons && <InputButtons />}
               </View>
               <View
                 style={[
@@ -619,6 +614,7 @@ const areEqual = <
   nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    additionalTextInputProps: prevAdditionalTextInputProps,
     asyncUploads: prevAsyncUploads,
     disabled: prevDisabled,
     editing: prevEditing,
@@ -626,15 +622,18 @@ const areEqual = <
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
+    mentionedUsers: prevMentionedUsers,
     quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
     suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
+    thread: prevThread,
     threadList: prevThreadList,
   } = prevProps;
   const {
+    additionalTextInputProps: nextAdditionalTextInputProps,
     asyncUploads: nextAsyncUploads,
     disabled: nextDisabled,
     editing: nextEditing,
@@ -642,17 +641,23 @@ const areEqual = <
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
+    mentionedUsers: nextMentionedUsers,
     quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
     suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
+    thread: nextThread,
     threadList: nextThreadList,
   } = nextProps;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
+
+  const additionalTextInputPropsEven =
+    prevAdditionalTextInputProps === nextAdditionalTextInputProps;
+  if (!additionalTextInputPropsEven) return false;
 
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
@@ -694,6 +699,10 @@ const areEqual = <
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) return false;
 
+  const mentionedUsersEqual =
+    prevMentionedUsers.length === nextMentionedUsers.length;
+  if (!mentionedUsersEqual) return false;
+
   const suggestionsEqual =
     !!prevSuggestions?.data && !!nextSuggestions?.data
       ? prevSuggestions.data.length === nextSuggestions.data.length &&
@@ -705,6 +714,12 @@ const areEqual = <
 
   const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
   if (!suggestionsTitleEqual) return false;
+
+  const threadEqual =
+    prevThread?.id === nextThread?.id &&
+    prevThread?.text === nextThread?.text &&
+    prevThread?.reply_count === nextThread?.reply_count;
+  if (!threadEqual) return false;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
@@ -759,20 +774,15 @@ export const MessageInput = <
 
   const {
     additionalTextInputProps,
-    appendText,
     asyncIds,
     asyncUploads,
-    AttachButton,
     clearEditingState,
     clearQuotedMessageState,
-    CommandsButton,
+    closeAttachmentPicker,
     editing,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    hasCommands,
-    hasFilePicker,
-    hasImagePicker,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -780,9 +790,8 @@ export const MessageInput = <
     InputButtons,
     isValidMessage,
     maxNumberOfFiles,
-    MoreOptionsButton,
+    mentionedUsers,
     numberOfUploads,
-    pickFile,
     quotedMessage,
     removeImage,
     resetInput,
@@ -790,11 +799,9 @@ export const MessageInput = <
     sending,
     sendMessageAsync,
     setGiphyActive,
-    setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-    uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -805,28 +812,25 @@ export const MessageInput = <
     suggestionsTitle,
   } = useSuggestionsContext<Co, Us>();
 
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+
   const { t } = useTranslationContext();
 
   return (
     <MemoizedMessageInput
       {...{
         additionalTextInputProps,
-        appendText,
         asyncIds,
         asyncUploads,
-        AttachButton,
         clearEditingState,
         clearQuotedMessageState,
-        CommandsButton,
+        closeAttachmentPicker,
         componentType,
         disabled,
         editing,
         FileUploadPreview,
         fileUploads,
         giphyActive,
-        hasCommands,
-        hasFilePicker,
-        hasImagePicker,
         ImageUploadPreview,
         imageUploads,
         Input,
@@ -835,9 +839,8 @@ export const MessageInput = <
         isValidMessage,
         maxNumberOfFiles,
         members,
-        MoreOptionsButton,
+        mentionedUsers,
         numberOfUploads,
-        pickFile,
         quotedMessage,
         removeImage,
         Reply,
@@ -846,14 +849,13 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setGiphyActive,
-        setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
         suggestionsTitle,
         t,
+        thread,
         uploadNewImage,
-        uploadsEnabled,
         watchers,
       }}
       {...props}

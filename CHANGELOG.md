@@ -1,5 +1,104 @@
 # Changelog
 
+## [3.4.0] (2021-05-14)
+
+### Features
+- Updated implementation around network recovery for smooth UX [#658](https://github.com/GetStream/stream-chat-react-native/pull/658)
+- Added support for `MessageDeleted` prop on Channel component, for overriding default deleted message component [65861d9](https://github.com/GetStream/stream-chat-react-native/commit/65861d9a52e8d289d6e66bbc63d2814aa6f87c9e)
+- Refresh channel list when `sort` prop updates, on ChannelList [42450fa](https://github.com/GetStream/stream-chat-react-native/commit/42450fa23d6221931b0b14d5f39fba2484b7dadf)
+- Added support for typing indicator in threads [6f518ca](https://github.com/GetStream/stream-chat-react-native/commit/6f518ca1879943edaa6606209c2f63672df1dd75)
+- Added handler for `channel.visible` event [476c36e](https://github.com/GetStream/stream-chat-react-native/commit/476c36e30eb41ca5843c0f679c18880e46d7564e)
+
+### Bug fixes
+
+- Added default sizes to Icons in `OverlayReactionList` component. [6b4db5f](https://github.com/GetStream/stream-chat-react-native/commit/6b4db5fd1ad4816506a2f567409201374d6d3f3c)
+- Miscellaneous fixes around image picker opening and closing [950f746](https://github.com/GetStream/stream-chat-react-native/commit/950f746412422cdb2fb6b358a24a3bc694a9032a) [4845e4e](https://github.com/GetStream/stream-chat-react-native/commit/4845e4e08e6725b612f17360d1fe031c0acf6578)
+
+##  [3.3.2] (2021-04-13)
+
+- Allow re-rerendering of MessageInput component, on changes to `additionalTextInputProps` [1b95a64](https://github.com/GetStream/stream-chat-react-native/commit/1b95a64f15642829d2b4296615c2d8572065f213)
+- Fixed Android camera permissions check [5b77516](https://github.com/GetStream/stream-chat-react-native/commit/5b775160b814c9d69fdb5f9879662c76064581af)
+
+##  [3.3.1] (2021-04-09)
+
+- Fixed `supportedReactions` prop support on `OverlayReactions` [#594](https://github.com/GetStream/stream-chat-react-native/pull/594/files)
+- Fixed mentions autocomplete functionality for channels with > 100 members [e8c93d3](https://github.com/GetStream/stream-chat-react-native/commit/e8c93d39825ecf7e3fb01dc6da8a1096cef50bf3)
+- Fixed theming issue on overlay for sent message (or my message) [7f11364](https://github.com/GetStream/stream-chat-react-native/commit/7f113649975620391dca1ff447e70ae89c08b5bb)
+- Exporting following components and hooks from SDK
+  - ChannelListLoadingIndicator
+  - ChannelPreviewMessage
+  - ChannelPreviewStatus
+  - ChannelPreviewTitle
+  - ChannelPreviewUnreadCount
+  - InputButtons
+  - useAppStateListener
+
+##  [3.3.0] (2021-04-07)
+
+### New Features 🎉
+
+- Added inline date separators, which can be customized by adding your own UI component [#581](https://github.com/GetStream/stream-chat-react-native/pull/581/files)
+
+  ```jsx
+  <Channel
+    InlineDateSeparator={({ date }) => { /** Your custom UI */ }}
+    maxTimeBetweenGroupedMessages={40000} // number of ms, after which further messages will be considered part of new group.
+  >
+  ```
+
+- Added ability to override default onLongPress, onPress, onPressIn and onDoubleTap handlers using following props on Channel component:
+
+  - onLongPressMessage
+  - onPressMessage
+  - onPressInMessage
+  - onDoubleTapMessage
+
+  You will have access to payload of that handler as param:
+
+  ```jsx
+  <Channel
+    ...
+    onLongPressMessage={({
+      actionHandlers: {
+          deleteMessage, // () => Promise<void>;
+          editMessage, // () => void;
+          reply, // () => void;
+          resendMessage, // () => Promise<void>;
+          showMessageOverlay, // () => void;
+          toggleBanUser, // () => Promise<void>;
+          toggleMuteUser, // () => Promise<void>;
+          toggleReaction, // (reactionType: string) => Promise<void>;
+      },
+      defaultHandler, // () => void
+      event, // any event object corresponding to touchable feedback
+      emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
+      message // message object on which longPress occured
+    }) => {
+      /** Your custom action */
+    }}
+  />
+  ```
+
+###  **🛑 BREAKING**
+
+- Following props are no longer accessible on `Input` component (which is used to customize underlying input box). They should be accessed from `MessageInputContext` (or corresponding hook - `useMessageInputContext`)
+
+  - openAttachmentPicker
+  - closeAttachmentPicker
+  - toggleAttachmentPicker
+  - openCommandsPicker
+  - openMentionsPicker
+  - openFilePicker
+
+- Value `typing` (which is list of users who are typing), has been moved from `ChannelContext` to its own separate context - `TypingContext` [c450719](https://github.com/GetStream/stream-chat-react-native/commit/c4507194956360ae27731fc81fed1d7dc1ed1861)
+
+
+### Fixes
+
+- [#522](https://github.com/GetStream/stream-chat-react-native/issues/522) `initialValue` not being set for inputbox [63b3d79](https://github.com/GetStream/stream-chat-react-native/pull/572/commits/63b3d7995b30dccf23aece51cbc7479388890fd0)
+- Fixed goToMessage functionality (when you press on quotedMessage) in MessageList [#580](https://github.com/GetStream/stream-chat-react-native/pull/580)
+- Fixed image picker not loading when swapping from keyboard [a180ad4](https://github.com/GetStream/stream-chat-react-native/commit/a180ad43fb1766f0252467c4d6aec84ca7c9e26d)
+
 ##  [3.2.0] (2021-03-23)
 
 ###  **🛑 BREAKING**

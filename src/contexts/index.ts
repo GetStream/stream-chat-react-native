@@ -18,4 +18,5 @@ export * from './themeContext/ThemeContext';
 export * from './themeContext/utils/theme';
 export * from './threadContext/ThreadContext';
 export * from './translationContext/TranslationContext';
+export * from './typingContext/TypingContext';
 export * from './utils/getDisplayName';

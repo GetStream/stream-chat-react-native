@@ -34,9 +34,20 @@ lane :match_me do
   )
 end
 
+desc "Installs all Certs and Profiles necessary for appstore"
+lane :match_appstore do
+  match(
+    type: "appstore",
+    app_identifier: [
+        "io.getstream.reactnative.SampleApp",
+    ],
+    readonly: is_ci
+  )
+end
+
 platform :ios do
-  desc "Description of what the lane does"
-  lane :distribute do
+  desc "Deploy build to Firebase"
+  lane :deploy_to_firebase do
       match_me
 
         gym(
@@ -56,5 +67,49 @@ platform :ios do
             groups: "ios-react-native-testers",
             release_notes: "Lots of amazing new features to test out!"
         )
+  end
+end
+
+platform :ios do
+  desc "Deploy build to TestFlight QA"
+  lane :deploy_to_testflight_qa do
+      app_store_connect_api_key()
+
+      match_appstore
+
+      settings_to_override = {
+        :BUNDLE_IDENTIFIER => "io.getstream.reactnative.SampleApp",
+        :PROVISIONING_PROFILE_SPECIFIER => "match AppStore io.getstream.reactnative.SampleApp"
+      }
+
+      package = load_json(json_path: "../package.json")
+      increment_version_number(version_number: package["version"])
+      increment_build_number(xcodeproj: "SampleApp.xcodeproj")
+
+      gym(
+          workspace: "./SampleApp.xcworkspace",
+          scheme: "SampleApp",
+          export_method: "app-store",
+          export_options: "./fastlane/testflight_gym_export_options.plist",
+          silent: true,
+          clean: true,
+          xcargs: settings_to_override,
+          include_symbols: true,
+          output_directory: "./dist",
+      )
+
+      upload_to_testflight(
+          groups: ['Testers'],
+          changelog: "Lots of amazing new features to test out!",
+          reject_build_waiting_for_review: true
+      )
+
+      commit_version_bump(
+        message: "[fastlane][ios] Bump version [skip ci]",
+        xcodeproj: "SampleApp.xcodeproj",
+        force: true # otherwise untracked files may crash the CI build
+      )
+
+      push_to_git_remote()
   end
 end

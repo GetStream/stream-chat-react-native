@@ -94,14 +94,14 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
       >
         {avatarComponent
           ? avatarComponent({ item: restItem })
-          : user?.image && (
+          : !!user?.image && (
               <Avatar
                 containerStyle={[
                   styles.avatarImageWrapper,
                   { backgroundColor: white },
                   gridAvatarWrapper,
                 ]}
-                image={user?.image}
+                image={user.image}
                 imageStyle={gridAvatar}
                 size={22}
               />

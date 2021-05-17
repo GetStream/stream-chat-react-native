@@ -189,6 +189,10 @@ export type Theme = {
     };
     backgroundColor?: string;
   };
+  inlineDateSeparator: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   loadingDots: {
     container: ViewStyle;
     loadingDot: ViewStyle;
@@ -286,6 +290,7 @@ export type Theme = {
   };
   messageList: {
     container: ViewStyle;
+    contentContainer: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     inlineUnreadIndicator: {
@@ -460,6 +465,7 @@ export type Theme = {
       radius: number;
       reaction: ViewStyle;
       reactionList: ViewStyle;
+      reactionSize: number;
     };
   };
   reply: {
@@ -621,6 +627,10 @@ export const defaultTheme: Theme = {
       usernameText: {},
     },
   },
+  inlineDateSeparator: {
+    container: {},
+    text: {},
+  },
   loadingDots: {
     container: {},
     loadingDot: {},
@@ -718,6 +728,7 @@ export const defaultTheme: Theme = {
   },
   messageList: {
     container: {},
+    contentContainer: {},
     errorNotification: {},
     errorNotificationText: {},
     inlineUnreadIndicator: {
@@ -926,6 +937,7 @@ export const defaultTheme: Theme = {
       radius: 2.5,
       reaction: {},
       reactionList: {},
+      reactionSize: 24,
     },
   },
   reply: {

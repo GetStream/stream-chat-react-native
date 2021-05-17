@@ -207,6 +207,14 @@ const sections = [
         name: 'ImageGalleryContext',
       },
       {
+        content: 'src/contexts/messageContext/MessageContext.md',
+        name: 'MessageContext',
+      },
+      {
+        content: 'src/contexts/messageInputContext/MessageInputContext.md',
+        name: 'MessageInputContext',
+      },
+      {
         content: 'src/contexts/messagesContext/MessagesContext.md',
         name: 'MessagesContext',
       },
@@ -215,8 +223,16 @@ const sections = [
         name: 'OverlayContext',
       },
       {
+        content: 'src/contexts/paginatedMessageListContext/PaginatedMessageListContext.md',
+        name: 'PaginatedMessageListContext',
+      },
+      {
         content: 'src/contexts/threadContext/ThreadContext.md',
         name: 'ThreadContext',
+      },
+      {
+        content: 'src/contexts/typingContext/TypingContext.md',
+        name: 'TypingContext',
       },
     ],
     usageMode: 'expand',

@@ -21,6 +21,7 @@ import Animated, {
   Easing,
   interpolate,
   runOnJS,
+  runOnUI,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useDerivedValue,
@@ -368,16 +369,22 @@ export const ImageGallery = <
    * Set selected photo when changed via pressing in the message list
    */
   useEffect(() => {
+    const updatePosition = (newIndex: number) => {
+      'worklet';
+
+      if (newIndex > -1) {
+        index.value = newIndex;
+        translationX.value = -(screenWidth + MARGIN) * newIndex;
+        runOnJS(setSelectedIndex)(newIndex);
+      }
+    };
+
     const newIndex = photos.findIndex(
       (photo) =>
         photo.messageId === image?.messageId && photo.uri === image?.url,
     );
 
-    if (newIndex > -1) {
-      index.value = newIndex;
-      translationX.value = -(screenWidth + MARGIN) * newIndex;
-      setSelectedIndex(newIndex);
-    }
+    runOnUI(updatePosition)(newIndex);
   }, [image, photoLength]);
 
   /**

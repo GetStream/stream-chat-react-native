@@ -29,6 +29,7 @@ export type ThreadContextValue<
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
   openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  reloadThread: () => void;
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
   thread: MessageType<At, Ch, Co, Ev, Me, Re, Us> | null;
   threadHasMore: boolean;

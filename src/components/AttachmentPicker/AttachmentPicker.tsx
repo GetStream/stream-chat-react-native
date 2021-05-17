@@ -279,15 +279,19 @@ export const AttachmentPicker = React.forwardRef(
           setHasNextPage(true);
         }
       }
+    }, [currentIndex]);
+
+    useEffect(() => {
       if (
         selectedPicker === 'images' &&
         endCursor === undefined &&
-        currentIndex > -1
+        currentIndex > -1 &&
+        !loadingPhotos
       ) {
         setPhotoError(false);
         getMorePhotos();
       }
-    }, [currentIndex]);
+    }, [currentIndex, selectedPicker]);
 
     const selectedPhotos = photos.map((asset) => ({
       asset,

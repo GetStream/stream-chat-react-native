@@ -156,6 +156,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
 
   const width = useWindowDimensions().width;
 
+  const supportedReactionTypes = supportedReactions.map(
+    (supportedReaction) => supportedReaction.type,
+  );
+
+  const filteredReactions = reactions.filter((reaction) =>
+    supportedReactionTypes.includes(reaction.type),
+  );
+
   const numColumns = Math.floor(
     (width -
       overlayPadding * 2 -
@@ -330,7 +338,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     >
       <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
       <FlatList
-        data={reactions}
+        data={filteredReactions}
         keyExtractor={({ name }, index) => `${name}_${index}`}
         numColumns={numColumns}
         renderItem={renderItem}

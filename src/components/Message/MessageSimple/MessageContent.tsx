@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import merge from 'lodash/merge';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -82,6 +81,7 @@ export type MessageContentPropsWithContext<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
   | 'disabled'
+  | 'goToMessage'
   | 'groupStyles'
   | 'hasReactions'
   | 'isMyMessage'
@@ -92,6 +92,7 @@ export type MessageContentPropsWithContext<
   | 'onLongPress'
   | 'onlyEmojis'
   | 'onPress'
+  | 'onPressIn'
   | 'otherAttachments'
   | 'preventPress'
   | 'showMessageStatus'
@@ -106,6 +107,7 @@ export type MessageContentPropsWithContext<
     | 'Gallery'
     | 'MessageFooter'
     | 'MessageHeader'
+    | 'MessageDeleted'
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
@@ -119,7 +121,7 @@ export type MessageContentPropsWithContext<
 /**
  * Child of MessageSimple that displays a message's content
  */
-export const MessageContentWithContext = <
+const MessageContentWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -145,6 +147,7 @@ export const MessageContentWithContext = <
     members,
     message,
     messageContentOrder,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -152,7 +155,7 @@ export const MessageContentWithContext = <
     onLongPress,
     onlyEmojis,
     onPress,
-    onPressInMessage,
+    onPressIn,
     otherAttachments,
     preventPress,
     repliesEnabled,
@@ -168,7 +171,6 @@ export const MessageContentWithContext = <
       colors: {
         accent_red,
         blue_alice,
-        grey,
         grey_gainsboro,
         grey_whisper,
         transparent,
@@ -177,9 +179,6 @@ export const MessageContentWithContext = <
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
           containerInner,
-          deletedContainer,
-          deletedContainerInner,
-          deletedText,
           errorContainer,
           errorIcon,
           errorIconContainer,
@@ -226,50 +225,12 @@ export const MessageContentWithContext = <
 
   if (message.deleted_at) {
     return (
-      <View
+      <MessageDeleted
+        formattedDate={getDateText(formatDate)}
+        groupStyle={groupStyle}
+        noBorder={noBorder}
         onLayout={onLayout}
-        style={[
-          alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
-          deletedContainer,
-        ]}
-      >
-        <View
-          style={[
-            styles.containerInner,
-            {
-              backgroundColor: grey_whisper,
-              borderBottomLeftRadius:
-                groupStyle === 'left_bottom' || groupStyle === 'left_single'
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                groupStyle === 'right_bottom' || groupStyle === 'right_single'
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: grey_whisper,
-            },
-            noBorder ? { borderWidth: 0 } : {},
-            deletedContainerInner,
-          ]}
-          testID='message-content-wrapper'
-        >
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-            markdownStyles={merge({ em: { color: grey } }, deletedText)}
-            message={{ ...message, text: '_Message deleted_' }}
-          />
-        </View>
-        <MessageFooter
-          alignment={alignment}
-          formattedDate={getDateText(formatDate)}
-          isDeleted
-          members={members}
-          message={message}
-          MessageStatus={MessageStatus}
-          otherAttachments={otherAttachments}
-          showMessageStatus={showMessageStatus}
-          testID='message-footer'
-        />
-      </View>
+      />
     );
   }
 
@@ -291,8 +252,24 @@ export const MessageContentWithContext = <
     <TouchableOpacity
       activeOpacity={0.7}
       disabled={disabled}
-      onLongPress={onLongPress}
-      onPress={onPress}
+      onLongPress={(event) => {
+        onLongPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPress={(event) => {
+        onPress({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
+      onPressIn={(event) => {
+        onPressIn?.({
+          emitter: 'messageContent',
+          event,
+        });
+      }}
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -316,7 +293,6 @@ export const MessageContentWithContext = <
           MessageStatus={MessageStatus}
           otherAttachments={otherAttachments}
           showMessageStatus={showMessageStatus}
-          testID='message-header'
         />
       )}
       <View onLayout={onLayout} style={wrapper}>
@@ -372,7 +348,6 @@ export const MessageContentWithContext = <
                     <Attachment
                       attachment={attachment}
                       key={`${message.id}-${attachmentIndex}`}
-                      onPressIn={onPressInMessage}
                     />
                   ));
                 case 'files':
@@ -380,14 +355,12 @@ export const MessageContentWithContext = <
                     <FileAttachmentGroup
                       key={`file_attachment_group_${messageContentOrderIndex}`}
                       messageId={message.id}
-                      onPressIn={onPressInMessage}
                     />
                   );
                 case 'gallery':
                   return (
                     <Gallery
                       key={`gallery_${messageContentOrderIndex}`}
-                      onPressIn={onPressInMessage}
                       preventPress={preventPress}
                     />
                   );
@@ -418,15 +391,8 @@ export const MessageContentWithContext = <
         />
       )}
       <MessageFooter
-        alignment={alignment}
         formattedDate={getDateText(formatDate)}
-        lastGroupMessage={lastGroupMessage}
-        members={members}
-        message={message}
-        MessageStatus={MessageStatus}
-        otherAttachments={otherAttachments}
-        showMessageStatus={showMessageStatus}
-        testID='message-footer'
+        isDeleted={!!message.deleted_at}
       />
     </TouchableOpacity>
   );
@@ -445,6 +411,7 @@ const areEqual = <
   nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     lastGroupMessage: prevLastGroupMessage,
@@ -457,6 +424,7 @@ const areEqual = <
     tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    goToMessage: nextGoToMessage,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     lastGroupMessage: nextLastGroupMessage,
@@ -474,6 +442,11 @@ const areEqual = <
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
@@ -585,16 +558,19 @@ export const MessageContent = <
   const {
     alignment,
     disabled,
+    goToMessage,
     groupStyles,
     hasReactions,
     isMyMessage,
     lastGroupMessage,
+    lastReceivedId,
     members,
     message,
     messageContentOrder,
     onLongPress,
     onlyEmojis,
     onPress,
+    onPressIn,
     otherAttachments,
     preventPress,
     showMessageStatus,
@@ -606,11 +582,11 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    onPressInMessage,
     repliesEnabled,
     Reply,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -626,13 +602,16 @@ export const MessageContent = <
         FileAttachmentGroup,
         formatDate,
         Gallery,
+        goToMessage,
         groupStyles,
         hasReactions,
         isMyMessage,
         lastGroupMessage,
+        lastReceivedId,
         members,
         message,
         messageContentOrder,
+        MessageDeleted,
         MessageFooter,
         MessageHeader,
         MessageReplies,
@@ -640,7 +619,7 @@ export const MessageContent = <
         onLongPress,
         onlyEmojis,
         onPress,
-        onPressInMessage,
+        onPressIn,
         otherAttachments,
         preventPress,
         repliesEnabled,

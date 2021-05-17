@@ -1,4 +1,4 @@
-Please check the `OverlayContextValue` in [OverlayContext](), for consumable values.
+Please check the `OverlayContextValue` in [OverlayContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/overlayContext/OverlayContext.tsx), for consumable values.
 Provider for this context exists in `OverlayProvider` component. And so, any child component of OverlayProvider
 can get access to context as following:
 
@@ -8,7 +8,7 @@ can get access to context as following:
 import { useOverlayContext } from 'stream-chat-react-native';
 
 const SomeChildComponent = () => {
-  const { openThread, threadMessages } = useOverlayContext();
+  const { openPicker, closePicker } = useOverlayContext();
 
   return (
     <View />
@@ -26,8 +26,8 @@ class SomeChildComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(props.openThread);
-    console.log(props.threadMessages);
+    console.log(props.openPicker);
+    console.log(props.closePicker);
   }
 
   // UI Logic

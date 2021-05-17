@@ -150,6 +150,24 @@ const MessageOverlayWithContext = <
 
   const { theme } = useTheme();
 
+  const myMessageTheme = messagesContext?.myMessageTheme;
+  const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
+
+  const [myMessageThemeString, setMyMessageThemeString] = useState(
+    JSON.stringify(myMessageTheme),
+  );
+
+  useEffect(() => {
+    if (myMessageTheme) {
+      setMyMessageThemeString(JSON.stringify(myMessageTheme));
+    }
+  }, [myMessageTheme]);
+
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    [myMessageThemeString, theme],
+  );
+
   const {
     colors: {
       blue_alice,
@@ -165,23 +183,7 @@ const MessageOverlayWithContext = <
         replyContainer,
       },
     },
-  } = theme;
-
-  const myMessageTheme = messagesContext?.myMessageTheme;
-  const [myMessageThemeString, setMyMessageThemeString] = useState(
-    JSON.stringify(myMessageTheme),
-  );
-
-  useEffect(() => {
-    if (myMessageTheme) {
-      setMyMessageThemeString(JSON.stringify(myMessageTheme));
-    }
-  }, [myMessageTheme]);
-
-  const modifiedTheme = useMemo(
-    () => mergeThemes({ style: myMessageTheme, theme }),
-    [myMessageThemeString, theme],
-  );
+  } = wrapMessageInTheme ? modifiedTheme : theme;
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -334,8 +336,6 @@ const MessageOverlayWithContext = <
 
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } =
     messagesContext || {};
-
-  const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
   return (
     <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
@@ -545,6 +545,7 @@ const MessageOverlayWithContext = <
                                         >
                                           key={`message_text_container_${messageContentOrderIndex}`}
                                           message={message}
+                                          messageOverlay
                                           onlyEmojis={onlyEmojis}
                                         />
                                       );
@@ -576,6 +577,9 @@ const MessageOverlayWithContext = <
                                 }),
                               )}
                               showScreen={showScreen}
+                              supportedReactions={
+                                messagesContext?.supportedReactions
+                              }
                               title={messageReactionTitle}
                             />
                           ) : null}

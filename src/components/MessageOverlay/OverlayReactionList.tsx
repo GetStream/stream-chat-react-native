@@ -144,7 +144,7 @@ export const ReactionButton = <
     theme: {
       colors: { accent_blue, grey },
       overlay: {
-        reactionsList: { reaction },
+        reactionsList: { reaction, reactionSize },
       },
     },
   } = useTheme();
@@ -251,9 +251,13 @@ export const ReactionButton = <
           iconStyle,
         ]}
       >
-        <Icon pathFill={grey} />
+        <Icon height={reactionSize} pathFill={grey} width={reactionSize} />
         <Animated.View style={[styles.selectedIcon, selectedStyle]}>
-          <Icon pathFill={accent_blue} />
+          <Icon
+            height={reactionSize}
+            pathFill={accent_blue}
+            width={reactionSize}
+          />
         </Animated.View>
       </Animated.View>
     </TapGestureHandler>

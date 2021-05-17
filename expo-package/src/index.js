@@ -8,7 +8,6 @@ import * as Haptics from 'expo-haptics';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
@@ -45,7 +44,7 @@ registerNativeHandlers({
   },
   getPhotos: async ({ after, first }) => {
     try {
-      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
         throw new Error('getPhotos Error');
       }
@@ -148,7 +147,7 @@ registerNativeHandlers({
       const permissionGranted =
         permissionCheck?.status === 'granted'
           ? permissionCheck
-          : await Permissions.askAsync(Permissions.CAMERA);
+          : await ImagePicker.requestCameraPermissionsAsync();
 
       if (
         permissionGranted?.status === 'granted' ||

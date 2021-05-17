@@ -27,6 +27,7 @@ import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessage
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 import { heavyDebounce } from './utils/debounce';
 import { lightThrottle } from './utils/throttle';
@@ -50,6 +51,7 @@ import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../Keyb
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
+import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
@@ -66,6 +68,7 @@ import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
@@ -111,6 +114,10 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import {
+  TypingContextValue,
+  TypingProvider,
+} from '../../contexts/typingContext/TypingContext';
 import {
   LOLReaction,
   LoveReaction,
@@ -188,7 +195,9 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideDateSeparators'
     | 'LoadingIndicator'
+    | 'maxTimeBetweenGroupedMessages'
     | 'NetworkDownIndicator'
     | 'StickyHeader'
   >
@@ -216,9 +225,9 @@ export type ChannelPropsWithContext<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       | 'additionalTouchableProps'
+      | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
-      | 'FileAttachmentIcon'
       | 'blockUser'
       | 'Card'
       | 'CardCover'
@@ -231,6 +240,7 @@ export type ChannelPropsWithContext<
       | 'dismissKeyboardOnMessageTouch'
       | 'editMessage'
       | 'FileAttachment'
+      | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
       | 'flagMessage'
       | 'FlatList'
@@ -248,6 +258,7 @@ export type ChannelPropsWithContext<
       | 'handleReply'
       | 'handleRetry'
       | 'handleThreadReply'
+      | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
@@ -255,10 +266,10 @@ export type ChannelPropsWithContext<
       | 'MessageAvatar'
       | 'MessageContent'
       | 'messageContentOrder'
+      | 'MessageDeleted'
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
-      | 'ScrollToBottomButton'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -270,11 +281,13 @@ export type ChannelPropsWithContext<
       | 'onDoubleTapMessage'
       | 'onLongPressMessage'
       | 'onPressInMessage'
+      | 'onPressMessage'
       | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
       | 'reply'
       | 'retry'
+      | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
       | 'threadReply'
@@ -385,6 +398,7 @@ const ChannelWithContext = <
   const {
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
+    animatedLongPress,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
     AttachButton = AttachButtonDefault,
@@ -442,9 +456,11 @@ const ChannelWithContext = <
     hasCommands = true,
     hasFilePicker = true,
     hasImagePicker = true,
+    hideDateSeparators = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
+    InlineDateSeparator = InlineDateSeparatorDefault,
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
@@ -458,11 +474,13 @@ const ChannelWithContext = <
     markdownRules,
     messageId,
     maxNumberOfFiles = 10,
+    maxTimeBetweenGroupedMessages,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
+    MessageDeleted = MessageDeletedDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
@@ -482,6 +500,7 @@ const ChannelWithContext = <
     onChangeText,
     onDoubleTapMessage,
     onLongPressMessage,
+    onPressMessage,
     onPressInMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
@@ -547,7 +566,7 @@ const ChannelWithContext = <
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
   >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
+    TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
   >({});
   const [watcherCount, setWatcherCount] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
@@ -566,7 +585,7 @@ const ChannelWithContext = <
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
        * since we use read state on channel to decide what offset to load channel at.
-       * Also there is no usecase from UX perspective, why one would need loading uninitialized channel at particular message.
+       * Also there is no use case from UX perspective, why one would need loading uninitialized channel at particular message.
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
       if (!channel.initialized) {
@@ -680,7 +699,7 @@ const ChannelWithContext = <
 
   const connectionChangedHandler = (event: ConnectionChangeEvent) => {
     if (event.online) {
-      reloadChannel();
+      resyncChannel();
     }
   };
 
@@ -718,7 +737,7 @@ const ChannelWithContext = <
       client.off('connection.changed', connectionChangedHandler);
       channel?.off(handleEvent);
     };
-  }, [channelId]);
+  }, [channelId, connectionRecoveredHandler, handleEvent]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
@@ -727,6 +746,7 @@ const ChannelWithContext = <
     try {
       await queryCall();
       setLastRead(new Date());
+      setHasMore(true);
       copyChannelState();
     } catch (err) {
       setError(err);
@@ -860,10 +880,85 @@ const ChannelWithContext = <
       return;
     });
 
-  const reloadChannel = () => {
-    channel?.state.clearMessages();
-    return loadChannel();
+  const resyncChannel = async () => {
+    if (!channel) return;
+
+    setError(false);
+    try {
+      /**
+       * Allow a buffer of 30 new messages, so that MessageList won't move its scroll position,
+       * giving smooth user experience.
+       */
+      const state = await channel.watch({
+        messages: {
+          limit: messages.length + 30,
+        },
+      });
+
+      const oldListTopMessage = messages[0];
+      const oldListTopMessageId = messages[0]?.id;
+      const oldListBottomMessage = messages[messages.length - 1];
+
+      const newListTopMessage = state.messages[0];
+      const newListBottomMessage = state.messages[state.messages.length - 1];
+
+      if (
+        !oldListTopMessage || // previous list was empty
+        !oldListBottomMessage || // previous list was empty
+        !newListTopMessage || // new list is truncated
+        !newListBottomMessage // new list is truncated
+      ) {
+        /** Channel was truncated */
+        channel.state.clearMessages();
+        channel.state.setIsUpToDate(true);
+        channel.state.addMessagesSorted(state.messages);
+        copyChannelState();
+        return;
+      }
+
+      const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
+      const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
+      const newListTopMessageCreatedAt = newListTopMessage.created_at
+        ? new Date(newListTopMessage.created_at)
+        : new Date();
+      const newListBottomMessageCreatedAt = newListBottomMessage?.created_at
+        ? new Date(newListBottomMessage.created_at)
+        : new Date();
+
+      let finalMessages = [];
+
+      if (
+        oldListTopMessage &&
+        oldListTopMessageCreatedAt &&
+        oldListBottomMessageCreatedAt &&
+        newListTopMessageCreatedAt < oldListTopMessageCreatedAt &&
+        newListBottomMessageCreatedAt >= oldListBottomMessageCreatedAt
+      ) {
+        const index = state.messages.findIndex(
+          (message) => message.id === oldListTopMessageId,
+        );
+        finalMessages = state.messages.slice(index);
+      } else {
+        finalMessages = state.messages;
+      }
+
+      channel.state.setIsUpToDate(true);
+
+      channel.state.clearMessages();
+      channel.state.addMessagesSorted(finalMessages);
+      setHasMore(true);
+      copyChannelState();
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+    }
   };
+
+  const reloadChannel = () =>
+    channelQueryCall(async () => {
+      await channel?.watch();
+      channel?.state.setIsUpToDate(true);
+    });
 
   /**
    * Makes a query to load messages in channel.
@@ -1015,6 +1110,22 @@ const ChannelWithContext = <
     }
   };
 
+  const replaceMessage = (
+    oldMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    newMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+  ) => {
+    if (channel) {
+      channel.state.removeMessage(oldMessage);
+      channel.state.addMessageSorted(newMessage, true);
+      if (thread && newMessage.parent_id) {
+        const threadMessages =
+          channel.state.threads[newMessage.parent_id] || [];
+        setThreadMessages(threadMessages);
+      }
+      setMessages(channel.state.messages);
+    }
+  };
+
   const createMessagePreview = ({
     attachments,
     mentioned_users,
@@ -1068,6 +1179,7 @@ const ChannelWithContext = <
 
   const sendMessageRequest = async (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    retrying?: boolean,
   ) => {
     const {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1098,7 +1210,7 @@ const ChannelWithContext = <
 
     const messageData = {
       attachments,
-      id,
+      id: retrying ? undefined : id,
       mentioned_users:
         mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
       parent_id,
@@ -1127,7 +1239,11 @@ const ChannelWithContext = <
 
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
-        updateMessage(messageResponse.message);
+        if (retrying) {
+          replaceMessage(message, messageResponse.message);
+        } else {
+          updateMessage(messageResponse.message);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -1175,9 +1291,13 @@ const ChannelWithContext = <
     Re,
     Us
   >['retrySendMessage'] = async (message) => {
-    message = { ...message, status: 'sending' };
-    updateMessage(message);
-    await sendMessageRequest(message);
+    const statusPendingMessage = {
+      ...message,
+      status: 'sending',
+    };
+
+    updateMessage(statusPendingMessage);
+    await sendMessageRequest(statusPendingMessage, true);
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -1187,6 +1307,7 @@ const ChannelWithContext = <
       newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
     ) => {
       setLoadingMore(false);
+      setError(false);
       setHasMore(updatedHasMore);
       setMessages(newMessages);
     },
@@ -1200,8 +1321,10 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = async () => {
-    if (loadingMore || hasMore === false) return;
+  >['loadMore'] = async (limit = 20) => {
+    if (loadingMore || hasMore === false) {
+      return;
+    }
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -1215,7 +1338,6 @@ const ChannelWithContext = <
     }
 
     const oldestID = oldestMessage && oldestMessage.id;
-    const limit = 20;
 
     try {
       if (channel) {
@@ -1228,7 +1350,9 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      return setLoadingMore(false);
+      setError(err);
+      setLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1240,7 +1364,7 @@ const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMoreRecent'] = async () => {
+  >['loadMoreRecent'] = async (limit = 5) => {
     if (channel?.state.isUpToDate) {
       return;
     }
@@ -1256,13 +1380,14 @@ const ChannelWithContext = <
 
     try {
       if (channel) {
-        await queryAfterMessage(recentMessage.id);
+        await queryAfterMessage(recentMessage.id, limit);
         loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
+      setError(err);
       setLoadingMoreRecent(false);
-      return;
+      throw err;
     }
   };
 
@@ -1271,6 +1396,7 @@ const ChannelWithContext = <
     (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
       setLoadingMoreRecent(false);
       setMessages(newMessages);
+      setError(false);
     },
   );
 
@@ -1407,24 +1533,63 @@ const ChannelWithContext = <
     Re,
     Us
   >['loadMoreThread'] = async () => {
-    if (threadLoadingMore || !thread?.id) return;
+    if (threadLoadingMore || !thread?.id) {
+      return;
+    }
     setThreadLoadingMore(true);
 
-    if (channel) {
+    try {
+      if (channel) {
+        const parentID = thread.id;
+
+        /**
+         * In the channel is re-initializing, then threads may get wiped out during the process
+         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
+         * preserve the messages on active thread, so lets simply copy messages from UI state to
+         * `channel.state`.
+         */
+        channel.state.threads[parentID] = threadMessages;
+        const oldestMessageID = threadMessages?.[0]?.id;
+
+        const limit = 50;
+        const queryResponse = await channel.getReplies(parentID, {
+          id_lt: oldestMessageID,
+          limit,
+        });
+
+        const updatedHasMore = queryResponse.messages.length === limit;
+        const updatedThreadMessages = channel.state.threads[parentID] || [];
+        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
+    }
+  };
+
+  const reloadThread = async () => {
+    if (!channel || !thread?.id) return;
+
+    setThreadLoadingMore(true);
+    try {
       const parentID = thread.id;
 
-      const oldMessages = channel.state.threads[parentID] || [];
-      const oldestMessageID = oldMessages?.[0]?.id;
-
       const limit = 50;
+      channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
-        id_lt: oldestMessageID,
-        limit,
+        limit: 50,
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
       const updatedThreadMessages = channel.state.threads[parentID] || [];
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+    } catch (err) {
+      console.warn('Thread loading request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
     }
   };
 
@@ -1440,6 +1605,7 @@ const ChannelWithContext = <
       !!(channel?.getConfig?.()?.commands || [])?.some(
         (command) => command.name === 'giphy',
       ),
+    hideDateSeparators,
     isAdmin,
     isModerator,
     isOwner,
@@ -1448,6 +1614,7 @@ const ChannelWithContext = <
     loading,
     LoadingIndicator,
     markRead,
+    maxTimeBetweenGroupedMessages,
     members,
     NetworkDownIndicator,
     read,
@@ -1457,7 +1624,6 @@ const ChannelWithContext = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    typing,
     watcherCount,
     watchers,
   });
@@ -1493,6 +1659,7 @@ const ChannelWithContext = <
     sendImageAsync,
     sendMessage,
     setInputRef,
+    setQuotedMessageState,
     ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
   });
@@ -1515,6 +1682,7 @@ const ChannelWithContext = <
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
+    animatedLongPress,
     Attachment,
     AttachmentActions,
     blockUser,
@@ -1549,6 +1717,7 @@ const ChannelWithContext = <
     handleRetry,
     handleThreadReply,
     initialScrollToFirstUnreadMessage,
+    InlineDateSeparator,
     InlineUnreadIndicator,
     markdownRules,
     Message,
@@ -1556,6 +1725,7 @@ const ChannelWithContext = <
     MessageAvatar,
     MessageContent,
     messageContentOrder,
+    MessageDeleted,
     MessageFooter,
     MessageHeader,
     MessageList,
@@ -1570,6 +1740,7 @@ const ChannelWithContext = <
     onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
+    onPressMessage,
     OverlayReactionList,
     ReactionList,
     removeMessage,
@@ -1600,6 +1771,7 @@ const ChannelWithContext = <
     closeThread,
     loadMoreThread,
     openThread,
+    reloadThread,
     setThreadLoadingMore,
     thread,
     threadHasMore,
@@ -1607,14 +1779,16 @@ const ChannelWithContext = <
     threadMessages,
   });
 
-  if (!channel || error) {
+  const typingContext = useCreateTypingContext({
+    typing,
+  });
+
+  if (!channel || (error && messages.length === 0)) {
     return (
       <LoadingErrorIndicator
         error={error}
         listType='message'
-        retry={() => {
-          loadMore();
-        }}
+        retry={reloadChannel}
       />
     );
   }
@@ -1638,21 +1812,25 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
-          value={messageListContext}
-        >
-          <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-            <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-              <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                  value={messageInputContext}
-                >
-                  <View style={{ height: '100%' }}>{children}</View>
-                </MessageInputProvider>
-              </SuggestionsProvider>
-            </ThreadProvider>
-          </MessagesProvider>
-        </PaginatedMessageListProvider>
+        <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
+          <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us>
+            value={messageListContext}
+          >
+            <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us>
+              value={messagesContext}
+            >
+              <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                    value={messageInputContext}
+                  >
+                    <View style={{ height: '100%' }}>{children}</View>
+                  </MessageInputProvider>
+                </SuggestionsProvider>
+              </ThreadProvider>
+            </MessagesProvider>
+          </PaginatedMessageListProvider>
+        </TypingProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );

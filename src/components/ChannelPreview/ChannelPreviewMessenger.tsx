@@ -197,7 +197,7 @@ export type ChannelPreviewMessengerProps<
     'channel' | 'latestMessagePreview'
   >;
 
-export const MemoizedChannelPreviewMessengerWithContext = React.memo(
+const MemoizedChannelPreviewMessengerWithContext = React.memo(
   ChannelPreviewMessengerWithContext,
 ) as typeof ChannelPreviewMessengerWithContext;
 
