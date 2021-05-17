@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - docusaurus/**   
 jobs:
   build_and_deploy_ios_firebase:
     runs-on: [macos-latest]
