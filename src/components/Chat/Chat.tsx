@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
-import { useAppStateListener } from './hooks/useAppStateListener';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
@@ -170,14 +169,6 @@ const ChatWithContext = <
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
   /**
-   * Handle appState change
-   */
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
-    client,
-    closeConnectionOnBackground,
-  );
-
-  /**
    * Setup connection event listeners
    */
   const { connectionRecovering, isOnline } = useIsOnline<
@@ -188,7 +179,7 @@ const ChatWithContext = <
     Me,
     Re,
     Us
-  >(client);
+  >(client, closeConnectionOnBackground);
 
   /**
    * Setup muted user listener

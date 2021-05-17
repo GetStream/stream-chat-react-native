@@ -6,3 +6,4 @@ vendor/
 *.md
 src/components/docs/
 lib/
+docusaurus/

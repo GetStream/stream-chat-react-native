@@ -39,11 +39,11 @@ export type PaginatedMessageListContextValue<
   /**
    * Load more messages
    */
-  loadMore: () => Promise<void>;
+  loadMore: (limit?: number) => Promise<void>;
   /**
    * Load more recent messages
    */
-  loadMoreRecent: () => Promise<void>;
+  loadMoreRecent: (limit?: number) => Promise<void>;
   /**
    * Messages from client state
    */

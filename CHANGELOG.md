@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.4.0] (2021-05-14)
+
+### Features
+- Updated implementation around network recovery for smooth UX [#658](https://github.com/GetStream/stream-chat-react-native/pull/658)
+- Added support for `MessageDeleted` prop on Channel component, for overriding default deleted message component [65861d9](https://github.com/GetStream/stream-chat-react-native/commit/65861d9a52e8d289d6e66bbc63d2814aa6f87c9e)
+- Refresh channel list when `sort` prop updates, on ChannelList [42450fa](https://github.com/GetStream/stream-chat-react-native/commit/42450fa23d6221931b0b14d5f39fba2484b7dadf)
+- Added support for typing indicator in threads [6f518ca](https://github.com/GetStream/stream-chat-react-native/commit/6f518ca1879943edaa6606209c2f63672df1dd75)
+- Added handler for `channel.visible` event [476c36e](https://github.com/GetStream/stream-chat-react-native/commit/476c36e30eb41ca5843c0f679c18880e46d7564e)
+
+### Bug fixes
+
+- Added default sizes to Icons in `OverlayReactionList` component. [6b4db5f](https://github.com/GetStream/stream-chat-react-native/commit/6b4db5fd1ad4816506a2f567409201374d6d3f3c)
+- Miscellaneous fixes around image picker opening and closing [950f746](https://github.com/GetStream/stream-chat-react-native/commit/950f746412422cdb2fb6b358a24a3bc694a9032a) [4845e4e](https://github.com/GetStream/stream-chat-react-native/commit/4845e4e08e6725b612f17360d1fe031c0acf6578)
+
 ##  [3.3.2] (2021-04-13)
 
 - Allow re-rerendering of MessageInput component, on changes to `additionalTextInputProps` [1b95a64](https://github.com/GetStream/stream-chat-react-native/commit/1b95a64f15642829d2b4296615c2d8572065f213)

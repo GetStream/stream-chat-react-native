@@ -668,13 +668,8 @@ const MessageWithContext = <
     }
   };
 
-  const handleResendMessage = () => {
-    const messageWithoutReservedFields = removeReservedFields(message);
-
-    return retrySendMessage(
-      messageWithoutReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
-  };
+  const handleResendMessage = () =>
+    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const handleReplyMessage = () => {
     setQuotedMessageState(message);
@@ -1046,6 +1041,7 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
+    goToMessage,
     groupStyles,
     handleAction,
     handleDeleteMessage,
@@ -1219,6 +1215,7 @@ const areEqual = <
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
     mutedUsers: prevMutedUsers,
@@ -1227,6 +1224,7 @@ const areEqual = <
     targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
+    goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
     mutedUsers: nextMutedUsers,
@@ -1244,7 +1242,13 @@ const areEqual = <
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
+
   if (lastReceivedIdChangedAndMatters) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&

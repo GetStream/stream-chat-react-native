@@ -81,6 +81,7 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
     case 'message':
       return (
         <LoadingErrorWrapper
+          onPress={retry}
           text={t('Error loading messages for this channel...')}
         />
       );
