@@ -431,7 +431,7 @@ Putting everything covered together into a single functional component most of t
 The final sample code:
 - Adds a `useEffect` to connect the user on mount and render the UI when ready.
 - Adds a `back` button for sudo-navigation by resetting the states of `thread` and `channel` when appropriate.
-- Adds a `View` around the `Chat` component with style `flex: 1` to allow `Chat` to adjust for the `back` button height.
+- Adds a `View` around the `Chat` component with style `flex: 1` to allow `Chat` to adjust for the `back` button height, and an empty `Thread` component to layout properly.
 - Adjusts the `topInset` and `keyboardVerticalOffset` to account for the `back` button height.
 
 These additions result in a small but functional chat sample app.
