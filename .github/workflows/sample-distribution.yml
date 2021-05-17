@@ -1,13 +1,11 @@
-name: build
+name: sample-distribution
 
 on:
-  pull_request:
+  push:
     branches:
       - master
-    types: [closed]
 jobs:
   build_and_deploy_ios_testflight_qa:
-    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'deploy') }}
     runs-on: [macos-latest]
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +34,6 @@ jobs:
           bundle exec fastlane deploy_to_testflight_qa
 
   build_and_deploy_android_s3:
-    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'deploy') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
