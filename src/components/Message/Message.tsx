@@ -609,8 +609,7 @@ const MessageWithContext = <
   const onOpenThread = () => {
     if (onThreadSelect) {
       onThreadSelect(message);
-    }
-    if (openThread) {
+    } else if (openThread) {
       openThread(message);
     }
   };
