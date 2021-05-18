@@ -60,7 +60,7 @@ export type MessageContextValue<
   handleAction: ActionHandler;
   handleDeleteMessage: () => Promise<void>;
   handleEditMessage: () => void;
-  handleReplyMessage: () => void;
+  handleQuotedReplyMessage: () => void;
   handleResendMessage: () => Promise<void>;
   handleToggleBanUser: () => Promise<void>;
   handleToggleMuteUser: () => Promise<void>;
