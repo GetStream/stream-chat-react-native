@@ -34,7 +34,7 @@ export const messageActions = <
   messageReactions,
   muteUser,
   quotedRepliesEnabled,
-  reply,
+  quotedReply,
   retry,
   threadRepliesEnabled,
   threadReply,
@@ -51,7 +51,7 @@ export const messageActions = <
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
   muteUser: MessageAction | null;
-  reply: MessageAction | null;
+  quotedReply: MessageAction | null;
   retry: MessageAction | null;
   threadReply: MessageAction | null;
   quotedRepliesEnabled?: boolean;
@@ -68,7 +68,7 @@ export const messageActions = <
   }
 
   if (quotedRepliesEnabled && !isThreadMessage && !error) {
-    actions.push(reply);
+    actions.push(quotedReply);
   }
 
   if (threadRepliesEnabled && !isThreadMessage && !error) {

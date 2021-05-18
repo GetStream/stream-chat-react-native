@@ -11,7 +11,7 @@ const SomeChildComponent = () => {
   const {
     handleDeleteMessage,
     handleEditMessage,
-    handleReplyMessage,
+    handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
     handleToggleMuteUser,

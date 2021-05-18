@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.5.0]
+
+### Bug fixes
+- Mute status updates on every message
+
+###  **🛑 BREAKING**
+- `reply`, `handleReply`, and `handleReplyMessage` have now all been shifted to `quotedReply`, `handleQuotedReply`, and `handleQuotedReplyMessage` respectively.
+
 ## [3.4.0] (2021-05-14)
 
 ### Features

@@ -374,14 +374,14 @@ export type MessagesContextValue<
   handleMute?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => Promise<void>;
+  /** Handler to access when a quoted reply action is invoked */
+  handleQuotedReply?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
   /** Handler to process a reaction */
   handleReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
     reactionType: string,
-  ) => Promise<void>;
-  /** Handler to access when a reply action is invoked */
-  handleReply?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => Promise<void>;
   /** Handler to access when a retry action is invoked */
   handleRetry?: (
@@ -431,7 +431,7 @@ export type MessagesContextValue<
    *     editMessage,
    *     flagMessage,
    *     muteUser,
-   *     reply,
+   *     quotedReply,
    *     retry,
    *     threadReply,
    *   }) => ([
@@ -459,7 +459,7 @@ export type MessagesContextValue<
         messageReactions,
         muteUser,
         quotedRepliesEnabled,
-        reply,
+        quotedReply,
         retry,
         threadRepliesEnabled,
         threadReply,
@@ -476,7 +476,7 @@ export type MessagesContextValue<
         message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
         messageReactions: boolean;
         muteUser: MessageAction | null;
-        reply: MessageAction | null;
+        quotedReply: MessageAction | null;
         retry: MessageAction | null;
         threadReply: MessageAction | null;
         quotedRepliesEnabled?: boolean;
@@ -513,7 +513,7 @@ export type MessagesContextValue<
    *    actionHandlers: {
    *        deleteMessage, // () => Promise<void>;
    *        editMessage, // () => void;
-   *        reply, // () => void;
+   *        quotedReply, // () => void;
    *        resendMessage, // () => Promise<void>;
    *        showMessageOverlay, // () => void;
    *        toggleBanUser, // () => Promise<void>;
@@ -539,7 +539,7 @@ export type MessagesContextValue<
    *    actionHandlers: {
    *        deleteMessage, // () => Promise<void>;
    *        editMessage, // () => void;
-   *        reply, // () => void;
+   *        quotedReply, // () => void;
    *        resendMessage, // () => Promise<void>;
    *        showMessageOverlay, // () => void;
    *        toggleBanUser, // () => Promise<void>;
@@ -568,7 +568,7 @@ export type MessagesContextValue<
    *    actionHandlers: {
    *        deleteMessage, // () => Promise<void>;
    *        editMessage, // () => void;
-   *        reply, // () => void;
+   *        quotedReply, // () => void;
    *        resendMessage, // () => Promise<void>;
    *        showMessageOverlay, // () => void;
    *        toggleBanUser, // () => Promise<void>;
@@ -597,7 +597,7 @@ export type MessagesContextValue<
    *    actionHandlers: {
    *        deleteMessage, // () => Promise<void>;
    *        editMessage, // () => void;
-   *        reply, // () => void;
+   *        quotedReply, // () => void;
    *        resendMessage, // () => Promise<void>;
    *        showMessageOverlay, // () => void;
    *        toggleBanUser, // () => Promise<void>;
@@ -607,7 +607,7 @@ export type MessagesContextValue<
    *    defaultHandler, // () => void
    *    event, // any event object corresponding to touchable feedback
    *    emitter, // which component trigged this touchable feedback e.g. card, fileAttachment, gallery, message ... etc
-   *    message // message object on which longPress occured
+   *    message // message object on which longPress occurred
    *  }) => {
    *    // Your custom action
    *  }}
@@ -618,11 +618,11 @@ export type MessagesContextValue<
     payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Full override of the reply button in the Message Actions
+   * Full override of the quoted reply button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  reply?:
+  quotedReply?:
     | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
     | null;
   /**

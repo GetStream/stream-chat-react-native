@@ -157,7 +157,7 @@ export type MessageTouchableHandlerPayload<
 export type MessageActionHandlers = {
   deleteMessage: () => Promise<void>;
   editMessage: () => void;
-  reply: () => void;
+  quotedReply: () => void;
   resendMessage: () => Promise<void>;
   showMessageOverlay: () => void;
   toggleBanUser: () => Promise<void>;
@@ -211,8 +211,8 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handleQuotedReply'
     | 'handleReaction'
-    | 'handleReply'
     | 'handleRetry'
     | 'handleThreadReply'
     | 'messageActions'
@@ -225,9 +225,9 @@ export type MessagePropsWithContext<
     | 'onPressMessage'
     | 'OverlayReactionList'
     | 'quotedRepliesEnabled'
+    | 'quotedReply'
     | 'reactionsEnabled'
     | 'removeMessage'
-    | 'reply'
     | 'retry'
     | 'retrySendMessage'
     | 'selectReaction'
@@ -340,8 +340,8 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handleQuotedReply,
     handleReaction: handleReactionProp,
-    handleReply,
     handleRetry,
     handleThreadReply,
     isAdmin,
@@ -369,7 +369,7 @@ const MessageWithContext = <
     reactionsEnabled,
     readEventsEnabled,
     removeMessage,
-    reply: replyProp,
+    quotedReply: quotedReplyProp,
     retry: retryProp,
     retrySendMessage,
     selectReaction,
@@ -671,7 +671,7 @@ const MessageWithContext = <
   const handleResendMessage = () =>
     retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
-  const handleReplyMessage = () => {
+  const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
   };
 
@@ -894,17 +894,17 @@ const MessageWithContext = <
           title: isMuted ? t('Unmute User') : t('Mute User'),
         };
 
-    const reply = replyProp
-      ? replyProp(message)
-      : replyProp === null
+    const quotedReply = quotedReplyProp
+      ? quotedReplyProp(message)
+      : quotedReplyProp === null
       ? null
       : {
           action: () => {
             setOverlay('none');
-            if (handleReply) {
-              handleReply(message);
+            if (handleQuotedReply) {
+              handleQuotedReply(message);
             }
-            handleReplyMessage();
+            handleQuotedReplyMessage();
           },
           icon: <CurveLineLeftUp pathFill={grey} />,
           title: t('Reply'),
@@ -963,7 +963,7 @@ const MessageWithContext = <
             messageReactions,
             muteUser,
             quotedRepliesEnabled,
-            reply,
+            quotedReply,
             retry,
             threadRepliesEnabled,
             threadReply,
@@ -996,7 +996,7 @@ const MessageWithContext = <
   const actionHandlers: MessageActionHandlers = {
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
-    reply: handleReplyMessage,
+    quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
     showMessageOverlay,
     toggleBanUser: handleToggleBanUser,
@@ -1046,7 +1046,7 @@ const MessageWithContext = <
     handleAction,
     handleDeleteMessage,
     handleEditMessage,
-    handleReplyMessage,
+    handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
     handleToggleMuteUser,

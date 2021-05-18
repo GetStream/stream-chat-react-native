@@ -255,7 +255,7 @@ export type ChannelPropsWithContext<
       | 'handleFlag'
       | 'handleMute'
       | 'handleReaction'
-      | 'handleReply'
+      | 'handleQuotedReply'
       | 'handleRetry'
       | 'handleThreadReply'
       | 'InlineDateSeparator'
@@ -283,9 +283,9 @@ export type ChannelPropsWithContext<
       | 'onPressInMessage'
       | 'onPressMessage'
       | 'OverlayReactionList'
+      | 'quotedReply'
       | 'ReactionList'
       | 'Reply'
-      | 'reply'
       | 'retry'
       | 'ScrollToBottomButton'
       | 'selectReaction'
@@ -456,8 +456,8 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handleQuotedReply,
     handleReaction,
-    handleReply,
     handleRetry,
     handleThreadReply,
     hasCommands = true,
@@ -512,11 +512,11 @@ const ChannelWithContext = <
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
+    quotedReply,
     ReactionList = ReactionListDefault,
     reactionsEnabled: reactionsEnabledProp,
     readEventsEnabled: readEventsEnabledProp,
     Reply = ReplyDefault,
-    reply,
     retry,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
@@ -1729,8 +1729,8 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handleQuotedReply,
     handleReaction,
-    handleReply,
     handleRetry,
     handleThreadReply,
     initialScrollToFirstUnreadMessage,
@@ -1759,10 +1759,10 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
+    quotedReply,
     ReactionList,
     removeMessage,
     Reply,
-    reply,
     retry,
     retrySendMessage,
     ScrollToBottomButton,
