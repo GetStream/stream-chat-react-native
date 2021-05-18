@@ -423,7 +423,7 @@ export const ImageGallery = <
            */
           if (isAndroid && hasPinched.value === HasPinched.TRUE) {
             hasPinched.value = HasPinched.FALSE;
-            isSwiping.value === IsSwiping.FALSE;
+            isSwiping.value = IsSwiping.FALSE;
             offsetX.value = translateX.value + evt.translationX;
             offsetY.value = translateY.value - evt.translationY;
           }

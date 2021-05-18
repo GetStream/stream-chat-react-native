@@ -25,12 +25,14 @@ export const useCreateChatContext = <
   client,
   connectionRecovering,
   isOnline,
+  mutedUsers,
   setActiveChannel,
 }: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const channelId = channel?.id;
   const clientValues = `${client.clientID}${
     Object.keys(client.activeChannels).length
   }${Object.keys(client.listeners).length}${client.mutedChannels.length}`;
+  const mutedUsersLength = mutedUsers.length;
 
   const chatContext: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
@@ -38,9 +40,10 @@ export const useCreateChatContext = <
       client,
       connectionRecovering,
       isOnline,
+      mutedUsers,
       setActiveChannel,
     }),
-    [channelId, clientValues, connectionRecovering, isOnline],
+    [channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
   );
 
   return chatContext;
