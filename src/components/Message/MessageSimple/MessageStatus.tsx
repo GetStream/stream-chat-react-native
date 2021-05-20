@@ -81,7 +81,7 @@ const MessageStatusWithContext = <
   if (message.status === 'sending') {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
-        <Time {...checkIcon} />
+        <Time {...timeIcon} />
       </View>
     );
   }
@@ -100,7 +100,11 @@ const MessageStatusWithContext = <
             {message.readBy}
           </Text>
         ) : null}
-        <CheckAll pathFill={accent_blue} {...checkAllIcon} />
+        {typeof message.readBy === 'number' || message.readBy === true ? (
+          <CheckAll pathFill={accent_blue} {...checkAllIcon} />
+        ) : (
+          <Check {...checkIcon} />
+        )}
       </View>
     );
   }
@@ -112,7 +116,7 @@ const MessageStatusWithContext = <
   ) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
-        <Check {...timeIcon} />
+        <Check {...checkIcon} />
       </View>
     );
   }
