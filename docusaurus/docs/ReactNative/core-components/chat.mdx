@@ -1,0 +1,75 @@
+---
+id: chat
+sidebar_position: 2
+title: Chat
+---
+
+WIP
+
+## Props
+
+### <div class="label required basic">Required</div> client
+
+The StreamChat client object
+
+```jsx
+import { StreamChat } from 'stream-chat'; 
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+
+export const App = () =>
+  <OverlayProvider topInset={0}>
+    <Chat client={client}>
+      {/** App components */}
+    </Chat>
+  </OverlayProvider>;
+```
+
+### closeConnectionOnBackground
+
+When false, ws connection won't be disconnection upon backgrounding the app. To receive push notifications, its necessary that user doesn't have active websocket connection. So by default, we disconnect websocket connection when app goes to background, and reconnect when app comes to foreground.
+
+| Type               | Default      |
+| ------------------ | ------------ |
+| boolean            | true         |
+
+### i18nInstance
+
+Instance of Streami18n class should be provided to Chat component to enable internationalization.
+
+Please read [Translations/i18n](../basics/translations) for details.
+
+| Type |
+| - |
+| Streami18n |
+
+### style
+
+You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
+
+
+```jsx
+import type { DeepPartial, Theme } from 'stream-chat-react-native';
+
+const theme: DeepPartial<Theme> = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+      icon: {
+        height: 16,
+        width: 16,
+      },
+    },
+  },
+};
+
+<Chat style={theme}>
+</Chat>
+```
+
+| Type |
+| - |
+| object |

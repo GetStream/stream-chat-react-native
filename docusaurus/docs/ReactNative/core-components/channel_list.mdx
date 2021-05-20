@@ -1,0 +1,587 @@
+---
+id: channellist
+sidebar_position: 3
+title: ChannelList
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+ChannelList component is used to display list of channels using React Native's [FlatList](https://reactnative.dev/docs/flatlist). ChannelList is provided by `stream-chat-react-native` and can be imported from the library.
+
+```js
+import { ChannelList } from 'stream-chat-react-native';
+```
+This component fetches a list of channels using [Query Channels](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) api. This API looks like following:
+
+```js
+const channels = await chatClient.queryChannels(filters, sort, options);
+```
+
+You can provide the values for [`filters`](#recommended-filters), [`sort`](#recommended-sort) and [`options`](#recommended-options) as props (object) on ChannelList component. When user selects channel or presses on channel in list, you will want to navigate to Channel screen of selected channel. You can provide this navigation logic within as a callback function via prop [`onSelect`](#recommended-onselect)
+
+:::note
+The ChannelList is a higher order component, and itself doesn't provide any UI. It internally uses ChannelListMessenger component, for UI implementation.
+:::
+
+## Usage
+
+```jsx
+const filters = { members: { $in: [ 'vishal', 'lucas', 'neil' ] } }
+const sort = { last_message_at: -1 };
+const options = { limit: 20, messages_limit: 30 }
+
+<ChannelList
+  filters={filters}
+  sort={sort}
+  options={options}
+  onSelect={(channel) => /** navigate to channel screen */ }
+/>
+```
+
+## Context Providers
+
+<!-- TODO: Change to new docs -->
+ChannelList component is a provider of [ChannelsContext](#). All the child components of ChannelList can access this context using a hook [`useChannelsContext`](#)
+
+```
+const { channels, refreshing } = useChannelsContext();
+```
+
+## UI Customizations
+
+ChannelList component is highly customizable. For every child UI component of ChannelList, you can provide your own custom implementation.
+You can reference the following visuals, to check which prop to use for customizing any of the sub-components.
+
+For example, you can customize title component as following:
+
+```jsx
+const CustomPreviewTitle = ({ channel }) => (
+  <Text>{channel.data.customProperty} - {channel.data.name}</Text>
+)
+
+<ChannelList PreviewTitle={CustomPreviewTitle} />
+```
+
+<Tabs
+  defaultValue='list-item-components'
+  values={[
+    { label: 'List Items', value: 'list-item-components' },
+    { label: 'Indicators', value: 'indicators' },
+  ]}
+>
+<TabItem value='list-item-components'>
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+</TabItem>
+<TabItem value='indicators'>
+
+![](../assets/api-references/components/channel-list/visual_guide_2.png)
+
+</TabItem>
+</Tabs>
+
+## Event Listeners
+
+ChannelList component uses [Event Listeners](https://getstream.io/chat/docs/javascript/event_listening/?language=javascript), to dynamically update the list upon changes e.g., new incoming message, user gets added to new channel etc.
+ChannelList component adds listeners for following events, to keep itself updated:
+
+| [Event Type](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) | Default Behavior | Prop to override |
+|- -|- -|- -|
+| `channel.deleted` | Remove channel from list | [onChannelDeleted](#onchanneldeleted) |
+| `channel.hidden` | Remove channel from list | [onChannelHidden](#onchannelhidden) |
+| `channel.truncated` | Updates the channel | [onChannelTruncated](#onchanneltruncated) |
+| `channel.updated` | Updates the channel | [onChannelUpdated](#onchannelupdated) |
+| `channel.visible` | Adds channel to list | [onChannelVisible](#onchannelvisible) |
+| `message.new` | Moves channel to top of the list | [lockChannelOrder](#lockchannelorder) |
+| `notification.added_to_channel` | Move new channel to top of the list and start watching it | [onAddedToChannel](#onaddedtochannel) |
+| `notification.message_new` | Move new channel to top of the list and start watching it | [onMessageNew](#onmessagenew) |
+| `notification.removed_from_channel` | Remove channel from list | [onRemovedFromChannel](#onremovedfromchannel) |
+
+You can override the default behaviour of each of these listeners via prop (listed in table above).
+
+### Override Default Behavior
+Let's explore an example of overriding the default behaviour for event `notification.message_new`. User will receive this event, when new message appears on channel which current user is member of, and this channel not loaded in the list yet. `onMessageNew` prop is a function, which takes following two parameters:
+
+- `setChannels` {function} - Setter for internal state property - `channels`. It's created from `useState([])` hook.
+- `event` {object} - An Event object corresponding to `notification.message_new` event
+
+With default implementation, the channel corresponding to event `notification.message_new` will be queried and added to top of the list. If you want to add this channel to bottom of the list instead, here is how you can do it:
+
+```tsx
+<ChannelList
+  onMessageNew={async (setChannels, event) => {
+    const newChannel = client.channel('messaging', event.channel.id);
+    await newChannel.watch();
+    setChannels(channels => [...channels, newChannel])
+  }}
+/>
+```
+
+## Props
+
+### <div class="label recommended basic">Recommended</div> filters
+
+Filter object, used to query channels from Stream. You can query on any of the custom fields you've defined on the Channel. You can also filter other built-in channel fields.
+
+See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a list of available `filter` fields.
+
+#### Example
+
+```js
+// Filter to query channels, which user 'vishal' and 'jaap' are members of.
+const filter = {
+  type: 'messaging',
+  members: {
+    $in: ['vishal', 'jaap']
+  }
+}
+```
+
+:::caution
+<!-- TODO: Change to new docs -->
+Avoid using inline objects as props. Please memoize the object before passing it to ChannelList component or use static reference to filters object.
+Please take a look at [best practices](#) guide for more details.
+:::
+
+
+| Type               |
+| ------------------ |
+| object             |
+
+### <div class="label recommended basic">Recommended</div> sort
+
+Sort object, used to query channels from Stream.
+
+See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a list of available `sort` fields
+
+```js
+const sort = { last_message_at: -1 };
+```
+
+| Type               |
+| ------------------ |
+| object             |
+
+### <div class="label recommended basic">Recommended</div> options
+
+Options object, used to query channels from Stream.
+
+See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a list of available `options` fields
+
+| Type               |
+| ------------------ |
+| object             |
+
+### <div class="label recommended basic">Recommended</div> onSelect
+
+This function gets called when user presses an item from list. You should implement logic for navigating to Channel screen, within this callback.
+
+#### Params
+- `channel` A channel object
+
+```jsx
+onSelect={(channel) => { /** navigation logic */ }}
+```
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### additionalFlatListProps
+
+Set any additional props on underlying [FlatList](https://reactnative.dev/docs/flatlist#props).
+
+#### Example Usage
+
+```jsx
+const flatListProps = { bounces: true };
+
+<ChannelList additionalFlatListProps={flatListProps} />
+```
+
+:::caution
+
+Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef` instead.
+
+:::
+
+| Type               |
+| ------------------ |
+| object             |
+
+### loadMoreThreshold
+
+Changes the `onEndReachedThreshold` on underlying FlatList. Please read the official React Native docs of [FlatList](https://reactnative.dev/docs/flatlist#onendreachedthreshold) for details
+
+
+| Type               | Default      |
+| ------------------ | ------------ |
+| number             | 2            |
+
+### lockChannelOrder
+
+If set to true, channels won't dynamically sort by most recent message, when new messages arrive.
+
+| Type               | Default      |
+| ------------------ | ------------ |
+| boolean            | false        |
+
+
+### maxUnreadCount
+
+Max number to display within unread notification badge. The value cannot be higher than 255, which is the limit on backend side.
+
+| Type               | Default      |
+| ------------------ | ------------ |
+| number             | 255          |
+
+### numberOfSkeletons
+
+A skeleton is a single row in a LoadingIndicator. Use this prop, to alter the number of rows of loading indicator.
+
+![](../assets/api-references/components/channel-list/loading_indicator.png)
+
+| Type               | Default      |
+| ------------------ | ------------ |
+| number             | 6            |
+
+### onAddedToChannel
+
+Function that overrides default behavior when a user gets added to a channel
+
+#### Params
+- `setChannels` Setter for internal state property - `channels`. It's created from [useState()](https://reactjs.org/docs/hooks-reference.html#usestate) hook.
+- `event` An [Event Object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.added_to_channel` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onChannelDeleted
+
+Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.deleted` event
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onChannelHidden
+
+Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.hidden` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onChannelVisible
+
+Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.visible` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onChannelTruncated
+
+Function to customize behavior when a channel gets truncated
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.truncated` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onChannelUpdated
+
+Function that overrides default behavior when a channel gets updated
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.updated` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onMessageNew
+
+Override the default listener/handler for event `notification.message_new`. This event is received on channel, which is not being watched.
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.message_new` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### onRemovedFromChannel
+
+Function that overrides default behavior when a user gets removed from a channel
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.removed_from_channel` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type               |
+| ------------------ |
+| Function           |
+
+### setFlatListRef
+
+Use this callback function to gain access to the underlying FlatList ref.
+
+#### Example
+
+```jsx
+const flRef = useRef();
+
+<ChannelList setFlatListRef={(ref) => flRef.current = ref} />
+```
+
+### EmptyStateIndicator
+
+Custom UI component for replacing default empty state indicator.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [EmptyStateIndicator](#) |
+
+### FooterLoadingIndicator
+
+Custom UI component for replacing default footer loading indicator, which appears when ChanneList is loding more channels when scrolled to bottom of the list.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [FooterLoadingIndicator](#) |
+
+### HeaderErrorIndicator
+
+Custom UI component for replacing default header error indicator, which appears when ChannelList failes to load more results.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [HeaderErrorIndicator](#) |
+
+### HeaderNetworkDownIndicator
+
+Custom UI component for replacing default network down indicator.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [HeaderNetworkDownIndicator](#) |
+
+### ListHeaderComponent
+
+UI component to render as header for channel list.
+
+| Type               |
+| ------------------ |
+| Component, element |
+
+### LoadingErrorIndicator
+
+Custom UI component for replacing default error indicator, which appears when ChannelList fails to fetch first set of channels.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [LoadingErrorIndicator](#) |
+
+### LoadingIndicator
+
+Custom UI component for replacing default loading indicator, which appears when ChannelList is loading first set of results
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [LoadingIndicator](#) |
+
+### Preview
+
+Custom UI component for rendering list item.
+
+<Tabs
+  defaultValue='props'
+  values={[
+    { label: 'Props', value: 'props' },
+    { label: 'Usage', value: 'example' },
+  ]}
+>
+<TabItem value='props'>
+
+- `channel` (Object) Channel
+- `latestMessagePreview` (Object) Info about latest message on channel
+    - `created_at` (Date)
+    - `messageObject` (Object),
+    - `previews` (Array) of text tokens - `{ bold: boolean, text: string }`. 
+
+      e.g, If the latest messages is `Hey @Vishal Narkhede, how are you?` from a user named `Neil Hannah`,
+      
+      ```ts
+      previews = [
+        {
+          bold: true,
+          text: 'Neil Hannah'
+        },
+        {
+          bold: false,
+          text: 'Hey',
+        },
+        {
+          bold: true,
+          text: '@Vishal Narkhede'
+        },
+        {
+          bold: false,
+          text: ', how are you?'
+        }
+      ]
+      ```
+    - `status`: (0 | 1 | 2)
+      - 0 = latest message is not current user's message
+      - 1 = nobody has read latest message which is the current user's message
+      - 2 = someone has read latest message which is the current user's message
+
+- `unread` (number) Unread count of channel
+
+</TabItem>
+<TabItem value='example'>
+
+```jsx
+import { ChannelList, useChannelPreviewDisplayAvatar, useChannelPreviewDisplayName } from 'stream-chat-react-native';
+
+const ChannelListItem = (props) => {
+  const { channel, latestMessagePreview, unread } = props;
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayName = useChannelPreviewDisplayName(channel, 14);
+
+  return (
+    <View>
+      <Text>{displayName}</Text>
+      <Text>{unread}</Text>
+    </View>
+  )
+}
+
+<ChannelList Preview={ChannelListItem} />
+```
+
+</TabItem>
+</Tabs>
+
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewMessenger](#) |
+
+
+### PreviewAvatar
+
+Custom UI component for rendering avatar component, within list item.
+
+#### Available Props
+
+- `channel` (Object) Channel
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewAvatar](#) |
+
+### PreviewMessage
+
+Custom UI component for rendering latest message preview component, within list item
+
+#### Available Props
+
+- `channel` (Object) Channel
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewMessage](#) |
+
+### PreviewStatus
+
+Custom UI component for rendering status component, within list item
+
+#### Available Props
+
+- `channel` (Object) Channel
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewStatus](#) |
+
+### PreviewTitle
+
+Custom UI component for rendering title, within list item
+
+#### Available Props
+
+- `channel` (Object) Channel
+- `displayName` (string)
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewTitle](#) |
+
+### PreviewUnreadCount
+
+Custom UI component for rendering unread count, within list item
+
+#### Available Props
+
+- `unread` (number) Unread count for channel
+- `maxUnreadCount` (number) 
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ChannelPreviewUnreadCount](#) |
