@@ -99,7 +99,7 @@ export type GalleryPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ImageGalleryContextValue, 'setImage'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -129,7 +129,7 @@ const GalleryWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -240,13 +240,15 @@ const GalleryWithContext = <
                 activeOpacity={0.8}
                 key={`gallery-item-${url}/${rowIndex}/${images.length}`}
                 onLongPress={(event) => {
-                  onLongPress({
-                    emitter: 'gallery',
-                    event,
-                  });
+                  if (onLongPress && !preventPress) {
+                    onLongPress({
+                      emitter: 'gallery',
+                      event,
+                    });
+                  }
                 }}
                 onPress={(event) => {
-                  if (!onPressIn && !preventPress) {
+                  if (!onPressIn && onPress && !preventPress) {
                     onPress({
                       defaultHandler: defaultOnPress,
                       emitter: 'gallery',
@@ -350,7 +352,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -403,7 +405,7 @@ export type GalleryProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -416,7 +418,7 @@ export const Gallery = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -449,13 +451,10 @@ export const Gallery = <
     onPressIn: contextOnPressIn,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    setBlurType: contextSetBlurType,
-    setOverlay: contextSetOverlay,
-  } = useOverlayContext();
+  const { additionalTouchableProps: contextAdditionalTouchableProps } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setBlurType: contextSetBlurType, setOverlay: contextSetOverlay } =
+    useOverlayContext();
 
   const images = propImages || contextImages;
 
