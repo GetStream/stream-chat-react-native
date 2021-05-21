@@ -1,12 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {
-  BackHandler,
-  ImageBackground,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { BackHandler, ImageBackground, Keyboard, Platform, StyleSheet, View } from 'react-native';
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetHandleProps,
@@ -71,9 +64,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         ]}
       >
         {selected && (
-          <View
-            style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}
-          >
+          <View style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}>
             <ImageOverlaySelectedComponent />
           </View>
         )}
@@ -104,9 +95,7 @@ const renderImage = ({
   } = item;
   const onPress = () => {
     if (selected) {
-      setSelectedImages((images) =>
-        images.filter((image) => image.uri !== asset.uri),
-      );
+      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
     } else {
       setSelectedImages((images) => {
         if (images.length >= maxNumberOfFiles) {
@@ -120,9 +109,7 @@ const renderImage = ({
   return (
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-      numberOfAttachmentPickerImageColumns={
-        numberOfAttachmentPickerImageColumns
-      }
+      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
       onPress={onPress}
       selected={selected}
       uri={asset.uri}
@@ -209,12 +196,7 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     const getMorePhotos = async () => {
-      if (
-        hasNextPage &&
-        !loadingPhotos &&
-        currentIndex > -1 &&
-        selectedPicker === 'images'
-      ) {
+      if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({
@@ -247,10 +229,7 @@ export const AttachmentPicker = React.forwardRef(
         return false;
       };
 
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
     }, [selectedPicker]);
@@ -302,6 +281,20 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedImages,
     }));
 
+    const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
+
+    /**
+     * Snap points changing cause a rerender of the position,
+     * this is an issue if you are calling close on the bottom sheet.
+     */
+    const snapPoints = useMemo(
+      () => [
+        attachmentPickerBottomSheetHeight ?? 308 - handleHeight,
+        screenHeight - (topInset ?? 0) - handleHeight,
+      ],
+      [attachmentPickerBottomSheetHeight, handleHeight, screenHeight, topInset],
+    );
+
     /**
      * TODO: Remove the need to return null here, changing snapPoints breaks the position
      * so initial render should occur after topInset is set currently
@@ -309,8 +302,6 @@ export const AttachmentPicker = React.forwardRef(
     if (topInset === undefined) {
       return null;
     }
-
-    const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
 
     return (
       <>
@@ -326,10 +317,7 @@ export const AttachmentPicker = React.forwardRef(
           index={-1}
           onChange={(index: number) => setCurrentIndex(index)}
           ref={ref}
-          snapPoints={[
-            attachmentPickerBottomSheetHeight ?? 308 - handleHeight,
-            screenHeight - topInset - handleHeight,
-          ]}
+          snapPoints={snapPoints}
         >
           <BottomSheetFlatList
             contentContainerStyle={[
@@ -347,9 +335,7 @@ export const AttachmentPicker = React.forwardRef(
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (
           <AttachmentPickerError
-            attachmentPickerBottomSheetHeight={
-              attachmentPickerBottomSheetHeight
-            }
+            attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
             attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
             AttachmentPickerErrorImage={AttachmentPickerErrorImage}
             attachmentPickerErrorText={attachmentPickerErrorText}

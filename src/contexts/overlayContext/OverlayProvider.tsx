@@ -1,10 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import {
-  BackHandler,
-  StyleSheet,
-  useWindowDimensions,
-  ViewStyle,
-} from 'react-native';
+import { BackHandler, StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
 import Dayjs from 'dayjs';
 import Animated, {
   cancelAnimation,
@@ -37,11 +32,7 @@ import { useStreami18n } from '../../utils/useStreami18n';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
-import {
-  BlurType,
-  OverlayContext,
-  OverlayProviderProps,
-} from './OverlayContext';
+import { BlurType, OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -81,7 +72,7 @@ export const OverlayProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
@@ -117,9 +108,7 @@ export const OverlayProvider = <
       if (ref.current) {
         ref.current.snapTo(0);
       } else {
-        console.warn(
-          'bottom and top insets must be set for the image picker to work correctly',
-        );
+        console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
     topInset,
@@ -168,10 +157,7 @@ export const OverlayProvider = <
       return false;
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
   }, [overlay]);
@@ -247,16 +233,11 @@ export const OverlayProvider = <
                   imageGalleryCustomComponents={imageGalleryCustomComponents}
                   imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                   imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                  numberOfImageGalleryGridColumns={
-                    numberOfImageGalleryGridColumns
-                  }
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
                   overlayOpacity={overlayOpacity}
                   visible={overlay === 'gallery'}
                 />
-                <AttachmentPicker
-                  ref={bottomSheetRef}
-                  {...attachmentPickerProps}
-                />
+                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
               </ThemeProvider>
             </ImageGalleryProvider>
           </AttachmentPickerProvider>
