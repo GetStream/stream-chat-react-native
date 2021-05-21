@@ -63,7 +63,12 @@ export type MessagesConfig = {
   threadRepliesEnabled?: boolean;
 };
 
-export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
+export type MessageContentType =
+  | 'attachments'
+  | 'files'
+  | 'gallery'
+  | 'quoted_reply'
+  | 'text';
 
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
