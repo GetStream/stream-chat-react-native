@@ -945,7 +945,9 @@ const MessageWithContext = <
         };
 
     const isThreadMessage = threadList || !!message.parent_id;
+
     const dismissOverlay = () => setOverlay('none');
+
     const messageActions =
       typeof messageActionsProp !== 'function'
         ? messageActionsProp
