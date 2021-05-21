@@ -450,6 +450,7 @@ export type MessagesContextValue<
         canModifyMessage,
         copyMessage,
         deleteMessage,
+        dismissOverlay,
         editMessage,
         error,
         flagMessage,
@@ -468,6 +469,7 @@ export type MessagesContextValue<
         canModifyMessage: boolean;
         copyMessage: MessageAction | null;
         deleteMessage: MessageAction | null;
+        dismissOverlay: () => void;
         editMessage: MessageAction | null;
         error: boolean;
         flagMessage: MessageAction | null;
