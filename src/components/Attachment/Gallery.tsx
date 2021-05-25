@@ -240,13 +240,15 @@ const GalleryWithContext = <
                 activeOpacity={0.8}
                 key={`gallery-item-${url}/${rowIndex}/${images.length}`}
                 onLongPress={(event) => {
-                  onLongPress({
-                    emitter: 'gallery',
-                    event,
-                  });
+                  if (onLongPress && !preventPress) {
+                    onLongPress({
+                      emitter: 'gallery',
+                      event,
+                    });
+                  }
                 }}
                 onPress={(event) => {
-                  if (!onPressIn && !preventPress) {
+                  if (!onPressIn && onPress && !preventPress) {
                     onPress({
                       defaultHandler: defaultOnPress,
                       emitter: 'gallery',
