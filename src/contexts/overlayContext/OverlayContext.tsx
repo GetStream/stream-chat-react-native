@@ -34,9 +34,7 @@ export type OverlayContextValue = {
   style?: DeepPartial<Theme>;
 };
 
-export const OverlayContext = React.createContext<OverlayContextValue>(
-  {} as OverlayContextValue,
-);
+export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
 export type OverlayProviderProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -45,7 +43,7 @@ export type OverlayProviderProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
@@ -73,6 +71,7 @@ export type OverlayProviderProps<
     imageGalleryGridSnapPoints?: [string | number, string | number];
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    translucentStatusBar?: boolean;
     value?: Partial<OverlayContextValue>;
   };
 
@@ -81,15 +80,11 @@ export const useOverlayContext = () => useContext(OverlayContext);
 export const withOverlayContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof OverlayContextValue>> => {
-  const WithOverlayContextComponent = (
-    props: Omit<P, keyof OverlayContextValue>,
-  ) => {
+  const WithOverlayContextComponent = (props: Omit<P, keyof OverlayContextValue>) => {
     const overlayContext = useOverlayContext();
 
     return <Component {...(props as P)} {...overlayContext} />;
   };
-  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
-    Component,
-  )}`;
+  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(Component)}`;
   return WithOverlayContextComponent;
 };

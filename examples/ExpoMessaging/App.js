@@ -133,8 +133,6 @@ const App = () => {
   const [clientReady, setClientReady] = useState(false);
   const [thread, setThread] = useState();
 
-  StatusBar.setTranslucent(false);
-
   useEffect(() => {
     const setupClient = async () => {
       await chatClient.connectUser(user, userToken);
@@ -156,7 +154,12 @@ const App = () => {
       }}
     >
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <OverlayProvider bottomInset={bottom} i18nInstance={streami18n} value={{ style: theme }}>
+        <OverlayProvider
+          bottomInset={bottom}
+          i18nInstance={streami18n}
+          translucentStatusBar
+          value={{ style: theme }}
+        >
           {clientReady && (
             <Stack.Navigator
               initialRouteName='ChannelList'

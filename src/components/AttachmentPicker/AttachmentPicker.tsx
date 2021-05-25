@@ -158,6 +158,7 @@ export type AttachmentPickerProps = {
   attachmentPickerErrorText?: string;
   numberOfAttachmentImagesToLoadPerCall?: number;
   numberOfAttachmentPickerImageColumns?: number;
+  translucentStatusBar?: boolean;
 };
 
 export const AttachmentPicker = React.forwardRef(
@@ -173,6 +174,7 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
       numberOfAttachmentPickerImageColumns,
+      translucentStatusBar,
     } = props;
 
     const {
@@ -303,7 +305,11 @@ export const AttachmentPicker = React.forwardRef(
       Platform.OS === 'android'
         ? fullScreenHeight - screenHeight - (StatusBar.currentHeight ?? 0) ===
           (StatusBar.currentHeight ?? 0)
-          ? StatusBar.currentHeight ?? 0
+          ? translucentStatusBar
+            ? 0
+            : StatusBar.currentHeight ?? 0
+          : translucentStatusBar
+          ? -(fullScreenHeight - screenHeight - (StatusBar.currentHeight ?? 0))
           : 0
         : 0;
 

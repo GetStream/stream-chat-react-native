@@ -112,6 +112,7 @@ export const OverlayProvider = <
       }
     },
     topInset,
+    translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
     value,
@@ -129,6 +130,7 @@ export const OverlayProvider = <
     ImageOverlaySelectedComponent,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
+    translucentStatusBar,
   };
 
   const bottomSheetRef = useRef<BottomSheet>(null);
