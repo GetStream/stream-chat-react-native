@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { BackHandler, StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
 import Dayjs from 'dayjs';
 import Animated, {
   cancelAnimation,
@@ -141,7 +141,7 @@ export const OverlayProvider = <
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
-  const { height, width } = useWindowDimensions();
+  const { height, width } = Dimensions.get('screen');
 
   // Setup translators
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });

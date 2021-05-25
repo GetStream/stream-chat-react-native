@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BackHandler, ImageBackground, Keyboard, Platform, StyleSheet, View } from 'react-native';
+import {
+  BackHandler,
+  Dimensions,
+  ImageBackground,
+  Keyboard,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetHandleProps,
@@ -24,6 +33,7 @@ const styles = StyleSheet.create({
 });
 
 const screenHeight = vh(100);
+const fullScreenHeight = Dimensions.get('screen').height;
 
 type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
@@ -284,15 +294,37 @@ export const AttachmentPicker = React.forwardRef(
     const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
 
     /**
+     * This is to handle issues with Android measurements coming back incorrect.
+     * If the StatusBar height is perfectly 1/2 of the difference between the two
+     * dimensions for screen and window, it is incorrect and we need to account for
+     * this. If you use a translucent header bar more adjustments are needed.
+     */
+    const androidBottomBarHeightAdjustment =
+      Platform.OS === 'android'
+        ? fullScreenHeight - screenHeight - (StatusBar.currentHeight ?? 0) ===
+          (StatusBar.currentHeight ?? 0)
+          ? StatusBar.currentHeight ?? 0
+          : 0
+        : 0;
+
+    /**
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
     const snapPoints = useMemo(
       () => [
-        attachmentPickerBottomSheetHeight ?? 308 - handleHeight,
-        screenHeight - (topInset ?? 0) - handleHeight,
+        attachmentPickerBottomSheetHeight ??
+          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
+        fullScreenHeight - (topInset ?? 0) - handleHeight,
       ],
-      [attachmentPickerBottomSheetHeight, handleHeight, screenHeight, topInset],
+      [
+        androidBottomBarHeightAdjustment,
+        attachmentPickerBottomSheetHeight,
+        fullScreenHeight,
+        handleHeight,
+        screenHeight,
+        topInset,
+      ],
     );
 
     /**
@@ -306,6 +338,7 @@ export const AttachmentPicker = React.forwardRef(
     return (
       <>
         <BottomSheet
+          containerHeight={fullScreenHeight}
           handleComponent={
             /**
              * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
