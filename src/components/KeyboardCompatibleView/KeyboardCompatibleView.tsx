@@ -12,6 +12,7 @@ import {
   LayoutRectangle,
   Platform,
   ScreenRect,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -59,11 +60,24 @@ export class KeyboardCompatibleView extends React.Component<
     }
 
     const keyboardY =
-      keyboardFrame.screenY - (this.props.keyboardVerticalOffset as number);
+      keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
+
+    const relativeHeight = frame.y + frame.height - keyboardY;
+    /**
+     * When the StatusBar is translucent there is an issue
+     * where the relative keyboard height is returned as the StatusBar
+     * height instead of 0 when closed.
+     */
+    if (
+      Platform.OS === 'android' &&
+      relativeHeight === StatusBar.currentHeight
+    ) {
+      return 0;
+    }
 
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
-    return Math.max(frame.y + frame.height - keyboardY, 0);
+    return Math.max(relativeHeight, 0);
   }
 
   _onKeyboardChange: KeyboardEventListener = (event) => {
