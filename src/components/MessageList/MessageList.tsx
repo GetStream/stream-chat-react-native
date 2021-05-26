@@ -905,10 +905,7 @@ const MessageListWithContext = <
     }
   }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
 
-  const stickyHeaderFormatDate =
-    stickyHeaderDate.getFullYear() === new Date().getFullYear()
-      ? 'MMM D'
-      : 'MMM D, YYYY';
+  const stickyHeaderFormatDate = "LL";
   const tStickyHeaderDate = tDateTimeParser(stickyHeaderDate);
   const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
