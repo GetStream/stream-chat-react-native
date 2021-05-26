@@ -61,8 +61,8 @@ export class KeyboardCompatibleView extends React.Component<
 
     const keyboardY =
       keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
-
     const relativeHeight = frame.y + frame.height - keyboardY;
+
     /**
      * When the StatusBar is translucent there is an issue
      * where the relative keyboard height is returned as the StatusBar
