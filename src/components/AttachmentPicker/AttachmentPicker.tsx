@@ -301,16 +301,23 @@ export const AttachmentPicker = React.forwardRef(
      * dimensions for screen and window, it is incorrect and we need to account for
      * this. If you use a translucent header bar more adjustments are needed.
      */
+    const statusBarHeight = StatusBar.currentHeight ?? 0;
+    const bottomBarHeight = fullScreenHeight - screenHeight - statusBarHeight;
     const androidBottomBarHeightAdjustment =
       Platform.OS === 'android'
-        ? fullScreenHeight - screenHeight - (StatusBar.currentHeight ?? 0) ===
-          (StatusBar.currentHeight ?? 0)
+        ? bottomBarHeight === statusBarHeight
           ? translucentStatusBar
             ? 0
             : StatusBar.currentHeight ?? 0
           : translucentStatusBar
-          ? -(fullScreenHeight - screenHeight - (StatusBar.currentHeight ?? 0))
-          : 0
+          ? bottomBarHeight > statusBarHeight
+            ? -bottomBarHeight
+            : bottomBarHeight > 0
+            ? -statusBarHeight
+            : 0
+          : bottomBarHeight > 0
+          ? 0
+          : statusBarHeight
         : 0;
 
     /**

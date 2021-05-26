@@ -203,6 +203,7 @@ export const OverlayProvider = <
     setBlurType,
     setOverlay,
     style: value?.style,
+    translucentStatusBar,
   };
 
   if (loadingTranslators) return null;
