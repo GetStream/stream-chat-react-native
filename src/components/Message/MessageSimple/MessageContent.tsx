@@ -337,14 +337,20 @@ const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
-          {message.quoted_message && quotedRepliesEnabled && (
-            <View style={[styles.replyContainer, replyContainer]}>
-              <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
-            </View>
-          )}
           {messageContentOrder.map(
             (messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {
+                case 'quoted_reply':
+                  return (
+                    message.quoted_message &&
+                    quotedRepliesEnabled && (
+                      <View style={[styles.replyContainer, replyContainer]}>
+                        <Reply
+                          styles={{ messageContainer: { maxWidth: vw(60) } }}
+                        />
+                      </View>
+                    )
+                  );
                 case 'attachments':
                   return otherAttachments.map((attachment, attachmentIndex) => (
                     <Attachment
