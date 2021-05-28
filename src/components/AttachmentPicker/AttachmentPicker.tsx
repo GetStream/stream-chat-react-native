@@ -311,7 +311,7 @@ export const AttachmentPicker = React.forwardRef(
             : StatusBar.currentHeight ?? 0
           : translucentStatusBar
           ? bottomBarHeight > statusBarHeight
-            ? -bottomBarHeight
+            ? -bottomBarHeight + statusBarHeight
             : bottomBarHeight > 0
             ? -statusBarHeight
             : 0
