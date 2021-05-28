@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AppState,
   AppStateStatus,
+  Dimensions,
   EmitterSubscription,
   Keyboard,
   KeyboardAvoidingViewProps,
@@ -65,14 +66,17 @@ export class KeyboardCompatibleView extends React.Component<
 
     /**
      * When the StatusBar is translucent there is an issue
-     * where the relative keyboard height is returned as the StatusBar
-     * height instead of 0 when closed.
+     * where the relative keyboard height is returned incorrectly
+     * instead of 0 when closed.
      */
-    if (
-      Platform.OS === 'android' &&
-      relativeHeight === StatusBar.currentHeight
-    ) {
-      return 0;
+    if (Platform.OS === 'android') {
+      const barHeights =
+        Dimensions.get('screen').height - Dimensions.get('window').height;
+      if (
+        relativeHeight <= Math.max(barHeights, StatusBar.currentHeight ?? 0)
+      ) {
+        return 0;
+      }
     }
 
     // Calculate the displacement needed for the view such that it
