@@ -558,7 +558,14 @@ export const MessageInputProvider = <
         const mimeType = lookup(doc.name);
 
         if (mimeType && mimeType?.startsWith('image/')) {
-          uploadNewImage(doc);
+          /**
+           * TODO: The current tight coupling of images to the image
+           * picker does not allow images picked from the file picker
+           * to be rendered in a preview via the uploadNewImage call.
+           * This should be updated alongside allowing image a file
+           * uploads together.
+           */
+          uploadNewFile(doc);
         } else {
           uploadNewFile(doc);
         }

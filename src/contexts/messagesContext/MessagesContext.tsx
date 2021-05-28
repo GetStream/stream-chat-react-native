@@ -63,7 +63,12 @@ export type MessagesConfig = {
   threadRepliesEnabled?: boolean;
 };
 
-export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
+export type MessageContentType =
+  | 'attachments'
+  | 'files'
+  | 'gallery'
+  | 'quoted_reply'
+  | 'text';
 
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -450,6 +455,7 @@ export type MessagesContextValue<
         canModifyMessage,
         copyMessage,
         deleteMessage,
+        dismissOverlay,
         editMessage,
         error,
         flagMessage,
@@ -468,6 +474,7 @@ export type MessagesContextValue<
         canModifyMessage: boolean;
         copyMessage: MessageAction | null;
         deleteMessage: MessageAction | null;
+        dismissOverlay: () => void;
         editMessage: MessageAction | null;
         error: boolean;
         flagMessage: MessageAction | null;
