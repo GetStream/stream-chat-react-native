@@ -31,6 +31,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          GITHUB_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
         run: |
           cd examples/SampleApp/ios
           bundle exec fastlane deploy_to_testflight_qa
