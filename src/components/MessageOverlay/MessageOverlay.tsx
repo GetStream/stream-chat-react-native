@@ -460,39 +460,45 @@ const MessageOverlayWithContext = <
                                 containerInner,
                               ]}
                             >
-                              {messagesContext?.quotedRepliesEnabled &&
-                                message.quoted_message &&
-                                Reply && (
-                                  <View
-                                    style={[
-                                      styles.replyContainer,
-                                      replyContainer,
-                                    ]}
-                                  >
-                                    <Reply
-                                      quotedMessage={
-                                        message.quoted_message as ReplyProps<
-                                          At,
-                                          Ch,
-                                          Co,
-                                          Ev,
-                                          Me,
-                                          Re,
-                                          Us
-                                        >['quotedMessage']
-                                      }
-                                      styles={{
-                                        messageContainer: { maxWidth: vw(60) },
-                                      }}
-                                    />
-                                  </View>
-                                )}
                               {messagesContext?.messageContentOrder?.map(
                                 (
                                   messageContentType,
                                   messageContentOrderIndex,
                                 ) => {
                                   switch (messageContentType) {
+                                    case 'quoted_reply':
+                                      return (
+                                        messagesContext?.quotedRepliesEnabled &&
+                                        message.quoted_message &&
+                                        Reply && (
+                                          <View
+                                            key={`quoted_reply_${messageContentOrderIndex}`}
+                                            style={[
+                                              styles.replyContainer,
+                                              replyContainer,
+                                            ]}
+                                          >
+                                            <Reply
+                                              quotedMessage={
+                                                message.quoted_message as ReplyProps<
+                                                  At,
+                                                  Ch,
+                                                  Co,
+                                                  Ev,
+                                                  Me,
+                                                  Re,
+                                                  Us
+                                                >['quotedMessage']
+                                              }
+                                              styles={{
+                                                messageContainer: {
+                                                  maxWidth: vw(60),
+                                                },
+                                              }}
+                                            />
+                                          </View>
+                                        )
+                                      );
                                     case 'attachments':
                                       return otherAttachments?.map(
                                         (attachment, attachmentIndex) =>
