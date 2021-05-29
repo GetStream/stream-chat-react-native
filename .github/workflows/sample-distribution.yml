@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          persist-credentials: false
+          token: ${{ secrets.VERSION_BUMP_TOKEN }}
       - name: Install RubyGems
         run: |
           cd examples/SampleApp/ios
@@ -33,7 +33,6 @@ jobs:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-          GITHUB_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
         run: |
           cd examples/SampleApp/ios
           bundle exec fastlane deploy_to_testflight_qa
