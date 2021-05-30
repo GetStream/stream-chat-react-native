@@ -42,8 +42,8 @@ registerNativeHandlers({
   },
   getPhotos: async ({ after, first }) => {
     try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
+      const { granted } = await MediaLibrary.requestPermissionsAsync();
+      if (!granted) {
         throw new Error('getPhotos Error');
       }
       const results = await MediaLibrary.getAssetsAsync({
@@ -67,38 +67,16 @@ registerNativeHandlers({
   },
   NetInfo: {
     addEventListener(listener) {
-      let unsubscribe;
-      // For NetInfo >= 3.x.x
-      if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
-          listener(isConnected);
-        });
-        return unsubscribe;
-      } else {
-        // For NetInfo < 3.x.x
-        unsubscribe = NetInfo.addEventListener('connectionChange', () => {
-          NetInfo.isConnected.fetch().then((isConnected) => {
-            listener(isConnected);
-          });
-        });
-
-        return unsubscribe.remove;
-      }
+      return NetInfo.addEventListener(({ isConnected }) => {
+        listener(isConnected);
+      });
     },
 
     fetch() {
       return new Promise((resolve, reject) => {
-        // For NetInfo >= 3.x.x
-        if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-          NetInfo.fetch().then(({ isConnected }) => {
-            resolve(isConnected);
-          }, reject);
-        } else {
-          // For NetInfo < 3.x.x
-          NetInfo.isConnected.fetch().then((isConnected) => {
-            resolve(isConnected);
-          }, reject);
-        }
+        NetInfo.fetch().then(({ isConnected }) => {
+          resolve(isConnected);
+        }, reject);
       });
     },
   },
@@ -141,13 +119,12 @@ registerNativeHandlers({
   },
   takePhoto: async ({ compressImageQuality = 1 }) => {
     try {
-      const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
-      const permissionGranted =
-        permissionCheck?.status === 'granted'
-          ? permissionCheck
-          : await ImagePicker.requestCameraPermissionsAsync();
+      let { canAskAgain, granted } = await ImagePicker.getCameraPermissionsAsync();
+      if (!granted && canAskAgain) {
+        ({ granted } = await ImagePicker.requestCameraPermissionsAsync());
+      }
 
-      if (permissionGranted?.status === 'granted' || permissionGranted?.granted === true) {
+      if (granted) {
         const photo = await ImagePicker.launchCameraAsync({
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });
