@@ -5,6 +5,7 @@ import {
   ImageStyle,
   Keyboard,
   Platform,
+  StatusBar,
   StyleSheet,
   ViewStyle,
 } from 'react-native';
@@ -66,10 +67,8 @@ import type {
 } from '../../types/types';
 
 const isAndroid = Platform.OS === 'android';
-
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-const quarterScreenHeight = vh(25);
+const fullScreenHeight = Dimensions.get('screen').height;
+const measuredScreenHeight = vh(100);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const MARGIN = 32;
@@ -161,8 +160,26 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { overlay, setBlurType, setOverlay } = useOverlayContext();
+  const { overlay, setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  /**
+   * Height constants
+   */
+  const statusBarHeight = StatusBar.currentHeight ?? 0;
+  const bottomBarHeight = fullScreenHeight - measuredScreenHeight - statusBarHeight;
+  const androidScreenHeightAdjustment = translucentStatusBar
+    ? bottomBarHeight === statusBarHeight || bottomBarHeight < 0
+      ? 0
+      : statusBarHeight
+    : bottomBarHeight === statusBarHeight || bottomBarHeight < 0
+    ? -statusBarHeight
+    : 0;
+  const screenHeight = isAndroid
+    ? Dimensions.get('window').height + androidScreenHeightAdjustment
+    : vh(100);
+  const halfScreenHeight = screenHeight / 2;
+  const quarterScreenHeight = screenHeight / 4;
 
   /**
    * BottomSheet ref
@@ -201,7 +218,7 @@ export const ImageGallery = <
   /**
    * Image height from URL or default to full screen height
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(vh(100));
+  const [currentImageHeight, setCurrentImageHeight] = useState<number>(screenHeight);
 
   /**
    * JS and UI index values, the JS follows the UI but is needed
@@ -378,7 +395,7 @@ export const ImageGallery = <
    */
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
-    setCurrentImageHeight(vh(100));
+    setCurrentImageHeight(screenHeight);
     if (photos[index.value]?.uri) {
       Image.getSize(photos[index.value].uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
@@ -1094,6 +1111,7 @@ export const ImageGallery = <
                             photo={photo}
                             previous={selectedIndex > i}
                             scale={scale}
+                            screenHeight={screenHeight}
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
                             style={{
@@ -1147,7 +1165,7 @@ export const ImageGallery = <
         index={0}
         onChange={(index: number) => setCurrentBottomSheetIndex(index)}
         ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || [0, vh(90)]}
+        snapPoints={imageGalleryGridSnapPoints || [0, (screenHeight * 9) / 10]}
       >
         <ImageGrid
           closeGridView={closeGridView}

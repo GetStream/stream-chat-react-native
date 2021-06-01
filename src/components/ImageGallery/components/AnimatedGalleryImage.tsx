@@ -6,7 +6,6 @@ import { vh, vw } from '../../../utils/utils';
 
 import type { ImageStyle, StyleProp } from 'react-native';
 
-const screenHeight = vh(100);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const oneEight = 1 / 8;
@@ -17,6 +16,7 @@ type Props = {
   photo: { uri: string };
   previous: boolean;
   scale: Animated.SharedValue<number>;
+  screenHeight: number;
   selected: boolean;
   shouldRender: boolean;
   translateX: Animated.SharedValue<number>;
@@ -32,6 +32,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
       photo,
       previous,
       scale,
+      screenHeight,
       selected,
       shouldRender,
       style,
@@ -58,17 +59,11 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
               : scale.value < 1 || scale.value !== offsetScale.value
               ? xScaleOffset
               : previous
-              ? translateX.value -
-                halfScreenWidth * (scale.value - 1) +
-                xScaleOffset
-              : translateX.value +
-                halfScreenWidth * (scale.value - 1) +
-                xScaleOffset,
+              ? translateX.value - halfScreenWidth * (scale.value - 1) + xScaleOffset
+              : translateX.value + halfScreenWidth * (scale.value - 1) + xScaleOffset,
           },
           {
-            translateY: selected
-              ? translateY.value + yScaleOffset
-              : yScaleOffset,
+            translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,
           },
           {
             scale: selected ? scale.value / 8 : oneEight,
