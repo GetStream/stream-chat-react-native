@@ -29,7 +29,7 @@ export type ChannelContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /**
    * Custom UI component to display empty state when channel has no messages.
@@ -193,14 +193,14 @@ export const ChannelProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
   value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ChannelContext.Provider value={(value as unknown) as ChannelContextValue}>
+  <ChannelContext.Provider value={value as unknown as ChannelContextValue}>
     {children}
   </ChannelContext.Provider>
 );
@@ -212,17 +212,8 @@ export const useChannelContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(ChannelContext) as unknown) as ChannelContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(ChannelContext) as unknown as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -237,7 +228,7 @@ export const withChannelContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
@@ -248,8 +239,6 @@ export const withChannelContext = <
 
     return <Component {...(props as P)} {...channelContext} />;
   };
-  WithChannelContextComponent.displayName = `WithChannelContext${getDisplayName(
-    Component,
-  )}`;
+  WithChannelContextComponent.displayName = `WithChannelContext${getDisplayName(Component)}`;
   return WithChannelContextComponent;
 };

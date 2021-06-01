@@ -22,7 +22,7 @@ export const getChannelPreviewDisplayAvatar = <
   Ev extends DefaultEventType = DefaultEventType,
   Me extends DefaultMessageType = DefaultMessageType,
   Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
@@ -39,9 +39,7 @@ export const getChannelPreviewDisplayAvatar = <
     };
   } else if (currentUserId) {
     const members = Object.values(channel.state?.members);
-    const otherMembers = members.filter(
-      (member) => member.user?.id !== currentUserId,
-    );
+    const otherMembers = members.filter((member) => member.user?.id !== currentUserId);
 
     if (otherMembers.length === 1) {
       return {
@@ -50,9 +48,7 @@ export const getChannelPreviewDisplayAvatar = <
       };
     }
     return {
-      images: otherMembers
-        .slice(0, 4)
-        .map((member) => member.user?.image || ''),
+      images: otherMembers.slice(0, 4).map((member) => member.user?.image || ''),
       names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
     };
   }
@@ -74,7 +70,7 @@ export const useChannelPreviewDisplayAvatar = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

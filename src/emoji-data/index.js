@@ -28,9 +28,7 @@ const emojiLib = emojis.reduce((acc, cur) => {
 const emojiArray = emojiNames
   .map(({ name, names }) => ({
     name,
-    names: emojiLib[name]?.names
-      ? [...new Set([...emojiLib[name].names, ...names])]
-      : names,
+    names: emojiLib[name]?.names ? [...new Set([...emojiLib[name].names, ...names])] : names,
   }))
   .sort((a, b) => (a.name < b.name ? -1 : 1));
 

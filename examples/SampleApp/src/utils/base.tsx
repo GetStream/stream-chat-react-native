@@ -13,13 +13,7 @@ export type IconProps = Partial<SvgProps> &
 export const RootSvg: React.FC<IconProps> = (props) => {
   const { backgroundFill = 'none', children, height = 24, width = 24 } = props;
   return (
-    <Svg
-      fill={backgroundFill}
-      height={height}
-      viewBox='0 0 24 24'
-      width={width}
-      {...props}
-    >
+    <Svg fill={backgroundFill} height={height} viewBox='0 0 24 24' width={width} {...props}>
       {children}
     </Svg>
   );
@@ -37,13 +31,5 @@ export const RootPath: React.FC<RootPathProps> = (props) => {
   } = useTheme();
 
   const { d, pathFill = black, pathOpacity } = props;
-  return (
-    <Path
-      clipRule='evenodd'
-      d={d}
-      fill={pathFill}
-      fillRule='evenodd'
-      opacity={pathOpacity}
-    />
-  );
+  return <Path clipRule='evenodd' d={d} fill={pathFill} fillRule='evenodd' opacity={pathOpacity} />;
 };

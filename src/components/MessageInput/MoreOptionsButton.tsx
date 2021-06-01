@@ -28,7 +28,7 @@ type MoreOptionsButtonPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
@@ -41,7 +41,7 @@ const MoreOptionsButtonWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -74,19 +74,13 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    disabled: prevDisabled,
-    handleOnPress: prevHandleOnPress,
-  } = prevProps;
-  const {
-    disabled: nextDisabled,
-    handleOnPress: nextHandleOnPress,
-  } = nextProps;
+  const { disabled: prevDisabled, handleOnPress: prevHandleOnPress } = prevProps;
+  const { disabled: nextDisabled, handleOnPress: nextHandleOnPress } = nextProps;
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
 
@@ -108,7 +102,7 @@ export type MoreOptionsButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -121,7 +115,7 @@ export const MoreOptionsButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

@@ -59,20 +59,15 @@ registerNativeHandlers({
       if (Platform.OS === 'android') {
         const readExternalStoragePermissionAndroid =
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
-        const hasPermission = await PermissionsAndroid.check(
-          readExternalStoragePermissionAndroid,
-        );
+        const hasPermission = await PermissionsAndroid.check(readExternalStoragePermissionAndroid);
         if (!hasPermission) {
-          const granted = await PermissionsAndroid.request(
-            readExternalStoragePermissionAndroid,
-            {
-              buttonNegative: 'Deny',
-              buttonNeutral: 'Ask Me Later',
-              buttonPositive: 'Allow',
-              message: 'Permissions are required to access and share photos.',
-              title: 'Photos Access',
-            },
-          );
+          const granted = await PermissionsAndroid.request(readExternalStoragePermissionAndroid, {
+            buttonNegative: 'Deny',
+            buttonNeutral: 'Ask Me Later',
+            buttonPositive: 'Allow',
+            message: 'Permissions are required to access and share photos.',
+            title: 'Photos Access',
+          });
           if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
             throw new Error('getPhotos Error');
           }
@@ -202,9 +197,7 @@ registerNativeHandlers({
       throw new Error('Sharing failed...');
     }
   },
-  takePhoto: async ({
-    compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1,
-  }) => {
+  takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
     });

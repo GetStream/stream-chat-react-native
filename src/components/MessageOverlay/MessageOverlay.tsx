@@ -91,7 +91,7 @@ export type MessageOverlayPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'MessageActions' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
@@ -109,7 +109,7 @@ const MessageOverlayWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -151,10 +151,10 @@ const MessageOverlayWithContext = <
     }
   }, [myMessageTheme]);
 
-  const modifiedTheme = useMemo(() => mergeThemes({ style: myMessageTheme, theme }), [
-    myMessageThemeString,
-    theme,
-  ]);
+  const modifiedTheme = useMemo(
+    () => mergeThemes({ style: myMessageTheme, theme }),
+    [myMessageThemeString, theme],
+  );
 
   const {
     colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white_smoke },
@@ -532,7 +532,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -583,7 +583,7 @@ export type MessageOverlayProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Partial<Omit<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>> &
   Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>;
 
@@ -597,17 +597,12 @@ export const MessageOverlay = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    data,
-    MessageActions,
-    OverlayReactionList,
-    OverlayReactions,
-    reset,
-  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data, MessageActions, OverlayReactionList, OverlayReactions, reset } =
+    useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {

@@ -79,15 +79,11 @@ export const Skeleton: React.FC = () => {
       avatarBoneWidth + boneRadius
     } ${paddingMedium} a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${
       avatarBoneWidth - boneRadius + detailsBonesWidth * 0.25
-    } ${paddingMedium} h-${
+    } ${paddingMedium} h-${detailsBonesWidth * 0.25 - boneRadius * 2} v${boneHeight} h${
       detailsBonesWidth * 0.25 - boneRadius * 2
-    } v${boneHeight} h${detailsBonesWidth * 0.25 - boneRadius * 2}z M${
-      avatarBoneWidth - boneRadius + detailsBonesWidth * 0.25
-    } ${
+    }z M${avatarBoneWidth - boneRadius + detailsBonesWidth * 0.25} ${
       paddingMedium + boneHeight
-    } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${
-      avatarBoneWidth + boneRadius
-    } ${
+    } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${avatarBoneWidth + boneRadius} ${
       paddingMedium + boneHeight + paddingSmall
     } a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${
       avatarBoneWidth + detailsBonesWidth * 0.8 - boneRadius
@@ -95,15 +91,13 @@ export const Skeleton: React.FC = () => {
       detailsBonesWidth * 0.8 - boneRadius * 2
     } v${boneHeight} h${detailsBonesWidth * 0.8 - boneRadius * 2}z M${
       avatarBoneWidth + detailsBonesWidth * 0.8 - boneRadius
-    } ${
-      height - paddingMedium
-    } a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${
+    } ${height - paddingMedium} a${boneRadius} ${boneRadius} 0 1 0 0 -${boneHeight}z M${
       avatarBoneWidth + detailsBonesWidth * 0.8 + boneRadius + paddingLarge
     } ${
       paddingMedium + boneHeight + paddingSmall
-    } a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${
-      width - paddingSmall - boneRadius
-    } ${paddingMedium + boneHeight + paddingSmall} h-${
+    } a${boneRadius} ${boneRadius} 0 1 0 0 ${boneHeight}z M${width - paddingSmall - boneRadius} ${
+      paddingMedium + boneHeight + paddingSmall
+    } h-${
       width -
       paddingSmall -
       boneRadius -
@@ -123,18 +117,10 @@ export const Skeleton: React.FC = () => {
       style={[styles.container, { borderBottomColor: border }, container]}
       testID='channel-preview-skeleton'
     >
-      <View
-        style={[styles.background, { backgroundColor: white_snow }, background]}
-      />
+      <View style={[styles.background, { backgroundColor: white_snow }, background]} />
       <Animated.View style={[animatedStyle, styles.background]}>
         <Svg height={height} width={width}>
-          <Rect
-            fill='url(#gradient)'
-            height={height}
-            width={width}
-            x={0}
-            y={0}
-          />
+          <Rect fill='url(#gradient)' height={height} width={width} x={0} y={0} />
           <Defs>
             <LinearGradient
               gradientUnits='userSpaceOnUse'

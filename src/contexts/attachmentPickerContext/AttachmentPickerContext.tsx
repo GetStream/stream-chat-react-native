@@ -1,9 +1,4 @@
-import React, {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -93,9 +88,7 @@ export const AttachmentPickerProvider = ({
   const bottomInsetValue = value?.bottomInset;
   const topInsetValue = value?.topInset;
 
-  const [bottomInset, setBottomInset] = useState<number | undefined>(
-    bottomInsetValue,
-  );
+  const [bottomInset, setBottomInset] = useState<number | undefined>(bottomInsetValue);
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
@@ -125,7 +118,7 @@ export const AttachmentPickerProvider = ({
 
   return (
     <AttachmentPickerContext.Provider
-      value={(combinedValue as unknown) as AttachmentPickerContextValue}
+      value={combinedValue as unknown as AttachmentPickerContextValue}
     >
       {children}
     </AttachmentPickerContext.Provider>
@@ -133,9 +126,7 @@ export const AttachmentPickerProvider = ({
 };
 
 export const useAttachmentPickerContext = () =>
-  (useContext(
-    AttachmentPickerContext,
-  ) as unknown) as AttachmentPickerContextValue;
+  useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
 
 export const withAttachmentPickerContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,

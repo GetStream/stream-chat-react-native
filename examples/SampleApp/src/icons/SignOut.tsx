@@ -11,12 +11,7 @@ export const SignOut: React.FC<IconProps> = ({ height, width }) => {
     },
   } = useTheme();
   return (
-    <Svg
-      fill='none'
-      height={height}
-      viewBox={`0 0 ${height} ${width}`}
-      width={width}
-    >
+    <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <G opacity='0.5'>
         <Path
           clipRule='evenodd'

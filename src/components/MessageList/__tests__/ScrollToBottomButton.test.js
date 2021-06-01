@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { ScrollToBottomButton } from '../ScrollToBottomButton';
 
@@ -69,11 +64,7 @@ describe('ScrollToBottomButton', () => {
     const { getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t }}>
-          <ScrollToBottomButton
-            onPress={() => null}
-            showNotification={true}
-            t={t}
-          />
+          <ScrollToBottomButton onPress={() => null} showNotification={true} t={t} />
         </TranslationProvider>
       </ThemeProvider>,
     );

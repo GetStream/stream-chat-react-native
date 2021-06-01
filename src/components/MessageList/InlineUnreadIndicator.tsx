@@ -34,22 +34,13 @@ export const InlineUnreadIndicator: React.FC = () => {
       <Svg height={24} style={{ position: 'absolute' }} width={vw(100)}>
         <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
         <Defs>
-          <LinearGradient
-            gradientUnits='userSpaceOnUse'
-            id='gradient'
-            x1={0}
-            x2={0}
-            y1={24}
-            y2={0}
-          >
+          <LinearGradient gradientUnits='userSpaceOnUse' id='gradient' x1={0} x2={0} y1={24} y2={0}>
             <Stop offset={1} stopColor={bg_gradient_end} stopOpacity={1} />
             <Stop offset={0} stopColor={bg_gradient_start} stopOpacity={1} />
           </LinearGradient>
         </Defs>
       </Svg>
-      <Text style={[styles.text, { color: grey }, text]}>
-        {t('Unread Messages')}
-      </Text>
+      <Text style={[styles.text, { color: grey }, text]}>{t('Unread Messages')}</Text>
     </View>
   );
 };

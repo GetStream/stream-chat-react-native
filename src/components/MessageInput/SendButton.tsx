@@ -28,11 +28,8 @@ type SendButtonPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'giphyActive' | 'sendMessage'
-> & {
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
@@ -43,7 +40,7 @@ const SendButtonWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -76,7 +73,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -116,7 +113,7 @@ export type SendButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -129,19 +126,11 @@ export const SendButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { giphyActive, sendMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedSendButton

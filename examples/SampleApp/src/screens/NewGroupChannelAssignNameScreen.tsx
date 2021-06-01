@@ -1,12 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import {
-  Check,
-  generateRandomId,
-  useTheme,
-  vw,
-} from 'stream-chat-react-native';
+import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -91,14 +86,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 
   const {
     theme: {
-      colors: {
-        bg_gradient_end,
-        bg_gradient_start,
-        black,
-        border,
-        grey,
-        white_snow,
-      },
+      colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
     },
   } = useTheme();
 
@@ -124,9 +112,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   return (
     <View style={styles.container}>
       <ScreenHeader
-        RightContent={() => (
-          <ConfirmButton disabled={!groupName} onPress={onConfirm} />
-        )}
+        RightContent={() => <ConfirmButton disabled={!groupName} onPress={onConfirm} />}
         style={styles.header}
         titleText='Name of Group Chat'
       />
@@ -157,13 +143,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
         </View>
         <View style={styles.gradient}>
           <Svg height={24} style={styles.absolute} width={vw(100)}>
-            <Rect
-              fill='url(#gradient)'
-              height={24}
-              width={vw(100)}
-              x={0}
-              y={0}
-            />
+            <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
             <Defs>
               <LinearGradient
                 gradientUnits='userSpaceOnUse'
@@ -173,11 +153,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
                 y1={0}
                 y2={24}
               >
-                <Stop
-                  offset={1}
-                  stopColor={bg_gradient_start}
-                  stopOpacity={1}
-                />
+                <Stop offset={1} stopColor={bg_gradient_start} stopOpacity={1} />
                 <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
               </LinearGradient>
             </Defs>

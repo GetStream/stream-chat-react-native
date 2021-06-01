@@ -38,7 +38,7 @@ export type ChannelPreviewUnreadCountProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> & {
   maxUnreadCount: number;
   unread?: number;
@@ -51,7 +51,7 @@ export const ChannelPreviewUnreadCount = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewUnreadCountProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -64,13 +64,7 @@ export const ChannelPreviewUnreadCount = <
   } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.unreadContainer,
-        { backgroundColor: accent_red },
-        unreadContainer,
-      ]}
-    >
+    <View style={[styles.unreadContainer, { backgroundColor: accent_red }, unreadContainer]}>
       {!!unread && (
         <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
           {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}

@@ -12,12 +12,7 @@ export const Check: React.FC<IconProps> = ({ fill, height, width }) => {
   } = useTheme();
 
   return (
-    <Svg
-      fill='none'
-      height={height}
-      viewBox={`0 0 ${height} ${width}`}
-      width={width}
-    >
+    <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path
         clipRule='evenodd'
         d='M5.293 11.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414z'

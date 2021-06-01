@@ -131,10 +131,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type GroupChannelDetailsRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'GroupChannelDetailsScreen'
->;
+type GroupChannelDetailsRouteProp = RouteProp<StackNavigatorParamList, 'GroupChannelDetailsScreen'>;
 
 type GroupChannelDetailsProps = {
   route: GroupChannelDetailsRouteProp;
@@ -176,15 +173,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setBlurType, setOverlay } = useOverlayContext();
   const {
     theme: {
-      colors: {
-        accent_blue,
-        accent_green,
-        black,
-        border,
-        grey,
-        white,
-        white_smoke,
-      },
+      colors: { accent_blue, accent_green, black, border, grey, white, white_smoke },
     },
   } = useTheme();
 
@@ -276,10 +265,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         subtitleText={membersStatus}
         titleText={displayName}
       />
-      <ScrollView
-        keyboardShouldPersistTaps='always'
-        style={{ backgroundColor: white }}
-      >
+      <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: white }}>
         {members.map((member) => {
           if (!member.user?.id) return null;
 
@@ -311,12 +297,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   size={40}
                 />
                 <View style={styles.memberDetails}>
-                  <Text style={[{ color: black }, styles.memberName]}>
-                    {member.user?.name}
-                  </Text>
-                  <Text style={{ color: grey }}>
-                    {getUserActivityStatus(member.user)}
-                  </Text>
+                  <Text style={[{ color: black }, styles.memberName]}>{member.user?.name}</Text>
+                  <Text style={{ color: grey }}>{getUserActivityStatus(member.user)}</Text>
                 </View>
               </View>
               <Text style={{ color: grey }}>
@@ -401,9 +383,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   }
                 }}
               >
-                {!!groupName && (
-                  <Check fill={accent_blue} height={24} width={24} />
-                )}
+                {!!groupName && <Check fill={accent_blue} height={24} width={24} />}
               </TouchableOpacity>
             </View>
           </View>

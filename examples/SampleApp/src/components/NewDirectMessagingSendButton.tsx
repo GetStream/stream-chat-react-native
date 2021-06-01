@@ -40,11 +40,8 @@ type NewDirectMessagingSendButtonPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'giphyActive' | 'sendMessage'
-> & {
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
@@ -55,17 +52,9 @@ const SendButtonWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
-  props: NewDirectMessagingSendButtonPropsWithContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >,
+  props: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
@@ -96,26 +85,10 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
-  prevProps: NewDirectMessagingSendButtonPropsWithContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >,
-  nextProps: NewDirectMessagingSendButtonPropsWithContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >,
+  prevProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     disabled: prevDisabled,
@@ -152,10 +125,8 @@ export type SendButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
->;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  * UI Component for send button in MessageInput component.
@@ -172,25 +143,27 @@ export const NewDirectMessagingSendButton = (
   >,
 ) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } = useChannelContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { channel } =
+    useChannelContext<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >();
 
-  const { giphyActive, text } = useMessageInputContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { giphyActive, text } =
+    useMessageInputContext<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >();
 
   const sendMessage = async () => {
     if (!channel) return;

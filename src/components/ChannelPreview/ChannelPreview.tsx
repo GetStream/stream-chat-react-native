@@ -2,21 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 
-import type {
-  Channel,
-  ChannelState,
-  Event,
-  MessageResponse,
-} from 'stream-chat';
+import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -36,7 +28,7 @@ export type ChannelPreviewPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Preview'> & {
     /**
@@ -56,7 +48,7 @@ const ChannelPreviewWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -70,11 +62,7 @@ const ChannelPreviewWithContext = <
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
-  const latestMessagePreview = useLatestMessagePreview(
-    channel,
-    forceUpdate,
-    lastMessage,
-  );
+  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
@@ -130,13 +118,7 @@ const ChannelPreviewWithContext = <
     return () => channel.off('message.read', handleReadEvent);
   }, []);
 
-  return (
-    <Preview
-      channel={channel}
-      latestMessagePreview={latestMessagePreview}
-      unread={unread}
-    />
-  );
+  return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;
 };
 
 export type ChannelPreviewProps<
@@ -146,10 +128,8 @@ export type ChannelPreviewProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>
-> &
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>> &
   Pick<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
 
 export const ChannelPreview = <
@@ -159,7 +139,7 @@ export const ChannelPreview = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

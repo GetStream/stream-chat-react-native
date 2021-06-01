@@ -26,25 +26,24 @@ export type InlineLoadingMoreRecentIndicatorPropsWithContext = {
   loadingMoreRecent?: boolean;
 };
 
-export const InlineLoadingMoreRecentIndicatorWithContext: React.FC<InlineLoadingMoreRecentIndicatorPropsWithContext> = ({
-  loadingMoreRecent,
-}) => {
-  const { theme } = useTheme();
+export const InlineLoadingMoreRecentIndicatorWithContext: React.FC<InlineLoadingMoreRecentIndicatorPropsWithContext> =
+  ({ loadingMoreRecent }) => {
+    const { theme } = useTheme();
 
-  const {
-    colors: { accent_blue },
-  } = theme;
+    const {
+      colors: { accent_blue },
+    } = theme;
 
-  if (!loadingMoreRecent) {
-    return null;
-  }
+    if (!loadingMoreRecent) {
+      return null;
+    }
 
-  return (
-    <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={accent_blue} size='small' />
-    </View>
-  );
-};
+    return (
+      <View style={styles.activityIndicatorContainer}>
+        <ActivityIndicator color={accent_blue} size='small' />
+      </View>
+    );
+  };
 
 const areEqual = (
   prevProps: InlineLoadingMoreRecentIndicatorPropsWithContext,
@@ -53,8 +52,7 @@ const areEqual = (
   const { loadingMoreRecent: prevLoadingMoreRecent } = prevProps;
   const { loadingMoreRecent: nextLoadingMoreRecent } = nextProps;
 
-  const loadingMoreRecentEqual =
-    prevLoadingMoreRecent === nextLoadingMoreRecent;
+  const loadingMoreRecentEqual = prevLoadingMoreRecent === nextLoadingMoreRecent;
   if (!loadingMoreRecentEqual) return false;
 
   return true;
@@ -72,21 +70,9 @@ export const InlineLoadingMoreRecentIndicator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
-  const { loadingMoreRecent } = usePaginatedMessageListContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { loadingMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return (
-    <MemoizedInlineLoadingMoreRecentIndicator
-      loadingMoreRecent={loadingMoreRecent}
-    />
-  );
+  return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />;
 };

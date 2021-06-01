@@ -33,7 +33,7 @@ type CommandsButtonPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> &
   Pick<SuggestionsContextValue<Co, Us>, 'suggestions'> & {
     /** Function that opens commands selector */
@@ -47,7 +47,7 @@ const CommandsButtonWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -70,8 +70,7 @@ const CommandsButtonWithContext = <
     >
       <Lightning
         pathFill={
-          suggestions &&
-          suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
+          suggestions && suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
             ? accent_blue
             : grey
         }
@@ -87,7 +86,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -116,7 +115,7 @@ export type CommandsButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -129,7 +128,7 @@ export const CommandsButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

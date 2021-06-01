@@ -7,10 +7,7 @@ import { Chat } from '../../../Chat/Chat';
 
 import { Streami18n } from '../../../../utils/Streami18n';
 import { generateMessage } from '../../../../mock-builders/generator/message';
-import {
-  generateStaticUser,
-  generateUser,
-} from '../../../../mock-builders/generator/user';
+import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 
 let chatClient;
@@ -31,11 +28,7 @@ describe('MessageStatus', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus
-          lastReceivedId={message.id}
-          message={message}
-          readBy={[{ id }]}
-        />
+        <MessageStatus lastReceivedId={message.id} message={message} readBy={[{ id }]} />
       </Chat>,
     );
 

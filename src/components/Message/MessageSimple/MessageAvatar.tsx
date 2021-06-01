@@ -55,8 +55,7 @@ const MessageAvatarWithContext = <
     },
   } = useTheme();
 
-  const visible =
-    typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
+  const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
   return (
     <View
@@ -88,10 +87,8 @@ const areEqual = <
   prevProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } =
-    prevProps;
-  const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } =
-    nextProps;
+  const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
+  const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;

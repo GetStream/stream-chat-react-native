@@ -19,7 +19,7 @@ export const useCreateMessagesContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   additionalTouchableProps,
   animatedLongPress,
@@ -107,22 +107,12 @@ export const useCreateMessagesContext = <
    */
   channelId?: string;
 }) => {
-  const additionalTouchablePropsLength = Object.keys(
-    additionalTouchableProps || {},
-  ).length;
+  const additionalTouchablePropsLength = Object.keys(additionalTouchableProps || {}).length;
   const markdownRulesLength = Object.keys(markdownRules || {}).length;
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions.length;
 
-  const messagesContext: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalTouchableProps,
       animatedLongPress,

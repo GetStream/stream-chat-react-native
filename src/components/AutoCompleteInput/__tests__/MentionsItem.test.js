@@ -11,8 +11,7 @@ describe('MentionsItem', () => {
       <ThemeProvider>
         <MentionsItem
           item={{
-            image:
-              'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
+            image: 'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
           }}
         />
       </ThemeProvider>,
@@ -47,8 +46,7 @@ describe('MentionsItem', () => {
         <MentionsItem
           item={{
             id: 'Test User',
-            image:
-              'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
+            image: 'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
           }}
         />
       </ThemeProvider>,

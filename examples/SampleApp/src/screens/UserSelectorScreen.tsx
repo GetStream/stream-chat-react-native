@@ -8,10 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, version } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
@@ -108,18 +105,12 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       style={[styles.container, { backgroundColor: white_snow }]}
       edges={['right', 'top', 'left']}
     >
-      <ScrollView
-        contentContainerStyle={styles.contentContainer}
-        style={styles.scrollContainer}
-      >
+      <ScrollView contentContainerStyle={styles.contentContainer} style={styles.scrollContainer}>
         <View style={styles.titleContainer}>
           <StreamLogo />
-          <Text style={[styles.title, { color: black }]}>
-            Welcome to Stream Chat
-          </Text>
+          <Text style={[styles.title, { color: black }]}>Welcome to Stream Chat</Text>
           <Text style={[styles.subTitle, { color: black }]}>
-            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
-            sdk:
+            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'} sdk:
           </Text>
         </View>
 
@@ -206,9 +197,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           },
         ]}
       >
-        <Text style={[styles.footerText, { color: grey_gainsboro }]}>
-          Stream SDK v{version}
-        </Text>
+        <Text style={[styles.footerText, { color: grey_gainsboro }]}>Stream SDK v{version}</Text>
       </View>
     </SafeAreaView>
   );

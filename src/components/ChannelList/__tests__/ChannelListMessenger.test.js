@@ -15,11 +15,7 @@ let chatClient;
 
 const Component = ({ channels, error = false, loadingChannels = false }) => (
   <Chat client={chatClient}>
-    <ChannelListMessenger
-      channels={channels}
-      error={error}
-      loadingChannels={loadingChannels}
-    />
+    <ChannelListMessenger channels={channels} error={error} loadingChannels={loadingChannels} />
   </Chat>
 );
 
@@ -28,10 +24,7 @@ describe('ChannelListMessenger', () => {
     chatClient = await getTestClientWithUser({ id: 'vishal' });
     const c1 = generateChannel();
     const c2 = generateChannel();
-    useMockedApis(chatClient, [
-      getOrCreateChannelApi(c1),
-      getOrCreateChannelApi(c2),
-    ]);
+    useMockedApis(chatClient, [getOrCreateChannelApi(c1), getOrCreateChannelApi(c2)]);
     const channel1 = chatClient.channel(c1.channel.type, c1.channel.id);
     await channel1.watch();
     const channel2 = chatClient.channel(c2.channel.type, c2.channel.id);
@@ -55,18 +48,14 @@ describe('ChannelListMessenger', () => {
   });
 
   it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
-    const { getByTestId } = render(
-      <Component channels={mockChannels} error={true} />,
-    );
+    const { getByTestId } = render(<Component channels={mockChannels} error={true} />);
     await waitFor(() => {
       expect(getByTestId('channel-loading-error')).toBeTruthy();
     });
   });
 
   it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
-    const { getByTestId } = render(
-      <Component channels={[]} loadingChannels={true} />,
-    );
+    const { getByTestId } = render(<Component channels={[]} loadingChannels={true} />);
     await waitFor(() => {
       expect(getByTestId('loading')).toBeTruthy();
     });

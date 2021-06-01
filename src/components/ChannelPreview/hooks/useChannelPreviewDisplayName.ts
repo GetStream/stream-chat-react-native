@@ -26,7 +26,7 @@ export const getChannelPreviewDisplayName = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   channelName,
   currentUserId,
@@ -41,33 +41,25 @@ export const getChannelPreviewDisplayName = <
   if (channelName) return channelName;
 
   const channelMembers = Object.values(members || {});
-  const otherMembers = channelMembers.filter(
-    (member) => member.user?.id !== currentUserId,
-  );
+  const otherMembers = channelMembers.filter((member) => member.user?.id !== currentUserId);
 
-  const name = otherMembers
-    .slice(0)
-    .reduce((returnString, currentMember, index, originalArray) => {
-      const returnStringLength = returnString.length;
-      const currentMemberName =
-        currentMember.user?.name || currentMember.user?.id || 'Unknown User';
-      // a rough approximation of when the +Number shows up
-      if (
-        returnStringLength + (currentMemberName.length + 2) <
-        maxCharacterLength
-      ) {
-        if (returnStringLength) {
-          returnString += `, ${currentMemberName}`;
-        } else {
-          returnString = currentMemberName;
-        }
+  const name = otherMembers.slice(0).reduce((returnString, currentMember, index, originalArray) => {
+    const returnStringLength = returnString.length;
+    const currentMemberName = currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+    // a rough approximation of when the +Number shows up
+    if (returnStringLength + (currentMemberName.length + 2) < maxCharacterLength) {
+      if (returnStringLength) {
+        returnString += `, ${currentMemberName}`;
       } else {
-        const remainingMembers = originalArray.length - index;
-        returnString += `, +${remainingMembers}`;
-        originalArray.splice(1); // exit early
+        returnString = currentMemberName;
       }
-      return returnString;
-    }, '');
+    } else {
+      const remainingMembers = originalArray.length - index;
+      returnString += `, +${remainingMembers}`;
+      originalArray.splice(1); // exit early
+    }
+    return returnString;
+  }, '');
 
   return name;
 };
@@ -79,7 +71,7 @@ export const useChannelPreviewDisplayName = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   characterLength?: number,

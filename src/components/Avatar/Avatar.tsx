@@ -70,12 +70,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
   } = props;
   const {
     theme: {
-      avatar: {
-        container,
-        image,
-        presenceIndicator,
-        presenceIndicatorContainer,
-      },
+      avatar: { container, image, presenceIndicator, presenceIndicatorContainer },
       colors: { accent_green, white },
     },
   } = useTheme();
@@ -107,13 +102,8 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
               imageProp.includes(randomSvgBaseUrl)
                 ? imageProp?.includes(streamCDN)
                   ? imageProp
-                  : `${randomImageBaseUrl}${
-                      name ? `?name=${getInitials(name)}&size=${size}` : ''
-                    }`
-                : imageProp.replace(
-                    'h=%2A',
-                    `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`,
-                  ),
+                  : `${randomImageBaseUrl}${name ? `?name=${getInitials(name)}&size=${size}` : ''}`
+                : imageProp.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`),
           }}
           style={[
             image,

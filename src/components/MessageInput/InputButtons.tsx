@@ -29,7 +29,7 @@ export type InputButtonsProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export type InputButtonsWithContextProps<
@@ -39,7 +39,7 @@ export type InputButtonsWithContextProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'AttachButton'
@@ -65,7 +65,7 @@ export const InputButtonsWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -95,18 +95,13 @@ export const InputButtonsWithContext = <
     return null;
   }
 
-  return !showMoreOptions &&
-    (hasImagePicker || hasFilePicker) &&
-    hasCommands ? (
+  return !showMoreOptions && (hasImagePicker || hasFilePicker) && hasCommands ? (
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
       {(hasImagePicker || hasFilePicker) && uploadsEnabled !== false && (
         <View
-          style={[
-            hasCommands ? styles.attachButtonContainer : undefined,
-            attachButtonContainer,
-          ]}
+          style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
           <AttachButton handleOnPress={toggleAttachmentPicker} />
         </View>
@@ -126,7 +121,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
@@ -193,7 +188,7 @@ export const InputButtons = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

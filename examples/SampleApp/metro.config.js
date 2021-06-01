@@ -11,7 +11,7 @@ function isExternalModule(modulePath) {
 }
 
 function listDirectories(rootPath, cb) {
-  FS.readdirSync(rootPath).forEach(fileName => {
+  FS.readdirSync(rootPath).forEach((fileName) => {
     if (fileName.charAt(0) === '.') return;
 
     let fullFileName = PATH.join(rootPath, fileName),
@@ -50,31 +50,28 @@ function buildFullModuleMap(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(
-    moduleRoot,
-    ({ external, fileName, fullFileName, symbolic }) => {
-      if (symbolic)
-        return buildFullModuleMap(
-          resolvePath(fullFileName, 'node_modules'),
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-        );
+  listDirectories(moduleRoot, ({ external, fileName, fullFileName, symbolic }) => {
+    if (symbolic)
+      return buildFullModuleMap(
+        resolvePath(fullFileName, 'node_modules'),
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+      );
 
-      const moduleMap = external ? externalModuleMap : mainModuleMap,
-        moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
+    const moduleMap = external ? externalModuleMap : mainModuleMap,
+      moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
 
-      if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
-      else
-        return buildFullModuleMap(
-          fullFileName,
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-          fileName,
-        );
-    },
-  );
+    if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
+    else
+      return buildFullModuleMap(
+        fullFileName,
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+        fileName,
+      );
+  });
 }
 
 function buildModuleResolutionMap() {
@@ -87,11 +84,7 @@ function buildModuleResolutionMap() {
   return Object.assign({}, externalModuleMap, moduleMap);
 }
 
-function findAlternateRoots(
-  moduleRoot = baseModulePath,
-  alternateRoots = [],
-  _alreadyVisited,
-) {
+function findAlternateRoots(moduleRoot = baseModulePath, alternateRoots = [], _alreadyVisited) {
   const alreadyVisited = _alreadyVisited || {};
   if (alreadyVisited && alreadyVisited.hasOwnProperty(moduleRoot)) return;
 
@@ -138,16 +131,16 @@ const FS = require('fs'),
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleExclusionList = [
-  new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
-  new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/node_modules/.*'),
-  new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/Example/.*'),
-  new RegExp(repoDir + '/examples/NativeMessaging/.*'),
-  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
-  //   new RegExp(repoDir + '/native-example/(.*)'),
-  new RegExp(repoDir + '/expo-package/.*'),
-  new RegExp(repoDir + '/native-package/node_modules/.*'),
-  new RegExp(repoDir + '/node_modules/.*'),
-],
+    new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+    new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/node_modules/.*'),
+    new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/Example/.*'),
+    new RegExp(repoDir + '/examples/NativeMessaging/.*'),
+    new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
+    //   new RegExp(repoDir + '/native-example/(.*)'),
+    new RegExp(repoDir + '/expo-package/.*'),
+    new RegExp(repoDir + '/native-package/node_modules/.*'),
+    new RegExp(repoDir + '/node_modules/.*'),
+  ],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)
   alternateRoots = findAlternateRoots(),
@@ -173,8 +166,6 @@ module.exports = {
     getPolyfills: getPolyfillHelper(),
   },
 };
-
-
 
 // /**
 //  * Metro configuration for React Native

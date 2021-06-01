@@ -9,17 +9,11 @@ import { BottomTabs } from '../components/BottomTabs';
 import type { RouteProp } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type {
-  BottomTabNavigatorParamList,
-  StackNavigatorParamList,
-} from '../types';
+import type { BottomTabNavigatorParamList, StackNavigatorParamList } from '../types';
 
 const Tab = createBottomTabNavigator<BottomTabNavigatorParamList>();
 
-type ChatScreenNavigationProp = StackNavigationProp<
-  StackNavigatorParamList,
-  'ChatScreen'
->;
+type ChatScreenNavigationProp = StackNavigationProp<StackNavigatorParamList, 'ChatScreen'>;
 type ChatScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChatScreen'>;
 
 type Props = {

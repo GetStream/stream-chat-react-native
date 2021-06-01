@@ -63,9 +63,7 @@ export type UploadProgressIndicatorProps = {
   type?: 'in_progress' | 'retry';
 };
 
-export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
-  props,
-) => {
+export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (props) => {
   const { action, active, children, style, type } = props;
 
   const {
@@ -78,37 +76,21 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
   } = useTheme();
 
   return !active ? (
-    <View
-      style={[styles.overflowHidden, style]}
-      testID='inactive-upload-progress-indicator'
-    >
+    <View style={[styles.overflowHidden, style]} testID='inactive-upload-progress-indicator'>
       {children}
     </View>
   ) : (
-    <View
-      style={[styles.overflowHidden, style]}
-      testID='active-upload-progress-indicator'
-    >
+    <View style={[styles.overflowHidden, style]} testID='active-upload-progress-indicator'>
       {children}
-      <View
-        style={[styles.overlay, { backgroundColor: overlayColor }, overlay]}
-      />
-      <View
-        style={[styles.container, { backgroundColor: overlayColor }, container]}
-      >
+      <View style={[styles.overlay, { backgroundColor: overlayColor }, overlay]} />
+      <View style={[styles.container, { backgroundColor: overlayColor }, container]}>
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
           <View style={styles.activityIndicatorContainer}>
-            <ActivityIndicator
-              color={white_smoke}
-              testID='upload-progress-indicator'
-            />
+            <ActivityIndicator color={white_smoke} testID='upload-progress-indicator' />
           </View>
         )}
         {type === ProgressIndicatorTypes.RETRY && (
-          <TouchableOpacity
-            onPress={action}
-            style={styles.retryButtonContainer}
-          >
+          <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
             <Refresh
               height={18}
               pathFill={white_smoke}

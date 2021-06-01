@@ -23,9 +23,7 @@ describe('CommandsItem', () => {
       expect(queryByTestId('commands-item-description')).toBeTruthy();
       expect(getByTestId('commands-item-title')).toHaveTextContent(`/${name}`);
       expect(getByTestId('commands-item-args')).toHaveTextContent(args);
-      expect(getByTestId('commands-item-description')).toHaveTextContent(
-        description,
-      );
+      expect(getByTestId('commands-item-description')).toHaveTextContent(description);
     });
   });
 });

@@ -23,7 +23,7 @@ export type ThreadContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
@@ -46,14 +46,14 @@ export const ThreadProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
   value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ThreadContext.Provider value={(value as unknown) as ThreadContextValue}>
+  <ThreadContext.Provider value={value as unknown as ThreadContextValue}>
     {children}
   </ThreadContext.Provider>
 );
@@ -65,17 +65,8 @@ export const useThreadContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(ThreadContext) as unknown) as ThreadContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(ThreadContext) as unknown as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if ThreadContext
@@ -90,7 +81,7 @@ export const withThreadContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
@@ -101,8 +92,6 @@ export const withThreadContext = <
 
     return <Component {...(props as P)} {...threadContext} />;
   };
-  WithThreadContextComponent.displayName = `WithThreadContext${getDisplayName(
-    Component,
-  )}`;
+  WithThreadContextComponent.displayName = `WithThreadContext${getDisplayName(Component)}`;
   return WithThreadContextComponent;
 };

@@ -64,13 +64,8 @@ const StatusIndicator = <
   Us extends UnknownType = DefaultUserType,
 >() => {
   const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    error,
-    HeaderErrorIndicator,
-    HeaderNetworkDownIndicator,
-    loadingChannels,
-    refreshList,
-  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
+    useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   if (loadingChannels) return null;
 
@@ -204,17 +199,13 @@ const ChannelListMessengerWithContext = <
             <EmptyStateIndicator listType='channel' />
           )
         }
-        ListFooterComponent={
-          loadingNextPage ? <FooterLoadingIndicator /> : undefined
-        }
+        ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListFooterComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
         // @ts-expect-error waiting for this merged PR to be released https://github.com/software-mansion/react-native-gesture-handler/pull/1394
         ref={setFlatListRef}
-        refreshControl={
-          <RefreshControl onRefresh={refreshList} refreshing={refreshing} />
-        }
+        refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}
         style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
         testID='channel-list-messenger'

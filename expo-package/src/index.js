@@ -17,11 +17,9 @@ registerNativeHandlers({
     <ExpoBlurView intensity={blurAmount} style={style} tint={blurType} />
   ),
   compressImage: async ({ compressImageQuality = 1, uri }) => {
-    const { uri: compressedUri } = await ImageManipulator.manipulateAsync(
-      uri,
-      [],
-      { compress: Math.min(Math.max(0, compressImageQuality), 1) },
-    );
+    const { uri: compressedUri } = await ImageManipulator.manipulateAsync(uri, [], {
+      compress: Math.min(Math.max(0, compressImageQuality), 1),
+    });
     return compressedUri;
   },
   deleteFile: async ({ uri }) => {
@@ -149,10 +147,7 @@ registerNativeHandlers({
           ? permissionCheck
           : await ImagePicker.requestCameraPermissionsAsync();
 
-      if (
-        permissionGranted?.status === 'granted' ||
-        permissionGranted?.granted === true
-      ) {
+      if (permissionGranted?.status === 'granted' || permissionGranted?.granted === true) {
         const photo = await ImagePicker.launchCameraAsync({
           quality: Math.min(Math.max(0, compressImageQuality), 1),
         });

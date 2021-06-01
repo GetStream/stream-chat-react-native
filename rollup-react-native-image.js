@@ -4,13 +4,7 @@ import path from 'path';
 
 export default function reactNativeImage(options = {}) {
   const includedImages = [];
-  const extensions = options.extensions || [
-    '.jpg',
-    '.jpeg',
-    '.png',
-    '.gif',
-    '.svg',
-  ];
+  const extensions = options.extensions || ['.jpg', '.jpeg', '.png', '.gif', '.svg'];
   let sourceDir = options.sourceDir || __dirname;
   if (sourceDir[sourceDir.length - 1] !== path.sep) {
     sourceDir += path.sep;
@@ -53,10 +47,7 @@ export default function reactNativeImage(options = {}) {
         const dir = path.dirname(origFileName);
 
         for (let i = 1; i < 6; i++) {
-          const scaledFileName = path.join(
-            dir,
-            base + '@' + i + 'x' + extension,
-          );
+          const scaledFileName = path.join(dir, base + '@' + i + 'x' + extension);
           const scaledPath = path.join(origSourceDir, scaledFileName);
           const scaledDestPath = path.join(origDestDir, scaledFileName);
           if (!existsSync(scaledPath)) {

@@ -26,10 +26,7 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type {
-  Colors,
-  MarkdownStyle,
-} from '../../../../contexts/themeContext/utils/theme';
+import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
@@ -69,12 +66,7 @@ export type RenderTextParams<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'onLongPress' | 'onPress'
-  >
-> & {
+> = Partial<Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress'>> & {
   colors: typeof Colors;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
@@ -158,9 +150,7 @@ export const renderText = <
   const onLink = (url: string) =>
     onLinkParams
       ? onLinkParams(url)
-      : Linking.canOpenURL(url).then(
-          (canOpenUrl) => canOpenUrl && Linking.openURL(url),
-        );
+      : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
 
   const react: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
@@ -230,9 +220,7 @@ export const renderText = <
         onPress,
         style: styles.mentions,
       },
-      Array.isArray(node.content)
-        ? node.content[0]?.content || ''
-        : output(node.content, state),
+      Array.isArray(node.content) ? node.content[0]?.content || '' : output(node.content, state),
     );
   };
 

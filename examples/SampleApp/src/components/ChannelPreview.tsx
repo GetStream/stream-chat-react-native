@@ -70,15 +70,16 @@ export const ChannelPreview: React.FC<
 
   const { setData, data } = useChannelInfoOverlayContext();
 
-  const { client } = useChatContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { client } =
+    useChatContext<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
@@ -89,9 +90,7 @@ export const ChannelPreview: React.FC<
   } = useTheme();
 
   const otherMembers = channel
-    ? Object.values(channel.state.members).filter(
-        (member) => member.user?.id !== data?.clientId,
-      )
+    ? Object.values(channel.state.members).filter((member) => member.user?.id !== data?.clientId)
     : [];
 
   return (
@@ -99,9 +98,7 @@ export const ChannelPreview: React.FC<
       overshootLeft={false}
       overshootRight={false}
       renderRightActions={() => (
-        <View
-          style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}
-        >
+        <View style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}>
           <RectButton
             onPress={() => {
               setData({ channel, clientId: client.userID, navigation });
@@ -122,9 +119,7 @@ export const ChannelPreview: React.FC<
                 subtext: `Are you sure you want to delete this ${
                   otherMembers.length === 1 ? 'conversation' : 'group'
                 }?`,
-                title: `Delete ${
-                  otherMembers.length === 1 ? 'Conversation' : 'Group'
-                }`,
+                title: `Delete ${otherMembers.length === 1 ? 'Conversation' : 'Group'}`,
               });
               setOverlay('confirmation');
             }}

@@ -29,7 +29,7 @@ type AttachButtonPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
@@ -43,7 +43,7 @@ const AttachButtonWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -75,7 +75,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -115,7 +115,7 @@ export type AttachButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -128,7 +128,7 @@ export const AttachButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

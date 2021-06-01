@@ -27,16 +27,12 @@ export const AttachmentPickerBottomSheetHandle: React.FC<{
   } = useTheme();
 
   const style = useAnimatedStyle<ViewStyle>(() => ({
-    borderTopLeftRadius:
-      animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
-    borderTopRightRadius:
-      animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
+    borderTopLeftRadius: animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
+    borderTopRightRadius: animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
   }));
 
   return (
-    <Animated.View
-      style={[styles.container, { backgroundColor: white }, style]}
-    >
+    <Animated.View style={[styles.container, { backgroundColor: white }, style]}>
       <View style={[styles.handle, { backgroundColor: `${black}1A` }]} />
       {/* ^ 1A = 10% opacity */}
     </Animated.View>

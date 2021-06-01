@@ -19,9 +19,11 @@ export type MergedThemesParams = {
 
 export const mergeThemes = (params: MergedThemesParams) => {
   const { style, theme } = params;
-  const finalTheme = (!theme || Object.keys(theme).length === 0
-    ? JSON.parse(JSON.stringify(defaultTheme))
-    : JSON.parse(JSON.stringify(theme))) as Theme;
+  const finalTheme = (
+    !theme || Object.keys(theme).length === 0
+      ? JSON.parse(JSON.stringify(defaultTheme))
+      : JSON.parse(JSON.stringify(theme))
+  ) as Theme;
 
   if (style) {
     merge(finalTheme, style);
@@ -43,11 +45,7 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
     return mergeThemes({ style, theme });
   }, [mergedStyle, style, theme]);
 
-  return (
-    <ThemeContext.Provider value={modifiedTheme}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={modifiedTheme}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {

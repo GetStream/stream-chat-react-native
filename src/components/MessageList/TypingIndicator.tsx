@@ -40,7 +40,7 @@ export const TypingIndicator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >() => {
   const {
     theme: {
@@ -52,17 +52,11 @@ export const TypingIndicator = <
 
   return (
     <View
-      style={[
-        styles.container,
-        { backgroundColor: `${white_snow}E6` },
-        container,
-      ]}
+      style={[styles.container, { backgroundColor: `${white_snow}E6` }, container]}
       testID='typing-indicator'
     >
       <LoadingDots style={styles.loadingDots} />
-      <Text style={[styles.typingText, { color: grey }, text]}>
-        {typingString}
-      </Text>
+      <Text style={[styles.typingText, { color: grey }, text]}>{typingString}</Text>
     </View>
   );
 };
