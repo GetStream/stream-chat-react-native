@@ -344,7 +344,10 @@ const MessageContentWithContext = <
                   return (
                     message.quoted_message &&
                     quotedRepliesEnabled && (
-                      <View style={[styles.replyContainer, replyContainer]}>
+                      <View
+                        key={`quoted_reply_${messageContentOrderIndex}`}
+                        style={[styles.replyContainer, replyContainer]}
+                      >
                         <Reply
                           styles={{ messageContainer: { maxWidth: vw(60) } }}
                         />

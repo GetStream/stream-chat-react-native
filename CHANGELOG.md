@@ -1,12 +1,32 @@
 # Changelog
 
-## [3.5.0]
-
-### Bug fixes
-- Mute status updates on every message
+## [3.5.0] (unpublished)
 
 ###  **🛑 BREAKING**
-- `reply`, `handleReply`, and `handleReplyMessage` have now all been shifted to `quotedReply`, `handleQuotedReply`, and `handleQuotedReplyMessage` respectively.
+
+Following props have been renamed:
+
+- `reply` -> `quotedReply`
+- `handleReply` -> `handleQuotedReply`
+- `handleReplyMessage` -> `handleQuotedReplyMessage`
+### Features
+
+- Added new props to Channel component [219b307](https://github.com/GetStream/stream-chat-react-native/commit/219b307e3d2db36a6974e4870dc0eb00213bcca2)
+
+  - maxMessageLength (number)
+  - reactionsEnabled (boolean)
+  - readEventsEnabled (boolean)
+  - repliesEnabled (boolean)
+  - typingEventsEnabled (boolean)
+  - uploadsEnabled (boolean)
+  - quoteRepliesEnabled (boolean)
+  - threadRepliesEnabled (boolean)
+
+### Bug fixes
+- Update messages when mute status updates [885f8c2](https://github.com/GetStream/stream-chat-react-native/commit/885f8c20306ef46eb6ad20cd2942618acf967741)
+- Fixed broken "Resend message" functionality for failed messages [359c192](https://github.com/GetStream/stream-chat-react-native/commit/359c192903b3e34836ffadcca55f2a4e0a7fc509)
+- Fixed read receipts [f7510e8](https://github.com/GetStream/stream-chat-react-native/commit/f7510e8134ad14fbfa1d920e68267d3080d2b1ba)
+- Fixed images as attachment from File Picker [5ca1a25](https://github.com/GetStream/stream-chat-react-native/commit/5ca1a250a9d1c75c86e9c89dda1c116dd77bb1b3)
 
 ## [3.4.0] (2021-05-14)
 
