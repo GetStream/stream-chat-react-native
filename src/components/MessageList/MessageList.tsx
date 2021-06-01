@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatListProps,
   FlatList as FlatListType,
@@ -32,10 +26,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -52,15 +43,8 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../../contexts/threadContext/ThreadContext';
-import {
-  mergeThemes,
-  ThemeProvider,
-  useTheme,
-} from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
+import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TranslationContextValue,
@@ -118,7 +102,7 @@ const keyExtractor = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   item: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
 ) =>
@@ -140,11 +124,8 @@ type MessageListPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  AttachmentPickerContextValue,
-  'closePicker' | 'selectedPicker' | 'setSelectedPicker'
-> &
+  Us extends UnknownType = DefaultUserType,
+> = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
   Pick<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
@@ -184,10 +165,7 @@ type MessageListPropsWithContext<
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
-  Pick<
-    ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'loadMoreThread' | 'thread'
-  > &
+  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'loadMoreThread' | 'thread'> &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -203,9 +181,7 @@ type MessageListPropsWithContext<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<
-      FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
-    >;
+    additionalFlatListProps?: Partial<FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -234,9 +210,7 @@ type MessageListPropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (
-      message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
-    ) => void;
+    onThreadSelect?: (message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -248,9 +222,7 @@ type MessageListPropsWithContext<
      *  }}
      * ```
      */
-    setFlatListRef?: (
-      ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null,
-    ) => void;
+    setFlatListRef?: (ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null) => void;
     /**
      * Boolean whether or not the Messages in the MessageList are part of a Thread
      **/
@@ -273,7 +245,7 @@ const MessageListWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -353,9 +325,7 @@ const MessageListWithContext = <
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessageBeforeUpdate = useRef<
-    MessageType<At, Ch, Co, Ev, Me, Re, Us>
-  >();
+  const topMessageBeforeUpdate = useRef<MessageType<At, Ch, Co, Ev, Me, Re, Us>>();
   const topMessageAfterUpdate = messageList[messageList.length - 1];
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
@@ -370,39 +340,28 @@ const MessageListWithContext = <
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<
-    MessageType<At, Ch, Co, Ev, Me, Re, Us>
-  > | null>(null);
+  const flatListRef = useRef<FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null>(null);
 
   const initialScrollSet = useRef<boolean>(false);
   const channelResyncScrollSet = useRef<boolean>(true);
 
   const [hasMoved, setHasMoved] = useState(false);
-  const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedMessage(messageList)?.id,
-  );
-  const [
-    scrollToBottomButtonVisible,
-    setScrollToBottomButtonVisible,
-  ] = useState(false);
+  const [lastReceivedId, setLastReceivedId] = useState(getLastReceivedMessage(messageList)?.id);
+  const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
   /**
    * channel.lastRead throws error if the channel is not initialized.
    */
-  const getLastReadSafely = () =>
-    channel?.initialized ? channel.lastRead() : undefined;
+  const getLastReadSafely = () => (channel?.initialized ? channel.lastRead() : undefined);
 
   const channelLastRead = useRef(getLastReadSafely());
 
   const isUnreadMessage = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
-    lastRead?: ReturnType<
-      StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
-    >,
-  ) =>
-    message && lastRead && message.created_at && lastRead < message.created_at;
+    lastRead?: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
+  ) => message && lastRead && message.created_at && lastRead < message.created_at;
 
   /**
    * If the top message in the list is unread, then we should scroll to top of the list.
@@ -415,9 +374,7 @@ const MessageListWithContext = <
       initialScrollSet.current = true;
       return;
     }
-    if (
-      isUnreadMessage(topMessageBeforeUpdate.current, channelLastRead.current)
-    ) {
+    if (isUnreadMessage(topMessageBeforeUpdate.current, channelLastRead.current)) {
       if (flatListRef.current) {
         flatListRef.current.scrollToEnd();
       }
@@ -439,8 +396,7 @@ const MessageListWithContext = <
         lastItem?.item?.created_at &&
         !lastItem.item.deleted_at &&
         typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !==
-          stickyHeaderDateRef.current.toDateString()
+        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current.toDateString()
       ) {
         stickyHeaderDateRef.current = lastItem.item.created_at;
         setStickyHeaderDate(lastItem.item.created_at);
@@ -471,11 +427,7 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (
-      !loading &&
-      channel &&
-      channel.countUnread() <= scrollToFirstUnreadThreshold
-    ) {
+    if (!loading && channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
       markRead();
     }
   }, [loading]);
@@ -504,8 +456,7 @@ const MessageListWithContext = <
         messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current ||
         (topMessageBeforeUpdate.current?.created_at &&
           topMessageAfterUpdate?.created_at &&
-          topMessageBeforeUpdate.current.created_at <
-            topMessageAfterUpdate.created_at)
+          topMessageBeforeUpdate.current.created_at < topMessageAfterUpdate.created_at)
       ) {
         channelResyncScrollSet.current = false;
         setScrollToBottomButtonVisible(false);
@@ -580,8 +531,7 @@ const MessageListWithContext = <
 
     const lastMessage = messageList?.[index + 1];
 
-    const showUnreadUnderlay =
-      !!isUnreadMessage(message, lastRead) && scrollToBottomButtonVisible;
+    const showUnreadUnderlay = !!isUnreadMessage(message, lastRead) && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator =
       showUnreadUnderlay && !isUnreadMessage(lastMessage, lastRead);
 
@@ -594,21 +544,16 @@ const MessageListWithContext = <
       );
     }
 
-    const wrapMessageInTheme =
-      client.userID === message.user?.id && !!myMessageTheme;
+    const wrapMessageInTheme = client.userID === message.user?.id && !!myMessageTheme;
     return wrapMessageInTheme ? (
       <>
         <ThemeProvider mergedStyle={modifiedTheme}>
           <Message
             goToMessage={goToMessage}
             groupStyles={
-              isMessageWithStylesReadByAndDateSeparator(message)
-                ? message.groupStyles
-                : []
+              isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
             }
-            lastReceivedId={
-              lastReceivedId === message.id ? lastReceivedId : undefined
-            }
+            lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
             message={message}
             onThreadSelect={onThreadSelect}
             showUnreadUnderlay={showUnreadUnderlay}
@@ -617,10 +562,9 @@ const MessageListWithContext = <
             threadList={threadList}
           />
         </ThemeProvider>
-        {isMessageWithStylesReadByAndDateSeparator(message) &&
-          message.dateSeparator && (
-            <InlineDateSeparator date={message.dateSeparator} />
-          )}
+        {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
+          <InlineDateSeparator date={message.dateSeparator} />
+        )}
         {/* Adding indicator below the messages, since the list is inverted */}
         {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
@@ -629,14 +573,10 @@ const MessageListWithContext = <
         <Message
           goToMessage={goToMessage}
           groupStyles={
-            isMessageWithStylesReadByAndDateSeparator(message)
-              ? message.groupStyles
-              : []
+            isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
           }
           lastReceivedId={
-            lastReceivedId === message.id || message.quoted_message_id
-              ? lastReceivedId
-              : undefined
+            lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
           }
           message={message}
           onThreadSelect={onThreadSelect}
@@ -645,10 +585,9 @@ const MessageListWithContext = <
           targetedMessage={targetedMessage === message.id}
           threadList={threadList}
         />
-        {isMessageWithStylesReadByAndDateSeparator(message) &&
-          message.dateSeparator && (
-            <InlineDateSeparator date={message.dateSeparator} />
-          )}
+        {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
+          <InlineDateSeparator date={message.dateSeparator} />
+        )}
         {/* Adding indicator below the messages, since the list is inverted */}
         {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
       </>
@@ -680,10 +619,7 @@ const MessageListWithContext = <
    */
   const maybeCallOnStartReached = (limit?: number) => {
     // If onStartReached has already been called for given data length, then ignore.
-    if (
-      messageList?.length &&
-      onStartReachedTracker.current[messageList.length]
-    ) {
+    if (messageList?.length && onStartReachedTracker.current[messageList.length]) {
       return;
     }
 
@@ -707,14 +643,10 @@ const MessageListWithContext = <
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
       onEndReachedInPromise.current.finally(() => {
-        onStartReachedInPromise.current = loadMoreRecent(limit)
-          .then(callback)
-          .catch(onError);
+        onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
       });
     } else {
-      onStartReachedInPromise.current = loadMoreRecent(limit)
-        .then(callback)
-        .catch(onError);
+      onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
     }
   };
 
@@ -725,10 +657,7 @@ const MessageListWithContext = <
    */
   const maybeCallOnEndReached = () => {
     // If onEndReached has already been called for given messageList length, then ignore.
-    if (
-      messageList?.length &&
-      onEndReachedTracker.current[messageList.length]
-    ) {
+    if (messageList?.length && onEndReachedTracker.current[messageList.length]) {
       return;
     }
 
@@ -751,18 +680,12 @@ const MessageListWithContext = <
     // If onStartReached is in progress, better to wait for it to finish for smooth UX
     if (onStartReachedInPromise.current) {
       onStartReachedInPromise.current.finally(() => {
-        onEndReachedInPromise.current = (threadList
-          ? loadMoreThread()
-          : loadMore()
-        )
+        onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
           .then(callback)
           .catch(onError);
       });
     } else {
-      onEndReachedInPromise.current = (threadList
-        ? loadMoreThread()
-        : loadMore()
-      )
+      onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
         .then(callback)
         .catch(onError);
     }
@@ -776,11 +699,7 @@ const MessageListWithContext = <
    *    |-> if channel is unread, call markRead().
    */
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
-    if (
-      !channel ||
-      !initialScrollSet.current ||
-      !channelResyncScrollSet.current
-    ) {
+    if (!channel || !initialScrollSet.current || !channelResyncScrollSet.current) {
       return;
     }
 
@@ -801,14 +720,10 @@ const MessageListWithContext = <
 
     // Show scrollToBottom button once scroll position goes beyond 300.
     const isScrollAtBottom = offset <= 300;
-    const showScrollToBottomButton =
-      !isScrollAtBottom || !channel?.state.isUpToDate;
+    const showScrollToBottomButton = !isScrollAtBottom || !channel?.state.isUpToDate;
 
     const shouldMarkRead =
-      !threadList &&
-      offset <= 0 &&
-      channel?.state.isUpToDate &&
-      channel.countUnread() > 0;
+      !threadList && offset <= 0 && channel?.state.isUpToDate && channel.countUnread() > 0;
 
     if (shouldMarkRead) {
       markRead();
@@ -890,9 +805,7 @@ const MessageListWithContext = <
   const imageString = messagesWithImages
     .map((message) =>
       message.attachments
-        ?.map(
-          (attachment) => attachment.image_url || attachment.thumb_url || '',
-        )
+        ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
         .join(),
     )
     .join();
@@ -906,9 +819,7 @@ const MessageListWithContext = <
   }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
 
   const stickyHeaderFormatDate =
-    stickyHeaderDate.getFullYear() === new Date().getFullYear()
-      ? 'MMM D'
-      : 'MMM D, YYYY';
+    stickyHeaderDate.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
   const tStickyHeaderDate = tDateTimeParser(stickyHeaderDate);
   const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
@@ -920,14 +831,10 @@ const MessageListWithContext = <
       closePicker();
     }
   };
-  const onScrollBeginDrag = () =>
-    !hasMoved && selectedPicker && setHasMoved(true);
-  const onScrollEndDrag = () =>
-    hasMoved && selectedPicker && setHasMoved(false);
+  const onScrollBeginDrag = () => !hasMoved && selectedPicker && setHasMoved(true);
+  const onScrollEndDrag = () => hasMoved && selectedPicker && setHasMoved(false);
 
-  const refCallback = (
-    ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>>,
-  ) => {
+  const refCallback = (ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
@@ -951,9 +858,7 @@ const MessageListWithContext = <
   }
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: white_snow }, container]}
-    >
+    <View style={[styles.container, { backgroundColor: white_snow }, container]}>
       <FlatList
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
@@ -991,13 +896,11 @@ const MessageListWithContext = <
               <DateHeader dateString={stickyHeaderDateToRender} />
             ) : null}
           </View>
-          {!disableTypingIndicator &&
-            TypingIndicator &&
-            typingEventsEnabled !== false && (
-              <TypingIndicatorContainer>
-                <TypingIndicator />
-              </TypingIndicatorContainer>
-            )}
+          {!disableTypingIndicator && TypingIndicator && typingEventsEnabled !== false && (
+            <TypingIndicatorContainer>
+              <TypingIndicator />
+            </TypingIndicatorContainer>
+          )}
           <ScrollToBottomButton
             onPress={goToNewMessages}
             showNotification={scrollToBottomButtonVisible}
@@ -1017,7 +920,7 @@ export type MessageListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageList = <
@@ -1027,15 +930,11 @@ export const MessageList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    closePicker,
-    selectedPicker,
-    setSelectedPicker,
-  } = useAttachmentPickerContext();
+  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
     disabled,
@@ -1069,25 +968,9 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay } = useOverlayContext();
-  const { loadMoreThread, thread } = useThreadContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { loadMoreThread, thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   return (

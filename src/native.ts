@@ -1,8 +1,4 @@
-import {
-  FlatList as DefaultFlatList,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
@@ -44,13 +40,7 @@ export type Asset = {
   width: number;
   id?: string;
 };
-type GetPhotos = ({
-  after,
-  first,
-}: {
-  first: number;
-  after?: string;
-}) =>
+type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
       endCursor: string;
@@ -60,9 +50,7 @@ type GetPhotos = ({
 export let getPhotos: GetPhotos = fail;
 
 type NetInfo = {
-  addEventListener: (
-    listener: (isConnected: boolean) => void,
-  ) => NetInfoSubscription | never;
+  addEventListener: (listener: (isConnected: boolean) => void) => NetInfoSubscription | never;
   fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
 };
 
@@ -73,11 +61,7 @@ export let NetInfo: NetInfo = {
   fetch: fail,
 };
 
-type PickDocument = ({
-  maxNumberOfFiles,
-}: {
-  maxNumberOfFiles?: number;
-}) =>
+type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
       docs?: {
@@ -110,9 +94,7 @@ type Photo =
       source: 'camera';
     })
   | { cancelled: true };
-type TakePhoto = (options: {
-  compressImageQuality?: number;
-}) => Promise<Photo> | never;
+type TakePhoto = (options: { compressImageQuality?: number }) => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 
 type HapticFeedbackMethod =

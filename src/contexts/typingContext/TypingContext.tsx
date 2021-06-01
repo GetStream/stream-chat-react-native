@@ -22,7 +22,7 @@ export type TypingContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
 };
@@ -36,14 +36,14 @@ export const TypingProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
   value: TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <TypingContext.Provider value={(value as unknown) as TypingContextValue}>
+  <TypingContext.Provider value={value as unknown as TypingContextValue}>
     {children}
   </TypingContext.Provider>
 );
@@ -55,17 +55,8 @@ export const useTypingContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(TypingContext) as unknown) as TypingContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(TypingContext) as unknown as TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if TypingContext
@@ -80,7 +71,7 @@ export const withTypingContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
@@ -91,8 +82,6 @@ export const withTypingContext = <
 
     return <Component {...(props as P)} {...typingContext} />;
   };
-  WithTypingContextComponent.displayName = `WithTypingContext${getDisplayName(
-    Component,
-  )}`;
+  WithTypingContextComponent.displayName = `WithTypingContext${getDisplayName(Component)}`;
   return WithTypingContextComponent;
 };

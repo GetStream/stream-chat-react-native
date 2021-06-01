@@ -89,9 +89,7 @@ describe('Attachment', () => {
       actions: [generateAttachmentAction(), generateAttachmentAction()],
       title_link: null,
     });
-    const { getByTestId } = render(
-      getAttachmentComponent({ actionHandler: () => {}, attachment }),
-    );
+    const { getByTestId } = render(getAttachmentComponent({ actionHandler: () => {}, attachment }));
 
     await waitFor(() => {
       expect(getByTestId('attachment-actions')).toBeTruthy();
@@ -108,9 +106,7 @@ describe('Attachment', () => {
       }),
     );
 
-    await waitFor(() =>
-      getByTestId(`attachment-actions-button-${action.name}`),
-    );
+    await waitFor(() => getByTestId(`attachment-actions-button-${action.name}`));
 
     expect(getByTestId('attachment-actions')).toContainElement(
       getByTestId(`attachment-actions-button-${action.name}`),

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  LayoutChangeEvent,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -76,7 +71,7 @@ export type MessageContentPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
@@ -129,7 +124,7 @@ const MessageContentWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -170,13 +165,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_red,
-        blue_alice,
-        grey_gainsboro,
-        grey_whisper,
-        transparent,
-      },
+      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -222,8 +211,7 @@ const MessageContentWithContext = <
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const noBorder =
-    (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+  const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
 
   if (message.deleted_at) {
     return (
@@ -247,8 +235,7 @@ const MessageContentWithContext = <
       ? transparent
       : grey_gainsboro;
 
-  const repliesCurveColor =
-    isMyMessage && !error ? backgroundColor : grey_whisper;
+  const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
 
   return (
     <TouchableOpacity
@@ -318,74 +305,63 @@ const MessageContentWithContext = <
             {
               backgroundColor,
               borderBottomLeftRadius:
-                (groupStyle === 'left_bottom' ||
-                  groupStyle === 'left_single') &&
+                (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
                 (!hasThreadReplies || threadList)
                   ? borderRadiusS
                   : borderRadiusL,
               borderBottomRightRadius:
-                (groupStyle === 'right_bottom' ||
-                  groupStyle === 'right_single') &&
+                (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
                 (!hasThreadReplies || threadList)
                   ? borderRadiusS
                   : borderRadiusL,
-              borderColor:
-                isMyMessage && !error ? backgroundColor : grey_whisper,
+              borderColor: isMyMessage && !error ? backgroundColor : grey_whisper,
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
           ]}
           testID='message-content-wrapper'
         >
-          {messageContentOrder.map(
-            (messageContentType, messageContentOrderIndex) => {
-              switch (messageContentType) {
-                case 'quoted_reply':
-                  return (
-                    message.quoted_message &&
-                    quotedRepliesEnabled && (
-                      <View
-                        key={`quoted_reply_${messageContentOrderIndex}`}
-                        style={[styles.replyContainer, replyContainer]}
-                      >
-                        <Reply
-                          styles={{ messageContainer: { maxWidth: vw(60) } }}
-                        />
-                      </View>
-                    )
-                  );
-                case 'attachments':
-                  return otherAttachments.map((attachment, attachmentIndex) => (
-                    <Attachment
-                      attachment={attachment}
-                      key={`${message.id}-${attachmentIndex}`}
-                    />
-                  ));
-                case 'files':
-                  return (
-                    <FileAttachmentGroup
-                      key={`file_attachment_group_${messageContentOrderIndex}`}
-                      messageId={message.id}
-                    />
-                  );
-                case 'gallery':
-                  return (
-                    <Gallery
-                      key={`gallery_${messageContentOrderIndex}`}
-                      preventPress={preventPress}
-                    />
-                  );
-                case 'text':
-                default:
-                  return otherAttachments.length &&
-                    otherAttachments[0].actions ? null : (
-                    <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-                      key={`message_text_container_${messageContentOrderIndex}`}
-                    />
-                  );
-              }
-            },
-          )}
+          {messageContentOrder.map((messageContentType, messageContentOrderIndex) => {
+            switch (messageContentType) {
+              case 'quoted_reply':
+                return (
+                  message.quoted_message &&
+                  quotedRepliesEnabled && (
+                    <View
+                      key={`quoted_reply_${messageContentOrderIndex}`}
+                      style={[styles.replyContainer, replyContainer]}
+                    >
+                      <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
+                    </View>
+                  )
+                );
+              case 'attachments':
+                return otherAttachments.map((attachment, attachmentIndex) => (
+                  <Attachment attachment={attachment} key={`${message.id}-${attachmentIndex}`} />
+                ));
+              case 'files':
+                return (
+                  <FileAttachmentGroup
+                    key={`file_attachment_group_${messageContentOrderIndex}`}
+                    messageId={message.id}
+                  />
+                );
+              case 'gallery':
+                return (
+                  <Gallery
+                    key={`gallery_${messageContentOrderIndex}`}
+                    preventPress={preventPress}
+                  />
+                );
+              case 'text':
+              default:
+                return otherAttachments.length && otherAttachments[0].actions ? null : (
+                  <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                    key={`message_text_container_${messageContentOrderIndex}`}
+                  />
+                );
+            }
+          })}
         </View>
         {error && (
           <View style={StyleSheet.absoluteFill}>
@@ -396,15 +372,9 @@ const MessageContentWithContext = <
         )}
       </View>
       {threadRepliesEnabled && (
-        <MessageReplies
-          noBorder={noBorder}
-          repliesCurveColor={repliesCurveColor}
-        />
+        <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
       )}
-      <MessageFooter
-        formattedDate={getDateText(formatDate)}
-        isDeleted={!!message.deleted_at}
-      />
+      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!message.deleted_at} />
     </TouchableOpacity>
   );
 };
@@ -416,7 +386,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -464,12 +434,10 @@ const areEqual = <
 
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
-    prevOtherAttachments?.[0]?.actions?.length ===
-      nextOtherAttachments?.[0]?.actions?.length;
+    prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
 
-  const membersEqual =
-    Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
 
   const groupStylesEqual =
@@ -500,13 +468,10 @@ const areEqual = <
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) &&
-    Array.isArray(nextMessage.latest_reactions)
-      ? prevMessage.latest_reactions.length ===
-          nextMessage.latest_reactions.length &&
+    Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length === nextMessage.latest_reactions.length &&
         prevMessage.latest_reactions.every(
-          ({ type }, index) =>
-            type === nextMessage.latest_reactions?.[index].type,
+          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
@@ -514,8 +479,7 @@ const areEqual = <
   const messageContentOrderEqual =
     prevMessageContentOrder.length === nextMessageContentOrder.length &&
     prevMessageContentOrder.every(
-      (messageContentType, index) =>
-        messageContentType === nextMessageContentOrder[index],
+      (messageContentType, index) => messageContentType === nextMessageContentOrder[index],
     );
   if (!messageContentOrderEqual) return false;
 
@@ -540,17 +504,11 @@ export type MessageContentProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
-  Omit<
-    MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'setMessageContentWidth'
-  >
+  Omit<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>
 > &
-  Pick<
-    MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'setMessageContentWidth'
-  >;
+  Pick<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>;
 
 /**
  * Child of MessageSimple that displays a message's content
@@ -562,7 +520,7 @@ export const MessageContent = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

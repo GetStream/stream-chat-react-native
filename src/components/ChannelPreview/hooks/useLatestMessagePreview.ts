@@ -7,12 +7,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type {
-  Channel,
-  ChannelState,
-  MessageResponse,
-  StreamChat,
-} from 'stream-chat';
+import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -32,7 +27,7 @@ type LatestMessage<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > =
   | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
   | MessageResponse<At, Ch, Co, Me, Re, Us>;
@@ -44,7 +39,7 @@ export type LatestMessagePreview<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   created_at: string | number | Date;
   messageObject: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined;
@@ -62,7 +57,7 @@ const getLatestMessageDisplayText = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
@@ -99,11 +94,7 @@ const getLatestMessageDisplayText = <
       { bold: boldOwner, text: ownerText },
       ...shortenedText.split('').reduce(
         (acc, cur, index) => {
-          if (
-            cur === '@' &&
-            mentionedUsers &&
-            regEx.test(shortenedText.substring(index))
-          ) {
+          if (cur === '@' && mentionedUsers && regEx.test(shortenedText.substring(index))) {
             acc.push({ bold: true, text: cur });
           } else if (mentionedUsers && regEx.test(acc[acc.length - 1].text)) {
             acc.push({ bold: false, text: cur });
@@ -141,7 +132,7 @@ const getLatestMessageDisplayDate = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
   tDateTimeParser: TDateTimeParser,
@@ -169,7 +160,7 @@ const getLatestMessageReadStatus = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
@@ -177,8 +168,7 @@ const getLatestMessageReadStatus = <
   readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
-  if (!message || currentUserId !== message.user?.id || readEvents === false)
-    return 0;
+  if (!message || currentUserId !== message.user?.id || readEvents === false) return 0;
 
   const readList = channel.state.read;
   if (currentUserId) {
@@ -205,7 +195,7 @@ const getLatestMessagePreview = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(params: {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
@@ -216,14 +206,7 @@ const getLatestMessagePreview = <
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
 }) => {
-  const {
-    channel,
-    client,
-    lastMessage,
-    readEvents,
-    t,
-    tDateTimeParser,
-  } = params;
+  const { channel, client, lastMessage, readEvents, t, tDateTimeParser } = params;
 
   const messages = channel.state.messages;
 
@@ -240,8 +223,7 @@ const getLatestMessagePreview = <
       status: 0,
     };
   }
-  const message =
-    lastMessage || messages.length ? messages[messages.length - 1] : undefined;
+  const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
@@ -265,7 +247,7 @@ export const useLatestMessagePreview = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   forceUpdate: number,

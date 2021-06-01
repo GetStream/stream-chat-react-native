@@ -64,10 +64,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelImagesScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'ChannelImagesScreen'
->;
+type ChannelImagesScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelImagesScreen'>;
 
 export type ChannelImagesScreenProps = {
   route: ChannelImagesScreenRouteProp;
@@ -78,20 +75,18 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { images, setImage, setImages } = useImageGalleryContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { images, setImage, setImages } =
+    useImageGalleryContext<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >();
   const { setBlurType, setOverlay } = useOverlayContext();
-  const { loading, loadMore, messages } = usePaginatedAttachments(
-    channel,
-    'image',
-  );
+  const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
     theme: {
       colors: { white },
@@ -105,30 +100,25 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   );
   const stickyHeaderDateRef = useRef('');
 
-  const updateStickyDate = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems?.length) {
-        const lastItem = viewableItems[0];
+  const updateStickyDate = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (viewableItems?.length) {
+      const lastItem = viewableItems[0];
 
-        const created_at = lastItem?.item?.created_at;
+      const created_at = lastItem?.item?.created_at;
 
-        if (
-          created_at &&
-          !lastItem.item.deleted_at &&
-          Dayjs(created_at).format('MMM YYYY') !== stickyHeaderDateRef.current
-        ) {
-          stickyHeaderDateRef.current = Dayjs(created_at).format('MMM YYYY');
-          const isCurrentYear =
-            new Date(created_at).getFullYear() === new Date().getFullYear();
-          setStickyHeaderDate(
-            isCurrentYear
-              ? Dayjs(created_at).format('MMM')
-              : Dayjs(created_at).format('MMM YYYY'),
-          );
-        }
+      if (
+        created_at &&
+        !lastItem.item.deleted_at &&
+        Dayjs(created_at).format('MMM YYYY') !== stickyHeaderDateRef.current
+      ) {
+        stickyHeaderDateRef.current = Dayjs(created_at).format('MMM YYYY');
+        const isCurrentYear = new Date(created_at).getFullYear() === new Date().getFullYear();
+        setStickyHeaderDate(
+          isCurrentYear ? Dayjs(created_at).format('MMM') : Dayjs(created_at).format('MMM YYYY'),
+        );
       }
-    },
-  );
+    }
+  });
 
   /**
    * Photos array created from all currently available
@@ -146,9 +136,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
       created_at: cur.created_at,
-      id: `photoId-${cur.id}-${
-        attachmentImage.image_url || attachmentImage.thumb_url
-      }`,
+      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
       messageId: cur.id,
       uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
     }));

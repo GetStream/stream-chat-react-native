@@ -50,31 +50,28 @@ function buildFullModuleMap(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(
-    moduleRoot,
-    ({ fileName, fullFileName, symbolic, external }) => {
-      if (symbolic)
-        return buildFullModuleMap(
-          resolvePath(fullFileName, 'node_modules'),
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-        );
+  listDirectories(moduleRoot, ({ fileName, fullFileName, symbolic, external }) => {
+    if (symbolic)
+      return buildFullModuleMap(
+        resolvePath(fullFileName, 'node_modules'),
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+      );
 
-      const moduleMap = external ? externalModuleMap : mainModuleMap,
-        moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
+    const moduleMap = external ? externalModuleMap : mainModuleMap,
+      moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
 
-      if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
-      else
-        return buildFullModuleMap(
-          fullFileName,
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-          fileName,
-        );
-    },
-  );
+    if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
+    else
+      return buildFullModuleMap(
+        fullFileName,
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+        fileName,
+      );
+  });
 }
 
 function buildModuleResolutionMap() {
@@ -87,11 +84,7 @@ function buildModuleResolutionMap() {
   return Object.assign({}, externalModuleMap, moduleMap);
 }
 
-function findAlternateRoots(
-  moduleRoot = baseModulePath,
-  alternateRoots = [],
-  _alreadyVisited,
-) {
+function findAlternateRoots(moduleRoot = baseModulePath, alternateRoots = [], _alreadyVisited) {
   const alreadyVisited = _alreadyVisited || {};
   if (alreadyVisited && alreadyVisited.hasOwnProperty(moduleRoot)) return;
 

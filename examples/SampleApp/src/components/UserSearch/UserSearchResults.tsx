@@ -9,13 +9,7 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import {
-  Avatar,
-  CheckSend,
-  Close,
-  useTheme,
-  vw,
-} from 'stream-chat-react-native';
+import { Avatar, CheckSend, Close, useTheme, vw } from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 
@@ -142,13 +136,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
       {groupedAlphabetically && sections.length > 0 && (
         <View style={styles.gradient}>
           <Svg height={24} style={styles.absolute} width={vw(100)}>
-            <Rect
-              fill='url(#gradient)'
-              height={24}
-              width={vw(100)}
-              x={0}
-              y={0}
-            />
+            <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
             <Defs>
               <LinearGradient
                 gradientUnits='userSpaceOnUse'
@@ -158,11 +146,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 y1={0}
                 y2={24}
               >
-                <Stop
-                  offset={1}
-                  stopColor={bg_gradient_start}
-                  stopOpacity={1}
-                />
+                <Stop offset={1} stopColor={bg_gradient_start} stopOpacity={1} />
                 <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
               </LinearGradient>
             </Defs>

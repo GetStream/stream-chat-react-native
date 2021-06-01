@@ -28,11 +28,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import {
-  isCommandTrigger,
-  isEmojiTrigger,
-  isMentionTrigger,
-} from '../../utils/utils';
+import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 
 import type { TextInputProps } from 'react-native';
 
@@ -63,8 +59,7 @@ const styles = StyleSheet.create({
 const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
   startOfTokenPosition + token.length;
 
-const isCommand = (text: string) =>
-  text[0] === '/' && text.split(' ').length <= 1;
+const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
 type AutoCompleteInputPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -73,7 +68,7 @@ type AutoCompleteInputPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -101,7 +96,7 @@ export type AutoCompleteInputProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 const AutoCompleteInputWithContext = <
@@ -111,7 +106,7 @@ const AutoCompleteInputWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -221,23 +216,19 @@ const AutoCompleteInputWithContext = <
     } else {
       const triggerSetting = triggerSettings[trigger];
       if (triggerSetting) {
-        await triggerSetting.dataProvider(
-          query as Emoji['name'],
-          text,
-          (data, queryCallback) => {
-            if (query !== queryCallback) {
-              return;
-            }
+        await triggerSetting.dataProvider(query as Emoji['name'], text, (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
 
-            updateSuggestionsContext(
-              {
-                data,
-                onSelect: (item) => onSelectSuggestion({ item, trigger }),
-              },
-              <EmojisHeader title={query} />,
-            );
-          },
-        );
+          updateSuggestionsContext(
+            {
+              data,
+              onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            },
+            <EmojisHeader title={query} />,
+          );
+        });
       }
     }
   };
@@ -290,15 +281,9 @@ const AutoCompleteInputWithContext = <
       new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
     );
 
-    const newCaretPosition = computeCaretPosition(
-      newTokenString,
-      startOfTokenPosition,
-    );
+    const newCaretPosition = computeCaretPosition(newTokenString, startOfTokenPosition);
 
-    const modifiedText = `${textToModify.substring(
-      0,
-      startOfTokenPosition,
-    )}${newTokenString}`;
+    const modifiedText = `${textToModify.substring(0, startOfTokenPosition)}${newTokenString}`;
 
     stopTracking();
 
@@ -335,17 +320,10 @@ const AutoCompleteInputWithContext = <
     return true;
   };
 
-  const handleMentions = ({
-    tokenMatch,
-  }: {
-    tokenMatch: RegExpMatchArray | null;
-  }) => {
+  const handleMentions = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
     const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleMentionsTrigger =
-      (lastToken &&
-        Object.keys(triggerSettings).find(
-          (trigger) => trigger === lastToken[0],
-        )) ||
+      (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
       null;
 
     /*
@@ -371,17 +349,10 @@ const AutoCompleteInputWithContext = <
     updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleEmojis = ({
-    tokenMatch,
-  }: {
-    tokenMatch: RegExpMatchArray | null;
-  }) => {
+  const handleEmojis = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
     const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleEmojisTrigger =
-      (lastToken &&
-        Object.keys(triggerSettings).find(
-          (trigger) => trigger === lastToken[0],
-        )) ||
+      (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
       null;
 
     /*
@@ -485,7 +456,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -517,7 +488,7 @@ export const AutoCompleteInput = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -534,11 +505,7 @@ export const AutoCompleteInput = <
     text,
     triggerSettings,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    closeSuggestions,
-    openSuggestions,
-    updateSuggestions,
-  } = useSuggestionsContext<Co, Us>();
+  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Co, Us>();
   const { t } = useTranslationContext();
 
   return (

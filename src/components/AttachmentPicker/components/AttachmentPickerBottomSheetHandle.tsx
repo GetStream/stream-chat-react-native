@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
 });
 
 export const AttachmentPickerBottomSheetHandle: React.FC<{
-  animatedPositionIndex: Animated.SharedValue<number>;
-}> = ({ animatedPositionIndex }) => {
+  animatedIndex: Animated.SharedValue<number>;
+}> = ({ animatedIndex }) => {
   const {
     theme: {
       colors: { black, white },
@@ -27,20 +27,12 @@ export const AttachmentPickerBottomSheetHandle: React.FC<{
   } = useTheme();
 
   const style = useAnimatedStyle<ViewStyle>(() => ({
-    borderTopLeftRadius:
-      animatedPositionIndex.value > 0
-        ? 16 - animatedPositionIndex.value * 16
-        : 16,
-    borderTopRightRadius:
-      animatedPositionIndex.value > 0
-        ? 16 - animatedPositionIndex.value * 16
-        : 16,
+    borderTopLeftRadius: animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
+    borderTopRightRadius: animatedIndex.value > 0 ? 16 - animatedIndex.value * 16 : 16,
   }));
 
   return (
-    <Animated.View
-      style={[styles.container, { backgroundColor: white }, style]}
-    >
+    <Animated.View style={[styles.container, { backgroundColor: white }, style]}>
       <View style={[styles.handle, { backgroundColor: `${black}1A` }]} />
       {/* ^ 1A = 10% opacity */}
     </Animated.View>

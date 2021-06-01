@@ -1,13 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-  within,
-} from '@testing-library/react-native';
+import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 
 import { ChannelList } from '../ChannelList';
 
@@ -39,11 +32,7 @@ import { getTestClientWithUser } from '../../../mock-builders/mock';
  * to debug then.
  */
 const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
-  <View
-    accessibilityRole='list-item'
-    onPress={setActiveChannel}
-    testID={channel.id}
-  >
+  <View accessibilityRole='list-item' onPress={setActiveChannel} testID={channel.id}>
     <Text>{channel.data.name}</Text>
     <Text>{channel.state.messages[0]?.text}</Text>
   </View>
@@ -106,9 +95,7 @@ describe('ChannelList', () => {
       </Chat>,
     );
 
-    await waitFor(() =>
-      expect(getByTestId(testChannel1.channel.id)).toBeTruthy(),
-    );
+    await waitFor(() => expect(getByTestId(testChannel1.channel.id)).toBeTruthy());
   });
 
   it('should re-query channels when filters change', async () => {
@@ -165,16 +152,12 @@ describe('ChannelList', () => {
         const newMessage = generateMessage({
           user: generateUser(),
         });
-        act(() =>
-          dispatchMessageNewEvent(chatClient, newMessage, testChannel3.channel),
-        );
+        act(() => dispatchMessageNewEvent(chatClient, newMessage, testChannel3.channel));
         return newMessage;
       };
 
       beforeEach(() => {
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1, testChannel2, testChannel3]),
-        ]);
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
       });
 
       it('should move channel to top of the list by default', async () => {
@@ -245,9 +228,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchNotificationMessageNewEvent(chatClient, testChannel3.channel),
-        );
+        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel3.channel));
 
         await waitFor(() => {
           expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
@@ -256,9 +237,7 @@ describe('ChannelList', () => {
         const items = getAllByRole('list-item');
 
         await waitFor(() => {
-          expect(
-            within(items[0]).getByTestId(testChannel3.channel.id),
-          ).toBeTruthy();
+          expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
       });
 
@@ -274,9 +253,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel),
-        );
+        act(() => dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel));
 
         await waitFor(() => {
           expect(onMessageNew).toHaveBeenCalledTimes(1);
@@ -303,12 +280,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchNotificationAddedToChannelEvent(
-            chatClient,
-            testChannel3.channel,
-          ),
-        );
+        act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
 
         await waitFor(() => {
           expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
@@ -317,9 +289,7 @@ describe('ChannelList', () => {
         const items = getAllByRole('list-item');
 
         await waitFor(() => {
-          expect(
-            within(items[0]).getByTestId(testChannel3.channel.id),
-          ).toBeTruthy();
+          expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
       });
 
@@ -335,12 +305,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchNotificationAddedToChannelEvent(
-            chatClient,
-            testChannel3.channel,
-          ),
-        );
+        act(() => dispatchNotificationAddedToChannelEvent(chatClient, testChannel3.channel));
 
         await waitFor(() => {
           expect(onAddedToChannel).toHaveBeenCalledTimes(1);
@@ -350,9 +315,7 @@ describe('ChannelList', () => {
 
     describe('notification.removed_from_channel', () => {
       beforeEach(() => {
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1, testChannel2, testChannel3]),
-        ]);
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2, testChannel3])]);
       });
 
       it('should remove the channel from list by default', async () => {
@@ -371,12 +334,7 @@ describe('ChannelList', () => {
           expect(items).toHaveLength(3);
         });
 
-        act(() =>
-          dispatchNotificationRemovedFromChannel(
-            chatClient,
-            testChannel3.channel,
-          ),
-        );
+        act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
 
         const newItems = getAllByRole('list-item');
         await waitFor(() => {
@@ -388,10 +346,7 @@ describe('ChannelList', () => {
         const onRemovedFromChannel = jest.fn();
         const { getByTestId } = render(
           <Chat client={chatClient}>
-            <ChannelList
-              {...props}
-              onRemovedFromChannel={onRemovedFromChannel}
-            />
+            <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
           </Chat>,
         );
 
@@ -399,12 +354,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchNotificationRemovedFromChannel(
-            chatClient,
-            testChannel3.channel,
-          ),
-        );
+        act(() => dispatchNotificationRemovedFromChannel(chatClient, testChannel3.channel));
 
         await waitFor(() => {
           expect(onRemovedFromChannel).toHaveBeenCalledTimes(1);
@@ -414,9 +364,7 @@ describe('ChannelList', () => {
 
     describe('channel.updated', () => {
       beforeEach(() => {
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1, testChannel2]),
-        ]);
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2])]);
       });
 
       it('should update a channel in the list by default', async () => {
@@ -469,9 +417,7 @@ describe('ChannelList', () => {
 
     describe('channel.deleted', () => {
       beforeEach(() => {
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1, testChannel2]),
-        ]);
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2])]);
       });
 
       it('should remove a channel from the list by default', async () => {
@@ -490,9 +436,7 @@ describe('ChannelList', () => {
           expect(items).toHaveLength(2);
         });
 
-        act(() =>
-          dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
-        );
+        act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
 
         const newItems = getAllByRole('list-item');
         await waitFor(() => {
@@ -512,9 +456,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
-        );
+        act(() => dispatchChannelDeletedEvent(chatClient, testChannel2.channel));
 
         await waitFor(() => {
           expect(onChannelDeleted).toHaveBeenCalledTimes(1);
@@ -524,9 +466,7 @@ describe('ChannelList', () => {
 
     describe('channel.hidden', () => {
       beforeEach(() => {
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1, testChannel2]),
-        ]);
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1, testChannel2])]);
       });
 
       it('should hide a channel from the list by default', async () => {
@@ -591,10 +531,7 @@ describe('ChannelList', () => {
         act(() => dispatchConnectionRecoveredEvent(chatClient));
 
         await waitFor(() => {
-          expect(recoverSpy).toHaveBeenCalledWith(
-            'connection.recovered',
-            expect.any(Function),
-          );
+          expect(recoverSpy).toHaveBeenCalledWith('connection.recovered', expect.any(Function));
         });
       });
     });
@@ -613,9 +550,7 @@ describe('ChannelList', () => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
 
-        act(() =>
-          dispatchChannelTruncatedEvent(chatClient, testChannel1.channel),
-        );
+        act(() => dispatchChannelTruncatedEvent(chatClient, testChannel1.channel));
 
         await waitFor(() => {
           expect(onChannelTruncated).toHaveBeenCalledTimes(1);
@@ -648,10 +583,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(updateSpy).toHaveBeenCalledWith(
-            'user.updated',
-            expect.any(Function),
-          );
+          expect(updateSpy).toHaveBeenCalledWith('user.updated', expect.any(Function));
         });
       });
     });
@@ -681,10 +613,7 @@ describe('ChannelList', () => {
         );
 
         await waitFor(() => {
-          expect(updateSpy).toHaveBeenCalledWith(
-            'user.presence.changed',
-            expect.any(Function),
-          );
+          expect(updateSpy).toHaveBeenCalledWith('user.presence.changed', expect.any(Function));
         });
       });
     });

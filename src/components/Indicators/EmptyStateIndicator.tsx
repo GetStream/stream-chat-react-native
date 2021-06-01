@@ -29,9 +29,7 @@ export type EmptyStateProps = {
   listType?: 'channel' | 'message' | 'default';
 };
 
-export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
-  listType,
-}) => {
+export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => {
   const {
     theme: {
       colors: { black, grey, grey_gainsboro },

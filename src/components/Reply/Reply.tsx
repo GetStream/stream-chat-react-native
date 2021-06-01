@@ -66,15 +66,9 @@ type ReplyPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'quotedMessage'
-> &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'FileAttachmentIcon' | 'MessageAvatar'
-  > &
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'quotedMessage'> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'FileAttachmentIcon' | 'MessageAvatar'> &
   Pick<TranslationContextValue, 't'> & {
     attachmentSize?: number;
     styles?: Partial<{
@@ -93,7 +87,7 @@ const ReplyWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -144,33 +138,19 @@ const ReplyWithContext = <
     !error &&
     lastAttachment &&
     messageType !== 'file' &&
-    (lastAttachment.image_url ||
-      lastAttachment.thumb_url ||
-      lastAttachment.og_scrape_url);
+    (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
-  const onlyEmojis =
-    !lastAttachment &&
-    !!quotedMessage.text &&
-    emojiRegex.test(quotedMessage.text);
+  const onlyEmojis = !lastAttachment && !!quotedMessage.text && emojiRegex.test(quotedMessage.text);
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      <MessageAvatar
-        alignment={'left'}
-        lastGroupMessage
-        message={quotedMessage}
-        size={24}
-      />
+      <MessageAvatar alignment={'left'} lastGroupMessage message={quotedMessage} size={24} />
       <View
         style={[
           styles.messageContainer,
           {
             backgroundColor:
-              messageType === 'other'
-                ? blue_alice
-                : messageType === 'giphy'
-                ? transparent
-                : white,
+              messageType === 'other' ? blue_alice : messageType === 'giphy' ? transparent : white,
             borderColor: border,
             borderWidth: messageType === 'other' ? 0 : 1,
           },
@@ -187,10 +167,7 @@ const ReplyWithContext = <
                 stylesProp.fileAttachmentContainer,
               ]}
             >
-              <FileAttachmentIcon
-                mimeType={lastAttachment.mime_type}
-                size={attachmentSize}
-              />
+              <FileAttachmentIcon mimeType={lastAttachment.mime_type} size={attachmentSize} />
             </View>
           ) : hasImage ? (
             <Image
@@ -201,11 +178,7 @@ const ReplyWithContext = <
                   lastAttachment.thumb_url ||
                   lastAttachment.og_scrape_url,
               }}
-              style={[
-                styles.imageAttachment,
-                imageAttachment,
-                stylesProp.imageAttachment,
-              ]}
+              style={[styles.imageAttachment, imageAttachment, stylesProp.imageAttachment]}
             />
           ) : null
         ) : null}
@@ -265,7 +238,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -285,10 +258,7 @@ const areEqual = <
   return true;
 };
 
-const MemoizedReply = React.memo(
-  ReplyWithContext,
-  areEqual,
-) as typeof ReplyWithContext;
+const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
 export type ReplyProps<
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -297,7 +267,7 @@ export type ReplyProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -310,38 +280,20 @@ export const Reply = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ReplyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const {
-    FileAttachmentIcon = FileIconDefault,
-    MessageAvatar = MessageAvatarDefault,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { editing, quotedMessage } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { editing, quotedMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const quotedEditingMessage = (typeof editing !== 'boolean'
-    ? editing?.quoted_message || false
-    : false) as MessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['quotedMessage'];
+  const quotedEditingMessage = (
+    typeof editing !== 'boolean' ? editing?.quoted_message || false : false
+  ) as MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['quotedMessage'];
 
   const { t } = useTranslationContext();
 

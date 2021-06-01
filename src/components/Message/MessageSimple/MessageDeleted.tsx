@@ -59,11 +59,8 @@ type MessageDeletedPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'message'
-> &
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'> &
   MessageDeletedComponentProps;
 
@@ -74,19 +71,12 @@ const MessageDeletedWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    formattedDate,
-    groupStyle,
-    message,
-    MessageFooter,
-    noBorder,
-    onLayout,
-  } = props;
+  const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout } =
+    props;
 
   const {
     theme: {
@@ -147,7 +137,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -192,13 +182,11 @@ export type MessageDeletedProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = MessageDeletedComponentProps & {
   alignment?: Alignment;
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  MessageFooter?: React.ComponentType<
-    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageFooter?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
 };
 
 export const MessageDeleted = <
@@ -208,19 +196,11 @@ export const MessageDeleted = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, message } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { alignment, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 

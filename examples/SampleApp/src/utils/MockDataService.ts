@@ -94,8 +94,7 @@ const messageSearchByImageAttachmentType = () => {
     },
     {
       id: generateRandomId(),
-      image_url:
-        'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
+      image_url: 'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
       type: 'image',
     },
     {

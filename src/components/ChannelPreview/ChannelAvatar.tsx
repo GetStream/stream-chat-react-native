@@ -26,7 +26,7 @@ export type ChannelAvatarProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
 
 /**
@@ -39,7 +39,7 @@ export const ChannelAvatar = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -49,13 +49,7 @@ export const ChannelAvatar = <
   const displayPresence = useChannelPreviewDisplayPresence(channel);
 
   if (displayAvatar.images) {
-    return (
-      <GroupAvatar
-        images={displayAvatar.images}
-        names={displayAvatar.names}
-        size={40}
-      />
-    );
+    return <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />;
   }
 
   return (

@@ -33,15 +33,11 @@ export const CommandsHeader: React.FC = () => {
   return (
     <View style={[styles.container, container]}>
       <Lightning pathFill={accent_blue} />
-      <Text
-        style={[styles.title, { color: grey }, title]}
-        testID='commands-header-title'
-      >
+      <Text style={[styles.title, { color: grey }, title]} testID='commands-header-title'>
         {t('Instant Commands')}
       </Text>
     </View>
   );
 };
 
-CommandsHeader.displayName =
-  'CommandsHeader{messageInput{suggestions{commandsHeader}}}';
+CommandsHeader.displayName = 'CommandsHeader{messageInput{suggestions{commandsHeader}}}';

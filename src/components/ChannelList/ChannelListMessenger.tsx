@@ -37,7 +37,7 @@ export type ChannelListMessengerPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Omit<
   ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'hasNextPage'
@@ -61,16 +61,11 @@ const StatusIndicator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
   const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    error,
-    HeaderErrorIndicator,
-    HeaderNetworkDownIndicator,
-    loadingChannels,
-    refreshList,
-  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
+    useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   if (loadingChannels) return null;
 
@@ -97,7 +92,7 @@ const renderItem = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   item,
 }: {
@@ -111,7 +106,7 @@ const keyExtractor = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   item: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => item.cid;
@@ -123,7 +118,7 @@ const ChannelListMessengerWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -204,16 +199,13 @@ const ChannelListMessengerWithContext = <
             <EmptyStateIndicator listType='channel' />
           )
         }
-        ListFooterComponent={
-          loadingNextPage ? <FooterLoadingIndicator /> : undefined
-        }
+        ListFooterComponent={loadingNextPage ? <FooterLoadingIndicator /> : undefined}
         ListHeaderComponent={ListFooterComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
+        // @ts-expect-error waiting for this merged PR to be released https://github.com/software-mansion/react-native-gesture-handler/pull/1394
         ref={setFlatListRef}
-        refreshControl={
-          <RefreshControl onRefresh={refreshList} refreshing={refreshing} />
-        }
+        refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}
         style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
         testID='channel-list-messenger'
@@ -231,7 +223,7 @@ export type ChannelListMessengerProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -247,7 +239,7 @@ export const ChannelListMessenger = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

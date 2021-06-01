@@ -8,18 +8,12 @@ import { Channel } from '../Channel';
 import { Attachment } from '../../Attachment/Attachment';
 import { Chat } from '../../Chat/Chat';
 
-import {
-  ChannelContext,
-  ChannelProvider,
-} from '../../../contexts/channelContext/ChannelContext';
+import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
-import {
-  ThreadContext,
-  ThreadProvider,
-} from '../../../contexts/threadContext/ThreadContext';
+import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { generateChannel } from '../../../mock-builders/generator/channel';
@@ -51,11 +45,7 @@ let channel;
 const user = generateUser({ id: 'id', name: 'name' });
 const messages = [generateMessage({ user })];
 
-const renderComponent = (
-  props = {},
-  callback = () => {},
-  context = ChannelContext,
-) =>
+const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
   render(
     <Chat client={chatClient}>
       <Channel {...props}>
@@ -98,9 +88,7 @@ describe('Channel', () => {
 
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
-    jest
-      .spyOn(channel, 'watch')
-      .mockImplementationOnce(() => Promise.reject(watchError));
+    jest.spyOn(channel, 'watch').mockImplementationOnce(() => Promise.reject(watchError));
 
     const { getByTestId } = renderComponent({ channel });
 
@@ -121,10 +109,7 @@ describe('Channel', () => {
     renderComponent({ channel });
 
     await waitFor(() =>
-      expect(clientOnSpy).toHaveBeenCalledWith(
-        'connection.recovered',
-        expect.any(Function),
-      ),
+      expect(clientOnSpy).toHaveBeenCalledWith('connection.recovered', expect.any(Function)),
     );
   });
 
@@ -132,16 +117,12 @@ describe('Channel', () => {
     const channelOnSpy = jest.spyOn(channel, 'on');
     renderComponent({ channel });
 
-    await waitFor(() =>
-      expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)),
-    );
+    await waitFor(() => expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)));
   });
 
   it('should mark a channel as read if the user inits a channel with unread messages', async () => {
     const watchSpy = jest.spyOn(channel, 'watch');
-    const countUnreadSpy = jest
-      .spyOn(channel, 'countUnread')
-      .mockImplementationOnce(() => 1);
+    const countUnreadSpy = jest.spyOn(channel, 'countUnread').mockImplementationOnce(() => 1);
     const markReadSpy = jest.spyOn(channel, 'markRead');
 
     renderComponent({ channel });
@@ -181,9 +162,7 @@ describe('Channel', () => {
       },
       ThreadContext,
     );
-    await waitFor(() =>
-      expect(hasThread).toHaveBeenCalledWith(threadMessage.id),
-    );
+    await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
 
   const queryChannelWithNewMessages = (newMessages) =>
@@ -230,9 +209,7 @@ describe('Channel', () => {
       MessagesContext,
     );
 
-    await waitFor(() =>
-      expect(clientUpdateMessageSpy).toHaveBeenCalledWith(updatedMessage),
-    );
+    await waitFor(() => expect(clientUpdateMessageSpy).toHaveBeenCalledWith(updatedMessage));
   });
 
   it('should use doUpdateMessageRequest for the editMessage callback if provided', async () => {
@@ -246,10 +223,7 @@ describe('Channel', () => {
     );
 
     await waitFor(() =>
-      expect(doUpdateMessageRequest).toHaveBeenCalledWith(
-        channel.cid,
-        messages[0],
-      ),
+      expect(doUpdateMessageRequest).toHaveBeenCalledWith(channel.cid, messages[0]),
     );
   });
 

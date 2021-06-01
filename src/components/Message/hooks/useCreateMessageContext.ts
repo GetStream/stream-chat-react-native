@@ -21,7 +21,7 @@ export const useCreateMessageContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   actionsEnabled,
   alignment,
@@ -62,30 +62,17 @@ export const useCreateMessageContext = <
   threadList,
 }: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const groupStylesLength = groupStyles.length;
-  const reactionsValue = reactions
-    .map(({ own, type }) => `${own}${type}`)
-    .join();
-  const latestReactions = message.latest_reactions
-    ? message.latest_reactions
-    : undefined;
-  const readBy =
-    isMessageWithStylesReadByAndDateSeparator(message) && message.readBy;
-  const messageValue = `${
-    latestReactions ? latestReactions.map(({ type }) => type).join() : ''
-  }${message.updated_at}${message.deleted_at}${readBy}${message.status}${
-    message.type
-  }${message.text}${message.reply_count}`;
+  const reactionsValue = reactions.map(({ own, type }) => `${own}${type}`).join();
+  const latestReactions = message.latest_reactions ? message.latest_reactions : undefined;
+  const readBy = isMessageWithStylesReadByAndDateSeparator(message) && message.readBy;
+  const messageValue = `${latestReactions ? latestReactions.map(({ type }) => type).join() : ''}${
+    message.updated_at
+  }${message.deleted_at}${readBy}${message.status}${message.type}${message.text}${
+    message.reply_count
+  }`;
   const membersValue = JSON.stringify(members);
 
-  const messageContext: MessageContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const messageContext: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       actionsEnabled,
       alignment,

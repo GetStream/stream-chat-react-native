@@ -1,10 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {
-  RouteProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Channel,
@@ -12,6 +8,7 @@ import {
   MessageInput,
   MessageList,
   ThreadContextValue,
+  useAttachmentPickerContext,
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
@@ -45,10 +42,7 @@ export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
   'ChannelScreen'
 >;
-export type ChannelScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'ChannelScreen'
->;
+export type ChannelScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelScreen'>;
 export type ChannelScreenProps = {
   navigation: ChannelScreenNavigationProp;
   route: ChannelScreenRouteProp;
@@ -67,6 +61,7 @@ export type ChannelHeaderProps = {
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
+  const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
   const { isOnline } = useChatContext();
@@ -86,6 +81,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
+            closePicker();
             if (isOneOnOneConversation) {
               navigation.navigate('OneOnOneChannelDetailScreen', {
                 channel,
@@ -123,8 +119,23 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<
-    | StreamChatChannel<
+  const [channel, setChannel] =
+    useState<
+      | StreamChatChannel<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalReactionType,
+          LocalUserType
+        >
+      | undefined
+    >(channelFromProp);
+
+  const [selectedThread, setSelectedThread] =
+    useState<
+      ThreadContextValue<
         LocalAttachmentType,
         LocalChannelType,
         LocalCommandType,
@@ -132,21 +143,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         LocalMessageType,
         LocalReactionType,
         LocalUserType
-      >
-    | undefined
-  >(channelFromProp);
-
-  const [selectedThread, setSelectedThread] = useState<
-    ThreadContextValue<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >['thread']
-  >();
+      >['thread']
+    >();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -170,9 +168,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View
-      style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}
-    >
+    <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
       <Channel
         channel={channel}
         disableTypingIndicator

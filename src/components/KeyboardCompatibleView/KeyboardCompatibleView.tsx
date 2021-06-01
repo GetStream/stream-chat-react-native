@@ -60,8 +60,7 @@ export class KeyboardCompatibleView extends React.Component<
       return 0;
     }
 
-    const keyboardY =
-      keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
+    const keyboardY = keyboardFrame.screenY - (this.props.keyboardVerticalOffset ?? 0);
     const relativeHeight = frame.y + frame.height - keyboardY;
 
     /**
@@ -70,11 +69,8 @@ export class KeyboardCompatibleView extends React.Component<
      * instead of 0 when closed.
      */
     if (Platform.OS === 'android') {
-      const barHeights =
-        Dimensions.get('screen').height - Dimensions.get('window').height;
-      if (
-        relativeHeight <= Math.max(barHeights, StatusBar.currentHeight ?? 0)
-      ) {
+      const barHeights = Dimensions.get('screen').height - Dimensions.get('window').height;
+      if (relativeHeight <= Math.max(barHeights, StatusBar.currentHeight ?? 0)) {
         return 0;
       }
     }
@@ -126,10 +122,7 @@ export class KeyboardCompatibleView extends React.Component<
   };
 
   _handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (
-      this.state.appState.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       this.setKeyboardListeners();
     }
 
@@ -195,14 +188,7 @@ export class KeyboardCompatibleView extends React.Component<
   }
 
   render() {
-    const {
-      behavior,
-      children,
-      contentContainerStyle,
-      enabled,
-      style,
-      ...props
-    } = this.props;
+    const { behavior, children, contentContainerStyle, enabled, style, ...props } = this.props;
     const bottomHeight = enabled ? this.state.bottom : 0;
     switch (behavior) {
       case 'height':
@@ -234,12 +220,7 @@ export class KeyboardCompatibleView extends React.Component<
       case 'position':
         return (
           <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
-            <View
-              onLayout={this._onLayout}
-              ref={this.viewRef}
-              style={style}
-              {...props}
-            >
+            <View onLayout={this._onLayout} ref={this.viewRef} style={style} {...props}>
               <View
                 style={StyleSheet.compose(contentContainerStyle, {
                   bottom: bottomHeight,
@@ -268,12 +249,7 @@ export class KeyboardCompatibleView extends React.Component<
       default:
         return (
           <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
-            <View
-              onLayout={this._onLayout}
-              ref={this.viewRef}
-              style={style}
-              {...props}
-            >
+            <View onLayout={this._onLayout} ref={this.viewRef} style={style} {...props}>
               {children}
             </View>
           </KeyboardProvider>

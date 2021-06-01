@@ -14,13 +14,7 @@ type Props = {
 };
 
 export const LoadingDots: React.FC<Props> = (props) => {
-  const {
-    diameter = 4,
-    duration = 1500,
-    numberOfDots = 3,
-    spacing: spacingProp,
-    style,
-  } = props;
+  const { diameter = 4, duration = 1500, numberOfDots = 3, spacing: spacingProp, style } = props;
 
   const {
     theme: {

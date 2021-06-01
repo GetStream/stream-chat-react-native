@@ -63,12 +63,7 @@ export type MessagesConfig = {
   threadRepliesEnabled?: boolean;
 };
 
-export type MessageContentType =
-  | 'attachments'
-  | 'files'
-  | 'gallery'
-  | 'quoted_reply'
-  | 'text';
+export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -77,7 +72,7 @@ export type MessagesContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = MessagesConfig & {
   /**
    * UI component for Attachment.
@@ -88,9 +83,7 @@ export type MessagesContextValue<
    * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx)
    */
-  AttachmentActions: React.ComponentType<
-    AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  AttachmentActions: React.ComponentType<AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx)
@@ -107,16 +100,12 @@ export type MessagesContextValue<
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)
    */
-  FileAttachment: React.ComponentType<
-    FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  FileAttachment: React.ComponentType<FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx)
    */
-  FileAttachmentGroup: React.ComponentType<
-    FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
@@ -152,41 +141,29 @@ export type MessagesContextValue<
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
-  MessageAvatar: React.ComponentType<
-    MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageAvatar: React.ComponentType<MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageContent
    * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx)
    */
-  MessageContent: React.ComponentType<
-    MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageContent: React.ComponentType<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageDeleted.tsx)
    */
-  MessageDeleted: React.ComponentType<
-    MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageDeleted: React.ComponentType<MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom message footer component
    */
-  MessageFooter: React.ComponentType<
-    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  MessageList: React.ComponentType<
-    MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageFooter: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageList: React.ComponentType<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)
    */
-  MessageReplies: React.ComponentType<
-    MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageReplies: React.ComponentType<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI Component for MessageRepliesAvatars
    * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageRepliesAvatars.tsx)
@@ -198,36 +175,26 @@ export type MessagesContextValue<
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
-  MessageSimple: React.ComponentType<
-    MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageSimple: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageStatus (delivered/read)
    * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageStatus.tsx)
    */
-  MessageStatus: React.ComponentType<
-    MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageStatus: React.ComponentType<MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageSystem
    * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
    */
-  MessageSystem: React.ComponentType<
-    MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageSystem: React.ComponentType<MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for OverlayReactionList
    */
-  OverlayReactionList: React.ComponentType<
-    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  OverlayReactionList: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx)
    */
-  ReactionList: React.ComponentType<
-    ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  ReactionList: React.ComponentType<ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
@@ -237,18 +204,14 @@ export type MessagesContextValue<
   /**
    * Override the api request for retry message functionality.
    */
-  retrySendMessage: (
-    message: MessageResponse<At, Ch, Co, Me, Re, Us>,
-  ) => Promise<void>;
+  retrySendMessage: (message: MessageResponse<At, Ch, Co, Me, Re, Us>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
    * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  setQuotedMessageState: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
+  setQuotedMessageState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
@@ -265,15 +228,7 @@ export type MessagesContextValue<
     extraState?: {
       commands?: SuggestionCommand<Co>[];
       messageInput?: string;
-      threadMessages?: ChannelState<
-        At,
-        Ch,
-        Co,
-        Ev,
-        Me,
-        Re,
-        Us
-      >['threads'][string];
+      threadMessages?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
     },
   ) => void;
   /**
@@ -297,9 +252,7 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  blockUser?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  blockUser?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
@@ -320,34 +273,26 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  copyMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  copyMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the delete message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  deleteMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  deleteMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   disableTypingIndicator?: boolean;
   /**
    * Full override of the edit message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  editMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  editMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the flag message button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  flagMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  flagMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
@@ -358,44 +303,28 @@ export type MessagesContextValue<
    * Optional function to custom format the message date
    */
   formatDate?: (date: TDateTimeParserInput) => string;
-  handleBlock?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleBlock?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
-  handleCopy?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleCopy?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
-  handleDelete?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleDelete?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when an edit message action is invoked */
   handleEdit?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /** Handler to access when a flag message action is invoked */
-  handleFlag?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleFlag?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
-  handleMute?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a quoted reply action is invoked */
-  handleQuotedReply?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to process a reaction */
   handleReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
     reactionType: string,
   ) => Promise<void>;
   /** Handler to access when a retry action is invoked */
-  handleRetry?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleRetry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
-  handleThreadReply?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  handleThreadReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
   /**
@@ -492,21 +421,15 @@ export type MessagesContextValue<
   /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<
-    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageHeader?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Custom UI component for message text */
-  MessageText?: React.ComponentType<
-    MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageText?: React.ComponentType<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Full override of the mute user button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  muteUser?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  muteUser?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Theme provided only to messages that are the current users
    */
@@ -592,9 +515,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressInMessage?: (
-    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
+  onPressInMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /**
    * Override onPress handler for message. You have access to payload of that handler as param:
    *
@@ -621,25 +542,19 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressMessage?: (
-    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
+  onPressMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /**
    * Full override of the quoted reply button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
-  quotedReply?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  quotedReply?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the resend button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  retry?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction)
-    | null;
+  retry?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
@@ -653,9 +568,7 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
-  threadReply?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => MessageAction;
+  threadReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);
@@ -667,14 +580,14 @@ export const MessagesProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
   value?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessagesContext.Provider value={(value as unknown) as MessagesContextValue}>
+  <MessagesContext.Provider value={value as unknown as MessagesContextValue}>
     {children}
   </MessagesContext.Provider>
 );
@@ -686,17 +599,8 @@ export const useMessagesContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(MessagesContext) as unknown) as MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(MessagesContext) as unknown as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext
@@ -711,12 +615,10 @@ export const withMessagesContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
-): React.FC<
-  Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>
-> => {
+): React.FC<Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithMessagesContextComponent = (
     props: Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
@@ -724,8 +626,6 @@ export const withMessagesContext = <
 
     return <Component {...(props as P)} {...messagesContext} />;
   };
-  WithMessagesContextComponent.displayName = `WithMessagesContext${getDisplayName(
-    Component,
-  )}`;
+  WithMessagesContextComponent.displayName = `WithMessagesContext${getDisplayName(Component)}`;
   return WithMessagesContextComponent;
 };

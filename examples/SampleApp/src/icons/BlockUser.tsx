@@ -12,12 +12,7 @@ export const BlockUser: React.FC<IconProps> = ({ height, width }) => {
   } = useTheme();
 
   return (
-    <Svg
-      fill='none'
-      height={height}
-      viewBox={`0 0 ${height} ${width}`}
-      width={width}
-    >
+    <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <Path
         clipRule='evenodd'
         d='M12 11a4 4 0 100-8 4 4 0 000 8zm0-2a2 2 0 100-4 2 2 0 000 4z'

@@ -2,13 +2,7 @@ import React, { useContext } from 'react';
 
 export type BlurType = 'light' | 'dark' | undefined;
 
-export type Overlay =
-  | 'addMembers'
-  | 'alert'
-  | 'channelInfo'
-  | 'confirmation'
-  | 'none'
-  | 'userInfo';
+export type Overlay = 'addMembers' | 'alert' | 'channelInfo' | 'confirmation' | 'none' | 'userInfo';
 
 export type AppOverlayContextValue = {
   overlay: Overlay;

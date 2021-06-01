@@ -4,12 +4,7 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -30,7 +25,7 @@ const wait = (ms: number) =>
 type Parameters<
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   filters: ChannelFilters<Ch, Co, Us>;
   options: ChannelOptions;
@@ -48,7 +43,7 @@ export const usePaginatedChannels = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
@@ -56,9 +51,7 @@ export const usePaginatedChannels = <
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const [channels, setChannels] = useState<
-    Channel<At, Ch, Co, Ev, Me, Re, Us>[]
-  >([]);
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
@@ -67,10 +60,7 @@ export const usePaginatedChannels = <
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (
-    queryType = '',
-    retryCount = 0,
-  ): Promise<void> => {
+  const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
@@ -88,15 +78,9 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(
-        filters,
-        sort,
-        newOptions,
-      );
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
 
-      channelQueryResponse.forEach((channel) =>
-        channel.state.setIsUpToDate(true),
-      );
+      channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
       const newChannels =
         queryType === 'reload' || queryType === 'refresh'

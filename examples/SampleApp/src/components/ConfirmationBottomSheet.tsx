@@ -50,10 +50,7 @@ const styles = StyleSheet.create({
 export const ConfirmationBottomSheet: React.FC = () => {
   const { setOverlay } = useAppOverlayContext();
   const { data: contextData, reset } = useBottomSheetOverlayContext();
-  const data =
-    contextData && !isAddMemberBottomSheetData(contextData)
-      ? contextData
-      : undefined;
+  const data = contextData && !isAddMemberBottomSheetData(contextData) ? contextData : undefined;
 
   const {
     theme: {
@@ -66,13 +63,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
     return null;
   }
 
-  const {
-    cancelText = 'CANCEL',
-    confirmText = 'CONFIRM',
-    onConfirm,
-    subtext,
-    title,
-  } = data;
+  const { cancelText = 'CANCEL', confirmText = 'CONFIRM', onConfirm, subtext, title } = data;
 
   return (
     <View
@@ -85,11 +76,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
       ]}
     >
       <View style={styles.description}>
-        {confirmText === 'LEAVE' ? (
-          <UserMinus pathFill={grey} />
-        ) : (
-          <Delete pathFill={accent_red} />
-        )}
+        {confirmText === 'LEAVE' ? <UserMinus pathFill={grey} /> : <Delete pathFill={accent_red} />}
         <Text style={[styles.title, { color: black }]}>{title}</Text>
         <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
       </View>

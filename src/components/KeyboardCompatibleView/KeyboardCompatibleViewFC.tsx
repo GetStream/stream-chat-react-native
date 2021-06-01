@@ -39,9 +39,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
   const subscriptions = useRef<EmitterSubscription[]>([]);
   const viewRef = useRef<View | null>(null);
 
-  const [appState, setAppState] = useState<AppStateStatus>(
-    AppState.currentState,
-  );
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const [bottom, setBottom] = useState(0);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 

@@ -18,7 +18,7 @@ export type GetDateSeparatorsParams<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   messages:
     | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
@@ -38,7 +38,7 @@ export const getDateSeparators = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   params: GetDateSeparatorsParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -59,9 +59,7 @@ export const getDateSeparators = <
 
     const messageDate = message.created_at.getDay();
 
-    const prevMessageDate = previousMessage
-      ? previousMessage.created_at.getDay()
-      : messageDate;
+    const prevMessageDate = previousMessage ? previousMessage.created_at.getDay() : messageDate;
 
     if (i === 0 || messageDate !== prevMessageDate) {
       dateSeparators[message.id] = message.created_at;

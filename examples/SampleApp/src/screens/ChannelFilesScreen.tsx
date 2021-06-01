@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  SectionList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Dayjs from 'dayjs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -75,10 +69,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelFilesScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'ChannelFilesScreen'
->;
+type ChannelFilesScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelFilesScreen'>;
 
 export type ChannelFilesScreenProps = {
   route: ChannelFilesScreenRouteProp;
@@ -89,10 +80,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { loading, loadMore, messages } = usePaginatedAttachments(
-    channel,
-    'file',
-  );
+  const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'file');
   const insets = useSafeAreaInsets();
   const {
     theme: {
@@ -162,9 +150,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                   borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
                 }}
               >
-                <View
-                  style={[styles.container, { backgroundColor: white_snow }]}
-                >
+                <View style={[styles.container, { backgroundColor: white_snow }]}>
                   <FileIcon mimeType={attachment.mime_type} />
                   <View style={styles.details}>
                     <Text
@@ -201,9 +187,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                   },
                 ]}
               >
-                <Text style={[styles.sectionTitle, { color: black }]}>
-                  {title}
-                </Text>
+                <Text style={[styles.sectionTitle, { color: black }]}>{title}</Text>
               </View>
             )}
             sections={sections}
