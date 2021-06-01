@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { vh, vw } from '../../../utils/utils';
+import { vw } from '../../../utils/utils';
 
 import type { ImageStyle, StyleProp } from 'react-native';
 
@@ -109,7 +109,8 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
       prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.photo.uri === nextProps.photo.uri &&
       prevProps.previous === nextProps.previous &&
-      prevProps.index === nextProps.index
+      prevProps.index === nextProps.index &&
+      prevProps.screenHeight === nextProps.screenHeight
     ) {
       return true;
     }
