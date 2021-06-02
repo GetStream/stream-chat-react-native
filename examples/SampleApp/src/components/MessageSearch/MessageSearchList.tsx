@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import { Avatar, Spinner, useTheme, vw } from 'stream-chat-react-native';
@@ -115,13 +109,9 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
           }}
         >
           <Text style={{ color: grey }}>
-            {`${
-              messages.length >= MESSAGE_SEARCH_LIMIT
-                ? MESSAGE_SEARCH_LIMIT
-                : messages.length
-            }${messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '} result${
-              messages.length === 1 ? '' : 's'
-            }`}
+            {`${messages.length >= MESSAGE_SEARCH_LIMIT ? MESSAGE_SEARCH_LIMIT : messages.length}${
+              messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '
+            } result${messages.length === 1 ? '' : 's'}`}
           </Text>
         </View>
       )}
@@ -148,17 +138,12 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
             <Avatar image={item.user?.image} name={item.user?.name} size={40} />
             <View style={styles.flex}>
               <View style={styles.row}>
-                <Text
-                  numberOfLines={1}
-                  style={[styles.titleContainer, { color: black }]}
-                >
+                <Text numberOfLines={1} style={[styles.titleContainer, { color: black }]}>
                   <Text style={styles.title}>{`${item.user?.name} `}</Text>
                   {!!item.channel?.name && (
                     <Text style={styles.detailsText}>
                       in
-                      <Text style={styles.title}>
-                        {` ${item.channel?.name}`}
-                      </Text>
+                      <Text style={styles.title}>{` ${item.channel?.name}`}</Text>
                     </Text>
                   )}
                 </Text>

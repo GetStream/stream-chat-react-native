@@ -1,26 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import {
-  LogBox,
-  Platform,
-  SafeAreaView,
-  View,
-  useColorScheme,
-} from 'react-native';
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-  RouteProp,
-} from '@react-navigation/native';
+import { LogBox, Platform, SafeAreaView, View, useColorScheme, StatusBar } from 'react-native';
+import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -48,15 +34,16 @@ type LocalMessageType = Record<string, unknown>;
 type LocalResponseType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
 
-const chatClient = StreamChat.getInstance<
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalResponseType,
-  LocalUserType
->('q95x9hkbyd6p');
+const chatClient =
+  StreamChat.getInstance<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalResponseType,
+    LocalUserType
+  >('q95x9hkbyd6p');
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 const user = {
@@ -87,9 +74,7 @@ type ChannelListScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;
 };
 
-const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
-  navigation,
-}) => {
+const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => {
   const { setChannel } = useContext(AppContext);
 
   const memoizedFilters = useMemo(() => filters, []);
@@ -142,11 +127,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
-        >
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
@@ -191,11 +172,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
-        >
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View
             style={{
               flex: 1,
@@ -287,29 +264,31 @@ const App = () => {
   const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
 
-  const [channel, setChannel] = useState<
-    ChannelType<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalResponseType,
-      LocalUserType
-    >
-  >();
+  const [channel, setChannel] =
+    useState<
+      ChannelType<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalResponseType,
+        LocalUserType
+      >
+    >();
   const [clientReady, setClientReady] = useState(false);
-  const [thread, setThread] = useState<
-    ThreadContextValue<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalResponseType,
-      LocalUserType
-    >['thread']
-  >();
+  const [thread, setThread] =
+    useState<
+      ThreadContextValue<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalResponseType,
+        LocalUserType
+      >['thread']
+    >();
 
   useEffect(() => {
     const setupClient = async () => {
@@ -383,9 +362,7 @@ export default () => {
   const theme = useStreamChatTheme();
 
   return (
-    <SafeAreaProvider
-      style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}
-    >
+    <SafeAreaProvider style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}>
       <App />
     </SafeAreaProvider>
   );

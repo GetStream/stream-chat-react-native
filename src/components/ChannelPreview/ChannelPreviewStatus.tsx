@@ -36,7 +36,7 @@ export type ChannelPreviewStatusProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'latestMessagePreview' | 'formatLatestMessageDate'
@@ -50,7 +50,7 @@ export const ChannelPreviewStatus = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

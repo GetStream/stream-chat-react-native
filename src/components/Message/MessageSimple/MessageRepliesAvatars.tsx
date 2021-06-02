@@ -36,11 +36,8 @@ export type MessageRepliesAvatarsProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'message'
->;
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
 
 export const MessageRepliesAvatars = <
   At extends UnknownType = DefaultAttachmentType,
@@ -49,7 +46,7 @@ export const MessageRepliesAvatars = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -78,9 +75,7 @@ export const MessageRepliesAvatars = <
     <View
       style={[
         styles.avatarContainer,
-        alignment === 'right'
-          ? { marginLeft: 8, ...rightAvatarsContainer }
-          : leftAvatarsContainer,
+        alignment === 'right' ? { marginLeft: 8, ...rightAvatarsContainer } : leftAvatarsContainer,
       ]}
     >
       {avatars.map((user, i) => (

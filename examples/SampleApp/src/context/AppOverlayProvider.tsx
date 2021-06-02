@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  BackHandler,
-  StyleSheet,
-  useWindowDimensions,
-  ViewStyle,
-} from 'react-native';
+import { BackHandler, StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import Animated, {
   cancelAnimation,
@@ -13,11 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import {
-  AppOverlayContext,
-  AppOverlayContextValue,
-  BlurType,
-} from './AppOverlayContext';
+import { AppOverlayContext, AppOverlayContextValue, BlurType } from './AppOverlayContext';
 
 import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
 import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
@@ -48,10 +39,7 @@ export const AppOverlayProvider: React.FC<{
       return false;
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
   }, [overlay]);
@@ -87,15 +75,9 @@ export const AppOverlayProvider: React.FC<{
               pointerEvents={overlay === 'none' ? 'none' : 'auto'}
               style={[StyleSheet.absoluteFill, overlayStyle]}
             >
-              <BlurView
-                blurType={blurType}
-                style={[StyleSheet.absoluteFill, { height, width }]}
-              />
+              <BlurView blurType={blurType} style={[StyleSheet.absoluteFill, { height, width }]} />
             </Animated.View>
-            <UserInfoOverlay
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'userInfo'}
-            />
+            <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
             <ChannelInfoOverlay
               overlayOpacity={overlayOpacity}
               visible={overlay === 'channelInfo'}

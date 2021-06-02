@@ -4,12 +4,7 @@ import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
-export const NewGroupIcon: React.FC<IconProps> = ({
-  active,
-  color,
-  height,
-  width,
-}) => {
+export const NewGroupIcon: React.FC<IconProps> = ({ active, color, height, width }) => {
   const {
     theme: {
       colors: { black },
@@ -17,12 +12,7 @@ export const NewGroupIcon: React.FC<IconProps> = ({
   } = useTheme();
 
   return (
-    <Svg
-      fill='none'
-      height={height}
-      viewBox={`0 0 ${height} ${width}`}
-      width={width}
-    >
+    <Svg fill='none' height={height} viewBox={`0 0 ${height} ${width}`} width={width}>
       <G opacity={active ? 1 : 0.5}>
         <Path
           clipRule='evenodd'

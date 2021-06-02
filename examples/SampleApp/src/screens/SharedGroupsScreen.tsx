@@ -119,17 +119,9 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     >
       <View style={styles.groupContainer}>
         {displayAvatar.images ? (
-          <GroupAvatar
-            images={displayAvatar.images}
-            names={displayAvatar.names}
-            size={40}
-          />
+          <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />
         ) : (
-          <Avatar
-            image={displayAvatar.image}
-            name={displayAvatar.name}
-            size={40}
-          />
+          <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
         )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>
@@ -154,9 +146,7 @@ const EmptyListComponent = () => {
   return (
     <View style={styles.emptyListContainer}>
       <Contacts fill={grey_gainsboro} scale={6} />
-      <Text style={[styles.emptyListTitle, { color: black }]}>
-        No shared groups
-      </Text>
+      <Text style={[styles.emptyListTitle, { color: black }]}>No shared groups</Text>
       <Text style={[styles.emptyListSubtitle, { color: grey }]}>
         Groups shared with user will appear here
       </Text>
@@ -186,10 +176,7 @@ const ListComponent: React.FC<ListComponentProps> = (props) => {
   return <ChannelListMessenger {...props} />;
 };
 
-type SharedGroupsScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'SharedGroupsScreen'
->;
+type SharedGroupsScreenRouteProp = RouteProp<StackNavigatorParamList, 'SharedGroupsScreen'>;
 
 type SharedGroupsScreenProps = {
   route: SharedGroupsScreenRouteProp;
@@ -209,10 +196,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
       <ScreenHeader titleText='Shared Groups' />
       <ChannelList
         filters={{
-          $and: [
-            { members: { $in: [chatClient?.user?.id] } },
-            { members: { $in: [user.id] } },
-          ],
+          $and: [{ members: { $in: [chatClient?.user?.id] } }, { members: { $in: [user.id] } }],
         }}
         List={ListComponent}
         options={{

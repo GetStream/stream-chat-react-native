@@ -19,7 +19,7 @@ export const useCreateTypingContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   typing,
 }: TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {

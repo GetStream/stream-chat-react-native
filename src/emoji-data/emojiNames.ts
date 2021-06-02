@@ -3,17 +3,7 @@
 module.exports = [
   {
     name: '+1',
-    names: [
-      'accept',
-      'agree',
-      'awesome',
-      'cool',
-      'good',
-      'hand',
-      'like',
-      'thumbsup',
-      'yes',
-    ],
+    names: ['accept', 'agree', 'awesome', 'cool', 'good', 'hand', 'like', 'thumbsup', 'yes'],
   },
   {
     name: '-1',
@@ -21,17 +11,7 @@ module.exports = [
   },
   {
     name: '100',
-    names: [
-      'century',
-      'exam',
-      'hundred',
-      'numbers',
-      'pass',
-      'perfect',
-      'quiz',
-      'score',
-      'test',
-    ],
+    names: ['century', 'exam', 'hundred', 'numbers', 'pass', 'perfect', 'quiz', 'score', 'test'],
   },
   {
     name: '1234',
@@ -338,16 +318,7 @@ module.exports = [
   },
   {
     name: 'ballot_box_with_check',
-    names: [
-      'agree',
-      'black-square',
-      'confirm',
-      'election',
-      'ok',
-      'tick',
-      'vote',
-      'yes',
-    ],
+    names: ['agree', 'black-square', 'confirm', 'election', 'ok', 'tick', 'vote', 'yes'],
   },
   {
     name: 'bamboo',
@@ -367,15 +338,7 @@ module.exports = [
   },
   {
     name: 'bank',
-    names: [
-      'building',
-      'business',
-      'cash',
-      'enterprise',
-      'money',
-      'sales',
-      'trust',
-    ],
+    names: ['building', 'business', 'cash', 'enterprise', 'money', 'sales', 'trust'],
   },
   {
     name: 'bar_chart',
@@ -439,31 +402,11 @@ module.exports = [
   },
   {
     name: 'beer',
-    names: [
-      'alcohol',
-      'beverage',
-      'booze',
-      'drink',
-      'drunk',
-      'party',
-      'pub',
-      'relax',
-      'summer',
-    ],
+    names: ['alcohol', 'beverage', 'booze', 'drink', 'drunk', 'party', 'pub', 'relax', 'summer'],
   },
   {
     name: 'beers',
-    names: [
-      'alcohol',
-      'beverage',
-      'booze',
-      'drink',
-      'drunk',
-      'party',
-      'pub',
-      'relax',
-      'summer',
-    ],
+    names: ['alcohol', 'beverage', 'booze', 'drink', 'drunk', 'party', 'pub', 'relax', 'summer'],
   },
   {
     name: 'beetle',
@@ -475,15 +418,7 @@ module.exports = [
   },
   {
     name: 'bell',
-    names: [
-      'buzzer',
-      'chime',
-      'christmas',
-      'notification',
-      'ring',
-      'sound',
-      'xmas',
-    ],
+    names: ['buzzer', 'chime', 'christmas', 'notification', 'ring', 'sound', 'xmas'],
   },
   {
     name: 'bellhop_bell',
@@ -503,15 +438,7 @@ module.exports = [
   },
   {
     name: 'bikini',
-    names: [
-      'beach',
-      'fashion',
-      'female',
-      'girl',
-      'summer',
-      'swimming',
-      'woman',
-    ],
+    names: ['beach', 'fashion', 'female', 'girl', 'summer', 'swimming', 'woman'],
   },
   {
     name: 'billed_cap',
@@ -949,15 +876,7 @@ module.exports = [
   },
   {
     name: 'checkered_flag',
-    names: [
-      'contest',
-      'finishline',
-      'gokart',
-      'laps',
-      'pit lane',
-      'race',
-      'racecar',
-    ],
+    names: ['contest', 'finishline', 'gokart', 'laps', 'pit lane', 'race', 'racecar'],
   },
   {
     name: 'cheese_wedge',
@@ -1013,15 +932,7 @@ module.exports = [
   },
   {
     name: 'cinema',
-    names: [
-      'blue-square',
-      'curtain',
-      'film',
-      'movie',
-      'record',
-      'stage',
-      'theater',
-    ],
+    names: ['blue-square', 'curtain', 'film', 'movie', 'record', 'stage', 'theater'],
   },
   {
     name: 'circus_tent',
@@ -1476,13 +1387,7 @@ module.exports = [
   },
   {
     name: 'deaf_person',
-    names: [
-      'american_sign_language',
-      'asl',
-      'deaf',
-      'disabled',
-      'hearing_loss',
-    ],
+    names: ['american_sign_language', 'asl', 'deaf', 'disabled', 'hearing_loss'],
   },
   {
     name: 'deaf_woman',
@@ -1583,16 +1488,7 @@ module.exports = [
   },
   {
     name: 'dolphin',
-    names: [
-      'animal',
-      'beach',
-      'fins',
-      'fish',
-      'flipper',
-      'nature',
-      'ocean',
-      'sea',
-    ],
+    names: ['animal', 'beach', 'fins', 'fish', 'flipper', 'nature', 'ocean', 'sea'],
   },
   {
     name: 'door',
@@ -1632,15 +1528,7 @@ module.exports = [
   },
   {
     name: 'drop_of_blood',
-    names: [
-      'bleeding',
-      'blod donation',
-      'blood',
-      'donation',
-      'injury',
-      'menstruation',
-      'period',
-    ],
+    names: ['bleeding', 'blod donation', 'blood', 'donation', 'injury', 'menstruation', 'period'],
   },
   {
     name: 'droplet',
@@ -1694,13 +1582,7 @@ module.exports = [
   },
   {
     name: 'earth_africa',
-    names: [
-      'continent',
-      'eastern hemisphere',
-      'globe',
-      'international',
-      'world',
-    ],
+    names: ['continent', 'eastern hemisphere', 'globe', 'international', 'world'],
   },
   {
     name: 'earth_americas',
@@ -1708,14 +1590,7 @@ module.exports = [
   },
   {
     name: 'earth_asia',
-    names: [
-      'continent',
-      'east',
-      'eastern hemisphere',
-      'globe',
-      'international',
-      'world',
-    ],
+    names: ['continent', 'east', 'eastern hemisphere', 'globe', 'international', 'world'],
   },
   {
     name: 'egg',
@@ -1783,14 +1658,7 @@ module.exports = [
   },
   {
     name: 'exclamation',
-    names: [
-      'danger',
-      'heavy_exclamation_mark',
-      'punctuation',
-      'surprise',
-      'warning',
-      'wow',
-    ],
+    names: ['danger', 'heavy_exclamation_mark', 'punctuation', 'surprise', 'warning', 'wow'],
   },
   {
     name: 'exploding_head',
@@ -2067,14 +1935,7 @@ module.exports = [
   },
   {
     name: 'fireworks',
-    names: [
-      'carnival',
-      'congratulations',
-      'festival',
-      'firecrackers',
-      'photo',
-      'pyrotechnics',
-    ],
+    names: ['carnival', 'congratulations', 'festival', 'firecrackers', 'photo', 'pyrotechnics'],
   },
   {
     name: 'first_place_medal',
@@ -2082,27 +1943,11 @@ module.exports = [
   },
   {
     name: 'first_quarter_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'first_quarter_moon_with_face',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'fish',
@@ -3261,28 +3106,11 @@ module.exports = [
   },
   {
     name: 'full_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-      'yellow',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight', 'yellow'],
   },
   {
     name: 'full_moon_with_face',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'funeral_urn',
@@ -3294,16 +3122,7 @@ module.exports = [
   },
   {
     name: 'garlic',
-    names: [
-      'cooking',
-      'flavor',
-      'food',
-      'garlic',
-      'ingredient',
-      'seasoning',
-      'spice',
-      'vegetable',
-    ],
+    names: ['cooking', 'flavor', 'food', 'garlic', 'ingredient', 'seasoning', 'spice', 'vegetable'],
   },
   {
     name: 'gb',
@@ -3347,15 +3166,7 @@ module.exports = [
   },
   {
     name: 'globe_with_meridians',
-    names: [
-      'earth',
-      'hemisphere',
-      'i18n',
-      'international',
-      'internet',
-      'interweb',
-      'world',
-    ],
+    names: ['earth', 'hemisphere', 'i18n', 'international', 'internet', 'interweb', 'world'],
   },
   {
     name: 'gloves',
@@ -3427,28 +3238,11 @@ module.exports = [
   },
   {
     name: 'grinning',
-    names: [
-      ':D',
-      'exclaimed',
-      'face',
-      'giggling',
-      'grin',
-      'happy',
-      'joy',
-      'smile',
-      'smiling',
-    ],
+    names: [':D', 'exclaimed', 'face', 'giggling', 'grin', 'happy', 'joy', 'smile', 'smiling'],
   },
   {
     name: 'guide_dog',
-    names: [
-      'disability',
-      'dog',
-      'guide dog',
-      'help dog',
-      'seeing dog',
-      'seeing eye dog',
-    ],
+    names: ['disability', 'dog', 'guide dog', 'help dog', 'seeing dog', 'seeing eye dog'],
   },
   {
     name: 'guitar',
@@ -3460,14 +3254,7 @@ module.exports = [
   },
   {
     name: 'hamburger',
-    names: [
-      'beef',
-      'burger king',
-      'cheeseburger',
-      'fast food',
-      'mcdonalds',
-      'meat',
-    ],
+    names: ['beef', 'burger king', 'cheeseburger', 'fast food', 'mcdonalds', 'meat'],
   },
   {
     name: 'hammer',
@@ -3531,28 +3318,11 @@ module.exports = [
   },
   {
     name: 'heart_eyes',
-    names: [
-      'affection',
-      'crush',
-      'face',
-      'heart',
-      'infatuation',
-      'like',
-      'love',
-      'valentines',
-    ],
+    names: ['affection', 'crush', 'face', 'heart', 'infatuation', 'like', 'love', 'valentines'],
   },
   {
     name: 'heart_eyes_cat',
-    names: [
-      'affection',
-      'animal',
-      'cats',
-      'heart',
-      'like',
-      'love',
-      'valentines',
-    ],
+    names: ['affection', 'animal', 'cats', 'heart', 'like', 'love', 'valentines'],
   },
   {
     name: 'heartbeat',
@@ -3628,15 +3398,7 @@ module.exports = [
   },
   {
     name: 'hindu_temple',
-    names: [
-      'hindu',
-      'hinduism',
-      'mandir',
-      'pray',
-      'religion',
-      'temple',
-      'worship',
-    ],
+    names: ['hindu', 'hinduism', 'mandir', 'pray', 'religion', 'temple', 'worship'],
   },
   {
     name: 'hippopotamus',
@@ -3725,15 +3487,7 @@ module.exports = [
   },
   {
     name: 'ice',
-    names: [
-      'cold',
-      'freeze',
-      'freezing',
-      'frozen',
-      'ice',
-      'icecube',
-      'slippery',
-    ],
+    names: ['cold', 'freeze', 'freezing', 'frozen', 'ice', 'icecube', 'slippery'],
   },
   {
     name: 'ice_cream',
@@ -3789,14 +3543,7 @@ module.exports = [
   },
   {
     name: 'iphone',
-    names: [
-      'apple',
-      'cellphone',
-      'dial',
-      'gadgets',
-      'smartphone',
-      'technology',
-    ],
+    names: ['apple', 'cellphone', 'dial', 'gadgets', 'smartphone', 'technology'],
   },
   {
     name: 'it',
@@ -3812,15 +3559,7 @@ module.exports = [
   },
   {
     name: 'japan',
-    names: [
-      'asia',
-      'country',
-      'japanese',
-      'nation',
-      'nihon',
-      'nippon',
-      'tokyo',
-    ],
+    names: ['asia', 'country', 'japanese', 'nation', 'nihon', 'nippon', 'tokyo'],
   },
   {
     name: 'japanese_castle',
@@ -3828,16 +3567,7 @@ module.exports = [
   },
   {
     name: 'japanese_goblin',
-    names: [
-      'creepy',
-      'evil',
-      'goblin',
-      'japanese',
-      'mask',
-      'monster',
-      'red',
-      'scary',
-    ],
+    names: ['creepy', 'evil', 'goblin', 'japanese', 'mask', 'monster', 'red', 'scary'],
   },
   {
     name: 'japanese_ogre',
@@ -3924,16 +3654,7 @@ module.exports = [
   },
   {
     name: 'kissing',
-    names: [
-      '3',
-      'face',
-      'infatuation',
-      'kiss',
-      'like',
-      'love',
-      'smooching',
-      'valentines',
-    ],
+    names: ['3', 'face', 'infatuation', 'kiss', 'like', 'love', 'smooching', 'valentines'],
   },
   {
     name: 'kissing_cat',
@@ -3941,27 +3662,11 @@ module.exports = [
   },
   {
     name: 'kissing_closed_eyes',
-    names: [
-      'affection',
-      'face',
-      'infatuation',
-      'kiss',
-      'like',
-      'love',
-      'valentines',
-    ],
+    names: ['affection', 'face', 'infatuation', 'kiss', 'like', 'love', 'valentines'],
   },
   {
     name: 'kissing_heart',
-    names: [
-      'affection',
-      'face',
-      'infatuation',
-      'kiss',
-      'like',
-      'love',
-      'valentines',
-    ],
+    names: ['affection', 'face', 'infatuation', 'kiss', 'like', 'love', 'valentines'],
   },
   {
     name: 'kissing_smiling_eyes',
@@ -4017,27 +3722,11 @@ module.exports = [
   },
   {
     name: 'last_quarter_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'last_quarter_moon_with_face',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'latin_cross',
@@ -4100,15 +3789,7 @@ module.exports = [
   },
   {
     name: 'lemon',
-    names: [
-      'citric',
-      'citron',
-      'citrus limon',
-      'fruit',
-      'lime',
-      'nature',
-      'sour',
-    ],
+    names: ['citric', 'citron', 'citrus limon', 'fruit', 'lime', 'nature', 'sour'],
   },
   {
     name: 'leo',
@@ -4599,26 +4280,11 @@ module.exports = [
   },
   {
     name: 'man_in_lotus_position',
-    names: [
-      'male',
-      'man',
-      'meditation',
-      'mindfulness',
-      'serenity',
-      'yoga',
-      'zen',
-    ],
+    names: ['male', 'man', 'meditation', 'mindfulness', 'serenity', 'yoga', 'zen'],
   },
   {
     name: 'man_in_motorized_wheelchair',
-    names: [
-      'disability',
-      'impaired',
-      'man',
-      'paralyzed',
-      'paralyzed',
-      'wheelchair',
-    ],
+    names: ['disability', 'impaired', 'man', 'paralyzed', 'paralyzed', 'wheelchair'],
   },
   {
     name: 'man_in_steamy_room',
@@ -4786,15 +4452,7 @@ module.exports = [
   },
   {
     name: 'men_holding_hands',
-    names: [
-      'boyfriends',
-      'couple',
-      'friends',
-      'gay',
-      'men',
-      'pair',
-      'relationship',
-    ],
+    names: ['boyfriends', 'couple', 'friends', 'gay', 'men', 'pair', 'relationship'],
   },
   {
     name: 'menorah_with_nine_branches',
@@ -4929,16 +4587,7 @@ module.exports = [
   },
   {
     name: 'mountain',
-    names: [
-      'alpine',
-      'environment',
-      'highland',
-      'hill',
-      'nature',
-      'photo',
-      'ridge',
-      'upland',
-    ],
+    names: ['alpine', 'environment', 'highland', 'hill', 'nature', 'photo', 'ridge', 'upland'],
   },
   {
     name: 'mountain_cableway',
@@ -4990,16 +4639,7 @@ module.exports = [
   },
   {
     name: 'mute',
-    names: [
-      'nonspeaking',
-      'quiet',
-      'silence',
-      'silent',
-      'sound',
-      'unspoken',
-      'volume',
-      'wordless',
-    ],
+    names: ['nonspeaking', 'quiet', 'silence', 'silent', 'sound', 'unspoken', 'volume', 'wordless'],
   },
   {
     name: 'nail_care',
@@ -5043,27 +4683,11 @@ module.exports = [
   },
   {
     name: 'new_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'new_moon_with_face',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'newspaper',
@@ -5235,16 +4859,7 @@ module.exports = [
   },
   {
     name: 'open_mouth',
-    names: [
-      ':O',
-      'face',
-      'gaping',
-      'gasping',
-      'impressed',
-      'surprise',
-      'whoa',
-      'wow',
-    ],
+    names: [':O', 'face', 'gaping', 'gasping', 'impressed', 'surprise', 'whoa', 'wow'],
   },
   {
     name: 'ophiuchus',
@@ -5312,15 +4927,7 @@ module.exports = [
   },
   {
     name: 'palm_tree',
-    names: [
-      'beach',
-      'mojito',
-      'nature',
-      'plant',
-      'summer',
-      'tropical',
-      'vegetable',
-    ],
+    names: ['beach', 'mojito', 'nature', 'plant', 'summer', 'tropical', 'vegetable'],
   },
   {
     name: 'pancakes',
@@ -5404,15 +5011,7 @@ module.exports = [
   },
   {
     name: 'people_holding_hands',
-    names: [
-      'connection',
-      'hands',
-      'hold_hands',
-      'love',
-      'support',
-      'support',
-      'union',
-    ],
+    names: ['connection', 'hands', 'hold_hands', 'love', 'support', 'support', 'union'],
   },
   {
     name: 'performing_arts',
@@ -5424,27 +5023,11 @@ module.exports = [
   },
   {
     name: 'person_kneeling',
-    names: [
-      'bend',
-      'bending',
-      'islam',
-      'kneeling',
-      'knees',
-      'muslim',
-      'praying',
-    ],
+    names: ['bend', 'bending', 'islam', 'kneeling', 'knees', 'muslim', 'praying'],
   },
   {
     name: 'person_standing',
-    names: [
-      'adult',
-      'human',
-      'person',
-      'posture',
-      'standing',
-      'straight',
-      'upright',
-    ],
+    names: ['adult', 'human', 'person', 'posture', 'standing', 'straight', 'upright'],
   },
   {
     name: 'person_with_headscarf',
@@ -5504,14 +5087,7 @@ module.exports = [
   },
   {
     name: 'pirate_flag',
-    names: [
-      'black flag',
-      'bones',
-      'jolly roger',
-      'roger',
-      'skull and crossbones',
-      'skull',
-    ],
+    names: ['black flag', 'bones', 'jolly roger', 'roger', 'skull and crossbones', 'skull'],
   },
   {
     name: 'pisces',
@@ -5591,16 +5167,7 @@ module.exports = [
   },
   {
     name: 'pound',
-    names: [
-      'bills',
-      'british',
-      'currency',
-      'england',
-      'money',
-      'sales',
-      'sterling',
-      'uk',
-    ],
+    names: ['bills', 'british', 'currency', 'england', 'money', 'sales', 'sterling', 'uk'],
   },
   {
     name: 'pouting_cat',
@@ -5692,14 +5259,7 @@ module.exports = [
   },
   {
     name: 'radio',
-    names: [
-      'broadcast',
-      'broadcasting',
-      'communication',
-      'music',
-      'podcast',
-      'program',
-    ],
+    names: ['broadcast', 'broadcasting', 'communication', 'music', 'podcast', 'program'],
   },
   {
     name: 'radio_button',
@@ -5901,15 +5461,7 @@ module.exports = [
   },
   {
     name: 'rocket',
-    names: [
-      'NASA',
-      'fly',
-      'launch',
-      'outer space',
-      'outer_space',
-      'ship',
-      'staffmode',
-    ],
+    names: ['NASA', 'fly', 'launch', 'outer space', 'outer_space', 'ship', 'staffmode'],
   },
   {
     name: 'roll_of_paper',
@@ -5941,17 +5493,7 @@ module.exports = [
   },
   {
     name: 'rotating_light',
-    names: [
-      '911',
-      'alert',
-      'ambulance',
-      'emergency',
-      'error',
-      'law',
-      'legal',
-      'pinged',
-      'police',
-    ],
+    names: ['911', 'alert', 'ambulance', 'emergency', 'error', 'law', 'legal', 'pinged', 'police'],
   },
   {
     name: 'round_pushpin',
@@ -5987,15 +5529,7 @@ module.exports = [
   },
   {
     name: 'sake',
-    names: [
-      'alcohol',
-      'beverage',
-      'booze',
-      'drink',
-      'drunk',
-      'japanese',
-      'wine',
-    ],
+    names: ['alcohol', 'beverage', 'booze', 'drink', 'drunk', 'japanese', 'wine'],
   },
   {
     name: 'salt',
@@ -6127,16 +5661,7 @@ module.exports = [
   },
   {
     name: 'shark',
-    names: [
-      'animal',
-      'beach',
-      'fins',
-      'fish',
-      'jaws',
-      'nature',
-      'ocean',
-      'sea',
-    ],
+    names: ['animal', 'beach', 'fins', 'fish', 'jaws', 'nature', 'ocean', 'sea'],
   },
   {
     name: 'shaved_ice',
@@ -6309,18 +5834,7 @@ module.exports = [
   },
   {
     name: 'smile',
-    names: [
-      ':)',
-      ':D',
-      'face',
-      'funny',
-      'grin',
-      'haha',
-      'happy',
-      'joy',
-      'laugh',
-      'like',
-    ],
+    names: [':)', ':D', 'face', 'funny', 'grin', 'haha', 'happy', 'joy', 'laugh', 'like'],
   },
   {
     name: 'smile_cat',
@@ -6328,18 +5842,7 @@ module.exports = [
   },
   {
     name: 'smiley',
-    names: [
-      ':)',
-      ':D',
-      'cheerful',
-      'face',
-      'funny',
-      'haha',
-      'happy',
-      'joy',
-      'merry',
-      'smile',
-    ],
+    names: [':)', ':D', 'cheerful', 'face', 'funny', 'haha', 'happy', 'joy', 'merry', 'smile'],
   },
   {
     name: 'smiley_cat',
@@ -6395,16 +5898,7 @@ module.exports = [
   },
   {
     name: 'snowman',
-    names: [
-      'christmas',
-      'cold',
-      'frozen',
-      'season',
-      'weather',
-      'winter',
-      'without_snow',
-      'xmas',
-    ],
+    names: ['christmas', 'cold', 'frozen', 'season', 'weather', 'winter', 'without_snow', 'xmas'],
   },
   {
     name: 'snowman_without_snow',
@@ -6464,17 +5958,7 @@ module.exports = [
   },
   {
     name: 'sparkles',
-    names: [
-      'awesome',
-      'cool',
-      'glisten',
-      'glitter',
-      'good',
-      'magic',
-      'shine',
-      'shiny',
-      'stars',
-    ],
+    names: ['awesome', 'cool', 'glisten', 'glitter', 'good', 'magic', 'shine', 'shiny', 'stars'],
   },
   {
     name: 'sparkling_heart',
@@ -6538,15 +6022,7 @@ module.exports = [
   },
   {
     name: 'stadium',
-    names: [
-      'arena',
-      'coliseum',
-      'concert',
-      'photo',
-      'place',
-      'sports',
-      'venue',
-    ],
+    names: ['arena', 'coliseum', 'concert', 'photo', 'place', 'sports', 'venue'],
   },
   {
     name: 'star',
@@ -6615,15 +6091,7 @@ module.exports = [
   },
   {
     name: 'stuck_out_tongue',
-    names: [
-      'childish',
-      'face',
-      'mischievous',
-      'playful',
-      'prank',
-      'smile',
-      'tongue',
-    ],
+    names: ['childish', 'face', 'mischievous', 'playful', 'prank', 'smile', 'tongue'],
   },
   {
     name: 'stuck_out_tongue_closed_eyes',
@@ -6631,16 +6099,7 @@ module.exports = [
   },
   {
     name: 'stuck_out_tongue_winking_eye',
-    names: [
-      'childish',
-      'face',
-      'mischievous',
-      'playful',
-      'prank',
-      'smile',
-      'tongue',
-      'wink',
-    ],
+    names: ['childish', 'face', 'mischievous', 'playful', 'prank', 'smile', 'tongue', 'wink'],
   },
   {
     name: 'studio_microphone',
@@ -6660,16 +6119,7 @@ module.exports = [
   },
   {
     name: 'sunglasses',
-    names: [
-      'beach',
-      'cool',
-      'eyewear',
-      'face',
-      'shades',
-      'smile',
-      'summer',
-      'sunglass',
-    ],
+    names: ['beach', 'cool', 'eyewear', 'face', 'shades', 'smile', 'summer', 'sunglass'],
   },
   {
     name: 'sunny',
@@ -6713,15 +6163,7 @@ module.exports = [
   },
   {
     name: 'symbols',
-    names: [
-      'ampersand',
-      'blue-square',
-      'characters',
-      'glyphs',
-      'music',
-      'note',
-      'percent',
-    ],
+    names: ['ampersand', 'blue-square', 'characters', 'glyphs', 'music', 'note', 'percent'],
   },
   {
     name: 'synagogue',
@@ -6729,16 +6171,7 @@ module.exports = [
   },
   {
     name: 'syringe',
-    names: [
-      'blood',
-      'doctor',
-      'drugs',
-      'health',
-      'hospital',
-      'medicine',
-      'needle',
-      'nurse',
-    ],
+    names: ['blood', 'doctor', 'drugs', 'health', 'hospital', 'medicine', 'needle', 'nurse'],
   },
   {
     name: 't-rex',
@@ -6956,28 +6389,11 @@ module.exports = [
   },
   {
     name: 'trophy',
-    names: [
-      'award',
-      'ceremony',
-      'contest',
-      'ftw',
-      'goblet',
-      'place',
-      'prize',
-      'win',
-    ],
+    names: ['award', 'ceremony', 'contest', 'ftw', 'goblet', 'place', 'prize', 'win'],
   },
   {
     name: 'tropical_drink',
-    names: [
-      'alcohol',
-      'beach',
-      'beverage',
-      'booze',
-      'cocktail',
-      'mojito',
-      'summer',
-    ],
+    names: ['alcohol', 'beach', 'beverage', 'booze', 'cocktail', 'mojito', 'summer'],
   },
   {
     name: 'tropical_fish',
@@ -7037,29 +6453,11 @@ module.exports = [
   },
   {
     name: 'two_men_holding_hands',
-    names: [
-      'bromance',
-      'couple',
-      'friendship',
-      'human',
-      'like',
-      'love',
-      'pair',
-      'people',
-    ],
+    names: ['bromance', 'couple', 'friendship', 'human', 'like', 'love', 'pair', 'people'],
   },
   {
     name: 'two_women_holding_hands',
-    names: [
-      'couple',
-      'female',
-      'friendship',
-      'human',
-      'like',
-      'love',
-      'pair',
-      'people',
-    ],
+    names: ['couple', 'female', 'friendship', 'human', 'like', 'love', 'pair', 'people'],
   },
   {
     name: 'u5272',
@@ -7099,15 +6497,7 @@ module.exports = [
   },
   {
     name: 'u7981',
-    names: [
-      'chinese',
-      'forbidden',
-      'japanese',
-      'kanji',
-      'limit',
-      'red-square',
-      'restricted',
-    ],
+    names: ['chinese', 'forbidden', 'japanese', 'kanji', 'limit', 'red-square', 'restricted'],
   },
   {
     name: 'u7a7a',
@@ -7131,17 +6521,7 @@ module.exports = [
   },
   {
     name: 'underage',
-    names: [
-      '18',
-      'circle',
-      'drink',
-      'juveniles',
-      'minor',
-      'night',
-      'pub',
-      'teenage',
-      'young',
-    ],
+    names: ['18', 'circle', 'drink', 'juveniles', 'minor', 'night', 'pub', 'teenage', 'young'],
   },
   {
     name: 'unicorn_face',
@@ -7161,15 +6541,7 @@ module.exports = [
   },
   {
     name: 'us',
-    names: [
-      'america',
-      'banner',
-      'country',
-      'flag',
-      'nation',
-      'states',
-      'united',
-    ],
+    names: ['america', 'banner', 'country', 'flag', 'nation', 'states', 'united'],
   },
   {
     name: 'v',
@@ -7225,15 +6597,7 @@ module.exports = [
   },
   {
     name: 'waning_crescent_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'waning_gibbous_moon',
@@ -7250,16 +6614,7 @@ module.exports = [
   },
   {
     name: 'warning',
-    names: [
-      'admonition',
-      'alert',
-      'cautionary',
-      'error',
-      'exclamation',
-      'issue',
-      'problem',
-      'wip',
-    ],
+    names: ['admonition', 'alert', 'cautionary', 'error', 'exclamation', 'issue', 'problem', 'wip'],
   },
   {
     name: 'wastebasket',
@@ -7283,16 +6638,7 @@ module.exports = [
   },
   {
     name: 'waving_hand',
-    names: [
-      'farewell',
-      'gesture',
-      'goodbye',
-      'hands',
-      'hello',
-      'hi',
-      'palm',
-      'solong',
-    ],
+    names: ['farewell', 'gesture', 'goodbye', 'hands', 'hello', 'hi', 'palm', 'solong'],
   },
   {
     name: 'waving_white_flag',
@@ -7304,15 +6650,7 @@ module.exports = [
   },
   {
     name: 'waxing_crescent_moon',
-    names: [
-      'evening',
-      'nature',
-      'night',
-      'planet',
-      'sleep',
-      'space',
-      'twilight',
-    ],
+    names: ['evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
   },
   {
     name: 'wc',
@@ -7324,15 +6662,7 @@ module.exports = [
   },
   {
     name: 'wedding',
-    names: [
-      'affection',
-      'bride',
-      'couple',
-      'groom',
-      'like',
-      'love',
-      'marriage',
-    ],
+    names: ['affection', 'bride', 'couple', 'groom', 'like', 'love', 'marriage'],
   },
   {
     name: 'whale',
@@ -7352,15 +6682,7 @@ module.exports = [
   },
   {
     name: 'white_check_mark',
-    names: [
-      'agree',
-      'answer',
-      'election',
-      'green-square',
-      'ok',
-      'tick',
-      'vote',
-    ],
+    names: ['agree', 'answer', 'election', 'green-square', 'ok', 'tick', 'vote'],
   },
   {
     name: 'white_circle',
@@ -7376,16 +6698,7 @@ module.exports = [
   },
   {
     name: 'white_heart',
-    names: [
-      'affection',
-      'clean',
-      'heart',
-      'like',
-      'love',
-      'pure',
-      'valentines',
-      'white',
-    ],
+    names: ['affection', 'clean', 'heart', 'like', 'love', 'pure', 'valentines', 'white'],
   },
   {
     name: 'white_large_square',
@@ -7425,16 +6738,7 @@ module.exports = [
   },
   {
     name: 'wink',
-    names: [
-      ';)',
-      'blink',
-      'eye',
-      'face',
-      'happy',
-      'mischievous',
-      'secret',
-      'smile',
-    ],
+    names: [';)', 'blink', 'eye', 'face', 'happy', 'mischievous', 'secret', 'smile'],
   },
   {
     name: 'wolf',
@@ -7618,26 +6922,11 @@ module.exports = [
   },
   {
     name: 'woman_in_lotus_position',
-    names: [
-      'female',
-      'meditation',
-      'mindfulness',
-      'serenity',
-      'woman',
-      'yoga',
-      'zen',
-    ],
+    names: ['female', 'meditation', 'mindfulness', 'serenity', 'woman', 'yoga', 'zen'],
   },
   {
     name: 'woman_in_motorized_wheelchair',
-    names: [
-      'disability',
-      'impaired',
-      'paralyzed',
-      'paralyzed',
-      'wheelchair',
-      'woman',
-    ],
+    names: ['disability', 'impaired', 'paralyzed', 'paralyzed', 'wheelchair', 'woman'],
   },
   {
     name: 'woman_in_steamy_room',
@@ -7706,28 +6995,11 @@ module.exports = [
   },
   {
     name: 'women_holding_hands',
-    names: [
-      'couple',
-      'friends',
-      'gay',
-      'girlfriends',
-      'lesbian',
-      'pair',
-      'relationship',
-      'women',
-    ],
+    names: ['couple', 'friends', 'gay', 'girlfriends', 'lesbian', 'pair', 'relationship', 'women'],
   },
   {
     name: 'womens',
-    names: [
-      'female',
-      'gender',
-      'loo',
-      'purple-square',
-      'restroom',
-      'toilet',
-      'woman',
-    ],
+    names: ['female', 'gender', 'loo', 'purple-square', 'restroom', 'toilet', 'woman'],
   },
   {
     name: 'woozy_face',

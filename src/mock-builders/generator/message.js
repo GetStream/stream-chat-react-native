@@ -4,8 +4,7 @@ import { generateUser } from './user';
 
 export const generateMessage = (options = {}) => {
   const timestamp =
-    options.timestamp ||
-    new Date(new Date().getTime() - Math.floor(Math.random() * 100000));
+    options.timestamp || new Date(new Date().getTime() - Math.floor(Math.random() * 100000));
 
   return {
     attachments: [],

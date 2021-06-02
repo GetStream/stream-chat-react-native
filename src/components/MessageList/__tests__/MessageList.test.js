@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { act } from 'react-test-renderer';
 
 import { MessageList } from '../MessageList';
@@ -12,10 +7,7 @@ import { MessageList } from '../MessageList';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
-import {
-  ChatContext,
-  ChatProvider,
-} from '../../../contexts/chatContext/ChatContext';
+import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -23,14 +15,8 @@ import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
-import {
-  generateMessage,
-  generateStaticMessage,
-} from '../../../mock-builders/generator/message';
-import {
-  generateStaticUser,
-  generateUser,
-} from '../../../mock-builders/generator/user';
+import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
+import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('MessageList', () => {
@@ -40,14 +26,8 @@ describe('MessageList', () => {
     const user1 = generateUser();
     const user2 = generateUser();
     const mockedChannel = generateChannel({
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user2 }),
-      ],
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ user: user1 }),
-      ],
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
 
     const chatClient = await getTestClientWithUser({ id: 'testID' });
@@ -196,10 +176,7 @@ describe('MessageList', () => {
     const user2 = generateUser();
     const messages = new Array(50).fill(generateMessage({ user: user1 }));
     const mockedChannel = generateChannel({
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user2 }),
-      ],
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
       messages,
     });
 
@@ -280,26 +257,11 @@ describe('MessageList', () => {
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(2);
     const mockedChannel = generateChannel({
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user1 }),
-      ],
+      members: [generateMember({ user: user1 }), generateMember({ user: user1 })],
       messages: [
-        generateStaticMessage(
-          'Message1',
-          { user: user1 },
-          '2020-05-05T14:48:00.000Z',
-        ),
-        generateStaticMessage(
-          'Message2',
-          { user: user2 },
-          '2020-05-05T14:49:00.000Z',
-        ),
-        generateStaticMessage(
-          'Message3',
-          { user: user2 },
-          '2020-05-06T14:50:00.000Z',
-        ),
+        generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
+        generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
+        generateStaticMessage('Message3', { user: user2 }, '2020-05-06T14:50:00.000Z'),
       ],
     });
 

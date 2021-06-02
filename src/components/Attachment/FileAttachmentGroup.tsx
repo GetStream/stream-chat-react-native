@@ -37,7 +37,7 @@ export type FileAttachmentGroupPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
     /**
@@ -57,7 +57,7 @@ const FileAttachmentGroupWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -95,7 +95,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -120,17 +120,9 @@ export type FileAttachmentGroupProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<
-    FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'messageId'
-  >
-> &
-  Pick<
-    FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'messageId'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageId'>> &
+  Pick<FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageId'>;
 
 export const FileAttachmentGroup = <
   At extends UnknownType = DefaultAttachmentType,
@@ -139,31 +131,15 @@ export const FileAttachmentGroup = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { files: contextFiles } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { Attachment = AttachmentDefault } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { Attachment = AttachmentDefault } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const files = propFiles || contextFiles;
 
@@ -180,5 +156,4 @@ export const FileAttachmentGroup = <
   );
 };
 
-FileAttachmentGroup.displayName =
-  'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';
+FileAttachmentGroup.displayName = 'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';

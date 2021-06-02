@@ -10,10 +10,7 @@ import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
-import {
-  generateStaticUser,
-  generateUser,
-} from '../../../mock-builders/generator/user';
+import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 afterEach(cleanup);
@@ -40,13 +37,10 @@ describe('TypingIndicator', () => {
         </TranslationProvider>
       </Chat>,
     );
-    expect(t).toHaveBeenCalledWith(
-      '{{ firstUser }} and {{ secondUser }} are typing...',
-      {
-        firstUser: user1.name,
-        secondUser: user2.name,
-      },
-    );
+    expect(t).toHaveBeenCalledWith('{{ firstUser }} and {{ secondUser }} are typing...', {
+      firstUser: user1.name,
+      secondUser: user2.name,
+    });
     await waitFor(() => {
       expect(getByTestId('typing-indicator')).toBeTruthy();
     });

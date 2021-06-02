@@ -3,9 +3,7 @@ import copy from 'clipboard-copy';
 import { MdContentCopy } from 'react-icons/md';
 import Link from 'react-styleguidist/lib/client/rsg-components/Link';
 import ToolbarButton from 'react-styleguidist/lib/client/rsg-components/ToolbarButton';
-import Styled, {
-  JssInjectedProps,
-} from 'react-styleguidist/lib/client/rsg-components/Styled';
+import Styled, { JssInjectedProps } from 'react-styleguidist/lib/client/rsg-components/Styled';
 import * as Rsg from 'react-styleguidist/lib/typings';
 
 export const styles = ({ color, fontFamily, fontSize, space }: Rsg.Theme) => ({
@@ -26,10 +24,7 @@ export const PathlineRenderer: React.FunctionComponent<JssInjectedProps> = ({
 }) => (
   <div className={classes.pathline}>
     <Link
-      href={
-        'https://github.com/GetStream/stream-chat-react-native/blob/master/' +
-        children
-      }
+      href={'https://github.com/GetStream/stream-chat-react-native/blob/master/' + children}
       rel='noopener'
       target='blank'
     >

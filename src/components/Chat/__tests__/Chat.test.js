@@ -73,9 +73,7 @@ describe('Chat', () => {
 
     act(() => dispatchConnectionRecoveredEvent(chatClient));
 
-    await waitFor(() =>
-      expect(context.connectionRecovering).toStrictEqual(false),
-    );
+    await waitFor(() => expect(context.connectionRecovering).toStrictEqual(false));
   });
 
   describe('ChatContext', () => {

@@ -36,18 +36,13 @@ const EmptyMentionsSearchIndicator = () => {
   return (
     <View style={styles.emptyIndicatorContainer}>
       <AtMentions height={112} pathFill={grey_gainsboro} width={112} />
-      <Text style={[styles.emptyIndicatorText, { color: grey }]}>
-        No mentions exist yet...
-      </Text>
+      <Text style={[styles.emptyIndicatorText, { color: grey }]}>No mentions exist yet...</Text>
     </View>
   );
 };
 
 export type MentionsScreenProps = {
-  navigation: StackNavigationProp<
-    BottomTabNavigatorParamList,
-    'MentionsScreen'
-  >;
+  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
@@ -66,13 +61,8 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const {
-    loading,
-    loadMore,
-    messages,
-    refreshing,
-    refreshList,
-  } = usePaginatedSearchedMessages(messageFilters);
+  const { loading, loadMore, messages, refreshing, refreshList } =
+    usePaginatedSearchedMessages(messageFilters);
 
   return (
     <View

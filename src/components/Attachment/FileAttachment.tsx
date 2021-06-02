@@ -63,11 +63,8 @@ export type FileAttachmentPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'onLongPress' | 'onPress' | 'onPressIn'
-> &
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'onPressIn'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
@@ -90,7 +87,7 @@ const FileAttachmentWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -146,35 +143,18 @@ const FileAttachmentWithContext = <
       testID='file-attachment'
       {...additionalTouchableProps}
     >
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: white },
-          container,
-          stylesProp.container,
-        ]}
-      >
-        <FileAttachmentIcon
-          mimeType={attachment.mime_type}
-          size={attachmentSize}
-        />
+      <View style={[styles.container, { backgroundColor: white }, container, stylesProp.container]}>
+        <FileAttachmentIcon mimeType={attachment.mime_type} size={attachmentSize} />
         <View style={[styles.details, details, stylesProp.details]}>
-          <Text
-            numberOfLines={2}
-            style={[styles.title, { color: black }, title, stylesProp.title]}
-          >
+          <Text numberOfLines={2} style={[styles.title, { color: black }, title, stylesProp.title]}>
             {attachment.title}
           </Text>
-          <Text
-            style={[styles.size, { color: grey }, fileSize, stylesProp.size]}
-          >
+          <Text style={[styles.size, { color: grey }, fileSize, stylesProp.size]}>
             {getFileSizeDisplayText(attachment.file_size)}
           </Text>
         </View>
       </View>
-      {attachment.actions?.length ? (
-        <AttachmentActions {...attachment} />
-      ) : null}
+      {attachment.actions?.length ? <AttachmentActions {...attachment} /> : null}
     </TouchableOpacity>
   );
 };
@@ -186,14 +166,9 @@ export type FileAttachmentProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>
-> &
-  Pick<
-    FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'attachment'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>> &
+  Pick<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
 
 export const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -202,19 +177,11 @@ export const FileAttachment = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { onLongPress, onPress, onPressIn } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,

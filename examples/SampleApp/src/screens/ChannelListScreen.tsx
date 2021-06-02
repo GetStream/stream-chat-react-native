@@ -1,18 +1,7 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-  ChannelList,
-  CircleClose,
-  Search,
-  useTheme,
-} from 'stream-chat-react-native';
+import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
 
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -90,14 +79,8 @@ export const ChannelListScreen: React.FC = () => {
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {
-    loading,
-    loadMore,
-    messages,
-    refreshing,
-    refreshList,
-    reset,
-  } = usePaginatedSearchedMessages(searchQuery);
+  const { loading, loadMore, messages, refreshing, refreshList, reset } =
+    usePaginatedSearchedMessages(searchQuery);
 
   const chatClientUserId = chatClient?.user?.id;
   const filters = useMemo(
@@ -188,12 +171,7 @@ export const ChannelListScreen: React.FC = () => {
           />
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
-          <View
-            style={[
-              styles.channelListContainer,
-              { opacity: searchQuery ? 0 : 1 },
-            ]}
-          >
+          <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList<
               LocalAttachmentType,
               LocalChannelType,

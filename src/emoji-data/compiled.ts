@@ -70,16 +70,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'abcd', names: ['abcd', 'alphabet', 'blue-square'] },
     {
       name: 'accept',
-      names: [
-        'accept',
-        'agree',
-        'chinese',
-        'good',
-        'kanji',
-        'ok',
-        'orange-circle',
-        'yes',
-      ],
+      names: ['accept', 'agree', 'chinese', 'good', 'kanji', 'ok', 'orange-circle', 'yes'],
     },
     {
       name: 'adhesive_bandage',
@@ -176,23 +167,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'arrow_lower_left',
-      names: [
-        'arrow_lower_left',
-        'blue-square',
-        'diagonal',
-        'direction',
-        'southwest',
-      ],
+      names: ['arrow_lower_left', 'blue-square', 'diagonal', 'direction', 'southwest'],
     },
     {
       name: 'arrow_lower_right',
-      names: [
-        'arrow_lower_right',
-        'blue-square',
-        'diagonal',
-        'direction',
-        'southeast',
-      ],
+      names: ['arrow_lower_right', 'blue-square', 'diagonal', 'direction', 'southeast'],
     },
     {
       name: 'arrow_right',
@@ -200,24 +179,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'arrow_right_hook',
-      names: [
-        'arrow_right_hook',
-        'blue-square',
-        'direction',
-        'return',
-        'rotate',
-      ],
+      names: ['arrow_right_hook', 'blue-square', 'direction', 'return', 'rotate'],
     },
     {
       name: 'arrow_up',
-      names: [
-        'arrow_up',
-        'above',
-        'blue-square',
-        'continue',
-        'direction',
-        'top',
-      ],
+      names: ['arrow_up', 'above', 'blue-square', 'continue', 'direction', 'top'],
     },
     {
       name: 'arrow_up_down',
@@ -225,37 +191,15 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'arrow_up_small',
-      names: [
-        'arrow_up_small',
-        'blue-square',
-        'direction',
-        'forward',
-        'point',
-        'top',
-        'triangle',
-      ],
+      names: ['arrow_up_small', 'blue-square', 'direction', 'forward', 'point', 'top', 'triangle'],
     },
     {
       name: 'arrow_upper_left',
-      names: [
-        'arrow_upper_left',
-        'blue-square',
-        'diagonal',
-        'direction',
-        'northwest',
-        'point',
-      ],
+      names: ['arrow_upper_left', 'blue-square', 'diagonal', 'direction', 'northwest', 'point'],
     },
     {
       name: 'arrow_upper_right',
-      names: [
-        'arrow_upper_right',
-        'blue-square',
-        'diagonal',
-        'direction',
-        'northeast',
-        'point',
-      ],
+      names: ['arrow_upper_right', 'blue-square', 'diagonal', 'direction', 'northeast', 'point'],
     },
     {
       name: 'arrows_clockwise',
@@ -271,13 +215,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'articulated_lorry',
-      names: [
-        'articulated_lorry',
-        'cars',
-        'express',
-        'transportation',
-        'vehicle',
-      ],
+      names: ['articulated_lorry', 'cars', 'express', 'transportation', 'vehicle'],
     },
     {
       name: 'astonished',
@@ -309,15 +247,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'auto_rickshaw',
-      names: [
-        'auto_rickshaw',
-        'rickshaw',
-        'tuk tuk',
-        'auto',
-        'car',
-        'transportation',
-        'vehicle',
-      ],
+      names: ['auto_rickshaw', 'rickshaw', 'tuk tuk', 'auto', 'car', 'transportation', 'vehicle'],
     },
     { name: 'avocado', names: ['avocado', 'food', 'fruit'] },
     { name: 'axe', names: ['axe', 'tool'] },
@@ -351,13 +281,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'bagel', names: ['bagel'] },
     {
       name: 'baggage_claim',
-      names: [
-        'baggage_claim',
-        'airport',
-        'blue-square',
-        'suitcase',
-        'transport',
-      ],
+      names: ['baggage_claim', 'airport', 'blue-square', 'suitcase', 'transport'],
     },
     {
       name: 'baguette_bread',
@@ -369,14 +293,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'balloon',
-      names: [
-        'balloon',
-        'birthday',
-        'celebration',
-        'circus',
-        'inflate',
-        'party',
-      ],
+      names: ['balloon', 'birthday', 'celebration', 'circus', 'inflate', 'party'],
     },
     {
       name: 'ballot_box_with_ballot',
@@ -398,15 +315,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'bamboo',
-      names: [
-        'bamboo',
-        'nature',
-        'panda',
-        'pine_decoration',
-        'plant',
-        'vegetable',
-        'wood',
-      ],
+      names: ['bamboo', 'nature', 'panda', 'pine_decoration', 'plant', 'vegetable', 'wood'],
     },
     {
       name: 'banana',
@@ -422,16 +331,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'bank',
-      names: [
-        'bank',
-        'building',
-        'business',
-        'cash',
-        'enterprise',
-        'money',
-        'sales',
-        'trust',
-      ],
+      names: ['bank', 'building', 'business', 'cash', 'enterprise', 'money', 'sales', 'trust'],
     },
     {
       name: 'bar_chart',
@@ -515,30 +415,13 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'beginner', names: ['beginner', 'badge', 'shield'] },
     {
       name: 'bell',
-      names: [
-        'bell',
-        'buzzer',
-        'chime',
-        'christmas',
-        'notification',
-        'ring',
-        'sound',
-        'xmas',
-      ],
+      names: ['bell', 'buzzer', 'chime', 'christmas', 'notification', 'ring', 'sound', 'xmas'],
     },
     { name: 'bellhop_bell', names: ['bellhop_bell', 'service'] },
     { name: 'bento', names: ['bento', 'box', 'food', 'japanese'] },
     {
       name: 'beverage_box',
-      names: [
-        'beverage_box',
-        'beverage',
-        'drink',
-        'food',
-        'juice box',
-        'juice',
-        'snack',
-      ],
+      names: ['beverage_box', 'beverage', 'drink', 'food', 'juice box', 'juice', 'snack'],
     },
     {
       name: 'bike',
@@ -546,16 +429,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'bikini',
-      names: [
-        'bikini',
-        'beach',
-        'fashion',
-        'female',
-        'girl',
-        'summer',
-        'swimming',
-        'woman',
-      ],
+      names: ['bikini', 'beach', 'fashion', 'female', 'girl', 'summer', 'swimming', 'woman'],
     },
     {
       name: 'billed_cap',
@@ -704,14 +578,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'bow_and_arrow', names: ['bow_and_arrow', 'sports'] },
     {
       name: 'bowl_with_spoon',
-      names: [
-        'bowl_with_spoon',
-        'breakfast',
-        'cereal',
-        'food',
-        'oatmeal',
-        'porridge',
-      ],
+      names: ['bowl_with_spoon', 'breakfast', 'cereal', 'food', 'oatmeal', 'porridge'],
     },
     {
       name: 'bowling',
@@ -734,14 +601,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'bricks', names: ['bricks'] },
     {
       name: 'bride_with_veil',
-      names: [
-        'bride_with_veil',
-        'bride',
-        'couple',
-        'marriage',
-        'wedding',
-        'woman',
-      ],
+      names: ['bride_with_veil', 'bride', 'couple', 'marriage', 'wedding', 'woman'],
     },
     {
       name: 'bridge_at_night',
@@ -749,16 +609,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'briefcase',
-      names: [
-        'briefcase',
-        'business',
-        'career',
-        'documents',
-        'job',
-        'law',
-        'legal',
-        'work',
-      ],
+      names: ['briefcase', 'business', 'career', 'documents', 'job', 'law', 'legal', 'work'],
     },
     {
       name: 'briefs',
@@ -776,15 +627,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'brown_circle', names: ['brown', 'circle', 'shape'] },
     {
       name: 'brown_heart',
-      names: [
-        'brown_heart',
-        'affection',
-        'brown',
-        'heart',
-        'like',
-        'love',
-        'valentines',
-      ],
+      names: ['brown_heart', 'affection', 'brown', 'heart', 'like', 'love', 'valentines'],
     },
     { name: 'brown_square', names: ['brown', 'shape', 'square'] },
     {
@@ -793,13 +636,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'building_construction',
-      names: [
-        'building_construction',
-        'architecture',
-        'progress',
-        'wip',
-        'working',
-      ],
+      names: ['building_construction', 'architecture', 'progress', 'wip', 'working'],
     },
     {
       name: 'bulb',
@@ -836,14 +673,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'busts_in_silhouette',
-      names: [
-        'busts_in_silhouette',
-        'group',
-        'human',
-        'person',
-        'team',
-        'user',
-      ],
+      names: ['busts_in_silhouette', 'group', 'human', 'person', 'team', 'user'],
     },
     {
       name: 'butter',
@@ -1026,14 +856,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'chopsticks', names: ['chopsticks', 'food'] },
     {
       name: 'christmas_tree',
-      names: [
-        'christmas_tree',
-        'celebration',
-        'december',
-        'festival',
-        'vacation',
-        'xmas',
-      ],
+      names: ['christmas_tree', 'celebration', 'december', 'festival', 'vacation', 'xmas'],
     },
     {
       name: 'church',
@@ -1041,16 +864,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'cinema',
-      names: [
-        'cinema',
-        'blue-square',
-        'curtain',
-        'film',
-        'movie',
-        'record',
-        'stage',
-        'theater',
-      ],
+      names: ['cinema', 'blue-square', 'curtain', 'film', 'movie', 'record', 'stage', 'theater'],
     },
     {
       name: 'circus_tent',
@@ -1086,15 +900,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'clinking_glasses',
-      names: [
-        'clinking_glasses',
-        'alcohol',
-        'beverage',
-        'celebrate',
-        'cheers',
-        'drink',
-        'party',
-      ],
+      names: ['clinking_glasses', 'alcohol', 'beverage', 'celebrate', 'cheers', 'drink', 'party'],
     },
     {
       name: 'clipboard',
@@ -1122,16 +928,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'clock12',
-      names: [
-        'clock12',
-        'early',
-        'late',
-        'midday',
-        'midnight',
-        'noon',
-        'schedule',
-        'time',
-      ],
+      names: ['clock12', 'early', 'late', 'midday', 'midnight', 'noon', 'schedule', 'time'],
     },
     {
       name: 'clock1230',
@@ -1207,14 +1004,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'closed_book',
-      names: [
-        'closed_book',
-        'knowledge',
-        'learn',
-        'library',
-        'read',
-        'textbook',
-      ],
+      names: ['closed_book', 'knowledge', 'learn', 'library', 'read', 'textbook'],
     },
     {
       name: 'closed_lock_with_key',
@@ -1232,30 +1022,12 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'cn',
-      names: [
-        'cn',
-        'flag-cn',
-        'banner',
-        'china',
-        'chinese',
-        'country',
-        'flag',
-        'nation',
-        'prc',
-      ],
+      names: ['cn', 'flag-cn', 'banner', 'china', 'chinese', 'country', 'flag', 'nation', 'prc'],
     },
     { name: 'coat', names: ['coat', 'jacket'] },
     {
       name: 'cocktail',
-      names: [
-        'cocktail',
-        'alcohol',
-        'beverage',
-        'booze',
-        'drink',
-        'drunk',
-        'mojito',
-      ],
+      names: ['cocktail', 'alcohol', 'beverage', 'booze', 'drink', 'drunk', 'mojito'],
     },
     {
       name: 'coconut',
@@ -1291,14 +1063,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'compression', names: ['compression'] },
     {
       name: 'computer',
-      names: [
-        'computer',
-        'display',
-        'laptop',
-        'monitor',
-        'screen',
-        'technology',
-      ],
+      names: ['computer', 'display', 'laptop', 'monitor', 'screen', 'technology'],
     },
     {
       name: 'confetti_ball',
@@ -1327,15 +1092,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'cookie',
-      names: [
-        'cookie',
-        'chocolate',
-        'dessert',
-        'food',
-        'oreo',
-        'snack',
-        'sweet',
-      ],
+      names: ['cookie', 'chocolate', 'dessert', 'food', 'oreo', 'snack', 'sweet'],
     },
     { name: 'cool', names: ['cool', 'blue-square', 'words'] },
     {
@@ -1376,15 +1133,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'crab', names: ['crab', 'animal', 'crustacean'] },
     {
       name: 'credit_card',
-      names: [
-        'credit_card',
-        'bill',
-        'dollar',
-        'money',
-        'payment',
-        'sales',
-        'shopping',
-      ],
+      names: ['credit_card', 'bill', 'dollar', 'money', 'payment', 'sales', 'shopping'],
     },
     {
       name: 'crescent_moon',
@@ -1397,14 +1146,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'crocodile',
-      names: [
-        'crocodile',
-        'alligator',
-        'animal',
-        'lizard',
-        'nature',
-        'reptile',
-      ],
+      names: ['crocodile', 'alligator', 'animal', 'lizard', 'nature', 'reptile'],
     },
     {
       name: 'croissant',
@@ -1412,12 +1154,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'crossed_fingers',
-      names: [
-        'crossed_fingers',
-        'hand_with_index_and_middle_fingers_crossed',
-        'good',
-        'lucky',
-      ],
+      names: ['crossed_fingers', 'hand_with_index_and_middle_fingers_crossed', 'good', 'lucky'],
     },
     {
       name: 'crossed_flags',
@@ -1434,27 +1171,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'crying_cat_face',
-      names: [
-        'crying_cat_face',
-        'animal',
-        'cats',
-        'cry',
-        'sad',
-        'tears',
-        'upset',
-        'weep',
-      ],
+      names: ['crying_cat_face', 'animal', 'cats', 'cry', 'sad', 'tears', 'upset', 'weep'],
     },
     {
       name: 'crystal_ball',
-      names: [
-        'crystal_ball',
-        'circus',
-        'disco',
-        'fortune_teller',
-        'magic',
-        'party',
-      ],
+      names: ['crystal_ball', 'circus', 'disco', 'fortune_teller', 'magic', 'party'],
     },
     {
       name: 'cucumber',
@@ -1515,15 +1236,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'dango',
-      names: [
-        'dango',
-        'barbecue',
-        'dessert',
-        'food',
-        'japanese',
-        'meat',
-        'sweet',
-      ],
+      names: ['dango', 'barbecue', 'dessert', 'food', 'japanese', 'meat', 'sweet'],
     },
     {
       name: 'dark_sunglasses',
@@ -1558,14 +1271,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'deaf_person',
-      names: [
-        'deaf_person',
-        'american_sign_language',
-        'asl',
-        'deaf',
-        'disabled',
-        'hearing_loss',
-      ],
+      names: ['deaf_person', 'american_sign_language', 'asl', 'deaf', 'disabled', 'hearing_loss'],
     },
     {
       name: 'deaf_woman',
@@ -1611,14 +1317,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'diamond_shape_with_a_dot_inside',
-      names: [
-        'diamond_shape_with_a_dot_inside',
-        'blue',
-        'crystal',
-        'fancy',
-        'gem',
-        'jewel',
-      ],
+      names: ['diamond_shape_with_a_dot_inside', 'blue', 'crystal', 'fancy', 'gem', 'jewel'],
     },
     {
       name: 'diamonds',
@@ -1634,15 +1333,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'diving_mask',
-      names: [
-        'diving_mask',
-        'dive',
-        'diving',
-        'mask',
-        'snorkel',
-        'swim',
-        'underwater',
-      ],
+      names: ['diving_mask', 'dive', 'diving', 'mask', 'snorkel', 'swim', 'underwater'],
     },
     {
       name: 'diya_lamp',
@@ -1663,16 +1354,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'dog',
-      names: [
-        'dog',
-        'animal',
-        'faithful',
-        'friend',
-        'nature',
-        'pet',
-        'puppy',
-        'woof',
-      ],
+      names: ['dog', 'animal', 'faithful', 'friend', 'nature', 'pet', 'puppy', 'woof'],
     },
     {
       name: 'dog2',
@@ -1688,17 +1370,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'dolphin',
-      names: [
-        'dolphin',
-        'flipper',
-        'animal',
-        'beach',
-        'fins',
-        'fish',
-        'nature',
-        'ocean',
-        'sea',
-      ],
+      names: ['dolphin', 'flipper', 'animal', 'beach', 'fins', 'fish', 'nature', 'ocean', 'sea'],
     },
     { name: 'door', names: ['door', 'entry', 'exit', 'house'] },
     { name: 'double_vertical_bar', names: ['double_vertical_bar'] },
@@ -1781,25 +1453,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'earth_africa',
-      names: [
-        'earth_africa',
-        'continent',
-        'eastern hemisphere',
-        'globe',
-        'international',
-        'world',
-      ],
+      names: ['earth_africa', 'continent', 'eastern hemisphere', 'globe', 'international', 'world'],
     },
     {
       name: 'earth_americas',
-      names: [
-        'earth_americas',
-        'USA',
-        'globe',
-        'international',
-        'western hemisphere',
-        'world',
-      ],
+      names: ['earth_americas', 'USA', 'globe', 'international', 'western hemisphere', 'world'],
     },
     {
       name: 'earth_asia',
@@ -1841,14 +1499,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'email',
-      names: [
-        'email',
-        'envelope',
-        'communication',
-        'inbox',
-        'letter',
-        'postal',
-      ],
+      names: ['email', 'envelope', 'communication', 'inbox', 'letter', 'postal'],
     },
     { name: 'end', names: ['end', 'arrow', 'words'] },
     {
@@ -1922,15 +1573,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'eyeglasses',
-      names: [
-        'eyeglasses',
-        'accessories',
-        'dork',
-        'eyesight',
-        'fashion',
-        'geek',
-        'nerdy',
-      ],
+      names: ['eyeglasses', 'accessories', 'dork', 'eyesight', 'fashion', 'geek', 'nerdy'],
     },
     {
       name: 'eyes',
@@ -1966,34 +1609,15 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'face_with_symbols_on_mouth',
-      names: [
-        'face_with_symbols_on_mouth',
-        'serious_face_with_symbols_covering_mouth',
-      ],
+      names: ['face_with_symbols_on_mouth', 'serious_face_with_symbols_covering_mouth'],
     },
     {
       name: 'face_with_thermometer',
-      names: [
-        'face_with_thermometer',
-        'cold',
-        'fever',
-        'sick',
-        'temperature',
-        'thermometer',
-      ],
+      names: ['face_with_thermometer', 'cold', 'fever', 'sick', 'temperature', 'thermometer'],
     },
     {
       name: 'facepunch',
-      names: [
-        'facepunch',
-        'punch',
-        'angry',
-        'attack',
-        'fist',
-        'hand',
-        'hit',
-        'violence',
-      ],
+      names: ['facepunch', 'punch', 'angry', 'attack', 'fist', 'hand', 'hit', 'violence'],
     },
     {
       name: 'factory',
@@ -2014,15 +1638,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'fax', names: ['fax', 'communication', 'technology'] },
     {
       name: 'fearful',
-      names: [
-        'fearful',
-        'face',
-        'huh',
-        'nervous',
-        'oops',
-        'scared',
-        'terrified',
-      ],
+      names: ['fearful', 'face', 'huh', 'nervous', 'oops', 'scared', 'terrified'],
     },
     { name: 'feet', names: ['feet', 'paw_prints'] },
     { name: 'female-artist', names: ['female-artist'] },
@@ -2480,14 +2096,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'four_leaf_clover',
-      names: [
-        'four_leaf_clover',
-        'irish',
-        'lucky',
-        'nature',
-        'plant',
-        'vegetable',
-      ],
+      names: ['four_leaf_clover', 'irish', 'lucky', 'nature', 'plant', 'vegetable'],
     },
     {
       name: 'fox_face',
@@ -2495,16 +2104,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'fr',
-      names: [
-        'flag-fr',
-        'fr',
-        'banner',
-        'country',
-        'flag',
-        'france',
-        'french',
-        'nation',
-      ],
+      names: ['flag-fr', 'fr', 'banner', 'country', 'flag', 'france', 'french', 'nation'],
     },
     { name: 'frame_with_picture', names: ['frame_with_picture'] },
     { name: 'free', names: ['free', 'blue-square', 'words'] },
@@ -2660,14 +2260,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'green_square', names: ['green', 'shape', 'square'] },
     {
       name: 'grey_exclamation',
-      names: [
-        'grey_exclamation',
-        'gray',
-        'punctuation',
-        'surprise',
-        'warning',
-        'wow',
-      ],
+      names: ['grey_exclamation', 'gray', 'punctuation', 'surprise', 'warning', 'wow'],
     },
     {
       name: 'grey_question',
@@ -2715,15 +2308,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'hamburger',
-      names: [
-        'hamburger',
-        'beef',
-        'burger king',
-        'cheeseburger',
-        'fast food',
-        'mcdonalds',
-        'meat',
-      ],
+      names: ['hamburger', 'beef', 'burger king', 'cheeseburger', 'fast food', 'mcdonalds', 'meat'],
     },
     {
       name: 'hammer',
@@ -2741,25 +2326,11 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'hand', names: ['hand', 'raised_hand', 'body'] },
     {
       name: 'handbag',
-      names: [
-        'handbag',
-        'accessories',
-        'accessory',
-        'fashion',
-        'purse',
-        'shopping',
-      ],
+      names: ['handbag', 'accessories', 'accessory', 'fashion', 'purse', 'shopping'],
     },
     {
       name: 'handshake',
-      names: [
-        'handshake',
-        'agreement',
-        'interview',
-        'networking',
-        'professional',
-        'shake',
-      ],
+      names: ['handshake', 'agreement', 'interview', 'networking', 'professional', 'shake'],
     },
     { name: 'hankey', names: ['hankey', 'poop', 'shit'] },
     {
@@ -2772,15 +2343,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'hatching_chick',
-      names: [
-        'hatching_chick',
-        'animal',
-        'baby',
-        'bird',
-        'born',
-        'chicken',
-        'egg',
-      ],
+      names: ['hatching_chick', 'animal', 'baby', 'bird', 'born', 'chicken', 'egg'],
     },
     {
       name: 'headphones',
@@ -2827,15 +2390,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'heartbeat',
-      names: [
-        'heartbeat',
-        'affection',
-        'heart',
-        'like',
-        'love',
-        'pink',
-        'valentines',
-      ],
+      names: ['heartbeat', 'affection', 'heart', 'like', 'love', 'pink', 'valentines'],
     },
     {
       name: 'heartpulse',
@@ -2855,23 +2410,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'heavy_dollar_sign',
-      names: [
-        'heavy_dollar_sign',
-        'buck',
-        'currency',
-        'money',
-        'payment',
-        'sales',
-      ],
+      names: ['heavy_dollar_sign', 'buck', 'currency', 'money', 'payment', 'sales'],
     },
     {
       name: 'heavy_heart_exclamation_mark_ornament',
-      names: [
-        'heavy_heart_exclamation_mark_ornament',
-        'excitement',
-        'like',
-        'love',
-      ],
+      names: ['heavy_heart_exclamation_mark_ornament', 'excitement', 'like', 'love'],
     },
     {
       name: 'heavy_minus_sign',
@@ -2883,14 +2426,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'heavy_plus_sign',
-      names: [
-        'heavy_plus_sign',
-        'addition',
-        'calculation',
-        'increase',
-        'math',
-        'more',
-      ],
+      names: ['heavy_plus_sign', 'addition', 'calculation', 'increase', 'math', 'more'],
     },
     {
       name: 'hedgehog',
@@ -2906,15 +2442,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'herb',
-      names: [
-        'herb',
-        'grass',
-        'lawn',
-        'medicine',
-        'plant',
-        'vegetable',
-        'weed',
-      ],
+      names: ['herb', 'grass', 'lawn', 'medicine', 'plant', 'vegetable', 'weed'],
     },
     {
       name: 'hibiscus',
@@ -2961,26 +2489,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'horse_racing',
-      names: [
-        'horse_racing',
-        'animal',
-        'betting',
-        'competition',
-        'gambling',
-        'luck',
-      ],
+      names: ['horse_racing', 'animal', 'betting', 'competition', 'gambling', 'luck'],
     },
     {
       name: 'hospital',
-      names: [
-        'hospital',
-        'building',
-        'clinic',
-        'doctor',
-        'health',
-        'medical',
-        'surgery',
-      ],
+      names: ['hospital', 'building', 'clinic', 'doctor', 'health', 'medical', 'surgery'],
     },
     { name: 'hot_face', names: ['hot_face'] },
     {
@@ -3008,16 +2521,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'hourglass',
-      names: [
-        'hourglass',
-        'clock',
-        'exam',
-        'limit',
-        'oldschool',
-        'quiz',
-        'test',
-        'time',
-      ],
+      names: ['hourglass', 'clock', 'exam', 'limit', 'oldschool', 'quiz', 'test', 'time'],
     },
     {
       name: 'hourglass_flowing_sand',
@@ -3036,15 +2540,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'ice',
-      names: [
-        'cold',
-        'freeze',
-        'freezing',
-        'frozen',
-        'ice',
-        'icecube',
-        'slippery',
-      ],
+      names: ['cold', 'freeze', 'freezing', 'frozen', 'ice', 'icecube', 'slippery'],
     },
     {
       name: 'ice_cream',
@@ -3062,14 +2558,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'id', names: ['id', 'purple-square', 'words'] },
     {
       name: 'ideograph_advantage',
-      names: [
-        'ideograph_advantage',
-        'chinese',
-        'circle',
-        'get',
-        'kanji',
-        'obtain',
-      ],
+      names: ['ideograph_advantage', 'chinese', 'circle', 'get', 'kanji', 'obtain'],
     },
     { name: 'imp', names: ['imp', 'angry', 'devil', 'horns'] },
     {
@@ -3095,15 +2584,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'iphone',
-      names: [
-        'iphone',
-        'apple',
-        'cellphone',
-        'dial',
-        'gadgets',
-        'smartphone',
-        'technology',
-      ],
+      names: ['iphone', 'apple', 'cellphone', 'dial', 'gadgets', 'smartphone', 'technology'],
     },
     {
       name: 'it',
@@ -3111,39 +2592,15 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'izakaya_lantern',
-      names: [
-        'izakaya_lantern',
-        'lantern',
-        'halloween',
-        'light',
-        'paper',
-        'spooky',
-      ],
+      names: ['izakaya_lantern', 'lantern', 'halloween', 'light', 'paper', 'spooky'],
     },
     {
       name: 'jack_o_lantern',
-      names: [
-        'jack_o_lantern',
-        'carve',
-        'creepy',
-        'fall',
-        'halloween',
-        'light',
-        'pumpkin',
-      ],
+      names: ['jack_o_lantern', 'carve', 'creepy', 'fall', 'halloween', 'light', 'pumpkin'],
     },
     {
       name: 'japan',
-      names: [
-        'japan',
-        'asia',
-        'country',
-        'japanese',
-        'nation',
-        'nihon',
-        'nippon',
-        'tokyo',
-      ],
+      names: ['japan', 'asia', 'country', 'japanese', 'nation', 'nihon', 'nippon', 'tokyo'],
     },
     {
       name: 'japanese_castle',
@@ -3205,15 +2662,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'joystick', names: ['joystick', 'game', 'play'] },
     {
       name: 'jp',
-      names: [
-        'flag-jp',
-        'jp',
-        'banner',
-        'country',
-        'flag',
-        'japanese',
-        'nation',
-      ],
+      names: ['flag-jp', 'jp', 'banner', 'country', 'flag', 'japanese', 'nation'],
     },
     { name: 'kaaba', names: ['kaaba', 'islam', 'mecca', 'mosque'] },
     { name: 'kangaroo', names: ['kangaroo'] },
@@ -3233,15 +2682,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'kiss',
-      names: [
-        'kiss',
-        'affection',
-        'face',
-        'like',
-        'lips',
-        'love',
-        'valentines',
-      ],
+      names: ['kiss', 'affection', 'face', 'like', 'lips', 'love', 'valentines'],
     },
     {
       name: 'kissing',
@@ -3289,14 +2730,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'kissing_smiling_eyes',
-      names: [
-        'kissing_smiling_eyes',
-        'affection',
-        'face',
-        'infatuation',
-        'kiss',
-        'valentines',
-      ],
+      names: ['kissing_smiling_eyes', 'affection', 'face', 'infatuation', 'kiss', 'valentines'],
     },
     { name: 'kite', names: ['kite', 'fly', 'toy'] },
     { name: 'kiwifruit', names: ['kiwifruit', 'fruit'] },
@@ -3304,27 +2738,11 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'koala', names: ['koala', 'animal', 'nature'] },
     {
       name: 'koko',
-      names: [
-        'koko',
-        'blue-square',
-        'destination',
-        'here',
-        'japanese',
-        'katakana',
-      ],
+      names: ['koko', 'blue-square', 'destination', 'here', 'japanese', 'katakana'],
     },
     {
       name: 'kr',
-      names: [
-        'flag-kr',
-        'kr',
-        'banner',
-        'country',
-        'flag',
-        'korea',
-        'nation',
-        'south',
-      ],
+      names: ['flag-kr', 'kr', 'banner', 'country', 'flag', 'korea', 'nation', 'south'],
     },
     {
       name: 'lab_coat',
@@ -3397,16 +2815,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'leaves',
-      names: [
-        'leaves',
-        'grass',
-        'lawn',
-        'nature',
-        'plant',
-        'spring',
-        'tree',
-        'vegetable',
-      ],
+      names: ['leaves', 'grass', 'lawn', 'nature', 'plant', 'spring', 'tree', 'vegetable'],
     },
     { name: 'ledger', names: ['ledger', 'notes', 'paper'] },
     {
@@ -3419,13 +2828,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'left_right_arrow',
-      names: [
-        'left_right_arrow',
-        'direction',
-        'horizontal',
-        'shape',
-        'sideways',
-      ],
+      names: ['left_right_arrow', 'direction', 'horizontal', 'shape', 'sideways'],
     },
     {
       name: 'left_speech_bubble',
@@ -3433,28 +2836,12 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'leftwards_arrow_with_hook',
-      names: [
-        'leftwards_arrow_with_hook',
-        'back',
-        'blue-square',
-        'enter',
-        'return',
-        'undo',
-      ],
+      names: ['leftwards_arrow_with_hook', 'back', 'blue-square', 'enter', 'return', 'undo'],
     },
     { name: 'leg', names: ['leg'] },
     {
       name: 'lemon',
-      names: [
-        'lemon',
-        'citric',
-        'citron',
-        'citrus limon',
-        'fruit',
-        'lime',
-        'nature',
-        'sour',
-      ],
+      names: ['lemon', 'citric', 'citron', 'citrus limon', 'fruit', 'lime', 'nature', 'sour'],
     },
     {
       name: 'leo',
@@ -3520,14 +2907,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'loudspeaker',
-      names: [
-        'loudspeaker',
-        'amplifier',
-        'sound',
-        'speakerphone',
-        'speakers',
-        'volume',
-      ],
+      names: ['loudspeaker', 'amplifier', 'sound', 'speakerphone', 'speakers', 'volume'],
     },
     {
       name: 'love_hotel',
@@ -3535,14 +2915,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'love_letter',
-      names: [
-        'love_letter',
-        'affection',
-        'email',
-        'envelope',
-        'like',
-        'valentines',
-      ],
+      names: ['love_letter', 'affection', 'email', 'envelope', 'like', 'valentines'],
     },
     {
       name: 'low_brightness',
@@ -3635,16 +3008,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'male_zombie', names: ['male_zombie'] },
     {
       name: 'man',
-      names: [
-        'man',
-        'classy',
-        'dad',
-        'father',
-        'guy',
-        'moustache',
-        'mustache',
-        'sir',
-      ],
+      names: ['man', 'classy', 'dad', 'father', 'guy', 'moustache', 'mustache', 'sir'],
     },
     { name: 'man-biking', names: ['man-biking'] },
     { name: 'man-bouncing-ball', names: ['man-bouncing-ball'] },
@@ -3799,14 +3163,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'mango', names: ['mango', 'food', 'fruit'] },
     {
       name: 'mans_shoe',
-      names: [
-        'mans_shoe',
-        'shoe',
-        'business',
-        'fashion',
-        'male',
-        'professional',
-      ],
+      names: ['mans_shoe', 'shoe', 'business', 'fashion', 'male', 'professional'],
     },
     {
       name: 'mantelpiece_clock',
@@ -3897,15 +3254,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'men_holding_hands',
-      names: [
-        'boyfriends',
-        'couple',
-        'friends',
-        'gay',
-        'men',
-        'pair',
-        'relationship',
-      ],
+      names: ['boyfriends', 'couple', 'friends', 'gay', 'men', 'pair', 'relationship'],
     },
     {
       name: 'menorah_with_nine_branches',
@@ -3913,15 +3262,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'mens',
-      names: [
-        'mens',
-        'blue-square',
-        'gender',
-        'male',
-        'restroom',
-        'toilet',
-        'wc',
-      ],
+      names: ['mens', 'blue-square', 'gender', 'male', 'restroom', 'toilet', 'wc'],
     },
     {
       name: 'mermaid',
@@ -3930,40 +3271,16 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'merman', names: ['merman', 'male', 'man', 'triton'] },
     {
       name: 'metro',
-      names: [
-        'metro',
-        'blue-square',
-        'mrt',
-        'transportation',
-        'tube',
-        'underground',
-      ],
+      names: ['metro', 'blue-square', 'mrt', 'transportation', 'tube', 'underground'],
     },
     { name: 'microbe', names: ['microbe'] },
     {
       name: 'microphone',
-      names: [
-        'microphone',
-        'PA',
-        'boom',
-        'mic',
-        'mike',
-        'music',
-        'sing',
-        'sound',
-        'talkshow',
-      ],
+      names: ['microphone', 'PA', 'boom', 'mic', 'mike', 'music', 'sing', 'sound', 'talkshow'],
     },
     {
       name: 'microscope',
-      names: [
-        'microscope',
-        'experiment',
-        'laboratory',
-        'science',
-        'study',
-        'zoomin',
-      ],
+      names: ['microscope', 'experiment', 'laboratory', 'science', 'study', 'zoomin'],
     },
     {
       name: 'middle_finger',
@@ -4050,13 +3367,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'motorized_wheelchair',
-      names: [
-        'motorized_wheelchair',
-        'automatic',
-        'disability',
-        'motor',
-        'wheelchair',
-      ],
+      names: ['motorized_wheelchair', 'automatic', 'disability', 'motor', 'wheelchair'],
     },
     {
       name: 'motorway',
@@ -4106,14 +3417,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'mrs_claus',
-      names: [
-        'mother_christmas',
-        'mrs_claus',
-        'female',
-        'mother christmas',
-        'woman',
-        'xmas',
-      ],
+      names: ['mother_christmas', 'mrs_claus', 'female', 'mother christmas', 'woman', 'xmas'],
     },
     {
       name: 'muscle',
@@ -4160,29 +3464,12 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'nauseated_face',
-      names: [
-        'nauseated_face',
-        'face',
-        'green',
-        'gross',
-        'ill',
-        'sick',
-        'throw up',
-        'vomit',
-      ],
+      names: ['nauseated_face', 'face', 'green', 'gross', 'ill', 'sick', 'throw up', 'vomit'],
     },
     { name: 'nazar_amulet', names: ['nazar_amulet'] },
     {
       name: 'necktie',
-      names: [
-        'necktie',
-        'business',
-        'cloth',
-        'fashion',
-        'formal',
-        'shirt',
-        'suitup',
-      ],
+      names: ['necktie', 'business', 'cloth', 'fashion', 'formal', 'shirt', 'suitup'],
     },
     {
       name: 'negative_squared_cross_mark',
@@ -4202,16 +3489,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'new_moon',
-      names: [
-        'new_moon',
-        'evening',
-        'nature',
-        'night',
-        'planet',
-        'sleep',
-        'space',
-        'twilight',
-      ],
+      names: ['new_moon', 'evening', 'nature', 'night', 'planet', 'sleep', 'space', 'twilight'],
     },
     {
       name: 'new_moon_with_face',
@@ -4252,28 +3530,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'no_entry',
-      names: [
-        'no_entry',
-        'bad',
-        'circle',
-        'denied',
-        'limit',
-        'privacy',
-        'security',
-        'stop',
-      ],
+      names: ['no_entry', 'bad', 'circle', 'denied', 'limit', 'privacy', 'security', 'stop'],
     },
     {
       name: 'no_entry_sign',
-      names: [
-        'no_entry_sign',
-        'circle',
-        'denied',
-        'disallow',
-        'forbid',
-        'limit',
-        'stop',
-      ],
+      names: ['no_entry_sign', 'circle', 'denied', 'disallow', 'forbid', 'limit', 'stop'],
     },
     {
       name: 'no_mobile_phones',
@@ -4299,14 +3560,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'notebook_with_decorative_cover',
-      names: [
-        'notebook_with_decorative_cover',
-        'classroom',
-        'notes',
-        'paper',
-        'record',
-        'study',
-      ],
+      names: ['notebook_with_decorative_cover', 'classroom', 'notes', 'paper', 'record', 'study'],
     },
     { name: 'notes', names: ['notes', 'music', 'score', 'tone'] },
     {
@@ -4325,15 +3579,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'octagonal_sign', names: ['octagonal_sign'] },
     {
       name: 'octopus',
-      names: [
-        'octopus',
-        'animal',
-        'beach',
-        'creature',
-        'nature',
-        'ocean',
-        'sea',
-      ],
+      names: ['octopus', 'animal', 'beach', 'creature', 'nature', 'ocean', 'sea'],
     },
     { name: 'oden', names: ['oden', 'food', 'japanese'] },
     {
@@ -4363,16 +3609,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'older_woman',
-      names: [
-        'older_woman',
-        'elder',
-        'female',
-        'human',
-        'lady',
-        'old',
-        'senior',
-        'women',
-      ],
+      names: ['older_woman', 'elder', 'female', 'human', 'lady', 'old', 'senior', 'women'],
     },
     { name: 'om_symbol', names: ['om_symbol'] },
     { name: 'on', names: ['on', 'arrow', 'words'] },
@@ -4386,14 +3623,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'oncoming_police_car',
-      names: [
-        'oncoming_police_car',
-        '911',
-        'enforcement',
-        'law',
-        'legal',
-        'vehicle',
-      ],
+      names: ['oncoming_police_car', '911', 'enforcement', 'law', 'legal', 'vehicle'],
     },
     {
       name: 'oncoming_taxi',
@@ -4428,24 +3658,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'ophiuchus',
-      names: [
-        'ophiuchus',
-        'astrology',
-        'constellation',
-        'purple-square',
-        'sign',
-      ],
+      names: ['ophiuchus', 'astrology', 'constellation', 'purple-square', 'sign'],
     },
     {
       name: 'orange_book',
-      names: [
-        'orange_book',
-        'knowledge',
-        'library',
-        'read',
-        'study',
-        'textbook',
-      ],
+      names: ['orange_book', 'knowledge', 'library', 'read', 'study', 'textbook'],
     },
     { name: 'orange_circle', names: ['circle', 'orange', 'shape'] },
     {
@@ -4470,15 +3687,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'ox', names: ['ox', 'animal', 'beef', 'cow'] },
     {
       name: 'oyster',
-      names: [
-        'oyster',
-        'animal',
-        'fish',
-        'food',
-        'mollusk',
-        'pearl',
-        'seafood',
-      ],
+      names: ['oyster', 'animal', 'fish', 'food', 'mollusk', 'pearl', 'seafood'],
     },
     {
       name: 'package',
@@ -4498,16 +3707,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'palm_tree',
-      names: [
-        'palm_tree',
-        'beach',
-        'mojito',
-        'nature',
-        'plant',
-        'summer',
-        'tropical',
-        'vegetable',
-      ],
+      names: ['palm_tree', 'beach', 'mojito', 'nature', 'plant', 'summer', 'tropical', 'vegetable'],
     },
     {
       name: 'pancakes',
@@ -4544,15 +3744,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'partly_sunny',
-      names: [
-        'partly_sunny',
-        'cloudy',
-        'fall',
-        'morning',
-        'nature',
-        'spring',
-        'weather',
-      ],
+      names: ['partly_sunny', 'cloudy', 'fall', 'morning', 'nature', 'spring', 'weather'],
     },
     {
       name: 'partly_sunny_rain',
@@ -4574,15 +3766,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'pear', names: ['pear', 'food', 'fruit', 'nature'] },
     {
       name: 'pencil2',
-      names: [
-        'pencil2',
-        'paper',
-        'school',
-        'stationery',
-        'study',
-        'write',
-        'writing',
-      ],
+      names: ['pencil2', 'paper', 'school', 'stationery', 'study', 'write', 'writing'],
     },
     { name: 'penguin', names: ['penguin', 'animal', 'nature'] },
     {
@@ -4611,27 +3795,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'person_kneeling',
-      names: [
-        'bend',
-        'bending',
-        'islam',
-        'kneeling',
-        'knees',
-        'muslim',
-        'praying',
-      ],
+      names: ['bend', 'bending', 'islam', 'kneeling', 'knees', 'muslim', 'praying'],
     },
     {
       name: 'person_standing',
-      names: [
-        'adult',
-        'human',
-        'person',
-        'posture',
-        'standing',
-        'straight',
-        'upright',
-      ],
+      names: ['adult', 'human', 'person', 'posture', 'standing', 'straight', 'upright'],
     },
     {
       name: 'person_with_headscarf',
@@ -4640,14 +3808,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'petri_dish', names: ['petri_dish'] },
     {
       name: 'phone',
-      names: [
-        'phone',
-        'telephone',
-        'call',
-        'communication',
-        'dial',
-        'technology',
-      ],
+      names: ['phone', 'telephone', 'call', 'communication', 'dial', 'technology'],
     },
     { name: 'pick', names: ['pick', 'dig', 'tools'] },
     { name: 'pie', names: ['pie', 'dessert', 'food', 'pastry'] },
@@ -4729,15 +3890,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'police_car',
-      names: [
-        'police_car',
-        'cars',
-        'enforcement',
-        'law',
-        'legal',
-        'transportation',
-        'vehicle',
-      ],
+      names: ['police_car', 'cars', 'enforcement', 'law', 'legal', 'transportation', 'vehicle'],
     },
     {
       name: 'poodle',
@@ -4749,14 +3902,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'post_office',
-      names: [
-        'post_office',
-        'building',
-        'communication',
-        'envelope',
-        'mail',
-        'postal',
-      ],
+      names: ['post_office', 'building', 'communication', 'envelope', 'mail', 'postal'],
     },
     {
       name: 'postal_horn',
@@ -4768,26 +3914,11 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'potable_water',
-      names: [
-        'potable_water',
-        'blue-square',
-        'cleaning',
-        'faucet',
-        'liquid',
-        'restroom',
-      ],
+      names: ['potable_water', 'blue-square', 'cleaning', 'faucet', 'liquid', 'restroom'],
     },
     {
       name: 'potato',
-      names: [
-        'potato',
-        'food',
-        'spud',
-        'starch',
-        'tater',
-        'tuber',
-        'vegatable',
-      ],
+      names: ['potato', 'food', 'spud', 'starch', 'tater', 'tuber', 'vegatable'],
     },
     {
       name: 'pouch',
@@ -4795,15 +3926,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'poultry_leg',
-      names: [
-        'poultry_leg',
-        'bird',
-        'chicken',
-        'drumstick',
-        'food',
-        'meat',
-        'turkey',
-      ],
+      names: ['poultry_leg', 'bird', 'chicken', 'drumstick', 'food', 'meat', 'turkey'],
     },
     {
       name: 'pound',
@@ -4825,15 +3948,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'pray',
-      names: [
-        'pray',
-        'highfive',
-        'hope',
-        'namaste',
-        'please',
-        'religion',
-        'wish',
-      ],
+      names: ['pray', 'highfive', 'hope', 'namaste', 'please', 'religion', 'wish'],
     },
     {
       name: 'prayer_beads',
@@ -4850,16 +3965,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'princess',
-      names: [
-        'princess',
-        'blond',
-        'crown',
-        'female',
-        'girl',
-        'queen',
-        'royal',
-        'woman',
-      ],
+      names: ['princess', 'blond', 'crown', 'female', 'girl', 'queen', 'royal', 'woman'],
     },
     { name: 'printer', names: ['printer', 'ink', 'paper'] },
     {
@@ -4882,13 +3988,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'put_litter_in_its_place',
-      names: [
-        'put_litter_in_its_place',
-        'blue-square',
-        'human',
-        'info',
-        'sign',
-      ],
+      names: ['put_litter_in_its_place', 'blue-square', 'human', 'info', 'sign'],
     },
     { name: 'question', names: ['question', 'confused', 'doubt'] },
     {
@@ -4911,15 +4011,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'racing_motorcycle', names: ['racing_motorcycle'] },
     {
       name: 'radio',
-      names: [
-        'radio',
-        'broadcast',
-        'broadcasting',
-        'communication',
-        'music',
-        'podcast',
-        'program',
-      ],
+      names: ['radio', 'broadcast', 'broadcasting', 'communication', 'music', 'podcast', 'program'],
     },
     {
       name: 'radio_button',
@@ -4941,15 +4033,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'rain_cloud', names: ['rain_cloud', 'weather'] },
     {
       name: 'rainbow',
-      names: [
-        'rainbow',
-        'happy',
-        'nature',
-        'photo',
-        'sky',
-        'spring',
-        'unicorn_face',
-      ],
+      names: ['rainbow', 'happy', 'nature', 'photo', 'sky', 'spring', 'unicorn_face'],
     },
     {
       name: 'rainbow-flag',
@@ -5091,28 +4175,12 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'ringed_planet',
-      names: [
-        'ringed_planet',
-        'astronomy',
-        'planet',
-        'saturn',
-        'space',
-        'universe',
-      ],
+      names: ['ringed_planet', 'astronomy', 'planet', 'saturn', 'space', 'universe'],
     },
     { name: 'robot_face', names: ['robot_face'] },
     {
       name: 'rocket',
-      names: [
-        'rocket',
-        'NASA',
-        'fly',
-        'launch',
-        'outer space',
-        'outer_space',
-        'ship',
-        'staffmode',
-      ],
+      names: ['rocket', 'NASA', 'fly', 'launch', 'outer space', 'outer_space', 'ship', 'staffmode'],
     },
     { name: 'roll_of_paper', names: ['roll_of_paper'] },
     { name: 'rolled_up_newspaper', names: ['rolled_up_newspaper'] },
@@ -5157,16 +4225,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'ru',
-      names: [
-        'flag-ru',
-        'ru',
-        'banner',
-        'country',
-        'federation',
-        'flag',
-        'nation',
-        'russian',
-      ],
+      names: ['flag-ru', 'ru', 'banner', 'country', 'federation', 'flag', 'nation', 'russian'],
     },
     {
       name: 'rugby_football',
@@ -5183,14 +4242,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'safety_pin', names: ['safety_pin'] },
     {
       name: 'safety_vest',
-      names: [
-        'safety_vest',
-        'clothes',
-        'construction',
-        'safety vest',
-        'safety',
-        'vest',
-      ],
+      names: ['safety_vest', 'clothes', 'construction', 'safety vest', 'safety', 'vest'],
     },
     {
       name: 'sagittarius',
@@ -5198,16 +4250,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'sake',
-      names: [
-        'sake',
-        'alcohol',
-        'beverage',
-        'booze',
-        'drink',
-        'drunk',
-        'japanese',
-        'wine',
-      ],
+      names: ['sake', 'alcohol', 'beverage', 'booze', 'drink', 'drunk', 'japanese', 'wine'],
     },
     { name: 'salt', names: ['salt'] },
     {
@@ -5266,14 +4309,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'scorpion', names: ['scorpion', 'animal', 'arachnid'] },
     {
       name: 'scorpius',
-      names: [
-        'scorpius',
-        'astrology',
-        'purple-square',
-        'scorpio',
-        'sign',
-        'zodiac',
-      ],
+      names: ['scorpius', 'astrology', 'purple-square', 'scorpio', 'sign', 'zodiac'],
     },
     {
       name: 'scream',
@@ -5326,17 +4362,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'shark',
-      names: [
-        'shark',
-        'animal',
-        'beach',
-        'fins',
-        'fish',
-        'jaws',
-        'nature',
-        'ocean',
-        'sea',
-      ],
+      names: ['shark', 'animal', 'beach', 'fins', 'fish', 'jaws', 'nature', 'ocean', 'sea'],
     },
     {
       name: 'shaved_ice',
@@ -5401,13 +4427,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'six', names: ['six', '6', 'blue-square', 'numbers'] },
     {
       name: 'six_pointed_star',
-      names: [
-        'six_pointed_star',
-        'hexagram',
-        'jewish',
-        'purple-square',
-        'religion',
-      ],
+      names: ['six_pointed_star', 'hexagram', 'jewish', 'purple-square', 'religion'],
     },
     { name: 'skateboard', names: ['skateboard'] },
     {
@@ -5456,14 +4476,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'slightly_frowning_face',
-      names: [
-        'slightly_frowning_face',
-        'disappointed',
-        'face',
-        'frowning',
-        'sad',
-        'upset',
-      ],
+      names: ['slightly_frowning_face', 'disappointed', 'face', 'frowning', 'sad', 'upset'],
     },
     {
       name: 'slightly_smiling_face',
@@ -5471,15 +4484,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'slot_machine',
-      names: [
-        'slot_machine',
-        'bet',
-        'casino',
-        'fruit machine',
-        'gamble',
-        'luck',
-        'vegas',
-      ],
+      names: ['slot_machine', 'bet', 'casino', 'fruit machine', 'gamble', 'luck', 'vegas'],
     },
     { name: 'sloth', names: ['sloth', 'animal', 'slow', 'slowly'] },
     {
@@ -5544,14 +4549,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'smiling_face_with_3_hearts',
-      names: [
-        'smiling_face_with_3_hearts',
-        'affection',
-        'appreciation',
-        'like',
-        'love',
-        'smiley',
-      ],
+      names: ['smiling_face_with_3_hearts', 'affection', 'appreciation', 'like', 'love', 'smiley'],
     },
     {
       name: 'smiling_imp',
@@ -5559,16 +4557,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'smirk',
-      names: [
-        'smirk',
-        'face',
-        'mean',
-        'prank',
-        'sarcasm',
-        'smile',
-        'smug',
-        'sneer',
-      ],
+      names: ['smirk', 'face', 'mean', 'prank', 'sarcasm', 'smile', 'smug', 'sneer'],
     },
     {
       name: 'smirk_cat',
@@ -5585,14 +4574,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'sneezing_face',
-      names: [
-        'sneezing_face',
-        'allergy',
-        'face',
-        'gesundheit',
-        'sick',
-        'sneeze',
-      ],
+      names: ['sneezing_face', 'allergy', 'face', 'gesundheit', 'sick', 'sneeze'],
     },
     {
       name: 'snow_capped_mountain',
@@ -5605,15 +4587,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'snowflake',
-      names: [
-        'snowflake',
-        'christmas',
-        'cold',
-        'season',
-        'weather',
-        'winter',
-        'xmas',
-      ],
+      names: ['snowflake', 'christmas', 'cold', 'season', 'weather', 'winter', 'xmas'],
     },
     {
       name: 'snowman',
@@ -5664,14 +4638,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'sparkle',
-      names: [
-        'sparkle',
-        'awesome',
-        'fireworks',
-        'good',
-        'green-square',
-        'stars',
-      ],
+      names: ['sparkle', 'awesome', 'fireworks', 'good', 'green-square', 'stars'],
     },
     {
       name: 'sparkler',
@@ -5702,14 +4669,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'speaker',
-      names: [
-        'speaker',
-        'broadcast',
-        'loudspeaker',
-        'silence',
-        'sound',
-        'volume',
-      ],
+      names: ['speaker', 'broadcast', 'loudspeaker', 'silence', 'sound', 'volume'],
     },
     {
       name: 'speaking_head_in_silhouette',
@@ -5717,14 +4677,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'speech_balloon',
-      names: [
-        'speech_balloon',
-        'bubble',
-        'chatting',
-        'message',
-        'talk',
-        'words',
-      ],
+      names: ['speech_balloon', 'bubble', 'chatting', 'message', 'talk', 'words'],
     },
     {
       name: 'speedboat',
@@ -5750,16 +4703,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'stadium',
-      names: [
-        'stadium',
-        'arena',
-        'coliseum',
-        'concert',
-        'photo',
-        'place',
-        'sports',
-        'venue',
-      ],
+      names: ['stadium', 'arena', 'coliseum', 'concert', 'photo', 'place', 'sports', 'venue'],
     },
     { name: 'star', names: ['star', 'night', 'yellow'] },
     {
@@ -5880,15 +4824,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'sunny',
-      names: [
-        'sunny',
-        'beach',
-        'brightness',
-        'nature',
-        'spring',
-        'summer',
-        'weather',
-      ],
+      names: ['sunny', 'beach', 'brightness', 'nature', 'spring', 'summer', 'weather'],
     },
     {
       name: 'sunrise',
@@ -5917,16 +4853,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'sweat_smile',
-      names: [
-        'sweat_smile',
-        'face',
-        'happy',
-        'hot',
-        'laugh',
-        'relief',
-        'smile',
-        'sweat',
-      ],
+      names: ['sweat_smile', 'face', 'happy', 'hot', 'laugh', 'relief', 'smile', 'sweat'],
     },
     {
       name: 'sweet_potato',
@@ -5965,14 +4892,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 't-rex',
-      names: [
-        't-rex',
-        'animal',
-        'dinosaur',
-        'extinct',
-        'nature',
-        'tyrannosaurus',
-      ],
+      names: ['t-rex', 'animal', 'dinosaur', 'extinct', 'nature', 'tyrannosaurus'],
     },
     {
       name: 'table_tennis_paddle_and_ball',
@@ -6058,14 +4978,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'thought_balloon',
-      names: [
-        'thought_balloon',
-        'bubble',
-        'cloud',
-        'dream',
-        'speech',
-        'thinking',
-      ],
+      names: ['thought_balloon', 'bubble', 'cloud', 'dream', 'speech', 'thinking'],
     },
     { name: 'thread', names: ['thread'] },
     {
@@ -6136,14 +5049,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'train',
-      names: [
-        'train',
-        'carriage',
-        'public',
-        'transportation',
-        'travel',
-        'vehicle',
-      ],
+      names: ['train', 'carriage', 'public', 'transportation', 'travel', 'vehicle'],
     },
     {
       name: 'train2',
@@ -6152,13 +5058,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'tram', names: ['tram', 'transportation', 'vehicle'] },
     {
       name: 'triangular_flag_on_post',
-      names: [
-        'triangular_flag_on_post',
-        'mark',
-        'milestone',
-        'pennant',
-        'place',
-      ],
+      names: ['triangular_flag_on_post', 'mark', 'milestone', 'pennant', 'place'],
     },
     {
       name: 'triangular_ruler',
@@ -6175,17 +5075,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'trophy',
-      names: [
-        'trophy',
-        'award',
-        'ceremony',
-        'contest',
-        'ftw',
-        'goblet',
-        'place',
-        'prize',
-        'win',
-      ],
+      names: ['trophy', 'award', 'ceremony', 'contest', 'ftw', 'goblet', 'place', 'prize', 'win'],
     },
     {
       name: 'tropical_drink',
@@ -6241,13 +5131,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'twisted_rightwards_arrows',
-      names: [
-        'twisted_rightwards_arrows',
-        'blue-square',
-        'music',
-        'random',
-        'shuffle',
-      ],
+      names: ['twisted_rightwards_arrows', 'blue-square', 'music', 'random', 'shuffle'],
     },
     {
       name: 'two',
@@ -6305,15 +5189,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'u6708',
-      names: [
-        'u6708',
-        'chinese',
-        'japanese',
-        'kanji',
-        'month',
-        'moon',
-        'orange-square',
-      ],
+      names: ['u6708', 'chinese', 'japanese', 'kanji', 'month', 'moon', 'orange-square'],
     },
     {
       name: 'u6709',
@@ -6325,14 +5201,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'u7121',
-      names: [
-        'u7121',
-        'chinese',
-        'japanese',
-        'kanji',
-        'nothing',
-        'orange-square',
-      ],
+      names: ['u7121', 'chinese', 'japanese', 'kanji', 'nothing', 'orange-square'],
     },
     {
       name: 'u7533',
@@ -6353,15 +5222,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'u7a7a',
-      names: [
-        'u7a7a',
-        'blue-square',
-        'chinese',
-        'empty',
-        'japanese',
-        'kanji',
-        'sky',
-      ],
+      names: ['u7a7a', 'blue-square', 'chinese', 'empty', 'japanese', 'kanji', 'sky'],
     },
     {
       name: 'umbrella',
@@ -6374,14 +5235,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'unamused',
-      names: [
-        'unamused',
-        'bored',
-        'indifference',
-        'sarcasm',
-        'serious',
-        'straight face',
-      ],
+      names: ['unamused', 'bored', 'indifference', 'sarcasm', 'serious', 'straight face'],
     },
     {
       name: 'underage',
@@ -6449,14 +5303,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'violin',
-      names: [
-        'violin',
-        'fiddle',
-        'instrument',
-        'music',
-        'orchestra',
-        'symphony',
-      ],
+      names: ['violin', 'fiddle', 'instrument', 'music', 'orchestra', 'symphony'],
     },
     {
       name: 'virgo',
@@ -6464,15 +5311,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'volcano',
-      names: [
-        'volcano',
-        'ash',
-        'disaster',
-        'eruption',
-        'lava',
-        'nature',
-        'photo',
-      ],
+      names: ['volcano', 'ash', 'disaster', 'eruption', 'lava', 'nature', 'photo'],
     },
     {
       name: 'volleyball',
@@ -6540,16 +5379,7 @@ export const compiledEmojis: CompiledEmojis = {
     { name: 'waving_black_flag', names: ['waving_black_flag'] },
     {
       name: 'waving_hand',
-      names: [
-        'farewell',
-        'gesture',
-        'goodbye',
-        'hands',
-        'hello',
-        'hi',
-        'palm',
-        'solong',
-      ],
+      names: ['farewell', 'gesture', 'goodbye', 'hands', 'hello', 'hi', 'palm', 'solong'],
     },
     {
       name: 'waving_white_flag',
@@ -6557,15 +5387,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'wavy_dash',
-      names: [
-        'wavy_dash',
-        'draw',
-        'line',
-        'moustache',
-        'mustache',
-        'scribble',
-        'squiggle',
-      ],
+      names: ['wavy_dash', 'draw', 'line', 'moustache', 'mustache', 'scribble', 'squiggle'],
     },
     {
       name: 'waxing_crescent_moon',
@@ -6590,16 +5412,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'wedding',
-      names: [
-        'wedding',
-        'affection',
-        'bride',
-        'couple',
-        'groom',
-        'like',
-        'love',
-        'marriage',
-      ],
+      names: ['wedding', 'affection', 'bride', 'couple', 'groom', 'like', 'love', 'marriage'],
     },
     {
       name: 'whale',
@@ -6688,17 +5501,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'wink',
-      names: [
-        'wink',
-        ';)',
-        'blink',
-        'eye',
-        'face',
-        'happy',
-        'mischievous',
-        'secret',
-        'smile',
-      ],
+      names: ['wink', ';)', 'blink', 'eye', 'face', 'happy', 'mischievous', 'secret', 'smile'],
     },
     { name: 'wolf', names: ['wolf', 'animal', 'nature', 'wild'] },
     { name: 'woman', names: ['woman', 'female', 'girls', 'lady'] },
@@ -6801,14 +5604,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'woman_in_steamy_room',
-      names: [
-        'woman_in_steamy_room',
-        'female',
-        'sauna',
-        'spa',
-        'steamroom',
-        'woman',
-      ],
+      names: ['woman_in_steamy_room', 'female', 'sauna', 'spa', 'steamroom', 'woman'],
     },
     {
       name: 'woman_kneeling',
@@ -6865,14 +5661,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'womans_hat',
-      names: [
-        'womans_hat',
-        'accessories',
-        'fashion',
-        'female',
-        'lady',
-        'spring',
-      ],
+      names: ['womans_hat', 'accessories', 'fashion', 'female', 'lady', 'spring'],
     },
     { name: 'woman’s_flat_shoe', names: ['blue shoes', 'flats'] },
     {
@@ -6890,16 +5679,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'womens',
-      names: [
-        'womens',
-        'female',
-        'gender',
-        'loo',
-        'purple-square',
-        'restroom',
-        'toilet',
-        'woman',
-      ],
+      names: ['womens', 'female', 'gender', 'loo', 'purple-square', 'restroom', 'toilet', 'woman'],
     },
     { name: 'woozy_face', names: ['woozy_face'] },
     {
@@ -6916,27 +5696,13 @@ export const compiledEmojis: CompiledEmojis = {
     },
     {
       name: 'writing_hand',
-      names: [
-        'writing_hand',
-        'compose',
-        'lower_left_ballpoint_pen',
-        'stationery',
-        'write',
-      ],
+      names: ['writing_hand', 'compose', 'lower_left_ballpoint_pen', 'stationery', 'write'],
     },
     { name: 'x', names: ['x', 'cancel', 'delete', 'no', 'remove'] },
     { name: 'yarn', names: ['yarn'] },
     {
       name: 'yawning_face',
-      names: [
-        'yawning_face',
-        'drowsy',
-        'rest',
-        'sleep',
-        'sleepy',
-        'tired',
-        'yawn',
-      ],
+      names: ['yawning_face', 'drowsy', 'rest', 'sleep', 'sleepy', 'tired', 'yawn'],
     },
     { name: 'yellow_circle', names: ['circle', 'shape', 'yellow'] },
     {
@@ -9552,10 +8318,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     face_with_symbols_on_mouth: {
       name: 'face_with_symbols_on_mouth',
-      names: [
-        'face_with_symbols_on_mouth',
-        'serious_face_with_symbols_covering_mouth',
-      ],
+      names: ['face_with_symbols_on_mouth', 'serious_face_with_symbols_covering_mouth'],
       sort_order: 92,
       unicode: '🤬',
     },
@@ -13528,11 +12291,7 @@ export const compiledEmojis: CompiledEmojis = {
     },
     man_and_woman_holding_hands: {
       name: 'man_and_woman_holding_hands',
-      names: [
-        'couple',
-        'man_and_woman_holding_hands',
-        'woman_and_man_holding_hands',
-      ],
+      names: ['couple', 'man_and_woman_holding_hands', 'woman_and_man_holding_hands'],
       skin_variations: [
         '👫🏻',
         '👩🏻‍🤝‍👨🏼',

@@ -21,15 +21,11 @@ export type ImageGalleryContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   images: MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
-  setImage: React.Dispatch<
-    React.SetStateAction<{ messageId?: string; url?: string } | undefined>
-  >;
-  setImages: React.Dispatch<
-    React.SetStateAction<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>
-  >;
+  setImage: React.Dispatch<React.SetStateAction<{ messageId?: string; url?: string } | undefined>>;
+  setImages: React.Dispatch<React.SetStateAction<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>>;
   image?: { messageId?: string; url?: string };
 };
 
@@ -44,13 +40,11 @@ export const ImageGalleryProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
-  const [images, setImages] = useState<
-    MessageType<At, Ch, Co, Ev, Me, Re, Us>[]
-  >([]);
+  const [images, setImages] = useState<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 
   const imageGalleryContext = {
@@ -62,7 +56,7 @@ export const ImageGalleryProvider = <
 
   return (
     <ImageGalleryContext.Provider
-      value={(imageGalleryContext as unknown) as ImageGalleryContextValue}
+      value={imageGalleryContext as unknown as ImageGalleryContextValue}
     >
       {children}
     </ImageGalleryContext.Provider>
@@ -76,9 +70,9 @@ export const useImageGalleryContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() =>
-  (useContext(ImageGalleryContext) as unknown) as ImageGalleryContextValue<
+  useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<
     At,
     Ch,
     Co,
@@ -96,24 +90,14 @@ export const withImageGalleryContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
-): React.FC<
-  Omit<P, keyof ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>>
-> => {
+): React.FC<Omit<P, keyof ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithImageGalleryContextComponent = (
     props: Omit<P, keyof ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const imageGalleryContext = useImageGalleryContext<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >();
+    const imageGalleryContext = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
     return <Component {...(props as P)} {...imageGalleryContext} />;
   };

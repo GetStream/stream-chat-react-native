@@ -24,12 +24,10 @@ type Parameters<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   lockChannelOrder: boolean;
-  setChannels: React.Dispatch<
-    React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-  >;
+  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
 };
 
 export const useNewMessage = <
@@ -39,7 +37,7 @@ export const useNewMessage = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   lockChannelOrder,
   setChannels,

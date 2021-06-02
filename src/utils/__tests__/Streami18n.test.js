@@ -27,9 +27,8 @@ const customDayjsLocaleConfig = {
     LT: 'HH:mm',
     LTS: 'HH:mm:ss',
   },
-  months: 'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split(
-    '_',
-  ),
+  months:
+    'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
   monthsShort: 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
   ordinal: '%d.',
   relativeTime: {
@@ -52,9 +51,7 @@ const customDayjsLocaleConfig = {
     dow: 1, // Monday is the first day of the week.
     doy: 4, // The week that contains Jan 4th is the first week of the year.
   },
-  weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split(
-    '_',
-  ),
+  weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split('_'),
   weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
   weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
 };
@@ -184,11 +181,7 @@ describe('registerTranslation - register new language `mr` (Marathi)', () => {
     text1: 'अनुवादित मजकूर 1',
     text2: 'अनुवादित मजकूर 2',
   };
-  streami18n.registerTranslation(
-    languageCode,
-    translations,
-    customDayjsLocaleConfig,
-  );
+  streami18n.registerTranslation(languageCode, translations, customDayjsLocaleConfig);
 
   streami18n.setLanguage('mr');
 

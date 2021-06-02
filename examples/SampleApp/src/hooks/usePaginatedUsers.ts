@@ -19,32 +19,22 @@ export type PaginatedUsers = {
   searchText: string;
   selectedUserIds: string[];
   selectedUsers: UserResponse<LocalUserType>[];
-  setInitialResults: React.Dispatch<
-    React.SetStateAction<UserResponse<LocalUserType>[] | null>
-  >;
-  setResults: React.Dispatch<
-    React.SetStateAction<UserResponse<LocalUserType>[]>
-  >;
+  setInitialResults: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[] | null>>;
+  setResults: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[]>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedUsers: React.Dispatch<
-    React.SetStateAction<UserResponse<LocalUserType>[]>
-  >;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[]>>;
   toggleUser: (user: UserResponse<LocalUserType>) => void;
 };
 
 export const usePaginatedUsers = (): PaginatedUsers => {
   const { chatClient } = useContext(AppContext);
 
-  const [initialResults, setInitialResults] = useState<
-    UserResponse<LocalUserType>[] | null
-  >(null);
+  const [initialResults, setInitialResults] = useState<UserResponse<LocalUserType>[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<UserResponse<LocalUserType>[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<
-    UserResponse<LocalUserType>[]
-  >([]);
+  const [selectedUsers, setSelectedUsers] = useState<UserResponse<LocalUserType>[]>([]);
 
   const hasMoreResults = useRef(true);
   const offset = useRef(0);
@@ -160,10 +150,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
       }
 
       // Dumb check to avoid duplicates
-      if (
-        query === searchText &&
-        results.findIndex((r) => res?.users[0].id === r.id) > -1
-      ) {
+      if (query === searchText && results.findIndex((r) => res?.users[0].id === r.id) > -1) {
         queryInProgress.current = false;
         return;
       }
@@ -175,10 +162,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
         return r.concat(res?.users || []);
       });
 
-      if (
-        res?.users.length < 10 &&
-        (offset.current === 0 || query === searchText)
-      ) {
+      if (res?.users.length < 10 && (offset.current === 0 || query === searchText)) {
         hasMoreResults.current = false;
       }
 

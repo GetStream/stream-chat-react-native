@@ -22,11 +22,7 @@ type Props = {
 };
 
 export const ImageGalleryOverlay: React.FC<Props> = (props) => {
-  const {
-    animatedBottomSheetIndex,
-    closeGridView,
-    currentBottomSheetIndex,
-  } = props;
+  const { animatedBottomSheetIndex, closeGridView, currentBottomSheetIndex } = props;
 
   const {
     theme: {
@@ -78,11 +74,7 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
   }
 
   return (
-    <TapGestureHandler
-      maxDeltaX={16}
-      maxDeltaY={16}
-      onHandlerStateChange={tapEvent}
-    >
+    <TapGestureHandler maxDeltaX={16} maxDeltaY={16} onHandlerStateChange={tapEvent}>
       <Animated.View
         style={[
           StyleSheet.absoluteFillObject,

@@ -27,11 +27,7 @@ module.exports = (api) => {
         ],
         'module-resolver',
       ],
-      presets: [
-        '@babel/env',
-        'module:metro-react-native-babel-preset',
-        '@babel/preset-typescript',
-      ],
+      presets: ['@babel/env', 'module:metro-react-native-babel-preset', '@babel/preset-typescript'],
     };
   }
 
@@ -72,10 +68,6 @@ module.exports = (api) => {
       ],
       'module-resolver',
     ],
-    presets: [
-      '@babel/env',
-      'module:metro-react-native-babel-preset',
-      '@babel/preset-typescript',
-    ],
+    presets: ['@babel/env', 'module:metro-react-native-babel-preset', '@babel/preset-typescript'],
   };
 };

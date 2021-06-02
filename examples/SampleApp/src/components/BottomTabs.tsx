@@ -86,16 +86,10 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
         };
 
         return (
-          <TouchableOpacity
-            key={index}
-            onPress={onPress}
-            style={styles.tabContainer}
-          >
+          <TouchableOpacity key={index} onPress={onPress} style={styles.tabContainer}>
             <View>
               {isFocused ? tab.iconActive : tab.icon}
-              {tab.notification && (
-                <View style={styles.notification}>{tab.notification}</View>
-              )}
+              {tab.notification && <View style={styles.notification}>{tab.notification}</View>}
             </View>
             <Text
               style={[

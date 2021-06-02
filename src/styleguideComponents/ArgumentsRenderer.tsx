@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Styled, {
-  JssInjectedProps,
-} from 'react-styleguidist/lib/client/rsg-components/Styled';
-import Argument, {
-  ArgumentProps,
-} from 'react-styleguidist/lib/client/rsg-components/Argument';
+import Styled, { JssInjectedProps } from 'react-styleguidist/lib/client/rsg-components/Styled';
+import Argument, { ArgumentProps } from 'react-styleguidist/lib/client/rsg-components/Argument';
 import Heading from 'react-styleguidist/lib/client/rsg-components/Heading';
 import * as Rsg from 'react-styleguidist/lib/typings';
 

@@ -26,25 +26,24 @@ export type InlineLoadingMoreThreadIndicatorPropsWithContext = {
   threadLoadingMore?: boolean;
 };
 
-export const InlineLoadingMoreThreadIndicatorWithContext: React.FC<InlineLoadingMoreThreadIndicatorPropsWithContext> = ({
-  threadLoadingMore,
-}) => {
-  const { theme } = useTheme();
+export const InlineLoadingMoreThreadIndicatorWithContext: React.FC<InlineLoadingMoreThreadIndicatorPropsWithContext> =
+  ({ threadLoadingMore }) => {
+    const { theme } = useTheme();
 
-  const {
-    colors: { accent_blue },
-  } = theme;
+    const {
+      colors: { accent_blue },
+    } = theme;
 
-  if (!threadLoadingMore) {
-    return null;
-  }
+    if (!threadLoadingMore) {
+      return null;
+    }
 
-  return (
-    <View style={styles.activityIndicatorContainer}>
-      <ActivityIndicator color={accent_blue} size='small' />
-    </View>
-  );
-};
+    return (
+      <View style={styles.activityIndicatorContainer}>
+        <ActivityIndicator color={accent_blue} size='small' />
+      </View>
+    );
+  };
 
 const areEqual = (
   prevProps: InlineLoadingMoreThreadIndicatorPropsWithContext,
@@ -53,8 +52,7 @@ const areEqual = (
   const { threadLoadingMore: prevThreadLoadingMore } = prevProps;
   const { threadLoadingMore: nextThreadLoadingMore } = nextProps;
 
-  const threadLoadingMoreEqual =
-    prevThreadLoadingMore === nextThreadLoadingMore;
+  const threadLoadingMoreEqual = prevThreadLoadingMore === nextThreadLoadingMore;
   if (!threadLoadingMoreEqual) return false;
 
   return true;
@@ -72,13 +70,9 @@ export const InlineLoadingMoreThreadIndicator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
   const { threadLoadingMore } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return (
-    <MemoizedInlineLoadingMoreThreadIndicator
-      threadLoadingMore={threadLoadingMore}
-    />
-  );
+  return <MemoizedInlineLoadingMoreThreadIndicator threadLoadingMore={threadLoadingMore} />;
 };

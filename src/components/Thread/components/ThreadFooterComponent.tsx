@@ -52,7 +52,7 @@ type ThreadFooterComponentPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Message'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
 
@@ -63,7 +63,7 @@ const ThreadFooterComponentWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -74,12 +74,7 @@ const ThreadFooterComponentWithContext = <
     theme: {
       colors: { bg_gradient_end, bg_gradient_start, grey },
       thread: {
-        newThread: {
-          backgroundGradientStart,
-          backgroundGradientStop,
-          text,
-          ...newThread
-        },
+        newThread: { backgroundGradientStart, backgroundGradientStop, text, ...newThread },
       },
     },
   } = useTheme();
@@ -91,26 +86,11 @@ const ThreadFooterComponentWithContext = <
   return (
     <View style={styles.threadHeaderContainer}>
       <View style={styles.messagePadding}>
-        <Message
-          groupStyles={['single']}
-          message={thread}
-          preventPress
-          threadList
-        />
+        <Message groupStyles={['single']} message={thread} preventPress threadList />
       </View>
       <View style={[styles.newThread, newThread]}>
-        <Svg
-          height={newThread.height ?? 24}
-          style={styles.absolute}
-          width={vw(100)}
-        >
-          <Rect
-            fill='url(#gradient)'
-            height={newThread.height ?? 24}
-            width={vw(100)}
-            x={0}
-            y={0}
-          />
+        <Svg height={newThread.height ?? 24} style={styles.absolute} width={vw(100)}>
+          <Rect fill='url(#gradient)' height={newThread.height ?? 24} width={vw(100)} x={0} y={0} />
           <Defs>
             <LinearGradient
               gradientUnits='userSpaceOnUse'
@@ -152,7 +132,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -181,7 +161,7 @@ export const ThreadFooterComponent = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
   const { Message } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();

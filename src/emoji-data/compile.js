@@ -6,9 +6,7 @@ const { emojiArray, emojiLib } = require('./index.js');
 const stingified = JSON.stringify({
   emojiArray,
   emojiLib,
-}).replace(/(["'])require(?:(?=(\\?))\2.)*?\1/g, (value) =>
-  value.replace(/"/g, ''),
-);
+}).replace(/(["'])require(?:(?=(\\?))\2.)*?\1/g, (value) => value.replace(/"/g, ''));
 
 fs.writeFile(
   'compiled.ts',

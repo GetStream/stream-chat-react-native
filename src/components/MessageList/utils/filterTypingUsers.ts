@@ -19,7 +19,7 @@ type FilterTypingUsersParams<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'typing'> &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
@@ -31,7 +31,7 @@ export const filterTypingUsers = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   client,
   thread,

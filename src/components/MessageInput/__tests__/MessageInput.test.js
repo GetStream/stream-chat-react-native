@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { MessageInput } from '../MessageInput';
 
@@ -50,9 +45,7 @@ describe('MessageInput', () => {
   it('should render MessageInput', async () => {
     await initializeChannel(generateChannel());
 
-    const { getByTestId, queryByTestId, queryByText, toJSON } = render(
-      getComponent(),
-    );
+    const { getByTestId, queryByTestId, queryByText, toJSON } = render(getComponent());
 
     await waitFor(() => {
       expect(queryByTestId('upload-photo-item')).toBeTruthy();

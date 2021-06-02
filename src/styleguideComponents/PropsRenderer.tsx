@@ -13,13 +13,8 @@ import { PropDescriptor } from 'react-styleguidist/lib/client/rsg-components/Pro
 function renderDescription(prop: PropDescriptor) {
   const { description, tags = {} } = prop;
   const extra = renderExtra(prop);
-  const args = [
-    ...(tags.arg || []),
-    ...(tags.argument || []),
-    ...(tags.param || []),
-  ];
-  const returnDocumentation =
-    (tags.return && tags.return[0]) || (tags.returns && tags.returns[0]);
+  const args = [...(tags.arg || []), ...(tags.argument || []), ...(tags.param || [])];
+  const returnDocumentation = (tags.return && tags.return[0]) || (tags.returns && tags.returns[0]);
 
   return (
     <div>
@@ -27,9 +22,7 @@ function renderDescription(prop: PropDescriptor) {
       {extra && <Para>{extra}</Para>}
       <JsDoc {...tags} />
       {args.length > 0 && <Arguments args={args} heading />}
-      {returnDocumentation && (
-        <Argument {...{ ...returnDocumentation, name: '' }} returns />
-      )}
+      {returnDocumentation && <Argument {...{ ...returnDocumentation, name: '' }} returns />}
     </div>
   );
 }

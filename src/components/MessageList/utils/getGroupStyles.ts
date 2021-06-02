@@ -22,7 +22,7 @@ export type GetGroupStylesParams<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   dateSeparators: DateSeparators;
   messages:
@@ -41,7 +41,7 @@ export const getGroupStyles = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

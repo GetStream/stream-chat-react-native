@@ -32,9 +32,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryGridImageComponent<
-  Us extends UnknownType = DefaultUserType
-> = ({
+export type ImageGalleryGridImageComponent<Us extends UnknownType = DefaultUserType> = ({
   item,
 }: {
   item: Photo<Us> & {
@@ -43,16 +41,12 @@ export type ImageGalleryGridImageComponent<
   };
 }) => React.ReactElement | null;
 
-export type ImageGalleryGridImageComponents<
-  Us extends UnknownType = DefaultUserType
-> = {
+export type ImageGalleryGridImageComponents<Us extends UnknownType = DefaultUserType> = {
   avatarComponent?: ImageGalleryGridImageComponent<Us>;
   imageComponent?: ImageGalleryGridImageComponent<Us>;
 };
 
-export type GridImageItem<
-  Us extends DefaultUserType = DefaultUserType
-> = Photo<Us> &
+export type GridImageItem<Us extends DefaultUserType = DefaultUserType> = Photo<Us> &
   ImageGalleryGridImageComponents<Us> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
@@ -73,12 +67,7 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
   } = useTheme();
   const { avatarComponent, imageComponent, ...restItem } = item;
 
-  const {
-    numberOfImageGalleryGridColumns,
-    selectAndClose,
-    uri,
-    user,
-  } = restItem;
+  const { numberOfImageGalleryGridColumns, selectAndClose, uri, user } = restItem;
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
@@ -117,9 +106,7 @@ const renderItem = <Us extends UnknownType = DefaultUserType>({
   item: GridImageItem<Us>;
 }) => <GridImage item={item} />;
 
-type Props<
-  Us extends UnknownType = DefaultUserType
-> = ImageGalleryGridImageComponents<Us> & {
+type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryGridImageComponents<Us> & {
   closeGridView: () => void;
   photos: Photo<Us>[];
   resetVisibleValues: () => void;
@@ -135,9 +122,7 @@ type Props<
   numberOfImageGalleryGridColumns?: number;
 };
 
-export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
-  props: Props<Us>,
-) => {
+export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
   const {
     avatarComponent,
     closeGridView,

@@ -19,7 +19,7 @@ export const getReadStates = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   clientUserId: string | undefined,
   messages:
@@ -34,9 +34,7 @@ export const getReadStates = <
     return acc;
   }, {} as { [key: string]: boolean | number });
 
-  const filteredMessagesReversed = messages
-    .filter((msg) => msg.updated_at)
-    .reverse();
+  const filteredMessagesReversed = messages.filter((msg) => msg.updated_at).reverse();
 
   if (read) {
     /**
@@ -81,13 +79,9 @@ export const getReadStates = <
             } else {
               const currentMessageReadData = readData[message.id];
               readData[message.id] =
-                typeof currentMessageReadData === 'boolean'
-                  ? 1
-                  : currentMessageReadData + 1;
+                typeof currentMessageReadData === 'boolean' ? 1 : currentMessageReadData + 1;
             }
-            const userIndex = members.findIndex(
-              ({ user }) => user.id === message.user?.id,
-            );
+            const userIndex = members.findIndex(({ user }) => user.id === message.user?.id);
             if (userIndex !== -1) {
               members.splice(userIndex, 1);
             }
