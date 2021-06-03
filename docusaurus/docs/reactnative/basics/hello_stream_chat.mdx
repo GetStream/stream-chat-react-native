@@ -154,8 +154,6 @@ The `OverlayProvider` is the highest level of the Stream Chat components.
 The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
 The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
-To use the `OverlayProvider` with no props `setTopInset` must be called at a later point in time, typically when the header height for the chat screen is known.
-For the purpose of this guide we will assume there is no header and provide the `topInset` as a prop with a value of `0`.
 
 For additional information on the `OverlayProvider` check the [OverlayProvider docs](<!-- TODO: Change to new docs -->) for detailed usage instructions, including how to properly use the `OverlyProvider` with [React Navigation](https://reactnavigation.org/).
 
@@ -163,7 +161,7 @@ For additional information on the `OverlayProvider` check the [OverlayProvider d
 import { OverlayProvider } from 'stream-chat-react-native';
 
 export const Screen = () =>
-  <OverlayProvider topInset={0}>
+  <OverlayProvider>
     {/** App components */}
   </OverlayProvider>
 ```
@@ -192,7 +190,7 @@ For additional information on the `Chat` component check the [Chat component doc
   const client = StreamChat.getInstance('api_key');
 
   export const App = () =>
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {/** App components */}
       </Chat>
@@ -219,7 +217,7 @@ For additional information on the `Chat` component check the [Chat component doc
   import { Screen } from './Screen';
 
   export const App = () =>
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Screen />
     </OverlayProvider>;
   ```
@@ -246,7 +244,7 @@ import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 const client = StreamChat.getInstance('api_key');
 
 export const App = () =>
-  <OverlayProvider topInset={0}>
+  <OverlayProvider>
     <Chat client={client}>
       <ChannelList />
     </Chat>
@@ -278,7 +276,7 @@ export const App = () => {
   const [channel, setChannel] = useState<ChannelType>();
 
   return (
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {channel ? (
           <Channel channel={channel}>
@@ -312,7 +310,7 @@ export const App = () => {
   const [channel, setChannel] = useState<ChannelType>();
 
   return (
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {channel ? (
           <Channel channel={channel}>
@@ -346,7 +344,7 @@ export const App = () => {
   const [channel, setChannel] = useState<ChannelType>();
 
   return (
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {channel ? (
           <Channel channel={channel}>
@@ -387,7 +385,7 @@ export const App = () => {
   const [thread, setThread] = useState<MessageType | null>();
 
   return (
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {channel ? (
           <Channel channel={channel} keyboardVerticalOffset={0} thread={thread}>

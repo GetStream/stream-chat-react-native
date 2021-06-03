@@ -136,27 +136,15 @@ The placement of the `AttachmentPicker` is dependant on two values, the `bottomI
 ### Top Inset
 
 `topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
-`topInset` can be set to 0 to cover the entire screen, or the [top safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control) if desired.
+`topInset` defaults to 0 and covers the entire screen, or it can be set to the [top safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control) if desired.
 The most common choice when using React Navigation is to get the header height using the `useHeaderHeight` hook from `@react-navigation/stack` and set the top inset to the given height for a nice visual result where the picker open to the header.
-
-:::caution
-
-**The bottom sheet will not render without `topInset` set.**
-
-<br />
-
-The current implementation of the scrollable bottom-sheet in which the image picker resides does not re-evaluate heights after the `topInset` is set; therefore set the `topInset` value only once.
-
-:::
 
 ```tsx
 const headerHeight = useHeaderHeight();
-const { setTopInset, topInset } = useAttachmentPickerContext();
+const { setTopInset } = useAttachmentPickerContext();
 
 useEffect(() => {
-  if (!topInset) {
-    setTopInset(headerHeight);
-  }
+  setTopInset(headerHeight);
 }, [headerHeight]);
 ```
 

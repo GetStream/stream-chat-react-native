@@ -58,7 +58,9 @@ Similarly if the gallery fully open is not at the desired height, this can be ad
 
 :::note
 
-Both of these values can be set via the appropriate functions, `setBottomInset` and `setTopInset`, that are accessible via the `useAttachmentPickerContext` hook.
+`topInset` prior to version `3.6.0` needed to be set before the image picker would render.
+Additionally it could only be set one time via either props or the `setTopInset` function, otherwise the gallery would open to incorrect heights.
+Both `bottomInset` & `topInset` can be set via the appropriate functions, `setBottomInset` and `setTopInset`, that are accessible via the `useAttachmentPickerContext` hook.
 
 :::
 

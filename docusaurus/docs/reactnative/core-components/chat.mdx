@@ -19,7 +19,7 @@ import { Chat, OverlayProvider } from 'stream-chat-react-native';
 const client = StreamChat.getInstance('api_key');
 
 export const App = () =>
-  <OverlayProvider topInset={0}>
+  <OverlayProvider>
     <Chat client={client}>
       {/** App components */}
     </Chat>
