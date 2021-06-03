@@ -185,7 +185,7 @@ For additional information on the `Chat` component check the [Chat component doc
 >
 <TabItem value='app'>
 
-  ```tsx
+  ```tsx {8-10}
   import { StreamChat } from 'stream-chat'; 
   import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
@@ -214,7 +214,7 @@ For additional information on the `Chat` component check the [Chat component doc
     </Chat>;
   ```
 
-  ```tsx
+  ```tsx {6}
   import { OverlayProvider } from 'stream-chat-react-native';
   import { Screen } from './Screen';
 
@@ -239,7 +239,7 @@ For additional information on the `ChannelList` component check the [ChannelList
 The `ChannelList` should be implemented inside of the UI components [previously configured](#configuring-ui-components) to provide the appropriate `contexts`.
 For the purpose of this guide we will continue to give the example implementation in a single component with the assumption that the client has already been instantiated, a user connected, and a channel the user has access to exists.
 
-```tsx
+```tsx {9}
 import { StreamChat } from 'stream-chat'; 
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
@@ -267,7 +267,7 @@ The `Channel` component does not require any props, but will not function as des
 The `channel` prop expects a `StreamChat` `Channel` instance.
 This can be created [as you did previously](#creating-a-channel), pulled directly from the `client.activeChannels`, or conveniently stored when a channel is selected from the `ChannelList`.
 
-```tsx
+```tsx {8,13-19}
 import React, { useState } from 'react';
 import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
@@ -301,7 +301,7 @@ For this additional components are required, most notably the `MessageList` comp
 
 For additional information on the `MessageList` component, how to pass props to the underlying [`FlatList`](https://reactnative.dev/docs/flatlist), or use the `MessageList` for threads, check the [MessageList component docs.](<!-- TODO: Change to new docs -->)
 
-```tsx
+```tsx {15}
 import React, { useState } from 'react';
 import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
@@ -335,7 +335,7 @@ Adding it to the app is as simple as rendering it below the `MessageList`.
 
 For additional information on the `MessageInput` component, how to modify it using `context`, or designate it for thread use via the `threadList` prop, check the [MessageInput component docs.](<!-- TODO: Change to new docs -->)
 
-```tsx
+```tsx {16}
 import React, { useState } from 'react';
 import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
@@ -375,7 +375,7 @@ The code snippet now has a fully functional `ChannelList`, `MessageList`, and `t
 
 For additional information on the `Thread` component, such as how to use `onThreadDismount` to manage your `thread` state, check the [Thread component docs.](<!-- TODO: Change to new docs -->)
 
-```tsx
+```tsx {9,15-24}
 import React, { useState } from 'react';
 import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
 import { ChannelList, Chat, MessageType, OverlayProvider } from 'stream-chat-react-native';
@@ -388,7 +388,7 @@ export const App = () => {
 
   return (
     <OverlayProvider topInset={0}>
-      <Chat client={chatClient}>
+      <Chat client={client}>
         {channel ? (
           <Channel channel={channel} keyboardVerticalOffset={0} thread={thread}>
             {thread ? (
@@ -440,7 +440,16 @@ These additions result in a small but functional chat sample app.
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
-import { ChannelList, Chat, MessageType, OverlayProvider } from 'stream-chat-react-native';
+import {
+  Channel,
+  ChannelList,
+  Chat,
+  MessageInput,
+  MessageList,
+  MessageType,
+  OverlayProvider,
+  Thread,
+} from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
@@ -487,7 +496,7 @@ export const App = () => {
         </View>
       </TouchableOpacity>
       <View style={{ flex: 1 }}>
-        <Chat client={chatClient}>
+        <Chat client={client}>
           {channel ? (
             <Channel channel={channel} keyboardVerticalOffset={60} thread={thread}>
               {thread ? (

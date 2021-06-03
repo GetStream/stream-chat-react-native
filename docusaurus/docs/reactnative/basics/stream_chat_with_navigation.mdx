@@ -173,7 +173,7 @@ This is the height between the bottom of the <!-- TODO: Change to new docs for l
 If you are displaying the chat screen without a tab-bar it is most likely the bottom inset is the [bottom safe area inset](https://reactnavigation.org/docs/handling-safe-area/#use-the-hook-for-more-control).
 If you are using a bottom tab-bar you can utilize the `useBottomTabBarHeight` hook from `@react-navigation/bottom-tabs` to get the appropriate height to use.
 
-```tsx
+```tsx {11,15}
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';

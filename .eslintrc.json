@@ -76,8 +76,10 @@
   },
   "overrides": [
     {
-      "files": ["*.md"],
+      "files": ["*.md", "*.mdx"],
       "rules": {
+        "arrow-body-style": ["error", "as-needed"],
+        "arrow-parens": ["error", "as-needed", { "requireForBlockBody": false }],
         "no-undef": 0,
         "react/jsx-no-undef": 0,
         "react/react-in-jsx-scope": 0,
