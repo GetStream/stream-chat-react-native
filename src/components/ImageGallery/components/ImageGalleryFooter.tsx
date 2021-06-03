@@ -162,7 +162,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
                 {t('{{ index }} of {{ photoLength }}', {
-                  index: selectedIndex + 1,
+                  index: photoLength - selectedIndex,
                   photoLength,
                 })}
               </Text>
