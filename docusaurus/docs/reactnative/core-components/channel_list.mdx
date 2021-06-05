@@ -122,7 +122,7 @@ With default implementation, the channel corresponding to event `notification.me
 
 ## Props
 
-### <div class="label recommended basic">Recommended</div> filters
+### <div class="label required">required</div> **filters**
 
 Filter object, used to query channels from Stream. You can query on any of the custom fields you've defined on the Channel. You can also filter other built-in channel fields.
 
@@ -151,7 +151,7 @@ Please take a look at [best practices](#) guide for more details.
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> sort
+### <div class="label required">required</div> **sort**
 
 Sort object, used to query channels from Stream.
 
@@ -165,7 +165,7 @@ const sort = { last_message_at: -1 };
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> options
+### <div class="label required">required</div> **options**
 
 Options object, used to query channels from Stream.
 
@@ -175,7 +175,7 @@ See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a l
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> onSelect
+### <div class="label required">required</div> **onSelect**
 
 This function gets called when user presses an item from list. You should implement logic for navigating to Channel screen, within this callback.
 

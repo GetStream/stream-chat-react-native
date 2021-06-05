@@ -4,11 +4,39 @@ sidebar_position: 2
 title: Chat
 ---
 
-WIP
+<!-- TODO: Change to new docs -->
+The Chat component is a React Context provider that wraps the [ChannelList](#) and [Channel](#) component. It provides the [ChatContext](#) to its children, which includes the StreamChat client instance. StreamChat [client](#) should be provided to this component as prop.
+
+`Chat` component is provided by `stream-chat-react-native` and can be imported from the library as following
+
+```tsx
+import { Chat } from 'stream-chat-react-native';
+```
+
+## Basic Usage
+
+```tsx
+const client = StreamChat.getInstance('api_key');
+
+// For ChannelList
+<Chat client={client}>
+  <ChannelList />
+</Chat>
+
+// For Channel
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel}>
+      <MessageList />
+      <MessageInput />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
 
 ## Props
 
-### <div class="label required basic">Required</div> client
+### <div class="label required">required</div> **client**
 
 The StreamChat client object
 
