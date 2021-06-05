@@ -3,3 +3,241 @@ id: overlay-provider
 sidebar_position: 1
 title: OverlayProvider
 ---
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+The `OverlayProvider` is the highest level of the Stream Chat components. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
+
+The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
+To use the `OverlayProvider` with no props `setTopInset` must be called at a later point in time, typically when the header height for the chat screen is known.
+For the purpose of this guide we will assume there is no header and provide the `topInset` as a prop with a value of `0`.
+
+## UI Customizations
+
+You can override any of the components which gets rendered in overlay using props on `OverlayProvider`.
+
+For example, you can customize message avatar component as following:
+
+```jsx
+import { Channel, useMessageContext } from 'stream-chat-react-native';
+
+const CustomAvatar = () => {
+  const {message} = useMessageContext();
+
+  return <Image source={{ src: message.user.image }} />
+}
+
+<Channel MessageAvatar={CustomAvatar} />
+```
+
+
+<Tabs
+  defaultValue='message-overlay'
+  values={[
+    { label: 'Message Overlay', value: 'message-overlay' },
+    { label: 'Image Picker', value: 'image-picker' },
+    { label: 'Image Gallery', value: 'image-gallery' },
+  ]}
+>
+<TabItem value='message-overlay'>
+
+![](../assets/api-references/components/overlay-provider/visual_guide_1.png)
+
+</TabItem>
+<TabItem value='image-picker'>
+
+![](../assets/api-references/components/overlay-provider/visual_guide_2.png)
+
+</TabItem>
+<TabItem value='image-gallery'>
+
+![](../assets/api-references/components/overlay-provider/visual_guide_3.png)
+
+</TabItem>
+</Tabs>
+
+## Props
+
+### <div class="label required">required</div> **bottomInset**
+`bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+
+:::tip
+This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook, if you would like to set it programatically from some child component.
+:::
+
+| Type | Default |
+| - | - |
+| number | 0 |
+
+### <div class="label required">required</div> **topInset**
+
+`topInset` must be set to ensure that when the picker is completely open it is opened to the desired height.
+The bottom sheet will not render without this height set, but it can be
+set to 0 to cover the entire screen, or the safe area top inset if desired.
+
+:::tip
+This can be done via props, but can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. 
+:::
+
+| Type | Default |
+| - | - |
+| number | 0 |
+
+### attachmentPickerBottomSheetHandleHeight
+
+Height of image picker bottom sheet handle.
+
+| Type | Default |
+| - | - |
+| number | 20 |
+
+### attachmentPickerBottomSheetHeight
+
+Height of image picker bottom sheet.
+
+| Type | Default |
+| - | - |
+| number | 308 |
+
+### attachmentPickerErrorButtonText
+
+### attachmentPickerErrorText
+
+### attachmentSelectionBarHeight
+
+### i18nInstance
+
+<!-- TODO: Change to new docs -->
+Instance of `Streami18n` class, to add internationalization. Please read more [Translations docs](#) for details.
+
+| Type |
+| - |
+| [`Streami18n`](#) |
+
+### imageGalleryCustomComponents
+
+Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
+
+- [ImageGalleryFooter](#)
+- [ImageGrid](#)
+- [ImageGridHandle](#)
+- [ImageGalleryHeader](#)
+
+```jsx
+{
+ footer: {
+   ShareIcon: CustomShareIconComponent
+ },
+ grid: {
+   avatarComponent: CustomAvatarComponent
+ },
+ gridHandle: {
+   centerComponent: CustomCenterComponent
+ },
+ header: {
+   CloseIcon: CustomCloseButtonComponent
+ },
+}
+```
+
+| Type |
+| - |
+| object |
+
+### imageGalleryGridHandleHeight
+
+Handler height for image gallery grid.
+
+| Type | Default |
+| - | - |
+| number | 40 |
+
+<!-- ### imageGalleryGridSnapPoints -->
+
+### numberOfAttachmentImagesToLoadPerCall
+
+Number of images to load per call to [`CameraRoll.getPhotos`](https://github.com/react-native-cameraroll/react-native-cameraroll#getphotos)
+
+| Type | Default |
+| - | - |
+| number | 60 |
+
+### numberOfAttachmentPickerImageColumns
+
+Number of columns to render within image picker.
+
+| Type | Default |
+| - | - |
+| number | 3 |
+
+### numberOfImageGalleryGridColumns
+
+Number of columns to render within image gallery grid.
+
+| Type | Default |
+| - | - |
+| number | 3 |
+
+### value
+
+### AttachmentPickerBottomSheetHandle
+
+Custom UI component to render bottom sheet handle for image picker.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [AttachmentPickerBottomSheetHandle](#) |
+
+### AttachmentPickerError
+
+### AttachmentPickerErrorImage
+
+### CameraSelectorIcon
+
+Custom UI component to render camera selector icon, within [AttachmentPicker](#)
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [CameraSelectorIcon](#) |
+
+### FileSelectorIcon
+
+Custom UI component to render file selector icon, within [AttachmentPicker](#)
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [FileSelectorIcon](#) |
+
+<!-- ### ImageOverlaySelectedComponent -->
+
+### ImageSelectorIcon
+
+Custom UI component to render image selector icon, within [AttachmentPicker](#)
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [ImageSelectorIcon](#) |
+
+<!-- ### MessageActions -->
+
+### OverlayReactionList
+
+Custom UI component to render available list of reactions.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [OverlayReactionList](#) |
+
+### OverlayReactions
+
+Custom UI component to render list of reactions added by members of channel.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [OverlayReactions](#) |
