@@ -40,6 +40,8 @@ Don't use `additionalFlatListProps` to access the FlatList ref, use [`setFlatLis
 
 ### inverted
 
+Sets the `inverted` prop on underlying [FlatList](https://reactnative.dev/docs/flatlist#inverted)
+
 | Type | Default |
 | - | - |
 | boolean | true |
@@ -52,14 +54,76 @@ Don't use `additionalFlatListProps` to access the FlatList ref, use [`setFlatLis
 
 ### onListScroll
 
+Callback function which gets called when list scrolls. This function receives scroll event from underlying FlatList as param.
+
+The event has the following shape (all values are numbers):
+
+```js
+{
+  nativeEvent: {
+    contentInset: {bottom, left, right, top},
+    contentOffset: {x, y},
+    contentSize: {height, width},
+    layoutMeasurement: {height, width},
+    zoomScale
+  }
+}
+```
+
+| Type |
+| - |
+| function |
+
 ### onThreadSelect
+
+Function which gets called when user presses on `"Thread Reply"` action from message actions or `MessageReplies` component which displays the number of thread replies on the message.
+You should put navigation logic to switch to Thread Screen within this function.
+
+| Type |
+| - |
+| function |
 
 ### setFlatListRef
 
-### threadList
+Use this callback function to gain access to the underlying FlatList ref.
+
+#### Example
+
+```jsx
+const flRef = useRef();
+
+<MessageList setFlatListRef={(ref) => flRef.current = ref} />
+```
+
+| Type |
+| - |
+| function |
+
+<!-- ### threadList
+
+Boolean whether or not the Messages in the MessageList are part of a Thread.
+
+| Type |
+| - |
+| function | -->
 
 ### FooterComponent
 
+Custom UI component to render footer for MessageList component. Since we use inverted FlatList, this component will be rendered at top of the list.
+In absence of this prop, an inline loading indicator will be rendered when channel is loading more results.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [LoadingMoreIndicator](#) |
+
 ### HeaderComponent
 
+Custom UI component to render header for MessageList component. Since we use inverted FlatList, this component will be rendered at bottom of the list.
+In absence of this prop, an inline loading indicator will be rendered when channel is loading more results.
+
+<!-- TODO: Change to new docs -->
+| Type               | Default      |
+| ------------------ | ------------ |
+| Component, element | [InlineLoadingMoreRecentIndicator](#) |
 
