@@ -7,20 +7,29 @@ title: MessageList
 `MessageList` component uses [`FlatList`](https://reactnative.dev/docs/flatlist) to render list of messages within a channel (provided as a prop to parent `Channel` component).
 This component must be rendered within `Channel` component. It uses `message.type` property, to render corresponding view for message.
 
-Additionally it also renders following building block-components for message list:
+Additionally it also renders following building blocks for message list:
 
 - `DateHeader` - which is a sticky header at top of the list and updates as you scroll up within list.
 - `InlineDateSeparator` - which act as separators for messages from different dates
 - `ScrollToBottomButton` - which when pressed, scrolls the list to most recent message.
 
+## Basic Usage
+
+```tsx
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel}>
+      <MessageList />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
 
 ## Props
 
 ### additionalFlatListProps
 
 Set any additional props on underlying [FlatList](https://reactnative.dev/docs/flatlist#props).
-
-#### Example Usage
 
 ```jsx
 const flatListProps = { bounces: true };
@@ -30,7 +39,7 @@ const flatListProps = { bounces: true };
 
 :::caution
 
-Don't use `additionalFlatListProps` to access the FlatList ref, use [`setFlatListRef`](#) instead.
+Don't use `additionalFlatListProps` to access the FlatList ref, use [`setFlatListRef`](#setflatlistref) instead.
 
 :::
 
@@ -47,6 +56,8 @@ Sets the `inverted` prop on underlying [FlatList](https://reactnative.dev/docs/f
 | boolean | true |
 
 ### noGroupByUser
+
+When true, consecutive messages from same user won't be grouped together. Avatar for user of message is only shown for last message of the group.
 
 | Type | Default |
 | - | - |
