@@ -122,7 +122,7 @@ With default implementation, the channel corresponding to event `notification.me
 
 ## Props
 
-### <div class="label recommended basic">Recommended</div> filters
+### <div class="label required">required</div> **filters**
 
 Filter object, used to query channels from Stream. You can query on any of the custom fields you've defined on the Channel. You can also filter other built-in channel fields.
 
@@ -151,7 +151,7 @@ Please take a look at [best practices](#) guide for more details.
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> sort
+### <div class="label required">required</div> **sort**
 
 Sort object, used to query channels from Stream.
 
@@ -165,7 +165,7 @@ const sort = { last_message_at: -1 };
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> options
+### <div class="label required">required</div> **options**
 
 Options object, used to query channels from Stream.
 
@@ -175,7 +175,7 @@ See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a l
 | ------------------ |
 | object             |
 
-### <div class="label recommended basic">Recommended</div> onSelect
+### <div class="label required">required</div> **onSelect**
 
 This function gets called when user presses an item from list. You should implement logic for navigating to Channel screen, within this callback.
 
@@ -186,9 +186,9 @@ This function gets called when user presses an item from list. You should implem
 onSelect={(channel) => { /** navigation logic */ }}
 ```
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### additionalFlatListProps
 
@@ -258,9 +258,9 @@ Function that overrides default behavior when a user gets added to a channel
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onChannelDeleted
 
@@ -271,9 +271,9 @@ Function that overrides default behavior when a channel gets deleted. In absence
 - `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
 - `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.deleted` event
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onChannelHidden
 
@@ -286,9 +286,9 @@ Function that overrides default behavior when a channel gets hidden. In absence 
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onChannelVisible
 
@@ -301,9 +301,9 @@ Function that overrides default behavior when a channel gets visible. In absence
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onChannelTruncated
 
@@ -316,9 +316,9 @@ Function to customize behavior when a channel gets truncated
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onChannelUpdated
 
@@ -331,9 +331,9 @@ Function that overrides default behavior when a channel gets updated
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onMessageNew
 
@@ -346,9 +346,9 @@ Override the default listener/handler for event `notification.message_new`. This
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### onRemovedFromChannel
 
@@ -361,9 +361,9 @@ Function that overrides default behavior when a user gets removed from a channel
 
 Please check the example in [Event Listener](#override-default-behavior) section
 
-| Type               |
-| ------------------ |
-| Function           |
+| Type |
+| - |
+| function |
 
 ### setFlatListRef
 
@@ -377,13 +377,17 @@ const flRef = useRef();
 <ChannelList setFlatListRef={(ref) => flRef.current = ref} />
 ```
 
+| Type |
+| - |
+| function |
+
 ### EmptyStateIndicator
 
 Custom UI component for replacing default empty state indicator.
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [EmptyStateIndicator](#) |
 
 ### FooterLoadingIndicator
@@ -391,8 +395,8 @@ Custom UI component for replacing default empty state indicator.
 Custom UI component for replacing default footer loading indicator, which appears when ChanneList is loding more channels when scrolled to bottom of the list.
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [FooterLoadingIndicator](#) |
 
 ### HeaderErrorIndicator
@@ -400,8 +404,8 @@ Custom UI component for replacing default footer loading indicator, which appear
 Custom UI component for replacing default header error indicator, which appears when ChannelList failes to load more results.
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [HeaderErrorIndicator](#) |
 
 ### HeaderNetworkDownIndicator
@@ -409,25 +413,25 @@ Custom UI component for replacing default header error indicator, which appears 
 Custom UI component for replacing default network down indicator.
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [HeaderNetworkDownIndicator](#) |
 
 ### ListHeaderComponent
 
 UI component to render as header for channel list.
 
-| Type               |
-| ------------------ |
-| Component, element |
+| Type |
+|- |
+|, element |
 
 ### LoadingErrorIndicator
 
 Custom UI component for replacing default error indicator, which appears when ChannelList fails to fetch first set of channels.
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [LoadingErrorIndicator](#) |
 
 ### LoadingIndicator
@@ -435,8 +439,8 @@ Custom UI component for replacing default error indicator, which appears when Ch
 Custom UI component for replacing default loading indicator, which appears when ChannelList is loading first set of results
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [LoadingIndicator](#) |
 
 ### Preview
@@ -514,8 +518,8 @@ const ChannelListItem = (props) => {
 
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewMessenger](#) |
 
 
@@ -528,8 +532,8 @@ Custom UI component for rendering avatar component, within list item.
 - `channel` (Object) Channel
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewAvatar](#) |
 
 ### PreviewMessage
@@ -541,8 +545,8 @@ Custom UI component for rendering latest message preview component, within list 
 - `channel` (Object) Channel
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewMessage](#) |
 
 ### PreviewStatus
@@ -554,8 +558,8 @@ Custom UI component for rendering status component, within list item
 - `channel` (Object) Channel
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewStatus](#) |
 
 ### PreviewTitle
@@ -568,8 +572,8 @@ Custom UI component for rendering title, within list item
 - `displayName` (string)
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewTitle](#) |
 
 ### PreviewUnreadCount
@@ -582,6 +586,6 @@ Custom UI component for rendering unread count, within list item
 - `maxUnreadCount` (number) 
 
 <!-- TODO: Change to new docs -->
-| Type               | Default      |
-| ------------------ | ------------ |
+| Type | Default |
+| - | - |
 | Component, element | [ChannelPreviewUnreadCount](#) |

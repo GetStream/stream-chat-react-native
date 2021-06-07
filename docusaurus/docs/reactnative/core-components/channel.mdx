@@ -94,7 +94,7 @@ const CustomAvatar = () => {
 
 ## Props
 
-### <div class="label required basic">Required</div> channel
+### <div class="label required">required</div> **channel**
 
 <!-- TODO: Change to new docs -->
 Instance of Channel from stream-chat package.
@@ -106,7 +106,7 @@ Please check the [reference docs](https://getstream.io/chat/docs/javascript/crea
 |- -|
 | [Channel](#) |
 
-### <div class="label required basic">Required</div> keyboardVerticalOffset
+### <div class="label required">required</div> **keyboardVerticalOffset**
 
 Distance between top of the screen and top of Channel component. Generally this value needs to be - `headerHeight`.
 
@@ -968,35 +968,122 @@ Please check guides section for [Customizing Message UI](../guides/message-custo
 
 ### MessageStatus
 
-UI component to render status of message, which includes time and read-receipts
+UI component to render status of message, which includes time and read-receipts.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageStatus.tsx) |
 
 ### MessageSystem
 
+UI component to render `system` type messages. Purpose of system messages is to inform user about changes to channel. System messages are part of message history, and have a property `type` set as `system`.
+You can add system messages within message history in following scenarios:
+
+- [A user gets added to or removed from channel](https://getstream.io/chat/docs/javascript/channel_members/?language=javascript)
+- [A user accepts invite to join a channel](https://getstream.io/chat/docs/javascript/channel_invites/?language=javascript#accepting-an-invite)
+- [Channel is updated](https://getstream.io/chat/docs/javascript/channel_update/?language=javascript&q=system#full-update-(overwrite))
+
+| Type | Default |
+|- -|- -|
+| Component, element | [MessageSystem](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSystem.tsx) |
+
 ### MessageText
+
+UI component to render text of message. By default, we use [Simple Markdown](https://github.com/Khan/simple-markdown#adding-a-simple-extension) package to render the text content of message.
+If you decide to use this prop, please be aware that you will need to handle the markdown rendering yourself. 
+
+| Type | Default |
+|- -|- -|
+| Component, element | [renderText](#) |
 
 ### MoreOptionsButton
 
+UI component to render a button within enclosed MessageInput, which when pressed shows more options such as AttachmentButton, CommandsButton
+
+| Type | Default |
+|- -|- -|
+| Component, element | [MoreOptionsButton](#) |
+
 ### NetworkDownIndicator
 
-### OverlayReactionList
+UI component to render an indicator at top of the channel, which shows up when there is some issue with network or connection.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [NetworkDownIndicator](#) |
+
+<!-- ### OverlayReactionList -->
 
 ### ReactionList
 
+UI component to render list of reactions at top of message bubble.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [ReactionList](#) |
+
 ### Reply
+
+UI component to render preview of parent of message for quoted reply.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [Reply](#) |
 
 ### ScrollToBottomButton
 
+UI component to render a button which when pressed, scrolls the message list to bottom.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [ScrollToBottomButton](#) |
+
 ### SendButton
+
+UI component to render a send message button, within enclosed MessageInput component.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [SendButton](#) |
 
 ### ShowThreadMessageInChannelButton
 
-### StickyHeader
+UI component to render a checkbox within enclosed Thread component, which when checked sets a `show_in_channel` property to true on a message.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [Thread](#) |
+
+<!-- ### StickyHeader -->
 
 ### TypingIndicator
 
+UI component to render typing indicator within enclosed MessageList component.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [TypingIndicator](#) |
+
 ### TypingIndicatorContainer
+
+UI component to render container in which typing indicator gets rendered within enclosed MessageList component.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [TypingIndicatorContainer](#) |
 
 ### UploadProgressIndicator
 
+UI component to render upload progress indicator as an overlay above [ImageUploadPreview](#imageuploadpreview) and [FileUploadPreview](#fileuploadpreview).
+
+| Type | Default |
+|- -|- -|
+| Component, element | [UploadProgressIndicator](#) |
+
 ### UrlPreview
 
+UI component to render preview of urls within enclosed MessageList component.
+
+| Type | Default |
+|- -|- -|
+| Component, element | [UrlPreview](#) |

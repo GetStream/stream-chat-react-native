@@ -1,0 +1,58 @@
+---
+id: chat-context
+title: ChatContext
+---
+
+`ChatContext` is provided by [`Chat`](../core-components/chat) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ChatContext` can be consumed by any of the child  component of `Chat` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ChatContext } from 'stream-chat-react-native';
+
+const { client, isOnline } = useContext(ChatContext);
+```
+
+Alternatively, you can also use `useChatContext` hook provided by library to consume ChatContext.
+
+```tsx
+import { useChatContext } from 'stream-chat-react-native';
+
+const { client, isOnline } = useChatContext();
+```
+
+## Value
+
+### client
+
+Same as prop [client](../core-components/chat#client)
+
+### connectionRecovering
+
+The value is true, when connection to websocket server is disconnected and is currently being recovered.
+
+| Type |
+| - |
+| boolean |
+
+### isOnline
+
+The value is true, when current user is connected to chat.
+
+| Type |
+| - |
+| boolean |
+
+### mutedUsers
+
+Array of users muted by current user.
+
+| Type |
+| - |
+| array |
+
+<!-- ### setActiveChannel -->
+<!-- ### channel -->

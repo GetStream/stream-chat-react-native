@@ -4,41 +4,70 @@ sidebar_position: 2
 title: Chat
 ---
 
-WIP
+<!-- TODO: Change to new docs -->
+The Chat component is a React Context provider that wraps the [ChannelList](#) and [Channel](#) component. It provides the [ChatContext](#) to its children, which includes the StreamChat client instance.
 
-## Props
+`Chat` component is provided by `stream-chat-react-native` and can be imported from the library as following
 
-### <div class="label required basic">Required</div> client
+```tsx
+import { Chat } from 'stream-chat-react-native';
+```
 
-The StreamChat client object
+- StreamChat [client](#) should be provided to this component as prop.
+- Chat component is also responsible for tracking the health of websocket connection with chat server. You can use `isOnline` value from [`ChatContext`](#) to access status.
 
-```jsx
+## Basic Usage
+
+```tsx
 import { StreamChat } from 'stream-chat'; 
-import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const App = () =>
-  <OverlayProvider>
-    <Chat client={client}>
-      {/** App components */}
-    </Chat>
-  </OverlayProvider>;
+// For ChannelList
+<Chat client={client}>
+  <ChannelList />
+</Chat>
+
+// For Channel
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel}>
+      <MessageList />
+      <MessageInput />
+    </Channel>
+  </Chat>
+</OverlayProvider>
 ```
+
+## Props
+
+### <div class="label required">required</div> **client**
+
+The StreamChat client instance
+
+```tsx
+import { StreamChat } from 'stream-chat'; 
+
+const client = StreamChat.getInstance('api_key');
+```
+
+| Type |
+| - |
+| [`StreamChat`](#) |
 
 ### closeConnectionOnBackground
 
 When false, ws connection won't be disconnection upon backgrounding the app. To receive push notifications, its necessary that user doesn't have active websocket connection. So by default, we disconnect websocket connection when app goes to background, and reconnect when app comes to foreground.
 
-| Type               | Default      |
-| ------------------ | ------------ |
-| boolean            | true         |
+| Type | Default |
+| - | - |
+| boolean | true |
 
 ### i18nInstance
 
 Instance of Streami18n class should be provided to Chat component to enable internationalization.
 
-Please read [Translations/i18n](../basics/translations) for details.
+Please read [Translations/i18n](../basics/translations#instantiation) for details.
 
 | Type |
 | - |
@@ -48,6 +77,9 @@ Please read [Translations/i18n](../basics/translations) for details.
 
 You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
 
+:::caution
+Styles provided on Chat component don't apply to components within overlay, such as attachment picker, message overlay etc. Please pass the separate theme (for styling components within overlay) to `OverlayProvider` as shown [here](#).
+:::
 
 ```jsx
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
