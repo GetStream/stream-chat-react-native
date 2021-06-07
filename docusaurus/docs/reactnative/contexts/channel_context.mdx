@@ -2,3 +2,148 @@
 id: channel-context
 title: ChannelContext
 ---
+
+`ChannelContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ChannelContext` can be consumed by any of the child  component of `Chat` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ChannelContext } from 'stream-chat-react-native';
+
+const { lastRead, reloadChannel, watcherCount } = useContext(ChannelContext);
+```
+
+Alternatively, you can also use `useChannelContext` hook provided by library to consume ChannelContext.
+
+```tsx
+import { useChannelContext } from 'stream-chat-react-native';
+
+const { lastRead, reloadChannel, watcherCount } = useChannelContext();
+```
+
+:::caution
+We don't recommend using `ChannelContext` at message level, since changes to its value may result in re-rendering of all the messages. And this can introduce performance issue
+:::
+
+## Value
+
+### channel
+
+Same as prop [channel](../core-components/channel#required-channel)
+
+### disabled
+
+Value is true, when channel is [frozen](https://getstream.io/chat/docs/javascript/freezing_channels/?language=javascript&q=frozen) and [disableIfFrozenChannel](../core-components/channel#disableiffrozenchannel) is true.
+
+| Type |
+| - |
+| boolean |
+
+### enforceUniqueReaction
+
+Same as prop [enforceUniqueReaction](../core-components/channel#enforceuniquereaction)
+
+### error
+
+Value is true, when any api call to `channel.query()` during first load or pagination fails.
+
+| Type |
+| - |
+| boolean |
+
+### giphyEnabled
+
+Value is true, when giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
+
+| Type |
+| - |
+| boolean |
+
+### hideDateSeparators
+
+Same as prop [hideDateSeparators](../core-components/channel#hidedateseparators)
+
+### isAdmin
+
+Value is true, when current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+
+```tsx
+const isAdmin =
+  client?.user?.role === 'admin' ||
+  channel?.state.membership.role === 'admin';
+
+```
+| Type |
+| - |
+| boolean |
+
+### isModerator
+
+Value is true, when current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+
+```tsx
+const isModerator =
+  channel?.state.membership.role === 'channel_moderator' ||
+  channel?.state.membership.role === 'moderator';
+```
+
+| Type |
+| - |
+| boolean |
+
+### isOwner
+
+Value is true, when current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
+
+```tsx
+const isOwner = channel?.state.membership.role === 'owner';
+```
+
+| Type |
+| - |
+| boolean |
+
+### lastRead
+
+### loadChannelAtMessage
+
+### loadChannelAtMessage
+
+### loading
+
+### maxTimeBetweenGroupedMessages
+
+### markRead
+
+### members
+
+### read
+
+### reloadChannel
+
+### scrollToFirstUnreadThreshold
+
+### setLastRead
+
+### setTargetedMessage
+
+### targetedMessage
+
+### watchers
+
+### watcherCount
+
+### readEventsEnabled
+
+### typingEventsEnabled
+
+### EmptyStateIndicator
+
+### LoadingIndicator
+
+### NetworkDownIndicator
+
+### StickyHeader
