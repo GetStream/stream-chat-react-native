@@ -2,3 +2,96 @@
 id: thread-context
 title: ThreadContext
 ---
+
+`ThreadContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ThreadContext` can be consumed by any of the child  component of `Channel` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ThreadContext } from 'stream-chat-react-native';
+
+const value = useContext(ThreadContext);
+```
+
+Alternatively, you can also use `useThreadContext` hook provided by library to consume ThreadContext.
+
+```tsx
+import { useThreadContext } from 'stream-chat-react-native';
+
+const value = useThreadContext();
+```
+
+## Value
+
+### closeThread
+
+Unsets the thread and thread messages in the Channel state.
+
+| Type |
+| - |
+| function |
+
+### loadMoreThread
+
+Loads more messages for the thread. Returns a promise.
+
+| Type |
+| - |
+| `() => Promise<void>` |
+
+### openThread
+
+Sets the thread and thread messages in the Channel state.
+
+| Type |
+| - |
+| function |
+
+### reloadThread
+
+Reloads the thread and thread messages.
+
+| Type |
+| - |
+| function |
+
+### setThreadLoadingMore
+
+A function which can be used to set the thread loading more state.
+
+| Type |
+| - |
+| function |
+
+### threadHasMore
+
+Boolean flag for thread messages pagination.
+
+| Type |
+| - |
+| boolean |
+
+### threadLoadingMore
+
+Boolean flag for thread messages loading more state.
+
+| Type |
+| - |
+| boolean |
+
+### threadMessages
+
+A list of formatted messages objects.
+
+| Type |
+| - |
+| `Array<object>` |<!-- TODO: Link to the messages definition on chat component once its done -->
+
+### Forwarded from Channel
+
+List of props that are forwarded from the [Channel](../core-components/channel) component:
+- [allowThreadMessagesInChannel](../core-components/channel#allowthreadmessagesinchannel)
+- [thread](../core-components/channel#thread)
