@@ -26,6 +26,13 @@ const { openPicker, closePicker } = useAttachmentPickerContext();
 
 ## Value
 
+### bottomInset
+
+`bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+
+| Type | Default |
+| - | - |
+| number | [`bottomInset`](../core-components/overlay-priovider#bottominset) |
 
 ### closePicker
 
@@ -69,6 +76,14 @@ Array<{
 | - |
 | array |
 
+### selectedPicker
+
+Value is `images` (string), when image attachment picker is open. Value will be `undefined` if file picker is active or file picker is open.
+
+| Type |
+| - |
+| 'images' \| undefined |
+
 ### setBottomInset
 
 Setter function for [`bottomInset`](#bottominset)
@@ -102,22 +117,6 @@ Setter function for [`topInset`](#topinset)
 | Type |
 | - |
 | `(topInset: number) => void` |
-
-### bottomInset
-
-`bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
-
-| Type | Default |
-| - | - |
-| number | [`bottomInset`](../core-components/overlay-priovider#bottominset) |
-
-### selectedPicker
-
-Value is `images` (string), when image attachment picker is open. Value will be `undefined` if file picker is active or file picker is open.
-
-| Type |
-| - |
-| 'images' \| undefined |
 
 ### topInset
 

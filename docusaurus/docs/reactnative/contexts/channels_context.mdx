@@ -2,3 +2,129 @@
 id: channels-context
 title: ChannelsContext
 ---
+
+`ChannelsContext` is provided by [`ChannelList`](../core-components/channel-list) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ChannelsContext` can be consumed by any of the child  component of `ChannelList` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useContext(ChannelsContext);
+```
+
+Alternatively, you can also use `useChannelsContext` hook provided by library to consume ChannelsContext.
+
+```tsx
+import { useChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useChannelsContext();
+```
+## Value
+
+### channels
+
+<!-- TODO: Change to new docs -->
+Array of channels currently loaded in `ChannelList` component. This value gets updated whenever `ChannelList` component makes a call to [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) either on first load or during pagination.
+
+| Type |
+| - |
+| array |
+
+### error
+
+Value is true when call to `client.queryChannels()` within ChannelList component fails, either during first load or during pagination.
+
+| Type |
+| - |
+| boolean |
+
+<!-- ### forceUpdate -->
+
+### hasNextPage
+
+Value is false when `ChannelList` component has loaded all the channels corresponding to [`filters`](../core-components/channel-list#required-filters).
+
+| Type |
+| - |
+| boolean |
+
+### loadingChannels
+
+Value is true when `ChannelList` component is loading the first page of channels.
+
+| Type |
+| - |
+| boolean |
+
+### loadingNextPage
+
+Value is true when `ChannelList` component is loading more channels as part of pagination. This will be set to true, when user scrolls to bottom of the list and [`hasNextPage`](#hasnextpage) is true.
+
+| Type |
+| - |
+| boolean |
+
+### loadNextPage
+
+Function to manually load next page for the `ChannelList` component
+
+| Type |
+| - |
+| function |
+
+### refreshing
+
+Value is true when `ChannelList` component is refreshing the list (using [`refreshList`](#refreshlist) function call). Refreshing state will be triggered either when user executes pull-to-refresh gesture or if network connection is being recovered.
+This value is attached to [refreshing](https://reactnative.dev/docs/flatlist#refreshing) prop of underlying `FlatList` component of `ChannelList`.
+
+| Type |
+| - |
+| boolean |
+
+### refreshList
+
+Function to manually resync or refresh the channels in `ChannelList` component.
+
+:::note
+Calling `refreshList` will display a [RefreshControl](https://reactnative.dev/docs/refreshcontrol) on underlying FlatList of `ChannelList` component.
+:::
+
+| Type |
+| - |
+| function |
+
+### reloadList
+
+Function to manually reload the channels in `ChannelList` component. 
+
+:::note
+Calling `reloadList` will wipe out the existing list of channels and show a loading indicator until new results are ready.
+:::
+
+## Forwarded from ChannelList
+
+List of props that are forwarded from `ChannelList` component to `ChannelsContext` value:
+
+- [additionalFlatListProps](../core-components/channel-list#additionalflatlistprops)
+- [loadMoreThreshold](../core-components/channel-list#loadmorethreshold)
+- [maxUnreadCount](../core-components/channel-list#maxunreadcount)
+- [numberOfSkeletons](../core-components/channel-list#numberofskeletons)
+- [onSelect](../core-components/channel-list#onselect)
+- [setFlatListRef](../core-components/channel-list#setflatlistref)
+- [EmptyStateIndicator](../core-components/channel-list#emptystateindicator)
+- [FooterLoadingIndicator](../core-components/channel-list#footerloadingindicator)
+- [HeaderErrorIndicator](../core-components/channel-list#headererrorindicator)
+- [HeaderNetworkDownIndicator](../core-components/channel-list#headernetworkdownindicator)
+- [LoadingErrorIndicator](../core-components/channel-list#loadingerrorindicator)
+- [LoadingIndicator](../core-components/channel-list#loadingindicator)
+- [Preview](../core-components/channel-list#preview)
+- [PreviewAvatar](../core-components/channel-list#previewavatar)
+- [PreviewMessage](../core-components/channel-list#previewmessage)
+- [PreviewStatus](../core-components/channel-list#previewstatus)
+- [PreviewTitle](../core-components/channel-list#previewtitle)
+- [PreviewUnreadCount](../core-components/channel-list#previewunreadcount)
+- [Skeleton](../core-components/channel-list#skeleton)
