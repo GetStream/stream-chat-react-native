@@ -27,7 +27,7 @@ export type MessageAvatarPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
@@ -41,7 +41,7 @@ const MessageAvatarWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -55,8 +55,7 @@ const MessageAvatarWithContext = <
     },
   } = useTheme();
 
-  const visible =
-    typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
+  const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
   return (
     <View
@@ -83,19 +82,13 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    lastGroupMessage: prevLastGroupMessage,
-    message: prevMessage,
-  } = prevProps;
-  const {
-    lastGroupMessage: nextLastGroupMessage,
-    message: nextMessage,
-  } = nextProps;
+  const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
+  const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
@@ -121,7 +114,7 @@ export type MessageAvatarProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Partial<MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageAvatar = <
@@ -131,16 +124,12 @@ export const MessageAvatar = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    lastGroupMessage,
-    message,
-    showAvatar,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, lastGroupMessage, message, showAvatar } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageAvatar

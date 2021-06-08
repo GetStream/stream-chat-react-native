@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-  ViewStyle,
-} from 'react-native';
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { FlatList, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Avatar } from '../Avatar/Avatar';
@@ -114,9 +103,7 @@ const ReactionIcon: React.FC<
     supportedReactions: ReactionData[];
   }
 > = ({ pathFill, size, supportedReactions, type }) => {
-  const Icon =
-    supportedReactions.find((reaction) => reaction.type === type)?.Icon ||
-    Unknown;
+  const Icon = supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
   return <Icon height={size} pathFill={pathFill} width={size} />;
 };
 
@@ -169,37 +156,25 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
       overlayPadding * 2 -
       ((Number(flatListContainer.paddingHorizontal || 0) ||
         styles.flatListContainer.paddingHorizontal) +
-        (Number(avatarContainer.padding || 0) ||
-          styles.avatarContainer.padding)) *
+        (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
         2) /
-      (avatarSize +
-        (Number(avatarContainer.padding || 0) ||
-          styles.avatarContainer.padding) *
-          2),
+      (avatarSize + (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding) * 2),
   );
 
-  const renderItem = ({
-    item: { alignment = 'left', image, name, type },
-  }: {
-    item: Reaction;
-  }) => {
-    const x =
-      avatarSize / 2 -
-      (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
+  const renderItem = ({ item: { alignment = 'left', image, name, type } }: { item: Reaction }) => {
+    const x = avatarSize / 2 - (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
     const y = avatarSize - radius;
 
     const left =
       alignment === 'left'
         ? x -
-          (Number(reactionBubbleBackground.width || 0) ||
-            styles.reactionBubbleBackground.width) +
+          (Number(reactionBubbleBackground.width || 0) || styles.reactionBubbleBackground.width) +
           radius
         : x - radius;
     const top =
       y -
       radius -
-      (Number(reactionBubbleBackground.height || 0) ||
-        styles.reactionBubbleBackground.height);
+      (Number(reactionBubbleBackground.height || 0) || styles.reactionBubbleBackground.height);
 
     return (
       <View style={[styles.avatarContainer, avatarContainer]}>
@@ -208,10 +183,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle
-                cx={
-                  x -
-                  (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
-                }
+                cx={x - (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)}
                 cy={y - radius * 2 - radius / 4}
                 fill={alignment === 'left' ? grey_gainsboro : white}
                 r={radius * 2}
@@ -231,8 +203,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
               style={[
                 styles.reactionBubbleBackground,
                 {
-                  backgroundColor:
-                    alignment === 'left' ? grey_gainsboro : white,
+                  backgroundColor: alignment === 'left' ? grey_gainsboro : white,
                   borderColor: alignment === 'left' ? white : grey_gainsboro,
                   borderWidth: radius / 2,
                   left,
@@ -244,10 +215,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
             <View style={[StyleSheet.absoluteFill]}>
               <Svg>
                 <Circle
-                  cx={
-                    x -
-                    (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
-                  }
+                  cx={x - (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)}
                   cy={y - radius * 2 - radius / 4}
                   fill={alignment === 'left' ? grey_gainsboro : white}
                   r={radius * 2 - radius / 2}
@@ -258,17 +226,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
               style={[
                 styles.reactionBubble,
                 {
-                  backgroundColor:
-                    alignment === 'left' ? grey_gainsboro : white,
+                  backgroundColor: alignment === 'left' ? grey_gainsboro : white,
                   height:
-                    (reactionBubble.borderRadius ||
-                      styles.reactionBubble.borderRadius) -
+                    (reactionBubble.borderRadius || styles.reactionBubble.borderRadius) -
                     radius / 2,
                   left,
                   top,
                   width:
-                    (reactionBubble.borderRadius ||
-                      styles.reactionBubble.borderRadius) -
+                    (reactionBubble.borderRadius || styles.reactionBubble.borderRadius) -
                     radius / 2,
                 },
                 reactionBubble,
@@ -276,19 +241,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
             >
               <ReactionIcon
                 pathFill={accent_blue}
-                size={
-                  (reactionBubble.borderRadius ||
-                    styles.reactionBubble.borderRadius) / 2
-                }
+                size={(reactionBubble.borderRadius || styles.reactionBubble.borderRadius) / 2}
                 supportedReactions={supportedReactions}
                 type={type}
               />
             </View>
           </View>
         </View>
-        <Text style={[styles.avatarName, { color: black }, avatarName]}>
-          {name}
-        </Text>
+        <Text style={[styles.avatarName, { color: black }, avatarName]}>{name}</Text>
       </View>
     );
   };
@@ -297,22 +257,13 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     () => ({
       transform: [
         {
-          translateY: interpolate(
-            showScreen.value,
-            [0, 1],
-            [-layoutHeight.value / 2, 0],
-          ),
+          translateY: interpolate(showScreen.value, [0, 1], [-layoutHeight.value / 2, 0]),
         },
         {
           translateX: interpolate(
             showScreen.value,
             [0, 1],
-            [
-              overlayAlignment === 'left'
-                ? -layoutWidth.value / 2
-                : layoutWidth.value / 2,
-              0,
-            ],
+            [overlayAlignment === 'left' ? -layoutWidth.value / 2 : layoutWidth.value / 2, 0],
           ),
         },
         {
@@ -329,12 +280,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         layoutWidth.value = layout.width;
         layoutHeight.value = layout.height;
       }}
-      style={[
-        styles.container,
-        { backgroundColor: white },
-        container,
-        showScreenStyle,
-      ]}
+      style={[styles.container, { backgroundColor: white }, container, showScreenStyle]}
     >
       <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
       <FlatList

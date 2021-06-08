@@ -32,15 +32,10 @@ export type AttachmentPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'AttachmentActions'
-  | 'Card'
-  | 'FileAttachment'
-  | 'Gallery'
-  | 'Giphy'
-  | 'UrlPreview'
+  'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
 > & {
   /**
    * The attachment to render
@@ -55,19 +50,11 @@ const AttachmentWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    attachment,
-    AttachmentActions,
-    Card,
-    FileAttachment,
-    Gallery,
-    Giphy,
-    UrlPreview,
-  } = props;
+  const { attachment, AttachmentActions, Card, FileAttachment, Gallery, Giphy, UrlPreview } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
@@ -87,10 +74,7 @@ const AttachmentWithContext = <
       <>
         <Gallery images={[attachment]} />
         {hasAttachmentActions && (
-          <AttachmentActions
-            key={`key-actions-${attachment.id}`}
-            {...attachment}
-          />
+          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
         )}
       </>
     );
@@ -100,11 +84,7 @@ const AttachmentWithContext = <
     return <FileAttachment attachment={attachment} />;
   }
 
-  if (
-    attachment.type === 'video' &&
-    attachment.asset_url &&
-    attachment.image_url
-  ) {
+  if (attachment.type === 'video' && attachment.asset_url && attachment.image_url) {
     return (
       // TODO: Put in video component
       <Card {...attachment} />
@@ -115,10 +95,7 @@ const AttachmentWithContext = <
     return (
       <>
         <Card {...attachment} />
-        <AttachmentActions
-          key={`key-actions-${attachment.id}`}
-          {...attachment}
-        />
+        <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
       </>
     );
   } else {
@@ -133,7 +110,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -161,16 +138,11 @@ export type AttachmentProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'AttachmentActions'
-    | 'Card'
-    | 'FileAttachment'
-    | 'Gallery'
-    | 'Giphy'
-    | 'UrlPreview'
+    'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
   >
 > &
   Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
@@ -185,7 +157,7 @@ export const Attachment = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -213,12 +185,9 @@ export const Attachment = <
   }
 
   const AttachmentActions =
-    PropAttachmentActions ||
-    ContextAttachmentActions ||
-    AttachmentActionsDefault;
+    PropAttachmentActions || ContextAttachmentActions || AttachmentActionsDefault;
   const Card = PropCard || ContextCard || CardDefault;
-  const FileAttachment =
-    PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
+  const FileAttachment = PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;

@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import {
-  Grid as GridIconDefault,
-  Share as ShareIconDefault,
-} from '../../../icons';
+import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
 import type { Photo } from '../ImageGallery';
@@ -61,9 +47,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryFooterCustomComponent<
-  Us extends UnknownType = DefaultUserType
-> = ({
+export type ImageGalleryFooterCustomComponent<Us extends UnknownType = DefaultUserType> = ({
   openGridView,
   photo,
   share,
@@ -75,9 +59,7 @@ export type ImageGalleryFooterCustomComponent<
   photo?: Photo<Us>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryFooterCustomComponentProps<
-  Us extends UnknownType = DefaultUserType
-> = {
+export type ImageGalleryFooterCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
   centerElement?: ImageGalleryFooterCustomComponent<Us>;
   GridIcon?: React.ReactElement;
   leftElement?: ImageGalleryFooterCustomComponent<Us>;
@@ -85,20 +67,17 @@ export type ImageGalleryFooterCustomComponentProps<
   ShareIcon?: React.ReactElement;
 };
 
-type Props<
-  Us extends UnknownType = DefaultUserType
-> = ImageGalleryFooterCustomComponentProps<Us> & {
-  opacity: Animated.SharedValue<number>;
-  openGridView: () => void;
-  photo: Photo<Us>;
-  photoLength: number;
-  selectedIndex: number;
-  visible: Animated.SharedValue<number>;
-};
+type Props<Us extends UnknownType = DefaultUserType> =
+  ImageGalleryFooterCustomComponentProps<Us> & {
+    opacity: Animated.SharedValue<number>;
+    openGridView: () => void;
+    photo: Photo<Us>;
+    photoLength: number;
+    selectedIndex: number;
+    visible: Animated.SharedValue<number>;
+  };
 
-export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
-  props: Props<Us>,
-) => {
+export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
   const {
     centerElement,
     GridIcon,
@@ -136,12 +115,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       opacity: opacity.value,
       transform: [
         {
-          translateY: interpolate(
-            visible.value,
-            [0, 1],
-            [height, 0],
-            Extrapolate.CLAMP,
-          ),
+          translateY: interpolate(visible.value, [0, 1], [height, 0], Extrapolate.CLAMP),
         },
       ],
     }),
@@ -171,9 +145,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView
-        style={[{ backgroundColor: white }, container, footerStyle]}
-      >
+      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, footerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
@@ -188,13 +160,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
             centerElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
-              <Text
-                style={[
-                  styles.imageCountText,
-                  { color: black },
-                  imageCountText,
-                ]}
-              >
+              <Text style={[styles.imageCountText, { color: black }, imageCountText]}>
                 {t('{{ index }} of {{ photoLength }}', {
                   index: selectedIndex + 1,
                   photoLength,

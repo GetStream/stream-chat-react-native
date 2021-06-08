@@ -1,0 +1,4 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py

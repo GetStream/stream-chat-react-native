@@ -10,8 +10,7 @@ export const generateAttachmentAction = (a) => ({
 });
 
 export const generateVideoAttachment = (a) => ({
-  asset_url:
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  asset_url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
   mime_type: 'video/mp4',
   title: uuidv4(),
   type: 'media',
@@ -48,8 +47,7 @@ export const generateAudioAttachment = (a) => ({
 });
 
 export const generateFileAttachment = (a) => ({
-  asset_url:
-    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+  asset_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
   description: uuidv4(),
   file_size: 1337,
   mime_type: uuidv4(),
@@ -80,8 +78,6 @@ export const generateCardAttachment = (a) => ({
   ...a,
 });
 
-export const generateImgurAttachment = () =>
-  generateCardAttachment({ type: 'imgur' });
+export const generateImgurAttachment = () => generateCardAttachment({ type: 'imgur' });
 
-export const generateGiphyAttachment = () =>
-  generateCardAttachment({ type: 'giphy' });
+export const generateGiphyAttachment = () => generateCardAttachment({ type: 'giphy' });

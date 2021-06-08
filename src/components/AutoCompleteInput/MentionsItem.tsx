@@ -61,10 +61,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
     <View style={[styles.container, container]}>
       <Avatar image={image} name={name} online={online} size={avatarSize} />
       <View style={[styles.column, column]}>
-        <Text
-          style={[styles.name, { color: black }, nameStyle]}
-          testID='mentions-item-name'
-        >
+        <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
           {name || id}
         </Text>
         <Text style={[styles.tag, { color: grey }, tag]}>{`@${id}`}</Text>

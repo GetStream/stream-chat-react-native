@@ -19,7 +19,7 @@ export const useCreateChatContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   channel,
   client,
@@ -29,9 +29,9 @@ export const useCreateChatContext = <
   setActiveChannel,
 }: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const channelId = channel?.id;
-  const clientValues = `${client.clientID}${
-    Object.keys(client.activeChannels).length
-  }${Object.keys(client.listeners).length}${client.mutedChannels.length}`;
+  const clientValues = `${client.clientID}${Object.keys(client.activeChannels).length}${
+    Object.keys(client.listeners).length
+  }${client.mutedChannels.length}`;
   const mutedUsersLength = mutedUsers.length;
 
   const chatContext: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(

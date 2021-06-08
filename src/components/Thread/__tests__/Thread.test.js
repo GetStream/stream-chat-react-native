@@ -16,10 +16,7 @@ import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateCha
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
-import {
-  generateMessage,
-  generateStaticMessage,
-} from '../../../mock-builders/generator/message';
+import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 
@@ -102,47 +99,20 @@ describe('Thread', () => {
     const i18nInstance = new Streami18n();
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(3);
-    const thread = generateStaticMessage(
-      'Message3',
-      { user: user2 },
-      '2020-05-05T14:50:00.000Z',
-    );
+    const thread = generateStaticMessage('Message3', { user: user2 }, '2020-05-05T14:50:00.000Z');
     const parent_id = thread.id;
     const mockedChannel = generateChannel({
       channel: {
         id: uuidv5('Channel', StreamReactNativeNamespace),
       },
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user1 }),
-      ],
+      members: [generateMember({ user: user1 }), generateMember({ user: user1 })],
       messages: [
-        generateStaticMessage(
-          'Message1',
-          { user: user1 },
-          '2020-05-05T14:48:00.000Z',
-        ),
-        generateStaticMessage(
-          'Message2',
-          { user: user2 },
-          '2020-05-05T14:49:00.000Z',
-        ),
+        generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
+        generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
         thread,
-        generateStaticMessage(
-          'Message4',
-          { parent_id, user: user1 },
-          '2020-05-05T14:50:00.000Z',
-        ),
-        generateStaticMessage(
-          'Message5',
-          { parent_id, user: user2 },
-          '2020-05-05T14:50:00.000Z',
-        ),
-        generateStaticMessage(
-          'Message6',
-          { parent_id, user: user1 },
-          '2020-05-05T14:50:00.000Z',
-        ),
+        generateStaticMessage('Message4', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
+        generateStaticMessage('Message5', { parent_id, user: user2 }, '2020-05-05T14:50:00.000Z'),
+        generateStaticMessage('Message6', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
       ],
     });
 

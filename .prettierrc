@@ -1,7 +1,21 @@
 {
   "arrowParens": "always",
   "jsxSingleQuote": true,
+  "printWidth": 100,
   "singleQuote": true,
   "tabWidth": 2,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": ["*.md", "*.mdx"],
+      "options": {
+        "arrowParens": "avoid",
+        "jsxSingleQuote": true,
+        "printWidth": 120,
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "all"
+      }
+    }
+  ]
 }

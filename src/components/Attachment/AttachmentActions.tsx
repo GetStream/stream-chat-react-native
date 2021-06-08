@@ -49,7 +49,7 @@ export type AttachmentActionsPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<Attachment<At>, 'actions'> &
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'> & {
     styles?: Partial<{
@@ -66,7 +66,7 @@ const AttachmentActionsWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -92,10 +92,7 @@ const AttachmentActionsWithContext = <
   } = useTheme();
 
   return (
-    <View
-      style={[styles.container, container, stylesProp.container]}
-      testID='attachment-actions'
-    >
+    <View style={[styles.container, container, stylesProp.container]} testID='attachment-actions'>
       {actions?.map((action, index) => {
         const primary = action.style === 'primary';
 
@@ -125,9 +122,7 @@ const AttachmentActionsWithContext = <
             <Text
               style={[
                 {
-                  color: primary
-                    ? primaryColor || white
-                    : defaultColor || black,
+                  color: primary ? primaryColor || white : defaultColor || black,
                 },
                 buttonTextStyle,
                 stylesProp.buttonText,
@@ -149,7 +144,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -174,11 +169,8 @@ export type AttachmentActionsProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Attachment<At> &
-  Partial<
-    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Attachment<At> & Partial<Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>>;
 
 /**
  * AttachmentActions - The actions you can take on an attachment.
@@ -191,7 +183,7 @@ export const AttachmentActions = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

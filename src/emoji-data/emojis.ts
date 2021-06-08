@@ -3055,10 +3055,7 @@ module.exports = [
   },
   {
     name: 'face_with_hand_over_mouth',
-    names: [
-      'face_with_hand_over_mouth',
-      'smiling_face_with_smiling_eyes_and_hand_covering_mouth',
-    ],
+    names: ['face_with_hand_over_mouth', 'smiling_face_with_smiling_eyes_and_hand_covering_mouth'],
     sort_order: 30,
     unicode: '1F92D',
   },
@@ -3088,10 +3085,7 @@ module.exports = [
   },
   {
     name: 'face_with_symbols_on_mouth',
-    names: [
-      'face_with_symbols_on_mouth',
-      'serious_face_with_symbols_covering_mouth',
-    ],
+    names: ['face_with_symbols_on_mouth', 'serious_face_with_symbols_covering_mouth'],
     sort_order: 92,
     unicode: '1F92C',
   },
@@ -8605,11 +8599,7 @@ module.exports = [
   },
   {
     name: 'man_and_woman_holding_hands',
-    names: [
-      'couple',
-      'man_and_woman_holding_hands',
-      'woman_and_man_holding_hands',
-    ],
+    names: ['couple', 'man_and_woman_holding_hands', 'woman_and_man_holding_hands'],
     skin_variations: {
       '1F3FB': {
         unicode: '1F46B-1F3FB',

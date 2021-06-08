@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';

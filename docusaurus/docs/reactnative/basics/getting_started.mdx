@@ -8,7 +8,7 @@ title: Getting Started
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-The Basics section of this documentation introduces the fundamentals of Stream Chat React Native.
+The Basics section of this documentation introduces the fundamentals of Stream Chat for React Native.
 It will cover installing Stream Chat within your project, give you some troubleshooting tips, and provide an overview of what is possible using the library.
 This should be considered a primer before delving into the API Reference or Customization sections.
 
@@ -70,14 +70,14 @@ Most if not all of the required packages now support auto-linking so setup shoul
 <TabItem value='yarn'>
 
   ```bash
-    yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated@2.0.0-rc.0 react-native-safe-area-context react-native-share react-native-svg
+    yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
   ```
 
 </TabItem>
 <TabItem value='npm'>
 
   ```bash
-    npm add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated@2.0.0-rc.0 react-native-safe-area-context react-native-share react-native-svg
+    npm add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
   ```
 
 </TabItem>
@@ -87,7 +87,7 @@ For iOS on a Mac install the pods `npx pod-install ios`.
 
 ### Additional Steps
 
-- `react-native-reanimated@2.0.0-rc.0` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/installation).
+- `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/installation).
 - `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
 - `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 - `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
@@ -128,9 +128,9 @@ But an awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is q
 
 ## Expo Installation
 
-Stream Chat React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run:
+Stream Chat for React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run:
 
 ```bash
 expo install stream-chat-expo
-expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-permissions expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg`
+expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg`
 ```

@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { generateRandomId } from '../../../utils/utils';
 
-import type {
-  FileUpload,
-  ImageUpload,
-  MessageInputContextValue,
-} from '../MessageInputContext';
+import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 import type {
   DefaultAttachmentType,
@@ -26,7 +22,7 @@ export const isEditingBoolean = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   editing: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
 ): editing is boolean => typeof editing === 'boolean';
@@ -38,7 +34,7 @@ export const useMessageDetailsForState = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   message: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
   initialValue?: string,
@@ -63,18 +59,14 @@ export const useMessageDetailsForState = <
   }, [text]);
 
   const messageValue =
-    typeof message === 'boolean'
-      ? ''
-      : `${message.id}${message.text}${message.updated_at}`;
+    typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       setText(message?.text || '');
       const newFileUploads = [];
       const newImageUploads = [];
 
-      const attachments = Array.isArray(message.attachments)
-        ? message.attachments
-        : [];
+      const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
       for (const attachment of attachments) {
         if (attachment.type === 'file') {
@@ -95,10 +87,7 @@ export const useMessageDetailsForState = <
             file: { name: attachment.fallback },
             id,
             state: 'finished',
-            url:
-              attachment.image_url ||
-              attachment.asset_url ||
-              attachment.thumb_url,
+            url: attachment.image_url || attachment.asset_url || attachment.thumb_url,
           });
         }
       }

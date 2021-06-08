@@ -6,15 +6,9 @@ import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
 
-import {
-  ChatContextValue,
-  ChatProvider,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
-import {
-  DeepPartial,
-  ThemeProvider,
-} from '../../contexts/themeContext/ThemeContext';
+import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -46,7 +40,7 @@ export type ChatProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
@@ -145,17 +139,11 @@ const ChatWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const {
-    children,
-    client,
-    closeConnectionOnBackground = true,
-    i18nInstance,
-    style,
-  } = props;
+  const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -171,15 +159,10 @@ const ChatWithContext = <
   /**
    * Setup connection event listeners
    */
-  const { connectionRecovering, isOnline } = useIsOnline<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >(client, closeConnectionOnBackground);
+  const { connectionRecovering, isOnline } = useIsOnline<At, Ch, Co, Ev, Me, Re, Us>(
+    client,
+    closeConnectionOnBackground,
+  );
 
   /**
    * Setup muted user listener
@@ -245,7 +228,7 @@ export const Chat = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {

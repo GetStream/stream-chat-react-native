@@ -4,11 +4,7 @@
     "browser": true,
     "es6": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:jest/recommended"
-  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:jest/recommended"],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {
@@ -17,12 +13,7 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "babel",
-    "markdown",
-    "better-styled-components",
-    "sort-destructure-keys"
-  ],
+  "plugins": ["babel", "markdown", "better-styled-components", "sort-destructure-keys"],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
@@ -58,10 +49,7 @@
     "react/prop-types": 0,
     "require-await": 2,
     "semi": [1, "always"],
-    "sort-destructure-keys/sort-destructure-keys": [
-      2,
-      { "caseSensitive": false }
-    ],
+    "sort-destructure-keys/sort-destructure-keys": [2, { "caseSensitive": false }],
     "sort-imports": [
       "error",
       {
@@ -72,11 +60,7 @@
         "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
       }
     ],
-    "sort-keys": [
-      "error",
-      "asc",
-      { "caseSensitive": false, "minKeys": 2, "natural": false }
-    ],
+    "sort-keys": ["error", "asc", { "caseSensitive": false, "minKeys": 2, "natural": false }],
     "valid-typeof": 2
   },
   "settings": {
@@ -114,7 +98,7 @@
         "plugin:jest/recommended",
         "plugin:prettier/recommended",
         "plugin:react/recommended",
-        "prettier/@typescript-eslint"
+        "prettier"
       ],
       "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
@@ -176,10 +160,7 @@
         "react/prop-types": 0,
         "require-await": 2,
         "semi": [1, "always"],
-        "sort-destructure-keys/sort-destructure-keys": [
-          2,
-          { "caseSensitive": false }
-        ],
+        "sort-destructure-keys/sort-destructure-keys": [2, { "caseSensitive": false }],
         "sort-imports": [
           "error",
           {
@@ -190,11 +171,7 @@
             "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
           }
         ],
-        "sort-keys": [
-          "error",
-          "asc",
-          { "caseSensitive": false, "minKeys": 2, "natural": false }
-        ],
+        "sort-keys": ["error", "asc", { "caseSensitive": false, "minKeys": 2, "natural": false }],
         "typescript-sort-keys/interface": [
           "error",
           "asc",

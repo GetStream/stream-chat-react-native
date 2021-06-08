@@ -1,9 +1,6 @@
 import React from 'react';
 import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
-import {
-  TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   interpolate,
@@ -107,7 +104,7 @@ type ReactionButtonProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
@@ -126,7 +123,7 @@ export const ReactionButton = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: ReactionButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -158,16 +155,12 @@ export const ReactionButton = <
     {
       onEnd: () => {
         runOnJS(triggerHaptic)('impactLight');
-        selectedOpacity.value = withTiming(
-          selected ? 0 : 1,
-          { duration: 250 },
-          () => {
-            if (handleReaction) {
-              runOnJS(handleReaction)(type);
-            }
-            runOnJS(setOverlay)('none');
-          },
-        );
+        selectedOpacity.value = withTiming(selected ? 0 : 1, { duration: 250 }, () => {
+          if (handleReaction) {
+            runOnJS(handleReaction)(type);
+          }
+          runOnJS(setOverlay)('none');
+        });
       },
       onFinish: () => {
         cancelAnimation(scale);
@@ -192,11 +185,9 @@ export const ReactionButton = <
       if (hasShown.value === 0 && result !== 0) {
         hasShown.value = 1;
         animationScale.value = withSequence(
-          withDelay(
-            60 * (numberOfReactions - (index + 1)),
-            withTiming(1.5, { duration: 300 }),
-          ),
-          withTiming(1, { duration: 200 }),
+          withDelay(60 * (numberOfReactions - (index + 1)), withTiming(0.1, { duration: 50 })),
+          withTiming(1.5, { duration: 250 }),
+          withTiming(1, { duration: 250 }),
         );
       }
     },
@@ -245,19 +236,11 @@ export const ReactionButton = <
       onHandlerStateChange={onTap}
     >
       <Animated.View
-        style={[
-          index !== numberOfReactions - 1 ? styles.notLastReaction : {},
-          reaction,
-          iconStyle,
-        ]}
+        style={[index !== numberOfReactions - 1 ? styles.notLastReaction : {}, reaction, iconStyle]}
       >
         <Icon height={reactionSize} pathFill={grey} width={reactionSize} />
         <Animated.View style={[styles.selectedIcon, selectedStyle]}>
-          <Icon
-            height={reactionSize}
-            pathFill={accent_blue}
-            width={reactionSize}
-          />
+          <Icon height={reactionSize} pathFill={accent_blue} width={reactionSize} />
         </Animated.View>
       </Animated.View>
     </TapGestureHandler>
@@ -271,7 +254,7 @@ export type OverlayReactionListPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'handleReaction' | 'messagesContext'
@@ -283,7 +266,7 @@ export type OverlayReactionListPropsWithContext<
       y: number;
     }>;
     ownReactionTypes: string[];
-    reactionListHeight: Animated.SharedValue<number>;
+    setReactionListHeight: React.Dispatch<React.SetStateAction<number>>;
     showScreen: Animated.SharedValue<number>;
     fill?: FillProps['fill'];
   };
@@ -295,7 +278,7 @@ const OverlayReactionListWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -305,7 +288,7 @@ const OverlayReactionListWithContext = <
     handleReaction,
     messageLayout,
     ownReactionTypes,
-    reactionListHeight,
+    setReactionListHeight,
     showScreen,
     setOverlay,
     supportedReactions = reactionData,
@@ -321,32 +304,26 @@ const OverlayReactionListWithContext = <
     },
   } = useTheme();
 
+  const reactionListHeight = useSharedValue(0);
   const reactionBubbleWidth = useSharedValue(0);
-  const reactionListLayout = useSharedValue(
-    {
-      height: 0,
-      width: 0,
-    },
-    false,
-  );
+  const reactionListLayout = useSharedValue({
+    height: 0,
+    width: 0,
+  });
 
   const { width } = useWindowDimensions();
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
-    const borderRadius =
-      reactionList.borderRadius || styles.reactionList.borderRadius;
+    const borderRadius = reactionList.borderRadius || styles.reactionList.borderRadius;
     const insideLeftBound =
-      messageLayout.value.x - reactionListLayout.value.width + borderRadius >
-      screenPadding;
-    const insideRightBound =
-      messageLayout.value.x + borderRadius < width - screenPadding;
+      messageLayout.value.x - reactionListLayout.value.width + borderRadius > screenPadding;
+    const insideRightBound = messageLayout.value.x + borderRadius < width - screenPadding;
     const left = !insideLeftBound
       ? screenPadding
       : !insideRightBound
       ? width - screenPadding - reactionListLayout.value.width
       : messageLayout.value.x - reactionListLayout.value.width + borderRadius;
-    const top =
-      messageLayout.value.y - reactionListLayout.value.height - radius * 2;
+    const top = messageLayout.value.y - reactionListLayout.value.height - radius * 2;
 
     return {
       left,
@@ -372,20 +349,14 @@ const OverlayReactionListWithContext = <
     () => ({
       transform: [
         {
-          translateY: interpolate(
-            showScreen.value,
-            [0, 1],
-            [-reactionListHeight.value / 2, 0],
-          ),
+          translateY: interpolate(showScreen.value, [0, 1], [-reactionListHeight.value / 2, 0]),
         },
         {
           translateX: interpolate(
             showScreen.value,
             [0, 1],
             [
-              alignment === 'left'
-                ? -reactionBubbleWidth.value / 2
-                : reactionBubbleWidth.value / 2,
+              alignment === 'left' ? -reactionBubbleWidth.value / 2 : reactionBubbleWidth.value / 2,
               0,
             ],
           ),
@@ -420,6 +391,7 @@ const OverlayReactionListWithContext = <
           }) => {
             reactionListLayout.value = { height, width: layoutWidth };
             reactionListHeight.value = height;
+            setReactionListHeight(height);
           }}
           style={[
             styles.reactionList,
@@ -454,31 +426,18 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment: prevAlignment,
-    ownReactionTypes: prevOwnReactionTypes,
-    reactionListHeight: prevReactionListHeight,
-  } = prevProps;
-  const {
-    alignment: nextAlignment,
-    ownReactionTypes: nextOwnReactionTypes,
-    reactionListHeight: nextReactionListHeight,
-  } = nextProps;
+  const { alignment: prevAlignment, ownReactionTypes: prevOwnReactionTypes } = prevProps;
+  const { alignment: nextAlignment, ownReactionTypes: nextOwnReactionTypes } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
 
-  const reactionListHeightEqual =
-    prevReactionListHeight === nextReactionListHeight;
-  if (!reactionListHeightEqual) return false;
-
-  const ownReactionTypesEqual =
-    prevOwnReactionTypes.length === nextOwnReactionTypes.length;
+  const ownReactionTypesEqual = prevOwnReactionTypes.length === nextOwnReactionTypes.length;
   if (!ownReactionTypesEqual) return false;
 
   return true;
@@ -496,7 +455,7 @@ export type OverlayReactionListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Omit<
   OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'setOverlay' | 'supportedReactions'
@@ -518,20 +477,12 @@ export const OverlayReactionList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
 
   return (

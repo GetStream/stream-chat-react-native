@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { MessageReplies } from '../MessageReplies';
 
@@ -12,10 +7,7 @@ import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
-import {
-  generateStaticUser,
-  generateUser,
-} from '../../../../mock-builders/generator/user';
+import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 
 afterEach(cleanup);
 
@@ -28,13 +20,7 @@ describe('MessageReplies', () => {
       reply_count: 2,
       user: staticUser,
     });
-    const {
-      getByTestId,
-      getByText,
-      queryAllByTestId,
-      rerender,
-      toJSON,
-    } = render(
+    const { getByTestId, getByText, queryAllByTestId, rerender, toJSON } = render(
       <TranslationProvider value={{ t }}>
         <ThemeProvider style={defaultTheme}>
           <MessageReplies

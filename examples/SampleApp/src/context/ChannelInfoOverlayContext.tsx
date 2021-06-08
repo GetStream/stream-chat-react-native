@@ -43,9 +43,7 @@ export type ChannelInfoOverlayContextValue = {
   data?: ChannelInfoOverlayData;
 };
 
-export const ChannelInfoOverlayContext = React.createContext(
-  {} as ChannelInfoOverlayContextValue,
-);
+export const ChannelInfoOverlayContext = React.createContext({} as ChannelInfoOverlayContextValue);
 
 export const ChannelInfoOverlayProvider: React.FC<{
   value?: ChannelInfoOverlayContextValue;
@@ -71,6 +69,4 @@ export const ChannelInfoOverlayProvider: React.FC<{
 };
 
 export const useChannelInfoOverlayContext = () =>
-  (useContext(
-    ChannelInfoOverlayContext,
-  ) as unknown) as ChannelInfoOverlayContextValue;
+  useContext(ChannelInfoOverlayContext) as unknown as ChannelInfoOverlayContextValue;

@@ -32,11 +32,10 @@ export type OverlayContextValue = {
   setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
+  translucentStatusBar?: boolean;
 };
 
-export const OverlayContext = React.createContext<OverlayContextValue>(
-  {} as OverlayContextValue,
-);
+export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
 export type OverlayProviderProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -45,7 +44,7 @@ export type OverlayProviderProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
@@ -65,7 +64,8 @@ export type OverlayProviderProps<
       MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       'MessageActions' | 'OverlayReactionList' | 'OverlayReactions'
     >
-  > & {
+  > &
+  Pick<OverlayContextValue, 'translucentStatusBar'> & {
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
@@ -81,15 +81,11 @@ export const useOverlayContext = () => useContext(OverlayContext);
 export const withOverlayContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof OverlayContextValue>> => {
-  const WithOverlayContextComponent = (
-    props: Omit<P, keyof OverlayContextValue>,
-  ) => {
+  const WithOverlayContextComponent = (props: Omit<P, keyof OverlayContextValue>) => {
     const overlayContext = useOverlayContext();
 
     return <Component {...(props as P)} {...overlayContext} />;
   };
-  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
-    Component,
-  )}`;
+  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(Component)}`;
   return WithOverlayContextComponent;
 };

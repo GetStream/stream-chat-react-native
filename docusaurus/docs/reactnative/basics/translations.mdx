@@ -45,7 +45,7 @@ const client = StreamChat.getInstance('api_key');
 const streami18n = new Streami18n({ language: 'nl' });
 
 export const App = () =>
-  <OverlayProvider i18nInstance={streami18n} topInset={0}>
+  <OverlayProvider i18nInstance={streami18n}>
     <Chat client={client} i18nInstance={streami18n}>
       {/** App components */}
     </Chat>

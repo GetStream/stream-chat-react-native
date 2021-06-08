@@ -58,7 +58,7 @@ export type ChannelPreviewMessengerPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
   Pick<
     ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -111,7 +111,7 @@ const ChannelPreviewMessengerWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -159,11 +159,7 @@ const ChannelPreviewMessengerWithContext = <
       <View style={[styles.contentContainer, contentContainer]}>
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
-          <PreviewUnreadCount
-            channel={channel}
-            maxUnreadCount={maxUnreadCount}
-            unread={unread}
-          />
+          <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
@@ -185,7 +181,7 @@ export type ChannelPreviewMessengerProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
   Omit<
     ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -212,7 +208,7 @@ export const ChannelPreviewMessenger = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

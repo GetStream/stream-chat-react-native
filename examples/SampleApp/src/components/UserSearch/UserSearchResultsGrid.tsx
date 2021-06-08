@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { vw } from 'stream-chat-react-native';
 
 import { UserGridItem } from './UserGridItem';
@@ -79,10 +73,7 @@ export const UserSearchResultsGrid: React.FC<UserSearchResultsGridProps> = ({
             style={[
               styles.userGridItemContainer,
               {
-                marginLeft:
-                  index % gridSize !== 0
-                    ? (totalUserSpace - 64 * gridSize) / 3
-                    : 0,
+                marginLeft: index % gridSize !== 0 ? (totalUserSpace - 64 * gridSize) / 3 : 0,
               },
             ]}
           >

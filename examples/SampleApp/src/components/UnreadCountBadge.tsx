@@ -49,9 +49,7 @@ export const UnreadCountBadge: React.FC = () => {
 
   return (
     <View style={[styles.unreadContainer, { backgroundColor: accent_red }]}>
-      {!!count && (
-        <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>
-      )}
+      {!!count && <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>}
     </View>
   );
 };

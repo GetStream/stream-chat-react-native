@@ -44,7 +44,7 @@ export type MessageStatusPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'message' | 'readEventsEnabled' | 'threadList'
@@ -57,7 +57,7 @@ const MessageStatusWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -67,13 +67,7 @@ const MessageStatusWithContext = <
     theme: {
       colors: { accent_blue },
       messageSimple: {
-        status: {
-          checkAllIcon,
-          checkIcon,
-          readByCount,
-          statusContainer,
-          timeIcon,
-        },
+        status: { checkAllIcon, checkIcon, readByCount, statusContainer, timeIcon },
       },
     },
   } = useTheme();
@@ -94,9 +88,7 @@ const MessageStatusWithContext = <
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
-          <Text
-            style={[styles.readByCount, { color: accent_blue }, readByCount]}
-          >
+          <Text style={[styles.readByCount, { color: accent_blue }, readByCount]}>
             {message.readBy}
           </Text>
         ) : null}
@@ -109,11 +101,7 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (
-    message.status === 'received' &&
-    message.type !== 'ephemeral' &&
-    !threadList
-  ) {
+  if (message.status === 'received' && message.type !== 'ephemeral' && !threadList) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         <Check {...checkIcon} />
@@ -131,7 +119,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -150,17 +138,14 @@ const areEqual = <
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
 
-  const readEventsEnabledEqual =
-    prevReadEventsEnabled === nextReadEventsEnabled;
+  const readEventsEnabledEqual = prevReadEventsEnabled === nextReadEventsEnabled;
   if (!readEventsEnabledEqual) return false;
 
   const messageEqual =
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) &&
-      prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) &&
-        nextMessage.readBy);
+    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
+      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy);
   if (!messageEqual) return false;
 
   return true;
@@ -178,7 +163,7 @@ export type MessageStatusProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageStatus = <
@@ -188,26 +173,14 @@ export const MessageStatus = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, readEventsEnabled, threadList } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { message, readEventsEnabled, threadList } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return (
-    <MemoizedMessageStatus
-      {...{ message, readEventsEnabled, threadList }}
-      {...props}
-    />
-  );
+  return <MemoizedMessageStatus {...{ message, readEventsEnabled, threadList }} {...props} />;
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

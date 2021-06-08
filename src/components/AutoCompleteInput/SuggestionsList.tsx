@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableOpacityProps,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
 import { CommandsItem } from './CommandsItem';
 import { EmojisItem } from './EmojisItem';
@@ -20,11 +15,7 @@ import {
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultCommandType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 const styles = StyleSheet.create({
   emojiItem: { paddingVertical: 10 },
@@ -32,23 +23,18 @@ const styles = StyleSheet.create({
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
   const { children, ...touchableOpacityProps } = props;
-  return (
-    <TouchableOpacity {...touchableOpacityProps}>{children}</TouchableOpacity>
-  );
+  return <TouchableOpacity {...touchableOpacityProps}>{children}</TouchableOpacity>;
 };
 
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
-const isString = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
->(
+const isString = <Co extends string = DefaultCommandType, Us extends UnknownType = DefaultUserType>(
   component: SuggestionComponentType<Co, Us>,
 ): component is string => typeof component === 'string';
 
 export type SuggestionsListProps<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   active: boolean;
   componentType: SuggestionComponentType<Co, Us>;
@@ -58,7 +44,7 @@ export type SuggestionsListProps<
 
 export const SuggestionsList = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: SuggestionsListProps<Co, Us>,
 ) => {
@@ -80,13 +66,7 @@ export const SuggestionsList = <
     },
   } = useTheme();
 
-  const renderItem = ({
-    index,
-    item,
-  }: {
-    index: number;
-    item: Suggestion<Co, Us>;
-  }) => {
+  const renderItem = ({ index, item }: { index: number; item: Suggestion<Co, Us> }) => {
     if (isString(Component)) {
       switch (Component) {
         case 'MentionsItem':
@@ -110,10 +90,7 @@ export const SuggestionsList = <
         case 'CommandsItem':
           if (isSuggestionCommand(item)) {
             return (
-              <SuggestionsItem
-                onPress={() => onSelect(item)}
-                style={[itemStyle]}
-              >
+              <SuggestionsItem onPress={() => onSelect(item)} style={[itemStyle]}>
                 <CommandsItem item={item} />
               </SuggestionsItem>
             );
@@ -122,10 +99,7 @@ export const SuggestionsList = <
         case 'EmojisItem':
           if (isSuggestionEmoji(item)) {
             return (
-              <SuggestionsItem
-                onPress={() => onSelect(item)}
-                style={[styles.emojiItem, itemStyle]}
-              >
+              <SuggestionsItem onPress={() => onSelect(item)} style={[styles.emojiItem, itemStyle]}>
                 <EmojisItem item={item} />
               </SuggestionsItem>
             );

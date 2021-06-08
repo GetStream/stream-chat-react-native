@@ -28,9 +28,7 @@ export type InlineDateSeparatorProps = {
   date?: Date;
 };
 
-export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({
-  date,
-}) => {
+export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }) => {
   const {
     theme: {
       colors: { overlay_dark, white },
@@ -43,17 +41,14 @@ export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({
     return null;
   }
 
-  const dateFormat =
-    date.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
+  const dateFormat = date.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
   const tDate = tDateTimeParser(date);
   const dateString = isDayOrMoment(tDate)
     ? tDate.format(dateFormat)
     : new Date(tDate).toDateString();
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: overlay_dark }, container]}
-    >
+    <View style={[styles.container, { backgroundColor: overlay_dark }, container]}>
       <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
     </View>
   );

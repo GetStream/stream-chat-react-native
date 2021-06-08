@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -58,7 +52,7 @@ type ImageUploadPreviewPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'imageUploads' | 'removeImage' | 'uploadImage'
@@ -71,7 +65,7 @@ export type ImageUploadPreviewProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 const ImageUploadPreviewWithContext = <
@@ -81,7 +75,7 @@ const ImageUploadPreviewWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -96,13 +90,7 @@ const ImageUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({
-    index,
-    item,
-  }: {
-    index: number;
-    item: ImageUpload;
-  }) => (
+  const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => (
     <View
       style={[
         styles.itemContainer,
@@ -114,9 +102,7 @@ const ImageUploadPreviewWithContext = <
         action={() => {
           uploadImage({ newImage: item });
         }}
-        active={
-          item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED
-        }
+        active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
         style={styles.upload}
         type={
           item.state === FileState.UPLOADING
@@ -167,7 +153,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -178,8 +164,7 @@ const areEqual = <
   return (
     prevImageUploads.length === nextImageUploads.length &&
     prevImageUploads.every(
-      (prevImageUpload, index) =>
-        prevImageUpload.state === nextImageUploads[index].state,
+      (prevImageUpload, index) => prevImageUpload.state === nextImageUploads[index].state,
     )
   );
 };
@@ -199,19 +184,12 @@ export const ImageUploadPreview = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { imageUploads, removeImage, uploadImage } =
+    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedImageUploadPreviewWithContext
@@ -221,5 +199,4 @@ export const ImageUploadPreview = <
   );
 };
 
-ImageUploadPreview.displayName =
-  'ImageUploadPreview{messageInput{imageUploadPreview}}';
+ImageUploadPreview.displayName = 'ImageUploadPreview{messageInput{imageUploadPreview}}';

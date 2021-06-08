@@ -1,12 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
 import { AppContext } from '../context/AppContext';
@@ -50,9 +43,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
-  navigation,
-}) => {
+export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const {
     theme: {
       colors: { black, grey, white },
@@ -102,9 +93,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('NewGroupChannelAddMemberScreen')
-            }
+            onPress={() => navigation.navigate('NewGroupChannelAddMemberScreen')}
             style={styles.menuItem}
           >
             <Group height={24} pathFill={grey} width={24} />
