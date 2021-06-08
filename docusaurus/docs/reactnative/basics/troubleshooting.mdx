@@ -5,6 +5,7 @@ title: Troubleshooting
 ---
 
 There are a few common problems users have reported when setting up Stream Chat for React Native, to help you if you run afoul of these problems we have created a list of common issues and solutions.
+If you encounter something that is not listed here, try [searching for the issue in GitHub](https://github.com/GetStream/stream-chat-react-native/issues).
 
 ## Cannot run remote debugger
 
@@ -43,6 +44,18 @@ To keep these in sync with the currently visible screen some logic is used to de
 
 Stream Chat for React Native relies heavily on context, in instances where the Render Error `undefined is not a function` occurs it is almost always the case that a context provider is not wrapping a component appropriately.
 If you encounter this error please ensure the `OverlayProvider`, `Chat`, and `Channel` components are wrapping your application correctly.
+
+## Incorrect input position
+
+If the `MessageInput` is at the incorrect height when the keyboard is displayed a setting could being incorrect.
+
+Ensure the `keyboardVerticalOffset` prop passed to `Channel` is correct and accounts for any header height that may need to be adjusted for.
+
+### Android
+
+On Android if the StatusBar is set to translucent, i.e. `StatusBar.setTranslucent(true)` then there may be some inaccurate layout calculations occurring.
+
+If you are using the standard React Native Android keyboard setting of `android:windowSoftInputMode="adjustResize"`, you can disable to layout adjustments on Android using the prop `disableKeyboardCompatibleView` and this will ignore the incorrect measurements.
 
 ## Wrong images in gallery
 
@@ -92,6 +105,12 @@ Additionally it could only be set one time via either props or the `setTopInset`
 Both `bottomInset` & `topInset` can be set via the appropriate functions, `setBottomInset` and `setTopInset`, that are accessible via the `useAttachmentPickerContext` hook.
 
 :::
+
+### Android
+
+On Android if the StatusBar is set to translucent, i.e. `StatusBar.setTranslucent(true)` then you need to provide the prop `translucentStatusBar` to the `OverlayProvider`.
+This prop is a `boolean` that adjusts for differences in the measurements of the screen height when the StatusBar on Android is translucent.
+It is important to note that since Expo 38 `true` is the default for transparent on Android.
 
 ## Image picker not working
 
