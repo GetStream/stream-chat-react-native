@@ -30,10 +30,6 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ## Value
 
-### channel
-
-Same as prop [channel](../core-components/channel#required-channel)
-
 ### disabled
 
 Value is true, when channel is [frozen](https://getstream.io/chat/docs/javascript/freezing_channels/?language=javascript&q=frozen) and [disableIfFrozenChannel](../core-components/channel#disableiffrozenchannel) is true.
@@ -41,10 +37,6 @@ Value is true, when channel is [frozen](https://getstream.io/chat/docs/javascrip
 | Type |
 | - |
 | boolean |
-
-### enforceUniqueReaction
-
-Same as prop [enforceUniqueReaction](../core-components/channel#enforceuniquereaction)
 
 ### error
 
@@ -62,18 +54,12 @@ Value is true, when giphy command is enabled on [channel type](https://getstream
 | - |
 | boolean |
 
-### hideDateSeparators
-
-Same as prop [hideDateSeparators](../core-components/channel#hidedateseparators)
-
 ### isAdmin
 
 Value is true, when current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
-const isAdmin =
-  client?.user?.role === 'admin' ||
-  channel?.state.membership.role === 'admin';
+const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role === 'admin';
 
 ```
 | Type |
@@ -85,9 +71,7 @@ const isAdmin =
 Value is true, when current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
-const isModerator =
-  channel?.state.membership.role === 'channel_moderator' ||
-  channel?.state.membership.role === 'moderator';
+const isModerator = channel?.state.membership.role === 'channel_moderator' || channel?.state.membership.role === 'moderator';
 ```
 
 | Type |
@@ -108,42 +92,170 @@ const isOwner = channel?.state.membership.role === 'owner';
 
 ### lastRead
 
-### loadChannelAtMessage
+<!-- TODO: Change to new docs -->
+Timestamp of when current user marked the channel as read - [`channel.markRead()`](https://getstream.io/chat/docs/javascript/unread/?language=javascript&q=markRead)
+
+| Type |
+| - |
+| [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) |
 
 ### loadChannelAtMessage
+
+Function to reload channel at particular message in history.
+
+```tsx
+loadChannelAtMessage({
+  before: 10, // Number of messages to load before messageId
+  after: 10, // Number of messages to load after messageId
+  messageId
+})
+```
+
+| Type |
+| - |
+| function |
 
 ### loading
 
-### maxTimeBetweenGroupedMessages
+Value is true, when channel is loading messages during first load.
+
+| Type |
+| - |
+| boolean |
 
 ### markRead
 
+<!-- TODO: Change to new docs -->
+Function to mark current channel as read, for current user. This function internally makes a throttled call to `channel.markRead()`, if [read events](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=read%20event) are enabled
+
+| Type |
+| - |
+| function |
+
 ### members
+
+<!-- TODO: Change to new docs -->
+Members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+
+:::caution
+<!-- TODO: Change to new docs -->
+`client.queryChannels()` or `channel.watch()` returns only upto 100 members of channel. So if you expect total number of members to be > 100, its better to use [`client.queryMembers()`](https://getstream.io/chat/docs/javascript/query_members/?language=javascript&q=members) api endpoint separately to get the list of members.
+:::
+
+```tsx
+Record<
+  string, // userId
+  {
+    banned?: boolean;
+    created_at?: string;
+    invite_accepted_at?: string;
+    invite_rejected_at?: string;
+    invited?: boolean;
+    is_moderator?: boolean;
+    role?: string;
+    shadow_banned?: boolean;
+    updated_at?: string;
+    user?: UserResponse<UserType>;
+    user_id?: string;
+  }
+>
+```
+
+| Type |
+| - |
+| object |
 
 ### read
 
+<!-- TODO: Change to new docs -->
+Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+
+```tsx
+Record<
+  string, // userId
+  {
+    last_read: Date;
+    user: UserResponse<UserType>
+  }
+>;
+```
+
+| Type |
+| - |
+| object |
+
 ### reloadChannel
 
-### scrollToFirstUnreadThreshold
+Function to reload a channel at most recent message. Promise returned by this function will be resolved, when the channel has finished reloading.
+
+| Type |
+| - |
+| () => Promise |
 
 ### setLastRead
 
+Setter function for react state [`lastRead`](#lastread) of Channel component.
+
+| Type |
+| - |
+| `(date: Date) => void` |
+
 ### setTargetedMessage
+
+Setter function for react state [`targetedMessage`](#targetedmessage) of Channel component
+
+| Type |
+| - |
+| `(messageId: string) => void` |
 
 ### targetedMessage
 
+Id of message, which is highlighted currently. This value gets set when you load a channel at particular message in history, using [loadChannelAtMessage](#loadchannelatmessage).
+
+| Type |
+| - |
+| string |
+
 ### watchers
+
+Watchers of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
+
+:::caution
+<!-- TODO: Change to new docs -->
+`client.queryChannels()` or `channel.watch()` returns only upto 100 watchers for channel. So if you expect total number of watchers to be > 100, you should request them explicitely using [Channel Pagination](https://getstream.io/chat/docs/javascript/channel_pagination/?language=javascript&q=members)
+:::
+
+```tsx
+Record<
+  string, // string
+  UserResponse<UserType>
+>;
+```
+
+| Type |
+| - |
+| object |
 
 ### watcherCount
 
-### readEventsEnabled
+Total number of users, currently watching a channel.
 
-### typingEventsEnabled
+| Type |
+| - |
+| number |
 
-### EmptyStateIndicator
+## Forwarded from Channel
 
-### LoadingIndicator
+List of props that are forwarded from `Channel` component to `ChannelContext` value:
 
-### NetworkDownIndicator
-
-### StickyHeader
+- [channel](../core-components/channel#required-channel)
+- [enforceUniqueReaction](../core-components/channel#enforceuniquereaction)
+- [hideDateSeparators](../core-components/channel#hidedateseparators)
+- [maxTimeBetweenGroupedMessages](../core-components/channel#maxtimebetweengroupedmessages)
+- [readEventsEnabled](../core-components/channel#readeventsenabled)
+- [scrollToFirstUnreadThreshold](../core-components/channel#scrolltofirstunreadthreshold)
+- [typingEventsEnabled](../core-components/channel#typingeventsenabled)
+- [EmptyStateIndicator](../core-components/channel#Emptystateindicator)
+- [LoadingIndicator](../core-components/channel#loadingindicator)
+- [NetworkDownIndicator](../core-components/channel#networkdownindicator)
+<!-- - [StickyHeader](../core-components/channel#stickyheader) -->
