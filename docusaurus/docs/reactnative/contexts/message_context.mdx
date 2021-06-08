@@ -2,3 +2,195 @@
 id: message-context
 title: MessageContext
 ---
+
+`MessageContext` is provided by [`Message`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`MessageContext` can be consumed by any of the child  component of `Message` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { MessageContext } from 'stream-chat-react-native';
+
+const { isMyMessage, message, files } = useContext(MessageContext);
+```
+
+Alternatively, you can also use `useMessageContext` hook provided by library to consume MessageContext.
+
+```tsx
+import { useMessageContext } from 'stream-chat-react-native';
+
+const { isMyMessage, message, files } = useMessageContext();
+```
+
+
+## Value
+
+### actionsEnabled
+
+This value gets set to true when following condition is true:
+
+```tsx
+message.type === 'regular' && message.status === 'received'
+```
+
+| Type |
+| - |
+| boolean |
+
+### alignment
+
+If the message is aligned to right of left side of list.
+
+| Type |
+| - |
+| enum('right', 'left') |
+
+### canModifyMessage
+
+Value is true in one of following scenarios:
+
+<!-- TODO: Change to new docs -->
+- message is sent by current user (connected to chat)
+- current user has [`admin`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
+- current user has [`moderator`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
+
+| Type |
+| - |
+| boolean |
+
+### files
+
+All the `file` type attachments on message.
+
+| Type |
+| - |
+| array |
+
+### groupStyles
+
+Position of message in group - top, bottom, middle, single.
+Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+
+| Type |
+| - |
+| `enum('top', 'bottom', 'middle', 'single')[]` |
+
+<!-- ### handleAction -->
+
+### handleDeleteMessage
+
+Callback function for "Delete Message" action.
+
+| Type |
+| - |
+| function |
+
+### handleEditMessage
+
+Callback function for "Edit Message" action.
+
+| Type |
+| - |
+| function |
+
+### handleQuotedReplyMessage
+
+Callback function for "Quoted Reply" action.
+
+| Type |
+| - |
+| function |
+
+### handleResendMessage
+
+Callback function for "Resend Message" (for failed message) action.
+
+| Type |
+| - |
+| function |
+
+### handleToggleBanUser
+
+Callback function for "Ban/Unban User" action.
+
+| Type |
+| - |
+| function |
+
+### handleToggleMuteUser
+
+Callback function for "Mute/Unmute User" action.
+
+| Type |
+| - |
+| function |
+
+### handleToggleReaction
+
+Callback function for toggling reaction from reaction picker.
+
+| Type |
+| - |
+| `(reactionType: string) => void` |
+
+### hasReactions
+
+Value is true, when message has atleast 1 reaction.
+
+| Type |
+| - |
+| boolean |
+
+### images
+
+All the `image` type attachments on message.
+
+| Type |
+| - |
+| array |
+
+### isMyMessage
+
+Value is true, when message is sent by current user (connected to chat).
+
+| Type |
+| - |
+| boolean |
+
+### lastGroupMessage
+
+### message
+
+### messageContentOrder
+
+### onLongPress
+
+### onlyEmojis
+
+### onOpenThread
+
+### onPress
+
+### onPressIn
+
+### otherAttachments
+
+### reactions
+
+### showMessageOverlay
+
+### showMessageStatus
+
+### threadList
+
+### goToMessage
+
+### lastReceivedId
+
+### preventPress
+
+### showAvatar
+
