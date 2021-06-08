@@ -2,3 +2,137 @@
 id: attachment-picker-context
 title: AttachmentPickerContext
 ---
+
+`AttachmentPickerContext` is provided by [`OverlayProvider`](../core-components/overlay-provider) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`AttachmentPickerContext` can be consumed by any of the child  component of `OverlayProvider` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { AttachmentPickerContext } from 'stream-chat-react-native';
+
+const { openPicker, closePicker } = useContext(AttachmentPickerContext);
+```
+
+Alternatively, you can also use `useAttachmentPickerContext` hook provided by library to consume AttachmentPickerContext.
+
+```tsx
+import { useAttachmentPickerContext } from 'stream-chat-react-native';
+
+const { openPicker, closePicker } = useAttachmentPickerContext();
+```
+
+## Value
+
+
+### closePicker
+
+Function to close the attachment picker bottom sheet.
+
+| Type |
+| - |
+| function |
+
+<!-- ### maxNumberOfFiles
+
+Maximum number of files (images + documents) which can be uploaded.
+
+| Type | Default |
+| - | - |
+| number | 10 | -->
+
+### openPicker
+
+Function to open the attachment picker bottom sheet.
+
+| Type |
+| - |
+| function |
+
+### selectedImages
+
+List of currently selected images in attachment picker.
+
+```tsx
+Array<{
+  height: number;
+  source: 'camera' | 'picker';
+  uri: string;
+  width: number;
+  id?: string;
+}>
+```
+
+| Type |
+| - |
+| array |
+
+### setBottomInset
+
+Setter function for [`bottomInset`](#bottominset)
+
+| Type |
+| - |
+| `(bottomInset: number) => void` |
+
+<!-- ### setMaxNumberOfFiles -->
+
+### setSelectedImages
+
+Setter function for [`selectedImages`](#selectedimages)
+
+| Type |
+| - |
+| `(selectedImages) => void` |
+
+### setSelectedPicker
+
+Setter function for [`selectedPicker`](#selectedpicker)
+
+| Type |
+| - |
+| `(picker: 'images' | undefined) => void` |
+
+### setTopInset
+
+Setter function for [`topInset`](#topinset)
+
+| Type |
+| - |
+| `(topInset: number) => void` |
+
+### bottomInset
+
+`bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+
+| Type | Default |
+| - | - |
+| number | [`bottomInset`](../core-components/overlay-priovider#bottominset) |
+
+### selectedPicker
+
+Value is `images` (string), when image attachment picker is open. Value will be `undefined` if file picker is active or file picker is open.
+
+| Type |
+| - |
+| 'images' \| undefined |
+
+### topInset
+
+`topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
+
+| Type | Default |
+| - | - |
+| number | [`topInset`](../core-components/overlay-priovider#topInset) |
+
+## Forwarded from OverlayProvider
+
+List of props that are forwarded from `OverlayProvider` component to `AttachmentPickerContext` value:
+
+- [attachmentPickerBottomSheetHeight](../core-components/overlay-provider#attachmentpickerbottomsheetheight)
+- [attachmentSelectionBarHeight](../core-components/overlay-provider#attachmentselectionbarheight)
+- [CameraSelectorIcon](../core-components/overlay-provider#cameraselectoricon)
+- [FileSelectorIcon](../core-components/overlay-provider#fileselectoricon)
+- [ImageSelectorIcon](../core-components/overlay-provider#imageselectoricon)
