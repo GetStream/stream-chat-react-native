@@ -22,11 +22,9 @@ type Parameters<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
-  setChannels: React.Dispatch<
-    React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-  >;
+  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
 };
 
 export const useUserPresence = <
@@ -36,7 +34,7 @@ export const useUserPresence = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   setChannels,
 }: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {

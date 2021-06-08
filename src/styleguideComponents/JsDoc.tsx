@@ -6,10 +6,8 @@ import Markdown from 'react-styleguidist/lib/client/rsg-components/Markdown';
 
 const plural = (array: TagObject[], caption: string) =>
   array.length === 1 ? caption : `${caption}s`;
-const list = (array: TagObject[]) =>
-  array.map((item) => item.description).join(', ');
-const paragraphs = (array: TagObject[]) =>
-  array.map((item) => item.description).join('\n\n');
+const list = (array: TagObject[]) => array.map((item) => item.description).join(', ');
+const paragraphs = (array: TagObject[]) => array.map((item) => item.description).join('\n\n');
 
 const fields = {
   author: (value: TagObject[]) => `${plural(value, 'Author')}: ${list(value)}`,
@@ -22,13 +20,10 @@ const fields = {
 };
 
 export function getMarkdown(props: TagProps) {
-  return map(
-    fields,
-    (format: (value: TagObject[]) => string, field: keyof TagProps) => {
-      const tag = props[field];
-      return tag && format(tag);
-    },
-  )
+  return map(fields, (format: (value: TagObject[]) => string, field: keyof TagProps) => {
+    const tag = props[field];
+    return tag && format(tag);
+  })
     .filter(Boolean)
     .join('\n\n');
 }

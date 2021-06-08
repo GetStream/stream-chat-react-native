@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  FlatList,
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -217,21 +209,14 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: interpolate(
-          showScreen.value,
-          [0, 1],
-          [viewHeight.value / 2, 0],
-        ),
+        translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
       },
     ],
   }));
 
   // magic number 8 used as fontSize is 16 so assuming average character width of half
   const maxWidth = channel
-    ? Math.floor(
-        width / 8 -
-          Object.keys(channel.state.members || {}).length.toString().length,
-      )
+    ? Math.floor(width / 8 - Object.keys(channel.state.members || {}).length.toString().length)
     : 0;
   const channelName = channel
     ? channel.data?.name ||
@@ -240,9 +225,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         .reduce((returnString, currentMember, index, originalArray) => {
           const returnStringLength = returnString.length;
           const currentMemberName =
-            currentMember.user?.name ||
-            currentMember.user?.id ||
-            'Unknown User';
+            currentMember.user?.name || currentMember.user?.id || 'Unknown User';
           // a rough approximation of when the +Number shows up
           if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
             if (returnStringLength) {
@@ -259,16 +242,11 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
         }, '')
     : '';
   const otherMembers = channel
-    ? Object.values(channel.state.members).filter(
-        (member) => member.user?.id !== clientId,
-      )
+    ? Object.values(channel.state.members).filter((member) => member.user?.id !== clientId)
     : [];
 
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={StyleSheet.absoluteFill}
-    >
+    <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
       <PanGestureHandler
         enabled={overlay === 'channelInfo'}
         maxPointers={1}
@@ -295,32 +273,21 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
               style={[styles.container, panStyle]}
             >
               <Animated.View
-                style={[
-                  styles.containerInner,
-                  { backgroundColor: white },
-                  showScreenStyle,
-                ]}
+                style={[styles.containerInner, { backgroundColor: white }, showScreenStyle]}
               >
                 <SafeAreaView>
                   {channel && (
                     <>
                       <View style={styles.detailsContainer}>
-                        <Text
-                          numberOfLines={1}
-                          style={[styles.channelName, { color: black }]}
-                        >
+                        <Text numberOfLines={1} style={[styles.channelName, { color: black }]}>
                           {channelName}
                         </Text>
                         <Text style={[styles.channelStatus, { color: grey }]}>
                           {otherMembers.length === 1
                             ? otherMembers[0].user?.online
                               ? 'Online'
-                              : `Last Seen ${dayjs(
-                                  otherMembers[0].user?.last_active,
-                                ).fromNow()}`
-                            : `${
-                                Object.keys(channel.state.members).length
-                              } Members, ${
+                              : `Last Seen ${dayjs(otherMembers[0].user?.last_active).fromNow()}`
+                            : `${Object.keys(channel.state.members).length} Members, ${
                                 Object.values(channel.state.members).filter(
                                   (member) => !!member.user?.online,
                                 ).length
@@ -348,14 +315,10 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                                   image={item.image}
                                   name={item.name || item.id}
                                   online={item.online}
-                                  presenceIndicatorContainerStyle={
-                                    styles.avatarPresenceIndicator
-                                  }
+                                  presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
                                   size={avatarSize}
                                 />
-                                <Text
-                                  style={[styles.userName, { color: black }]}
-                                >
+                                <Text style={[styles.userName, { color: black }]}>
                                   {item.name || item.id || ''}
                                 </Text>
                               </View>
@@ -370,19 +333,13 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             setOverlay('none');
                             if (navigation) {
                               if (otherMembers.length === 1) {
-                                navigation.navigate(
-                                  'OneOnOneChannelDetailScreen',
-                                  {
-                                    channel,
-                                  },
-                                );
+                                navigation.navigate('OneOnOneChannelDetailScreen', {
+                                  channel,
+                                });
                               } else {
-                                navigation.navigate(
-                                  'GroupChannelDetailsScreen',
-                                  {
-                                    channel,
-                                  },
-                                );
+                                navigation.navigate('GroupChannelDetailsScreen', {
+                                  channel,
+                                });
                               }
                             }
                           }
@@ -399,16 +356,12 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <View style={styles.rowInner}>
                             <User pathFill={grey} />
                           </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            View info
-                          </Text>
+                          <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
                       {otherMembers.length > 1 && (
                         <TapGestureHandler
-                          onHandlerStateChange={({
-                            nativeEvent: { state },
-                          }) => {
+                          onHandlerStateChange={({ nativeEvent: { state } }) => {
                             if (state === State.END) {
                               if (clientId) {
                                 channel.removeMembers([clientId]);
@@ -417,15 +370,11 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             }
                           }}
                         >
-                          <View
-                            style={[styles.row, { borderTopColor: border }]}
-                          >
+                          <View style={[styles.row, { borderTopColor: border }]}>
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={grey} />
                             </View>
-                            <Text style={[styles.rowText, { color: black }]}>
-                              Leave Group
-                            </Text>
+                            <Text style={[styles.rowText, { color: black }]}>Leave Group</Text>
                           </View>
                         </TapGestureHandler>
                       )}
@@ -439,14 +388,10 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                                 setOverlay('none');
                               },
                               subtext: `Are you sure you want to delete this ${
-                                otherMembers.length === 1
-                                  ? 'conversation'
-                                  : 'group'
+                                otherMembers.length === 1 ? 'conversation' : 'group'
                               }?`,
                               title: `Delete ${
-                                otherMembers.length === 1
-                                  ? 'Conversation'
-                                  : 'Group'
+                                otherMembers.length === 1 ? 'Conversation' : 'Group'
                               }`,
                             });
                             setOverlay('confirmation');
@@ -488,9 +433,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                           <View style={styles.rowInner}>
                             <CircleClose pathFill={grey} />
                           </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            Cancel
-                          </Text>
+                          <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
                         </View>
                       </TapGestureHandler>
                     </>

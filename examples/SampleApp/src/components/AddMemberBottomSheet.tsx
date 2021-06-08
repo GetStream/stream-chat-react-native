@@ -69,8 +69,7 @@ export const AddMemberBottomSheet: React.FC = () => {
   const { setOverlay } = useAppOverlayContext();
   const { data, reset } = useBottomSheetOverlayContext();
 
-  const channel =
-    data && isAddMemberBottomSheetData(data) ? data.channel : undefined;
+  const channel = data && isAddMemberBottomSheetData(data) ? data.channel : undefined;
 
   const insets = useSafeAreaInsets();
 
@@ -89,9 +88,7 @@ export const AddMemberBottomSheet: React.FC = () => {
     searchText,
   } = usePaginatedUsers();
 
-  const [addMemberQueryInProgress, setAddMemberQueryInProgress] = useState(
-    false,
-  );
+  const [addMemberQueryInProgress, setAddMemberQueryInProgress] = useState(false);
   const [error, setError] = useState(false);
 
   if (!channel) {

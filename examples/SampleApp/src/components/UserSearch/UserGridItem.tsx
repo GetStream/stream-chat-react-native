@@ -54,11 +54,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
     },
   } = useTheme();
   return (
-    <TouchableOpacity
-      key={user.id}
-      onPress={onPress}
-      style={styles.selectedUserItemContainer}
-    >
+    <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <Avatar
         image={user.image}
         online={user.online}
@@ -78,10 +74,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
           <Close />
         </View>
       )}
-      <Text
-        numberOfLines={2}
-        style={[styles.selectedUserItemName, { color: black }]}
-      >
+      <Text numberOfLines={2} style={[styles.selectedUserItemName, { color: black }]}>
         {user.name}
       </Text>
     </TouchableOpacity>

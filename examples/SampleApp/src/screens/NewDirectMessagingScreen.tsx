@@ -1,19 +1,5 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Alert,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
@@ -161,17 +147,18 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel = useRef<
-    StreamChatChannel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-  >();
+  const currentChannel =
+    useRef<
+      StreamChatChannel<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >
+    >();
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -226,17 +213,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   }, [selectedUsersLength]);
 
   const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
-    <View
-      style={[
-        { backgroundColor: white },
-        focusOnSearchInput ? styles.container : undefined,
-      ]}
-    >
-      <ScreenHeader
-        inSafeArea={inSafeArea}
-        onBack={reset}
-        titleText='New Chat'
-      />
+    <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
+      <ScreenHeader inSafeArea={inSafeArea} onBack={reset} titleText='New Chat' />
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => {
@@ -300,11 +278,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           )}
         </View>
         <View style={styles.searchContainerRight}>
-          {selectedUsers.length === 0 ? (
-            <User pathFill={grey} />
-          ) : (
-            <UserAdd pathFill={grey} />
-          )}
+          {selectedUsers.length === 0 ? <User pathFill={grey} /> : <UserAdd pathFill={grey} />}
         </View>
       </TouchableOpacity>
       {focusOnSearchInput && !searchText && selectedUsers.length === 0 && (
@@ -382,10 +356,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
         {renderUserSearch({ inSafeArea: true })}
-        {results &&
-          results.length >= 0 &&
-          !focusOnSearchInput &&
-          focusOnMessageInput && <MessageList />}
+        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
+          <MessageList />
+        )}
         {selectedUsers.length > 0 && <MessageInput />}
       </Channel>
     </SafeAreaView>

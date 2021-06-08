@@ -1,16 +1,6 @@
 import React, { useEffect } from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {
-  CompositeNavigationProp,
-  useNavigation,
-} from '@react-navigation/native';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAttachmentPickerContext, useTheme } from 'stream-chat-react-native';
 
@@ -21,10 +11,7 @@ import { GoBack } from '../icons/GoBack';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type {
-  DrawerNavigatorParamList,
-  StackNavigatorParamList,
-} from '../types';
+import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   backButton: {
@@ -129,10 +116,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
-  const { setTopInset, topInset } = useAttachmentPickerContext();
+  const { setTopInset } = useAttachmentPickerContext();
 
   useEffect(() => {
-    if (setTopInset && !topInset) {
+    if (setTopInset) {
       setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
     }
   }, [insets.top]);
@@ -159,13 +146,11 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
         ]}
       >
         <View style={styles.leftContainer}>
-          {
-            LeftContent ? <LeftContent /> :
-            <BackButton
-              onBack={onBack}
-              showUnreadCountBadge={showUnreadCountBadge}
-            />
-          }
+          {LeftContent ? (
+            <LeftContent />
+          ) : (
+            <BackButton onBack={onBack} showUnreadCountBadge={showUnreadCountBadge} />
+          )}
         </View>
         <View style={styles.centerContainer}>
           <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>

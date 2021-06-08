@@ -22,15 +22,11 @@ type Parameters<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
-  setChannels: React.Dispatch<
-    React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-  >;
+  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
   onChannelDeleted?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
@@ -42,7 +38,7 @@ export const useChannelDeleted = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   onChannelDeleted,
   setChannels,

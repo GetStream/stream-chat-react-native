@@ -1,10 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import {
-  BackHandler,
-  StyleSheet,
-  useWindowDimensions,
-  ViewStyle,
-} from 'react-native';
+import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
 import Dayjs from 'dayjs';
 import Animated, {
   cancelAnimation,
@@ -37,11 +32,7 @@ import { useStreami18n } from '../../utils/useStreami18n';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
-import {
-  BlurType,
-  OverlayContext,
-  OverlayProviderProps,
-} from './OverlayContext';
+import { BlurType, OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -81,7 +72,7 @@ export const OverlayProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
@@ -117,12 +108,11 @@ export const OverlayProvider = <
       if (ref.current) {
         ref.current.snapTo(0);
       } else {
-        console.warn(
-          'bottom and top insets must be set for the image picker to work correctly',
-        );
+        console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
     topInset,
+    translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
     value,
@@ -140,6 +130,7 @@ export const OverlayProvider = <
     ImageOverlaySelectedComponent,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
+    translucentStatusBar,
   };
 
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -152,7 +143,7 @@ export const OverlayProvider = <
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
-  const { height, width } = useWindowDimensions();
+  const { height, width } = Dimensions.get('screen');
 
   // Setup translators
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
@@ -168,10 +159,7 @@ export const OverlayProvider = <
       return false;
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
   }, [overlay]);
@@ -215,6 +203,7 @@ export const OverlayProvider = <
     setBlurType,
     setOverlay,
     style: value?.style,
+    translucentStatusBar,
   };
 
   if (loadingTranslators) return null;
@@ -247,16 +236,11 @@ export const OverlayProvider = <
                   imageGalleryCustomComponents={imageGalleryCustomComponents}
                   imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                   imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                  numberOfImageGalleryGridColumns={
-                    numberOfImageGalleryGridColumns
-                  }
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
                   overlayOpacity={overlayOpacity}
                   visible={overlay === 'gallery'}
                 />
-                <AttachmentPicker
-                  ref={bottomSheetRef}
-                  {...attachmentPickerProps}
-                />
+                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
               </ThemeProvider>
             </ImageGalleryProvider>
           </AttachmentPickerProvider>

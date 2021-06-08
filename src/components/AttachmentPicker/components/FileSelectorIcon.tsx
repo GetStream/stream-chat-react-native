@@ -14,7 +14,5 @@ export const FileSelectorIcon: React.FC<Props> = ({ numberOfImageUploads }) => {
     },
   } = useTheme();
 
-  return (
-    <Folder pathFill={numberOfImageUploads === 0 ? grey : grey_gainsboro} />
-  );
+  return <Folder pathFill={numberOfImageUploads === 0 ? grey : grey_gainsboro} />;
 };

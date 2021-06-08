@@ -142,15 +142,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
 }) => {
   const {
     theme: {
-      colors: {
-        accent_green,
-        accent_red,
-        black,
-        border,
-        grey,
-        white,
-        white_smoke,
-      },
+      colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
     },
   } = useTheme();
   const { chatClient } = useContext(AppContext);
@@ -164,9 +156,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const user = member?.user;
   const [muted, setMuted] = useState(
     chatClient?.mutedUsers &&
-      chatClient?.mutedUsers?.findIndex(
-        (mutedUser) => mutedUser.target.id === user?.id,
-      ) > -1,
+      chatClient?.mutedUsers?.findIndex((mutedUser) => mutedUser.target.id === user?.id) > -1,
   );
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     chatClient?.mutedChannels &&
@@ -209,10 +199,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
 
   return (
     <SafeAreaView style={[{ backgroundColor: white }, styles.container]}>
-      <ScrollView
-        contentContainerStyle={styles.contentContainer}
-        style={styles.container}
-      >
+      <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
         <View style={styles.userInfoContainer}>
           <Image source={{ uri: user.image }} style={styles.avatar} />
           <Text
@@ -227,12 +214,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
           </Text>
           <View style={styles.onlineStatusContainer}>
             {user.online && (
-              <View
-                style={[
-                  { backgroundColor: accent_green },
-                  styles.onlineIndicator,
-                ]}
-              />
+              <View style={[{ backgroundColor: accent_green }, styles.onlineIndicator]} />
             )}
             <Text
               style={[

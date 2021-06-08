@@ -54,9 +54,7 @@ export type BottomSheetOverlayContextValue = {
   data?: BottomSheetOverlayData;
 };
 
-export const BottomSheetOverlayContext = React.createContext(
-  {} as BottomSheetOverlayContextValue,
-);
+export const BottomSheetOverlayContext = React.createContext({} as BottomSheetOverlayContextValue);
 
 export const BottomSheetOverlayProvider = ({
   children,
@@ -85,6 +83,4 @@ export const BottomSheetOverlayProvider = ({
 };
 
 export const useBottomSheetOverlayContext = () =>
-  (useContext(
-    BottomSheetOverlayContext,
-  ) as unknown) as BottomSheetOverlayContextValue;
+  useContext(BottomSheetOverlayContext) as unknown as BottomSheetOverlayContextValue;

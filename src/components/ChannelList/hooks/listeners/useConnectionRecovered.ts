@@ -25,7 +25,7 @@ export const useConnectionRecovered = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   refreshList,
   setForceUpdate,
@@ -38,18 +38,12 @@ export const useConnectionRecovered = <
       setForceUpdate((count) => count + 1);
     };
 
-    const { unsubscribe: unsubscribeRecovered } = client.on(
-      'connection.recovered',
-      handleEvent,
-    );
-    const { unsubscribe: unsubscribeChanged } = client.on(
-      'connection.changed',
-      (event) => {
-        if (event.online) {
-          handleEvent();
-        }
-      },
-    );
+    const { unsubscribe: unsubscribeRecovered } = client.on('connection.recovered', handleEvent);
+    const { unsubscribe: unsubscribeChanged } = client.on('connection.changed', (event) => {
+      if (event.online) {
+        handleEvent();
+      }
+    });
 
     return () => {
       unsubscribeRecovered();

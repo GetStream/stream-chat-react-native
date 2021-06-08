@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Dimensions,
   Image,
   ImageStyle,
   Keyboard,
   Platform,
+  StatusBar,
   StyleSheet,
   ViewStyle,
 } from 'react-native';
@@ -40,10 +42,7 @@ import {
   ImageGalleryHeaderCustomComponentProps,
 } from './components/ImageGalleryHeader';
 import { ImageGalleryOverlay } from './components/ImageGalleryOverlay';
-import {
-  ImageGalleryGridImageComponents,
-  ImageGrid,
-} from './components/ImageGrid';
+import { ImageGalleryGridImageComponents, ImageGrid } from './components/ImageGrid';
 import {
   ImageGalleryGridHandleCustomComponentProps,
   ImageGridHandle,
@@ -68,10 +67,8 @@ import type {
 } from '../../types/types';
 
 const isAndroid = Platform.OS === 'android';
-
-const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-const quarterScreenHeight = vh(25);
+const fullScreenHeight = Dimensions.get('screen').height;
+const measuredScreenHeight = vh(100);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const MARGIN = 32;
@@ -87,9 +84,7 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents<
-  Us extends UnknownType = DefaultUserType
-> = {
+export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserType> = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
    *
@@ -129,9 +124,7 @@ export type ImageGalleryCustomComponents<
   };
 };
 
-type Props<
-  Us extends UnknownType = DefaultUserType
-> = ImageGalleryCustomComponents<Us> & {
+type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomComponents<Us> & {
   overlayOpacity: Animated.SharedValue<number>;
   visible: boolean;
   imageGalleryGridHandleHeight?: number;
@@ -149,7 +142,7 @@ export const ImageGallery = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: Props<Us>,
 ) => {
@@ -167,16 +160,26 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { overlay, setBlurType, setOverlay } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { overlay, setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  /**
+   * Height constants
+   */
+  const statusBarHeight = StatusBar.currentHeight ?? 0;
+  const bottomBarHeight = fullScreenHeight - measuredScreenHeight - statusBarHeight;
+  const androidScreenHeightAdjustment = translucentStatusBar
+    ? bottomBarHeight === statusBarHeight || bottomBarHeight < 0
+      ? 0
+      : statusBarHeight
+    : bottomBarHeight === statusBarHeight || bottomBarHeight < 0
+    ? -statusBarHeight
+    : 0;
+  const screenHeight = isAndroid
+    ? Dimensions.get('window').height + androidScreenHeightAdjustment
+    : vh(100);
+  const halfScreenHeight = screenHeight / 2;
+  const quarterScreenHeight = screenHeight / 4;
 
   /**
    * BottomSheet ref
@@ -215,7 +218,7 @@ export const ImageGallery = <
   /**
    * Image height from URL or default to full screen height
    */
-  const [currentImageHeight, setCurrentImageHeight] = useState<number>(vh(100));
+  const [currentImageHeight, setCurrentImageHeight] = useState<number>(screenHeight);
 
   /**
    * JS and UI index values, the JS follows the UI but is needed
@@ -345,9 +348,7 @@ export const ImageGallery = <
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
       created_at: cur.created_at,
-      id: `photoId-${cur.id}-${
-        attachmentImage.image_url || attachmentImage.thumb_url
-      }`,
+      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
       messageId: cur.id,
       uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
       user: cur.user,
@@ -380,8 +381,7 @@ export const ImageGallery = <
     };
 
     const newIndex = photos.findIndex(
-      (photo) =>
-        photo.messageId === image?.messageId && photo.uri === image?.url,
+      (photo) => photo.messageId === image?.messageId && photo.uri === image?.url,
     );
 
     runOnUI(updatePosition)(newIndex);
@@ -395,13 +395,11 @@ export const ImageGallery = <
    */
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
-    setCurrentImageHeight(vh(100));
+    setCurrentImageHeight(screenHeight);
     if (photos[index.value]?.uri) {
       Image.getSize(photos[index.value].uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
-        setCurrentImageHeight(
-          imageHeight > screenHeight ? screenHeight : imageHeight,
-        );
+        setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
       });
     }
   }, [uriForCurrentImage]);
@@ -438,10 +436,8 @@ export const ImageGallery = <
             const maxXYRatio = isAndroid ? 1 : 0.25;
             if (
               Math.abs(evt.translationX / evt.translationY) > maxXYRatio &&
-              (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) <
-                3 ||
-                Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) <
-                  3)
+              (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) < 3 ||
+                Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) < 3)
             ) {
               isSwiping.value = IsSwiping.TRUE;
             }
@@ -478,20 +474,15 @@ export const ImageGallery = <
            * away effect
            */
           scale.value =
-            currentImageHeight * offsetScale.value < screenHeight &&
-            translateY.value > 0
-              ? offsetScale.value *
-                (1 - (1 / 3) * (translateY.value / screenHeight))
+            currentImageHeight * offsetScale.value < screenHeight && translateY.value > 0
+              ? offsetScale.value * (1 - (1 / 3) * (translateY.value / screenHeight))
               : currentImageHeight * offsetScale.value > screenHeight &&
-                translateY.value >
-                  (currentImageHeight / 2) * offsetScale.value -
-                    halfScreenHeight
+                translateY.value > (currentImageHeight / 2) * offsetScale.value - halfScreenHeight
               ? offsetScale.value *
                 (1 -
                   (1 / 3) *
                     ((translateY.value -
-                      ((currentImageHeight / 2) * offsetScale.value -
-                        halfScreenHeight)) /
+                      ((currentImageHeight / 2) * offsetScale.value - halfScreenHeight)) /
                       screenHeight))
               : scale.value;
 
@@ -541,8 +532,7 @@ export const ImageGallery = <
              */
           } else if (
             index.value > 0 &&
-            Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) <
-              3 &&
+            Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
             translateX.value > 0 &&
             finalXPosition > halfScreenWidth &&
             isSwiping.value === IsSwiping.TRUE
@@ -599,16 +589,10 @@ export const ImageGallery = <
           translateY.value =
             currentImageHeight * scale.value < screenHeight
               ? withTiming(0)
-              : translateY.value >
-                (currentImageHeight / 2) * scale.value - halfScreenHeight
-              ? withTiming(
-                  (currentImageHeight / 2) * scale.value - halfScreenHeight,
-                )
-              : translateY.value <
-                (-currentImageHeight / 2) * scale.value + halfScreenHeight
-              ? withTiming(
-                  (-currentImageHeight / 2) * scale.value + halfScreenHeight,
-                )
+              : translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
+              ? withTiming((currentImageHeight / 2) * scale.value - halfScreenHeight)
+              : translateY.value < (-currentImageHeight / 2) * scale.value + halfScreenHeight
+              ? withTiming((-currentImageHeight / 2) * scale.value + halfScreenHeight)
               : withDecay({
                   clamp: [
                     (-currentImageHeight / 2) * scale.value + halfScreenHeight,
@@ -625,9 +609,7 @@ export const ImageGallery = <
            * the zoom back to one
            */
           scale.value =
-            scale.value !== offsetScale.value
-              ? withTiming(offsetScale.value)
-              : offsetScale.value;
+            scale.value !== offsetScale.value ? withTiming(offsetScale.value) : offsetScale.value;
 
           /**
            * If the photo is centered or at the top of the screen if scaled larger
@@ -637,19 +619,16 @@ export const ImageGallery = <
            */
           if (
             finalYPosition > halfScreenHeight &&
-            offsetY.value + 8 >=
-              (currentImageHeight / 2) * scale.value - halfScreenHeight &&
+            offsetY.value + 8 >= (currentImageHeight / 2) * scale.value - halfScreenHeight &&
             isSwiping.value !== IsSwiping.TRUE &&
             translateY.value !== 0 &&
             !(
-              Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) <
-                3 &&
+              Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
               translateX.value < 0 &&
               finalXPosition < -halfScreenWidth
             ) &&
             !(
-              Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) <
-                3 &&
+              Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
               translateX.value > 0 &&
               finalXPosition > halfScreenWidth
             )
@@ -678,13 +657,10 @@ export const ImageGallery = <
                 ? withDecay({
                     velocity: evt.velocityY,
                   })
-                : withTiming(
-                    halfScreenHeight + (currentImageHeight / 2) * scale.value,
-                    {
-                      duration: 200,
-                      easing: Easing.out(Easing.ease),
-                    },
-                  );
+                : withTiming(halfScreenHeight + (currentImageHeight / 2) * scale.value, {
+                    duration: 200,
+                    easing: Easing.out(Easing.ease),
+                  });
             translateX.value = withDecay({
               velocity: -evt.velocityX,
             });
@@ -754,8 +730,7 @@ export const ImageGallery = <
           offsetX.value = translateX.value;
           offsetY.value = translateY.value;
           adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
-          adjustedFocalY.value =
-            evt.focalY - (halfScreenHeight + offsetY.value);
+          adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
           originX.value = adjustedFocalX.value;
           originY.value = adjustedFocalY.value;
           offsetScale.value = scale.value;
@@ -818,12 +793,10 @@ export const ImageGallery = <
           } else if (numberOfPinchFingers.value > 1) {
             originX.value =
               originX.value -
-              (oldFocalX.value / localEvtScale -
-                adjustedFocalX.value / localEvtScale);
+              (oldFocalX.value / localEvtScale - adjustedFocalX.value / localEvtScale);
             originY.value =
               originY.value -
-              (oldFocalY.value / localEvtScale -
-                adjustedFocalY.value / localEvtScale);
+              (oldFocalY.value / localEvtScale - adjustedFocalY.value / localEvtScale);
           }
         }
 
@@ -836,10 +809,8 @@ export const ImageGallery = <
         if (numberOfPinchFingers.value === 1) {
           oldFocalX.value = adjustedFocalX.value + focalOffsetX.value;
           oldFocalY.value = adjustedFocalY.value + focalOffsetY.value;
-          translateX.value =
-            offsetX.value - oldFocalX.value + localEvtScale * originX.value;
-          translateY.value =
-            offsetY.value + oldFocalY.value - localEvtScale * originY.value;
+          translateX.value = offsetX.value - oldFocalX.value + localEvtScale * originX.value;
+          translateY.value = offsetY.value + oldFocalY.value - localEvtScale * originY.value;
 
           /**
            * If the number of fingers in the gesture is greater than one the
@@ -849,14 +820,8 @@ export const ImageGallery = <
         } else if (numberOfPinchFingers.value > 1) {
           oldFocalX.value = adjustedFocalX.value;
           oldFocalY.value = adjustedFocalY.value;
-          translateX.value =
-            offsetX.value -
-            adjustedFocalX.value +
-            localEvtScale * originX.value;
-          translateY.value =
-            offsetY.value +
-            adjustedFocalY.value -
-            localEvtScale * originY.value;
+          translateX.value = offsetX.value - adjustedFocalX.value + localEvtScale * originX.value;
+          translateY.value = offsetY.value + adjustedFocalY.value - localEvtScale * originY.value;
         }
       },
       onFinish: () => {
@@ -885,16 +850,10 @@ export const ImageGallery = <
           translateY.value =
             currentImageHeight * scale.value < screenHeight
               ? withTiming(0)
-              : translateY.value >
-                (currentImageHeight / 2) * scale.value - screenHeight / 2
-              ? withTiming(
-                  (currentImageHeight / 2) * scale.value - screenHeight / 2,
-                )
-              : translateY.value <
-                (-currentImageHeight / 2) * scale.value + screenHeight / 2
-              ? withTiming(
-                  (-currentImageHeight / 2) * scale.value + screenHeight / 2,
-                )
+              : translateY.value > (currentImageHeight / 2) * scale.value - screenHeight / 2
+              ? withTiming((currentImageHeight / 2) * scale.value - screenHeight / 2)
+              : translateY.value < (-currentImageHeight / 2) * scale.value + screenHeight / 2
+              ? withTiming((-currentImageHeight / 2) * scale.value + screenHeight / 2)
               : translateY.value;
 
           /**
@@ -938,8 +897,7 @@ export const ImageGallery = <
           offsetX.value = translateX.value;
           offsetY.value = translateY.value;
           adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
-          adjustedFocalY.value =
-            evt.focalY - (halfScreenHeight + offsetY.value);
+          adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
           originX.value = adjustedFocalX.value;
           originY.value = adjustedFocalY.value;
           offsetScale.value = scale.value;
@@ -960,8 +918,7 @@ export const ImageGallery = <
   const onSingleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onActive: () => {
       cancelAnimation(headerFooterVisible);
-      headerFooterVisible.value =
-        headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
+      headerFooterVisible.value = headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
     },
   });
 
@@ -970,15 +927,8 @@ export const ImageGallery = <
    */
   const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onActive: (evt) => {
-      if (
-        Math.abs(tapX.value - evt.absoluteX) < 64 &&
-        Math.abs(tapY.value - evt.absoluteY) < 64
-      ) {
-        if (
-          offsetScale.value === 1 &&
-          offsetX.value === 0 &&
-          offsetY.value === 0
-        ) {
+      if (Math.abs(tapX.value - evt.absoluteX) < 64 && Math.abs(tapY.value - evt.absoluteY) < 64) {
+        if (offsetScale.value === 1 && offsetX.value === 0 && offsetY.value === 0) {
           offsetScale.value = 2;
           scale.value = withTiming(2, {
             duration: 200,
@@ -1036,11 +986,9 @@ export const ImageGallery = <
       currentImageHeight * scale.value < screenHeight && translateY.value > 0
         ? 1 - translateY.value / quarterScreenHeight
         : currentImageHeight * scale.value > screenHeight &&
-          translateY.value >
-            (currentImageHeight / 2) * scale.value - halfScreenHeight
+          translateY.value > (currentImageHeight / 2) * scale.value - halfScreenHeight
         ? 1 -
-          (translateY.value -
-            ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
+          (translateY.value - ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
             quarterScreenHeight
         : 1,
     [currentImageHeight],
@@ -1107,9 +1055,7 @@ export const ImageGallery = <
       pointerEvents={visible ? 'auto' : 'none'}
       style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
-      <Animated.View
-        style={[StyleSheet.absoluteFillObject, containerBackground]}
-      />
+      <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
         minPointers={1}
         numberOfTaps={1}
@@ -1165,6 +1111,7 @@ export const ImageGallery = <
                             photo={photo}
                             previous={selectedIndex > i}
                             scale={scale}
+                            screenHeight={screenHeight}
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
                             style={{
@@ -1206,19 +1153,19 @@ export const ImageGallery = <
         currentBottomSheetIndex={currentBottomSheetIndex}
       />
       <BottomSheet
-        animatedPositionIndex={animatedBottomSheetIndex}
+        animatedIndex={animatedBottomSheetIndex}
+        containerHeight={Dimensions.get('screen').height}
         handleComponent={() => (
           <ImageGridHandle
             closeGridView={closeGridView}
             {...imageGalleryCustomComponents?.gridHandle}
           />
         )}
-        // @ts-expect-error
         handleHeight={imageGalleryGridHandleHeight ?? 40}
-        initialSnapIndex={0}
+        index={0}
         onChange={(index: number) => setCurrentBottomSheetIndex(index)}
         ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || [0, vh(90)]}
+        snapPoints={imageGalleryGridSnapPoints || [0, (screenHeight * 9) / 10]}
       >
         <ImageGrid
           closeGridView={closeGridView}
@@ -1236,11 +1183,7 @@ export const ImageGallery = <
 /**
  * Clamping worklet to clamp the scaling
  */
-export const clamp = (
-  value: number,
-  lowerBound: number,
-  upperBound: number,
-) => {
+export const clamp = (value: number, lowerBound: number, upperBound: number) => {
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
 };

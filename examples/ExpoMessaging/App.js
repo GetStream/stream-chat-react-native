@@ -1,17 +1,10 @@
 /* eslint-disable react/display-name */
 import 'react-native-gesture-handler';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, SafeAreaView, useColorScheme, View } from 'react-native';
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-} from '@react-navigation/native';
+import { LogBox, SafeAreaView, StatusBar, useColorScheme, View } from 'react-native';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, useHeaderHeight } from '@react-navigation/stack';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -89,11 +82,7 @@ const ChannelScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
-        >
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View style={{ flex: 1 }}>
             <MessageList
               onThreadSelect={(thread) => {
@@ -116,11 +105,7 @@ const ThreadScreen = () => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
-        >
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View
             style={{
               flex: 1,
@@ -172,6 +157,7 @@ const App = () => {
         <OverlayProvider
           bottomInset={bottom}
           i18nInstance={streami18n}
+          translucentStatusBar
           value={{ style: theme }}
         >
           {clientReady && (
@@ -211,9 +197,7 @@ const App = () => {
 export default () => {
   const theme = useStreamChatTheme();
   return (
-    <SafeAreaProvider
-      style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}
-    >
+    <SafeAreaProvider style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}>
       <App />
     </SafeAreaProvider>
   );

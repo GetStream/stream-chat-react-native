@@ -37,7 +37,7 @@ export type MessagesWithStylesReadByAndDateSeparator<
   Co extends string = DefaultCommandType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = MessageResponse<At, Ch, Co, Me, Re, Us> & {
   groupStyles: GroupType[];
   readBy: boolean | number;
@@ -51,7 +51,7 @@ export type MessageType<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > =
   | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
   | MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>;
@@ -64,19 +64,12 @@ export const isMessageWithStylesReadByAndDateSeparator = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-): message is MessagesWithStylesReadByAndDateSeparator<
-  At,
-  Ch,
-  Co,
-  Me,
-  Re,
-  Us
-> =>
-  (message as MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>)
-    .readBy !== undefined;
+): message is MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us> =>
+  (message as MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>).readBy !==
+  undefined;
 
 export const useMessageList = <
   At extends UnknownType = DefaultAttachmentType,
@@ -85,32 +78,21 @@ export const useMessageList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   params: UseMessageListParams,
 ) => {
   const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    hideDateSeparators,
-    maxTimeBetweenGroupedMessages,
-    read,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { messages } = usePaginatedMessageListContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
+    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { messages } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const messageList = threadList ? threadMessages : messages;
-  const readList:
-    | ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
-    | undefined = threadList ? undefined : read;
+  const readList: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'] | undefined = threadList
+    ? undefined
+    : read;
 
   const dateSeparators = getDateSeparators<At, Ch, Co, Ev, Me, Re, Us>({
     hideDateSeparators,
@@ -138,15 +120,9 @@ export const useMessageList = <
       readBy: msg.id ? readData[msg.id] || false : false,
     }));
 
-  return (inverted
-    ? messagesWithStylesReadByAndDateSeparator.reverse()
-    : messagesWithStylesReadByAndDateSeparator) as MessageType<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >[];
+  return (
+    inverted
+      ? messagesWithStylesReadByAndDateSeparator.reverse()
+      : messagesWithStylesReadByAndDateSeparator
+  ) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 };

@@ -1,9 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, ViewStyle } from 'react-native';
-import {
-  TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   runOnJS,
@@ -93,25 +90,19 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
       <Animated.View
         style={[
           styles.row,
-          index !== length - 1
-            ? { ...styles.bottomBorder, borderBottomColor: border }
-            : {},
+          index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
           animatedStyle,
         ]}
       >
         {icon}
-        <Text style={[styles.titleStyle, { color: black }, titleStyle]}>
-          {title}
-        </Text>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle]}>{title}</Text>
       </Animated.View>
     </TapGestureHandler>
   );
 };
 
-const messageActionIsEqual = (
-  prevProps: MessageActionProps,
-  nextProps: MessageActionProps,
-) => prevProps.length === nextProps.length;
+const messageActionIsEqual = (prevProps: MessageActionProps, nextProps: MessageActionProps) =>
+  prevProps.length === nextProps.length;
 
 const MemoizedMessageAction = React.memo(
   MessageAction,
@@ -125,11 +116,8 @@ export type MessageActionsPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'messageActions'
-> & {
+  Us extends UnknownType = DefaultUserType,
+> = Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
   showScreen: Animated.SharedValue<number>;
 };
 const MessageActionsWithContext = <
@@ -139,7 +127,7 @@ const MessageActionsWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -158,11 +146,7 @@ const MessageActionsWithContext = <
     () => ({
       transform: [
         {
-          translateY: interpolate(
-            showScreen.value,
-            [0, 1],
-            [-height.value / 2, 0],
-          ),
+          translateY: interpolate(showScreen.value, [0, 1], [-height.value / 2, 0]),
         },
         {
           translateX: interpolate(
@@ -185,11 +169,7 @@ const MessageActionsWithContext = <
         width.value = layout.width;
         height.value = layout.height;
       }}
-      style={[
-        styles.container,
-        { backgroundColor: white_snow },
-        showScreenStyle,
-      ]}
+      style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
     >
       {messageActions?.map((messageAction, index) => (
         <MemoizedMessageAction
@@ -208,18 +188,21 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messageActions: prevMessageActions } = prevProps;
-  const { messageActions: nextMessageActions } = nextProps;
+  const { alignment: prevAlignment, messageActions: prevMessageActions } = prevProps;
+  const { alignment: nextAlignment, messageActions: nextMessageActions } = nextProps;
 
-  const messageActionsEqual =
-    prevMessageActions?.length === nextMessageActions?.length;
+  const messageActionsEqual = prevMessageActions?.length === nextMessageActions?.length;
+  if (!messageActionsEqual) return false;
 
-  return messageActionsEqual;
+  const alignmentEqual = prevAlignment === nextAlignment;
+  if (!alignmentEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessageActions = React.memo(
@@ -234,14 +217,9 @@ export type MessageActionsProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>
-> &
-  Pick<
-    MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'showScreen'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>> &
+  Pick<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>;
 
 /**
  * MessageActions - A high level component which implements all the logic required for MessageActions
@@ -253,7 +231,7 @@ export const MessageActions = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -261,7 +239,5 @@ export const MessageActions = <
 
   const { alignment, messageActions } = data || {};
 
-  return (
-    <MemoizedMessageActions {...{ alignment, messageActions }} {...props} />
-  );
+  return <MemoizedMessageActions {...{ alignment, messageActions }} {...props} />;
 };

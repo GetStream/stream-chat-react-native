@@ -1,12 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Keyboard, SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {
@@ -123,15 +116,16 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
 
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { client } = useChatContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { client } =
+    useChatContext<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
 
@@ -234,11 +228,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: interpolate(
-          showScreen.value,
-          [0, 1],
-          [viewHeight.value / 2, 0],
-        ),
+        translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
       },
     ],
   }));
@@ -257,17 +247,12 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     (permission) => (member.role || '').toLowerCase() !== permission,
   );
   const modifyingPermissions =
-    (permissions.some(
-      (permission) => (self.role || '').toLowerCase() === permission,
-    ) &&
+    (permissions.some((permission) => (self.role || '').toLowerCase() === permission) &&
       memberModifiable) ||
     memberModifiable;
 
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={StyleSheet.absoluteFill}
-    >
+    <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
       <PanGestureHandler
         enabled={overlay === 'channelInfo'}
         maxPointers={1}
@@ -294,52 +279,36 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
               style={[styles.container, panStyle]}
             >
               <Animated.View
-                style={[
-                  styles.containerInner,
-                  { backgroundColor: white },
-                  showScreenStyle,
-                ]}
+                style={[styles.containerInner, { backgroundColor: white }, showScreenStyle]}
               >
                 <SafeAreaView>
                   {channel && (
                     <>
                       <View style={styles.detailsContainer}>
-                        <Text
-                          numberOfLines={1}
-                          style={[styles.channelName, { color: black }]}
-                        >
+                        <Text numberOfLines={1} style={[styles.channelName, { color: black }]}>
                           {member.user?.name || member.user?.id || ''}
                         </Text>
                         <Text style={[styles.channelStatus, { color: grey }]}>
                           {member.user?.online
                             ? 'Online'
-                            : `Last Seen ${dayjs(
-                                member.user?.last_active,
-                              ).fromNow()}`}
+                            : `Last Seen ${dayjs(member.user?.last_active).fromNow()}`}
                         </Text>
                         <View style={styles.userItemContainer}>
                           <Avatar
                             image={member.user?.image}
                             name={member.user?.name || member.user?.id}
                             online={member.user?.online}
-                            presenceIndicatorContainerStyle={
-                              styles.avatarPresenceIndicator
-                            }
+                            presenceIndicatorContainerStyle={styles.avatarPresenceIndicator}
                             size={avatarSize}
                           />
                         </View>
                       </View>
                       <TapGestureHandler
-                        onHandlerStateChange={async ({
-                          nativeEvent: { state },
-                        }) => {
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
                           if (state === State.END) {
                             if (!client.user?.id) return;
 
-                            const members = [
-                              client.user.id,
-                              member.user?.id || '',
-                            ];
+                            const members = [client.user.id, member.user?.id || ''];
 
                             // Check if the channel already exists.
                             const channels = await client.queryChannels({
@@ -355,12 +324,9 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                                   });
                             setOverlay('none');
                             if (navigation) {
-                              navigation.navigate(
-                                'OneOnOneChannelDetailScreen',
-                                {
-                                  channel: newChannel,
-                                },
-                              );
+                              navigation.navigate('OneOnOneChannelDetailScreen', {
+                                channel: newChannel,
+                              });
                             }
                           }
                         }}
@@ -376,22 +342,15 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           <View style={styles.rowInner}>
                             <User pathFill={grey} />
                           </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            View info
-                          </Text>
+                          <Text style={[styles.rowText, { color: black }]}>View info</Text>
                         </View>
                       </TapGestureHandler>
                       <TapGestureHandler
-                        onHandlerStateChange={async ({
-                          nativeEvent: { state },
-                        }) => {
+                        onHandlerStateChange={async ({ nativeEvent: { state } }) => {
                           if (state === State.END) {
                             if (!client.user?.id) return;
 
-                            const members = [
-                              client.user.id,
-                              member.user?.id || '',
-                            ];
+                            const members = [client.user.id, member.user?.id || ''];
 
                             // Check if the channel already exists.
                             const channels = await client.queryChannels({
@@ -427,16 +386,12 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           <View style={styles.rowInner}>
                             <MessageIcon pathFill={grey} />
                           </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            Message
-                          </Text>
+                          <Text style={[styles.rowText, { color: black }]}>Message</Text>
                         </View>
                       </TapGestureHandler>
                       {modifyingPermissions ? (
                         <TapGestureHandler
-                          onHandlerStateChange={({
-                            nativeEvent: { state },
-                          }) => {
+                          onHandlerStateChange={({ nativeEvent: { state } }) => {
                             if (state === State.END) {
                               setData({
                                 confirmText: 'REMOVE',
@@ -466,9 +421,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                             <View style={styles.rowInner}>
                               <UserMinus pathFill={accent_red} />
                             </View>
-                            <Text
-                              style={[styles.rowText, { color: accent_red }]}
-                            >
+                            <Text style={[styles.rowText, { color: accent_red }]}>
                               Remove From Group
                             </Text>
                           </View>
@@ -493,9 +446,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           <View style={styles.rowInner}>
                             <CircleClose pathFill={grey} />
                           </View>
-                          <Text style={[styles.rowText, { color: black }]}>
-                            Cancel
-                          </Text>
+                          <Text style={[styles.rowText, { color: black }]}>Cancel</Text>
                         </View>
                       </TapGestureHandler>
                     </>

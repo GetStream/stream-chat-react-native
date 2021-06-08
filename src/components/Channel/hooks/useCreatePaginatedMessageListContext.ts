@@ -19,7 +19,7 @@ export const useCreatePaginatedMessageListContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   channelId,
   hasMore,
@@ -37,34 +37,25 @@ export const useCreatePaginatedMessageListContext = <
     .map(
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
         `${deleted_at}${
-          latest_reactions
-            ? latest_reactions.map(({ type }) => type).join()
-            : ''
+          latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
         }${reply_count}${status}${updated_at.toISOString()}`,
     )
     .join();
 
-  const paginatedMessagesContext: PaginatedMessageListContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
-    () => ({
-      hasMore,
-      loadingMore,
-      loadingMoreRecent,
-      loadMore,
-      loadMoreRecent,
-      messages,
-      setLoadingMore,
-      setLoadingMoreRecent,
-    }),
-    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
-  );
+  const paginatedMessagesContext: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> =
+    useMemo(
+      () => ({
+        hasMore,
+        loadingMore,
+        loadingMoreRecent,
+        loadMore,
+        loadMoreRecent,
+        messages,
+        setLoadingMore,
+        setLoadingMoreRecent,
+      }),
+      [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
+    );
 
   return paginatedMessagesContext;
 };

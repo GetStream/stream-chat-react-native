@@ -30,10 +30,7 @@ const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
   return (
     <View style={[styles.container, container]}>
       <Spinner />
-      <Text
-        style={[styles.loadingText, { color: black }, loadingText]}
-        testID='loading'
-      >
+      <Text style={[styles.loadingText, { color: black }, loadingText]} testID='loading'>
         {text}
       </Text>
     </View>

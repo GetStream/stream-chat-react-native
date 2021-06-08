@@ -19,7 +19,7 @@ export const useCreateChannelContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   channel,
   disabled,
@@ -57,19 +57,9 @@ export const useCreateChannelContext = <
 
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
-  const readUsersLastReads = readUsers
-    .map(({ last_read }) => last_read.toISOString())
-    .join();
+  const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
 
-  const channelContext: ChannelContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const channelContext: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       channel,
       disabled,

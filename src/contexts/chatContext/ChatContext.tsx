@@ -22,7 +22,7 @@ export type ChatContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /**
    * The StreamChat client object
@@ -79,14 +79,14 @@ export const ChatProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
   value: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
+  <ChatContext.Provider value={value as unknown as ChatContextValue}>
     {children}
   </ChatContext.Provider>
 );
@@ -98,17 +98,8 @@ export const useChatContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(ChatContext) as unknown) as ChatContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(ChatContext) as unknown as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -123,7 +114,7 @@ export const withChatContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
@@ -134,8 +125,6 @@ export const withChatContext = <
 
     return <Component {...(props as P)} {...chatContext} />;
   };
-  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(
-    Component,
-  )}`;
+  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(Component)}`;
   return WithChatContextComponent;
 };

@@ -29,18 +29,10 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(
-        queryAllByTestId('inactive-upload-progress-indicator'),
-      ).toHaveLength(0);
-      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
-        0,
-      );
+      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
+      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
+      expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(fileUploads.length);
+      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });
@@ -92,16 +84,12 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        0,
+      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(0);
+      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(
+        fileUploads.length,
       );
-      expect(
-        queryAllByTestId('inactive-upload-progress-indicator'),
-      ).toHaveLength(fileUploads.length);
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
-        0,
-      );
+      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });
@@ -153,16 +141,10 @@ describe('FileUploadPreview', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
-      expect(
-        queryAllByTestId('inactive-upload-progress-indicator'),
-      ).toHaveLength(0);
+      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
+      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
-        fileUploads.length,
-      );
+      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(fileUploads.length);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });
@@ -224,13 +206,9 @@ describe('FileUploadPreview', () => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
         fileUploads.length - 1,
       );
-      expect(
-        queryAllByTestId('inactive-upload-progress-indicator'),
-      ).toHaveLength(1);
+      expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(1);
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
-      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(
-        1,
-      );
+      expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });

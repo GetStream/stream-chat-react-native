@@ -22,11 +22,7 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
-        <MessageTextContainer
-          alignment='right'
-          groupStyles={['top']}
-          message={message}
-        />
+        <MessageTextContainer alignment='right' groupStyles={['top']} message={message} />
       </ThemeProvider>,
     );
 
@@ -41,9 +37,7 @@ describe('MessageTextContainer', () => {
           alignment='right'
           groupStyles={['top']}
           message={message}
-          MessageText={({ message }) => (
-            <Text testID='message-text'>{message.text}</Text>
-          )}
+          MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
         />
       </ThemeProvider>,
     );

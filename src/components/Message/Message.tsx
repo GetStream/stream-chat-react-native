@@ -11,10 +11,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import {
-  TapGestureHandler,
-  TapGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   runOnJS,
@@ -38,10 +35,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   KeyboardContextValue,
   useKeyboardContext,
@@ -65,10 +59,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -101,19 +92,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const prefetchImage = ({
-  height,
-  url,
-}: {
-  height: number | string;
-  url: string;
-}) => {
+const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
   if (url.includes('&h=%2A')) {
     Image.prefetch(
-      url.replace(
-        'h=%2A',
-        `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-      ),
+      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
     )
       .catch(() => Image.prefetch(url))
       .catch(() => {
@@ -148,7 +130,7 @@ export type MessageTouchableHandlerPayload<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -172,7 +154,7 @@ export type MessagePropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'channel'
@@ -185,16 +167,8 @@ export type MessagePropsWithContext<
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<
-    Omit<
-      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'groupStyles' | 'message'
-    >
-  > &
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  > &
+  Partial<Omit<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'animatedLongPress'
@@ -264,9 +238,7 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      **/
     onLongPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
     /**
      * You can call methods available on the Message
@@ -280,15 +252,11 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      * */
     onPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
 
     onPressIn?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
@@ -313,7 +281,7 @@ const MessageWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -392,13 +360,7 @@ const MessageWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        accent_red,
-        bg_gradient_start,
-        grey,
-        targetedMessageBackground,
-      },
+      colors: { accent_blue, accent_red, bg_gradient_start, grey, targetedMessageBackground },
       messageSimple: {
         gallery: { halfSize, size },
         targetedMessageUnderlay,
@@ -445,8 +407,7 @@ const MessageWithContext = <
     });
   }, [targetedMessage]);
 
-  const actionsEnabled =
-    message.type === 'regular' && message.status === 'received';
+  const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
@@ -466,9 +427,7 @@ const MessageWithContext = <
     }
   };
 
-  const onPressQuotedMessage = (
-    quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
+  const onPressQuotedMessage = (quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (!goToMessage) return;
 
     pressActive.value = false;
@@ -477,21 +436,11 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (
-    error = message.type === 'error' || message.status === 'failed',
-  ) => {
+  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
-    const quotedMessage = message.quoted_message as MessageType<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >;
+    const quotedMessage = message.quoted_message as MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     if (error) {
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
@@ -500,8 +449,7 @@ const MessageWithContext = <
   };
 
   const alignment =
-    forceAlignMessages &&
-    (forceAlignMessages === 'left' || forceAlignMessages === 'right')
+    forceAlignMessages && (forceAlignMessages === 'left' || forceAlignMessages === 'right')
       ? forceAlignMessages
       : isMyMessage
       ? 'right'
@@ -521,11 +469,7 @@ const MessageWithContext = <
             if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (
-              cur.type === 'image' &&
-              !cur.title_link &&
-              !cur.og_scrape_url
-            ) {
+            } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
                * an image with no url links at all falling back to being an attachment
@@ -559,9 +503,7 @@ const MessageWithContext = <
   const hasAttachmentActions =
     !message.deleted_at &&
     Array.isArray(message.attachments) &&
-    message.attachments.some(
-      (attachment) => attachment.actions && attachment.actions.length,
-    );
+    message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
 
   // prefetch images for Gallery component rendering
   const attachmentImageLength = attachments.images.length;
@@ -676,8 +618,7 @@ const MessageWithContext = <
   };
 
   const isMuted = (client.mutedUsers || []).some(
-    (mute) =>
-      mute.user.id === client.userID && mute.target.id === message.user?.id,
+    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
   const handleToggleMuteUser = async () => {
@@ -980,11 +921,8 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActions?.filter(Boolean) as
-        | MessageAction[]
-        | undefined,
-      messageReactionTitle:
-        !error && messageReactions ? t('Message Reactions') : undefined,
+      messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
@@ -1057,8 +995,7 @@ const MessageWithContext = <
     hasReactions,
     images: attachments.images,
     isMyMessage,
-    lastGroupMessage:
-      groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
+    lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
     members,
     message,
@@ -1114,8 +1051,7 @@ const MessageWithContext = <
     readEventsEnabled,
     showAvatar,
     showMessageOverlay,
-    showMessageStatus:
-      typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
+    showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
   });
 
@@ -1171,18 +1107,12 @@ const MessageWithContext = <
       waitFor={doubleTapRef}
     >
       <Animated.View>
-        <TapGestureHandler
-          numberOfTaps={2}
-          onGestureEvent={onDoubleTap}
-          ref={doubleTapRef}
-        >
+        <TapGestureHandler numberOfTaps={2} onGestureEvent={onDoubleTap} ref={doubleTapRef}>
           <Animated.View
             style={[
               style,
               {
-                backgroundColor: showUnreadUnderlay
-                  ? bg_gradient_start
-                  : undefined,
+                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
               },
               scaleStyle,
             ]}
@@ -1212,7 +1142,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -1255,18 +1185,15 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) &&
-      prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) &&
-        nextMessage.readBy) &&
+    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
+      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.updated_at === nextMessage.updated_at;
   if (!messageEqual) return false;
 
-  const messageUserBannedEqual =
-    prevMessage.user?.banned === nextMessage.user?.banned;
+  const messageUserBannedEqual = prevMessage.user?.banned === nextMessage.user?.banned;
   if (!messageUserBannedEqual) return false;
 
   const prevMessageAttachments = prevMessage.attachments;
@@ -1285,29 +1212,21 @@ const areEqual = <
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) &&
-    Array.isArray(nextMessage.latest_reactions)
-      ? prevMessage.latest_reactions.length ===
-          nextMessage.latest_reactions.length &&
+    Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length === nextMessage.latest_reactions.length &&
         prevMessage.latest_reactions.every(
-          ({ type }, index) =>
-            type === nextMessage.latest_reactions?.[index].type,
+          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
   const mutedUserSame =
     prevMutedUsers.length === nextMutedUsers.length ||
-    prevMutedUsers.some(
-      (mutedUser) => mutedUser.target.id === prevMessage.user?.id,
-    ) ===
-      nextMutedUsers.some(
-        (mutedUser) => mutedUser.target.id === nextMessage.user?.id,
-      );
+    prevMutedUsers.some((mutedUser) => mutedUser.target.id === prevMessage.user?.id) ===
+      nextMutedUsers.some((mutedUser) => mutedUser.target.id === nextMessage.user?.id);
   if (!mutedUserSame) return false;
 
-  const showUnreadUnderlayEqual =
-    prevShowUnreadUnderlay === nextShowUnreadUnderlay;
+  const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) return false;
 
   const tEqual = prevT === nextT;
@@ -1319,10 +1238,7 @@ const areEqual = <
   return true;
 };
 
-const MemoizedMessage = React.memo(
-  MessageWithContext,
-  areEqual,
-) as typeof MessageWithContext;
+const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -1331,17 +1247,9 @@ export type MessageProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<
-    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  >
-> &
-  Pick<
-    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
+  Pick<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -1356,7 +1264,7 @@ export const Message = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

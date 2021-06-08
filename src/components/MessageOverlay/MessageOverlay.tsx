@@ -1,12 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Keyboard,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Keyboard, Platform, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -44,11 +37,7 @@ import {
   OverlayContextValue,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
-import {
-  mergeThemes,
-  ThemeProvider,
-  useTheme,
-} from '../../contexts/themeContext/ThemeContext';
+import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vh, vw } from '../../utils/utils';
 
 import type { ReplyProps } from '../Reply/Reply';
@@ -102,7 +91,7 @@ export type MessageOverlayPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'MessageActions' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
@@ -120,7 +109,7 @@ const MessageOverlayWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -153,9 +142,8 @@ const MessageOverlayWithContext = <
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
-  const [myMessageThemeString, setMyMessageThemeString] = useState(
-    JSON.stringify(myMessageTheme),
-  );
+  const [myMessageThemeString, setMyMessageThemeString] = useState(JSON.stringify(myMessageTheme));
+  const [reactionListHeight, setReactionListHeight] = useState(0);
 
   useEffect(() => {
     if (myMessageTheme) {
@@ -169,13 +157,7 @@ const MessageOverlayWithContext = <
   );
 
   const {
-    colors: {
-      blue_alice,
-      grey_gainsboro,
-      grey_whisper,
-      transparent,
-      white_smoke,
-    },
+    colors: { blue_alice, grey_gainsboro, grey_whisper, transparent, white_smoke },
     messageSimple: {
       content: {
         container: { borderRadiusL, borderRadiusS },
@@ -185,12 +167,9 @@ const MessageOverlayWithContext = <
     },
   } = wrapMessageInTheme ? modifiedTheme : theme;
 
-  const scrollViewRef = useRef<ScrollView>(null);
-
   const messageHeight = useSharedValue(0);
-  const messageLayout = useSharedValue({ x: 0, y: 0 }, false);
+  const messageLayout = useSharedValue({ x: 0, y: 0 });
   const messageWidth = useSharedValue(0);
-  const reactionListHeight = useSharedValue(0);
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -301,22 +280,13 @@ const MessageOverlayWithContext = <
     () => ({
       transform: [
         {
-          translateY: interpolate(
-            showScreen.value,
-            [0, 1],
-            [messageHeight.value / 2, 0],
-          ),
+          translateY: interpolate(showScreen.value, [0, 1], [messageHeight.value / 2, 0]),
         },
         {
           translateX: interpolate(
             showScreen.value,
             [0, 1],
-            [
-              alignment === 'left'
-                ? -messageWidth.value / 2
-                : messageWidth.value / 2,
-              0,
-            ],
+            [alignment === 'left' ? -messageWidth.value / 2 : messageWidth.value / 2, 0],
           ),
         },
         {
@@ -327,14 +297,11 @@ const MessageOverlayWithContext = <
     [alignment],
   );
 
-  const groupStyle = `${alignment}_${(
-    groupStyles?.[0] || 'bottom'
-  ).toLowerCase()}`;
+  const groupStyle = `${alignment}_${(groupStyles?.[0] || 'bottom').toLowerCase()}`;
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } =
-    messagesContext || {};
+  const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
   return (
     <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
@@ -348,7 +315,6 @@ const MessageOverlayWithContext = <
             maxPointers={1}
             minDist={10}
             onGestureEvent={onPan}
-            waitFor={scrollViewRef}
           >
             <Animated.View style={[StyleSheet.absoluteFillObject]}>
               <SafeAreaView style={styles.flex}>
@@ -357,10 +323,9 @@ const MessageOverlayWithContext = <
                   contentContainerStyle={[
                     styles.center,
                     {
-                      paddingTop: reactionListHeight.value,
+                      paddingTop: reactionListHeight,
                     },
                   ]}
-                  ref={scrollViewRef}
                   showsVerticalScrollIndicator={false}
                   style={[styles.flex, styles.scrollView]}
                 >
@@ -371,7 +336,6 @@ const MessageOverlayWithContext = <
                         setOverlay('none');
                       }
                     }}
-                    waitFor={scrollViewRef}
                   >
                     <Animated.View style={[styles.flex, panStyle]}>
                       {message && (
@@ -379,32 +343,23 @@ const MessageOverlayWithContext = <
                           style={[
                             styles.center,
                             styles.overlayPadding,
-                            alignment === 'left'
-                              ? styles.alignStart
-                              : styles.alignEnd,
+                            alignment === 'left' ? styles.alignStart : styles.alignEnd,
                           ]}
                         >
                           {handleReaction ? (
                             <OverlayReactionList
                               messageLayout={messageLayout}
                               ownReactionTypes={
-                                message?.own_reactions?.map(
-                                  (reaction) => reaction.type,
-                                ) || []
+                                message?.own_reactions?.map((reaction) => reaction.type) || []
                               }
-                              reactionListHeight={reactionListHeight}
+                              setReactionListHeight={setReactionListHeight}
                               showScreen={showScreen}
                             />
                           ) : null}
                           <Animated.View
                             onLayout={({
                               nativeEvent: {
-                                layout: {
-                                  height: layoutHeight,
-                                  width: layoutWidth,
-                                  x,
-                                  y,
-                                },
+                                layout: { height: layoutHeight, width: layoutWidth, x, y },
                               },
                             }) => {
                               messageLayout.value = {
@@ -414,16 +369,10 @@ const MessageOverlayWithContext = <
                               messageWidth.value = layoutWidth;
                               messageHeight.value = layoutHeight;
                             }}
-                            style={[
-                              styles.alignEnd,
-                              styles.row,
-                              showScreenStyle,
-                            ]}
+                            style={[styles.alignEnd, styles.row, showScreenStyle]}
                           >
                             {alignment === 'left' && MessageAvatar && (
-                              <MessageAvatar
-                                {...{ alignment, message, showAvatar: true }}
-                              />
+                              <MessageAvatar {...{ alignment, message, showAvatar: true }} />
                             )}
                             <View
                               style={[
@@ -453,46 +402,45 @@ const MessageOverlayWithContext = <
                                       : borderRadiusL,
                                   borderColor: grey_whisper,
                                 },
-                                (onlyEmojis && !message.quoted_message) ||
-                                otherAttachments?.length
+                                (onlyEmojis && !message.quoted_message) || otherAttachments?.length
                                   ? { borderWidth: 0 }
                                   : {},
                                 containerInner,
                               ]}
                             >
-                              {messagesContext?.quotedRepliesEnabled &&
-                                message.quoted_message &&
-                                Reply && (
-                                  <View
-                                    style={[
-                                      styles.replyContainer,
-                                      replyContainer,
-                                    ]}
-                                  >
-                                    <Reply
-                                      quotedMessage={
-                                        message.quoted_message as ReplyProps<
-                                          At,
-                                          Ch,
-                                          Co,
-                                          Ev,
-                                          Me,
-                                          Re,
-                                          Us
-                                        >['quotedMessage']
-                                      }
-                                      styles={{
-                                        messageContainer: { maxWidth: vw(60) },
-                                      }}
-                                    />
-                                  </View>
-                                )}
                               {messagesContext?.messageContentOrder?.map(
-                                (
-                                  messageContentType,
-                                  messageContentOrderIndex,
-                                ) => {
+                                (messageContentType, messageContentOrderIndex) => {
                                   switch (messageContentType) {
+                                    case 'quoted_reply':
+                                      return (
+                                        messagesContext?.quotedRepliesEnabled &&
+                                        message.quoted_message &&
+                                        Reply && (
+                                          <View
+                                            key={`quoted_reply_${messageContentOrderIndex}`}
+                                            style={[styles.replyContainer, replyContainer]}
+                                          >
+                                            <Reply
+                                              quotedMessage={
+                                                message.quoted_message as ReplyProps<
+                                                  At,
+                                                  Ch,
+                                                  Co,
+                                                  Ev,
+                                                  Me,
+                                                  Re,
+                                                  Us
+                                                >['quotedMessage']
+                                              }
+                                              styles={{
+                                                messageContainer: {
+                                                  maxWidth: vw(60),
+                                                },
+                                              }}
+                                            />
+                                          </View>
+                                        )
+                                      );
                                     case 'attachments':
                                       return otherAttachments?.map(
                                         (attachment, attachmentIndex) =>
@@ -519,9 +467,7 @@ const MessageOverlayWithContext = <
                                           <Gallery
                                             alignment={alignment}
                                             groupStyles={groupStyles}
-                                            hasThreadReplies={
-                                              !!message?.reply_count
-                                            }
+                                            hasThreadReplies={!!message?.reply_count}
                                             images={images}
                                             key={`gallery_${messageContentOrderIndex}`}
                                             messageId={message.id}
@@ -535,15 +481,7 @@ const MessageOverlayWithContext = <
                                     default:
                                       return otherAttachments?.length &&
                                         otherAttachments[0].actions ? null : (
-                                        <MessageTextContainer<
-                                          At,
-                                          Ch,
-                                          Co,
-                                          Ev,
-                                          Me,
-                                          Re,
-                                          Us
-                                        >
+                                        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
                                           key={`message_text_container_${messageContentOrderIndex}`}
                                           message={message}
                                           messageOverlay
@@ -555,32 +493,21 @@ const MessageOverlayWithContext = <
                               )}
                             </View>
                           </Animated.View>
-                          {messageActions && (
-                            <MessageActions showScreen={showScreen} />
-                          )}
+                          {messageActions && <MessageActions showScreen={showScreen} />}
                           {!!messageReactionTitle &&
                           message.latest_reactions &&
                           message.latest_reactions.length > 0 ? (
                             <OverlayReactions
                               alignment={alignment}
-                              reactions={message.latest_reactions.map(
-                                (reaction) => ({
-                                  alignment:
-                                    clientId && clientId === reaction.user?.id
-                                      ? 'right'
-                                      : 'left',
-                                  image: reaction?.user?.image,
-                                  name:
-                                    reaction?.user?.name ||
-                                    reaction.user_id ||
-                                    '',
-                                  type: reaction.type,
-                                }),
-                              )}
+                              reactions={message.latest_reactions.map((reaction) => ({
+                                alignment:
+                                  clientId && clientId === reaction.user?.id ? 'right' : 'left',
+                                image: reaction?.user?.image,
+                                name: reaction?.user?.name || reaction.user_id || '',
+                                type: reaction.type,
+                              }))}
                               showScreen={showScreen}
-                              supportedReactions={
-                                messagesContext?.supportedReactions
-                              }
+                              supportedReactions={messagesContext?.supportedReactions}
                               title={messageReactionTitle}
                             />
                           ) : null}
@@ -605,7 +532,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -629,18 +556,14 @@ const areEqual = <
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
 
-  const messageReactionTitleEqual =
-    prevMessageReactionTitle === nextMessageReactionTitle;
+  const messageReactionTitleEqual = prevMessageReactionTitle === nextMessageReactionTitle;
   if (!messageReactionTitleEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage?.latest_reactions) &&
-    Array.isArray(nextMessage?.latest_reactions)
-      ? prevMessage?.latest_reactions.length ===
-          nextMessage?.latest_reactions.length &&
+    Array.isArray(prevMessage?.latest_reactions) && Array.isArray(nextMessage?.latest_reactions)
+      ? prevMessage?.latest_reactions.length === nextMessage?.latest_reactions.length &&
         prevMessage?.latest_reactions.every(
-          ({ type }, index) =>
-            type === nextMessage?.latest_reactions?.[index].type,
+          ({ type }, index) => type === nextMessage?.latest_reactions?.[index].type,
         )
       : prevMessage?.latest_reactions === nextMessage?.latest_reactions;
   if (!latestReactionsEqual) return false;
@@ -660,17 +583,9 @@ export type MessageOverlayProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
-> = Partial<
-  Omit<
-    MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'overlayOpacity'
-  >
-> &
-  Pick<
-    MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'overlayOpacity'
-  >;
+  Us extends DefaultUserType = DefaultUserType,
+> = Partial<Omit<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>> &
+  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>;
 
 /**
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
@@ -682,25 +597,18 @@ export const MessageOverlay = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    data,
-    MessageActions,
-    OverlayReactionList,
-    OverlayReactions,
-    reset,
-  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data, MessageActions, OverlayReactionList, OverlayReactions, reset } =
+    useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {
     MessageActions: props.MessageActions || MessageActions,
     OverlayReactionList:
-      props.OverlayReactionList ||
-      OverlayReactionList ||
-      data?.OverlayReactionList,
+      props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,
   };
 

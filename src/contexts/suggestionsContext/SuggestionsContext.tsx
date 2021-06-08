@@ -5,54 +5,46 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
 import type { Emoji } from '../../emoji-data/compiled';
-import type {
-  DefaultCommandType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 export type SuggestionComponentType<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = string | React.ReactElement<{ item: Suggestion<Co, Us> }>;
 
 export const isSuggestionCommand = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   suggestion: Suggestion<Co, Us>,
 ): suggestion is SuggestionCommand<Co> => 'args' in suggestion;
 
 export const isSuggestionEmoji = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   suggestion: Suggestion<Co, Us>,
 ): suggestion is Emoji => 'unicode' in suggestion;
 
 export const isSuggestionUser = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   suggestion: Suggestion<Co, Us>,
 ): suggestion is SuggestionUser<Us> => 'id' in suggestion;
 
 export type Suggestion<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = SuggestionCommand<Co> | SuggestionUser<Us> | Emoji;
 
-export type SuggestionCommand<
-  Co extends string = DefaultCommandType
-> = CommandResponse<Co>;
+export type SuggestionCommand<Co extends string = DefaultCommandType> = CommandResponse<Co>;
 
-export type SuggestionUser<
-  Us extends UnknownType = DefaultUserType
-> = UserResponse<Us>;
+export type SuggestionUser<Us extends UnknownType = DefaultUserType> = UserResponse<Us>;
 
 export type Suggestions<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   data: Suggestion<Co, Us>[];
   onSelect: (item: Suggestion<Co, Us>) => void;
@@ -60,7 +52,7 @@ export type Suggestions<
 
 export type SuggestionsContextValue<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /** Override handler for closing suggestions (mentions, command autocomplete etc) */
   closeSuggestions: () => void;
@@ -94,28 +86,21 @@ export type SuggestionsContextValue<
   suggestionsViewActive?: boolean;
 };
 
-export const SuggestionsContext = React.createContext(
-  {} as SuggestionsContextValue,
-);
+export const SuggestionsContext = React.createContext({} as SuggestionsContextValue);
 
 /**
  * This provider component exposes the properties stored within the SuggestionsContext.
  */
 export const SuggestionsProvider = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
-  const [componentType, setComponentType] = useState<
-    SuggestionComponentType<Co, Us>
-  >('');
+  const [componentType, setComponentType] = useState<SuggestionComponentType<Co, Us>>('');
   const [suggestions, setSuggestions] = useState<Suggestions<Co, Us>>();
-  const [
-    suggestionsTitle,
-    setSuggestionsTitle,
-  ] = useState<React.ReactElement>();
+  const [suggestionsTitle, setSuggestionsTitle] = useState<React.ReactElement>();
   const [suggestionsViewActive, setSuggestionsViewActive] = useState(false);
 
   const openSuggestions = (
@@ -156,9 +141,7 @@ export const SuggestionsProvider = <
   };
 
   return (
-    <SuggestionsContext.Provider
-      value={(suggestionsContext as unknown) as SuggestionsContextValue}
-    >
+    <SuggestionsContext.Provider value={suggestionsContext as unknown as SuggestionsContextValue}>
       {children}
     </SuggestionsContext.Provider>
   );
@@ -166,17 +149,13 @@ export const SuggestionsProvider = <
 
 export const useSuggestionsContext = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(SuggestionsContext) as unknown) as SuggestionsContextValue<
-    Co,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(SuggestionsContext) as unknown as SuggestionsContextValue<Co, Us>;
 
 export const withSuggestionsContext = <
   P extends UnknownType,
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof SuggestionsContextValue<Co, Us>>> => {

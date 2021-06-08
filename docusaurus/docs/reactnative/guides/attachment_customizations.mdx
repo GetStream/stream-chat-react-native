@@ -285,7 +285,7 @@ const ChannelScreen = () => {
   const {bottom} = useSafeAreaInsets();
 
   return (
-    <ChatOverlayProvider bottomInset={bottom} topInset={0}>
+    <ChatOverlayProvider bottomInset={bottom}>
       <SafeAreaView>
         <Chat client={chatClient}>
           {/* Setting keyboardVerticalOffset as 0, since we don't have any header yet */}

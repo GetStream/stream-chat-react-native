@@ -45,7 +45,7 @@ type MessageFooterPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
@@ -65,7 +65,7 @@ const MessageFooterWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -85,13 +85,7 @@ const MessageFooterWithContext = <
     theme: {
       colors: { grey },
       messageSimple: {
-        content: {
-          deletedMetaText,
-          eyeIcon,
-          messageUser,
-          metaContainer,
-          metaText,
-        },
+        content: { deletedMetaText, eyeIcon, messageUser, metaContainer, metaText },
       },
     },
   } = useTheme();
@@ -151,15 +145,11 @@ const MessageFooterWithContext = <
           </Text>
         </>
       ) : null}
-      {Object.keys(members).length > 2 &&
-      alignment === 'left' &&
-      message.user?.name ? (
+      {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
         <Text style={[{ color: grey }, messageUser]}>{message.user.name}</Text>
       ) : null}
       {showMessageStatus && <MessageStatus />}
-      <Text style={[{ color: grey, textAlign: alignment }, metaText]}>
-        {formattedDate}
-      </Text>
+      <Text style={[{ color: grey, textAlign: alignment }, metaText]}>{formattedDate}</Text>
     </View>
   );
 };
@@ -171,7 +161,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -198,8 +188,7 @@ const areEqual = <
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
 
-  const membersEqual =
-    Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
@@ -215,12 +204,10 @@ const areEqual = <
 
   const otherAttachmentsEqual =
     prevOtherAttachments.length === nextOtherAttachments.length &&
-    prevOtherAttachments?.[0]?.actions?.length ===
-      nextOtherAttachments?.[0]?.actions?.length;
+    prevOtherAttachments?.[0]?.actions?.length === nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
 
-  const showMessageStatusEqual =
-    prevShowMessageStatus === nextShowMessageStatus;
+  const showMessageStatusEqual = prevShowMessageStatus === nextShowMessageStatus;
   if (!showMessageStatusEqual) return false;
 
   const formattedDateEqual = prevFormattedDate === nextFormattedDate;
@@ -241,15 +228,13 @@ export type MessageFooterProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Partial<Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;
     message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-    MessageStatus?: React.ComponentType<
-      MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>
-    >;
+    MessageStatus?: React.ComponentType<MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>>;
     otherAttachments?: Attachment<At>[];
     showMessageStatus?: boolean;
   };
@@ -261,18 +246,12 @@ export const MessageFooter = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   props: MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    lastGroupMessage,
-    members,
-    message,
-    otherAttachments,
-    showMessageStatus,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { MessageStatus } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 

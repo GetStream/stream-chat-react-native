@@ -31,8 +31,7 @@ export const useChannelMembersStatus = (
 
   const getStatus = () => {
     let newStatus = '';
-    const isOneOnOneConversation =
-      memberCount === 2 && channel.id?.indexOf('!members-') === 0;
+    const isOneOnOneConversation = memberCount === 2 && channel.id?.indexOf('!members-') === 0;
 
     if (isOneOnOneConversation) {
       const result = Object.values({ ...channel.state.members }).find(
@@ -42,8 +41,7 @@ export const useChannelMembersStatus = (
       return (newStatus = getUserActivityStatus(result?.user));
     } else {
       const memberCountText = `${memberCount} Members`;
-      const onlineCountText =
-        watchersCount > 0 ? `${watchersCount} Online` : '';
+      const onlineCountText = watchersCount > 0 ? `${watchersCount} Online` : '';
 
       newStatus = `${[memberCountText, onlineCountText].join(',')}`;
 

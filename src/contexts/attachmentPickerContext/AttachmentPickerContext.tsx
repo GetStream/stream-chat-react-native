@@ -1,9 +1,4 @@
-import React, {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -16,6 +11,14 @@ export type AttachmentPickerIconProps = {
 };
 
 export type AttachmentPickerContextValue = {
+  /**
+   * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+   * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+   *
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
+   * for more details.
+   */
+  bottomInset: number;
   /**
    * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
@@ -41,32 +44,15 @@ export type AttachmentPickerContextValue = {
   maxNumberOfFiles: number;
   openPicker: () => void;
   selectedImages: Asset[];
-  setBottomInset: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setBottomInset: React.Dispatch<React.SetStateAction<number>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
-  setTopInset: React.Dispatch<React.SetStateAction<number | undefined>>;
+  setTopInset: React.Dispatch<React.SetStateAction<number>>;
+  topInset: number;
   attachmentPickerBottomSheetHeight?: number;
   attachmentSelectionBarHeight?: number;
-  /**
-   * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
-   * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
-   *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
-   * for more details.
-   */
-  bottomInset?: number;
   selectedPicker?: 'images';
-  /**
-   * `topInset` must be set to ensure that when the picker is completely open it is opened to the desired height.
-   * This can be done via props, but can also be set via the `setTopInset` function provided by the
-   * `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be
-   * set to 0 to cover the entire screen, or the safe area top inset if desired.
-   *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#overlayprovider) section in Cookbook
-   * for more details.
-   */
-  topInset?: number;
 };
 
 export const AttachmentPickerContext = React.createContext<AttachmentPickerContextValue>(
@@ -81,32 +67,29 @@ export const AttachmentPickerProvider = ({
     AttachmentPickerContextValue,
     | 'attachmentSelectionBarHeight'
     | 'attachmentPickerBottomSheetHeight'
-    | 'bottomInset'
     | 'CameraSelectorIcon'
     | 'closePicker'
     | 'FileSelectorIcon'
     | 'ImageSelectorIcon'
     | 'openPicker'
-    | 'topInset'
-  >;
+  > &
+    Partial<Pick<AttachmentPickerContextValue, 'bottomInset' | 'topInset'>>;
 }>) => {
   const bottomInsetValue = value?.bottomInset;
   const topInsetValue = value?.topInset;
 
-  const [bottomInset, setBottomInset] = useState<number | undefined>(
-    bottomInsetValue,
-  );
+  const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
-  const [topInset, setTopInset] = useState<number | undefined>(value?.topInset);
+  const [topInset, setTopInset] = useState<number>(value?.topInset ?? 0);
 
   useEffect(() => {
-    setBottomInset(bottomInsetValue);
+    setBottomInset(bottomInsetValue ?? 0);
   }, [bottomInsetValue]);
 
   useEffect(() => {
-    setTopInset(topInsetValue);
+    setTopInset(topInsetValue ?? 0);
   }, [topInsetValue]);
 
   const combinedValue = {
@@ -125,7 +108,7 @@ export const AttachmentPickerProvider = ({
 
   return (
     <AttachmentPickerContext.Provider
-      value={(combinedValue as unknown) as AttachmentPickerContextValue}
+      value={combinedValue as unknown as AttachmentPickerContextValue}
     >
       {children}
     </AttachmentPickerContext.Provider>
@@ -133,9 +116,7 @@ export const AttachmentPickerProvider = ({
 };
 
 export const useAttachmentPickerContext = () =>
-  (useContext(
-    AttachmentPickerContext,
-  ) as unknown) as AttachmentPickerContextValue;
+  useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
 
 export const withAttachmentPickerContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,

@@ -1,11 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -63,11 +57,7 @@ const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   } = useTheme();
 
   return (
-    <TouchableOpacity
-      disabled={disabled}
-      onPress={onPress}
-      style={styles.navigationButton}
-    >
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
       <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
     </TouchableOpacity>
   );
@@ -82,9 +72,7 @@ type Props = {
   navigation: NewGroupChannelAddMemberScreenNavigationProp;
 };
 
-export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
-  navigation,
-}) => {
+export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
   const { chatClient } = useContext(AppContext);
 
   const {
@@ -93,14 +81,8 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
     },
   } = useTheme();
 
-  const {
-    onChangeSearchText,
-    onFocusInput,
-    removeUser,
-    reset,
-    searchText,
-    selectedUsers,
-  } = useUserSearchContext();
+  const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
+    useUserSearchContext();
 
   const onRightArrowPress = () => {
     if (selectedUsers.length === 0) return;
@@ -114,10 +96,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
       <ScreenHeader
         onBack={reset}
         RightContent={() => (
-          <RightArrowButton
-            disabled={selectedUsers.length === 0}
-            onPress={onRightArrowPress}
-          />
+          <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
         )}
         titleText='Add Group Members'
       />

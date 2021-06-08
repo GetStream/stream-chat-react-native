@@ -156,11 +156,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: interpolate(
-          showScreen.value,
-          [0, 1],
-          [viewHeight.value / 2, 0],
-        ),
+        translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
       },
     ],
   }));
@@ -168,16 +164,8 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   if (!visible) return null;
 
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={StyleSheet.absoluteFill}
-    >
-      <PanGestureHandler
-        enabled={visible}
-        maxPointers={1}
-        minDist={10}
-        onGestureEvent={onPan}
-      >
+    <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
+      <PanGestureHandler enabled={visible} maxPointers={1} minDist={10} onGestureEvent={onPan}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
           <TapGestureHandler
             maxDist={32}

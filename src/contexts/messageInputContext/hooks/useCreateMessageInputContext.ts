@@ -22,7 +22,7 @@ export const useCreateMessageInputContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   additionalTextInputProps,
   appendText,
@@ -115,15 +115,7 @@ export const useCreateMessageInputContext = <
     : '';
   const threadId = thread?.id;
 
-  const messageInputContext: MessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const messageInputContext: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,

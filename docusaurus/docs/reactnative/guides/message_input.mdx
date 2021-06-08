@@ -58,7 +58,7 @@ export const ChannelScreen = ({ channel }) => {
   const [channel, setChannel] = useState();
 
   return (
-    <OverlayProvider topInset={0}>
+    <OverlayProvider>
       <Chat client={client}>
         {channel ? (
           <Channel

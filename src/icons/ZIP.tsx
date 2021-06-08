@@ -13,10 +13,7 @@ export const ZIP: React.FC<IconProps> = (props) => (
       d='M0 3a3 3 0 013-3h20.333l10 10v27a3 3 0 01-3 3H3a3 3 0 01-3-3V3z'
       pathFill='#F5F5F5'
     />
-    <RootPath
-      d='M0 28h33.333v9a3 3 0 01-3 3H3a3 3 0 01-3-3v-9z'
-      pathFill='#A8A8A8'
-    />
+    <RootPath d='M0 28h33.333v9a3 3 0 01-3 3H3a3 3 0 01-3-3v-9z' pathFill='#A8A8A8' />
     <RootPath
       d='M25.864 9.99a2.48 2.48 0 01-2.48-2.48V.058L33.33 9.99h-7.466z'
       pathFill='#DBDBDB'

@@ -30,7 +30,7 @@ function listDirectories(rootPath, cb) {
     if (!stats.isDirectory()) return;
 
     const external = isExternalModule(fullFileName);
-    cb({rootPath, symbolic, external, fullFileName, fileName});
+    cb({ rootPath, symbolic, external, fullFileName, fileName });
   });
 }
 
@@ -50,31 +50,28 @@ function buildFullModuleMap(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(
-    moduleRoot,
-    ({fileName, fullFileName, symbolic, external}) => {
-      if (symbolic)
-        return buildFullModuleMap(
-          resolvePath(fullFileName, 'node_modules'),
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-        );
+  listDirectories(moduleRoot, ({ fileName, fullFileName, symbolic, external }) => {
+    if (symbolic)
+      return buildFullModuleMap(
+        resolvePath(fullFileName, 'node_modules'),
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+      );
 
-      const moduleMap = external ? externalModuleMap : mainModuleMap,
-        moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
+    const moduleMap = external ? externalModuleMap : mainModuleMap,
+      moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
 
-      if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
-      else
-        return buildFullModuleMap(
-          fullFileName,
-          mainModuleMap,
-          externalModuleMap,
-          alreadyVisited,
-          fileName,
-        );
-    },
-  );
+    if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
+    else
+      return buildFullModuleMap(
+        fullFileName,
+        mainModuleMap,
+        externalModuleMap,
+        alreadyVisited,
+        fileName,
+      );
+  });
 }
 
 function buildModuleResolutionMap() {
@@ -87,17 +84,13 @@ function buildModuleResolutionMap() {
   return Object.assign({}, externalModuleMap, moduleMap);
 }
 
-function findAlternateRoots(
-  moduleRoot = baseModulePath,
-  alternateRoots = [],
-  _alreadyVisited,
-) {
+function findAlternateRoots(moduleRoot = baseModulePath, alternateRoots = [], _alreadyVisited) {
   const alreadyVisited = _alreadyVisited || {};
   if (alreadyVisited && alreadyVisited.hasOwnProperty(moduleRoot)) return;
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(moduleRoot, ({fullFileName, fileName, external}) => {
+  listDirectories(moduleRoot, ({ fullFileName, fileName, external }) => {
     if (fileName.charAt(0) !== '@') {
       if (external) alternateRoots.push(fullFileName);
     } else {
@@ -133,11 +126,11 @@ function getPolyfillHelper() {
 
 const PATH = require('path');
 const FS = require('fs'),
-  blacklist = require('metro-config/src/defaults/blacklist');
+  exclusionList = require('metro-config/src/defaults/exclusionList');
 
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
-const moduleBlacklist = [
+const moduleExclusionList = [
     new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
     new RegExp(repoDir + '/examples/SampleApp/.*'),
     new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
@@ -157,7 +150,7 @@ if (alternateRoots && alternateRoots.length)
 
 module.exports = {
   resolver: {
-    blacklistRE: blacklist(moduleBlacklist),
+    blacklistRE: exclusionList(moduleExclusionList),
     extraNodeModules,
     useWatchman: false,
   },

@@ -47,12 +47,7 @@ type Props = ImageGalleryGridHandleCustomComponentProps & {
 };
 
 export const ImageGridHandle: React.FC<Props> = (props) => {
-  const {
-    centerComponent,
-    closeGridView,
-    leftComponent,
-    rightComponent,
-  } = props;
+  const { centerComponent, closeGridView, leftComponent, rightComponent } = props;
   const {
     theme: {
       colors: { black, white },
@@ -65,17 +60,11 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
 
   return (
     <View style={[styles.handle, { backgroundColor: white }, handle]}>
-      {leftComponent ? (
-        leftComponent({ closeGridView })
-      ) : (
-        <View style={styles.leftContainer} />
-      )}
+      {leftComponent ? leftComponent({ closeGridView }) : <View style={styles.leftContainer} />}
       {centerComponent ? (
         centerComponent({ closeGridView })
       ) : (
-        <Text style={[styles.text, { color: black }, handleText]}>
-          {t('Photos')}
-        </Text>
+        <Text style={[styles.text, { color: black }, handleText]}>{t('Photos')}</Text>
       )}
       {rightComponent ? (
         rightComponent({ closeGridView })

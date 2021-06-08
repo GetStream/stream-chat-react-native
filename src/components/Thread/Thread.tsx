@@ -6,18 +6,12 @@ import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
 import type { MessageListProps } from '../MessageList/MessageList';
 
@@ -39,7 +33,7 @@ type ThreadPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageList'> &
   Pick<
@@ -50,16 +44,12 @@ type ThreadPropsWithContext<
      * Additional props for underlying MessageInput component.
      * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messageinput
      * */
-    additionalMessageInputProps?: Partial<
-      MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
-    >;
+    additionalMessageInputProps?: Partial<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>>;
     /**
      * Additional props for underlying MessageList component.
      * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messagelist
      * */
-    additionalMessageListProps?: Partial<
-      MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
-    >;
+    additionalMessageListProps?: Partial<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -70,9 +60,7 @@ type ThreadPropsWithContext<
      * **Customized MessageInput component to used within Thread instead of default MessageInput
      * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/v3/#messageinput)**
      */
-    MessageInput?: React.ComponentType<
-      MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
-    >;
+    MessageInput?: React.ComponentType<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>>;
     /**
      * Call custom function on closing thread if handling thread state elsewhere
      */
@@ -86,7 +74,7 @@ const ThreadWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -165,7 +153,7 @@ export type ThreadProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -184,18 +172,14 @@ export const Thread = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageList } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    closeThread,
-    loadMoreThread,
-    reloadThread,
-    thread,
-  } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { closeThread, loadMoreThread, reloadThread, thread } =
+    useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <ThreadWithContext<At, Ch, Co, Ev, Me, Re, Us>
