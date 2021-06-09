@@ -3,7 +3,6 @@ id: message-input-context
 title: MessageInputContext
 ---
 
-
 `MessageInputContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -14,7 +13,7 @@ title: MessageInputContext
 import { useContext } from 'react';
 import { MessageInputContext } from 'stream-chat-react-native';
 
-const { isMyMessage, message, files } = useContext(MessageInputContext);
+const { sendMessage, toggleAttachmentPicker } = useContext(MessageInputContext);
 ```
 
 Alternatively, you can also use `useMessageInputContext` hook provided by library to consume MessageInputContext.
@@ -22,7 +21,7 @@ Alternatively, you can also use `useMessageInputContext` hook provided by librar
 ```tsx
 import { useMessageInputContext } from 'stream-chat-react-native';
 
-const { isMyMessage, message, files } = useMessageInputContext();
+const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ```
 
 ## Value
