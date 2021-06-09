@@ -1,0 +1,86 @@
+---
+id: channel-preview-messenger
+title: ChannelPreviewMessenger
+---
+
+import OnSelect from '../assets/mdx-fragments/core-components/channel-list/props/on_select.mdx';
+import PreviewAvatar from '../assets/mdx-fragments/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../assets/mdx-fragments/core-components/channel-list/props/preview_message.mdx';
+import PreviewStatus from '../assets/mdx-fragments/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../assets/mdx-fragments/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../assets/mdx-fragments/core-components/channel-list/props/preview_unread_count.mdx';
+import LastMessagePreview from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/last_message_preview.mdx';
+import FormatLatestMessageDate from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
+import MaxUnreadCount from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/max_unread_count.mdx';
+import Unread from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/unread.mdx';
+import Channel from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelPreviewMessenger` is the UI component for channel previews. Renders a preview item for each channel in a list.
+
+You can replace the channel preview UI component using the `Preview` property on [ChannelPreview](./channel-preview#preview)<!-- TODO: Should we document channel preview? --> or [ChannelList](../core-components/channellist#preview).
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+## UI Customizations
+
+`ChannelPreviewMessenger` component makes it possible to customize any of the enclosed child components. For every child UI component of `ChannelPreviewMessenger`, you can provide your own custom implementation. You can reference the visuals in the first section, to check which prop to use for customizing.
+
+```jsx
+import { ChannelPreviewMessenger } from 'stream-chat-react-native';
+
+const CustomPreviewTitle = ({ channel }) => (
+  <Text>{channel.data.customProperty} - {channel.data.name}</Text>
+)
+
+<ChannelPreviewMessenger PreviewTitle={CustomPreviewTitle} />
+```
+
+## Props forwarded from ChannelPreview
+
+### channel
+
+<Channel/>
+
+### lastMessagePreview
+
+<LastMessagePreview/>
+
+### unread
+
+<Unread/>
+
+## Props forwarded from ChannelList
+
+### onSelect
+
+<OnSelect/>
+
+### PreviewAvatar
+
+<PreviewAvatar/>
+
+### PreviewMessage
+
+<PreviewMessage/>
+
+### PreviewStatus
+
+<PreviewStatus/>
+
+### PreviewTitle
+
+<PreviewTitle/>
+
+### PreviewUnreadCount
+
+<PreviewUnreadCount/>
+
+### maxUnreadCount
+
+<MaxUnreadCount/>
+
+## Props
+
+### formatLatestMessageDate
+
+<FormatLatestMessageDate/>

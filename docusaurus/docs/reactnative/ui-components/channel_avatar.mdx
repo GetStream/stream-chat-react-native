@@ -1,0 +1,51 @@
+---
+id: channel-avatar
+title: ChannelAvatar
+---
+
+import Channel from '../assets/mdx-fragments/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelAvatar` is the UI component for channel avatars. Renders the avatar for each channel in a list.
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+## UI Customizations
+
+You can have a custom channel preview message component by setting the `PreviewAvatar` prop on any of its parent UI components.
+
+```jsx
+import { 
+  ChannelPreviewMessenger,
+  useChannelPreviewDisplayAvatar,
+  useChannelPreviewDisplayPresence,
+} from 'stream-chat-react-native';
+
+import { CustomGroupAvatar } from '...'; // your custom group avatar component
+import { CustomAvatar } from '...'; // your custom avatar component
+
+const CustomPreviewAvatar = ({ channel }) => {
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayPresence = useChannelPreviewDisplayPresence(channel);
+
+  if (displayAvatar.images) {
+    return <CustomGroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />;
+  }
+
+  return (
+    <CustomAvatar
+      image={displayAvatar.image}
+      name={displayAvatar.name}
+      online={displayPresence}
+      size={40}
+    />
+  );
+}
+
+<ChannelPreviewMessenger PreviewAvatar={CustomPreviewAvatar} />
+```
+
+## Props forwarded from ChannelPreviewMessenger
+
+### channel
+
+<Channel/>
