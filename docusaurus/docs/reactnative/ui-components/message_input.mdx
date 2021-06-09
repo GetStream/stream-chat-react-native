@@ -1,0 +1,24 @@
+---
+id: message-input
+sidebar_position: 6
+title: MessageInput
+---
+
+`MessageInput` component provides all the UI and necessary functionality (e.g, attachment picker, commands, mentions autocomplete etc.) for composing a message.
+This component must be used as child of `Channel` component.
+
+## Basic Usage
+
+```tsx
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel}>
+      <MessageInput />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+## Props
+
+All the configuration for `MessageInput` can be done on [`Channel`](../core-components/channel) component. Additionally please take a look at [Guide Section](../guides/message-input) about customizing MessageInput UI
