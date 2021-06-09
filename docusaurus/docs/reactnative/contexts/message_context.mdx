@@ -3,7 +3,7 @@ id: message-context
 title: MessageContext
 ---
 
-`MessageContext` is provided by [`Message`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+`MessageContext` is provided by [`Message`](#) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
 
@@ -23,7 +23,6 @@ import { useMessageContext } from 'stream-chat-react-native';
 
 const { isMyMessage, message, files } = useMessageContext();
 ```
-
 
 ## Value
 
@@ -162,35 +161,128 @@ Value is true, when message is sent by current user (connected to chat).
 
 ### lastGroupMessage
 
+Whether or not this is the last message in a [group of messages](#groupstyles).
+
+| Type |
+| - |
+| boolean |
+
 ### message
+
+Message object corresponding to this context
+
+| Type |
+| - |
+| object |
 
 ### messageContentOrder
 
+Order of message content.
+
+e.g., `['quoted_reply', 'attachments', 'file', 'gallery', 'text']`
+
+| Type |
+| - |
+| array |
+
 ### onLongPress
+
+Default long press handler for message UI.
+
+| Type |
+| - |
+| function |
 
 ### onlyEmojis
 
+Value is true if message text only contain emojis and nothing else.
+
+| Type |
+| - |
+| boolean |
+
 ### onOpenThread
+
+Handler function for "Thread Reply" action.
+
+| Type |
+| - |
+| function |
 
 ### onPress
 
+Default press handler for message UI.
+
+| Type |
+| - |
+| function |
+
 ### onPressIn
+
+Default pressIn handler for message UI.
+
+| Type |
+| - |
+| function |
 
 ### otherAttachments
 
+All the attachments on message except type `file` and `image`.
+
+| Type |
+| - |
+| array |
+
 ### reactions
+
+All the reactions currently added on message.
+
+```tsx
+[
+  {
+    own: true,
+    type: 'love'
+  },
+  {
+    own: false,
+    type: 'haha'
+  }
+]
+```
+
+| Type |
+| - |
+| array |
 
 ### showMessageOverlay
 
-### showMessageStatus
+Function to open the message action overlay. This function gets called when user long presses a message.
+
+| Type |
+| - |
+| function |
+
+<!-- ### showMessageStatus -->
 
 ### threadList
 
-### goToMessage
+Value is true, if current message is part of a message thread.
+
+| Type |
+| - |
+| boolean |
+
+<!-- ### goToMessage -->
 
 ### lastReceivedId
 
-### preventPress
+Most recent message id in the message list.
 
-### showAvatar
+| Type |
+| - |
+| string |
+
+<!-- ### preventPress -->
+
+<!-- ### showAvatar -->
 

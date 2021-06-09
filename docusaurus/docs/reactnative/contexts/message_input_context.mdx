@@ -2,3 +2,390 @@
 id: message-input-context
 title: MessageInputContext
 ---
+
+
+`MessageInputContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`MessageInputContext` can be consumed by any of the child  component of `Channel` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { MessageInputContext } from 'stream-chat-react-native';
+
+const { isMyMessage, message, files } = useContext(MessageInputContext);
+```
+
+Alternatively, you can also use `useMessageInputContext` hook provided by library to consume MessageInputContext.
+
+```tsx
+import { useMessageInputContext } from 'stream-chat-react-native';
+
+const { isMyMessage, message, files } = useMessageInputContext();
+```
+
+## Value
+<!-- ### additionalTextInputProps -->
+<!-- ### AttachButton -->
+<!-- ### autoCompleteTriggerSettings -->
+### clearEditingState
+
+Function to clear "Editing Message" state from MessageInput component.
+
+| Type |
+| - |
+| function |
+
+### clearQuotedMessageState
+
+Function to clear "Add Quoted Reply" state from MessageInput component.
+
+| Type |
+| - |
+| function |
+
+<!-- ### CommandsButton -->
+<!-- ### compressImageQuality -->
+<!-- ### doDocUploadRequest -->
+<!-- ### doImageUploadRequest -->
+
+### editing
+
+Value is true, when user is editing some message, within `MessageInput` component.
+
+| Type |
+| - |
+| boolean |
+
+<!-- ### editMessage -->
+<!-- ### FileUploadPreview -->
+<!-- ### hasCommands -->
+<!-- ### hasFilePicker -->
+<!-- ### hasImagePicker -->
+<!-- ### ImageUploadPreview -->
+<!-- ### initialValue -->
+<!-- ### Input -->
+<!-- ### InputButtons -->
+<!-- ### maxMessageLength -->
+<!-- ### maxNumberOfFiles -->
+<!-- ### MoreOptionsButton -->
+<!-- ### numberOfLines -->
+<!-- ### onChangeText -->
+<!-- ### quotedMessage -->
+<!-- ### SendButton -->
+<!-- ### sendImageAsync -->
+### sendMessage
+
+Sends a composed message within `MessageInput` component to channel. This function is attached to onPress handler of [`SendButton`](../core-components/channel#sendbutton). The message optimistically gets added to message list UI first, before actually making api call to server.
+During this intermediate stage, MessageStatus component will display an indicator for "pending" state.
+
+| Type |
+| - |
+| function |
+
+<!-- ### setInputRef -->
+
+<!-- ### setQuotedMessageState -->
+
+<!-- ### ShowThreadMessageInChannelButton -->
+<!-- ### UploadProgressIndicator -->
+<!-- ### uploadsEnabled -->
+
+### appendText
+
+Appends text to existing text entered by user in `MessageInput` component.
+
+| Type |
+| - |
+| `(text) => void` |
+
+<!-- ### asyncIds -->
+
+<!-- ### asyncUploads -->
+
+### closeAttachmentPicker
+
+Dismiss the attachment picker, if its already open.
+
+| Type |
+| - |
+| function |
+
+### fileUploads
+
+List of `file` type attachments currently attached to message, which is being composed in `MessageInput` component.
+
+```tsx
+[
+  {
+    file: {
+      name: 'test.pdf';
+      size: 2000;
+      type: 'application/pdf';
+      uri: 'file-uri';
+    };
+    id: 'asdas232bk3jb42k3';
+    state: 'uploaded'; // or 'finished'
+    url: 'https://cdn.getstream.io/kajsnkj2n3j4';
+  }
+]
+```
+
+| Type |
+| - |
+| array |
+
+### giphyActive
+
+This value gets set to true, when user selects a `giphy` command from commands list (which shows up when you type `/` in input box). Value will be active until user writes a keyword for search the giphy.
+When user sends a message for searching a giphy, this value (giphyActive) will be set to `false` again.
+
+| Type |
+| - |
+| boolean |
+
+### imageUploads
+
+List of `image` type attachments currently attached to message, which is being composed in `MessageInput` component.
+
+```tsx
+[
+  {
+    file: { name: 'fallback-name.jpeg' },
+    id: '2j3n4k23nj4k23n4k3',
+    state: 'finished',
+    url: 'https://cdn.getstream.io/kajsnkj2n3j4',
+  }
+]
+```
+
+| Type |
+| - |
+| array |
+
+### inputBoxRef
+
+Ref for [`TextInput`](https://reactnative.dev/docs/textinput) component within `MessageInput`
+
+| Type |
+| - |
+| [ref](https://reactjs.org/docs/refs-and-the-dom.html#adding-a-ref-to-a-dom-element) |
+
+### isValidMessage
+
+Value is false when text within input box is empty and no images or files have been attached to a message yet. You can use this value to add enabled/disabled Ui state on SendMessage button.
+
+| Type |
+| - |
+| boolean |
+
+### mentionedUsers
+
+Ids of users which are mentioned (e.g., `Hey @Vishal Narkhede, how are you`) in a message, which is being composed in MessageInput component.
+
+```tsx
+['vishal-user-id', 'jaap-user-id']
+```
+
+| Type |
+| - |
+| array |
+
+### numberOfUploads
+
+Number of image + files attached to message which is being composed in `MessageInput` component.
+
+| Type |
+| - |
+| number |
+
+<!-- ### onChange -->
+
+<!-- ### onSelectItem -->
+
+### openAttachmentPicker
+
+Opens the attachment picker bottom sheet, if its not open.
+
+| Type |
+| - |
+| function |
+
+### openCommandsPicker
+
+Opens the commands picker box. By default, this function is attached to onPress handler for [`CommandsButton`](../core-components/channel#commandsbutton).
+
+| Type |
+| - |
+| function |
+
+### openFilePicker
+
+Opens the file picker. By default, this function is attached to onPress handler for [`FileAttachmentIcon`](../core-components/channel#fileattachmenticon).
+
+| Type |
+| - |
+| function |
+
+### openMentionsPicker
+
+Opens the user mentions autocomplete popup. When user types `@` in input box, internally this function gets called.
+
+| Type |
+| - |
+| function |
+
+<!-- ### pickFile -->
+
+### removeFile
+
+Removes attached file in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [FileUploadPreview](../core-components/channel#fileuploadpreview).
+It takes index of file (to be removed) in [fileUploads](#fileuploads) array as parameter.
+
+| Type |
+| - |
+| `(index) => void` |
+
+### removeImage
+
+Removes attached image in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [ImageUploadPreview](../core-components/channel#imageuploadpreview).
+It takes index of file (to be removed) in [fileUploads](#fileuploads) array as parameter.
+
+| Type |
+| - |
+| `(index) => void` |
+
+### resetInput
+
+Resets the entire MessageInput component to empty state by clearing the text, attachments etc.
+
+| Type |
+| - |
+| function |
+
+<!-- ### selectedPicker -->
+
+<!-- ### sending -->
+
+<!-- ### sendMessageAsync -->
+
+### sendThreadMessageInChannel
+
+This value is only applicable to `Thread` component. When value `sendThreadMessageInChannel` is true, message gets sent from `MessageInput` component with property `show_in_channel: true`.
+This value is attached to the checkbox (with label "Also Send To Channel") in `MessageInput` component within `Thread` component.
+
+| Type |
+| - |
+| boolean |
+
+<!-- ### setAsyncIds -->
+
+<!-- ### setAsyncUploads -->
+
+<!-- ### setFileUploads -->
+
+### setGiphyActive
+
+Setter function for [`giphyActive`](#giphyactive)
+
+| Type |
+| - |
+| `(isActive) => void` |
+
+### setImageUploads
+
+Setter function for [`imageUploads`](#imageuploads)
+
+| Type |
+| - |
+| `(images) => void` |
+
+### setInputBoxRef
+
+Setter function for [`inputBoxRef`](#inputboxref)
+
+| Type |
+| - |
+| `(ref) => void` |
+
+### setMentionedUsers
+
+Setter function for [`mentionedUsers`](#mentionedusers)
+
+| Type |
+| - |
+| `(mentionedUsers) => void` |
+
+### setNumberOfUploads
+
+Setter function for [`mentionedUsers`](#mentionedusers)
+
+| Type |
+| - |
+| `(mentionedUsers) => void` |
+
+### setSendThreadMessageInChannel
+
+Setter function for [`setSendThreadMessageInChannel`](#setsendthreadmessageinchannel)
+
+| Type |
+| - |
+| `(sendThreadMessageInChannel) => void` |
+
+### setShowMoreOptions
+
+Setter function for [`showMoreOptions`](#showmoreoptions)
+
+| Type |
+| - |
+| `(showMoreOptions) => void` |
+
+### setText
+
+Setter function for [`text`](#text)
+
+| Type |
+| - |
+| `(text) => void` |
+
+<!-- ### showMoreOptions -->
+
+### text
+
+Text message entered by user in underlying [`TextInput`](https://reactnative.dev/docs/textinput) within `MessageInput` component.
+This value is attached to `TextInput`'s [`value prop`](https://reactnative.dev/docs/textinput#value)
+
+| Type |
+| - |
+| string |
+
+<!-- ### thread -->
+
+### toggleAttachmentPicker
+
+Function to toggle attachment picker.  By default, this function is attached to onPress handler for [`AttachButton`](../core-components/channel#attachbutton)
+
+| Type |
+| - |
+| function |
+
+<!-- ### triggerSettings -->
+
+### updateMessage
+
+This function is a counterpart of [`sendMessage`](#sendmessage), for the case of editing a message. This function is attached to [`SendButton`](../core-components/channel#sendbutton) when some existing message is being updated.
+Similar to `sendMessage` function, the message will be updated in message list UI first, before making api call to update the message.
+
+| Type |
+| - |
+| function |
+
+<!-- ### uploadFile
+
+### uploadImage -->
+
+<!-- ### uploadNewFile
+
+### uploadNewImage
+ -->
