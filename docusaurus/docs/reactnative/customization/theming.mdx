@@ -1,0 +1,152 @@
+---
+id: theming
+sidebar_position: 2
+title: Theming
+---
+
+import inspector from '../assets/customization/theming/inspector.png'
+import themed from '../assets/customization/theming/themed.png'
+import unthemed from '../assets/customization/theming/unthemed.png'
+
+The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system.
+
+## Creating a theme
+
+To accurately create a theme we suggest utilizing our exported types to create your own theme.
+This will allow you to ensure the keys you are using in your theme object are correct.
+
+When you provide a theme as a prop a deep merge of the theme and default theme is performed so only styles designated in the custom theme overwrite the defaults. 
+We provide a helper type `DeepPartial` that makes all of the keys at every depth optional, this is to account for the deep merge that is performed.
+
+You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts).
+
+```tsx
+import type { DeepPartial, Theme } from 'stream-chat-react-native';
+
+const theme: DeepPartial<Theme> = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+    },
+  },
+};
+```
+
+## Applying a theme
+
+There are two entry points for custom themes into the SDK, in the `OverlayProvider` and `Chat` components.
+Both of these components take a prop `style` which accepts a custom theme.
+
+In practice you only need to provide you custom theme to the `OverlayProvider` as the theme is accessed via context.
+Nested `ThemeProvider` components merge themes provided by higher level `ThemeProvider` components, so the theme provided to the `OverlayProvider` will be available from the `ThemeProvider` in the `Chat` component.
+This allows you to provide a different theme at different levels of the application if you choose.
+
+```tsx {2}
+export const App = () =>
+  <OverlayProvider style={theme}>
+    <Chat client={client}>
+      <ChannelList />
+    </Chat>
+  </OverlayProvider>;
+```
+
+## Dark mode
+
+If you would like to support dark mode in your application you can create and apply different themes depending on the current `colorScheme` provided by React Native.
+To prevent unnecessary deep merges and re-renders we suggest keeping the current theme in state and only change it when theme colorScheme changes.
+
+```tsx
+import { useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
+import type { DeepPartial, Theme } from 'stream-chat-react-native';
+
+export const App = () => {
+  const colorScheme = useColorScheme();
+  const getTheme = (): DeepPartial<Theme> => ({
+    colors: colorScheme === 'dark' ? { black: '#FFFFFF' } : { black: '#000000' }
+  });
+  const [theme, setTheme] = useState(getTheme());
+
+  useEffect(() => {
+    setTheme(getTheme());
+  }, [colorScheme]);
+
+  return (
+    <OverlayProvider style={theme}>
+      <Chat client={client}>
+        <ChannelList />
+      </Chat>
+    </OverlayProvider>
+  );
+};
+```
+
+## Using the theme
+
+You can easily access the theme in any custom components you create using the `useTheme` hook.
+To ensure any change to the theme is reflected within the UI it is not advised to pass theme variables through custom memoization checks.
+
+```tsx
+const {
+  theme: {
+    colors: { black },
+  },
+} = useTheme();
+```
+
+## Identifying theme paths
+
+Where possible we have used `displayName` on components to expose the theme path to the style.
+To view the `displayName` on a component.
+
+- Open the [in-app developer menu](https://reactnative.dev/docs/debugging#accessing-the-in-app-developer-menu)
+- Turn on inspector by pressing `Show Inspector` button
+- Select the desired component and the `displayName` will be shown in the inspector path
+
+Not all theme styles are tied to high level components; but we have added this debugging strategy to help in locating the most common components easily.
+
+<div style={{ display: 'flex', justifyContent: 'space-around' }}>
+<img src={inspector} alt="Inspector" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+
+To find the path and customize the style on a file attachment for instance we locate the component using the inspector.
+The `displayName` is listed as `FileAttachment{messageSimple{file}}`.
+
+This syntax is indicating the component is named `FileAttachment` and the style keys are `messageSimple` -> `file`.
+There are often multiple keys on a designated display name corresponding to different sub-components styles.
+In this case `file` has five sub-component keys that can modify the styling.
+
+The exported types and original theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts) can then be referenced to create a custom modification to the theme.
+
+```tsx
+const theme: DeepPartial<Theme> = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+      icon: {
+        height: 16,
+        width: 16,
+      },
+    },
+  },
+};
+```
+
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+<img src={unthemed} alt="Unthemed" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+<img src={themed} alt="Themed" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+
+The resulting changes by applying the custom theme are easily seen in the change in icon size and background color of the file attachment.
+
+:::note
+
+Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types.
+The TypeScript documentation of [`Theme`]((https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)) should help you in this regard.
+Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple` -> `content` -> `markdown`.
+
+:::
