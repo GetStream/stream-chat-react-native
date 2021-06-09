@@ -2,3 +2,60 @@
 id: overlay-context
 title: OverlayContext
 ---
+
+`OverlayContext` is provided by [`OverlayProvider`](../core-components/overlay-provider) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`OverlayContext` can be consumed by any of the child  component of `OverlayProvider` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { OverlayContext } from 'stream-chat-react-native';
+
+const { setBlurType, setOverlay } = useContext(OverlayContext);
+```
+
+Alternatively, you can also use `useOverlayContext` hook provided by library to consume OverlayContext.
+
+```tsx
+import { useOverlayContext } from 'stream-chat-react-native';
+
+const { setBlurType, setOverlay } = useOverlayContext();
+```
+
+## Value
+
+### overlay
+
+Current active overlay. Overlay gets rendered in following cases
+
+- 'alert' - For delete message confirmation alert box
+- 'gallery' - When image viewer/gallery is opened 
+- 'message' - When message overlay is opened by long pressing a message
+- 'none' - Default value
+
+| Type |
+| - |
+| enum('alert', 'gallery', 'message', 'none') |
+
+### setBlurType
+
+Set the blur background type for overlay. 
+
+| Type |
+| - |
+| enum('light', 'dark', undefined) |
+
+### setOverlay
+
+Setter for [`overlay`](#overlay). You can use this setter to show the overlay. Please make sure to explicitely relevant blur background type  for overlay by using [`setBlurType`](#setblurtype).
+
+| Type |
+| - |
+| `(overlay) => void` |
+
+<!-- ### style -->
+
+<!-- ### translucentStatusBar -->
+
