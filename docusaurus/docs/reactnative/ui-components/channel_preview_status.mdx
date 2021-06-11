@@ -20,7 +20,7 @@ In the following sample we display a custom message preview date.
 <!-- Added the comment about useMemo because one of our sample projects had a perf problem related to this exact case  -->
 ```jsx
 import { useMemo } from 'react';
-import { ChannelList } from 'stream-chat-react-native';
+import { ChannelList, ChannelPreviewStatus } from 'stream-chat-react-native';
 import { customDateFormatter } from '...'; // your custom date formatter
 
 const CustomPreviewStatus = ({ latestMessagePreview }) => {
