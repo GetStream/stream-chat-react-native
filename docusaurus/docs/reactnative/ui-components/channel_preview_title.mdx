@@ -1,0 +1,40 @@
+---
+id: channel-preview-title
+title: ChannelPreviewTitle
+---
+
+import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelPreviewTitle` is the UI component for displaying the title for each channel on a list.
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png) <!-- Replace with propert screenshot -->
+
+## Basic Usage
+
+You can have a custom channel preview title component by setting the `PreviewTitle` prop on any of its parent UI components.
+
+```jsx
+import { ChannelList } from 'stream-chat-react-native';
+
+const CustomPreviewTitle = ({ displayName }) => {
+    return (
+        <Text>Title: {displayName}</Text>
+    );
+}
+
+<ChannelList PreviewTitle={CustomPreviewTitle} />
+```
+
+## Props
+
+### channel
+
+<Channel/>
+
+### displayName
+
+Formatted name for the previewed channel.
+
+| Type |
+|- -|
+| string |

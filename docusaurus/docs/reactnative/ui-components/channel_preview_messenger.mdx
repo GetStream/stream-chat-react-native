@@ -1,0 +1,85 @@
+---
+id: channel-preview-messenger
+title: ChannelPreviewMessenger
+---
+
+import OnSelect from '../common-content/core-components/channel-list/props/on_select.mdx';
+import PreviewAvatar from '../common-content/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../common-content/core-components/channel-list/props/preview_message.mdx';
+import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+import LastMessagePreview from '../common-content/ui-components/channel-preview-messenger/props/last_message_preview.mdx';
+import FormatLatestMessageDate from '../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
+import MaxUnreadCount from '../common-content/ui-components/channel-preview-messenger/props/max_unread_count.mdx';
+import Unread from '../common-content/ui-components/channel-preview-messenger/props/unread.mdx';
+import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelPreviewMessenger` is the UI component for channel previews. Renders a preview item for each channel in a list.
+
+You can replace the channel preview UI component using the `Preview` property on [ChannelPreview](./channel-preview#preview)<!-- TODO: Should we document channel preview? --> or [ChannelList](../core-components/channellist#preview).
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+## Basic Usage
+
+You can have a custom channel preview messenger component by setting the `Preview` prop on any of its parent UI components.
+
+```jsx
+import { ChannelList } from 'stream-chat-react-native';
+
+const CustomListItem = ({ channel }) => {
+  return (
+    <View style={additionalWrapperStyles}>
+       <ChannelPreviewMessenger channel{channel} />
+    </View>
+  )
+}
+<ChannelList Preview={CustomListItem} />
+```
+
+## Props
+
+### channel
+
+<Channel/>
+
+### lastMessagePreview
+
+<LastMessagePreview/>
+
+### unread
+
+<Unread/>
+
+### onSelect
+
+<OnSelect/>
+
+### PreviewAvatar
+
+<PreviewAvatar/>
+
+### PreviewMessage
+
+<PreviewMessage/>
+
+### PreviewStatus
+
+<PreviewStatus/>
+
+### PreviewTitle
+
+<PreviewTitle/>
+
+### PreviewUnreadCount
+
+<PreviewUnreadCount/>
+
+### maxUnreadCount
+
+<MaxUnreadCount/>
+
+### formatLatestMessageDate
+
+<FormatLatestMessageDate/>
