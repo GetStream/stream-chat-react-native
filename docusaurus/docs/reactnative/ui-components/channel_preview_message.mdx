@@ -14,13 +14,13 @@ The `ChannelPreviewMessage` is the UI component for channel previews messages. R
 You can have a custom channel preview message component by setting the `ChannelPreviewMessage` prop on any of its parent UI components.
 
 ```jsx
-import { ChannelPreviewMessenger } from 'stream-chat-react-native';
+import { ChannelList } from 'stream-chat-react-native';
 
 const CustomPreviewMessage = ({ lastMessagePreview }) => (
   <Text>text: {lastMessagePreview.previews.text}</Text>
 )
 
-<ChannelPreviewMessenger PreviewMessage={CustomPreviewMessage} />
+<ChannelList PreviewMessage={CustomPreviewMessage} />
 ```
 
 ## Props

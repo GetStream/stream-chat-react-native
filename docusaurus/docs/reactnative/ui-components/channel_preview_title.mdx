@@ -14,7 +14,7 @@ The `ChannelPreviewTitle` is the UI component for displaying the title for each 
 You can have a custom channel preview title component by setting the `PreviewTitle` prop on any of its parent UI components.
 
 ```jsx
-import { ChannelPreviewMessenger } from 'stream-chat-react-native';
+import { ChannelList } from 'stream-chat-react-native';
 
 const CustomPreviewTitle = ({ displayName }) => {
     return (
@@ -22,7 +22,7 @@ const CustomPreviewTitle = ({ displayName }) => {
     );
 }
 
-<ChannelPreviewMessenger PreviewTitle={CustomPreviewTitle} />
+<ChannelList PreviewTitle={CustomPreviewTitle} />
 ```
 
 ## Props

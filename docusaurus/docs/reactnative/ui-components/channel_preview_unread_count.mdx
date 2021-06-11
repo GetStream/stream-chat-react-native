@@ -16,7 +16,7 @@ The `ChannelPreviewUnreadCount` is the UI component for displaying the unread co
 You can have a custom channel preview unread count component by setting the `PreviewUnreadCount` prop on any of its parent UI components.
 
 ```jsx
-import { ChannelPreviewMessenger } from 'stream-chat-react-native';
+import { ChannelList } from 'stream-chat-react-native';
 
 const CustomPreviewUnreadCount = ({ unread, maxUnreadCount }) => {
     return (
@@ -28,7 +28,7 @@ const CustomPreviewUnreadCount = ({ unread, maxUnreadCount }) => {
     );
 }
 
-<ChannelPreviewMessenger PreviewUnreadCount={CustomPreviewUnreadCount} />
+<ChannelList PreviewUnreadCount={CustomPreviewUnreadCount} />
 ```
 
 ## Props

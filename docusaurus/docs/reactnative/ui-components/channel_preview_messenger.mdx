@@ -26,6 +26,8 @@ You can replace the channel preview UI component using the `Preview` property on
 You can have a custom channel preview messenger component by setting the `Preview` prop on any of its parent UI components.
 
 ```jsx
+import { ChannelList } from 'stream-chat-react-native';
+
 const CustomListItem = ({ channel }) => {
   return (
     <View style={additionalWrapperStyles}>
