@@ -172,3 +172,7 @@ const CustomMessageStatus = () => {
 ...
 <Channel MessageFooter={CustomMessageFooter} MessageStatus={CustomMessageStatus}>
 ```
+
+It is important to keep in mind when creating custom components that some may have internal functionality you may want to keep.
+Additionally many of our out of the box component utilize custom memoization equality functions to minimize re-renders.
+With this in mind we suggest looking at the source code for any component you wish to replace, and possibly using it as a jumping off point, to ensure you are not removing desired functionality or performance.
