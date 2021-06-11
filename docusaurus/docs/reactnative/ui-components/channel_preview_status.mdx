@@ -27,10 +27,9 @@ const CustomPreviewStatus = ({ latestMessagePreview }) => {
     // important usage of useMemo once date parsers can perform some computation when re-rendering.
     const formattedDate = useMemo(() => customDateFormatter(latestMessagePreview), [latestMessagePreview]);
     return (
-        <Text>{formattedDate}</Text>
+        <ChannelPreviewStatus formatLatestMessageDate={formattedDate} />
     );
 }
-
 <ChannelList PreviewStatus={CustomPreviewStatus} />
 ```
 
