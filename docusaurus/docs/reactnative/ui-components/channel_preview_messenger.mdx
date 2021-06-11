@@ -21,18 +21,19 @@ You can replace the channel preview UI component using the `Preview` property on
 
 ![](../assets/api-references/components/channel-list/visual_guide_1.png)
 
-## UI Customizations
+## Basic usage
 
-`ChannelPreviewMessenger` component makes it possible to customize any of the enclosed child components. For every child UI component of `ChannelPreviewMessenger`, you can provide your own custom implementation. You can reference the visuals in the first section, to check which prop to use for customizing.
+You can have a custom channel preview messenger component by setting the `Preview` prop on any of its parent UI components.
 
 ```jsx
-import { ChannelPreviewMessenger } from 'stream-chat-react-native';
-
-const CustomPreviewTitle = ({ channel }) => (
-  <Text>{channel.data.customProperty} - {channel.data.name}</Text>
-)
-
-<ChannelPreviewMessenger PreviewTitle={CustomPreviewTitle} />
+const CustomListItem = ({ channel }) => {
+  return (
+    <View style={additionalWrapperStyles}>
+       <ChannelPreviewMessenger channel{channel} />
+    </View>
+  )
+}
+<ChannelList Preview={CustomListItem} />
 ```
 
 ## Props
