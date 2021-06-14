@@ -58,7 +58,6 @@ export const useCreateThreadContext = <
     }),
     [
       allowThreadMessagesInChannel,
-      loadMoreThread,
       threadHasMore,
       threadId,
       threadLoadingMore,
