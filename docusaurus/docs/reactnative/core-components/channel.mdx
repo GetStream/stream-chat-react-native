@@ -323,12 +323,11 @@ Please refer to [Customize Message Actions](../guides/customize-message-actions)
 
 ### forceAlignMessages
 
-If true, all the messages will be aligned to the left side of screen, similar to Slack.
-By default, received messages get aligned on left side of screen and sent messages go to right side of screen.
+Force alignment for messages in list either on left side or right side of screen. By default, received messages get aligned on left side of screen and sent messages go to right side of screen.
 
-| Type               | Default      |
-| ------------------ | ------------ |
-| boolean            | false        |
+| Type | Default |
+| - | - |
+| enum('left', 'right') | false |
 
 
 ### formatDate
@@ -343,9 +342,9 @@ Formatter function to custom format the message date on deleted messages and mes
 
 When set to false, giphy commands feature will be disabled on MessageInput component.
 
-| Type               | Default      |
-| ------------------ | ------------ |
-| boolean            | true        |
+| Type | Default |
+| - | - |
+| boolean | true |
 
 <!-- ### globalUnreadCountLimit -->
 

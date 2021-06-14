@@ -1,0 +1,63 @@
+---
+id: message-deleted
+title: MessageDeleted
+---
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+
+UI component to render UI for deleted messages. [`MessageContent`](./message-content) component uses `MessageDeleted` component to render messages which have `deleted_at` property as non-empty.
+
+## Basic Usage
+
+**Use case** Always show the borders
+
+```tsx
+import {Channel, MessageDeleted} from 'stream-chat-react-native';
+
+const CustomMessageDeleted = ({ message }) => <MessageDeleted noBorder={false} />
+
+<Channel MessageDeleted={CustomMessageDeleted} />
+```
+
+## Props
+
+### <div class="label required">required</div> **formattedDate**
+
+Datetime stamp to be shown in footer for deleted message.
+
+| Type |
+| - |
+| string |
+
+### <div class="label required">required</div> **groupStyle**
+
+Group styles which is combination of [alignment](../contexts/message-context#alignment) and [groupStyles](../contexts/message-context#groupstyles)
+
+e.g., left_bottom, left_single, right_top
+
+This prop decides the appropriate border radius to apply for deleted message container.
+
+| Type |
+| - |
+| string |
+
+### <div class="label required">required</div> **noBorder**
+
+Weather to show the borders for deleted message or not. By default, this value is computed as follow:
+
+```tsx
+const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+```
+| Type |
+| - |
+| boolean |
+
+<!-- ### <div class="label required">required</div> **onLayout** -->
+
+### alignment
+
+<Alignment />
+
+### message
+
+<MessageProp />

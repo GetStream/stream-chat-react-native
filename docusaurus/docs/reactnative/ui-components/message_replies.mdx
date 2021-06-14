@@ -1,0 +1,59 @@
+---
+id: message-replies
+title: MessageReplies
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnOpenThread from '../common-content/contexts/message-context/on_open_thread.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
+`MessageReplies` is a UI component to render thread reply count and avatars of users who replied to the message in thread. Avatars are rendered using [`MessageRepliesAvatar`](./message-replies-avatar) component.
+
+## Props
+
+:::note
+This component uses default values for all the **non-required** props, from [`MessageContext`](../contexts/message-context)
+:::
+
+### <div class="label required">required</div> **noBorder**
+
+If true, little curved line next to the reply count won't be rendered.
+
+| Type |
+| - |
+| boolean |
+
+### <div class="label required">required</div> **repliesCurveColor**
+
+Color for the curved line next to the reply count.
+
+| Type |
+| - |
+| string |
+
+### alignment
+
+<Alignment />
+
+### message
+
+<MessageProp />
+
+### onLongPress
+
+<OnLongPress />
+
+### onPress
+
+<OnPress />
+
+### onOpenThread
+
+<OnOpenThread />
+
+### threadList
+
+<ThreadList />

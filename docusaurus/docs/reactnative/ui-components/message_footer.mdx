@@ -1,0 +1,69 @@
+---
+id: message-footer
+title: MessageFooter
+---
+
+import Members from '../common-content/contexts/channel-context/members.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+
+`MessageFooter` renders UI for footer of message UI, which consists of read recipts, timestamp of message etc. This component uses [`MessageStatus`](./message-status) for rendering read recipts internally.
+
+## Basic Usage
+
+**Use case** Display dates in different format
+
+```tsx
+import {Channel, MessageFooter} from 'stream-chat-react-native';
+
+const CustomMessageFooter = ({ message }) => <MessageFooter formattedDate={getDateTimeStamp(message)} />
+
+<Channel MessageFooter={CustomMessageFooter} />
+```
+
+## Props
+
+:::note
+This component uses default value for all the **non-required** props, from [`MessageContext`](../contexts/message-context)
+:::
+
+### <div class="label required">required</div> **formattedDate**
+
+Datetime stamp to be shown in footer for deleted message.
+
+| Type |
+| - |
+| string |
+
+### isDeleted
+
+Weather message is deleted or not. In case of deleted message, `'Only visible to you'` subtext will be rendered in this component.
+
+| Type | Default |
+| - | - |
+| boolean | false |
+
+### alignment
+
+<Alignment />
+
+### members
+
+<Members />
+
+### message
+
+<MessageProp />
+
+### otherAttachments
+
+<OtherAttachments />
+
+<!-- ### showMessageStatus -->
+
+### lastGroupMessage
+
+<LastGroupMessage />
+

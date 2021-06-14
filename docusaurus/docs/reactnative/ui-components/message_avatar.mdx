@@ -1,0 +1,59 @@
+---
+id: message-avatar
+title: MessageAvatar
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+
+`MessageAvatar` is the default component for rendering avatar of the message sender, within `MessageSimple` component. This component has been well optimized to save un-necessary re-renderings.
+If you would like to replace this default component with your own implementation, you can use the prop [`MessageAvatar`](../core-components/channel#messageavatar) on `Channel` component.
+
+## Basic Usage
+
+**Use Case**: Reduce the size of user avatar:
+
+```tsx
+import {Channel, MessageAvatar} from 'stream-chat-react-native';
+
+const SmallerMessageAvatar = () => <MessageAvatar size={30} />
+
+<Channel MessageAvatar={SmallerMessageAvatar} />
+```
+
+## Props
+
+This component uses default values for all the following props, from [`MessageContext`](../contexts/message-context)
+
+### alignment
+
+<Alignment />
+
+### lastGroupMessage
+
+<LastGroupMessage />
+
+### message
+
+<MessageProp />
+
+### size
+
+Dimension for avatar image.
+
+:::tip
+You can also set the size for message avatar, using our [theming system](../customization/theming).
+
+```tsx
+const theme = {
+  avatar: {
+    BASE_AVATAR_SIZE: 30
+  }
+}
+```
+:::
+
+| Type | Default |
+| - | - |
+| number | 32 |

@@ -3,6 +3,23 @@ id: message-context
 title: MessageContext
 ---
 
+import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnOpenThread from '../common-content/contexts/message-context/on_open_thread.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
 `MessageContext` is provided by [`Message`](#) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -40,11 +57,7 @@ message.type === 'regular' && message.status === 'received'
 
 ### alignment
 
-If the message is aligned to right of left side of list.
-
-| Type |
-| - |
-| enum('right', 'left') |
+<Alignment />
 
 ### canModifyMessage
 
@@ -59,6 +72,10 @@ Value is true in one of following scenarios:
 | - |
 | boolean |
 
+### disabled
+
+<Disabled />
+
 ### files
 
 All the `file` type attachments on message.
@@ -69,13 +86,7 @@ All the `file` type attachments on message.
 
 ### groupStyles
 
-Position of message in group - top, bottom, middle, single.
-Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-
-| Type |
-| - |
-| `enum('top', 'bottom', 'middle', 'single')[]` |
+<GroupStyles />
 
 <!-- ### handleAction -->
 
@@ -137,11 +148,7 @@ Callback function for toggling reaction from reaction picker.
 
 ### hasReactions
 
-Value is true, when message has atleast 1 reaction.
-
-| Type |
-| - |
-| boolean |
+<HasReactions />
 
 ### images
 
@@ -153,85 +160,43 @@ All the `image` type attachments on message.
 
 ### isMyMessage
 
-Value is true, when message is sent by current user (connected to chat).
-
-| Type |
-| - |
-| boolean |
+<IsMyMessage />
 
 ### lastGroupMessage
 
-Whether or not this is the last message in a [group of messages](#groupstyles).
-
-| Type |
-| - |
-| boolean |
+<LastGroupMessage />
 
 ### message
 
-Message object corresponding to this context
-
-| Type |
-| - |
-| object |
+<MessageProp />
 
 ### messageContentOrder
 
-Order of message content.
-
-e.g., `['quoted_reply', 'attachments', 'file', 'gallery', 'text']`
-
-| Type |
-| - |
-| array |
+<MessageContentOrder />
 
 ### onLongPress
 
-Default long press handler for message UI.
-
-| Type |
-| - |
-| function |
+<OnLongPress />
 
 ### onlyEmojis
 
-Value is true if message text only contain emojis and nothing else.
-
-| Type |
-| - |
-| boolean |
+<OnlyEmojis />
 
 ### onOpenThread
 
-Handler function for "Thread Reply" action.
-
-| Type |
-| - |
-| function |
+<OnOpenThread />
 
 ### onPress
 
-Default press handler for message UI.
-
-| Type |
-| - |
-| function |
+<OnPress />
 
 ### onPressIn
 
-Default pressIn handler for message UI.
-
-| Type |
-| - |
-| function |
+<OnPressIn />
 
 ### otherAttachments
 
-All the attachments on message except type `file` and `image`.
-
-| Type |
-| - |
-| array |
+<OtherAttachments />
 
 ### reactions
 
@@ -262,15 +227,9 @@ Function to open the message action overlay. This function gets called when user
 | - |
 | function |
 
-<!-- ### showMessageStatus -->
-
 ### threadList
 
-Value is true, if current message is part of a message thread.
-
-| Type |
-| - |
-| boolean |
+<ThreadList />
 
 <!-- ### goToMessage -->
 
@@ -286,3 +245,4 @@ Most recent message id in the message list.
 
 <!-- ### showAvatar -->
 
+<!-- ### showMessageStatus -->

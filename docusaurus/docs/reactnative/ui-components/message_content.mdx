@@ -1,0 +1,111 @@
+---
+id: message-content
+title: MessageContent
+---
+
+import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
+import Members from '../common-content/contexts/channel-context/members.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
+`MessageContent` is a child component of `MessageSimple`, and renders all the actual content of the message such as text, attachments, thread replies count etc.
+
+:::note
+Avatar of sender of message and reactions are not part of `MessageContent`
+:::
+
+## Basic Usage
+
+**Use Case**: Turn off `onLongPress` handler for `MessageContent`.
+
+```tsx
+import {Channel, MessageContent} from 'stream-chat-react-native';
+
+const CustomMessageContent = () => <MessageContent onLongPress={() => null} />
+
+<Channel MessageContent={CustomMessageContent} />
+```
+
+## Props
+
+:::note
+This component uses default values for all the following props, from [`MessageContext`](../contexts/message-context)
+:::
+
+### alignment
+
+<Alignment />
+
+### disabled
+
+<Disabled />
+
+<!-- ### goToMessage -->
+
+### groupStyles
+
+<GroupStyles />
+
+### hasReactions
+
+<HasReactions />
+
+### isMyMessage
+
+<IsMyMessage />
+
+### lastGroupMessage
+
+<LastGroupMessage />
+
+### members
+
+<Members />
+
+### message
+
+<MessageProp />
+
+### messageContentOrder
+
+<MessageContentOrder />
+
+### onLongPress
+
+<OnLongPress />
+
+### onlyEmojis
+
+<OnlyEmojis />
+
+### onPress
+
+<OnPress />
+
+### onPressIn
+
+<OnPressIn />
+
+### otherAttachments
+
+<OtherAttachments />
+
+<!-- ### preventPress -->
+
+<!-- ### showMessageStatus -->
+
+### threadList
+
+<ThreadList />
