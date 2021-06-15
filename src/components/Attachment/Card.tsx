@@ -97,7 +97,10 @@ export type CardPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = Attachment<At> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'onPressIn'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -138,6 +141,7 @@ const CardWithContext = <
     onLongPress,
     onPress,
     onPressIn,
+    preventPress,
     styles: stylesProp = {},
     text,
     thumb_url,
@@ -169,14 +173,17 @@ const CardWithContext = <
 
   return (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'card',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'card',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        if (!onPressIn) {
+        if (onPress) {
           onPress({
             defaultHandler: defaultOnPress,
             emitter: 'card',
@@ -311,7 +318,8 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -325,6 +333,7 @@ export const Card = <
         onLongPress,
         onPress,
         onPressIn,
+        preventPress,
       }}
       {...props}
     />

@@ -64,7 +64,10 @@ export type FileAttachmentPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'onPressIn'> &
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
+> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
@@ -100,6 +103,7 @@ const FileAttachmentWithContext = <
     onLongPress,
     onPress,
     onPressIn,
+    preventPress,
     styles: stylesProp = {},
   } = props;
 
@@ -116,14 +120,17 @@ const FileAttachmentWithContext = <
 
   return (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'fileAttachment',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'fileAttachment',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        if (!onPressIn) {
+        if (onPress) {
           onPress({
             defaultHandler: defaultOnPress,
             emitter: 'fileAttachment',
@@ -181,7 +188,8 @@ export const FileAttachment = <
 >(
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
@@ -197,6 +205,7 @@ export const FileAttachment = <
         onLongPress,
         onPress,
         onPressIn,
+        preventPress,
       }}
       {...props}
     />
