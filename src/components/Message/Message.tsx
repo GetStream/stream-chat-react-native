@@ -922,6 +922,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
