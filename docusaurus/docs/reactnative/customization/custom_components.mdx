@@ -1,0 +1,118 @@
+---
+id: custom_components
+sidebar_position: 4
+title: Custom Components
+---
+
+import dateHeader from '../assets/customization/custom-components/date_header.png'
+import nameDateHeader from '../assets/customization/custom-components/name_date_header.png'
+import newDateHeader from '../assets/customization/custom-components/new_date_header.png'
+import noDateHeader from '../assets/customization/custom-components/no_date_header.png'
+
+The core of Stream Chat for React Native is it's ability to be customized to your needs.
+Many developers find that simply altering [the theme](./theming.mdx) is enough to achieve their desired results.
+But if more modification is needed, or functionality beyond what is provided out of the box is desired, creating a custom component is likely the best course of action.
+
+## When to use a custom component
+
+Understanding what is customizable is helpful in determining when to build a custom component.
+If you want to insert your component(s) into another component, you need to create a custom component.
+If you want to change the layout of a component significantly, you need to create a custom component.
+If you want to change the internal functionality of a component, you need to create a custom component.
+A good way to think about it is, with few exceptions, what you see is what you get.
+But don't worry building and using custom components is easy!
+
+### Exceptions
+
+- Paddings, fonts, colors, borders, etc. can all be altered from the [the theme](./theming.mdx) as styles are passed to most components and sub-components.
+- You can align all messages to one side using the `forceAlignMessages` prop on the `Channel` component.
+- And you can reorder message content using the `messageContentOrder` prop on `Channel`; but you may want to adjust the theming to account for changes to border alignments if you alter this order.
+
+Changes to content beyond these tweaks will require custom components.
+If your goal is simply to remove a UI feature you can always replace the component with one that returns `null` to achieve this, i.e. `() => null`.
+
+## How to use a custom component
+
+Most custom components are provided to the UI as props on the `Channel` component.
+The `OverlayProvider`, `MessageList`, and `ChannelList` have a few exceptions to this rule, but `Channel` is the primary entry point.
+
+Let's say you want to remove the fixed `DateHeader` on the message list.
+We can create a component that returns `null` and pass it in as out `DateHeader` on `Channel`.
+
+```tsx
+const MyEmptyComponent = () => null;
+
+<Channel
+  ...
+  DateHeader={MyEmptyComponent}
+>
+```
+
+The new custom component takes the place of the default `DateHeader` within our context and is then used and rendered wherever the default `DateHeader` currently is.
+We can just as easily swap the component out for one that renders something different than the original.
+Most components rely on context for receiving data, but some use props instead or as well.
+In the case of `DateHeader` the component will be rendered with the prop `dateString` which is a `string`.
+
+```tsx
+const MyNewComponent = ({ dateString }) => <Text>{`Hello World: ${dateString}`}</Text>;
+
+<Channel
+  ...
+  DateHeader={MyNewComponent}
+>
+```
+
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+<div style={{ position: 'relative' }}>
+<div style={{ left: '110px', top: '65px', position: 'absolute', height: '30px', width: '60px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
+<img src={dateHeader} alt="DateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+<img src={noDateHeader} alt="NoDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+<div style={{ position: 'relative' }}>
+<div style={{ left: '90px', top: '65px', position: 'absolute', height: '20px', width: '100px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
+<img src={newDateHeader} alt="NewDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+</div>
+
+## Using contexts
+
+At the core of creating custom components is the ability to access pertinent data from the contexts Stream Chat for React Native provides.
+[The hooks](./contexts.mdx#hooks) provided allow you to access this contextual information easily throughout your application.
+Keep in mind when developing that these hooks are only usable within the scope of their context providers.
+Certain contexts, such at `MessageContext`, are only available within the scope of a single `Message` so you cannot use this hook in for instance the `DateHeader`.
+
+To demonstrate this usage we can replace our `DateHeader` with a component that makes use of context.
+We can pull messages from the `PaginatedMessageListContext` and get the name of the last sender from the list and display it in place of the `DateHeader`.
+
+```tsx
+const MySenderComponent = () => {
+  const { messages } = usePaginatedMessageListContext();
+  const latestMessageSender = messages[messages.length - 1]?.user?.name;
+
+  return <Text>{`Last Sender: ${latestMessageSender}`}</Text>;
+};
+
+<Channel
+  ...
+  DateHeader={MySenderComponent}
+>
+```
+
+<div style={{ display: 'flex', justifyContent: 'space-around' }}>
+<div style={{ position: 'relative' }}>
+<div style={{ left: '90px', top: '65px', position: 'absolute', height: '20px', width: '100px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
+<img src={nameDateHeader} alt="NameDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+</div>
+
+This allows you as a developer to not only customize the look and feel of every part of the UI, but also decide what information is shown where based on your own design.
+
+:::caution
+
+Custom components within a `Message` should draw from mostly static contexts with the exception of their own `MessageContext`.
+`ThemeContext`, `MessagesContext`, and `TranslationContext` all remain static with few exceptions and can be used.
+
+This should be done as memoization of a value from a context surrounding the [`FlatList`](https://reactnative.dev/docs/flatlist) from a component within the `FlatList` does not work properly when the context updates.
+Pulling directly from the `PaginatedMessageListContext` within a `Message` for instance would cause every `Message` to re-render to some degree when the message list updates.
+
+:::
