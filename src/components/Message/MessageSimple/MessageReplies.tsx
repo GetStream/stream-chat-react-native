@@ -78,7 +78,14 @@ export type MessageRepliesPropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'message' | 'onLongPress' | 'onPress' | 'onOpenThread' | 'threadList'
+  | 'alignment'
+  | 'message'
+  | 'onLongPress'
+  | 'onPress'
+  | 'onPressIn'
+  | 'onOpenThread'
+  | 'preventPress'
+  | 'threadList'
 > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageRepliesAvatars'> &
   Pick<TranslationContextValue, 't'> & {
@@ -105,6 +112,8 @@ const MessageRepliesWithContext = <
     onLongPress,
     onOpenThread,
     onPress,
+    onPressIn,
+    preventPress,
     repliesCurveColor,
     t,
     threadList,
@@ -139,18 +148,32 @@ const MessageRepliesWithContext = <
         </>
       )}
       <TouchableOpacity
+        disabled={preventPress}
         onLongPress={(event) => {
-          onLongPress({
-            emitter: 'messageReplies',
-            event,
-          });
+          if (onLongPress) {
+            onLongPress({
+              emitter: 'messageReplies',
+              event,
+            });
+          }
         }}
         onPress={(event) => {
-          onPress({
-            defaultHandler: onOpenThread,
-            emitter: 'messageReplies',
-            event,
-          });
+          if (onPress) {
+            onPress({
+              defaultHandler: onOpenThread,
+              emitter: 'messageReplies',
+              event,
+            });
+          }
+        }}
+        onPressIn={(event) => {
+          if (onPressIn) {
+            onPressIn({
+              defaultHandler: onOpenThread,
+              emitter: 'messageReplies',
+              event,
+            });
+          }
         }}
         style={[styles.container, container]}
         testID='message-replies'
@@ -248,8 +271,16 @@ export const MessageReplies = <
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, message, onLongPress, onOpenThread, onPress, threadList } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    alignment,
+    message,
+    onLongPress,
+    onOpenThread,
+    onPress,
+    onPressIn,
+    preventPress,
+    threadList,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageRepliesAvatars } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
@@ -262,6 +293,8 @@ export const MessageReplies = <
         onLongPress,
         onOpenThread,
         onPress,
+        onPressIn,
+        preventPress,
         t,
         threadList,
       }}

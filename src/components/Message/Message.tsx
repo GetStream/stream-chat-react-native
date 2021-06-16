@@ -922,6 +922,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
@@ -1100,14 +1101,19 @@ const MessageWithContext = <
 
   return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
-      enabled={animatedLongPress}
+      enabled={animatedLongPress && !preventPress}
       maxDeltaX={8}
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
       waitFor={doubleTapRef}
     >
       <Animated.View>
-        <TapGestureHandler numberOfTaps={2} onGestureEvent={onDoubleTap} ref={doubleTapRef}>
+        <TapGestureHandler
+          enabled={!preventPress}
+          numberOfTaps={2}
+          onGestureEvent={onDoubleTap}
+          ref={doubleTapRef}
+        >
           <Animated.View
             style={[
               style,
