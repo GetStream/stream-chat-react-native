@@ -20,7 +20,7 @@ If you want to insert your component(s) into another component, you need to crea
 If you want to change the layout of a component significantly, you need to create a custom component.
 If you want to change the internal functionality of a component, you need to create a custom component.
 A good way to think about it is, with few exceptions, what you see is what you get.
-But don't worry building and using custom components is easy!
+We can't account for every possible use case out of the box, but don't worry building and using custom components is easy!
 
 ### Exceptions
 
@@ -116,3 +116,54 @@ This should be done as memoization of a value from a context surrounding the [`F
 Pulling directly from the `PaginatedMessageListContext` within a `Message` for instance would cause every `Message` to re-render to some degree when the message list updates.
 
 :::
+
+## Performance
+
+If a value in a context updates [all components accessing values from that context will re-render](https://reactjs.org/docs/context.html#contextprovider), even if the values they are accessing have not changed.
+Many of the out of the box components use memoization with custom `areEqual` checks to ensure components are only being re-rendered when necessary.
+Values from context are passed through the memoization as props and the necessity to re-render is determined.
+This is most important inside of messages where the largest performance hit would be noticeable as an update that re-renders every message is computationally expensive.
+
+When creating custom components we suggest that developers take the same performance considerations to ensure the user experience is not degraded.
+If we add a console log to a custom `DateHeader` component that is accessing the `PaginatedMessageListContext` we see a large number of re-renders when the channel mounts, and continue to see more re-renders when interacting with messages, such as reacting to one.
+
+```tsx
+const MySenderComponent = () => {
+  const { messages } = usePaginatedMessageListContext();
+  const latestMessageSender = messages[messages.length - 1]?.user?.name;
+  console.log('Render.');
+
+  return <Text>{`Last Sender: ${latestMessageSender}`}</Text>;
+};
+```
+
+To reduce these re-renders we can break the component apart into a component that consumes context, and a component that is memoized and takes only props.
+We can then use a custom `areEqual` check in the memoization to determine if the component should re-render.
+
+```tsx
+const MySenderComponentWithContext = ({ latestMessageSender }) => {
+  console.log('Rendered');
+
+  return <Text>{`Last Sender: ${latestMessageSender}`}</Text>;
+};
+
+const MemoizedMySenderComponent = React.memo(
+  MySenderComponentWithContext,
+  (prev, next) => prev.latestMessageSender === next.latestMessageSender,
+);
+
+const MySenderComponent = () => {
+  const { messages } = usePaginatedMessageListContext();
+  const latestMessageSender = messages[messages.length - 1]?.user?.name;
+
+  return <MemoizedMySenderComponent latestMessageSender={latestMessageSender} />;
+};
+```
+
+Following this pattern we see `MySenderComponentWithContext`, and therefore the UI component `Text`, render only one time.
+The check on `latestMessageSender` will ensure the component re-renders when `latestMessageSender` changes, but otherwise will not.
+We can react to, edit, delete, or add a message, and the component will not re-render until the sender of the latest message changes.
+
+There are many custom equality checks like this in the out of the box components.
+When creating a custom component we always suggest **looking at the source code of the component you are replacing**.
+If you use the original component as a base for your custom component you can ensure the performance of your custom component matches that of the original, and easily see which contexts data is being drawn from.
