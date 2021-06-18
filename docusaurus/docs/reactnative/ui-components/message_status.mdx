@@ -3,21 +3,7 @@ id: message-status
 title: MessageStatus
 ---
 
-import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
-import Members from '../common-content/contexts/channel-context/members.mdx';
-
-import Alignment from '../common-content/contexts/message-context/alignment.mdx';
-import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
-import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
-import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
-import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
-import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
 import MessageProp from '../common-content/contexts/message-context/message.mdx';
-import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
-import OnPress from '../common-content/contexts/message-context/on_press.mdx';
-import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
-import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
-import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
 `MessageStatus` is a UI component which renders the read recipts for message. If the message is being sent (`message.status === 'pending'`), then it will render pending state icon.
@@ -30,10 +16,14 @@ You can disable read recipts at all by using [`readEventsEnabled`](../core-compo
 
 ### message
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <MessageProp />
 
 <!-- ### readEventsEnabled -->
 
 ### threadList
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <ThreadList />

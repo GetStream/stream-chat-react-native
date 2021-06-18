@@ -1,0 +1,554 @@
+---
+id: messages-context
+title: MessagesContext
+---
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+import AnimatedLongPress from '../common-content/core-components/channel/props/animated_long_press.mdx';
+import Attachment from '../common-content/core-components/channel/props/attachment.mdx';
+import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
+import BlockUser from '../common-content/core-components/channel/props/block_user.mdx';
+import Card from '../common-content/core-components/channel/props/card.mdx';
+// import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
+// import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
+// import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
+import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
+import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
+import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
+import DisableTypingIndicator from '../common-content/core-components/channel/props/disable_typing_indicator.mdx';
+import DismissKeyboardOnMessageTouch from '../common-content/core-components/channel/props/dismiss_keyboard_on_message_touch.mdx';
+import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
+import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
+import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
+import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
+import FlagMessage from '../common-content/core-components/channel/props/flag_message.mdx';
+import FlatList from '../common-content/core-components/channel/props/flat_list.mdx';
+import ForceAlignMessages from '../common-content/core-components/channel/props/force_align_messages.mdx';
+import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
+import Gallery from '../common-content/core-components/channel/props/gallery.mdx';
+import Giphy from '../common-content/core-components/channel/props/giphy.mdx';
+import HandleBlock from '../common-content/core-components/channel/props/handle_block.mdx';
+import HandleCopy from '../common-content/core-components/channel/props/handle_copy.mdx';
+import HandleDelete from '../common-content/core-components/channel/props/handle_delete.mdx';
+import HandleEdit from '../common-content/core-components/channel/props/handle_edit.mdx';
+import HandleFlag from '../common-content/core-components/channel/props/handle_flag.mdx';
+import HandleMute from '../common-content/core-components/channel/props/handle_mute.mdx';
+import HandleQuotedReply from '../common-content/core-components/channel/props/handle_quoted_reply.mdx';
+import HandleReaction from '../common-content/core-components/channel/props/handle_reaction.mdx';
+import HandleRetry from '../common-content/core-components/channel/props/handle_retry.mdx';
+import HandleThreadReply from '../common-content/core-components/channel/props/handle_thread_reply.mdx';
+import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
+import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
+import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
+import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
+// import Message from '../common-content/core-components/channel/props/message.mdx';
+import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
+import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
+import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
+import MessageContentOrder from '../common-content/core-components/channel/props/message_content_order.mdx';
+import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx';
+import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx';
+import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx';
+// import MessageList from '../common-content/core-components/channel/props/message_list.mdx';
+import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx';
+import MessageRepliesAvatars from '../common-content/core-components/channel/props/message_replies_avatars.mdx';
+import MessageSimple from '../common-content/core-components/channel/props/message_simple.mdx';
+import MessageStatus from '../common-content/core-components/channel/props/message_status.mdx';
+import MessageSystem from '../common-content/core-components/channel/props/message_system.mdx';
+import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
+import MuteUser from '../common-content/core-components/channel/props/mute_user.mdx';
+import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
+import OnDoubleTapMessage from '../common-content/core-components/channel/props/on_double_tap_message.mdx';
+import OnLongPressMessage from '../common-content/core-components/channel/props/on_long_press_message.mdx';
+import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
+import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
+import OverlayReactionList from '../common-content/core-components/channel/props/overlay_reaction_list.mdx';
+import QuotedReply from '../common-content/core-components/channel/props/quoted_reply.mdx';
+import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
+// import RemoveMessage from '../common-content/core-components/channel/props/remove_message.mdx';
+import Reply from '../common-content/core-components/channel/props/reply.mdx';
+import Retry from '../common-content/core-components/channel/props/retry.mdx';
+// import RetrySendMessage from '../common-content/core-components/channel/props/retry_send_message.mdx';
+import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
+import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
+import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
+import ThreadReply from '../common-content/core-components/channel/props/thread_reply.mdx';
+import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
+import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
+import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
+
+## Value
+
+### additionalTouchableProps
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<AdditionalTouchableProps />
+
+### animatedLongPress
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<AnimatedLongPress />
+
+### Attachment
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Attachment />
+
+### AttachmentActions
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<AttachmentActions />
+
+### blockUser
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<BlockUser />
+
+### Card
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Card />
+
+### CardCover
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<CardCover />
+
+### CardFooter
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<CardFooter />
+
+### CardHeader
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<CardHeader />
+
+### channelId
+
+Id of current channel.
+
+| Type |
+| - |
+| string |
+
+### copyMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<CopyMessage />
+
+### DateHeader
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<DateHeader />
+
+### deleteMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<DeleteMessage />
+
+### disableTypingIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<DisableTypingIndicator />
+
+### dismissKeyboardOnMessageTouch
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<DismissKeyboardOnMessageTouch />
+
+### editMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<EditMessage />
+
+### FileAttachment
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FileAttachment />
+
+### FileAttachmentGroup
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FileAttachmentGroup />
+
+### FileAttachmentIcon
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FileAttachmentIcon />
+
+### flagMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FlagMessage />
+
+### FlatList
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FlatList />
+
+### forceAlignMessages
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ForceAlignMessages />
+
+### formatDate
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<FormatDate />
+
+### Gallery
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Gallery />
+
+### Giphy
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Giphy />
+
+### handleBlock
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleBlock />
+
+### handleCopy
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleCopy />
+
+### handleDelete
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleDelete />
+
+### handleEdit
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleEdit />
+
+### handleFlag
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleFlag />
+
+### handleMute
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleMute />
+
+### handleQuotedReply
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleQuotedReply />
+
+### handleReaction
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleReaction />
+
+### handleRetry
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleRetry />
+
+### handleThreadReply
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HandleThreadReply />
+
+### initialScrollToFirstUnreadMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<InitialScrollToFirstUnreadMessage />
+
+### InlineDateSeparator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<InlineDateSeparator />
+
+### InlineUnreadIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<InlineUnreadIndicator />
+
+### markdownRules
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MarkdownRules />
+
+### Message
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Message />
+
+### messageActions
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageActions />
+
+### MessageAvatar
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageAvatar />
+
+### MessageContent
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageContent />
+
+### messageContentOrder
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageContentOrder />
+
+### MessageDeleted
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageDeleted />
+
+### MessageFooter
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageFooter />
+
+### MessageHeader
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageHeader />
+
+### MessageList
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageList />
+
+### MessageReplies
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageReplies />
+
+### MessageRepliesAvatars
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageRepliesAvatars />
+
+### MessageSimple
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageSimple />
+
+### MessageStatus
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageStatus />
+
+### MessageSystem
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageSystem />
+
+### MessageText
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MessageText />
+
+### muteUser
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MuteUser />
+
+### myMessageTheme
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MyMessageTheme />
+
+### onDoubleTapMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<OnDoubleTapMessage />
+
+### onLongPressMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<OnLongPressMessage />
+
+### onPressInMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<OnPressInMessage />
+
+### onPressMessage
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<OnPressMessage />
+
+### OverlayReactionList
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<OverlayReactionList />
+
+### quotedReply
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<QuotedReply />
+
+### ReactionList
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ReactionList />
+
+### removeMessage
+
+Function to remove message from local channel state. Please note that this function is only for updating the local state, it doesn't call the api for deleting message (`channel.deleteMessage`).
+
+| Type |
+| - |
+| `(message) => void` |
+
+### Reply
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Reply />
+
+### retry
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Retry />
+
+### retrySendMessage
+
+Function to re-attempt sending failed message.
+
+| Type |
+| - |
+| `(message) => void` |
+
+### ScrollToBottomButton
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ScrollToBottomButton />
+
+### selectReaction
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<SelectReaction />
+
+### setEditingState
+
+Enables editing state for given message.
+
+| Type |
+| - |
+| `(message) => void` |
+
+### setQuotedMessageState
+
+Enables quoted-reply state on given message.
+
+| Type |
+| - |
+| `(message) => void` |
+
+### supportedReactions
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<SupportedReactions />
+
+### threadReply
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ThreadReply />
+
+### TypingIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<TypingIndicator />
+
+### TypingIndicatorContainer
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<TypingIndicatorContainer />
+
+### updateMessage
+
+Upserts a given message in local channel state. Please note that this function doesn't call `channel.sendMessage`. Channel component uses this function for optimistic updates to message.
+
+| Type |
+| - |
+| `(message) => void` |
+
+### UrlPreview
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<UrlPreview />

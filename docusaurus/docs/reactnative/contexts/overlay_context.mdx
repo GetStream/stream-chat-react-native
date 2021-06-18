@@ -3,6 +3,9 @@ id: overlay-context
 title: OverlayContext
 ---
 
+import SetBlurType from '../common-content/contexts/overlay-context/set_blur_type.mdx';
+import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
+
 `OverlayContext` is provided by [`OverlayProvider`](../core-components/overlay-provider) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -41,19 +44,11 @@ Current active overlay. Overlay gets rendered in following cases
 
 ### setBlurType
 
-Set the blur background type for overlay. 
-
-| Type |
-| - |
-| enum('light', 'dark', undefined) |
+<SetBlurType />
 
 ### setOverlay
 
-Setter for [`overlay`](#overlay). You can use this setter to show the overlay. Please make sure to explicitely relevant blur background type  for overlay by using [`setBlurType`](#setblurtype).
-
-| Type |
-| - |
-| `(overlay) => void` |
+<SetOverlay />
 
 <!-- ### style -->
 

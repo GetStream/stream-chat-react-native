@@ -1,0 +1,63 @@
+---
+id: giphy
+title: Giphy
+---
+
+import HandleAction from '../common-content/contexts/message-context/handle_action.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+
+`Giphy` is a UI component for rendering the `giphy` type attachments on message.
+
+## Basic Usage
+
+**Use Case**
+
+```tsx
+import { Channel, Giphy } from 'stream-chat-react-native';
+
+<Channel Giphy={() => <Giphy />}
+```
+
+## Props
+
+### attachment
+
+Attachment object for `giphy` type attachment.
+
+| Type |
+| - |
+| object |
+
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<AdditionalTouchableProps />
+
+### handleAction
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<HandleAction />
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<OnLongPress />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<OnPress />
+
+### onPressIn
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<OnPressIn />

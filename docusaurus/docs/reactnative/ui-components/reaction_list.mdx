@@ -2,3 +2,98 @@
 id: reaction-list
 title: ReactionList
 ---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import Reactions from '../common-content/contexts/message-context/reactions.mdx';
+import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
+
+import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
+
+`ReactionList` is a UI component to render reactions added on message, on top of message. This is a child component of `MessageSimple`.
+
+## Basic Usage
+
+**Use Case** Override background color for reaction list container:
+
+```tsx
+import { Channel, ReactionList } from 'stream-chat-react-native';
+
+const ReactionListWithCustomBackground = () => <ReactionList fill={'#00DDD'} stroke={'#fffff'} />
+
+<Channel ReactionList={ReactionListWithCustomBackground} />
+```
+
+### <div class="label required">required</div> **formattedDate** 
+
+Width of message content. This helps ReactionList align itself on the front-edge of the message content.
+This value gets computed in [`MessageContent`](./message-content) once the content gets loaded.
+
+| Type |
+| - |
+| number |
+
+### fill
+
+Background color for reaction list container, when [`alignment`](#alignment) is `left`.
+
+| Type |
+| - |
+| string |
+
+<!-- ### radius -->
+
+### reactionSize
+
+Dimension of each reaction icon.
+
+| Type |
+| - |
+| number |
+
+### stroke
+
+Background color for reaction list container, when [`alignment`](#alignment) is `right`.
+
+| Type |
+| - |
+| string |
+
+<!-- ### strokeSize -->
+
+### alignment
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<Alignment />
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<OnLongPress />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<OnPress />
+
+### reactions
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<Reactions />
+
+### showMessageOverlay
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<ShowMessageOverlay />
+
+### supportedReactions
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<SupportedReactions />

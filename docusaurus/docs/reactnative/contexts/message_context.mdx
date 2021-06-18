@@ -6,8 +6,11 @@ title: MessageContext
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import Files from '../common-content/contexts/message-context/files.mdx';
 import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HandleAction from '../common-content/contexts/message-context/handle_action.mdx';
 import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import Images from '../common-content/contexts/message-context/images.mdx';
 import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
 import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
 import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
@@ -18,6 +21,8 @@ import OnPress from '../common-content/contexts/message-context/on_press.mdx';
 import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
 import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
 import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import Reactions from '../common-content/contexts/message-context/reactions.mdx';
+import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
 `MessageContext` is provided by [`Message`](#) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
@@ -78,17 +83,15 @@ Value is true in one of following scenarios:
 
 ### files
 
-All the `file` type attachments on message.
-
-| Type |
-| - |
-| array |
+<Files />
 
 ### groupStyles
 
 <GroupStyles />
 
-<!-- ### handleAction -->
+### handleAction
+
+<HandleAction />
 
 ### handleDeleteMessage
 
@@ -152,11 +155,7 @@ Callback function for toggling reaction from reaction picker.
 
 ### images
 
-All the `image` type attachments on message.
-
-| Type |
-| - |
-| array |
+<Images />
 
 ### isMyMessage
 
@@ -200,32 +199,11 @@ All the `image` type attachments on message.
 
 ### reactions
 
-All the reactions currently added on message.
-
-```tsx
-[
-  {
-    own: true,
-    type: 'love'
-  },
-  {
-    own: false,
-    type: 'haha'
-  }
-]
-```
-
-| Type |
-| - |
-| array |
+<Reactions />
 
 ### showMessageOverlay
 
-Function to open the message action overlay. This function gets called when user long presses a message.
-
-| Type |
-| - |
-| function |
+<ShowMessageOverlay />
 
 ### threadList
 

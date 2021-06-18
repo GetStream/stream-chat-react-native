@@ -1,0 +1,97 @@
+---
+id: attachment
+title: Attachment
+---
+
+import Card from '../common-content/core-components/channel/props/card.mdx';
+import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
+import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
+import Gallery from '../common-content/core-components/channel/props/gallery.mdx';
+import Giphy from '../common-content/core-components/channel/props/giphy.mdx';
+import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
+
+The `Attachment` is the UI component for rendering attachments for message, within MessageList. This component delegates rendering part to following sub-components, as per type of attachment:
+
+- Card
+- FileAttachment
+- Gallery
+- Giphy
+- UrlPreview
+
+:::note
+This component is used within library to render all the attachments EXCEPT type `image`. For images, [`Gallery`](./gallery) component is used.
+:::
+
+## Basic Usage
+
+Generally you wouldn't need to use this component for customization, you should instead use specific attachment type related prop such as Giphy, Gallery, UrlPreview etc.
+Please check our guide on [Attachment Customization](../guide/attachment_customizations) for details.
+
+## Props
+
+### attachment
+
+Attachment object to render UI for. This is basically a value of `attachments` property on message object - `message.attachments[0]`
+
+```
+{
+  actions?: Action[];
+  asset_url?: string;
+  author_icon?: string;
+  author_link?: string;
+  author_name?: string;
+  color?: string;
+  fallback?: string;
+  fields?: Field[];
+  footer?: string;
+  footer_icon?: string;
+  image_url?: string;
+  og_scrape_url?: string;
+  pretext?: string;
+  text?: string;
+  thumb_url?: string;
+  title?: string;
+  title_link?: string;
+  type?: string;
+}
+```
+
+| Type |
+| - |
+| object |
+
+### AttachmentActions
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<AttachmentActions />
+
+### Card
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Card />
+
+### FileAttachment
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<FileAttachment />
+
+### Gallery
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Gallery />
+
+### Giphy
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Giphy />
+
+### UrlPreview
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<UrlPreview />
