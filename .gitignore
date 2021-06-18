@@ -10,6 +10,8 @@ yarn-error.log
 .DS_Store
 dist/
 lib/
+# lib/ ignores metro-dev-helpers/lib so:
+!metro-dev-helpers/lib
 .env*
 examples/SampleApp/ios/vendor/
 vendor

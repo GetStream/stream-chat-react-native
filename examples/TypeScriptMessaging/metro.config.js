@@ -3,11 +3,11 @@
 const PATH = require('path');
 const blacklist = require('metro-config/src/defaults/exclusionList');
 
-const extractExternalModules = require('stream-chat-react-native-core/metro-dev-helpers');
+const extractLinkedPackages = require('stream-chat-react-native-core/metro-dev-helpers/extract-linked-packages');
 
 const projectRoot = PATH.resolve(__dirname);
 
-const { alternateRoots, extraNodeModules, moduleBlacklist } = extractExternalModules(projectRoot);
+const { alternateRoots, extraNodeModules, moduleBlacklist } = extractLinkedPackages(projectRoot);
 
 module.exports = {
   resolver: {

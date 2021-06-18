@@ -1,4 +1,8 @@
 /* eslint-env node */
+
+const PATH = require('path');
+const FS = require('fs');
+
 function resolvePath(...parts) {
   const thisPath = PATH.resolve.apply(PATH, parts);
   if (!FS.existsSync(thisPath)) {
@@ -93,7 +97,7 @@ function buildFullModuleMap(
   });
 }
 
-function buildModuleResolutionMap(repoDir, moduleRoot) {
+module.exports = function extractExtraNodeModules(repoDir, moduleRoot) {
   const moduleMap = {},
     externalModuleMap = {};
 
@@ -101,44 +105,4 @@ function buildModuleResolutionMap(repoDir, moduleRoot) {
 
   // Root project modules take precedence over external modules
   return Object.assign({}, externalModuleMap, moduleMap);
-}
-
-const PATH = require('path');
-const FS = require('fs');
-
-const defaultBlackList = [
-  '/examples/NativeMessaging',
-  '/examples/ExpoMessaging',
-  '/examples/TypeScriptMessaging',
-  '/examples/SampleApp',
-  '/native-package/node_modules',
-  '/expo-package',
-  '/node_modules',
-];
-
-module.exports = function extractExternalModules(repoDir) {
-  const pjson = require(PATH.join(repoDir, 'package.json'));
-  const sdkRoot = PATH.join(
-    repoDir,
-    pjson.dependencies['stream-chat-react-native-core'].replace('link:', ''),
-  );
-  const sdkNativeRoot = PATH.join(
-    repoDir,
-    pjson.dependencies['stream-chat-react-native'].replace('link:', ''),
-  );
-
-  const alternateRoots = [sdkRoot, sdkNativeRoot];
-
-  if (alternateRoots && alternateRoots.length)
-    console.log('Found alternate project roots: ', alternateRoots);
-
-  const moduleBlacklist = defaultBlackList
-    .filter((item) => repoDir.slice(-item.length) !== item)
-    .map((item) => new RegExp(sdkRoot + item + '/.*'));
-  // watch alternate roots (outside of project root)
-  // build full module map for proper
-  // resolution of modules in external roots
-  const extraNodeModules = buildModuleResolutionMap(repoDir, PATH.join(repoDir, 'node_modules'));
-
-  return { alternateRoots, extraNodeModules, moduleBlacklist };
 };
