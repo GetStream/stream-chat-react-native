@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 const PATH = require('path');
-const blacklist = require('metro-config/src/defaults/blackList');
+const blacklist = require('metro-config/src/defaults/exclusionList');
 
 const extractExternalModules = require('stream-chat-react-native-core/metro-dev-helpers');
 
