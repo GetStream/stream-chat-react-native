@@ -233,7 +233,7 @@ For additional information on the `Chat` component check the [Chat component doc
 
 ## Channel List
 
-<div style={{ display: 'flex' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
 
 Stream Chat for React Native provides a `ChannelList` component out of the box for displaying a list of channels.
@@ -306,7 +306,7 @@ export const App = () => {
 
 ### Message List
 
-<div style={{ display: 'flex' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
 
 The `Channel` component on it's own will not provide any UI.
@@ -347,7 +347,7 @@ export const App = () => {
 
 ### Message Input
 
-<div style={{ display: 'flex' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
 
 A chat app needs to be able to send messages, and for this Stream Chat for React Native provides a `MessageInput` component.
@@ -394,7 +394,7 @@ This small code snippet is enough to render a list of channels and swap them out
 
 ### Thread
 
-<div style={{ display: 'flex' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
 
 There is one more high level component that Stream Chat for React Native provides out of the box, and that is `Thread`.
@@ -461,10 +461,10 @@ It is the access point for the majority of the customization of the SDK, and con
 
 ### Hello Stream Chat
 
-<div style={{ display: 'flex' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
 
-Putting everything covered together into a single functional component most of the Stream Chat for React Native SDK can be tested with little additional setup.
+Putting everything covered together into a single functional component most of the Stream Chat for React Native SDK can be tested with a few additional setup.
 
 The final sample code:
 - Adds a `useEffect` to connect the user on mount and render the UI when ready.
