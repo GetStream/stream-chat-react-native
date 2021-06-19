@@ -3,6 +3,8 @@ id: attachment-picker-context
 title: AttachmentPickerContext
 ---
 
+import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
+
 `AttachmentPickerContext` is provided by [`OverlayProvider`](../core-components/overlay-provider) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -78,11 +80,7 @@ Array<{
 
 ### selectedPicker
 
-Value is `images` (string), when image attachment picker is open. Value will be `undefined` if file picker is active or file picker is open.
-
-| Type |
-| - |
-| 'images' \| undefined |
+<SelectedPicker />
 
 ### setBottomInset
 

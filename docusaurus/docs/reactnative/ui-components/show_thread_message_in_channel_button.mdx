@@ -1,0 +1,31 @@
+---
+id: show-thread-message-in-channel-button
+title: ShowThreadMessageInChannelButton
+---
+
+import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx'
+import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
+import SetSendThreadMessageInChannel from '../common-content/contexts/message-input-context/set_send_thread_message_in_channel.mdx'
+
+`ShowThreadMessageInChannelButton` is a default UI component, for rendering a checkbox labeled "Also send to channel" within `Thread` component.
+When this checkbox is checked by users, message sent as thread reply also gets added to parent channel's message list.
+
+## Props
+
+### allowThreadMessagesInChannel
+
+_(Overrides the value from [ThreadContext](../../contexts/thread-context))_
+
+<AllowThreadMessagesInChannel />
+
+### sendThreadMessageInChannel
+
+_(Overrides the value from [MessageInputContext](../../contexts/message-input-context))_
+
+<SendThreadMessageInChannel />
+
+### setSendThreadMessageInChannel
+
+_(Overrides the value from [MessageInputContext](../../contexts/message-input-context))_
+
+<SetSendThreadMessageInChannel />

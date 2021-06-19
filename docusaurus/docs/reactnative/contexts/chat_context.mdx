@@ -3,6 +3,8 @@ id: chat-context
 title: ChatContext
 ---
 
+import Client from '../common-content/core-components/chat/props/client.mdx'
+
 `ChatContext` is provided by [`Chat`](../core-components/chat) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -28,7 +30,7 @@ const { client, isOnline } = useChatContext();
 
 ### client
 
-Same as prop [client](../core-components/chat#client)
+<Client />
 
 ### connectionRecovering
 

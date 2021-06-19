@@ -3,6 +3,45 @@ id: message-input-context
 title: MessageInputContext
 ---
 
+import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx'
+
+import AppendText from '../common-content/contexts/message-input-context/append_text.mdx'
+import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx'
+import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx'
+import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx'
+import Editing from '../common-content/contexts/message-input-context/editing.mdx'
+import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx';
+import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx';
+import ImageUploads from '../common-content/contexts/message-input-context/image_uploads.mdx';
+import InputBoxRef from '../common-content/contexts/message-input-context/input_box_ref.mdx'
+import IsValidMessage from '../common-content/contexts/message-input-context/is_valid_message.mdx'
+import MentionedUsers from '../common-content/contexts/message-input-context/mentioned_users.mdx'
+import NumberOfUploads from '../common-content/contexts/message-input-context/number_of_uploads.mdx'
+import OpenAttachmentPicker from '../common-content/contexts/message-input-context/open_attachment_picker.mdx'
+import OpenFilePicker from '../common-content/contexts/message-input-context/open_file_picker.mdx'
+import OpenMentionsPicker from '../common-content/contexts/message-input-context/open_mentions_picker.mdx'
+import RemoveFile from '../common-content/contexts/message-input-context/remove_file.mdx';
+import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx';
+import ResetInput from '../common-content/contexts/message-input-context/reset_input.mdx'
+import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
+import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx'
+import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
+import SetImageUploads from '../common-content/contexts/message-input-context/set_image_uploads.mdx'
+import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
+import SetMentionedUsers from '../common-content/contexts/message-input-context/set_mentioned_users.mdx'
+import SetNumberOfUploads from '../common-content/contexts/message-input-context/set_number_of_uploads.mdx'
+import SetSendThreadMessageInChannel from '../common-content/contexts/message-input-context/set_send_thread_message_in_channel.mdx'
+import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx'
+import SetText from '../common-content/contexts/message-input-context/set_text.mdx'
+import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
+import Text from '../common-content/contexts/message-input-context/text.mdx'
+import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx'
+import UploadFile from '../common-content/contexts/message-input-context/upload_file.mdx';
+import UploadImage from '../common-content/contexts/message-input-context/upload_image.mdx';
+import UpdateMessage from '../common-content/contexts/message-input-context/update_message.mdx'
+import UploadNewFile from '../common-content/contexts/message-input-context/upload_new_file.mdx'
+import UploadNewImage from '../common-content/contexts/message-input-context/upload_new_image.mdx'
+
 `MessageInputContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -25,24 +64,18 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ```
 
 ## Value
+
 <!-- ### additionalTextInputProps -->
 <!-- ### AttachButton -->
 <!-- ### autoCompleteTriggerSettings -->
+
 ### clearEditingState
 
-Function to clear "Editing Message" state from MessageInput component.
-
-| Type |
-| - |
-| function |
+<ClearEditingState />
 
 ### clearQuotedMessageState
 
-Function to clear "Add Quoted Reply" state from MessageInput component.
-
-| Type |
-| - |
-| function |
+<ClearQuotedMessageState />
 
 <!-- ### CommandsButton -->
 <!-- ### compressImageQuality -->
@@ -51,11 +84,7 @@ Function to clear "Add Quoted Reply" state from MessageInput component.
 
 ### editing
 
-Value is true, when user is editing some message, within `MessageInput` component.
-
-| Type |
-| - |
-| boolean |
+<Editing />
 
 <!-- ### editMessage -->
 <!-- ### FileUploadPreview -->
@@ -74,14 +103,10 @@ Value is true, when user is editing some message, within `MessageInput` componen
 <!-- ### quotedMessage -->
 <!-- ### SendButton -->
 <!-- ### sendImageAsync -->
+
 ### sendMessage
 
-Sends a composed message within `MessageInput` component to channel. This function is attached to onPress handler of [`SendButton`](../core-components/channel#sendbutton). The message optimistically gets added to message list UI first, before actually making api call to server.
-During this intermediate stage, MessageStatus component will display an indicator for "pending" state.
-
-| Type |
-| - |
-| function |
+<SendMessage />
 
 <!-- ### setInputRef -->
 
@@ -93,11 +118,7 @@ During this intermediate stage, MessageStatus component will display an indicato
 
 ### appendText
 
-Appends text to existing text entered by user in `MessageInput` component.
-
-| Type |
-| - |
-| `(text) => void` |
+<AppendText />
 
 <!-- ### asyncIds -->
 
@@ -105,99 +126,35 @@ Appends text to existing text entered by user in `MessageInput` component.
 
 ### closeAttachmentPicker
 
-Dismiss the attachment picker, if its already open.
-
-| Type |
-| - |
-| function |
+<CloseAttachmentPicker />
 
 ### fileUploads
 
-List of `file` type attachments currently attached to message, which is being composed in `MessageInput` component.
-
-```tsx
-[
-  {
-    file: {
-      name: 'test.pdf';
-      size: 2000;
-      type: 'application/pdf';
-      uri: 'file-uri';
-    };
-    id: 'asdas232bk3jb42k3';
-    state: 'uploaded'; // or 'finished'
-    url: 'https://cdn.getstream.io/kajsnkj2n3j4';
-  }
-]
-```
-
-| Type |
-| - |
-| array |
+<FileUploads />
 
 ### giphyActive
 
-This value gets set to true, when user selects a `giphy` command from commands list (which shows up when you type `/` in input box). Value will be active until user writes a keyword for search the giphy.
-When user sends a message for searching a giphy, this value (giphyActive) will be set to `false` again.
-
-| Type |
-| - |
-| boolean |
+<GiphyActive />
 
 ### imageUploads
 
-List of `image` type attachments currently attached to message, which is being composed in `MessageInput` component.
-
-```tsx
-[
-  {
-    file: { name: 'fallback-name.jpeg' },
-    id: '2j3n4k23nj4k23n4k3',
-    state: 'finished',
-    url: 'https://cdn.getstream.io/kajsnkj2n3j4',
-  }
-]
-```
-
-| Type |
-| - |
-| array |
+<ImageUploads />
 
 ### inputBoxRef
 
-Ref for [`TextInput`](https://reactnative.dev/docs/textinput) component within `MessageInput`
-
-| Type |
-| - |
-| [ref](https://reactjs.org/docs/refs-and-the-dom.html#adding-a-ref-to-a-dom-element) |
+<InputBoxRef />
 
 ### isValidMessage
 
-Value is false when text within input box is empty and no images or files have been attached to a message yet. You can use this value to add enabled/disabled Ui state on SendMessage button.
-
-| Type |
-| - |
-| boolean |
+<IsValidMessage />
 
 ### mentionedUsers
 
-Ids of users which are mentioned (e.g., `Hey @Vishal Narkhede, how are you`) in a message, which is being composed in MessageInput component.
-
-```tsx
-['vishal-user-id', 'jaap-user-id']
-```
-
-| Type |
-| - |
-| array |
+<MentionedUsers />
 
 ### numberOfUploads
 
-Number of image + files attached to message which is being composed in `MessageInput` component.
-
-| Type |
-| - |
-| number |
+<NumberOfUploads />
 
 <!-- ### onChange -->
 
@@ -205,65 +162,39 @@ Number of image + files attached to message which is being composed in `MessageI
 
 ### openAttachmentPicker
 
-Opens the attachment picker bottom sheet, if its not open.
-
-| Type |
-| - |
-| function |
+<OpenAttachmentPicker />
 
 ### openCommandsPicker
 
-Opens the commands picker box. By default, this function is attached to onPress handler for [`CommandsButton`](../core-components/channel#commandsbutton).
-
-| Type |
-| - |
-| function |
+<OpenCommandsPicker />
 
 ### openFilePicker
 
-Opens the file picker. By default, this function is attached to onPress handler for [`FileAttachmentIcon`](../core-components/channel#fileattachmenticon).
-
-| Type |
-| - |
-| function |
+<OpenFilePicker />
 
 ### openMentionsPicker
 
-Opens the user mentions autocomplete popup. When user types `@` in input box, internally this function gets called.
-
-| Type |
-| - |
-| function |
+<OpenMentionsPicker />
 
 <!-- ### pickFile -->
 
 ### removeFile
 
-Removes attached file in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [FileUploadPreview](../core-components/channel#fileuploadpreview).
-It takes index of file (to be removed) in [fileUploads](#fileuploads) array as parameter.
-
-| Type |
-| - |
-| `(index) => void` |
+<RemoveFile />
 
 ### removeImage
 
-Removes attached image in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [ImageUploadPreview](../core-components/channel#imageuploadpreview).
-It takes index of file (to be removed) in [fileUploads](#fileuploads) array as parameter.
-
-| Type |
-| - |
-| `(index) => void` |
+<RemoveImage />
 
 ### resetInput
 
-Resets the entire MessageInput component to empty state by clearing the text, attachments etc.
+<ResetInput />
 
-| Type |
-| - |
-| function |
+### selectedPicker
 
-<!-- ### selectedPicker -->
+_(Forwarded from [AttachmentPickerContext](../../contexts/attachment-picker-context))_
+
+<SelectedPicker />
 
 <!-- ### sending -->
 
@@ -271,12 +202,7 @@ Resets the entire MessageInput component to empty state by clearing the text, at
 
 ### sendThreadMessageInChannel
 
-This value is only applicable to `Thread` component. When value `sendThreadMessageInChannel` is true, message gets sent from `MessageInput` component with property `show_in_channel: true`.
-This value is attached to the checkbox (with label "Also Send To Channel") in `MessageInput` component within `Thread` component.
-
-| Type |
-| - |
-| boolean |
+<SendThreadMessageInChannel />
 
 <!-- ### setAsyncIds -->
 
@@ -286,105 +212,68 @@ This value is attached to the checkbox (with label "Also Send To Channel") in `M
 
 ### setGiphyActive
 
-Setter function for [`giphyActive`](#giphyactive)
-
-| Type |
-| - |
-| `(isActive) => void` |
+<SetGiphyActive />
 
 ### setImageUploads
 
-Setter function for [`imageUploads`](#imageuploads)
-
-| Type |
-| - |
-| `(images) => void` |
+<SetImageUploads />
 
 ### setInputBoxRef
 
-Setter function for [`inputBoxRef`](#inputboxref)
-
-| Type |
-| - |
-| `(ref) => void` |
+<SetInputBoxRef />
 
 ### setMentionedUsers
 
-Setter function for [`mentionedUsers`](#mentionedusers)
-
-| Type |
-| - |
-| `(mentionedUsers) => void` |
+<SetMentionedUsers />
 
 ### setNumberOfUploads
 
-Setter function for [`mentionedUsers`](#mentionedusers)
-
-| Type |
-| - |
-| `(mentionedUsers) => void` |
+<SetNumberOfUploads />
 
 ### setSendThreadMessageInChannel
 
-Setter function for [`setSendThreadMessageInChannel`](#setsendthreadmessageinchannel)
-
-| Type |
-| - |
-| `(sendThreadMessageInChannel) => void` |
+<SetSendThreadMessageInChannel />
 
 ### setShowMoreOptions
 
-Setter function for [`showMoreOptions`](#showmoreoptions)
-
-| Type |
-| - |
-| `(showMoreOptions) => void` |
+<SetShowMoreOptions />
 
 ### setText
 
-Setter function for [`text`](#text)
+<SetText />
 
-| Type |
-| - |
-| `(text) => void` |
+### showMoreOptions
 
-<!-- ### showMoreOptions -->
+<ShowMoreOptions />
 
 ### text
 
-Text message entered by user in underlying [`TextInput`](https://reactnative.dev/docs/textinput) within `MessageInput` component.
-This value is attached to `TextInput`'s [`value prop`](https://reactnative.dev/docs/textinput#value)
-
-| Type |
-| - |
-| string |
+<Text />
 
 <!-- ### thread -->
 
 ### toggleAttachmentPicker
 
-Function to toggle attachment picker.  By default, this function is attached to onPress handler for [`AttachButton`](../core-components/channel#attachbutton)
-
-| Type |
-| - |
-| function |
+<ToggleAttachmentPicker />
 
 <!-- ### triggerSettings -->
 
 ### updateMessage
 
-This function is a counterpart of [`sendMessage`](#sendmessage), for the case of editing a message. This function is attached to [`SendButton`](../core-components/channel#sendbutton) when some existing message is being updated.
-Similar to `sendMessage` function, the message will be updated in message list UI first, before making api call to update the message.
+<UpdateMessage />
 
-| Type |
-| - |
-| function |
+### uploadFile
 
-<!-- ### uploadFile
+<UploadFile />
 
-### uploadImage -->
+### uploadImage
 
-<!-- ### uploadNewFile
+<UploadImage />
+
+### uploadNewFile
+
+<UploadNewFile />
 
 ### uploadNewImage
- -->
+
+<UploadNewImage />

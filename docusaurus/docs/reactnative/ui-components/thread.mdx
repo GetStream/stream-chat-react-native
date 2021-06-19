@@ -1,0 +1,47 @@
+---
+id: thread
+title: Thread
+---
+
+import Client from '../common-content/core-components/chat/props/client.mdx'
+
+import Thread from '../common-content/core-components/channel/props/thread.mdx'
+
+import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx'
+import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
+import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx'
+
+`Thread` component renders thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
+
+## Props
+
+### client
+
+_(Overrides the value from [ChatContext](../../contexts/chat-context))_
+
+<Client />
+
+### closeThread
+
+_(Overrides the value from [ThreadContext](../../contexts/thread-context))_
+
+<CloseThread />
+
+### loadMoreThread
+
+_(Overrides the value from [ThreadContext](../../contexts/thread-context))_
+
+<LoadMoreThread />
+
+### reloadThread
+
+_(Overrides the value from [ThreadContext](../../contexts/thread-context))_
+
+<ReloadThread />
+
+### thread
+
+_(Overrides the value from [ThreadContext](../../contexts/thread-context))_
+
+<Thread />
+

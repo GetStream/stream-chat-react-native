@@ -3,6 +3,15 @@ id: thread-context
 title: ThreadContext
 ---
 
+import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx'
+import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
+import OpenThread from '../common-content/contexts/thread-context/open_thread.mdx'
+import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx'
+import SetThreadLoadingMore from '../common-content/contexts/thread-context/set_thread_loading_more.mdx'
+import ThreadHasMore from '../common-content/contexts/thread-context/thread_has_more.mdx'
+import ThreadLoadingMore from '../common-content/contexts/thread-context/thread_loading_more.mdx'
+import ThreadMessages from '../common-content/contexts/thread-context/thread_messages.mdx'
+
 `ThreadContext` is provided by [`Channel`](../core-components/channel) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -28,67 +37,35 @@ const value = useThreadContext();
 
 ### closeThread
 
-Unsets the thread and thread messages in the Channel state.
-
-| Type |
-| - |
-| function |
+<CloseThread />
 
 ### loadMoreThread
 
-Loads more messages for the thread. Returns a promise.
-
-| Type |
-| - |
-| `() => Promise<void>` |
+<LoadMoreThread />
 
 ### openThread
 
-Sets the thread and thread messages in the Channel state.
-
-| Type |
-| - |
-| function |
+<OpenThread />
 
 ### reloadThread
 
-Reloads the thread and thread messages.
-
-| Type |
-| - |
-| function |
+<ReloadThread />
 
 ### setThreadLoadingMore
 
-A function which can be used to set the thread loading more state.
-
-| Type |
-| - |
-| function |
+<SetThreadLoadingMore />
 
 ### threadHasMore
 
-Boolean flag for thread messages pagination.
-
-| Type |
-| - |
-| boolean |
+<ThreadHasMore />
 
 ### threadLoadingMore
 
-Boolean flag for thread messages loading more state.
-
-| Type |
-| - |
-| boolean |
+<ThreadLoadingMore />
 
 ### threadMessages
 
-A list of formatted messages objects.
-
-| Type |
-| - |
-| `Array<object>` |<!-- TODO: Link to the messages definition on chat component once its done -->
+<ThreadMessages />
 
 ### Forwarded from Channel
 
