@@ -1,0 +1,10 @@
+Function to open the autocomplete suggestions popup. This function takes following two parameters:
+
+- `component` - You can either pass a string or a react element.
+  - string - `enum('MentionsItem' | 'CommandsItem' | 'EmojisItem')`. Based on value, one of the default components will be rendered as list item within suggestions list.
+  - element - React element which takes `item` as a prop, which is a suggestion item within list set using `updateSuggestions`. This element is used to render item in the suggestions list.
+- `title` - component to render a title for suggestions list.
+
+| Type |
+| - |
+| function |
