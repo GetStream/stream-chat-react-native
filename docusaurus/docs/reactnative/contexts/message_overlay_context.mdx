@@ -1,0 +1,132 @@
+---
+id: message-overlay-context
+title: MessageOverlayContext
+---
+
+import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
+import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
+import OverlayReactionList from '../common-content/core-components/channel/props/overlay_reaction_list.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import Files from '../common-content/contexts/message-context/files.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HandleAction from '../common-content/contexts/message-context/handle_action.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import Images from '../common-content/contexts/message-context/images.mdx';
+import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnOpenThread from '../common-content/contexts/message-context/on_open_thread.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import Reactions from '../common-content/contexts/message-context/reactions.mdx';
+import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
+`MessageOverlayContext` is a context provided by `OverlayProvider`, to provide values for message overlay. Message overlay shows up when user long presses a message.
+
+## Value
+
+<!-- ### MessageActions -->
+
+### OverlayReactionList
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<OverlayReactionList />
+
+### OverlayReactions
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<OverlayReactions />
+
+<!-- ### reset -->
+
+### setData
+
+Setter function for [data](#data).
+
+| Type |
+| - |
+| function |
+
+### data
+
+This is an object with following keys:
+
+  - `alignment`
+
+  <Alignment />
+
+  - `clientId`
+
+  Id of current user, connected chat.
+
+  | Type |
+  | - |
+  | string |
+
+  - `files`
+
+  <Files />
+
+  - `groupStyles`
+
+  <GroupStyles />
+
+  - `handleReaction`
+
+  Function for toggling reaction on message.
+
+  | Type |
+  | - |
+  | `(reactionType: string) => void` |
+
+  - `images`
+
+  <Images />
+
+  - `message`
+
+  <MessageProp />
+
+  - `messageActions`
+
+  <MessageActions />
+
+  - `messageReactionTitle`
+
+  Title for `MessageReactions` component.
+
+  | Type | Default |
+  | - | - |
+  | string | "Message Reactions" |
+
+  - `messagesContext`
+
+  Entire value object of [MessagesContext](./messages-context)
+
+  - `onlyEmojis`
+
+  <OnlyEmojis />
+
+  - `otherAttachments`
+
+  <OtherAttachments />
+
+  - `OverlayReactionList`
+
+  <OverlayReactionList />
+
+  - `supportedReactions`
+
+  <SupportedReactions />
+
+  - `threadList`
+
+  <ThreadList />

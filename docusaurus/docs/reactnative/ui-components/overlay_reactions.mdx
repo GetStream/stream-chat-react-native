@@ -1,0 +1,56 @@
+---
+id: overlay-reactions
+title: OverlayReactions
+---
+
+import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+
+`OverlayReactions` is a UI component to render list of existing reactions within message overlay, which opens up when user long presses a message.
+
+## Value
+
+### <div class="label required">required</div> **alignment** 
+
+<Alignment />
+
+### reactions
+
+List of existing reactions, which are extracted in following format:
+
+```tsx
+const reactions = message.latest_reactions.map((reaction) => ({
+  alignment:
+    clientId && clientId === reaction.user?.id ? 'right' : 'left',
+  image: reaction?.user?.image,
+  name: reaction?.user?.name || reaction.user_id || '',
+  type: reaction.type,
+}))
+```
+
+| Type |
+| - |
+| array |
+
+### <div class="label required">required</div> **showScreen**
+
+Share value from React Native Reanimated's [`useSharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/api/useSharedValue/) hook.
+
+| Type |
+| - |
+| object |
+
+### <div class="label required">required</div> **supportedReactions**
+
+<SupportedReactions />
+
+### <div class="label required">required</div> **title**
+
+Title for component.
+
+| Type |
+| - |
+| string |
+
+
