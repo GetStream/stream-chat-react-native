@@ -6,6 +6,13 @@ title: Channel
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+import Channel from '../common-content/core-components/channel/props/channel.mdx';
+import EnforceUniqueReaction from '../common-content/core-components/channel/props/enforce_unique_reaction.mdx';
+import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel/props/empty_state_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
+import NetworkDownIndicator from '../common-content/core-components/channel/props/network_down_indicator.mdx';
+
 import AdditionalKeyboardAvoidingViewProps from '../common-content/core-components/channel/props/additional_keyboard_avoiding_view_props.mdx'
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx'
 import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx'
@@ -200,15 +207,7 @@ const CustomAvatar = () => {
 
 ### <div class="label required">required</div> **channel**
 
-<!-- TODO: Change to new docs -->
-Instance of Channel from stream-chat package.
-
-Please check the [reference docs](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) around how to create or query channel
-
-
-| Type |
-|- -|
-| [Channel](#) | <!-- TODO: Add a link here -->
+<Channel />
 
 ### <div class="label required">required</div> **keyboardVerticalOffset**
 
@@ -341,12 +340,7 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 ### enforceUniqueReaction
 
-When set to true, reactions will be limited to 1 per user. If user selects another reaction then his previous reaction will be removed and replaced with new one.
-This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
-
-| Type | Default |
-| - | - |
-| boolean | false |
+<EnforceUniqueReaction />
 
 ### flagMessage
 
@@ -488,11 +482,7 @@ Maximum number of files (documents + images), that can be attached per message.
 
 ### maxTimeBetweenGroupedMessages
 
-Maximum time in milliseconds that should occur between messages to still consider them grouped together. By default all the messages from same user will be grouped together.
-
-| Type |
-| - |
-| number |
+<MaxTimeBetweenGroupedMessages />
 
 ### messageActions
 
@@ -619,11 +609,7 @@ Available props:
 
 ### EmptyStateIndicator
 
-UI component to render, when channel has no messages.
-
-| Type | Default |
-|- -|- -|
-| Component, element | [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Indicators/EmptyStateIndicator.tsx) |
+<EmptyStateIndicator />
 
 ### FileAttachmentIcon
 
@@ -695,11 +681,7 @@ UI component to render full screen error indicator, when channel fails to load.
 
 ### LoadingIndicator
 
-UI component to render full screen error indicator, when channel fails to load.
-
-| Type | Default |
-|- -|- -|
-| Component, element | [LoadingIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Indicators/LoadingIndicator.tsx) |
+<LoadingIndicator />
 
 ### Message
 
@@ -755,11 +737,7 @@ UI component to render full screen error indicator, when channel fails to load.
 
 ### NetworkDownIndicator
 
-UI component to render an indicator at top of the channel, which shows up when there is some issue with network or connection.
-
-| Type | Default |
-|- -|- -|
-| Component, element | [NetworkDownIndicator](#) |
+<NetworkDownIndicator />
 
 ### OverlayReactionList
 

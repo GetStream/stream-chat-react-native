@@ -3,6 +3,17 @@ id: channel-context
 title: ChannelContext
 ---
 
+import Channel from '../common-content/core-components/channel/props/channel.mdx';
+import EnforceUniqueReaction from '../common-content/core-components/channel/props/enforce_unique_reaction.mdx';
+import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
+import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
+import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
+import ScrollToFirstUnreadThreshold from '../common-content/core-components/channel/props/scroll_to_first_unread_threshold.mdx';
+import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel/props/empty_state_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
+import NetworkDownIndicator from '../common-content/core-components/channel/props/network_down_indicator.mdx';
+
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import Members from '../common-content/contexts/channel-context/members.mdx';
 
@@ -33,6 +44,24 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ## Value
 
+### channel
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<Channel />
+
+### EmptyStateIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<EmptyStateIndicator />
+
+### enforceUniqueReaction
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<EnforceUniqueReaction />
+
 ### disabled
 
 <Disabled />
@@ -52,6 +81,12 @@ Value is true, when giphy command is enabled on [channel type](https://getstream
 | Type |
 | - |
 | boolean |
+
+### hideDateSeparators
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<HideDateSeparators />
 
 ### isAdmin
 
@@ -122,6 +157,12 @@ Value is true, when channel is loading messages during first load.
 | - |
 | boolean |
 
+### LoadingIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<LoadingIndicator />
+
 ### markRead
 
 <!-- TODO: Change to new docs -->
@@ -131,9 +172,21 @@ Function to mark current channel as read, for current user. This function intern
 | - |
 | function |
 
+### maxTimeBetweenGroupedMessages
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<MaxTimeBetweenGroupedMessages />
+
 ### members
 
 <Members />
+
+### NetworkDownIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<NetworkDownIndicator />
 
 ### read
 
@@ -154,6 +207,12 @@ Record<
 | - |
 | object |
 
+### readEventsEnabled
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ReadEventsEnabled />
+
 ### reloadChannel
 
 Function to reload a channel at most recent message. Promise returned by this function will be resolved, when the channel has finished reloading.
@@ -161,6 +220,12 @@ Function to reload a channel at most recent message. Promise returned by this fu
 | Type |
 | - |
 | () => Promise |
+
+### scrollToFirstUnreadThreshold
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ScrollToFirstUnreadThreshold />
 
 ### setLastRead
 
@@ -185,6 +250,12 @@ Id of message, which is highlighted currently. This value gets set when you load
 | Type |
 | - |
 | string |
+
+### typingEventsEnabled
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<TypingEventsEnabled />
 
 ### watchers
 
@@ -214,18 +285,5 @@ Total number of users, currently watching a channel.
 | - |
 | number |
 
-## Forwarded from Channel
 
-List of props that are forwarded from `Channel` component to `ChannelContext` value:
-
-- [channel](../core-components/channel#required-channel)
-- [enforceUniqueReaction](../core-components/channel#enforceuniquereaction)
-- [hideDateSeparators](../core-components/channel#hidedateseparators)
-- [maxTimeBetweenGroupedMessages](../core-components/channel#maxtimebetweengroupedmessages)
-- [readEventsEnabled](../core-components/channel#readeventsenabled)
-- [scrollToFirstUnreadThreshold](../core-components/channel#scrolltofirstunreadthreshold)
-- [typingEventsEnabled](../core-components/channel#typingeventsenabled)
-- [EmptyStateIndicator](../core-components/channel#Emptystateindicator)
-- [LoadingIndicator](../core-components/channel#loadingindicator)
-- [NetworkDownIndicator](../core-components/channel#networkdownindicator)
 <!-- - [StickyHeader](../core-components/channel#stickyheader) -->

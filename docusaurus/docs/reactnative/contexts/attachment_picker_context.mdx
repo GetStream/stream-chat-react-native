@@ -5,6 +5,12 @@ title: AttachmentPickerContext
 
 import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
 
+import AttachmentPickerBottomSheetHeight from '../common-content/core-components/overlay-provider/props/attachment_picker_bottom_sheet_height.mdx';
+import AttachmentSelectionBarHeight from '../common-content/core-components/overlay-provider/props/attachment_selection_bar_height.mdx';
+import CameraSelectorIcon from '../common-content/core-components/overlay-provider/props/camera_selector_icon.mdx';
+import FileSelectorIcon from '../common-content/core-components/overlay-provider/props/file_selector_icon.mdx';
+import ImageSelectorIcon from '../common-content/core-components/overlay-provider/props/image_selector_icon.mdx';
+
 `AttachmentPickerContext` is provided by [`OverlayProvider`](../core-components/overlay-provider) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -28,6 +34,18 @@ const { openPicker, closePicker } = useAttachmentPickerContext();
 
 ## Value
 
+### attachmentPickerBottomSheetHeight
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<AttachmentPickerBottomSheetHeight />
+
+### attachmentSelectionBarHeight
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<AttachmentSelectionBarHeight />
+
 ### bottomInset
 
 `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
@@ -36,6 +54,12 @@ const { openPicker, closePicker } = useAttachmentPickerContext();
 | - | - |
 | number | [`bottomInset`](../core-components/overlay-priovider#bottominset) |
 
+### CameraSelectorIcon
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<CameraSelectorIcon />
+
 ### closePicker
 
 Function to close the attachment picker bottom sheet.
@@ -43,6 +67,18 @@ Function to close the attachment picker bottom sheet.
 | Type |
 | - |
 | function |
+
+### FileSelectorIcon
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<FileSelectorIcon />
+
+### ImageSelectorIcon
+
+_(Forwarded from [`OverlayProvider`](../core-components/overlay-provider) props)_
+
+<ImageSelectorIcon />
 
 <!-- ### maxNumberOfFiles
 
@@ -123,13 +159,3 @@ Setter function for [`topInset`](#topinset)
 | Type | Default |
 | - | - |
 | number | [`topInset`](../core-components/overlay-priovider#topInset) |
-
-## Forwarded from OverlayProvider
-
-List of props that are forwarded from `OverlayProvider` component to `AttachmentPickerContext` value:
-
-- [attachmentPickerBottomSheetHeight](../core-components/overlay-provider#attachmentpickerbottomsheetheight)
-- [attachmentSelectionBarHeight](../core-components/overlay-provider#attachmentselectionbarheight)
-- [CameraSelectorIcon](../core-components/overlay-provider#cameraselectoricon)
-- [FileSelectorIcon](../core-components/overlay-provider#fileselectoricon)
-- [ImageSelectorIcon](../core-components/overlay-provider#imageselectoricon)

@@ -3,6 +3,8 @@ id: message-input-context
 title: MessageInputContext
 ---
 
+import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx'
+
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
 import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx';
@@ -26,8 +28,10 @@ import NumberOfLines from '../common-content/core-components/channel/props/numbe
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
-
-import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx'
+import SendMessageAsync from '../common-content/core-components/channel/props/send_message_async.mdx';
+import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
+import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
+import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx';
 
 import AppendText from '../common-content/contexts/message-input-context/append_text.mdx'
 import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx'
@@ -92,13 +96,19 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ### additionalTextInputProps
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <AdditionalTextInputProps />
 
 ### AttachButton
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <AttachButton />
 
 ### autoCompleteTriggerSettings
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <AutoCompleteTriggerSettings />
 
@@ -112,20 +122,27 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ### CommandsButton
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <CommandsButton />
 
 ### compressImageQuality
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <CompressImageQuality />
 
 ### doDocUploadRequest
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <DoDocUploadRequest />
 
 ### doImageUploadRequest
 
-<DoImageUploadRequest />
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
+<DoImageUploadRequest />
 
 ### editing
 
@@ -133,57 +150,85 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ### editMessage
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <EditMessage />
 
 ### FileUploadPreview
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <FileUploadPreview />
 
 ### hasCommands
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <HasCommands />
 
 ### hasFilePicker
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <HasFilePicker />
 
 ### hasImagePicker
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <HasImagePicker />
 
 ### ImageUploadPreview
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <ImageUploadPreview />
 
 ### initialValue
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <InitialValue />
 
 ### Input
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <Input />
 
 ### InputButtons
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <InputButtons />
 
 ### maxMessageLength
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <MaxMessageLength />
 
 ### maxNumberOfFiles
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <MaxNumberOfFiles />
 
 ### MoreOptionsButton
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <MoreOptionsButton />
 
 ### numberOfLines
 
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
 <NumberOfLines />
 
 ### onChangeText
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
 <OnChangeText />
 
@@ -197,8 +242,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ### sendImageAsync
 
-<SendImageAsync />
+_(Forwarded from [`Channel`](../core-components/channel) props)_
 
+<SendImageAsync />
 
 ### sendMessage
 
@@ -208,9 +254,23 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <!-- ### setQuotedMessageState -->
 
-<!-- ### ShowThreadMessageInChannelButton -->
-<!-- ### UploadProgressIndicator -->
-<!-- ### uploadsEnabled -->
+### ShowThreadMessageInChannelButton
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<ShowThreadMessageInChannelButton /> ---
+
+### UploadProgressIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<UploadProgressIndicator /> ---
+
+### uploadsEnabled
+
+_(Forwarded from [`Channel`](../core-components/channel) props)_
+
+<UploadsEnabled /> ---
 
 ### appendText
 
@@ -294,7 +354,11 @@ _(Forwarded from [AttachmentPickerContext](../../contexts/attachment-picker-cont
 
 <!-- ### sending -->
 
-<!-- ### sendMessageAsync -->
+### sendMessageAsync
+
+_(Forwarded from [Channel](../../core-components/channel) props)_
+
+<SendMessageAsync /> ---
 
 ### sendThreadMessageInChannel
 

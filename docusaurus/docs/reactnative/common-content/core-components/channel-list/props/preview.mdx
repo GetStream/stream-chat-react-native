@@ -1,0 +1,76 @@
+Custom UI component for rendering list item.
+
+<Tabs
+  defaultValue='props'
+  values={[
+    { label: 'Props', value: 'props' },
+    { label: 'Usage', value: 'example' },
+  ]}
+>
+<TabItem value='props'>
+
+- `channel` (Object) Channel
+- `latestMessagePreview` (Object) Info about latest message on channel
+    - `created_at` (Date)
+    - `messageObject` (Object),
+    - `previews` (Array) of text tokens - `{ bold: boolean, text: string }`. 
+
+      e.g, If the latest messages is `Hey @Vishal Narkhede, how are you?` from a user named `Neil Hannah`,
+      
+      ```ts
+      previews = [
+        {
+          bold: true,
+          text: 'Neil Hannah'
+        },
+        {
+          bold: false,
+          text: 'Hey',
+        },
+        {
+          bold: true,
+          text: '@Vishal Narkhede'
+        },
+        {
+          bold: false,
+          text: ', how are you?'
+        }
+      ]
+      ```
+    - `status`: (0 | 1 | 2)
+      - 0 = latest message is not current user's message
+      - 1 = nobody has read latest message which is the current user's message
+      - 2 = someone has read latest message which is the current user's message
+
+- `unread` (number) Unread count of channel
+
+</TabItem>
+<TabItem value='example'>
+
+```jsx
+import { ChannelList, useChannelPreviewDisplayAvatar, useChannelPreviewDisplayName } from 'stream-chat-react-native';
+
+const ChannelListItem = (props) => {
+  const { channel, latestMessagePreview, unread } = props;
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayName = useChannelPreviewDisplayName(channel, 14);
+
+  return (
+    <View>
+      <Text>{displayName}</Text>
+      <Text>{unread}</Text>
+    </View>
+  )
+}
+
+<ChannelList Preview={ChannelListItem} />
+```
+
+</TabItem>
+</Tabs>
+
+
+<!-- TODO: Change to new docs -->
+| Type | Default |
+| - | - |
+| Component, element | [ChannelPreviewMessenger](#) |
