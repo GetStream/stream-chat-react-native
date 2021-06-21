@@ -1,0 +1,21 @@
+This props partially overrides the value of `OverlayContext`. This prop can be used to set the [styles/theme](../../customization/theming/) for chat components.
+
+```tsx
+const theme = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+    },
+  },
+};
+
+<OverlayProvider value={{ style: theme }}>
+  ...
+</OverlayProvider>
+```
+
+| Type |
+| - |
+| object |
