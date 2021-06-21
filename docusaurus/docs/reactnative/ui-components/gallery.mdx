@@ -37,38 +37,6 @@ import { Channel, Gallery } from 'stream-chat-react-native';
 
 ## Props
 
-### hasThreadReplies
-
-Weather current message has any thread replies or not. This boolean is used for setting borderBottomLeftRadius for left aligned messages and borderBottomRightRadius for right aligned messages.
-
-| Type | Default |
-| - | - |
-| boolean | `message.reply_count` |
-
-### messageId
-
-Id of the current message.
-
-| Type |
-| - |
-| string |
-
-### messageText
-
-Text content of current message - `message.text`. This prop gets used for styling purpose of gallery.
-
-| Type |
-| - |
-| string |
-
-### preventPress
-
-Disables the press handler, when true.
-
-| Type | Default |
-| - | - |
-| boolean | false |
-
 ### additionalTouchableProps
 
 _(Overrides the value from [MessagesContext](../../contexts/messages-context))_
@@ -87,11 +55,35 @@ _(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <GroupStyles />
 
+### hasThreadReplies
+
+Weather current message has any thread replies or not. This boolean is used for setting borderBottomLeftRadius for left aligned messages and borderBottomRightRadius for right aligned messages.
+
+| Type | Default |
+| - | - |
+| boolean | `message.reply_count` |
+
 ### images
 
 _(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Images />
+
+### messageId
+
+Id of the current message.
+
+| Type |
+| - |
+| string |
+
+### messageText
+
+Text content of current message - `message.text`. This prop gets used for styling purpose of gallery.
+
+| Type |
+| - |
+| string |
 
 ### onLongPress
 
@@ -110,6 +102,14 @@ _(Overrides the value from [MessageContext](../../contexts/message-context))_
 _(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <OnPressIn />
+
+### preventPress
+
+Disables the press handler, when true.
+
+| Type | Default |
+| - | - |
+| boolean | false |
 
 ### setBlurType
 

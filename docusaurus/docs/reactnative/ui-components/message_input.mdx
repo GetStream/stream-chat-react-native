@@ -63,11 +63,71 @@ This component must be used as child of `Channel` component.
 All the configuration for `MessageInput` can be done on [`Channel`](../core-components/channel) component. Additionally please take a look at [Guide Section](../guides/message-input) about customizing MessageInput UI
 :::
 
+### clearEditingState
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<ClearEditingState />
+
+### clearQuotedMessageState
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<ClearQuotedMessageState />
+
+### closeAttachmentPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<CloseAttachmentPicker />
+
+### componentType
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions-context))_
+
+<ComponentType />
+
 ### disabled
 
 _(Overrides the value from [ChannelContext](../contexts/channel-context))_
 
 <Disabled />
+
+### editing
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<Editing />
+
+### fileUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<FileUploads />
+
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<GiphyActive />
+
+### imageUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<ImageUploads />
+
+### inputBoxRef
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<InputBoxRef />
+
+### isValidMessage
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<IsValidMessage />
 
 ### members
 
@@ -75,29 +135,11 @@ _(Overrides the value from [ChannelContext](../contexts/channel-context))_
 
 <Members />
 
-### watchers
-
-_(Overrides the value from [ChannelContext](../contexts/channel-context))_
-
-<Watchers />
-
 ### quotedRepliesEnabled
 
 _(Overrides the value from [MessagesContext](../contexts/messages-context))_
 
 <QuotedRepliesEnabled />
-
-### Reply
-
-_(Overrides the value from [MessagesContext](../contexts/messages-context))_
-
-<Reply />
-
-### componentType
-
-_(Overrides the value from [SuggestionsContext](../contexts/suggestions-context))_
-
-<ComponentType />
 
 ### suggestions
 
@@ -129,83 +171,6 @@ _(Overrides the value from [MessageInputContext](../contexts/message-input-conte
 
 <AsyncUploads /> -->
 
-### clearEditingState
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<ClearEditingState />
-
-### clearQuotedMessageState
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<ClearQuotedMessageState />
-
-### closeAttachmentPicker
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<CloseAttachmentPicker />
-
-### editing
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<Editing />
-
-### FileUploadPreview
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<FileUploadPreview />
-
-### fileUploads
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<FileUploads />
-
-### giphyActive
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<GiphyActive />
-
-### ImageUploadPreview
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<ImageUploadPreview />
-
-### imageUploads
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<ImageUploads />
-
-### Input
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<Input />
-
-### inputBoxRef
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<InputBoxRef />
-
-### InputButtons
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<InputButtons />
-
-### isValidMessage
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<IsValidMessage />
 
 ### maxNumberOfFiles
 
@@ -243,12 +208,6 @@ _(Overrides the value from [MessageInputContext](../contexts/message-input-conte
 
 <ResetInput />
 
-### SendButton
-
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
-
-<SendButton />
-
 <!-- ### sending
 
 _(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
@@ -273,11 +232,11 @@ _(Overrides the value from [MessageInputContext](../contexts/message-input-conte
 
 <ShowMoreOptions />
 
-### ShowThreadMessageInChannelButton
+### thread
 
-_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+_(Overrides the value from [ThreadContext](../contexts/thread-context))_
 
-<ShowThreadMessageInChannelButton />
+<Thread />
 
 ### uploadNewImage
 
@@ -285,8 +244,50 @@ _(Overrides the value from [MessageInputContext](../contexts/message-input-conte
 
 <UploadNewImage />
 
-### thread
+### watchers
 
-_(Overrides the value from [ThreadContext](../contexts/thread-context))_
+_(Overrides the value from [ChannelContext](../contexts/channel-context))_
 
-<Thread />
+<Watchers />
+
+### Reply
+
+_(Overrides the value from [MessagesContext](../contexts/messages-context))_
+
+<Reply />
+
+### FileUploadPreview
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<FileUploadPreview />
+
+### ImageUploadPreview
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<ImageUploadPreview />
+
+### Input
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<Input />
+
+### InputButtons
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<InputButtons />
+
+### SendButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<SendButton />
+
+### ShowThreadMessageInChannelButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message-input-context))_
+
+<ShowThreadMessageInChannelButton />

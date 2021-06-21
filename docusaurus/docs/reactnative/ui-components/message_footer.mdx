@@ -25,10 +25,6 @@ const CustomMessageFooter = ({ message }) => <MessageFooter formattedDate={getDa
 
 ## Props
 
-:::note
-This component uses default value for all the **non-required** props, from [`MessageContext`](../contexts/message-context)
-:::
-
 ### <div class="label required">required</div> **formattedDate**
 
 Datetime stamp to be shown in footer for deleted message.
@@ -37,7 +33,7 @@ Datetime stamp to be shown in footer for deleted message.
 | - |
 | string |
 
-### isDeleted
+### <div class="label required">required</div> **isDeleted**
 
 Weather message is deleted or not. In case of deleted message, `'Only visible to you'` subtext will be rendered in this component.
 
@@ -47,23 +43,33 @@ Weather message is deleted or not. In case of deleted message, `'Only visible to
 
 ### alignment
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <Alignment />
 
 ### members
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Members />
 
 ### message
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <MessageProp />
 
 ### otherAttachments
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <OtherAttachments />
 
 <!-- ### showMessageStatus -->
 
 ### lastGroupMessage
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <LastGroupMessage />
 

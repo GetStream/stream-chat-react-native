@@ -3,6 +3,20 @@ id: message-content
 title: MessageContent
 ---
 
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+import Attachment from '../common-content/core-components/channel/props/attachment.mdx'
+import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx'
+import FormatDate from '../common-content/core-components/channel/props/format_date.mdx'
+import Gallery from '../common-content/core-components/channel/props/gallery.mdx'
+import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx'
+import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx'
+import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx'
+import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx'
+import MessageStatus from '../common-content/core-components/channel/props/message_status.mdx'
+import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
+import Reply from '../common-content/core-components/channel/props/reply.mdx'
+import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx'
+
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import Members from '../common-content/contexts/channel-context/members.mdx';
 
@@ -40,15 +54,21 @@ const CustomMessageContent = () => <MessageContent onLongPress={() => null} />
 
 ## Props
 
-:::note
-This component uses default values for all the following props, from [`MessageContext`](../contexts/message-context)
-:::
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<AdditionalTouchableProps />
 
 ### alignment
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Alignment />
 
 ### disabled
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Disabled />
 
@@ -56,49 +76,73 @@ This component uses default values for all the following props, from [`MessageCo
 
 ### groupStyles
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <GroupStyles />
 
 ### hasReactions
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <HasReactions />
 
 ### isMyMessage
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <IsMyMessage />
 
 ### lastGroupMessage
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <LastGroupMessage />
 
 ### members
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <Members />
 
 ### message
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <MessageProp />
 
 ### messageContentOrder
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <MessageContentOrder />
 
 ### onLongPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <OnLongPress />
 
 ### onlyEmojis
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <OnlyEmojis />
 
 ### onPress
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <OnPress />
 
 ### onPressIn
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <OnPressIn />
 
 ### otherAttachments
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <OtherAttachments />
 
@@ -108,4 +152,78 @@ This component uses default values for all the following props, from [`MessageCo
 
 ### threadList
 
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
 <ThreadList />
+
+### quotedRepliesEnabled
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<QuotedRepliesEnabled />
+
+### threadRepliesEnabled
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<ThreadRepliesEnabled />
+
+### Attachment
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Attachment />
+
+### FileAttachmentGroup
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<FileAttachmentGroup />
+
+### formatDate
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<FormatDate />
+
+### Gallery
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Gallery />
+
+### MessageDeleted
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<MessageDeleted />
+
+### MessageFooter
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<MessageFooter />
+
+### MessageHeader
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<MessageHeader />
+
+### MessageReplies
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<MessageReplies />
+
+### MessageStatus
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<MessageStatus />
+
+### Reply
+
+_(Overrides the value from [MessagesContext](../../contexts/messages-context))_
+
+<Reply />

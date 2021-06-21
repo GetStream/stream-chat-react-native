@@ -9,6 +9,7 @@ import PreviewMessage from '../common-content/core-components/channel-list/props
 import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
 import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
 import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+
 import LastMessagePreview from '../common-content/ui-components/channel-preview-messenger/props/last_message_preview.mdx';
 import FormatLatestMessageDate from '../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
 import MaxUnreadCount from '../common-content/ui-components/channel-preview-messenger/props/max_unread_count.mdx';
@@ -28,7 +29,7 @@ import { ChannelList, ChannelPreviewMessenger } from 'stream-chat-react-native';
 const CustomListItem = ({ channel }) => {
   return (
     <View style={additionalWrapperStyles}>
-       <ChannelPreviewMessenger channel{channel} />
+       <ChannelPreviewMessenger channel={channel} />
     </View>
   )
 }
@@ -37,46 +38,56 @@ const CustomListItem = ({ channel }) => {
 
 ## Props
 
-### channel
+### <div class="label required">required</div> **channel**
 
 <Channel/>
+
+### formatLatestMessageDate
+
+<FormatLatestMessageDate/>
 
 ### lastMessagePreview
 
 <LastMessagePreview/>
 
-### unread
+### maxUnreadCount
 
-<Unread/>
+<MaxUnreadCount/>
 
 ### onSelect
 
 <OnSelect/>
 
+### unread
+
+<Unread/>
+
 ### PreviewAvatar
+
+_(Overrides the value from [ChannelsContext](../../contexts/channels-context))_
 
 <PreviewAvatar/>
 
 ### PreviewMessage
 
+_(Overrides the value from [ChannelsContext](../../contexts/channels-context))_
+
 <PreviewMessage/>
 
 ### PreviewStatus
+
+_(Overrides the value from [ChannelsContext](../../contexts/channels-context))_
 
 <PreviewStatus/>
 
 ### PreviewTitle
 
+_(Overrides the value from [ChannelsContext](../../contexts/channels-context))_
+
 <PreviewTitle/>
 
 ### PreviewUnreadCount
 
+_(Overrides the value from [ChannelsContext](../../contexts/channels-context))_
+
 <PreviewUnreadCount/>
-
-### maxUnreadCount
-
-<MaxUnreadCount/>
-
-### formatLatestMessageDate
-
-<FormatLatestMessageDate/>

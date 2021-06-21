@@ -53,22 +53,6 @@ When true, input box will be auto focused upon mounting.
 
 <!-- ### closeThreadOnDismount -->
 
-### disabled
-
-When true, the underlying input box will be disabled.
-
-| Type | Default |
-| - | - |
-| boolean | false |
-
-### onThreadDismount
-
-Function which gets called when Thread component unmounts.
-
-| Type |
-| - |
-| function |
-
 ### client
 
 _(Overrides the value from [ChatContext](../../contexts/chat-context))_
@@ -81,11 +65,27 @@ _(Overrides the value from [ThreadContext](../../contexts/thread-context))_
 
 <CloseThread />
 
+### disabled
+
+When true, the underlying input box will be disabled.
+
+| Type | Default |
+| - | - |
+| boolean | false |
+
 ### loadMoreThread
 
 _(Overrides the value from [ThreadContext](../../contexts/thread-context))_
 
 <LoadMoreThread />
+
+### onThreadDismount
+
+Function which gets called when Thread component unmounts.
+
+| Type |
+| - |
+| function |
 
 ### reloadThread
 
