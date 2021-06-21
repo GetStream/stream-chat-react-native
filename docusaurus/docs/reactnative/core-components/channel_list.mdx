@@ -85,7 +85,6 @@ const { channels, refreshing } = useChannelsContext();
 ## UI Customizations
 
 ChannelList component is highly customizable. For every child UI component of ChannelList, you can provide your own custom implementation.
-You can reference the following visuals, to check which prop to use for customizing any of the sub-components.
 
 For example, you can customize title component as following:
 
@@ -96,6 +95,8 @@ const CustomPreviewTitle = ({ channel }) => (
 
 <ChannelList PreviewTitle={CustomPreviewTitle} />
 ```
+
+You can reference the following visuals, to check which [prop](#props) to use for customizing any of the sub-components.
 
 <Tabs
   defaultValue='list-item-components'

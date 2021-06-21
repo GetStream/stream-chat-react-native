@@ -9,6 +9,12 @@ import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.m
 
 UI component to render the reaction selector within message overlay.
 
+You can replace this default UI component using the `OverlayReactionList` prop on [Channel](../core-components/channel) component.
+
+```tsx
+<Channel OverlayReactionList={CustomOverlayReactionList} />
+```
+
 ## Props
 
 ### data

@@ -6,7 +6,15 @@ title: AttachButton
 import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
+[Source](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/AttachButton.tsx)
+
 `AttachButton` is a default UI component for rendering attachment button within `MessageInput` component. When user presses this button, it opens the attachment picker bottom sheet.
+
+You can set `AttachButton` prop on Channel component to replace this default component:
+
+```tsx
+<Channel AttachButton={CustomAttachButton} />
+```
 
 ## Props
 

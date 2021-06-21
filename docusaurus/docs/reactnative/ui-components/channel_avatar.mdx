@@ -5,13 +5,9 @@ title: ChannelAvatar
 
 import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
 
-The `ChannelAvatar` is the UI component for rendering avatar/image for channel within `ChannelList` component.
+The `ChannelAvatar` is the default UI component for rendering avatar/image for channel within `ChannelList` component.
 
-![](../assets/api-references/components/channel-list/visual_guide_1.png)
-
-## Basic Usage
-
-You can have a custom channel preview message component by setting the `PreviewAvatar` prop on any of its parent UI components.
+You can set `PreviewAvatar` prop on `ChannelList` component to replace this default component:
 
 ```jsx
 import { 

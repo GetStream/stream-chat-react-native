@@ -19,13 +19,19 @@ The `Attachment` is the UI component for rendering attachments for message, with
 - UrlPreview
 
 :::note
-This component is used within library to render all the attachments EXCEPT type `image`. For images, [`Gallery`](./gallery) component is used.
+This component is used within library to render all the attachments EXCEPT type `image`. For images, [`Gallery`](../gallery) component is used.
 :::
 
-## Basic Usage
+You can set `Attachment` prop on `Channel` component to replace this default component:
 
+```tsx
+<Channel Attachment={CustomAttachment} />
+```
+
+:::caution
 Generally you wouldn't need to use this component for customization, you should instead use specific attachment type related prop such as Giphy, Gallery, UrlPreview etc.
 Please check our guide on [Attachment Customization](../guide/attachment_customizations) for details.
+:::
 
 ## Props
 

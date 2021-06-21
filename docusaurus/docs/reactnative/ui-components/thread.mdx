@@ -13,7 +13,61 @@ import ReloadThread from '../common-content/contexts/thread-context/reload_threa
 
 `Thread` component renders thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
 
+## Basic Usage
+
+```tsx
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel} thread={messageId}>
+      <Thread />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
 ## Props
+
+### additionalMessageInputProps
+
+Additional [props](../message-input#props) for underlying `MessageInput` component.
+
+| Type |
+| - |
+| object |
+
+### additionalMessageListProps
+
+Additional [props](../message-list#props) for underlying `MessageList` component.
+
+| Type |
+| - |
+| object |
+
+### autoFocus
+
+When true, input box will be auto focused upon mounting.
+
+| Type | Default |
+| - | - |
+| boolean | true |
+
+<!-- ### closeThreadOnDismount -->
+
+### disabled
+
+When true, the underlying input box will be disabled.
+
+| Type | Default |
+| - | - |
+| boolean | false |
+
+### onThreadDismount
+
+Function which gets called when Thread component unmounts.
+
+| Type |
+| - |
+| function |
 
 ### client
 

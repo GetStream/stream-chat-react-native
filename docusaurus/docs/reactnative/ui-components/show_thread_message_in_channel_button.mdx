@@ -10,6 +10,12 @@ import SetSendThreadMessageInChannel from '../common-content/contexts/message-in
 `ShowThreadMessageInChannelButton` is a default UI component, for rendering a checkbox labeled "Also send to channel" within `Thread` component.
 When this checkbox is checked by users, message sent as thread reply also gets added to parent channel's message list.
 
+You can replace this default UI component using the `ShowThreadMessageInChannelButton` prop on [Channel](../core-components/channel) component.
+
+```tsx
+<Channel ShowThreadMessageInChannelButton={CustomShowThreadMessageInChannelButton} />
+```
+
 ## Props
 
 ### allowThreadMessagesInChannel
