@@ -37,7 +37,8 @@ const theme: DeepPartial<Theme> = {
 ## Applying a theme
 
 There are two entry points for custom themes into the SDK, in the `OverlayProvider` and `Chat` components.
-Both of these components take a prop `style` which accepts a custom theme.
+`Chat` takes a prop `style` which accepts a custom theme.
+The `OverlayProvider` accepts the same `style` as a key on the prop `value`.
 
 In practice you only need to provide you custom theme to the `OverlayProvider` as the theme is accessed via context.
 Nested `ThemeProvider` components merge themes provided by higher level `ThemeProvider` components, so the theme provided to the `OverlayProvider` will be available from the `ThemeProvider` in the `Chat` component.
@@ -45,7 +46,7 @@ This allows you to provide a different theme at different levels of the applicat
 
 ```tsx {2}
 export const App = () =>
-  <OverlayProvider style={theme}>
+  <OverlayProvider value={{ style: theme }}>
     <Chat client={client}>
       <ChannelList />
     </Chat>
@@ -74,7 +75,7 @@ export const App = () => {
   }, [colorScheme]);
 
   return (
-    <OverlayProvider style={theme}>
+    <OverlayProvider value={{ style: theme }}>
       <Chat client={client}>
         <ChannelList />
       </Chat>
