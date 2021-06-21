@@ -9,7 +9,7 @@ const sdkBlacklistedPaths = [
   '/examples/TypeScriptMessaging',
   '/examples/SampleApp',
   '/native-package/node_modules',
-  '/expo-package',
+  '/expo-package/node_modules',
   '/node_modules',
 ];
 
