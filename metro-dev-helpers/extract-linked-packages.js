@@ -19,16 +19,27 @@ module.exports = function extractLinkedPackages(repoDir) {
 
   const sdkRootPackage = linkedPackages['stream-chat-react-native-core'];
   const sdkNativePackage = linkedPackages['stream-chat-react-native'];
+  const sdkExpoPackage = linkedPackages['stream-chat-expo'];
 
   if (!sdkRootPackage) {
     throw new Error('stream-chat-react-native-core is not linked!');
   }
 
-  if (!sdkRootPackage) {
-    throw new Error('stream-chat-react-native is not linked!');
+  const alternateRoots = [sdkRootPackage];
+
+  if (sdkNativePackage) {
+    alternateRoots.push(sdkNativePackage);
   }
 
-  const alternateRoots = [sdkRootPackage, sdkNativePackage];
+  if (sdkExpoPackage) {
+    alternateRoots.push(sdkExpoPackage);
+  }
+
+  if (!sdkNativePackage && !sdkExpoPackage) {
+    throw new Error(
+      'stream-chat-react-native or stream-chat-expo is not linked! You need to link at least one.',
+    );
+  }
 
   // Blacklisting samples and other packages folders so theyre not taken in consideration
   // The filter operation checks if this helper is being used inside of one of the blacklisted
