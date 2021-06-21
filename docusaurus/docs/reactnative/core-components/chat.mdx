@@ -7,7 +7,7 @@ title: Chat
 import Client from '../common-content/core-components/chat/props/client.mdx'
 
 <!-- TODO: Change to new docs -->
-The Chat component is a React Context provider that wraps the [ChannelList](#) and [Channel](#) component. It provides the [ChatContext](#) to its children, which includes the StreamChat client instance.
+The Chat component is a React Context provider that wraps the [ChannelList](../channel-list) and [Channel](../channel) component. It provides the [ChatContext](../../contexts/chat-context) to its children, which includes the StreamChat client instance.
 
 `Chat` component is provided by `stream-chat-react-native` and can be imported from the library as following
 
@@ -15,8 +15,8 @@ The Chat component is a React Context provider that wraps the [ChannelList](#) a
 import { Chat } from 'stream-chat-react-native';
 ```
 
-- StreamChat [client](#) should be provided to this component as prop.
-- Chat component is also responsible for tracking the health of websocket connection with chat server. You can use `isOnline` value from [`ChatContext`](#) to access status.
+- StreamChat client should be provided to this component as prop.
+- Chat component is also responsible for tracking the health of websocket connection with chat server. You can use `isOnline` value from [ChatContext](../../contexts/chat-context#isonline) to access status.
 
 ## Basic Usage
 
