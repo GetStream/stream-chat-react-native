@@ -1,7 +1,7 @@
 ---
 id: hello_stream_chat
 sidebar_position: 2
-title: Hello Stream Chat
+title: Getting Started
 ---
 
 import Tabs from '@theme/Tabs';
@@ -31,7 +31,7 @@ To start you must get an instance of Stream Chat, for this you will need an api 
 To create one you can sign up for a [free 30-day trial](https://getstream.io/chat/trial/) of Stream Chat, no CC is required.
 
 ```ts
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 
 const client = StreamChat.getInstance('api_key');
 ```
@@ -47,17 +47,17 @@ See the <!-- TODO: Change to new docs -->[Tokens & Authentication](https://getst
 For the purpose of this guide it will be assumed you have created and retrieved a `user_token`.
 
 To connect a user a the `connectUser` function should be called and provided with the user object and `user_token`.
-Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.  
+Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.
 
 ```ts
-await client.connectUser( 
-    { 
-        id: 'jlahey', 
-        name: 'Jim Lahey', 
-        image: 'https://i.imgur.com/fR9Jz14.png', 
-    }, 
+await client.connectUser(
+    {
+        id: 'jlahey',
+        name: 'Jim Lahey',
+        image: 'https://i.imgur.com/fR9Jz14.png',
+    },
     'user_token',
-); 
+);
 ```
 
 It is recommended to not repeatedly call `connectUser` unnecessarily, multiple calls to `connectUser` will result in warnings, and attempting to call `connectUser` before disconnecting a current user will throw an Error.
@@ -114,8 +114,8 @@ For the purpose of this guide you should create a `channel` as you see fit utili
   /**
    *  Channel created using a channel id
    */
-  const channel = client.channel('messaging', 'the_park', { 
-      name: 'The Park', 
+  const channel = client.channel('messaging', 'the_park', {
+      name: 'The Park',
   });
   ```
 
@@ -128,7 +128,7 @@ For the purpose of this guide you should create a `channel` as you see fit utili
    */
   const channel = client.channel('messaging', {
       members: ['jlahey', 'rlafleur']
-      name: 'The Park', 
+      name: 'The Park',
   });
   ```
 
@@ -190,7 +190,7 @@ For additional information on the `Chat` component check the [Chat component doc
 <TabItem value='app'>
 
   ```tsx {8-10}
-  import { StreamChat } from 'stream-chat'; 
+  import { StreamChat } from 'stream-chat';
   import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
   const client = StreamChat.getInstance('api_key');
@@ -207,7 +207,7 @@ For additional information on the `Chat` component check the [Chat component doc
 <TabItem value='screen'>
 
   ```tsx
-  import { StreamChat } from 'stream-chat'; 
+  import { StreamChat } from 'stream-chat';
   import { Chat } from 'stream-chat-react-native';
 
   const client = StreamChat.getInstance('api_key');
@@ -251,7 +251,7 @@ For the purpose of this guide the example implementation will continue to be giv
 </div>
 
 ```tsx {9}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -280,7 +280,7 @@ This can be created [as you did previously](#creating-a-channel), pulled directl
 
 ```tsx {8,13-19}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -321,7 +321,7 @@ For additional information on the `MessageList` component, how to pass props to 
 
 ```tsx {15}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -365,7 +365,7 @@ For additional information on the `MessageInput` component, how to modify it usi
 
 ```tsx {14,16}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -412,7 +412,7 @@ For additional information on the `Thread` component, such as how to use `onThre
 
 ```tsx {9,15-24}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, MessageType, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -481,7 +481,7 @@ These additions result in a small but functional chat sample app.
 ```tsx
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -504,13 +504,13 @@ export const App = () => {
     const setupClient = async () => {
       try {
         await client.connectUser(
-          { 
-            id: 'jlahey', 
-            name: 'Jim Lahey', 
-            image: 'https://i.imgur.com/fR9Jz14.png', 
-          }, 
+          {
+            id: 'jlahey',
+            name: 'Jim Lahey',
+            image: 'https://i.imgur.com/fR9Jz14.png',
+          },
           'user_token',
-        ); 
+        );
         setClientReady(true);
       } catch (e) {
         console.log(e);

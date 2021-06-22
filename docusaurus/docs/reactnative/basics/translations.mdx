@@ -4,24 +4,23 @@ sidebar_position: 4
 title: Translations / i18n
 ---
 
-Static translations inside of the Stream Chat for React Native components are provided by `Streami18n`.
-`Streami18n` is a class that uses a configuration of [i18next](https://www.i18next.com/) with a subset of the functionality exposed.
-`Streami18n` is provided by `stream-chat-react-native` and can be imported from the library.
+`Streami18n` provides static translation inside other Stream Chat components.
+`Streami18n` is a class that exposes a subset of [i18next](https://www.i18next.com/) configuration.
+You can import `Streami18n` from the `stream-chat-react-native` library:
 
 ```ts
 import { Streami18n } from 'stream-chat-react-native';
 ```
 
-## Instantiation
+## Initiating I18N
 
-To create an instance of `Streami18n` you simply need to instantiate the class.
-No parameters are required, this will default to English (en).
+To create an instance of `Streami18n` you simply need to instantiate the class. `Streai18n` doesn't require any parameters for creation and will default to English (en).
 
 ```ts
 const streami18n = new Streami18n();
 ```
 
-`Streami18n` accepts two parameters when being instantiated, [`options`](#options) and [`i18nextConfig`](#i18nextconfig).
+`Streami18n` accepts two parameters when you instantiate it, [`options`](#options) and [`i18nextConfig`](#i18nextconfig).
 These parameters allow you to modify the `Streami18n` instance to your preferences.
 
 ```ts
@@ -30,15 +29,21 @@ const streami18n = new Streami18n(options, i18nextConfig);
 
 ## Usage
 
-If you choose to use the default English settings with Day.js you do not need to deal directly with an instance of `Streami18n`, this is taken care of for you.
+<!-- Is usage of this with Day.js so common that we should start the section on usage with it? -->
+If you're using default English settings with Day.js to handle dates, you do not need to deal directly with `Streami18n`. 
 
-If you choose to change the language, translation, or date handling, you will need to provide your modified instance of `Streami18n` to the component library.
-Two components require your custom instance of `Streami18n` to properly pass your translation and time-date functions to the component library, `OverlayProvider` and <!-- TODO: Change to new docs for links -->`Chat`.
+You will need to provide a modified instance of `Streami18n` to the component library if you choose to change one of the following settings:
+ 
+- language 
+- translation
+- date handling
+
+Two components require your custom instance of `Streami18n` to properly pass your translation and time-date functions to the component library:  [`OverlayProvider`](docusaurus/docs/reactnative/core-components/overlay_provider.mdx) and [`Chat`](docusaurus/docs/reactnative/core-components/chat.mdx).
 Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
-Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
+Passing this prop  your instance of `Streami18n` will provide that istance to the other components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
 
 ```tsx
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -67,7 +72,7 @@ Currently seven total languages are provided out of the box.
 
 ## Options
 
-`options` is the first optional parameter passed to `Streami18n`, it is an object with all keys being optional.
+`options` is the first optional parameter passed to `Streami18n`; it is an object with all keys being optional.
 
 ### DateTimeParser
 
@@ -83,6 +88,7 @@ Day.js is a dependency of the repo and used by default.
 
 You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
 To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
+
 
 | TYPE |
 |- -|
@@ -111,6 +117,16 @@ Language code for language to be used.
 | TYPE | DEFAULT |
 |- -|- -|
 | string | `en` |
+
+ Accepts the following codes.
+
+- `en` - English
+- `nl` - Dutch
+- `ru` - Russian
+- `tr` - Turkish
+- `fr` - French
+- `it` - Italian
+- `hi` - Hindi
 
 ### logger
 
