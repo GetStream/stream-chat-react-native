@@ -1,15 +1,15 @@
 # Changelog
 
-## [3.6.0-rc.0]
+## [3.6.0] (2021-06-22)
 
 This release provides full support for Expo 41 and React Native 0.64
 
 Please make sure to upgrade following packages to specified versions:
 
-- react-native-reanimated@2.1.0
-- react-native-share@6.0.1
+- `react-native-reanimated@2.1.0`
+- `react-native-share@6.0.1`
 
-## [3.5.0]
+## [3.5.0] (2021-05-28)
 
 ###  **🛑 BREAKING**
 
