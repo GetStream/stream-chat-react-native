@@ -29,30 +29,25 @@ import ImageSelectorIcon from '../common-content/core-components/overlay-provide
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
 import OverlayReactions from '../common-content/core-components/overlay-provider/props/overlay_reactions.mdx';
 
-The `OverlayProvider` is the highest level of the Stream Chat components. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
-
-The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
-To use the `OverlayProvider` with no props `setTopInset` must be called at a later point in time, typically when the header height for the chat screen is known.
-For the purpose of this guide we will assume there is no header and provide the `topInset` as a prop with a value of `0`.
+The `OverlayProvider` is the top level Stream Chat for React Native component and wraps all other components provided by the SDK.
+The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
 ## UI Customizations
 
-You can override any of the components which gets rendered in overlay using props on `OverlayProvider`.
+You can override any of the components rendered in overlay using props on `OverlayProvider` or `Channel`.
+Custom components provided to `Channel` are hoisted to the overlay for use in displaying messages within the `OverlayProvider`.
+Customizing these components requires no interaction with the `OverlayProvider`.
 
-For example, you can customize message avatar component as following:
+Components only rendered within the overlay can be overridden and modified via props on the `OverlayProvider`.
+Removing the `OverlayReactionList` can be done easily by replacing it with a function that returns null.
 
-```jsx
-import { Channel, useMessageContext } from 'stream-chat-react-native';
+```tsx
+import { OverlayProvider } from 'stream-chat-react-native';
 
-const CustomAvatar = () => {
-  const {message} = useMessageContext();
-
-  return <Image source={{ src: message.user.image }} />
-}
-
-<Channel MessageAvatar={CustomAvatar} />
+<OverlayProvider OverlayReactionList={() => null}>
+  ...
+</OverlayProvider>
 ```
-
 
 <Tabs
   defaultValue='message-overlay'
@@ -81,30 +76,7 @@ const CustomAvatar = () => {
 
 ## Props
 
-### <div class="label required">required</div> **bottomInset**
-`bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
-
-:::tip
-This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook, if you would like to set it programatically from some child component.
-:::
-
-| Type | Default |
-| - | - |
-| number | 0 |
-
-### <div class="label required">required</div> **topInset**
-
-`topInset` must be set to ensure that when the picker is completely open it is opened to the desired height.
-The bottom sheet will not render without this height set, but it can be
-set to 0 to cover the entire screen, or the safe area top inset if desired.
-
-:::tip
-This can be done via props, but can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. 
-:::
-
-| Type | Default |
-| - | - |
-| number | 0 |
+The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
 
 ### attachmentPickerBottomSheetHandleHeight
 
@@ -125,6 +97,20 @@ This can be done via props, but can also be set via the `setTopInset` function p
 ### attachmentSelectionBarHeight
 
 <AttachmentSelectionBarHeight />
+
+### bottomInset
+Height of items located below the `MessageInput` when present.
+This inset determines the underlying shift to the `MessageList` when it is opened.
+
+:::tip
+
+This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+
+:::
+
+| Type | Default |
+| - | - |
+| number | 0 |
 
 ### i18nInstance
 
@@ -194,3 +180,17 @@ This can be done via props, but can also be set via the `setTopInset` function p
 
 <OverlayReactions />
 
+### topInset
+
+Distance from the top of the screen the attachment picker should open to when expanded.
+This is often set the to the header height.
+
+:::tip
+
+This can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. 
+
+:::
+
+| Type | Default |
+| - | - |
+| number | 0 |
