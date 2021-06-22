@@ -34,6 +34,12 @@ This value gets computed in [`MessageContent`](./message-content) once the conte
 | - |
 | number |
 
+### alignment
+
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
+
+<Alignment />
+
 ### fill
 
 Background color for reaction list container, when [`alignment`](#alignment) is `left`.
@@ -43,30 +49,6 @@ Background color for reaction list container, when [`alignment`](#alignment) is 
 | string |
 
 <!-- ### radius -->
-
-### reactionSize
-
-Dimension of each reaction icon.
-
-| Type |
-| - |
-| number |
-
-### stroke
-
-Background color for reaction list container, when [`alignment`](#alignment) is `right`.
-
-| Type |
-| - |
-| string |
-
-<!-- ### strokeSize -->
-
-### alignment
-
-_(Overrides the value from [MessageContext](../../contexts/message-context))_
-
-<Alignment />
 
 ### onLongPress
 
@@ -86,11 +68,29 @@ _(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Reactions />
 
+### reactionSize
+
+Dimension of each reaction icon.
+
+| Type |
+| - |
+| number |
+
 ### showMessageOverlay
 
 _(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <ShowMessageOverlay />
+
+### stroke
+
+Background color for reaction list container, when [`alignment`](#alignment) is `right`.
+
+| Type |
+| - |
+| string |
+
+<!-- ### strokeSize -->
 
 ### supportedReactions
 
