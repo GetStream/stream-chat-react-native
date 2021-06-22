@@ -12,13 +12,13 @@ import MessageContent from '../common-content/core-components/channel/props/mess
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
 
 `MessageSimple` is the default component for rendering message related UI. This component has been well optimized to save un-necessary re-renderings.
-If you would like to replace this default component with your own implementation, you can use the prop [`MessageSimple`](../core-components/channel#messagesimple) on `Channel` component.
+If you would like to replace this default component with your own implementation, you can use the prop [`MessageSimple`](../../core-components/channel#messagesimple) on `Channel` component.
 
 This component consumes the [`MessageContext`]('../contexts/message') and handles the display and functionality for an individual message in a message list. The Message UI component is typically a combination following sub-components that each consume context and are responsible for one aspect of a message (ex: text, reactions, attachments).
 
 ## Basic Usage
 
-**Use Case 1** Force `single` [`groupStyles`](../contexts/message-context#groupstyles) on message UI.
+**Use Case 1** Force `single` [`groupStyles`](../../contexts/message-context#groupstyles) on message UI.
 
 > You can achieve the same result by using a prop [`noGroupByUser`](./ui-components/message-list#nogroupbyuser) on `MessageList` component.
 
@@ -46,42 +46,42 @@ const CustomMessageUI = () => <MessageSimple alignment={'left'} />
 
 ### alignment
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <Alignment />
 
 ### groupStyles
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <GroupStyles />
 
 ### hasReactions
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <HasReactions />
 
 ### message
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <MessageProp />
 
 ### MessageAvatar
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <MessageAvatar />
 
 ### MessageContent
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <MessageContent />
 
 ### ReactionList
 
-_(Overrides the value from [MessageContext](../contexts/message-context))_
+_(Overrides the value from [MessageContext](../../contexts/message-context))_
 
 <ReactionList />
