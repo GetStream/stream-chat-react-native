@@ -1,26 +1,12 @@
-Use this prop to override following default UI components, which are part of [image gallery](../../ui-components/image-gallery).
+[Image gallery](/reactnative/ui-components/image-gallery) components.
+Each key in the object is spread as props onto its respective component.
+Each component has a number of sub-components it can receive in this manor.
 
-- [ImageGalleryFooter](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGalleryFooter.tsx)
-- [ImageGrid](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGrid.tsx)
-- [ImageGridHandle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGridHandle.tsx)
-- [ImageGalleryHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGalleryHeader.tsx)
+- `footer` -> [ImageGalleryFooter](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGalleryFooter.tsx)
+- `grid` -> [ImageGrid](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGrid.tsx)
+- `gridHandle` -> [ImageGridHandle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGridHandle.tsx)
+- `header` -> [ImageGalleryHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ImageGallery/components/ImageGalleryHeader.tsx)
 
-```jsx
-{
- footer: {
-   ShareIcon: CustomShareIconComponent
- },
- grid: {
-   avatarComponent: CustomAvatarComponent
- },
- gridHandle: {
-   centerComponent: CustomCenterComponent
- },
- header: {
-   CloseIcon: CustomCloseButtonComponent
- },
-}
-```
 
 | Type |
 | - |
