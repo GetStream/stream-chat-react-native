@@ -13,10 +13,7 @@ export const TAR: React.FC<IconProps> = (props) => (
       d='M0 4a4 4 0 014-4h19.333l10 10v26a4 4 0 01-4 4H4a4 4 0 01-4-4V4z'
       pathFill='#F5F5F5'
     />
-    <RootPath
-      d='M0 28h33.333v8a4 4 0 01-4 4H4a4 4 0 01-4-4v-8z'
-      pathFill='#A8A8A8'
-    />
+    <RootPath d='M0 28h33.333v8a4 4 0 01-4 4H4a4 4 0 01-4-4v-8z' pathFill='#A8A8A8' />
     <RootPath
       d='M26.691 9.99a3.307 3.307 0 01-3.307-3.307V.058L33.33 9.99H26.69z'
       pathFill='#DBDBDB'

@@ -26,10 +26,7 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type {
-  Colors,
-  MarkdownStyle,
-} from '../../../../contexts/themeContext/utils/theme';
+import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
@@ -68,12 +65,9 @@ export type RenderTextParams<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'onLongPress' | 'onPress'
-  >
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -91,7 +85,7 @@ export const renderText = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -102,9 +96,10 @@ export const renderText = <
     message,
     messageOverlay,
     onLink: onLinkParams,
-    onLongPress: propOnLongPress,
+    onLongPress: onLongPressParam,
     onlyEmojis,
-    onPress: propOnPress,
+    onPress: onPressParam,
+    preventPress,
   } = params;
 
   // take the @ mentions and turn them into markdown?
@@ -158,24 +153,26 @@ export const renderText = <
   const onLink = (url: string) =>
     onLinkParams
       ? onLinkParams(url)
-      : Linking.canOpenURL(url).then(
-          (canOpenUrl) => canOpenUrl && Linking.openURL(url),
-        );
+      : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
 
   const react: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
-      propOnPress?.({
-        defaultHandler: () => onLink(node.target),
-        emitter: 'textLink',
-        event,
-      });
+      if (!preventPress && onPressParam) {
+        onPressParam({
+          defaultHandler: () => onLink(node.target),
+          emitter: 'textLink',
+          event,
+        });
+      }
     };
 
     const onLongPress = (event: GestureResponderEvent) => {
-      propOnLongPress?.({
-        emitter: 'textLink',
-        event,
-      });
+      if (!preventPress && onLongPressParam) {
+        onLongPressParam({
+          emitter: 'textLink',
+          event,
+        });
+      }
     };
 
     state.withinLink = true;
@@ -209,17 +206,21 @@ export const renderText = <
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
-      propOnPress?.({
-        emitter: 'textMention',
-        event,
-      });
+      if (!preventPress && onPressParam) {
+        onPressParam({
+          emitter: 'textMention',
+          event,
+        });
+      }
     };
 
     const onLongPress = (event: GestureResponderEvent) => {
-      propOnLongPress?.({
-        emitter: 'textMention',
-        event,
-      });
+      if (!preventPress && onLongPressParam) {
+        onLongPressParam({
+          emitter: 'textMention',
+          event,
+        });
+      }
     };
 
     return React.createElement(
@@ -230,9 +231,7 @@ export const renderText = <
         onPress,
         style: styles.mentions,
       },
-      Array.isArray(node.content)
-        ? node.content[0]?.content || ''
-        : output(node.content, state),
+      Array.isArray(node.content) ? node.content[0]?.content || '' : output(node.content, state),
     );
   };
 

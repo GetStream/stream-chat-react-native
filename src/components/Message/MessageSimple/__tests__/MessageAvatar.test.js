@@ -19,20 +19,9 @@ describe('MessageAvatar', () => {
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
-    const {
-      getByTestId,
-      getByText,
-      queryAllByTestId,
-      queryAllByText,
-      rerender,
-      toJSON,
-    } = render(
+    const { getByTestId, getByText, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
-        <MessageAvatar
-          alignment='right'
-          groupStyles={['bottom']}
-          message={message}
-        />
+        <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
       </ThemeProvider>,
     );
 
@@ -60,11 +49,7 @@ describe('MessageAvatar', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageAvatar
-          alignment='left'
-          groupStyles={['single']}
-          message={staticMessage}
-        />
+        <MessageAvatar alignment='left' groupStyles={['single']} message={staticMessage} />
       </ThemeProvider>,
     );
 

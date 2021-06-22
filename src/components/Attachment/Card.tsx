@@ -95,11 +95,11 @@ export type CardPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Attachment<At> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'onLongPress' | 'onPress' | 'onPressIn'
+    'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -126,7 +126,7 @@ const CardWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: CardPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -141,6 +141,7 @@ const CardWithContext = <
     onLongPress,
     onPress,
     onPressIn,
+    preventPress,
     styles: stylesProp = {},
     text,
     thumb_url,
@@ -172,14 +173,17 @@ const CardWithContext = <
 
   return (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'card',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'card',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        if (!onPressIn) {
+        if (onPress) {
           onPress({
             defaultHandler: defaultOnPress,
             emitter: 'card',
@@ -210,13 +214,7 @@ const CardWithContext = <
             style={[styles.cardCover, cover, stylesProp.cardCover]}
           />
           {author_name && (
-            <View
-              style={[
-                styles.authorNameMask,
-                authorNameMask,
-                stylesProp.authorNameMask,
-              ]}
-            >
+            <View style={[styles.authorNameMask, authorNameMask, stylesProp.authorNameMask]}>
               <View
                 style={[
                   styles.authorNameContainer,
@@ -267,12 +265,7 @@ const CardWithContext = <
             {title && (
               <Text
                 numberOfLines={1}
-                style={[
-                  styles.title,
-                  { color: black },
-                  titleStyle,
-                  stylesProp.title,
-                ]}
+                style={[styles.title, { color: black }, titleStyle, stylesProp.title]}
               >
                 {title}
               </Text>
@@ -280,12 +273,7 @@ const CardWithContext = <
             {text && (
               <Text
                 numberOfLines={3}
-                style={[
-                  styles.description,
-                  { color: black },
-                  description,
-                  stylesProp.description,
-                ]}
+                style={[styles.description, { color: black }, description, stylesProp.description]}
               >
                 {text}
               </Text>
@@ -297,10 +285,7 @@ const CardWithContext = <
   );
 };
 
-const MemoizedCard = React.memo(
-  CardWithContext,
-  () => true,
-) as typeof CardWithContext;
+const MemoizedCard = React.memo(CardWithContext, () => true) as typeof CardWithContext;
 
 export type CardProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -309,13 +294,10 @@ export type CardProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Attachment<At> &
   Partial<
-    Pick<
-      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'onLongPress' | 'onPress' | 'onPressIn'
-    > &
+    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'onPressIn'> &
       Pick<
         MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -332,25 +314,14 @@ export const Card = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const {
-    additionalTouchableProps,
-    CardCover,
-    CardFooter,
-    CardHeader,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedCard
@@ -362,6 +333,7 @@ export const Card = <
         onLongPress,
         onPress,
         onPressIn,
+        preventPress,
       }}
       {...props}
     />

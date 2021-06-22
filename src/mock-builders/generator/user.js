@@ -17,8 +17,7 @@ export const generateStaticUser = (userNumber) => {
     case 0:
       return generateUser({
         id: 'DannyBoi1',
-        image:
-          'https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg',
+        image: 'https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg',
         name: 'Dan',
       });
     case 1:

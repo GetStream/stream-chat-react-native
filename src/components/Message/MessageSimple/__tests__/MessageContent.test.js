@@ -154,9 +154,7 @@ describe('MessageContent', () => {
   it('renders the Gallery when image attachments exist', async () => {
     const user = generateUser();
     const message = generateMessage({
-      attachments: [
-        { image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' },
-      ],
+      attachments: [{ image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' }],
       user,
     });
 

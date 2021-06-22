@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  cleanup,
-  fireEvent,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { Message } from '../../Message';
 
@@ -138,13 +133,7 @@ describe('Message', () => {
   it('toggles edit message ability based on `isMyMessage` prop', async () => {
     const message = generateMessage({ user });
 
-    const {
-      getByTestId,
-      getByText,
-      queryAllByTestId,
-      queryAllByText,
-      rerender,
-    } = renderMessage({
+    const { getByTestId, getByText, queryAllByTestId, queryAllByText, rerender } = renderMessage({
       message,
     });
 
@@ -216,13 +205,7 @@ describe('Message', () => {
   it('toggles delete message ability based on `isMyMessage` prop', async () => {
     const message = generateMessage({ user });
 
-    const {
-      getByTestId,
-      getByText,
-      queryAllByTestId,
-      queryAllByText,
-      rerender,
-    } = renderMessage({
+    const { getByTestId, getByText, queryAllByTestId, queryAllByText, rerender } = renderMessage({
       message,
     });
 
@@ -289,11 +272,7 @@ describe('Message', () => {
     const message = generateMessage({ user });
     const onThreadSelect = jest.fn();
     const MessageComponent = () => (
-      <Message
-        groupStyles={['bottom']}
-        message={message}
-        onThreadSelect={onThreadSelect}
-      />
+      <Message groupStyles={['bottom']} message={message} onThreadSelect={onThreadSelect} />
     );
 
     const { getByTestId, queryAllByTestId, queryAllByText } = render(

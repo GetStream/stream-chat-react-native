@@ -19,12 +19,13 @@ export const useCreateThreadContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   allowThreadMessagesInChannel,
   closeThread,
   loadMoreThread,
   openThread,
+  reloadThread,
   setThreadLoadingMore,
   thread,
   threadHasMore,
@@ -37,9 +38,7 @@ export const useCreateThreadContext = <
     .map(
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
         `${deleted_at}${
-          latest_reactions
-            ? latest_reactions.map(({ type }) => type).join()
-            : ''
+          latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
         }${reply_count}${status}${updated_at.toISOString()}`,
     )
     .join();
@@ -50,6 +49,7 @@ export const useCreateThreadContext = <
       closeThread,
       loadMoreThread,
       openThread,
+      reloadThread,
       setThreadLoadingMore,
       thread,
       threadHasMore,

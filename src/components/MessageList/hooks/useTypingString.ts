@@ -1,4 +1,7 @@
+import { filterTypingUsers } from '../utils/filterTypingUsers';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useTypingContext } from '../../../contexts/typingContext/TypingContext';
 
@@ -20,37 +23,27 @@ export const useTypingString = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
   const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const typingKeys = Object.keys(typing);
-  const nonSelfUsers: string[] = [];
-  typingKeys.forEach((typingKey) => {
-    if (client?.user?.id === typing?.[typingKey]?.user?.id) {
-      return;
-    }
-    const user =
-      typing?.[typingKey]?.user?.name || typing?.[typingKey]?.user?.id;
-    if (user) {
-      nonSelfUsers.push(user);
-    }
-  });
+  const filteredTypingUsers = filterTypingUsers({ client, thread, typing });
 
-  if (nonSelfUsers.length === 1) {
-    return t('{{ user }} is typing', { user: nonSelfUsers[0] });
+  if (filteredTypingUsers.length === 1) {
+    return t('{{ user }} is typing', { user: filteredTypingUsers[0] });
   }
 
-  if (nonSelfUsers.length > 1) {
+  if (filteredTypingUsers.length > 1) {
     /**
      * Joins the multiple names with number after first name
      * example: "Dan and Neil"
      */
     return t('{{ firstUser }} and {{ nonSelfUserLength }} more are typing', {
-      firstUser: nonSelfUsers[0],
-      nonSelfUserLength: nonSelfUsers.length - 1,
+      firstUser: filteredTypingUsers[0],
+      nonSelfUserLength: filteredTypingUsers.length - 1,
     });
   }
 

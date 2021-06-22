@@ -8,15 +8,12 @@ const notBabeledDeps = [
   'react-native-reanimated',
   'react-native-lightbox',
   '@gorhom/bottom-sheet',
-  'react-native-svg'
+  'react-native-svg',
 ];
 
 const sections = [
   {
-    components: [
-      'src/contexts/overlayContext/OverlayProvider.tsx',
-      'src/components/Chat/Chat.tsx',
-    ],
+    components: ['src/contexts/overlayContext/OverlayProvider.tsx', 'src/components/Chat/Chat.tsx'],
     exampleMode: 'collapse',
     name: 'Top Level Component',
     usageMode: 'expand',
@@ -168,10 +165,7 @@ const sections = [
     usageMode: 'expand',
   },
   {
-    components: [
-      'src/components/Avatar/Avatar.tsx',
-      'src/components/Avatar/GroupAvatar.tsx',
-    ],
+    components: ['src/components/Avatar/Avatar.tsx', 'src/components/Avatar/GroupAvatar.tsx'],
     exampleMode: 'collapse',
     name: 'Avatar Components',
     sections: [
@@ -242,24 +236,25 @@ const sections = [
 module.exports = {
   updateDocs(docs) {
     if (docs && docs.displayName) {
-      docs.visibleName = docs.displayName.indexOf('{') > -1 ? docs.displayName.slice(0, docs.displayName.indexOf('{')) : docs.displayName;
+      docs.visibleName =
+        docs.displayName.indexOf('{') > -1
+          ? docs.displayName.slice(0, docs.displayName.indexOf('{'))
+          : docs.displayName;
     }
-    return docs
+    return docs;
   },
   title: 'Stream Chat React Native - Docs',
   require: [
     '@babel/polyfill',
-    path.join(
-      __dirname,
-      'src/styleguideComponents/register-react-native-web.js',
-    ),
+    path.join(__dirname, 'src/styleguideComponents/register-react-native-web.js'),
   ],
   styleguideDir: 'docs/v3',
   sortProps: (props) => props,
   styles: {
     StyleGuide: {
       '@global body': {
-        fontFamily: '-apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans"'
+        fontFamily:
+          '-apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans"',
       },
       // We're changing the LogoRenderer component
       sidebar: {
@@ -277,24 +272,15 @@ module.exports = {
     objectAssign: 'Object.assign',
   },
   resolver(ast, recast) {
-    return require('react-docgen').resolver.findAllExportedComponentDefinitions(
-      ast,
-      recast,
-    );
+    return require('react-docgen').resolver.findAllExportedComponentDefinitions(ast, recast);
   },
-  propsParser: require('react-docgen-typescript').withCustomConfig(
-    './tsconfig.json',
-    {
-      propFilter: { skipPropsWithoutDoc: false },
-      shouldRemoveUndefinedFromOptional: true,
-      shouldExtractLiteralValuesFromEnum: true
-    },
-  ).parse,
+  propsParser: require('react-docgen-typescript').withCustomConfig('./tsconfig.json', {
+    propFilter: { skipPropsWithoutDoc: false },
+    shouldRemoveUndefinedFromOptional: true,
+    shouldExtractLiteralValuesFromEnum: true,
+  }).parse,
   styleguideComponents: {
-    PathlineRenderer: path.join(
-      __dirname,
-      'src/styleguideComponents/PathlineRenderer.tsx',
-    ),
+    PathlineRenderer: path.join(__dirname, 'src/styleguideComponents/PathlineRenderer.tsx'),
     Wrapper: path.join(__dirname, 'src/styleguideComponents/Wrapper.tsx'),
     PropsRenderer: path.join(__dirname, 'src/styleguideComponents/PropsRenderer.tsx'),
   },
@@ -309,10 +295,7 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
-        '@gorhom/bottom-sheet': path.join(
-          __dirname,
-          'src/styleguideComponents/BottomSheet.tsx',
-        ),
+        '@gorhom/bottom-sheet': path.join(__dirname, 'src/styleguideComponents/BottomSheet.tsx'),
         'react-native-markdown-package': path.join(
           __dirname,
           'src/styleguideComponents/Markdown.tsx',
@@ -332,17 +315,12 @@ module.exports = {
           loader: 'babel-loader',
           include: [
             path.join(__dirname, 'src'),
-            ...notBabeledDeps.map((dep) =>
-              path.join(__dirname, 'node_modules', dep),
-            ),
+            ...notBabeledDeps.map((dep) => path.join(__dirname, 'node_modules', dep)),
           ],
           options: {
             comments: true,
             plugins: ['module-resolver', 'react-native-web'],
-            presets: [
-              'module:metro-react-native-babel-preset',
-              '@babel/preset-typescript',
-            ],
+            presets: ['module:metro-react-native-babel-preset', '@babel/preset-typescript'],
             babelrc: false,
           },
         },

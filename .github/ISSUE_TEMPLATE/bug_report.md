@@ -10,7 +10,7 @@ assignees: vishalnarkhede
 <!--
 PLEASE READ THIS BEFORE PROCEEDING:
 
-Did you check cookbook? - https://github.com/GetStream/stream-chat-react-native/blob/master/docs/cookbook.md
+Did you check cookbook? - https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0
 
 If you are looking for an answer to "how to implement/do ... using xx component?" question, cookbook would be a nice place to start. We are constantly trying to update cookbook with different examples of use-cases/customisations of components. If you can't find an answer there, please leave a comment here - https://github.com/GetStream/stream-chat-react-native/issues/184 and I will try to add/include a sample code or example  as soon as possible to cookbook. This way it can help the other devs who are looking for same answer. Also if you have some feedback regarding cookbook, please don't hesitate to comment there.
 

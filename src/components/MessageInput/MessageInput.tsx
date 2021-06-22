@@ -23,6 +23,7 @@ import {
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -108,11 +109,8 @@ type MessageInputPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<
-  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'disabled' | 'members' | 'watchers'
-> &
+  Us extends UnknownType = DefaultUserType,
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
@@ -145,11 +143,9 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
-  Pick<
-    SuggestionsContextValue<Co, Us>,
-    'componentType' | 'suggestions' | 'suggestionsTitle'
-  > &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply' | 'quotedRepliesEnabled'> &
+  Pick<SuggestionsContextValue<Co, Us>, 'componentType' | 'suggestions' | 'suggestionsTitle'> &
+  Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
@@ -161,7 +157,7 @@ const MessageInputWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -189,6 +185,7 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    quotedRepliesEnabled,
     removeImage,
     Reply,
     resetInput,
@@ -200,6 +197,7 @@ const MessageInputWithContext = <
     suggestions,
     suggestionsTitle,
     t,
+    thread,
     threadList,
     uploadNewImage,
     watchers,
@@ -260,54 +258,78 @@ const MessageInputWithContext = <
     return closeAttachmentPicker;
   }, []);
 
-  const selectedImagesLength = selectedImages.length;
-  const imageUploadsLength = imageUploads.length;
+  const [hasResetImages, setHasResetImages] = useState(false);
+  const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
+  const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
+
   useEffect(() => {
-    if (selectedImagesLength > imageUploadsLength) {
-      const imagesToUpload = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
+    setSelectedImages([]);
+    if (imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+    return () => setSelectedImages([]);
+  }, []);
+
+  useEffect(() => {
+    if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
+      setHasResetImages(true);
+    }
+  }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (imagesForInput === false && imageUploads.length) {
+      imageUploads.forEach((image) => removeImage(image.id));
+    }
+  }, [imagesForInput]);
+
+  useEffect(() => {
+    if (imagesForInput) {
+      if (selectedImagesLength > imageUploadsLength) {
+        const imagesToUpload = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+          );
+          return !uploadedImage;
+        });
+        imagesToUpload.forEach((image) => uploadNewImage(image));
+      } else if (selectedImagesLength < imageUploadsLength) {
+        const imagesToRemove = imageUploads.filter(
           (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+            !selectedImages.find(
+              (selectedImage) =>
+                selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
+            ),
         );
-        return !uploadedImage;
-      });
-      imagesToUpload.forEach((image) => uploadNewImage(image));
-    } else if (selectedImagesLength < imageUploadsLength) {
-      const imagesToRemove = imageUploads.filter(
-        (imageUpload) =>
-          !selectedImages.find(
-            (selectedImage) =>
-              selectedImage.uri === imageUpload.file.uri ||
-              selectedImage.uri === imageUpload.url,
-          ),
-      );
-      imagesToRemove.forEach((image) => removeImage(image.id));
+        imagesToRemove.forEach((image) => removeImage(image.id));
+      }
     }
   }, [selectedImagesLength]);
 
   useEffect(() => {
-    if (imageUploadsLength < selectedImagesLength) {
-      const updatedSelectedImages = selectedImages.filter((selectedImage) => {
-        const uploadedImage = imageUploads.find(
-          (imageUpload) =>
-            imageUpload.file.uri === selectedImage.uri ||
-            imageUpload.url === selectedImage.uri,
+    if (imagesForInput) {
+      if (imageUploadsLength < selectedImagesLength) {
+        const updatedSelectedImages = selectedImages.filter((selectedImage) => {
+          const uploadedImage = imageUploads.find(
+            (imageUpload) =>
+              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+          );
+          return uploadedImage;
+        });
+        setSelectedImages(updatedSelectedImages);
+      } else if (imageUploadsLength > selectedImagesLength) {
+        setSelectedImages(
+          imageUploads
+            .map((imageUpload) => ({
+              height: imageUpload.file.height,
+              source: imageUpload.file.source,
+              uri: imageUpload.url,
+              width: imageUpload.file.width,
+            }))
+            .filter(Boolean) as Asset[],
         );
-        return uploadedImage;
-      });
-      setSelectedImages(updatedSelectedImages);
-    } else if (imageUploadsLength > selectedImagesLength) {
-      setSelectedImages(
-        imageUploads
-          .map((imageUpload) => ({
-            height: imageUpload.file.height,
-            source: imageUpload.file.source,
-            uri: imageUpload.url,
-            width: imageUpload.file.width,
-          }))
-          .filter(Boolean) as Asset[],
-      );
+      }
     }
   }, [imageUploadsLength]);
 
@@ -404,11 +426,7 @@ const MessageInputWithContext = <
             layout: { height: newHeight },
           },
         }) => setHeight(newHeight)}
-        style={[
-          styles.container,
-          { backgroundColor: white, borderColor: border },
-          container,
-        ]}
+        style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
         {(editing || quotedMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
@@ -417,13 +435,7 @@ const MessageInputWithContext = <
             ) : (
               <CurveLineLeftUp pathFill={grey_gainsboro} />
             )}
-            <Text
-              style={[
-                styles.editingBoxHeaderTitle,
-                { color: black },
-                editingBoxHeaderTitle,
-              ]}
-            >
+            <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
               {editing ? t('Editing Message') : t('Reply to Message')}
             </Text>
             <TouchableOpacity
@@ -467,7 +479,9 @@ const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {((typeof editing !== 'boolean' && editing?.quoted_message) ||
+                {((typeof editing !== 'boolean' &&
+                  quotedRepliesEnabled &&
+                  editing?.quoted_message) ||
                   quotedMessage) && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
@@ -494,11 +508,7 @@ const MessageInputWithContext = <
                       ]}
                     >
                       <Lightning height={16} pathFill={white} width={16} />
-                      <Text
-                        style={[styles.giphyText, { color: white }, giphyText]}
-                      >
-                        GIPHY
-                      </Text>
+                      <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
                     </View>
                   )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
@@ -518,9 +528,7 @@ const MessageInputWithContext = <
                 </View>
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                <SendButton
-                  disabled={disabled || sending.current || !isValidMessage()}
-                />
+                <SendButton disabled={disabled || sending.current || !isValidMessage()} />
               </View>
             </>
           )}
@@ -550,8 +558,7 @@ const MessageInputWithContext = <
               backgroundColor: white_smoke,
               height:
                 (attachmentPickerBottomSheetHeight
-                  ? attachmentPickerBottomSheetHeight +
-                    (attachmentSelectionBarHeight ?? 52)
+                  ? attachmentPickerBottomSheetHeight + (attachmentSelectionBarHeight ?? 52)
                   : 360) - (bottomInset ?? 0),
             },
             attachmentSelectionBar,
@@ -571,7 +578,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -592,6 +599,7 @@ const areEqual = <
     suggestions: prevSuggestions,
     suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
+    thread: prevThread,
     threadList: prevThreadList,
   } = prevProps;
   const {
@@ -610,6 +618,7 @@ const areEqual = <
     suggestions: nextSuggestions,
     suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
+    thread: nextThread,
     threadList: nextThreadList,
   } = nextProps;
 
@@ -660,21 +669,24 @@ const areEqual = <
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) return false;
 
-  const mentionedUsersEqual =
-    prevMentionedUsers.length === nextMentionedUsers.length;
+  const mentionedUsersEqual = prevMentionedUsers.length === nextMentionedUsers.length;
   if (!mentionedUsersEqual) return false;
 
   const suggestionsEqual =
     !!prevSuggestions?.data && !!nextSuggestions?.data
       ? prevSuggestions.data.length === nextSuggestions.data.length &&
-        prevSuggestions.data.every(
-          ({ name }, index) => name === nextSuggestions.data[index].name,
-        )
+        prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
       : !!prevSuggestions === !!nextSuggestions;
   if (!suggestionsEqual) return false;
 
   const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
   if (!suggestionsTitleEqual) return false;
+
+  const threadEqual =
+    prevThread?.id === nextThread?.id &&
+    prevThread?.text === nextThread?.text &&
+    prevThread?.reply_count === nextThread?.reply_count;
+  if (!threadEqual) return false;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
@@ -694,7 +706,7 @@ export type MessageInputProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -713,19 +725,11 @@ export const MessageInput = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled = false, members, watchers } = useChannelContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
     additionalTextInputProps,
@@ -759,13 +763,11 @@ export const MessageInput = <
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { quotedRepliesEnabled, Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const {
-    componentType,
-    suggestions,
-    suggestionsTitle,
-  } = useSuggestionsContext<Co, Us>();
+  const { componentType, suggestions, suggestionsTitle } = useSuggestionsContext<Co, Us>();
+
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { t } = useTranslationContext();
 
@@ -795,6 +797,7 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
+        quotedRepliesEnabled,
         removeImage,
         Reply,
         resetInput,
@@ -807,6 +810,7 @@ export const MessageInput = <
         suggestions,
         suggestionsTitle,
         t,
+        thread,
         uploadNewImage,
         watchers,
       }}

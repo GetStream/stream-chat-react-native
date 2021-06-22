@@ -52,9 +52,7 @@ export type UserInfoOverlayContextValue = {
   data?: UserInfoOverlayData;
 };
 
-export const UserInfoOverlayContext = React.createContext(
-  {} as UserInfoOverlayContextValue,
-);
+export const UserInfoOverlayContext = React.createContext({} as UserInfoOverlayContextValue);
 
 export const UserInfoOverlayProvider: React.FC<{
   value?: UserInfoOverlayContextValue;
@@ -71,15 +69,11 @@ export const UserInfoOverlayProvider: React.FC<{
     setData,
   };
   return (
-    <UserInfoOverlayContext.Provider
-      value={userInfoOverlayContext as UserInfoOverlayContextValue}
-    >
+    <UserInfoOverlayContext.Provider value={userInfoOverlayContext as UserInfoOverlayContextValue}>
       {children}
     </UserInfoOverlayContext.Provider>
   );
 };
 
 export const useUserInfoOverlayContext = () =>
-  (useContext(
-    UserInfoOverlayContext,
-  ) as unknown) as UserInfoOverlayContextValue;
+  useContext(UserInfoOverlayContext) as unknown as UserInfoOverlayContextValue;

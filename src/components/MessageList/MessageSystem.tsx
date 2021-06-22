@@ -50,7 +50,7 @@ export type MessageSystemProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -76,7 +76,7 @@ export const MessageSystem = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

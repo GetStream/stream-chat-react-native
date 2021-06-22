@@ -6,10 +6,7 @@ import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { TouchableHandlerPayload } from '../../components/Message/Message';
-import type {
-  GroupType,
-  MessageType,
-} from '../../components/MessageList/hooks/useMessageList';
+import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type {
@@ -37,7 +34,7 @@ export type MessageContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /** Whether or not actions can be performed on message */
   actionsEnabled: boolean;
@@ -60,7 +57,7 @@ export type MessageContextValue<
   handleAction: ActionHandler;
   handleDeleteMessage: () => Promise<void>;
   handleEditMessage: () => void;
-  handleReplyMessage: () => void;
+  handleQuotedReplyMessage: () => void;
   handleResendMessage: () => Promise<void>;
   handleToggleBanUser: () => Promise<void>;
   handleToggleMuteUser: () => Promise<void>;
@@ -111,6 +108,7 @@ export type MessageContextValue<
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
+  goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;
   /** Prevent message being pressed for image viewer view */
@@ -131,14 +129,14 @@ export const MessageProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessageContext.Provider value={(value as unknown) as MessageContextValue}>
+  <MessageContext.Provider value={value as unknown as MessageContextValue}>
     {children}
   </MessageContext.Provider>
 );
@@ -150,17 +148,8 @@ export const useMessageContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(MessageContext) as unknown) as MessageContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  Us extends UnknownType = DefaultUserType,
+>() => useContext(MessageContext) as unknown as MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if MessageContext
@@ -175,7 +164,7 @@ export const withMessageContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
@@ -186,8 +175,6 @@ export const withMessageContext = <
 
     return <Component {...(props as P)} {...messageContext} />;
   };
-  WithMessageContextComponent.displayName = `WithMessageContext${getDisplayName(
-    Component,
-  )}`;
+  WithMessageContextComponent.displayName = `WithMessageContext${getDisplayName(Component)}`;
   return WithMessageContextComponent;
 };

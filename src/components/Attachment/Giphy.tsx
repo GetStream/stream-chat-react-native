@@ -109,15 +109,12 @@ export type GiphyPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn'
+  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'additionalTouchableProps'
-  > & {
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
     attachment: Attachment<At>;
   };
 
@@ -128,7 +125,7 @@ const GiphyWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -139,6 +136,7 @@ const GiphyWithContext = <
     onLongPress,
     onPress,
     onPressIn,
+    preventPress,
   } = props;
 
   const { actions, image_url, thumb_url, title, type } = attachment;
@@ -185,13 +183,7 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View
-            style={[
-              styles.giphyContainer,
-              { backgroundColor: overlay_dark },
-              giphyContainer,
-            ]}
-          >
+          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
@@ -200,22 +192,14 @@ const GiphyWithContext = <
         </View>
       </View>
       <View>
-        <View
-          style={[styles.selector, { borderBottomColor: border }, selector]}
-        >
+        <View style={[styles.selector, { borderBottomColor: border }, selector]}>
           <TouchableOpacity
             onPress={() => handleAction('image_action', 'shuffle')}
-            style={[
-              styles.shuffleButton,
-              { borderColor: border },
-              shuffleButton,
-            ]}
+            style={[styles.shuffleButton, { borderColor: border }, shuffleButton]}
           >
             <Left />
           </TouchableOpacity>
-          <Text
-            style={[styles.title, { color: black }, titleStyle]}
-          >{`"${title}"`}</Text>
+          <Text style={[styles.title, { color: black }, titleStyle]}>{`"${title}"`}</Text>
           <TouchableOpacity
             onPress={() => {
               if (actions?.[1].name && actions?.[1].value && handleAction) {
@@ -234,15 +218,9 @@ const GiphyWithContext = <
                 handleAction(actions[2].name, actions[2].value);
               }
             }}
-            style={[
-              styles.cancelContainer,
-              { borderRightColor: border },
-              cancelContainer,
-            ]}
+            style={[styles.cancelContainer, { borderRightColor: border }, cancelContainer]}
           >
-            <Text style={[styles.cancel, { color: grey }, cancel]}>
-              {actions?.[2].text}
-            </Text>
+            <Text style={[styles.cancel, { color: grey }, cancel]}>{actions?.[2].text}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -252,32 +230,37 @@ const GiphyWithContext = <
             }}
             style={[styles.sendContainer, sendContainer]}
           >
-            <Text style={[styles.send, { color: accent_blue }, send]}>
-              {actions?.[0].text}
-            </Text>
+            <Text style={[styles.send, { color: accent_blue }, send]}>{actions?.[0].text}</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   ) : (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'giphy',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        onPress({
-          emitter: 'giphy',
-          event,
-        });
+        if (onPress) {
+          onPress({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       onPressIn={(event) => {
-        onPressIn?.({
-          emitter: 'giphy',
-          event,
-        });
+        if (onPressIn) {
+          onPressIn({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       style={[styles.container, container]}
       testID='giphy-attachment'
@@ -290,13 +273,7 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View
-            style={[
-              styles.giphyContainer,
-              { backgroundColor: overlay_dark },
-              giphyContainer,
-            ]}
-          >
+          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
@@ -315,24 +292,16 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    attachment: {
-      actions: prevActions,
-      image_url: prevImageUrl,
-      thumb_url: prevThumbUrl,
-    },
+    attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
   } = prevProps;
   const {
-    attachment: {
-      actions: nextActions,
-      image_url: nextImageUrl,
-      thumb_url: nextThumbUrl,
-    },
+    attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -352,10 +321,7 @@ const areEqual = <
   return true;
 };
 
-const MemoizedGiphy = React.memo(
-  GiphyWithContext,
-  areEqual,
-) as typeof GiphyWithContext;
+const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWithContext;
 
 export type GiphyProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -364,16 +330,10 @@ export type GiphyProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'onLongPress' | 'onPressIn'
-  > &
-    Pick<
-      MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'additionalTouchableProps'
-    >
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPressIn'> &
+    Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'>
 > & {
   attachment: Attachment<At>;
 };
@@ -388,28 +348,13 @@ export const Giphy = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, onLongPress, onPress, onPressIn } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { additionalTouchableProps } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedGiphy
@@ -419,6 +364,7 @@ export const Giphy = <
         onLongPress,
         onPress,
         onPressIn,
+        preventPress,
       }}
       {...props}
     />

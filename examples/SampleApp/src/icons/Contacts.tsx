@@ -4,12 +4,7 @@ import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
-export const Contacts: React.FC<IconProps> = ({
-  fill,
-  height = 24,
-  scale = 1,
-  width = 24,
-}) => {
+export const Contacts: React.FC<IconProps> = ({ fill, height = 24, scale = 1, width = 24 }) => {
   const {
     theme: {
       colors: { black },

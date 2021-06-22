@@ -4,12 +4,7 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -30,7 +25,7 @@ const wait = (ms: number) =>
 type Parameters<
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   filters: ChannelFilters<Ch, Co, Us>;
   options: ChannelOptions;
@@ -48,7 +43,7 @@ export const usePaginatedChannels = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
@@ -56,9 +51,7 @@ export const usePaginatedChannels = <
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const [channels, setChannels] = useState<
-    Channel<At, Ch, Co, Ev, Me, Re, Us>[]
-  >([]);
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
@@ -67,10 +60,7 @@ export const usePaginatedChannels = <
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (
-    queryType = '',
-    retryCount = 0,
-  ): Promise<void> => {
+  const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
@@ -88,11 +78,9 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(
-        filters,
-        sort,
-        newOptions,
-      );
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
+
+      channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
       const newChannels =
         queryType === 'reload' || queryType === 'refresh'
@@ -136,7 +124,7 @@ export const usePaginatedChannels = <
   const reloadList = () => queryChannels('reload');
 
   /**
-   * Equality check using stringified filters ensure that we don't make un-necessary queryChannels api calls
+   * Equality check using stringified filters/sort ensure that we don't make un-necessary queryChannels api calls
    * for the scenario:
    *
    * <ChannelList
@@ -151,10 +139,11 @@ export const usePaginatedChannels = <
    * in return will trigger useEffect. To avoid this, we can add a value check.
    */
   const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
+  const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
     reloadList();
-  }, [filterStr]);
+  }, [filterStr, sortStr]);
 
   return {
     channels,

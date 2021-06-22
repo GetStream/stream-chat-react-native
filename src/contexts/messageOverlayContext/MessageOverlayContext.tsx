@@ -5,13 +5,10 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
-import type { Alignment } from '../messageContext/MessageContext';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
-import type {
-  GroupType,
-  MessageType,
-} from '../../components/MessageList/hooks/useMessageList';
+import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionsProps } from '../../components/MessageOverlay/MessageActions';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
@@ -41,7 +38,7 @@ export type MessageOverlayData<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   alignment?: Alignment;
   clientId?: string;
@@ -51,13 +48,12 @@ export type MessageOverlayData<
   images?: Attachment<At>[];
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageActions?: MessageAction[];
+  messageContext?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactionTitle?: string;
   messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   onlyEmojis?: boolean;
   otherAttachments?: Attachment<At>[];
-  OverlayReactionList?: React.ComponentType<
-    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  OverlayReactionList?: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
 };
@@ -69,24 +65,20 @@ export type MessageOverlayContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
    * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
-  MessageActions: React.ComponentType<
-    MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageActions: React.ComponentType<MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *
    * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactionList.tsx)
    */
-  OverlayReactionList: React.ComponentType<
-    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  OverlayReactionList: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png), in overlay (which shows up on long press on message).
    *
@@ -94,15 +86,11 @@ export type MessageOverlayContextValue<
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps>;
   reset: () => void;
-  setData: React.Dispatch<
-    React.SetStateAction<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>>
-  >;
+  setData: React.Dispatch<React.SetStateAction<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>>>;
   data?: MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>;
 };
 
-export const MessageOverlayContext = React.createContext(
-  {} as MessageOverlayContextValue,
-);
+export const MessageOverlayContext = React.createContext({} as MessageOverlayContextValue);
 
 export const MessageOverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -111,7 +99,7 @@ export const MessageOverlayProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
@@ -130,9 +118,7 @@ export const MessageOverlayProvider = <
     setData,
   };
   return (
-    <MessageOverlayContext.Provider
-      value={messageOverlayContext as MessageOverlayContextValue}
-    >
+    <MessageOverlayContext.Provider value={messageOverlayContext as MessageOverlayContextValue}>
       {children}
     </MessageOverlayContext.Provider>
   );
@@ -145,9 +131,9 @@ export const useMessageOverlayContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() =>
-  (useContext(MessageOverlayContext) as unknown) as MessageOverlayContextValue<
+  useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<
     At,
     Ch,
     Co,
@@ -170,27 +156,14 @@ export const withMessageOverlayContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
-): React.FC<
-  Omit<P, keyof MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>>
-> => {
+): React.FC<Omit<P, keyof MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithMessageOverlayContextComponent = (
-    props: Omit<
-      P,
-      keyof MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>
-    >,
+    props: Omit<P, keyof MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const messageContext = useMessageOverlayContext<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >();
+    const messageContext = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
 
     return <Component {...(props as P)} {...messageContext} />;
   };

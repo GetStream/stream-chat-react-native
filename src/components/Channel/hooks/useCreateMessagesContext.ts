@@ -19,7 +19,7 @@ export const useCreateMessagesContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   additionalTouchableProps,
   animatedLongPress,
@@ -52,8 +52,8 @@ export const useCreateMessagesContext = <
   handleEdit,
   handleFlag,
   handleMute,
+  handleQuotedReply,
   handleReaction,
-  handleReply,
   handleRetry,
   handleThreadReply,
   initialScrollToFirstUnreadMessage,
@@ -65,6 +65,7 @@ export const useCreateMessagesContext = <
   MessageAvatar,
   MessageContent,
   messageContentOrder,
+  MessageDeleted,
   MessageFooter,
   MessageHeader,
   MessageList,
@@ -81,12 +82,12 @@ export const useCreateMessagesContext = <
   onPressInMessage,
   onPressMessage,
   OverlayReactionList,
+  quotedRepliesEnabled,
+  quotedReply,
   ReactionList,
   reactionsEnabled,
   removeMessage,
-  repliesEnabled,
   Reply,
-  reply,
   retry,
   retrySendMessage,
   ScrollToBottomButton,
@@ -94,6 +95,7 @@ export const useCreateMessagesContext = <
   setEditingState,
   setQuotedMessageState,
   supportedReactions,
+  threadRepliesEnabled,
   threadReply,
   TypingIndicator,
   TypingIndicatorContainer,
@@ -105,22 +107,12 @@ export const useCreateMessagesContext = <
    */
   channelId?: string;
 }) => {
-  const additionalTouchablePropsLength = Object.keys(
-    additionalTouchableProps || {},
-  ).length;
+  const additionalTouchablePropsLength = Object.keys(additionalTouchableProps || {}).length;
   const markdownRulesLength = Object.keys(markdownRules || {}).length;
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions.length;
 
-  const messagesContext: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalTouchableProps,
       animatedLongPress,
@@ -152,8 +144,8 @@ export const useCreateMessagesContext = <
       handleEdit,
       handleFlag,
       handleMute,
+      handleQuotedReply,
       handleReaction,
-      handleReply,
       handleRetry,
       handleThreadReply,
       initialScrollToFirstUnreadMessage,
@@ -165,6 +157,7 @@ export const useCreateMessagesContext = <
       MessageAvatar,
       MessageContent,
       messageContentOrder,
+      MessageDeleted,
       MessageFooter,
       MessageHeader,
       MessageList,
@@ -181,12 +174,12 @@ export const useCreateMessagesContext = <
       onPressInMessage,
       onPressMessage,
       OverlayReactionList,
+      quotedRepliesEnabled,
+      quotedReply,
       ReactionList,
       reactionsEnabled,
       removeMessage,
-      repliesEnabled,
       Reply,
-      reply,
       retry,
       retrySendMessage,
       ScrollToBottomButton,
@@ -194,6 +187,7 @@ export const useCreateMessagesContext = <
       setEditingState,
       setQuotedMessageState,
       supportedReactions,
+      threadRepliesEnabled,
       threadReply,
       TypingIndicator,
       TypingIndicatorContainer,

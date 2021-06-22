@@ -73,6 +73,7 @@ export * from './Chat/Chat';
 export * from './Chat/hooks/useAppStateListener';
 export * from './Chat/hooks/useCreateChatContext';
 export * from './Chat/hooks/useIsOnline';
+export * from './Chat/hooks/useMutedUsers';
 
 export * from './ImageGallery/ImageGallery';
 export * from './ImageGallery/components/AnimatedGalleryImage';
@@ -94,6 +95,7 @@ export * from './Message/hooks/useCreateMessageContext';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
+export * from './Message/MessageSimple/MessageDeleted';
 export * from './Message/MessageSimple/MessageFooter';
 export * from './Message/MessageSimple/MessageReplies';
 export * from './Message/MessageSimple/MessageRepliesAvatars';
@@ -102,6 +104,8 @@ export * from './Message/MessageSimple/MessageStatus';
 export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
+export * from './Message/utils/messageActions';
+export * from './Message/utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';

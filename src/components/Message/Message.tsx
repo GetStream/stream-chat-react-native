@@ -11,10 +11,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import {
-  TapGestureHandler,
-  TapGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   runOnJS,
@@ -26,6 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+import { messageActions as defaultMessageActions } from './utils/messageActions';
 import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
@@ -37,10 +35,7 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   KeyboardContextValue,
   useKeyboardContext,
@@ -64,10 +59,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../../contexts/threadContext/ThreadContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
@@ -100,19 +92,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const prefetchImage = ({
-  height,
-  url,
-}: {
-  height: number | string;
-  url: string;
-}) => {
+const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
   if (url.includes('&h=%2A')) {
     Image.prefetch(
-      url.replace(
-        'h=%2A',
-        `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-      ),
+      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
     )
       .catch(() => Image.prefetch(url))
       .catch(() => {
@@ -147,7 +130,7 @@ export type MessageTouchableHandlerPayload<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
@@ -156,7 +139,7 @@ export type MessageTouchableHandlerPayload<
 export type MessageActionHandlers = {
   deleteMessage: () => Promise<void>;
   editMessage: () => void;
-  reply: () => void;
+  quotedReply: () => void;
   resendMessage: () => Promise<void>;
   showMessageOverlay: () => void;
   toggleBanUser: () => Promise<void>;
@@ -171,7 +154,7 @@ export type MessagePropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'channel'
@@ -179,22 +162,13 @@ export type MessagePropsWithContext<
   | 'enforceUniqueReaction'
   | 'isAdmin'
   | 'isModerator'
-  | 'isOwner'
   | 'members'
   | 'readEventsEnabled'
 > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<
-    Omit<
-      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'groupStyles' | 'message'
-    >
-  > &
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  > &
+  Partial<Omit<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'animatedLongPress'
@@ -211,8 +185,8 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handleQuotedReply'
     | 'handleReaction'
-    | 'handleReply'
     | 'handleRetry'
     | 'handleThreadReply'
     | 'messageActions'
@@ -224,16 +198,17 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'quotedRepliesEnabled'
+    | 'quotedReply'
     | 'reactionsEnabled'
     | 'removeMessage'
-    | 'repliesEnabled'
-    | 'reply'
     | 'retry'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
+    | 'threadRepliesEnabled'
     | 'threadReply'
     | 'updateMessage'
   > &
@@ -263,9 +238,7 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      **/
     onLongPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
     /**
      * You can call methods available on the Message
@@ -279,15 +252,11 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      * */
     onPress?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
 
     onPressIn?: (
-      payload: Partial<
-        MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>
-      >,
+      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
@@ -312,7 +281,7 @@ const MessageWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -339,17 +308,16 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handleQuotedReply,
     handleReaction: handleReactionProp,
-    handleReply,
     handleRetry,
     handleThreadReply,
     isAdmin,
     isModerator,
-    isOwner,
     lastReceivedId,
     members,
     message,
-    messageActions: messageActionsProp,
+    messageActions: messageActionsProp = defaultMessageActions,
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
@@ -365,11 +333,11 @@ const MessageWithContext = <
     openThread,
     OverlayReactionList,
     preventPress,
+    quotedRepliesEnabled,
     reactionsEnabled,
     readEventsEnabled,
     removeMessage,
-    repliesEnabled,
-    reply: replyProp,
+    quotedReply: quotedReplyProp,
     retry: retryProp,
     retrySendMessage,
     selectReaction,
@@ -385,19 +353,14 @@ const MessageWithContext = <
     t,
     targetedMessage,
     threadList = false,
+    threadRepliesEnabled,
     threadReply: threadReplyProp,
     updateMessage,
   } = props;
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        accent_red,
-        bg_gradient_start,
-        grey,
-        targetedMessageBackground,
-      },
+      colors: { accent_blue, accent_red, bg_gradient_start, grey, targetedMessageBackground },
       messageSimple: {
         gallery: { halfSize, size },
         targetedMessageUnderlay,
@@ -408,6 +371,18 @@ const MessageWithContext = <
   const doubleTapRef = useRef<TapGestureHandler>(null);
   const pressActive = useSharedValue(false);
   const scale = useSharedValue(1);
+
+  /**
+   * This is a cleanup effect to prevent the onLongPress
+   * handler from being called if the component has dismounted.
+   */
+  useEffect(
+    () => () => {
+      pressActive.value = false;
+      cancelAnimation(scale);
+    },
+    [],
+  );
   const scaleStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       transform: [
@@ -432,12 +407,11 @@ const MessageWithContext = <
     });
   }, [targetedMessage]);
 
-  const actionsEnabled =
-    message.type === 'regular' && message.status === 'received';
+  const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
-  const canModifyMessage = isMyMessage || isModerator || isOwner || isAdmin;
+  const canModifyMessage = isMyMessage || isModerator || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -453,9 +427,7 @@ const MessageWithContext = <
     }
   };
 
-  const onPressQuotedMessage = (
-    quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
+  const onPressQuotedMessage = (quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (!goToMessage) return;
 
     pressActive.value = false;
@@ -464,21 +436,11 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (
-    error = message.type === 'error' || message.status === 'failed',
-  ) => {
+  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
-    const quotedMessage = message.quoted_message as MessageType<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >;
+    const quotedMessage = message.quoted_message as MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     if (error) {
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
@@ -487,8 +449,7 @@ const MessageWithContext = <
   };
 
   const alignment =
-    forceAlignMessages &&
-    (forceAlignMessages === 'left' || forceAlignMessages === 'right')
+    forceAlignMessages && (forceAlignMessages === 'left' || forceAlignMessages === 'right')
       ? forceAlignMessages
       : isMyMessage
       ? 'right'
@@ -508,11 +469,7 @@ const MessageWithContext = <
             if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (
-              cur.type === 'image' &&
-              !cur.title_link &&
-              !cur.og_scrape_url
-            ) {
+            } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
                * an image with no url links at all falling back to being an attachment
@@ -546,9 +503,7 @@ const MessageWithContext = <
   const hasAttachmentActions =
     !message.deleted_at &&
     Array.isArray(message.attachments) &&
-    message.attachments.some(
-      (attachment) => attachment.actions && attachment.actions.length,
-    );
+    message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
 
   // prefetch images for Gallery component rendering
   const attachmentImageLength = attachments.images.length;
@@ -655,21 +610,15 @@ const MessageWithContext = <
     }
   };
 
-  const handleResendMessage = () => {
-    const messageWithoutReservedFields = removeReservedFields(message);
+  const handleResendMessage = () =>
+    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
-    return retrySendMessage(
-      messageWithoutReservedFields as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
-  };
-
-  const handleReplyMessage = () => {
+  const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
   };
 
   const isMuted = (client.mutedUsers || []).some(
-    (mute) =>
-      mute.user.id === client.userID && mute.target.id === message.user?.id,
+    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
   );
 
   const handleToggleMuteUser = async () => {
@@ -886,17 +835,17 @@ const MessageWithContext = <
           title: isMuted ? t('Unmute User') : t('Mute User'),
         };
 
-    const reply = replyProp
-      ? replyProp(message)
-      : replyProp === null
+    const quotedReply = quotedReplyProp
+      ? quotedReplyProp(message)
+      : quotedReplyProp === null
       ? null
       : {
           action: () => {
             setOverlay('none');
-            if (handleReply) {
-              handleReply(message);
+            if (handleQuotedReply) {
+              handleQuotedReply(message);
             }
-            handleReplyMessage();
+            handleQuotedReplyMessage();
           },
           icon: <CurveLineLeftUp pathFill={grey} />,
           title: t('Reply'),
@@ -938,13 +887,17 @@ const MessageWithContext = <
 
     const isThreadMessage = threadList || !!message.parent_id;
 
+    const dismissOverlay = () => setOverlay('none');
+
     const messageActions =
-      typeof messageActionsProp === 'function'
-        ? messageActionsProp({
+      typeof messageActionsProp !== 'function'
+        ? messageActionsProp
+        : messageActionsProp({
             blockUser,
             canModifyMessage,
             copyMessage,
             deleteMessage,
+            dismissOverlay,
             editMessage,
             error,
             flagMessage,
@@ -953,71 +906,12 @@ const MessageWithContext = <
             message,
             messageReactions,
             muteUser,
-            repliesEnabled,
-            reply,
+            quotedRepliesEnabled,
+            quotedReply,
             retry,
+            threadRepliesEnabled,
             threadReply,
-          })
-        : messageActionsProp
-        ? messageActionsProp
-        : error && isMyMessage
-        ? [retry, editMessage, deleteMessage]
-        : messageReactions
-        ? undefined
-        : canModifyMessage
-        ? isThreadMessage
-          ? message.text
-            ? isMyMessage
-              ? [editMessage, copyMessage, deleteMessage]
-              : [copyMessage, flagMessage]
-            : isMyMessage
-            ? [editMessage, deleteMessage]
-            : [flagMessage]
-          : message.text
-          ? repliesEnabled
-            ? isMyMessage
-              ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
-              : [reply, threadReply, copyMessage, flagMessage]
-            : isMyMessage
-            ? [editMessage, copyMessage, deleteMessage]
-            : [copyMessage]
-          : repliesEnabled
-          ? isMyMessage
-            ? [reply, threadReply, editMessage, deleteMessage]
-            : [reply, threadReply, flagMessage]
-          : isMyMessage
-          ? [editMessage, deleteMessage]
-          : [flagMessage]
-        : isThreadMessage
-        ? message.text
-          ? isMyMessage
-            ? [copyMessage, deleteMessage]
-            : [copyMessage, muteUser, flagMessage, blockUser]
-          : isMyMessage
-          ? [deleteMessage]
-          : [muteUser, blockUser, flagMessage]
-        : message.text
-        ? repliesEnabled
-          ? isMyMessage
-            ? [reply, threadReply, copyMessage, deleteMessage]
-            : [
-                reply,
-                threadReply,
-                copyMessage,
-                muteUser,
-                flagMessage,
-                blockUser,
-              ]
-          : isMyMessage
-          ? [copyMessage, deleteMessage]
-          : [copyMessage, muteUser, flagMessage, blockUser]
-        : repliesEnabled
-        ? isMyMessage
-          ? [reply, threadReply, deleteMessage]
-          : [reply, threadReply, muteUser, blockUser]
-        : isMyMessage
-        ? [deleteMessage]
-        : [muteUser, blockUser];
+          });
 
     setData({
       alignment,
@@ -1027,11 +921,9 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActions?.filter(Boolean) as
-        | MessageAction[]
-        | undefined,
-      messageReactionTitle:
-        !error && messageReactions ? t('Message Reactions') : undefined,
+      messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageContext: { ...messageContext, disabled: true, preventPress: true },
+      messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
@@ -1046,7 +938,7 @@ const MessageWithContext = <
   const actionHandlers: MessageActionHandlers = {
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
-    reply: handleReplyMessage,
+    quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
     showMessageOverlay,
     toggleBanUser: handleToggleBanUser,
@@ -1091,11 +983,12 @@ const MessageWithContext = <
     channel,
     disabled,
     files: attachments.files,
+    goToMessage,
     groupStyles,
     handleAction,
     handleDeleteMessage,
     handleEditMessage,
-    handleReplyMessage,
+    handleQuotedReplyMessage,
     handleResendMessage,
     handleToggleBanUser,
     handleToggleMuteUser,
@@ -1103,8 +996,7 @@ const MessageWithContext = <
     hasReactions,
     images: attachments.images,
     isMyMessage,
-    lastGroupMessage:
-      groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
+    lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
     members,
     message,
@@ -1160,8 +1052,7 @@ const MessageWithContext = <
     readEventsEnabled,
     showAvatar,
     showMessageOverlay,
-    showMessageStatus:
-      typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
+    showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
   });
 
@@ -1210,7 +1101,7 @@ const MessageWithContext = <
 
   return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
-      enabled={animatedLongPress}
+      enabled={animatedLongPress && !preventPress}
       maxDeltaX={8}
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
@@ -1218,6 +1109,7 @@ const MessageWithContext = <
     >
       <Animated.View>
         <TapGestureHandler
+          enabled={!preventPress}
           numberOfTaps={2}
           onGestureEvent={onDoubleTap}
           ref={doubleTapRef}
@@ -1226,9 +1118,7 @@ const MessageWithContext = <
             style={[
               style,
               {
-                backgroundColor: showUnreadUnderlay
-                  ? bg_gradient_start
-                  : undefined,
+                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
               },
               scaleStyle,
             ]}
@@ -1258,23 +1148,25 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    channel: prevChannel,
+    goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
+    mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
     targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
-    channel: nextChannel,
+    goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
+    mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
     targetedMessage: nextTargetedMessage,
@@ -1289,22 +1181,25 @@ const areEqual = <
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
+
   if (lastReceivedIdChangedAndMatters) return false;
+
+  const goToMessageChangedAndMatters =
+    nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
+
+  if (goToMessageChangedAndMatters) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    (isMessageWithStylesReadByAndDateSeparator(prevMessage) &&
-      prevMessage.readBy) ===
-      (isMessageWithStylesReadByAndDateSeparator(nextMessage) &&
-        nextMessage.readBy) &&
+    (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
+      (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.updated_at === nextMessage.updated_at;
   if (!messageEqual) return false;
 
-  const messageUserBannedEqual =
-    prevMessage.user?.banned === nextMessage.user?.banned;
+  const messageUserBannedEqual = prevMessage.user?.banned === nextMessage.user?.banned;
   if (!messageUserBannedEqual) return false;
 
   const prevMessageAttachments = prevMessage.attachments;
@@ -1323,25 +1218,21 @@ const areEqual = <
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) &&
-    Array.isArray(nextMessage.latest_reactions)
-      ? prevMessage.latest_reactions.length ===
-          nextMessage.latest_reactions.length &&
+    Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length === nextMessage.latest_reactions.length &&
         prevMessage.latest_reactions.every(
-          ({ type }, index) =>
-            type === nextMessage.latest_reactions?.[index].type,
+          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
   const mutedUserSame =
-    !!prevChannel &&
-    !!nextChannel &&
-    prevChannel.state.mutedUsers.length === nextChannel.state.mutedUsers.length;
+    prevMutedUsers.length === nextMutedUsers.length ||
+    prevMutedUsers.some((mutedUser) => mutedUser.target.id === prevMessage.user?.id) ===
+      nextMutedUsers.some((mutedUser) => mutedUser.target.id === nextMessage.user?.id);
   if (!mutedUserSame) return false;
 
-  const showUnreadUnderlayEqual =
-    prevShowUnreadUnderlay === nextShowUnreadUnderlay;
+  const showUnreadUnderlayEqual = prevShowUnreadUnderlay === nextShowUnreadUnderlay;
   if (!showUnreadUnderlayEqual) return false;
 
   const tEqual = prevT === nextT;
@@ -1353,10 +1244,7 @@ const areEqual = <
   return true;
 };
 
-const MemoizedMessage = React.memo(
-  MessageWithContext,
-  areEqual,
-) as typeof MessageWithContext;
+const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -1365,17 +1253,9 @@ export type MessageProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<
-    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  >
-> &
-  Pick<
-    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'groupStyles' | 'message'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
+  Pick<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -1390,7 +1270,7 @@ export const Message = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -1400,11 +1280,10 @@ export const Message = <
     enforceUniqueReaction,
     isAdmin,
     isModerator,
-    isOwner,
     members,
     readEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -1423,9 +1302,9 @@ export const Message = <
         enforceUniqueReaction,
         isAdmin,
         isModerator,
-        isOwner,
         members,
         messagesContext,
+        mutedUsers,
         openThread,
         readEventsEnabled,
         setData,

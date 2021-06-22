@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Down } from '../../icons';
@@ -61,9 +55,7 @@ export type ScrollToBottomButtonProps = {
   unreadCount?: number;
 };
 
-export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
-  props,
-) => {
+export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props) => {
   const { onPress, showNotification = true, unreadCount } = props;
 
   const {
@@ -86,13 +78,7 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
   return (
     <TouchableOpacity onPress={onPress} style={[styles.touchable, touchable]}>
       <View style={[styles.wrapper, wrapper]}>
-        <View
-          style={[
-            styles.container,
-            { backgroundColor: white, shadowColor: black },
-            container,
-          ]}
-        >
+        <View style={[styles.container, { backgroundColor: white, shadowColor: black }, container]}>
           <Down />
         </View>
         {!!unreadCount && (
@@ -119,5 +105,4 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
   );
 };
 
-ScrollToBottomButton.displayName =
-  'ScrollToBottomButton{messageList{scrollToBottomButton}}';
+ScrollToBottomButton.displayName = 'ScrollToBottomButton{messageList{scrollToBottomButton}}';

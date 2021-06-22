@@ -22,7 +22,7 @@ const getChannelPreviewDisplayPresence = <
   Ev extends DefaultEventType = DefaultEventType,
   Me extends DefaultMessageType = DefaultMessageType,
   Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
@@ -31,9 +31,7 @@ const getChannelPreviewDisplayPresence = <
 
   if (currentUserId) {
     const members = Object.values(channel.state.members);
-    const otherMembers = members.filter(
-      (member) => member.user?.id !== currentUserId,
-    );
+    const otherMembers = members.filter((member) => member.user?.id !== currentUserId);
 
     if (otherMembers.length === 1) {
       return !!otherMembers[0].user?.online;
@@ -55,7 +53,7 @@ export const useChannelPreviewDisplayPresence = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -63,8 +61,7 @@ export const useChannelPreviewDisplayPresence = <
 
   const currentUserId = client.userID;
   const members = Object.values(channel.state.members).filter(
-    (member) =>
-      !!member.user?.id && !!currentUserId && member.user?.id !== currentUserId,
+    (member) => !!member.user?.id && !!currentUserId && member.user?.id !== currentUserId,
   );
   const channelMemberOnline = members.some((member) => member.user?.online);
 

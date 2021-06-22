@@ -36,7 +36,7 @@ export type MessageSimplePropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
@@ -53,7 +53,7 @@ const MessageSimpleWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -77,11 +77,9 @@ const MessageSimpleWithContext = <
   const [messageContentWidth, setMessageContentWidth] = useState(0);
 
   const isVeryLastMessage =
-    channel?.state.messages[channel?.state.messages.length - 1]?.id ===
-    message.id;
+    channel?.state.messages[channel?.state.messages.length - 1]?.id === message.id;
 
-  const hasMarginBottom =
-    groupStyles.includes('single') || groupStyles.includes('bottom');
+  const hasMarginBottom = groupStyles.includes('single') || groupStyles.includes('bottom');
 
   const showReactions = hasReactions && ReactionList;
 
@@ -96,13 +94,11 @@ const MessageSimpleWithContext = <
         },
         container,
       ]}
-      testID={'message-simple-wrapper'}
+      testID='message-simple-wrapper'
     >
       {alignment === 'left' && <MessageAvatar />}
       <MessageContent setMessageContentWidth={setMessageContentWidth} />
-      {showReactions && (
-        <ReactionList messageContentWidth={messageContentWidth} />
-      )}
+      {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
     </View>
   );
 };
@@ -114,7 +110,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -138,8 +134,7 @@ const areEqual = <
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
 
-  const groupStylesEqual =
-    JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
+  const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
 
   const messageEqual =
@@ -149,8 +144,7 @@ const areEqual = <
     prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
-  const channelEqual =
-    prevChannel?.state.messages.length === nextChannel?.state.messages.length;
+  const channelEqual = prevChannel?.state.messages.length === nextChannel?.state.messages.length;
   if (!channelEqual) return false;
 
   const prevAttachments = prevMessage.attachments;
@@ -168,13 +162,10 @@ const areEqual = <
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) &&
-    Array.isArray(nextMessage.latest_reactions)
-      ? prevMessage.latest_reactions.length ===
-          nextMessage.latest_reactions.length &&
+    Array.isArray(prevMessage.latest_reactions) && Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length === nextMessage.latest_reactions.length &&
         prevMessage.latest_reactions.every(
-          ({ type }, index) =>
-            type === nextMessage.latest_reactions?.[index].type,
+          ({ type }, index) => type === nextMessage.latest_reactions?.[index].type,
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
@@ -194,7 +185,7 @@ export type MessageSimpleProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -208,26 +199,14 @@ export const MessageSimple = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    channel,
-    groupStyles,
-    hasReactions,
-    message,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageAvatar, MessageContent, ReactionList } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { alignment, channel, groupStyles, hasReactions, message } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { MessageAvatar, MessageContent, ReactionList } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageSimple<At, Ch, Co, Ev, Me, Re, Us>

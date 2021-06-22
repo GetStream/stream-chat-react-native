@@ -28,16 +28,17 @@ export const usePaginatedSearchedMessages = (
 ) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [messages, setMessages] = useState<
-    MessageResponse<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >[]
-  >();
+  const [messages, setMessages] =
+    useState<
+      MessageResponse<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >[]
+    >();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);

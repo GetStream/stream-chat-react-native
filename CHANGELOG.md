@@ -1,5 +1,56 @@
 # Changelog
 
+## [3.6.0-rc.0]
+
+This release provides full support for Expo 41 and React Native 0.64
+
+Please make sure to upgrade following packages to specified versions:
+
+- react-native-reanimated@2.1.0
+- react-native-share@6.0.1
+
+## [3.5.0]
+
+###  **🛑 BREAKING**
+
+Following props have been renamed:
+
+- `reply` -> `quotedReply`
+- `handleReply` -> `handleQuotedReply`
+- `handleReplyMessage` -> `handleQuotedReplyMessage`
+### Features
+
+- Added new props to Channel component [219b307](https://github.com/GetStream/stream-chat-react-native/commit/219b307e3d2db36a6974e4870dc0eb00213bcca2)
+
+  - maxMessageLength (number)
+  - reactionsEnabled (boolean)
+  - readEventsEnabled (boolean)
+  - repliesEnabled (boolean)
+  - typingEventsEnabled (boolean)
+  - uploadsEnabled (boolean)
+  - quoteRepliesEnabled (boolean)
+  - threadRepliesEnabled (boolean)
+
+### Bug fixes
+- Update messages when mute status updates [885f8c2](https://github.com/GetStream/stream-chat-react-native/commit/885f8c20306ef46eb6ad20cd2942618acf967741)
+- Fixed broken "Resend message" functionality for failed messages [359c192](https://github.com/GetStream/stream-chat-react-native/commit/359c192903b3e34836ffadcca55f2a4e0a7fc509)
+- Fixed read receipts [f7510e8](https://github.com/GetStream/stream-chat-react-native/commit/f7510e8134ad14fbfa1d920e68267d3080d2b1ba)
+- Fixed images as attachment from File Picker [5ca1a25](https://github.com/GetStream/stream-chat-react-native/commit/5ca1a250a9d1c75c86e9c89dda1c116dd77bb1b3)
+
+## [3.4.0] (2021-05-14)
+
+### Features
+- Updated implementation around network recovery for smooth UX [#658](https://github.com/GetStream/stream-chat-react-native/pull/658)
+- Added support for `MessageDeleted` prop on Channel component, for overriding default deleted message component [65861d9](https://github.com/GetStream/stream-chat-react-native/commit/65861d9a52e8d289d6e66bbc63d2814aa6f87c9e)
+- Refresh channel list when `sort` prop updates, on ChannelList [42450fa](https://github.com/GetStream/stream-chat-react-native/commit/42450fa23d6221931b0b14d5f39fba2484b7dadf)
+- Added support for typing indicator in threads [6f518ca](https://github.com/GetStream/stream-chat-react-native/commit/6f518ca1879943edaa6606209c2f63672df1dd75)
+- Added handler for `channel.visible` event [476c36e](https://github.com/GetStream/stream-chat-react-native/commit/476c36e30eb41ca5843c0f679c18880e46d7564e)
+
+### Bug fixes
+
+- Added default sizes to Icons in `OverlayReactionList` component. [6b4db5f](https://github.com/GetStream/stream-chat-react-native/commit/6b4db5fd1ad4816506a2f567409201374d6d3f3c)
+- Miscellaneous fixes around image picker opening and closing [950f746](https://github.com/GetStream/stream-chat-react-native/commit/950f746412422cdb2fb6b358a24a3bc694a9032a) [4845e4e](https://github.com/GetStream/stream-chat-react-native/commit/4845e4e08e6725b612f17360d1fe031c0acf6578)
+
 ##  [3.3.2] (2021-04-13)
 
 - Allow re-rerendering of MessageInput component, on changes to `additionalTextInputProps` [1b95a64](https://github.com/GetStream/stream-chat-react-native/commit/1b95a64f15642829d2b4296615c2d8572065f213)

@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -79,7 +73,7 @@ type FileUploadPreviewPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'fileUploads' | 'removeFile' | 'uploadFile'
@@ -93,7 +87,7 @@ const FileUploadPreviewWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -123,9 +117,7 @@ const FileUploadPreviewWithContext = <
       action={() => {
         uploadFile({ newFile: item });
       }}
-      active={
-        item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED
-      }
+      active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
       style={styles.overlay}
       type={
         item.state === FileState.UPLOADING
@@ -227,7 +219,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -238,8 +230,7 @@ const areEqual = <
   return (
     prevFileUploads.length === nextFileUploads.length &&
     prevFileUploads.every(
-      (prevFileUpload, index) =>
-        prevFileUpload.state === nextFileUploads[index].state,
+      (prevFileUpload, index) => prevFileUpload.state === nextFileUploads[index].state,
     )
   );
 };
@@ -256,7 +247,7 @@ export type FileUploadPreviewProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -270,28 +261,13 @@ export const FileUploadPreview = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { FileAttachmentIcon } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { fileUploads, removeFile, uploadFile } =
+    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { FileAttachmentIcon } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedFileUploadPreview
@@ -301,5 +277,4 @@ export const FileUploadPreview = <
   );
 };
 
-FileUploadPreview.displayName =
-  'FileUploadPreview{messageInput{fileUploadPreview}}';
+FileUploadPreview.displayName = 'FileUploadPreview{messageInput{fileUploadPreview}}';

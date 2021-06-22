@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   BackHandler,
+  Dimensions,
   ImageBackground,
   Keyboard,
   Platform,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
 });
 
 const screenHeight = vh(100);
+const fullScreenHeight = Dimensions.get('screen').height;
 
 type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
@@ -71,9 +74,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         ]}
       >
         {selected && (
-          <View
-            style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}
-          >
+          <View style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}>
             <ImageOverlaySelectedComponent />
           </View>
         )}
@@ -104,9 +105,7 @@ const renderImage = ({
   } = item;
   const onPress = () => {
     if (selected) {
-      setSelectedImages((images) =>
-        images.filter((image) => image.uri !== asset.uri),
-      );
+      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
     } else {
       setSelectedImages((images) => {
         if (images.length >= maxNumberOfFiles) {
@@ -120,9 +119,7 @@ const renderImage = ({
   return (
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
-      numberOfAttachmentPickerImageColumns={
-        numberOfAttachmentPickerImageColumns
-      }
+      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
       onPress={onPress}
       selected={selected}
       uri={asset.uri}
@@ -161,6 +158,7 @@ export type AttachmentPickerProps = {
   attachmentPickerErrorText?: string;
   numberOfAttachmentImagesToLoadPerCall?: number;
   numberOfAttachmentPickerImageColumns?: number;
+  translucentStatusBar?: boolean;
 };
 
 export const AttachmentPicker = React.forwardRef(
@@ -176,6 +174,7 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       numberOfAttachmentImagesToLoadPerCall,
       numberOfAttachmentPickerImageColumns,
+      translucentStatusBar,
     } = props;
 
     const {
@@ -209,12 +208,7 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     const getMorePhotos = async () => {
-      if (
-        hasNextPage &&
-        !loadingPhotos &&
-        currentIndex > -1 &&
-        selectedPicker === 'images'
-      ) {
+      if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({
@@ -247,10 +241,7 @@ export const AttachmentPicker = React.forwardRef(
         return false;
       };
 
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
       return () => backHandler.remove();
     }, [selectedPicker]);
@@ -302,6 +293,53 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedImages,
     }));
 
+    const handleHeight = attachmentPickerBottomSheetHandleHeight || 20;
+
+    /**
+     * This is to handle issues with Android measurements coming back incorrect.
+     * If the StatusBar height is perfectly 1/2 of the difference between the two
+     * dimensions for screen and window, it is incorrect and we need to account for
+     * this. If you use a translucent header bar more adjustments are needed.
+     */
+    const statusBarHeight = StatusBar.currentHeight ?? 0;
+    const bottomBarHeight = fullScreenHeight - screenHeight - statusBarHeight;
+    const androidBottomBarHeightAdjustment =
+      Platform.OS === 'android'
+        ? bottomBarHeight === statusBarHeight
+          ? translucentStatusBar
+            ? 0
+            : StatusBar.currentHeight ?? 0
+          : translucentStatusBar
+          ? bottomBarHeight > statusBarHeight
+            ? -bottomBarHeight + statusBarHeight
+            : bottomBarHeight > 0
+            ? -statusBarHeight
+            : 0
+          : bottomBarHeight > 0
+          ? 0
+          : statusBarHeight
+        : 0;
+
+    /**
+     * Snap points changing cause a rerender of the position,
+     * this is an issue if you are calling close on the bottom sheet.
+     */
+    const snapPoints = useMemo(
+      () => [
+        attachmentPickerBottomSheetHeight ??
+          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
+        fullScreenHeight - (topInset ?? 0) - handleHeight,
+      ],
+      [
+        androidBottomBarHeightAdjustment,
+        attachmentPickerBottomSheetHeight,
+        fullScreenHeight,
+        handleHeight,
+        screenHeight,
+        topInset,
+      ],
+    );
+
     /**
      * TODO: Remove the need to return null here, changing snapPoints breaks the position
      * so initial render should occur after topInset is set currently
@@ -313,19 +351,19 @@ export const AttachmentPicker = React.forwardRef(
     return (
       <>
         <BottomSheet
+          containerHeight={fullScreenHeight}
           handleComponent={
-            photoError ? () => null : AttachmentPickerBottomSheetHandle
+            /**
+             * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`
+             * as opacity is not an allowed style
+             */
+            photoError ? null : AttachmentPickerBottomSheetHandle
           }
-          // @ts-expect-error
-          handleHeight={attachmentPickerBottomSheetHandleHeight || 20}
-          initialSnapIndex={-1}
+          handleHeight={handleHeight}
+          index={-1}
           onChange={(index: number) => setCurrentIndex(index)}
           ref={ref}
-          snapPoints={[
-            attachmentPickerBottomSheetHeight ?? 308,
-            screenHeight - topInset,
-          ]}
-          style={{ opacity: photoError ? 0 : 1 }}
+          snapPoints={snapPoints}
         >
           <BottomSheetFlatList
             contentContainerStyle={[
@@ -343,9 +381,7 @@ export const AttachmentPicker = React.forwardRef(
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (
           <AttachmentPickerError
-            attachmentPickerBottomSheetHeight={
-              attachmentPickerBottomSheetHeight
-            }
+            attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
             attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
             AttachmentPickerErrorImage={AttachmentPickerErrorImage}
             attachmentPickerErrorText={attachmentPickerErrorText}

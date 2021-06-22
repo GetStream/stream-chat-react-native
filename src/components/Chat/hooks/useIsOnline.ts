@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useAppStateListener } from './useAppStateListener';
 import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
@@ -16,6 +17,12 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
+/**
+ * Disconnect the websocket connection when app goes to background,
+ * and reconnect when app comes to foreground.
+ * We do this to make sure, user receives push notifications when app is in the background.
+ * You can't receive push notification until you have active websocket connection.
+ */
 export const useIsOnline = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -23,22 +30,38 @@ export const useIsOnline = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  closeConnectionOnBackground = true,
 ) => {
-  const [
-    unsubscribeNetInfo,
-    setUnsubscribeNetInfo,
-  ] = useState<NetInfoSubscription>();
+  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<NetInfoSubscription>();
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   const clientExits = !!client;
+
+  const onBackground = closeConnectionOnBackground
+    ? () => {
+        for (const cid in client.activeChannels) {
+          const channel = client.activeChannels[cid];
+          channel?.state.setIsUpToDate(false);
+        }
+        client.closeConnection();
+        setIsOnline(false);
+      }
+    : undefined;
+
+  const onForeground = closeConnectionOnBackground
+    ? () => {
+        client.openConnection();
+      }
+    : undefined;
+
+  useAppStateListener(onForeground, onBackground);
+
   useEffect(() => {
-    const handleChangedEvent = (
-      event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => {
+    const handleChangedEvent = (event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };

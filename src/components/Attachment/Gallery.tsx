@@ -58,10 +58,7 @@ const GalleryImage: React.FC<
         uri: uri.includes('&h=%2A')
           ? error
             ? uri
-            : uri.replace(
-                'h=%2A',
-                `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-              )
+            : uri.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`)
           : uri,
       }}
     />
@@ -99,7 +96,7 @@ export type GalleryPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ImageGalleryContextValue, 'setImage'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -109,17 +106,14 @@ export type GalleryPropsWithContext<
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
+    | 'preventPress'
     | 'threadList'
   > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'additionalTouchableProps'
-  > &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
-    preventPress?: boolean;
   };
 
 const GalleryWithContext = <
@@ -129,7 +123,7 @@ const GalleryWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -174,35 +168,27 @@ const GalleryWithContext = <
   if (!images?.length) return null;
 
   // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
-  const galleryImages = images
-    .slice(0, 4)
-    .reduce((returnArray, currentImage, index) => {
-      const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
-      if (attachmentUrl) {
-        const url = makeImageCompatibleUrl(attachmentUrl);
-        if (images.length <= 2) {
-          returnArray[0] = [
-            ...(returnArray[0] || []),
-            { height: size || 200, url },
-          ];
-        } else if (images.length === 3) {
-          if (index === 0) {
-            returnArray[0] = [{ height: size || 200, url }];
-          } else {
-            returnArray[1] = [
-              ...(returnArray[1] || []),
-              { height: halfSize || 100, url },
-            ];
-          }
+  const galleryImages = images.slice(0, 4).reduce((returnArray, currentImage, index) => {
+    const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
+    if (attachmentUrl) {
+      const url = makeImageCompatibleUrl(attachmentUrl);
+      if (images.length <= 2) {
+        returnArray[0] = [...(returnArray[0] || []), { height: size || 200, url }];
+      } else if (images.length === 3) {
+        if (index === 0) {
+          returnArray[0] = [{ height: size || 200, url }];
         } else {
-          returnArray[index % 2] = [
-            ...(returnArray[index % 2] || []),
-            { height: halfSize || 100, url },
-          ];
+          returnArray[1] = [...(returnArray[1] || []), { height: halfSize || 100, url }];
         }
+      } else {
+        returnArray[index % 2] = [
+          ...(returnArray[index % 2] || []),
+          { height: halfSize || 100, url },
+        ];
       }
-      return returnArray;
-    }, [] as { height: number | string; url: string }[][]);
+    }
+    return returnArray;
+  }, [] as { height: number | string; url: string }[][]);
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
@@ -238,15 +224,18 @@ const GalleryWithContext = <
             return (
               <TouchableOpacity
                 activeOpacity={0.8}
+                disabled={preventPress}
                 key={`gallery-item-${url}/${rowIndex}/${images.length}`}
                 onLongPress={(event) => {
-                  onLongPress({
-                    emitter: 'gallery',
-                    event,
-                  });
+                  if (onLongPress) {
+                    onLongPress({
+                      emitter: 'gallery',
+                      event,
+                    });
+                  }
                 }}
                 onPress={(event) => {
-                  if (!onPressIn && !preventPress) {
+                  if (onPress) {
                     onPress({
                       defaultHandler: defaultOnPress,
                       emitter: 'gallery',
@@ -255,7 +244,7 @@ const GalleryWithContext = <
                   }
                 }}
                 onPressIn={(event) => {
-                  if (onPressIn && !preventPress) {
+                  if (onPressIn) {
                     onPressIn({
                       defaultHandler: defaultOnPress,
                       emitter: 'gallery',
@@ -282,36 +271,25 @@ const GalleryWithContext = <
                       borderBottomLeftRadius:
                         (images.length === 1 ||
                           (images.length === 2 && rowIndex === 0) ||
-                          (images.length === 3 &&
-                            colIndex === 0 &&
-                            rowIndex === 0) ||
-                          (images.length === 4 &&
-                            colIndex === 0 &&
-                            rowIndex === 1)) &&
+                          (images.length === 3 && colIndex === 0 && rowIndex === 0) ||
+                          (images.length === 4 && colIndex === 0 && rowIndex === 1)) &&
                         !messageText &&
-                        ((groupStyle !== 'left_bottom' &&
-                          groupStyle !== 'left_single') ||
+                        ((groupStyle !== 'left_bottom' && groupStyle !== 'left_single') ||
                           (hasThreadReplies && !threadList))
                           ? 14
                           : 0,
                       borderBottomRightRadius:
                         (images.length === 1 ||
-                          (colIndex === 1 &&
-                            (images.length === 2 || rowIndex === 1))) &&
+                          (colIndex === 1 && (images.length === 2 || rowIndex === 1))) &&
                         !messageText &&
-                        ((groupStyle !== 'right_bottom' &&
-                          groupStyle !== 'right_single') ||
+                        ((groupStyle !== 'right_bottom' && groupStyle !== 'right_single') ||
                           (hasThreadReplies && !threadList))
                           ? 14
                           : 0,
-                      borderTopLeftRadius:
-                        colIndex === 0 && rowIndex === 0 ? 14 : 0,
+                      borderTopLeftRadius: colIndex === 0 && rowIndex === 0 ? 14 : 0,
                       borderTopRightRadius:
-                        ((colIndex === 1 || images.length === 1) &&
-                          rowIndex === 0) ||
-                        (images.length === 3 &&
-                          colIndex === 0 &&
-                          rowIndex === 1) ||
+                        ((colIndex === 1 || images.length === 1) && rowIndex === 0) ||
+                        (images.length === 3 && colIndex === 0 && rowIndex === 1) ||
                         (images.length === 2 && rowIndex === 1)
                           ? 14
                           : 0,
@@ -350,7 +328,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -372,8 +350,7 @@ const areEqual = <
   if (!messageTextEqual) return false;
 
   const groupStylesEqual =
-    prevGroupStyles.length === nextGroupStyles.length &&
-    prevGroupStyles[0] === nextGroupStyles[0];
+    prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
   if (!groupStylesEqual) return false;
 
   const hasThreadRepliesEqual = prevHasThreadReplies === nextHasThreadReplies;
@@ -391,10 +368,7 @@ const areEqual = <
   return true;
 };
 
-const MemoizedGallery = React.memo(
-  GalleryWithContext,
-  areEqual,
-) as typeof GalleryWithContext;
+const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 
 export type GalleryProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -403,7 +377,7 @@ export type GalleryProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
@@ -416,7 +390,7 @@ export const Gallery = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -431,7 +405,7 @@ export const Gallery = <
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
-    preventPress,
+    preventPress: propPreventPress,
     setBlurType: propSetBlurType,
     setImage: propSetImage,
     setOverlay: propSetOverlay,
@@ -447,27 +421,25 @@ export const Gallery = <
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
     onPressIn: contextOnPressIn,
+    preventPress: contextPreventPress,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    setBlurType: contextSetBlurType,
-    setOverlay: contextSetOverlay,
-  } = useOverlayContext();
+  const { additionalTouchableProps: contextAdditionalTouchableProps } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setBlurType: contextSetBlurType, setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
 
   if (!images.length) return null;
 
-  const additionalTouchableProps =
-    propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
   const onPressIn = propOnPressIn || contextOnPressIn;
   const onPress = propOnPress || contextOnPress;
+  const preventPress =
+    typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
   const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;

@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  PixelRatio,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -65,75 +58,70 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
    * ]
    */
   const imagesOrNames = images || names || [];
-  const avatarImages = imagesOrNames
-    .slice(0, 4)
-    .reduce((returnArray, currentImage, index) => {
-      const url = currentImage.startsWith('http')
-        ? currentImage
-        : `${randomImageBaseUrl}${
-            names
-              ? `?name=${getInitials(names[index])}&size=${
-                  imagesOrNames.length <= 2 ? size : size / 2
-                }`
-              : ''
-          }`;
-      if (imagesOrNames.length <= 2) {
-        Image.prefetch(
-          imageError
-            ? url
-            : url.replace(
-                'h=%2A',
-                `h=${PixelRatio.getPixelSizeForLayoutSize(
-                  imagesOrNames.length <= 2 ? size : size / 2,
-                )}`,
-              ),
-        ).catch(() => {
-          // do nothing, not a big deal that prefetch failed
-        });
+  const avatarImages = imagesOrNames.slice(0, 4).reduce((returnArray, currentImage, index) => {
+    const url = currentImage.startsWith('http')
+      ? currentImage
+      : `${randomImageBaseUrl}${
+          names
+            ? `?name=${getInitials(names[index])}&size=${
+                imagesOrNames.length <= 2 ? size : size / 2
+              }`
+            : ''
+        }`;
+    if (imagesOrNames.length <= 2) {
+      Image.prefetch(
+        imageError
+          ? url
+          : url.replace(
+              'h=%2A',
+              `h=${PixelRatio.getPixelSizeForLayoutSize(
+                imagesOrNames.length <= 2 ? size : size / 2,
+              )}`,
+            ),
+      ).catch(() => {
+        // do nothing, not a big deal that prefetch failed
+      });
+      returnArray[0] = [
+        ...(returnArray[0] || []),
+        {
+          height: imagesOrNames.length === 1 ? size : size / 2,
+          name: names ? names[index] : '',
+          url,
+          width: size,
+        },
+      ];
+    } else {
+      Image.prefetch(
+        imageError
+          ? url
+          : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size / 2)}`),
+      ).catch(() => {
+        // do nothing, not a big deal that prefetch failed
+      });
+      if (index < 2) {
         returnArray[0] = [
           ...(returnArray[0] || []),
           {
-            height: imagesOrNames.length === 1 ? size : size / 2,
+            height: size / 2,
             name: names ? names[index] : '',
             url,
-            width: size,
+            width: size / 2,
           },
         ];
       } else {
-        Image.prefetch(
-          imageError
-            ? url
-            : url.replace(
-                'h=%2A',
-                `h=${PixelRatio.getPixelSizeForLayoutSize(size / 2)}`,
-              ),
-        ).catch(() => {
-          // do nothing, not a big deal that prefetch failed
-        });
-        if (index < 2) {
-          returnArray[0] = [
-            ...(returnArray[0] || []),
-            {
-              height: size / 2,
-              name: names ? names[index] : '',
-              url,
-              width: size / 2,
-            },
-          ];
-        } else {
-          returnArray[1] = [
-            ...(returnArray[1] || []),
-            {
-              height: size / 2,
-              name: names ? names[index] : '',
-              url,
-              width: imagesOrNames.length === 3 ? size : size / 2,
-            },
-          ];
-        }
+        returnArray[1] = [
+          ...(returnArray[1] || []),
+          {
+            height: size / 2,
+            name: names ? names[index] : '',
+            url,
+            width: imagesOrNames.length === 3 ? size : size / 2,
+          },
+        ];
       }
-      return returnArray;
-    }, [] as { height: number; name: string; url: string; width: number }[][]);
+    }
+    return returnArray;
+  }, [] as { height: number; name: string; url: string; width: number }[][]);
 
   return (
     <View
@@ -166,14 +154,9 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
                     ? url.includes(streamCDN)
                       ? url
                       : `${randomImageBaseUrl}${
-                          name
-                            ? `?name=${getInitials(name)}&size=${height}`
-                            : ''
+                          name ? `?name=${getInitials(name)}&size=${height}` : ''
                         }`
-                    : url.replace(
-                        'h=%2A',
-                        `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`,
-                      ),
+                    : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`),
               }}
               style={[
                 image,

@@ -22,7 +22,7 @@ export type PaginatedMessageListContextValue<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
   /**
    * Has more messages to load
@@ -39,11 +39,11 @@ export type PaginatedMessageListContextValue<
   /**
    * Load more messages
    */
-  loadMore: () => Promise<void>;
+  loadMore: (limit?: number) => Promise<void>;
   /**
    * Load more recent messages
    */
-  loadMoreRecent: () => Promise<void>;
+  loadMoreRecent: (limit?: number) => Promise<void>;
   /**
    * Messages from client state
    */
@@ -69,7 +69,7 @@ export const PaginatedMessageListProvider = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   children,
   value,
@@ -77,7 +77,7 @@ export const PaginatedMessageListProvider = <
   value?: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
   <PaginatedMessageListContext.Provider
-    value={(value as unknown) as PaginatedMessageListContextValue}
+    value={value as unknown as PaginatedMessageListContextValue}
   >
     {children}
   </PaginatedMessageListContext.Provider>
@@ -90,11 +90,17 @@ export const usePaginatedMessageListContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >() =>
-  (useContext(
-    PaginatedMessageListContext,
-  ) as unknown) as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  useContext(PaginatedMessageListContext) as unknown as PaginatedMessageListContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >;
 
 /**
  * Typescript currently does not support partial inference so if MessageListContextValue
@@ -109,27 +115,15 @@ export const withPaginatedMessageListContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   Component: React.ComponentType<P>,
-): React.FC<
-  Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>
-> => {
+): React.FC<Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithPaginatedMessageListContextComponent = (
-    props: Omit<
-      P,
-      keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>
-    >,
+    props: Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const paginatedMessageListContext = usePaginatedMessageListContext<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >();
+    const paginatedMessageListContext =
+      usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
 
     return <Component {...(props as P)} {...paginatedMessageListContext} />;
   };

@@ -8,11 +8,14 @@ export const useTargetedMessage = (messageId?: string) => {
     clearTargetedMessageCall.current = setTimeout(() => {
       setTargetedMessage(undefined);
     }, 3000);
+
+    return () => {
+      clearTargetedMessageCall.current && clearTimeout(clearTargetedMessageCall.current);
+    };
   }, []);
 
   const setTargetedMessageTimeout = (messageId: string) => {
-    clearTargetedMessageCall.current &&
-      clearTimeout(clearTargetedMessageCall.current);
+    clearTargetedMessageCall.current && clearTimeout(clearTargetedMessageCall.current);
 
     clearTargetedMessageCall.current = setTimeout(() => {
       setTargetedMessage(undefined);

@@ -351,12 +351,8 @@ export type Theme = {
     container: ViewStyle;
     content: {
       container: ViewStyle & {
-        borderRadiusL: ViewStyle[
-          | 'borderBottomLeftRadius'
-          | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle[
-          | 'borderBottomRightRadius'
-          | 'borderTopRightRadius'];
+        borderRadiusL: ViewStyle['borderBottomLeftRadius' | 'borderTopLeftRadius'];
+        borderRadiusS: ViewStyle['borderBottomRightRadius' | 'borderTopRightRadius'];
       };
       containerInner: ViewStyle;
       deletedContainer: ViewStyle;

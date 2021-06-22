@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ColorValue,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ColorValue, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -82,20 +75,19 @@ export type MessageRepliesPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
   | 'message'
   | 'onLongPress'
   | 'onPress'
+  | 'onPressIn'
   | 'onOpenThread'
+  | 'preventPress'
   | 'threadList'
 > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'MessageRepliesAvatars'
-  > &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageRepliesAvatars'> &
   Pick<TranslationContextValue, 't'> & {
     noBorder?: boolean;
     repliesCurveColor?: ColorValue;
@@ -108,7 +100,7 @@ const MessageRepliesWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -120,6 +112,8 @@ const MessageRepliesWithContext = <
     onLongPress,
     onOpenThread,
     onPress,
+    onPressIn,
+    preventPress,
     repliesCurveColor,
     t,
     threadList,
@@ -154,29 +148,37 @@ const MessageRepliesWithContext = <
         </>
       )}
       <TouchableOpacity
+        disabled={preventPress}
         onLongPress={(event) => {
-          onLongPress({
-            emitter: 'messageReplies',
-            event,
-          });
+          if (onLongPress) {
+            onLongPress({
+              emitter: 'messageReplies',
+              event,
+            });
+          }
         }}
         onPress={(event) => {
-          onPress({
-            defaultHandler: onOpenThread,
-            emitter: 'messageReplies',
-            event,
-          });
+          if (onPress) {
+            onPress({
+              defaultHandler: onOpenThread,
+              emitter: 'messageReplies',
+              event,
+            });
+          }
+        }}
+        onPressIn={(event) => {
+          if (onPressIn) {
+            onPressIn({
+              defaultHandler: onOpenThread,
+              emitter: 'messageReplies',
+              event,
+            });
+          }
         }}
         style={[styles.container, container]}
         testID='message-replies'
       >
-        <Text
-          style={[
-            styles.messageRepliesText,
-            { color: accent_blue },
-            messageRepliesText,
-          ]}
-        >
+        <Text style={[styles.messageRepliesText, { color: accent_blue }, messageRepliesText]}>
           {message.reply_count === 1
             ? t('1 Thread Reply')
             : t('{{ replyCount }} Thread Replies', {
@@ -210,7 +212,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -231,8 +233,7 @@ const areEqual = <
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
 
-  const messageReplyCountEqual =
-    prevMessage.reply_count === nextMessage.reply_count;
+  const messageReplyCountEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) return false;
 
   const noBorderEqual = prevNoBorder === nextNoBorder;
@@ -256,7 +257,7 @@ export type MessageRepliesProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageReplies = <
@@ -266,7 +267,7 @@ export const MessageReplies = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -276,17 +277,11 @@ export const MessageReplies = <
     onLongPress,
     onOpenThread,
     onPress,
+    onPressIn,
+    preventPress,
     threadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageRepliesAvatars } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { MessageRepliesAvatars } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
   return (
@@ -298,6 +293,8 @@ export const MessageReplies = <
         onLongPress,
         onOpenThread,
         onPress,
+        onPressIn,
+        preventPress,
         t,
         threadList,
       }}

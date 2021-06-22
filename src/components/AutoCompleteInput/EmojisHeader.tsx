@@ -35,15 +35,11 @@ export const EmojisHeader: React.FC<EmojisHeaderProps> = ({ title = '' }) => {
   return (
     <View style={[styles.container, container]}>
       <Smile pathFill={accent_blue} />
-      <Text
-        style={[styles.title, { color: grey }, titleStyle]}
-        testID='emojis-header-title'
-      >
+      <Text style={[styles.title, { color: grey }, titleStyle]} testID='emojis-header-title'>
         {t('Emoji matching') + ` "${title}"`}
       </Text>
     </View>
   );
 };
 
-EmojisHeader.displayName =
-  'EmojisHeader{messageInput{suggestions{emojisHeader}}}';
+EmojisHeader.displayName = 'EmojisHeader{messageInput{suggestions{emojisHeader}}}';

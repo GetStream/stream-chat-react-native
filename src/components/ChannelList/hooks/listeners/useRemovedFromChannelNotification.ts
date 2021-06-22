@@ -22,15 +22,11 @@ type Parameters<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = {
-  setChannels: React.Dispatch<
-    React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-  >;
+  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
@@ -42,7 +38,7 @@ export const useRemovedFromChannelNotification = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   onRemovedFromChannel,
   setChannels,
@@ -55,9 +51,7 @@ export const useRemovedFromChannelNotification = <
         onRemovedFromChannel(setChannels, event);
       } else {
         setChannels((channels) => {
-          const newChannels = channels.filter(
-            (channel) => channel.cid !== event.channel?.cid,
-          );
+          const newChannels = channels.filter((channel) => channel.cid !== event.channel?.cid);
           return [...newChannels];
         });
       }

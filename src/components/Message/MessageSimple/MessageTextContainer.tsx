@@ -13,10 +13,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type {
-  MarkdownStyle,
-  Theme,
-} from '../../../contexts/themeContext/utils/theme';
+import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -39,11 +36,9 @@ export type MessageTextProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  renderText: (
-    params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => JSX.Element | null;
+  renderText: (params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>) => JSX.Element | null;
   theme: { theme: Theme };
 };
 
@@ -54,15 +49,12 @@ export type MessageTextContainerPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress'
+  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
 > &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'markdownRules' | 'MessageText'
-  > & {
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'markdownRules' | 'MessageText'> & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
     styles?: Partial<{
@@ -77,7 +69,7 @@ const MessageTextContainerWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -92,6 +84,7 @@ const MessageTextContainerWithContext = <
     onLongPress,
     onlyEmojis,
     onPress,
+    preventPress,
     styles: stylesProp = {},
   } = props;
 
@@ -131,6 +124,7 @@ const MessageTextContainerWithContext = <
           onLongPress,
           onlyEmojis,
           onPress,
+          preventPress,
         })
       )}
     </View>
@@ -144,7 +138,7 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -159,13 +153,11 @@ const areEqual = <
   if (!onlyEmojisEqual) return false;
 
   const mentionedUsersEqual =
-    prevMessage.mentioned_users?.length ===
-      nextMessage.mentioned_users?.length &&
+    prevMessage.mentioned_users?.length === nextMessage.mentioned_users?.length &&
     (nextMessage.mentioned_users?.length === 0 ||
       (prevMessage.mentioned_users?.length &&
         nextMessage.mentioned_users?.length &&
-        prevMessage.mentioned_users[0].name ===
-          nextMessage.mentioned_users[0].name));
+        prevMessage.mentioned_users[0].name === nextMessage.mentioned_users[0].name));
   if (!mentionedUsersEqual) return false;
 
   return true;
@@ -183,7 +175,7 @@ export type MessageTextContainerProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageTextContainer = <
@@ -193,28 +185,13 @@ export const MessageTextContainer = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, onLongPress, onlyEmojis, onPress } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { markdownRules, MessageText } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { message, onLongPress, onlyEmojis, onPress, preventPress } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { markdownRules, MessageText } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageTextContainer
@@ -225,11 +202,11 @@ export const MessageTextContainer = <
         onLongPress,
         onlyEmojis,
         onPress,
+        preventPress,
       }}
       {...props}
     />
   );
 };
 
-MessageTextContainer.displayName =
-  'MessageTextContainer{messageSimple{content}}';
+MessageTextContainer.displayName = 'MessageTextContainer{messageSimple{content}}';

@@ -22,7 +22,7 @@ export const useCreateMessageInputContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >({
   additionalTextInputProps,
   appendText,
@@ -85,6 +85,7 @@ export const useCreateMessageInputContext = <
   setInputRef,
   setMentionedUsers,
   setNumberOfUploads,
+  setQuotedMessageState,
   setSendThreadMessageInChannel,
   setShowMoreOptions,
   setText,
@@ -114,15 +115,7 @@ export const useCreateMessageInputContext = <
     : '';
   const threadId = thread?.id;
 
-  const messageInputContext: MessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = useMemo(
+  const messageInputContext: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,
@@ -185,6 +178,7 @@ export const useCreateMessageInputContext = <
       setInputRef,
       setMentionedUsers,
       setNumberOfUploads,
+      setQuotedMessageState,
       setSendThreadMessageInChannel,
       setShowMoreOptions,
       setText,
@@ -202,7 +196,6 @@ export const useCreateMessageInputContext = <
       uploadsEnabled,
     }),
     [
-      sendThreadMessageInChannel,
       editingExists,
       fileUploadsValue,
       giphyActive,
@@ -211,6 +204,7 @@ export const useCreateMessageInputContext = <
       mentionedUsersLength,
       quotedMessageId,
       selectedPicker,
+      sendThreadMessageInChannel,
       showMoreOptions,
       text,
       threadId,

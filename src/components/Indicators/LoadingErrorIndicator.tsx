@@ -39,10 +39,7 @@ const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
 
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
-      <Text
-        style={[styles.errorText, { color: accent_red }, errorText]}
-        testID='loading-error'
-      >
+      <Text style={[styles.errorText, { color: accent_red }, errorText]} testID='loading-error'>
         {text}
       </Text>
       {children}
@@ -71,16 +68,14 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
   switch (listType) {
     case 'channel':
       return (
-        <LoadingErrorWrapper
-          onPress={retry}
-          text={t('Error loading channel list...')}
-        >
+        <LoadingErrorWrapper onPress={retry} text={t('Error loading channel list...')}>
           <Text style={[styles.retryText, { color: black }, retryText]}>⟳</Text>
         </LoadingErrorWrapper>
       );
     case 'message':
       return (
         <LoadingErrorWrapper
+          onPress={retry}
           text={t('Error loading messages for this channel...')}
         />
       );
@@ -89,5 +84,4 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
   }
 };
 
-LoadingErrorIndicator.displayName =
-  'LoadingErrorIndicator{loadingErrorIndicator}';
+LoadingErrorIndicator.displayName = 'LoadingErrorIndicator{loadingErrorIndicator}';

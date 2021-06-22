@@ -2,19 +2,13 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
-import { useAppStateListener } from './hooks/useAppStateListener';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
+import { useMutedUsers } from './hooks/useMutedUsers';
 
-import {
-  ChatContextValue,
-  ChatProvider,
-} from '../../contexts/chatContext/ChatContext';
+import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
-import {
-  DeepPartial,
-  ThemeProvider,
-} from '../../contexts/themeContext/ThemeContext';
+import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -46,7 +40,7 @@ export type ChatProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
@@ -145,17 +139,11 @@ const ChatWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const {
-    children,
-    client,
-    closeConnectionOnBackground = true,
-    i18nInstance,
-    style,
-  } = props;
+  const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -163,24 +151,23 @@ const ChatWithContext = <
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
-  // Setup translators
+  /**
+   * Setup translators
+   */
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
-  // Setup connection event listeners
-  const { connectionRecovering, isOnline } = useIsOnline<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >(client);
-
-  useAppStateListener<At, Ch, Co, Ev, Me, Re, Us>(
+  /**
+   * Setup connection event listeners
+   */
+  const { connectionRecovering, isOnline } = useIsOnline<At, Ch, Co, Ev, Me, Re, Us>(
     client,
     closeConnectionOnBackground,
   );
+
+  /**
+   * Setup muted user listener
+   */
+  const mutedUsers = useMutedUsers<At, Ch, Co, Ev, Me, Re, Us>(client);
 
   useEffect(() => {
     if (client.setUserAgent) {
@@ -198,6 +185,7 @@ const ChatWithContext = <
     client,
     connectionRecovering,
     isOnline,
+    mutedUsers,
     setActiveChannel,
   });
 
@@ -240,7 +228,7 @@ export const Chat = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {

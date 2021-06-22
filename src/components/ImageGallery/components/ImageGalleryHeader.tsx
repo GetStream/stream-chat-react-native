@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import {
+  Platform,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -60,9 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryHeaderCustomComponent<
-  Us extends UnknownType = DefaultUserType
-> = ({
+export type ImageGalleryHeaderCustomComponent<Us extends UnknownType = DefaultUserType> = ({
   hideOverlay,
   photo,
 }: {
@@ -70,35 +66,22 @@ export type ImageGalleryHeaderCustomComponent<
   photo?: Photo<Us>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryHeaderCustomComponentProps<
-  Us extends UnknownType = DefaultUserType
-> = {
+export type ImageGalleryHeaderCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
   centerElement?: ImageGalleryHeaderCustomComponent<Us>;
   CloseIcon?: React.ReactElement;
   leftElement?: ImageGalleryHeaderCustomComponent<Us>;
   rightElement?: ImageGalleryHeaderCustomComponent<Us>;
 };
 
-type Props<
-  Us extends UnknownType = DefaultUserType
-> = ImageGalleryHeaderCustomComponentProps<Us> & {
-  opacity: Animated.SharedValue<number>;
-  visible: Animated.SharedValue<number>;
-  photo?: Photo<Us>;
-};
+type Props<Us extends UnknownType = DefaultUserType> =
+  ImageGalleryHeaderCustomComponentProps<Us> & {
+    opacity: Animated.SharedValue<number>;
+    visible: Animated.SharedValue<number>;
+    photo?: Photo<Us>;
+  };
 
-export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
-  props: Props<Us>,
-) => {
-  const {
-    centerElement,
-    CloseIcon,
-    leftElement,
-    opacity,
-    photo,
-    rightElement,
-    visible,
-  } = props;
+export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+  const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);
   const {
     theme: {
@@ -117,27 +100,35 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setBlurType, setOverlay } = useOverlayContext();
+  const { setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
 
   const parsedDate = tDateTimeParser(photo?.created_at);
+
+  /**
+   * .calendar is required on moment types, but in reality it
+   * is unavailable on first render. We therefore check if it
+   * is available and call it, otherwise we call .fromNow.
+   */
   const date =
     parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar()
+      ? parsedDate.calendar
+        ? parsedDate.calendar()
+        : parsedDate.fromNow()
       : parsedDate;
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
     transform: [
       {
-        translateY: interpolate(
-          visible.value,
-          [0, 1],
-          [-height, 0],
-          Extrapolate.CLAMP,
-        ),
+        translateY: interpolate(visible.value, [0, 1], [-height, 0], Extrapolate.CLAMP),
       },
     ],
   }));
+
+  const androidTranslucentHeaderStyle = {
+    paddingTop:
+      Platform.OS === 'android' && translucentStatusBar ? StatusBar.currentHeight : undefined,
+  };
 
   const hideOverlay = () => {
     setOverlay('none');
@@ -150,7 +141,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
       pointerEvents={'box-none'}
     >
       <ReanimatedSafeAreaView
-        style={[{ backgroundColor: white }, container, headerStyle]}
+        style={[{ backgroundColor: white }, androidTranslucentHeaderStyle, container, headerStyle]}
       >
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
@@ -169,9 +160,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
               <Text style={[styles.userName, { color: black }, usernameText]}>
                 {photo?.user?.name || t('Unknown User')}
               </Text>
-              <Text style={[styles.date, { color: black }, dateText]}>
-                {date}
-              </Text>
+              <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>
             </View>
           )}
           {rightElement ? (

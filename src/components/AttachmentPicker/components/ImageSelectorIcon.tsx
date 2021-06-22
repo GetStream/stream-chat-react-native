@@ -14,7 +14,5 @@ export const ImageSelectorIcon: React.FC<Props> = ({ selectedPicker }) => {
     },
   } = useTheme();
 
-  return (
-    <Picture pathFill={selectedPicker === 'images' ? accent_blue : grey} />
-  );
+  return <Picture pathFill={selectedPicker === 'images' ? accent_blue : grey} />;
 };

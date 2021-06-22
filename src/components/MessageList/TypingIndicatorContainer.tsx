@@ -1,15 +1,12 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
+import { filterTypingUsers } from './utils/filterTypingUsers';
+
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  TypingContextValue,
-  useTypingContext,
-} from '../../contexts/typingContext/TypingContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
+import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
 
 import type {
   DefaultAttachmentType,
@@ -37,9 +34,10 @@ type TypingIndicatorContainerPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 > = Pick<TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'typing'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'>;
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
 
 const TypingIndicatorContainerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -48,33 +46,25 @@ const TypingIndicatorContainerWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
-  props: PropsWithChildren<
-    TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
-  >,
+  props: PropsWithChildren<TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, typing } = props;
+  const { children, client, thread, typing } = props;
 
   const {
     theme: {
       messageList: { typingIndicatorContainer },
     },
   } = useTheme();
-  const typingUsers = Object.values(typing);
+  const typingUsers = filterTypingUsers({ client, thread, typing });
 
-  if (
-    !typingUsers.length ||
-    (typingUsers.length === 1 && typingUsers[0].user?.id === client?.user?.id)
-  ) {
+  if (!typingUsers.length) {
     return null;
   }
 
   return (
-    <View
-      style={[styles.container, typingIndicatorContainer]}
-      testID='typing-indicator-container'
-    >
+    <View style={[styles.container, typingIndicatorContainer]} testID='typing-indicator-container'>
       {children}
     </View>
   );
@@ -87,10 +77,8 @@ export type TypingIndicatorContainerProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
-> = Partial<
-  TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
->;
+  Us extends DefaultUserType = DefaultUserType,
+> = Partial<TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const TypingIndicatorContainer = <
   At extends UnknownType = DefaultAttachmentType,
@@ -99,18 +87,15 @@ export const TypingIndicatorContainer = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType,
 >(
-  props: PropsWithChildren<
-    TypingIndicatorContainerProps<At, Ch, Co, Ev, Me, Re, Us>
-  >,
+  props: PropsWithChildren<TypingIndicatorContainerProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return (
-    <TypingIndicatorContainerWithContext {...{ client, typing }} {...props} />
-  );
+  return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };
 
 TypingIndicatorContainer.displayName =

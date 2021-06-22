@@ -1,22 +1,10 @@
 import React from 'react';
 import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-} from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-import {
-  Chat,
-  OverlayProvider,
-  ThemeProvider,
-  useOverlayContext,
-} from 'stream-chat-react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
 
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
@@ -60,13 +48,7 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
-  const {
-    chatClient,
-    isConnecting,
-    loginUser,
-    logout,
-    switchUser,
-  } = useChatClient();
+  const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
@@ -85,9 +67,7 @@ const App = () => {
           dark: colorScheme === 'dark',
         }}
       >
-        <AppContext.Provider
-          value={{ chatClient, loginUser, logout, switchUser }}
-        >
+        <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
           {isConnecting ? (
             <LoadingScreen />
           ) : chatClient ? (
@@ -114,11 +94,7 @@ const DrawerNavigator: React.FC = () => {
         width: 300,
       }}
     >
-      <Drawer.Screen
-        component={HomeScreen}
-        name='HomeScreen'
-        options={{ headerShown: false }}
-      />
+      <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
     </Drawer.Navigator>
   );
 };
@@ -198,11 +174,7 @@ const HomeScreen = () => {
 
   return (
     <Stack.Navigator initialRouteName='ChatScreen'>
-      <Stack.Screen
-        component={ChatScreen}
-        name='ChatScreen'
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen component={ChatScreen} name='ChatScreen' options={{ headerShown: false }} />
       <Stack.Screen
         component={ChannelScreen}
         name='ChannelScreen'

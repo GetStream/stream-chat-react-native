@@ -1,13 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
@@ -17,6 +9,8 @@ import {
   User,
   UserAdd,
   useTheme,
+  SendButton,
+  SendButtonProps,
 } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
@@ -29,6 +23,7 @@ import { useUserSearchContext } from '../context/UserSearchContext';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
+import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
 import type {
   LocalAttachmentType,
   LocalChannelType,
@@ -152,17 +147,18 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel = useRef<
-    StreamChatChannel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-  >();
+  const currentChannel =
+    useRef<
+      StreamChatChannel<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >
+    >();
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -216,45 +212,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     initChannel();
   }, [selectedUsersLength]);
 
-  /**
-   * 1. If the current channel is draft, then we create the channel and then send message
-   * Otherwise we simply send the message.
-   *
-   * 2. And then navigate to ChannelScreen
-   */
-  const customSendMessage = async () => {
-    if (!currentChannel?.current) return;
-
-    if (isDraft.current) {
-      currentChannel.current.initialized = false;
-      await currentChannel.current.query({});
-    }
-
-    try {
-      await currentChannel.current.sendMessage({
-        text: messageInputText,
-      });
-
-      navigation.replace('ChannelScreen', {
-        channelId: currentChannel.current.id,
-      });
-    } catch (e) {
-      Alert.alert('Error sending a message');
-    }
-  };
-
   const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
-    <View
-      style={[
-        { backgroundColor: white },
-        focusOnSearchInput ? styles.container : undefined,
-      ]}
-    >
-      <ScreenHeader
-        inSafeArea={inSafeArea}
-        onBack={reset}
-        titleText='New Chat'
-      />
+    <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
+      <ScreenHeader inSafeArea={inSafeArea} onBack={reset} titleText='New Chat' />
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => {
@@ -318,11 +278,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           )}
         </View>
         <View style={styles.searchContainerRight}>
-          {selectedUsers.length === 0 ? (
-            <User pathFill={grey} />
-          ) : (
-            <UserAdd pathFill={grey} />
-          )}
+          {selectedUsers.length === 0 ? <User pathFill={grey} /> : <UserAdd pathFill={grey} />}
         </View>
       </TouchableOpacity>
       {focusOnSearchInput && !searchText && selectedUsers.length === 0 && (
@@ -396,14 +352,13 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         onChangeText={setMessageInputText}
-        sendMessage={customSendMessage}
+        SendButton={NewDirectMessagingSendButton}
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
         {renderUserSearch({ inSafeArea: true })}
-        {results &&
-          results.length >= 0 &&
-          !focusOnSearchInput &&
-          focusOnMessageInput && <MessageList />}
+        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
+          <MessageList />
+        )}
         {selectedUsers.length > 0 && <MessageInput />}
       </Channel>
     </SafeAreaView>

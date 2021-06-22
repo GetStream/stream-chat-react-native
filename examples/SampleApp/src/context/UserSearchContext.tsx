@@ -4,9 +4,7 @@ import { PaginatedUsers, usePaginatedUsers } from '../hooks/usePaginatedUsers';
 
 export type UserSearchContextValue = PaginatedUsers;
 
-export const UserSearchContext = React.createContext(
-  {} as UserSearchContextValue,
-);
+export const UserSearchContext = React.createContext({} as UserSearchContextValue);
 
 export const UserSearchProvider: React.FC<{
   value?: UserSearchContextValue;
@@ -15,13 +13,11 @@ export const UserSearchProvider: React.FC<{
 
   const userSearchContext = { ...paginatedUsers, ...value };
   return (
-    <UserSearchContext.Provider
-      value={userSearchContext as UserSearchContextValue}
-    >
+    <UserSearchContext.Provider value={userSearchContext as UserSearchContextValue}>
       {children}
     </UserSearchContext.Provider>
   );
 };
 
 export const useUserSearchContext = () =>
-  (useContext(UserSearchContext) as unknown) as UserSearchContextValue;
+  useContext(UserSearchContext) as unknown as UserSearchContextValue;

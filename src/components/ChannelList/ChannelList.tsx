@@ -4,22 +4,20 @@ import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicat
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
-import {
-  ChannelListMessenger,
-  ChannelListMessengerProps,
-} from './ChannelListMessenger';
+import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
 import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
+import { useChannelVisible } from './hooks/listeners/useChannelVisible';
 import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
-import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
+import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
+import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
@@ -32,13 +30,7 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 
 import type { FlatList } from 'react-native-gesture-handler';
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-  Event,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -58,7 +50,7 @@ export type ChannelListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Partial<
   Pick<
     ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -97,9 +89,7 @@ export type ChannelListProps<
    *
    * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channellistmessenger)
    */
-  List?: React.ComponentType<
-    ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  List?: React.ComponentType<ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * If set to true, channels won't dynamically sort by most recent message, defaults to false
    */
@@ -113,9 +103,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onAddedToChannel?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -127,9 +115,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelDeleted?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -141,9 +127,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelHidden?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -155,9 +139,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelTruncated?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -169,9 +151,19 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onChannelUpdated?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
+  /**
+   * Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
+   *
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.visible` event
+   *
+   * @overrideType Function
+   * */
+  onChannelVisible?: (
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -184,9 +176,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onMessageNew?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -198,9 +188,7 @@ export type ChannelListProps<
    * @overrideType Function
    * */
   onRemovedFromChannel?: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
-    >,
+    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
@@ -233,7 +221,7 @@ export const ChannelList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -256,6 +244,7 @@ export const ChannelList = <
     onAddedToChannel,
     onChannelDeleted,
     onChannelHidden,
+    onChannelVisible,
     onChannelTruncated,
     onChannelUpdated,
     onMessageNew,
@@ -320,6 +309,11 @@ export const ChannelList = <
     setChannels,
   });
 
+  useChannelVisible({
+    onChannelVisible,
+    setChannels,
+  });
+
   useConnectionRecovered<At, Ch, Co, Ev, Me, Re, Us>({
     refreshList,
     setForceUpdate,
@@ -373,9 +367,7 @@ export const ChannelList = <
     refreshing,
     refreshList,
     reloadList,
-    setFlatListRef: (
-      ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
-    ) => {
+    setFlatListRef: (ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null) => {
       if (setFlatListRef) {
         setFlatListRef(ref);
       }

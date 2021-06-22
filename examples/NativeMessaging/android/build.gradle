@@ -2,11 +2,12 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "30.0.2"
-        minSdkVersion = 16
+        buildToolsVersion = "30.0.3"
+        minSdkVersion = 21
         compileSdkVersion = 30
         targetSdkVersion = 30
         androidXCore = "1.0.2"
+        ndkVersion = "20.1.5948944"
         // Put here other AndroidX dependencies
     }
     repositories {

@@ -1,11 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -68,15 +62,15 @@ const Icon: React.FC<
   }
 > = ({ pathFill, size, style, supportedReactions, type }) => {
   const ReactionIcon =
-    supportedReactions.find((reaction) => reaction.type === type)?.Icon ||
-    Unknown;
+    supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
-  const scale = useSharedValue(0, false);
+  const scale = useSharedValue(0);
 
   const showReaction = () => {
     'worklet';
     scale.value = withSequence(
-      withDelay(250, withTiming(1.5, { duration: 500 })),
+      withDelay(250, withTiming(0.5, { duration: 100 })),
+      withTiming(1.5, { duration: 400 }),
       withTiming(1, { duration: 500 }),
     );
   };
@@ -98,12 +92,7 @@ const Icon: React.FC<
 
   return (
     <Animated.View style={animatedStyle}>
-      <ReactionIcon
-        height={size}
-        pathFill={pathFill}
-        style={style}
-        width={size}
-      />
+      <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />
     </Animated.View>
   );
 };
@@ -115,10 +104,16 @@ export type ReactionListPropsWithContext<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'onLongPress' | 'onPress' | 'reactions' | 'showMessageOverlay'
+  | 'alignment'
+  | 'onLongPress'
+  | 'onPress'
+  | 'onPressIn'
+  | 'preventPress'
+  | 'reactions'
+  | 'showMessageOverlay'
 > & {
   messageContentWidth: number;
   supportedReactions: ReactionData[];
@@ -136,7 +131,7 @@ const ReactionListWithContext = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -146,6 +141,8 @@ const ReactionListWithContext = <
     messageContentWidth,
     onLongPress,
     onPress,
+    onPressIn,
+    preventPress,
     radius: propRadius,
     reactions,
     reactionSize: propReactionSize,
@@ -174,7 +171,7 @@ const ReactionListWithContext = <
     },
   } = useTheme();
 
-  const opacity = useSharedValue(0, false);
+  const opacity = useSharedValue(0);
 
   const width = useWindowDimensions().width;
 
@@ -222,11 +219,9 @@ const ReactionListWithContext = <
   const y1 = reactionSize + radius * 2;
   const y2 = reactionSize - radius;
 
-  const insideLeftBound =
-    x2 - (reactionSize * reactions.length) / 2 > screenPadding;
+  const insideLeftBound = x2 - (reactionSize * reactions.length) / 2 > screenPadding;
   const insideRightBound =
-    x2 + strokeSize + (reactionSize * reactions.length) / 2 <
-    width - screenPadding * 2;
+    x2 + strokeSize + (reactionSize * reactions.length) / 2 < width - screenPadding * 2;
   const left =
     reactions.length === 1
       ? x1 + (alignmentLeft ? -radius : radius - reactionSize)
@@ -238,18 +233,32 @@ const ReactionListWithContext = <
 
   return (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'reactionList',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'reactionList',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        onPress({
-          defaultHandler: () => showMessageOverlay(true),
-          emitter: 'reactionList',
-          event,
-        });
+        if (onPress) {
+          onPress({
+            defaultHandler: () => showMessageOverlay(true),
+            emitter: 'reactionList',
+            event,
+          });
+        }
+      }}
+      onPressIn={(event) => {
+        if (onPressIn) {
+          onPressIn({
+            defaultHandler: () => showMessageOverlay(true),
+            emitter: 'reactionList',
+            event,
+          });
+        }
       }}
       style={[
         styles.container,
@@ -264,26 +273,11 @@ const ReactionListWithContext = <
         <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
           <Svg>
             <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
-            <Circle
-              cx={x2}
-              cy={y2}
-              fill={stroke}
-              r={radius * 2 + strokeSize * 3}
-            />
+            <Circle cx={x2} cy={y2} fill={stroke} r={radius * 2 + strokeSize * 3} />
             <Circle cx={x1} cy={y1} fill={fill} r={radius + strokeSize} />
             <Circle cx={x2} cy={y2} fill={fill} r={radius * 2 + strokeSize} />
-            <Circle
-              cx={x1}
-              cy={y1}
-              fill={alignmentLeft ? fill : stroke}
-              r={radius}
-            />
-            <Circle
-              cx={x2}
-              cy={y2}
-              fill={alignmentLeft ? fill : stroke}
-              r={radius * 2}
-            />
+            <Circle cx={x1} cy={y1} fill={alignmentLeft ? fill : stroke} r={radius} />
+            <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
           </Svg>
           <View
             style={[
@@ -302,12 +296,7 @@ const ReactionListWithContext = <
           />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
-              <Circle
-                cx={x2}
-                cy={y2}
-                fill={alignmentLeft ? fill : stroke}
-                r={radius * 2}
-              />
+              <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
             </Svg>
           </View>
           <View
@@ -348,22 +337,15 @@ const areEqual = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    messageContentWidth: prevMessageContentWidth,
-    reactions: prevReactions,
-  } = prevProps;
-  const {
-    messageContentWidth: nextMessageContentWidth,
-    reactions: nextReactions,
-  } = nextProps;
+  const { messageContentWidth: prevMessageContentWidth, reactions: prevReactions } = prevProps;
+  const { messageContentWidth: nextMessageContentWidth, reactions: nextReactions } = nextProps;
 
-  const messageContentWidthEqual =
-    prevMessageContentWidth === nextMessageContentWidth;
+  const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
   if (!messageContentWidthEqual) return false;
 
   const reactionsEqual =
@@ -390,17 +372,9 @@ export type ReactionListProps<
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<
-    ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'messageContentWidth'
-  >
-> &
-  Pick<
-    ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'messageContentWidth'
-  >;
+  Us extends UnknownType = DefaultUserType,
+> = Partial<Omit<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>> &
+  Pick<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>;
 
 /**
  * ReactionList - A high level component which implements all the logic required for a message reaction list
@@ -412,7 +386,7 @@ export const ReactionList = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends UnknownType = DefaultUserType,
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -420,18 +394,12 @@ export const ReactionList = <
     alignment,
     onLongPress,
     onPress,
+    onPressIn,
+    preventPress,
     reactions,
     showMessageOverlay,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedReactionList
@@ -439,6 +407,8 @@ export const ReactionList = <
         alignment,
         onLongPress,
         onPress,
+        onPressIn,
+        preventPress,
         reactions,
         showMessageOverlay,
         supportedReactions,
