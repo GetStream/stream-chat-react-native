@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Delete, UserMinus, useTheme } from 'stream-chat-react-native';
 
@@ -11,17 +12,15 @@ import {
 
 const styles = StyleSheet.create({
   actionButtonLeft: {
-    flex: 1,
     padding: 20,
   },
   actionButtonRight: {
-    alignItems: 'flex-end',
-    flex: 1,
     padding: 20,
   },
   actionButtonsContainer: {
     borderTopWidth: 1,
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   container: {
     height: 224,
