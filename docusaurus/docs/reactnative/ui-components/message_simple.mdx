@@ -20,7 +20,7 @@ This component consumes the [`MessageContext`]('../contexts/message') and handle
 
 **Use Case 1** Force `single` [`groupStyles`](../../contexts/message-context#groupstyles) on message UI.
 
-> You can achieve the same result by using a prop [`noGroupByUser`](./ui-components/message-list#nogroupbyuser) on `MessageList` component.
+> You can achieve the same result by using a prop [`noGroupByUser`](../message-list#nogroupbyuser) on `MessageList` component.
 
 ```tsx
 import {Channel, MessageSimple} from 'stream-chat-react-native'
@@ -32,7 +32,7 @@ const CustomMessageUI = () => <MessageSimple groupStyles={['single']} />
 
 **Use Case 2** Force `left` alignment on message UI (similar to slack)
 
-> You can achieve the same result by using a prop [`forceAlignMessages`](./ui-components/channel#forcealignmessages) on `MessageList` component.
+> You can achieve the same result by using a prop [`forceAlignMessages`](../../core-components/channel#forcealignmessages) on `MessageList` component.
 
 ```tsx
 import {Channel, MessageSimple} from 'stream-chat-react-native'
