@@ -5,40 +5,30 @@ title: Chat
 ---
 
 import Client from '../common-content/core-components/chat/props/client.mdx'
+import I18nInstance from '../common-content/core-components/overlay-provider/props/i18n_instance.mdx';
 
-<!-- TODO: Change to new docs -->
-The Chat component is a React Context provider that wraps the [ChannelList](../channel-list) and [Channel](../channel) component. It provides the [ChatContext](../../contexts/chat-context) to its children, which includes the StreamChat client instance.
-
-`Chat` component is provided by `stream-chat-react-native` and can be imported from the library as following
-
-```tsx
-import { Chat } from 'stream-chat-react-native';
-```
-
-- StreamChat client should be provided to this component as prop.
-- Chat component is also responsible for tracking the health of websocket connection with chat server. You can use `isOnline` value from [ChatContext](../../contexts/chat-context#isonline) to access status.
+<!-- TODO: WHERE ARE THESE CONTEXTS!!!!! -->
+`Chat` provides the [ChatContext](../contexts/chat-context), [TranslationContext](../contexts/chat-context), and [ThemeContext](../contexts/chat-context) to its child components.
+`Chat` is the second highest level component in the Stream Chat for React Native library with only the [`OverlyProvider`](./overlay_provider.mdx) at a higher level.
+`Chat` is also responsible for tracking the health of the websocket connection with Stream Chat server.
+The value `isOnline` provided by the [ChatContext](../contexts/chat-context#isonline) indicates the status of the connection.
 
 ## Basic Usage
 
+`Chat` should be inside of the `OverlayProvider` and if you choose can be implemented at a high level of your application, similar to the `OverlayProvider`.
+
 ```tsx
 import { StreamChat } from 'stream-chat'; 
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-// For ChannelList
-<Chat client={client}>
-  <ChannelList />
-</Chat>
-
-// For Channel
-<OverlayProvider>
-  <Chat client={client}>
-    <Channel channel={channel}>
-      <MessageList />
-      <MessageInput />
-    </Channel>
-  </Chat>
-</OverlayProvider>
+export const App = () =>
+  <OverlayProvider>
+    <Chat client={client}>
+      {/** App components */}
+    </Chat>
+  </OverlayProvider>;
 ```
 
 ## Props
@@ -49,7 +39,9 @@ const client = StreamChat.getInstance('api_key');
 
 ### closeConnectionOnBackground
 
-When false, ws connection won't be disconnection upon backgrounding the app. To receive push notifications, its necessary that user doesn't have active websocket connection. So by default, we disconnect websocket connection when app goes to background, and reconnect when app comes to foreground.
+When set to false the WebSocket connection won't disconnect when sending the app to the background.
+To receive push notifications it's necessary that user doesn't have an active WebSocket connection.
+By default the WebSocket connection is disconnected when the app goes to the background, and reconnects when app comes to the foreground.
 
 | Type | Default |
 | - | - |
@@ -57,42 +49,21 @@ When false, ws connection won't be disconnection upon backgrounding the app. To 
 
 ### i18nInstance
 
-Instance of Streami18n class should be provided to Chat component to enable internationalization.
-
-Please read [Translations/i18n](../../basics/translations#instantiation) for details.
-
-| Type |
-| - |
-| Streami18n |
+<I18nInstance />
 
 ### style
 
-You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
+A `theme` object to customize the styles of SDK components.
+Detailed information on theming can be found in the [customization documentation](../customization/theming.mdx).
 
-:::caution
-Styles provided on Chat component don't apply to components within overlay, such as attachment picker, message overlay etc. Please pass the separate theme (for styling components within overlay) to [`OverlayProvider`](../overlay-provider#value).
+:::note
+
+Themes are inherited from parent providers.
+A [theme provided to the `OverlayProvider`](./overlay-provider#value) will be the base theme `style` is merged into.
+Themes are not hoisted though, therefore a theme provided to `Chat` will not change overlay components such as the attachment picker.
+
 :::
 
-```jsx
-import type { DeepPartial, Theme } from 'stream-chat-react-native';
-
-const theme: DeepPartial<Theme> = {
-  messageSimple: {
-    file: {
-      container: {
-        backgroundColor: 'red',
-      },
-      icon: {
-        height: 16,
-        width: 16,
-      },
-    },
-  },
-};
-
-<Chat style={theme}>
-</Chat>
-```
 
 | Type |
 | - |
