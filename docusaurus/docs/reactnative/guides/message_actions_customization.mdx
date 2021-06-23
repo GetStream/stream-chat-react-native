@@ -23,7 +23,7 @@ By default we render the following actions (as shown in screenshots)
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../../object-types/message-action) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, handler) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, handler) for rendering the action button.
 
 ```tsx
 type MessageAction = {
@@ -37,7 +37,7 @@ type MessageAction = {
 You can customize each one of the default actions using props on Channel component (as shown further on this page). Channel component makes these props available to enclosed components via context `MessagesContext`.
 
 [`Channel`](../) component accepts a prop called - `messageActions`. You can use this prop as a callback function to render message actions selectively.
-This parameters to this function includes all the default message actions as [`MessageAction`](../../object-types/message-action) object, and some more relevant properties. Array of `MessageAction`'s returned by this function, will be rendered in message overlay (on long press).
+This parameters to this function includes all the default message actions as [`MessageAction`](../object-types/message_action.mdx) object, and some more relevant properties. Array of `MessageAction`'s returned by this function, will be rendered in message overlay (on long press).
 
 ```tsx
 messageActions={({
