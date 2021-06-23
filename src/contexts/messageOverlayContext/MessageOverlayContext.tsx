@@ -5,7 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
-import type { Alignment } from '../messageContext/MessageContext';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
@@ -48,6 +48,7 @@ export type MessageOverlayData<
   images?: Attachment<At>[];
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageActions?: MessageAction[];
+  messageContext?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactionTitle?: string;
   messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   onlyEmojis?: boolean;

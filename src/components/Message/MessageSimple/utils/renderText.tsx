@@ -66,7 +66,9 @@ export type RenderTextParams<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress'>> & {
+> = Partial<
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'preventPress'>
+> & {
   colors: typeof Colors;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
@@ -94,9 +96,10 @@ export const renderText = <
     message,
     messageOverlay,
     onLink: onLinkParams,
-    onLongPress: propOnLongPress,
+    onLongPress: onLongPressParam,
     onlyEmojis,
-    onPress: propOnPress,
+    onPress: onPressParam,
+    preventPress,
   } = params;
 
   // take the @ mentions and turn them into markdown?
@@ -154,18 +157,22 @@ export const renderText = <
 
   const react: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
-      propOnPress?.({
-        defaultHandler: () => onLink(node.target),
-        emitter: 'textLink',
-        event,
-      });
+      if (!preventPress && onPressParam) {
+        onPressParam({
+          defaultHandler: () => onLink(node.target),
+          emitter: 'textLink',
+          event,
+        });
+      }
     };
 
     const onLongPress = (event: GestureResponderEvent) => {
-      propOnLongPress?.({
-        emitter: 'textLink',
-        event,
-      });
+      if (!preventPress && onLongPressParam) {
+        onLongPressParam({
+          emitter: 'textLink',
+          event,
+        });
+      }
     };
 
     state.withinLink = true;
@@ -199,17 +206,21 @@ export const renderText = <
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
-      propOnPress?.({
-        emitter: 'textMention',
-        event,
-      });
+      if (!preventPress && onPressParam) {
+        onPressParam({
+          emitter: 'textMention',
+          event,
+        });
+      }
     };
 
     const onLongPress = (event: GestureResponderEvent) => {
-      propOnLongPress?.({
-        emitter: 'textMention',
-        event,
-      });
+      if (!preventPress && onLongPressParam) {
+        onLongPressParam({
+          emitter: 'textMention',
+          event,
+        });
+      }
     };
 
     return React.createElement(

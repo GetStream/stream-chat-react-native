@@ -107,7 +107,13 @@ export type ReactionListPropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'onLongPress' | 'onPress' | 'reactions' | 'showMessageOverlay'
+  | 'alignment'
+  | 'onLongPress'
+  | 'onPress'
+  | 'onPressIn'
+  | 'preventPress'
+  | 'reactions'
+  | 'showMessageOverlay'
 > & {
   messageContentWidth: number;
   supportedReactions: ReactionData[];
@@ -135,6 +141,8 @@ const ReactionListWithContext = <
     messageContentWidth,
     onLongPress,
     onPress,
+    onPressIn,
+    preventPress,
     radius: propRadius,
     reactions,
     reactionSize: propReactionSize,
@@ -225,18 +233,32 @@ const ReactionListWithContext = <
 
   return (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'reactionList',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'reactionList',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        onPress({
-          defaultHandler: () => showMessageOverlay(true),
-          emitter: 'reactionList',
-          event,
-        });
+        if (onPress) {
+          onPress({
+            defaultHandler: () => showMessageOverlay(true),
+            emitter: 'reactionList',
+            event,
+          });
+        }
+      }}
+      onPressIn={(event) => {
+        if (onPressIn) {
+          onPressIn({
+            defaultHandler: () => showMessageOverlay(true),
+            emitter: 'reactionList',
+            event,
+          });
+        }
       }}
       style={[
         styles.container,
@@ -368,8 +390,15 @@ export const ReactionList = <
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, onLongPress, onPress, reactions, showMessageOverlay } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    alignment,
+    onLongPress,
+    onPress,
+    onPressIn,
+    preventPress,
+    reactions,
+    showMessageOverlay,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -378,6 +407,8 @@ export const ReactionList = <
         alignment,
         onLongPress,
         onPress,
+        onPressIn,
+        preventPress,
         reactions,
         showMessageOverlay,
         supportedReactions,

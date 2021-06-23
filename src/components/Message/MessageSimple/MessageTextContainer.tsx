@@ -52,7 +52,7 @@ export type MessageTextContainerPropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress'
+  'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
 > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'markdownRules' | 'MessageText'> & {
     markdownStyles?: MarkdownStyle;
@@ -84,6 +84,7 @@ const MessageTextContainerWithContext = <
     onLongPress,
     onlyEmojis,
     onPress,
+    preventPress,
     styles: stylesProp = {},
   } = props;
 
@@ -123,6 +124,7 @@ const MessageTextContainerWithContext = <
           onLongPress,
           onlyEmojis,
           onPress,
+          preventPress,
         })
       )}
     </View>
@@ -187,7 +189,7 @@ export const MessageTextContainer = <
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, onLongPress, onlyEmojis, onPress } =
+  const { message, onLongPress, onlyEmojis, onPress, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { markdownRules, MessageText } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -200,6 +202,7 @@ export const MessageTextContainer = <
         onLongPress,
         onlyEmojis,
         onPress,
+        preventPress,
       }}
       {...props}
     />

@@ -112,7 +112,7 @@ export type GiphyPropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn'
+  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
     attachment: Attachment<At>;
@@ -129,8 +129,15 @@ const GiphyWithContext = <
 >(
   props: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { additionalTouchableProps, attachment, handleAction, onLongPress, onPress, onPressIn } =
-    props;
+  const {
+    additionalTouchableProps,
+    attachment,
+    handleAction,
+    onLongPress,
+    onPress,
+    onPressIn,
+    preventPress,
+  } = props;
 
   const { actions, image_url, thumb_url, title, type } = attachment;
 
@@ -230,23 +237,30 @@ const GiphyWithContext = <
     </View>
   ) : (
     <TouchableOpacity
+      disabled={preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'giphy',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        onPress({
-          emitter: 'giphy',
-          event,
-        });
+        if (onPress) {
+          onPress({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       onPressIn={(event) => {
-        onPressIn?.({
-          emitter: 'giphy',
-          event,
-        });
+        if (onPressIn) {
+          onPressIn({
+            emitter: 'giphy',
+            event,
+          });
+        }
       }}
       style={[styles.container, container]}
       testID='giphy-attachment'
@@ -338,7 +352,7 @@ export const Giphy = <
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, onLongPress, onPress, onPressIn } =
+  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -350,6 +364,7 @@ export const Giphy = <
         onLongPress,
         onPress,
         onPressIn,
+        preventPress,
       }}
       {...props}
     />

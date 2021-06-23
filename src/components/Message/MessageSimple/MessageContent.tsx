@@ -240,24 +240,30 @@ const MessageContentWithContext = <
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      disabled={disabled}
+      disabled={disabled || preventPress}
       onLongPress={(event) => {
-        onLongPress({
-          emitter: 'messageContent',
-          event,
-        });
+        if (onLongPress) {
+          onLongPress({
+            emitter: 'messageContent',
+            event,
+          });
+        }
       }}
       onPress={(event) => {
-        onPress({
-          emitter: 'messageContent',
-          event,
-        });
+        if (onPress) {
+          onPress({
+            emitter: 'messageContent',
+            event,
+          });
+        }
       }}
       onPressIn={(event) => {
-        onPressIn?.({
-          emitter: 'messageContent',
-          event,
-        });
+        if (onPressIn) {
+          onPressIn({
+            emitter: 'messageContent',
+            event,
+          });
+        }
       }}
       {...additionalTouchableProps}
       /**
@@ -347,12 +353,7 @@ const MessageContentWithContext = <
                   />
                 );
               case 'gallery':
-                return (
-                  <Gallery
-                    key={`gallery_${messageContentOrderIndex}`}
-                    preventPress={preventPress}
-                  />
-                );
+                return <Gallery key={`gallery_${messageContentOrderIndex}`} />;
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (

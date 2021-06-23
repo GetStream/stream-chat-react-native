@@ -134,7 +134,7 @@ export const MessageProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
   <MessageContext.Provider value={value as unknown as MessageContextValue}>
     {children}
