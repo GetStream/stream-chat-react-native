@@ -1,0 +1,46 @@
+---
+id: channel-preview-status
+title: ChannelPreviewStatus
+---
+
+import LastMessagePreview from '../common-content/ui-components/channel-preview-messenger/props/last_message_preview.mdx'
+import FormatLatestMessageDate from '../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
+import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelPreviewStatus` is the UI component for displaying the last message status. Renders the last message date for each channel on a list.
+
+## Basic Usage
+
+You can replace the default preview status UI component using the `PreviewStatus` prop on [ChannelList](../core-components/channel_list.mdx#preview).
+<!-- Added the following phrase so users can search for "custom message date" and find this component once it defaults to rendering the last message date  -->
+In the following sample we display a custom message preview date. 
+
+<!-- Added the comment about useMemo because one of our sample projects had a perf problem related to this exact case  -->
+```jsx
+import { useMemo } from 'react';
+import { ChannelList, ChannelPreviewStatus } from 'stream-chat-react-native';
+import { customDateFormatter } from '...'; // your custom date formatter
+
+const CustomPreviewStatus = ({ latestMessagePreview }) => {
+    // important usage of useMemo once date parsers can perform some computation when re-rendering.
+    const formattedDate = useMemo(() => customDateFormatter(latestMessagePreview), [latestMessagePreview]);
+    return (
+        <ChannelPreviewStatus formatLatestMessageDate={formattedDate} />
+    );
+}
+<ChannelList PreviewStatus={CustomPreviewStatus} />
+```
+
+## Props
+
+### <div class="label required">required</div> **channel**
+
+<Channel/>
+
+### lastMessagePreview
+
+<LastMessagePreview/>
+
+### formatLatestMessageDate
+
+<FormatLatestMessageDate/>

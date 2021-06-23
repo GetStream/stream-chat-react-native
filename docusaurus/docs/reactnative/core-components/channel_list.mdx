@@ -1,0 +1,284 @@
+---
+id: channel-list
+sidebar_position: 3
+title: ChannelList
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import Filters from '../common-content/core-components/channel-list/props/filters.mdx';
+import Sort from '../common-content/core-components/channel-list/props/sort.mdx';
+import Options from '../common-content/core-components/channel-list/props/options.mdx';
+import OnSelect from '../common-content/core-components/channel-list/props/on_select.mdx';
+import AdditionalFlatListProps from '../common-content/core-components/channel-list/props/additional_flat_list_props.mdx';
+import LoadMoreThreshold from '../common-content/core-components/channel-list/props/load_more_threshold.mdx';
+import LockChannelOrder from '../common-content/core-components/channel-list/props/lock_channel_order.mdx';
+import MaxUnreadCount from '../common-content/core-components/channel-list/props/max_unread_count.mdx';
+import NumberOfSkeletons from '../common-content/core-components/channel-list/props/number_of_skeletons.mdx';
+import OnAddedToChannel from '../common-content/core-components/channel-list/props/on_added_to_channel.mdx';
+import OnChannelDeleted from '../common-content/core-components/channel-list/props/on_channel_deleted.mdx';
+import OnChannelHidden from '../common-content/core-components/channel-list/props/on_channel_hidden.mdx';
+import OnChannelVisible from '../common-content/core-components/channel-list/props/on_channel_visible.mdx';
+import OnChannelTruncated from '../common-content/core-components/channel-list/props/on_channel_truncated.mdx';
+import OnChannelUpdated from '../common-content/core-components/channel-list/props/on_channel_updated.mdx';
+import OnMessageNew from '../common-content/core-components/channel-list/props/on_message_new.mdx';
+import OnRemovedFromChannel from '../common-content/core-components/channel-list/props/on_removed_from_channel.mdx';
+import SetFlatListRef from '../common-content/core-components/channel-list/props/set_flat_list_ref.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel-list/props/empty_state_indicator.mdx';
+import FooterLoadingIndicator from '../common-content/core-components/channel-list/props/footer_loading_indicator.mdx';
+import HeaderErrorIndicator from '../common-content/core-components/channel-list/props/header_error_indicator.mdx';
+import HeaderNetworkDownIndicator from '../common-content/core-components/channel-list/props/header_network_down_indicator.mdx';
+import ListHeaderComponent from '../common-content/core-components/channel-list/props/list_header_component.mdx';
+import LoadingErrorIndicator from '../common-content/core-components/channel-list/props/loading_error_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel-list/props/loading_indicator.mdx';
+import Preview from '../common-content/core-components/channel-list/props/preview.mdx';
+import PreviewAvatar from '../common-content/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../common-content/core-components/channel-list/props/preview_message.mdx';
+import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+import Skeleton from '../common-content/core-components/channel-list/props/skeleton.mdx';
+
+ChannelList component is used to display list of channels using React Native's [FlatList](https://reactnative.dev/docs/flatlist). ChannelList is provided by `stream-chat-react-native` and can be imported from the library.
+
+```js
+import { ChannelList } from 'stream-chat-react-native';
+```
+This component fetches a list of channels using [Query Channels](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) api. This API looks like following:
+
+```js
+const channels = await chatClient.queryChannels(filters, sort, options);
+```
+
+You can provide the values for [`filters`](#recommended-filters), [`sort`](#recommended-sort) and [`options`](#recommended-options) as props (object) on ChannelList component. When user selects channel or presses on channel in list, you will want to navigate to Channel screen of selected channel. You can provide this navigation logic within as a callback function via prop [`onSelect`](#recommended-onselect)
+
+:::note
+The ChannelList is a higher order component, and itself doesn't provide any UI. It internally uses ChannelListMessenger component, for UI implementation.
+:::
+
+## Usage
+
+```jsx
+const filters = { members: { $in: [ 'vishal', 'lucas', 'neil' ] } }
+const sort = { last_message_at: -1 };
+const options = { limit: 20, messages_limit: 30 }
+
+<ChannelList
+  filters={filters}
+  sort={sort}
+  options={options}
+  onSelect={(channel) => /** navigate to channel screen */ }
+/>
+```
+
+## Context Providers
+
+ChannelList component is a provider of [ChannelsContext](../contexts/channels_context.mdx). All the child components of ChannelList can access this context using a hook `useChannelsContext`.
+
+```
+const { channels, refreshing } = useChannelsContext();
+```
+
+## UI Customizations
+
+ChannelList component is highly customizable. For every child UI component of ChannelList, you can provide your own custom implementation.
+
+For example, you can customize title component as following:
+
+```jsx
+const CustomPreviewTitle = ({ channel }) => (
+  <Text>{channel.data.customProperty} - {channel.data.name}</Text>
+)
+
+<ChannelList PreviewTitle={CustomPreviewTitle} />
+```
+
+You can reference the following visuals, to check which [prop](#props) to use for customizing any of the sub-components.
+
+<Tabs
+  defaultValue='list-item-components'
+  values={[
+    { label: 'List Items', value: 'list-item-components' },
+    { label: 'Indicators', value: 'indicators' },
+  ]}
+>
+<TabItem value='list-item-components'>
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+</TabItem>
+<TabItem value='indicators'>
+
+![](../assets/api-references/components/channel-list/visual_guide_2.png)
+
+</TabItem>
+</Tabs>
+
+## Event Listeners
+
+ChannelList component uses [Event Listeners](https://getstream.io/chat/docs/javascript/event_listening/?language=javascript), to dynamically update the list upon changes e.g., new incoming message, user gets added to new channel etc.
+ChannelList component adds listeners for following events, to keep itself updated:
+
+| [Event Type](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) | Default Behavior | Prop to override |
+|- -|- -|- -|
+| `channel.deleted` | Remove channel from list | [onChannelDeleted](#onchanneldeleted) |
+| `channel.hidden` | Remove channel from list | [onChannelHidden](#onchannelhidden) |
+| `channel.truncated` | Updates the channel | [onChannelTruncated](#onchanneltruncated) |
+| `channel.updated` | Updates the channel | [onChannelUpdated](#onchannelupdated) |
+| `channel.visible` | Adds channel to list | [onChannelVisible](#onchannelvisible) |
+| `message.new` | Moves channel to top of the list | [lockChannelOrder](#lockchannelorder) |
+| `notification.added_to_channel` | Move new channel to top of the list and start watching it | [onAddedToChannel](#onaddedtochannel) |
+| `notification.message_new` | Move new channel to top of the list and start watching it | [onMessageNew](#onmessagenew) |
+| `notification.removed_from_channel` | Remove channel from list | [onRemovedFromChannel](#onremovedfromchannel) |
+
+You can override the default behaviour of each of these listeners via prop (listed in table above).
+
+### Override Default Behavior
+Let's explore an example of overriding the default behaviour for event `notification.message_new`. User will receive this event, when new message appears on channel which current user is member of, and this channel not loaded in the list yet. `onMessageNew` prop is a function, which takes following two parameters:
+
+- `setChannels` {function} - Setter for internal state property - `channels`. It's created from `useState([])` hook.
+- `event` {object} - An Event object corresponding to `notification.message_new` event
+
+With default implementation, the channel corresponding to event `notification.message_new` will be queried and added to top of the list. If you want to add this channel to bottom of the list instead, here is how you can do it:
+
+```tsx
+<ChannelList
+  onMessageNew={async (setChannels, event) => {
+    const newChannel = client.channel('messaging', event.channel.id);
+    await newChannel.watch();
+    setChannels(channels => [...channels, newChannel])
+  }}
+/>
+```
+
+## Props
+
+### <div class="label required">required</div> **filters**
+
+<Filters />
+
+### <div class="label required">required</div> **sort**
+
+<Sort />
+
+### <div class="label required">required</div> **options**
+
+<Options />
+
+### <div class="label required">required</div> **onSelect**
+
+<OnSelect />
+
+### additionalFlatListProps
+
+<AdditionalFlatListProps />
+
+### loadMoreThreshold
+
+<LoadMoreThreshold />
+
+### lockChannelOrder
+
+<LockChannelOrder />
+
+### maxUnreadCount
+
+<MaxUnreadCount />
+
+### numberOfSkeletons
+
+<NumberOfSkeletons />
+
+### onAddedToChannel
+
+<OnAddedToChannel />
+
+### onChannelDeleted
+
+<OnChannelDeleted />
+
+### onChannelHidden
+
+<OnChannelHidden />
+
+### onChannelVisible
+
+<OnChannelVisible />
+
+### onChannelTruncated
+
+<OnChannelTruncated />
+
+### onChannelUpdated
+
+<OnChannelUpdated />
+
+### onMessageNew
+
+<OnMessageNew />
+
+### onRemovedFromChannel
+
+<OnRemovedFromChannel />
+
+### setFlatListRef
+
+<SetFlatListRef />
+
+### EmptyStateIndicator
+
+<EmptyStateIndicator />
+
+### FooterLoadingIndicator
+
+<FooterLoadingIndicator />
+
+### HeaderErrorIndicator
+
+<HeaderErrorIndicator />
+
+### HeaderNetworkDownIndicator
+
+<HeaderNetworkDownIndicator />
+
+### ListHeaderComponent
+
+<ListHeaderComponent />
+
+### LoadingErrorIndicator
+
+<LoadingErrorIndicator />
+
+### LoadingIndicator
+
+<LoadingIndicator />
+
+### Preview
+
+<Preview />
+
+### PreviewAvatar
+
+<PreviewAvatar />
+
+### PreviewMessage
+
+<PreviewMessage />
+
+### PreviewStatus
+
+<PreviewStatus />
+
+### PreviewTitle
+
+<PreviewTitle />
+
+### PreviewUnreadCount
+
+<PreviewUnreadCount />
+
+### Skeleton
+
+<Skeleton />

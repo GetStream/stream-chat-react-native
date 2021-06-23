@@ -1,0 +1,19 @@
+Set any additional props on underlying [FlatList](https://reactnative.dev/docs/flatlist#props).
+
+#### Example Usage
+
+```jsx
+const flatListProps = { bounces: true };
+
+<ChannelList additionalFlatListProps={flatListProps} />
+```
+
+:::caution
+
+Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef` instead.
+
+:::
+
+| Type |
+| - |
+| object |

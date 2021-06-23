@@ -1,0 +1,36 @@
+---
+id: image-upload-preview
+title: ImageUploadPreview
+---
+
+import ImageUploads from '../common-content/contexts/message-input-context/image_uploads.mdx';
+import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx';
+import UploadImage from '../common-content/contexts/message-input-context/upload_image.mdx';
+
+`ImageUploadPreview` is the default UI component for rendering a preview of attached image within `MessageInput` component.
+
+You can replace this default UI component using the `ImageUploadPreview` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel ImageUploadPreview={CustomImageUploadPreview} />
+```
+
+## Props
+
+### imageUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ImageUploads />
+
+### removeImage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<RemoveImage />
+
+### uploadImage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<UploadImage />

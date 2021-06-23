@@ -1,0 +1,34 @@
+---
+id: file-icon
+title: FileIcon
+---
+
+`FileIcon` is a UI component to render icon for `file` type attachment in message, within `MessageList`.
+
+## Basic Usage
+
+**Use Case** Use custom size for file attachment icon:
+
+```tsx
+import { Channel, FileIcon } from 'stream-chat-react-native';
+
+<Channel FileAttachmentIcon={() => <FileIcon size={40} />}
+```
+
+## Props
+
+### <div class="label required">required</div> **mimeType**
+
+Mime type for this file attachment. e.g., `application/pdf`, `audio/mp4` etc
+
+| Type |
+| - |
+| string |
+
+### size
+
+Size of the icon.
+
+| Type |
+| - |
+| number |

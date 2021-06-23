@@ -1,0 +1,22 @@
+Partially overrides the `value` provided to the `OverlayContext`.
+This prop can be used to set the [theme](/reactnative/customization/theming) via the `style` key.
+
+```tsx
+const theme = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+    },
+  },
+};
+
+<OverlayProvider value={{ style: theme }}>
+  ...
+</OverlayProvider>
+```
+
+| Type |
+| - |
+| object |

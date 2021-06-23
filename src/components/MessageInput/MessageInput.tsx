@@ -559,7 +559,7 @@ const MessageInputWithContext = <
               height:
                 (attachmentPickerBottomSheetHeight
                   ? attachmentPickerBottomSheetHeight + (attachmentSelectionBarHeight ?? 52)
-                  : 360) - (bottomInset ?? 0),
+                  : 360) - bottomInset,
             },
             attachmentSelectionBar,
           ]}

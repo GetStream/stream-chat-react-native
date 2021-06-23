@@ -1,0 +1,12 @@
+Override the default listener/handler for event `notification.message_new`. This event is received on channel, which is not being watched.
+
+#### Params
+
+- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
+- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.message_new` event
+
+Please check the example in [Event Listener](#override-default-behavior) section
+
+| Type |
+| - |
+| function |

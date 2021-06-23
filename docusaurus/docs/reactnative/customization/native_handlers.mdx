@@ -1,0 +1,138 @@
+---
+id: native_handlers
+sidebar_position: 5
+title: Native Handlers
+---
+
+Stream Chat for React Native uses a number of features that require packages that run native code.
+Stream Chat for React Native also supports [Expo](https://expo.io/), which has it's own set of native packages.
+To reconcile these differences Stream Chat for React Native is made up of two packages, `stream-chat-react-native-core`, and either `stream-chat-react-native` or `stream-chat-expo`.
+The non *core* packages call a function from the core package, `registerNativeHandlers`, this gives the core package access to different native functions that perform the same task, but are different between Expo and vanilla React Native.
+
+## Overriding Handlers
+
+If desired the native handlers can be overridden.
+The same function that is called internally to set the handlers can be used to override them, `registerNativeHandlers`.
+If the function returns the same type of data as the original function it should seamlessly work with the rest of the SDK.
+You should look at the default implementation to ensure any override conforms to the appropriate type definition provided by the SDK.
+
+Haptic feedback is used in the app to indicate certain presses, and within the image viewer to indicate zoom limits are hit.
+If haptic feedback is not desired in your application you can easily remove it by registering a different handler to the function.
+
+```tsx
+import { registerNativeHandlers } from 'stream-chat-react-native';
+
+registerNativeHandlers({
+  triggerHaptic: () => null,
+});
+```
+
+This should be done outside of the component lifecycle to prevent unnecessarily re-registering the same handler repeatedly. 
+
+## Handlers
+
+There are 13 handlers registered as they interact with different native API packages depending on if the SDK being used on Expo or vanilla React Native.
+
+### BlurView
+
+A component that blurs the view behind it.
+
+**React Native:** [`@react-native-community/blur`](https://github.com/Kureev/react-native-blur)
+
+**Expo:** [`expo-blur`](https://docs.expo.io/versions/latest/sdk/blur-view/)
+
+### compressImage
+
+An async function that compresses an image and returns the local `uri` of the compressed image.
+
+**React Native:** [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer)
+
+**Expo:** [`expo-image-manipulator`](https://docs.expo.io/versions/latest/sdk/imagemanipulator/)
+
+### deleteFile
+
+A function that deletes a file at a given local `uri`.
+
+**React Native:** [`react-native-fs`](https://github.com/itinance/react-native-fs)
+
+**Expo:** [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/)
+
+### FlatList
+
+A FlatList component, on Expo the standard React Native component is used, on React Native a modified FlatList better fit for two directional scrolling is used.
+
+**React Native:** [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
+
+**Expo:** [`react-native`](https://reactnative.dev/docs/flatlist)
+
+### getLocalAssetUri
+
+A function that gets the local `uri` of an image or remote asset.
+
+**React Native:** [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
+
+**Expo:** [`expo-media-library`](https://docs.expo.io/versions/latest/sdk/media-library/)
+
+### getPhotos
+
+A function that returns photos from the camera roll given an offset of `after` and a number to retrieve, `first`.
+
+**React Native:** [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
+
+**Expo:** [`expo-media-library`](https://docs.expo.io/versions/latest/sdk/media-library/)
+
+### NetInfo
+
+A object containing two keys, `addEventListener` and `fetch`, which are functions that allow a developer to add listeners to `NetInfo` or fetch information from `NetInfo`.
+
+**React Native:** [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
+
+**Expo:** [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
+
+### PickDocument
+
+A function to open the document picker and return documents picked from it.
+
+**React Native:** [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker)
+
+**Expo:** [`expo-document-picker`](https://docs.expo.io/versions/latest/sdk/document-picker/)
+
+### saveFile
+
+A function to save a file from a url to local storage.
+
+**React Native:** [`react-native-fs`](https://github.com/itinance/react-native-fs)
+
+**Expo:** [`expo-file-system`](https://docs.expo.io/versions/latest/sdk/filesystem/)
+
+### SDK
+
+String identifying which package, `stream-chat-react-native` or `stream-chat-expo`, is being used.
+
+**React Native:** *stream-chat-react-native*
+
+**Expo:** *stream-chat-expo*
+
+### shareImage
+
+A function to provide a given image to the native sharing functionality of the OS.
+
+**React Native:** [`react-native-fs`](https://github.com/itinance/react-native-fs) & [`react-native-share`](https://github.com/react-native-share/react-native-share)
+
+**Expo:** [`expo-sharing`](https://docs.expo.io/versions/latest/sdk/sharing/)
+
+### takePhoto
+
+A function that opens the OS specific camera and returns an image when one is taken.
+
+**React Native:** [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
+
+**Expo:** [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/)
+ 
+### triggerHaptic
+
+A function to trigger haptic feedback given the type of haptic force desired.
+
+**React Native:** [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback)
+
+**Expo:** [`expo-haptics`](https://docs.expo.io/versions/latest/sdk/haptics/)

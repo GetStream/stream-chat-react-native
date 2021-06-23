@@ -1,0 +1,87 @@
+---
+id: message-simple
+title: MessageSimple
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
+import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
+import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
+
+`MessageSimple` is the default component for rendering message related UI. This component has been well optimized to save un-necessary re-renderings.
+If you would like to replace this default component with your own implementation, you can use the prop [`MessageSimple`](../core-components/channel.mdx#messagesimple) on `Channel` component.
+
+This component consumes the [`MessageContext`](../contexts/message_context.mdx) and handles the display and functionality for an individual message in a message list. The Message UI component is typically a combination following sub-components that each consume context and are responsible for one aspect of a message (ex: text, reactions, attachments).
+
+## Basic Usage
+
+**Use Case 1** Force `single` [`groupStyles`](../contexts/message_context.mdx#groupstyles) on message UI.
+
+> You can achieve the same result by using a prop [`noGroupByUser`](./message_list.mdx#nogroupbyuser) on `MessageList` component.
+
+```tsx
+import {Channel, MessageSimple} from 'stream-chat-react-native'
+
+const CustomMessageUI = () => <MessageSimple groupStyles={['single']} />
+
+<Channel MessageSimple={CustomMessageUI} />
+```
+
+**Use Case 2** Force `left` alignment on message UI (similar to slack)
+
+> You can achieve the same result by using a prop [`forceAlignMessages`](../core-components/channel.mdx#forcealignmessages) on `MessageList` component.
+
+```tsx
+import {Channel, MessageSimple} from 'stream-chat-react-native'
+
+const CustomMessageUI = () => <MessageSimple alignment={'left'} />
+
+<Channel MessageSimple={CustomMessageUI} />
+```
+
+## Props
+
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Alignment />
+
+### groupStyles
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<GroupStyles />
+
+### hasReactions
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<HasReactions />
+
+### message
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<MessageProp />
+
+### MessageAvatar
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<MessageAvatar />
+
+### MessageContent
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<MessageContent />
+
+### ReactionList
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<ReactionList />

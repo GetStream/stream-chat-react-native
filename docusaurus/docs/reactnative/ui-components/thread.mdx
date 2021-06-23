@@ -1,0 +1,101 @@
+---
+id: thread
+title: Thread
+---
+
+import Client from '../common-content/core-components/chat/props/client.mdx'
+
+import Thread from '../common-content/core-components/channel/props/thread.mdx'
+
+import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx'
+import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
+import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx'
+
+`Thread` component renders thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
+
+## Basic Usage
+
+```tsx
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel} thread={messageId}>
+      <Thread />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+## Props
+
+### additionalMessageInputProps
+
+Additional [props](./message_input.mdx#props) for underlying `MessageInput` component.
+
+| Type |
+| - |
+| object |
+
+### additionalMessageListProps
+
+Additional [props](./message_list.mdx#props) for underlying `MessageList` component.
+
+| Type |
+| - |
+| object |
+
+### autoFocus
+
+When true, input box will be auto focused upon mounting.
+
+| Type | Default |
+| - | - |
+| boolean | true |
+
+<!-- ### closeThreadOnDismount -->
+
+### client
+
+_(Overrides the value from [ChatContext](../contexts/chat_context.mdx))_
+
+<Client />
+
+### closeThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+
+<CloseThread />
+
+### disabled
+
+When true, the underlying input box will be disabled.
+
+| Type | Default |
+| - | - |
+| boolean | false |
+
+### loadMoreThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+
+<LoadMoreThread />
+
+### onThreadDismount
+
+Function which gets called when Thread component unmounts.
+
+| Type |
+| - |
+| function |
+
+### reloadThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+
+<ReloadThread />
+
+### thread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+
+<Thread />
+

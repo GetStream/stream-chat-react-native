@@ -1,0 +1,109 @@
+---
+id: card
+title: Card
+---
+
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
+import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
+import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
+
+`Card` is a UI component used by library to render custom attachment types.
+
+Please check the guides for [Custom Attachment](../guides/attachment_customizations.mdx) for details.
+
+## Props
+
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<AdditionalTouchableProps />
+
+### author_name
+
+Author name, to be rendered in footer of card.
+
+| Type |
+| - |
+| string |
+
+### image_url
+
+Url of image to render as cover image for card. In absence of `image_url`, `thumb_url` will be used for cover.
+
+| Type |
+| - |
+| string |
+
+### og_scrape_url
+
+URL to redirect to, when user presses on card.
+
+| Type |
+| - |
+| string |
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnLongPress />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPress />
+
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPressIn />
+
+### text
+
+Text description for card, which will be rendered in footer of card.
+
+| Type |
+| - |
+| string |
+
+### thumb_url
+
+Thumbnail url for cover image.
+
+| Type |
+| - |
+| string |
+
+### title
+
+Title for card, which will be rendered in footer of card
+
+| Type |
+| - |
+| string |
+
+### CardCover
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<CardCover />
+
+### CardFooter
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<CardFooter />
+
+### CardHeader
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<CardHeader />

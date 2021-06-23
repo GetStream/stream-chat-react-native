@@ -116,10 +116,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
-  const { setTopInset, topInset } = useAttachmentPickerContext();
+  const { setTopInset } = useAttachmentPickerContext();
 
   useEffect(() => {
-    if (setTopInset && !topInset) {
+    if (setTopInset) {
       setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
     }
   }, [insets.top]);

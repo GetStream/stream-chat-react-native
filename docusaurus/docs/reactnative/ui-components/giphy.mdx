@@ -1,0 +1,59 @@
+---
+id: giphy
+title: Giphy
+---
+
+import HandleAction from '../common-content/contexts/message-context/handle_action.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+
+`Giphy` is a UI component for rendering the `giphy` type attachments on message.
+
+You can replace this default UI component using the `Giphy` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel Giphy={CustomGiphy}
+```
+
+## Props
+
+### <div class="label required">required</div> **attachment**
+
+Attachment object for `giphy` type attachment.
+
+| Type |
+| - |
+| object |
+
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<AdditionalTouchableProps />
+
+### handleAction
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<HandleAction />
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnLongPress />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPress />
+
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPressIn />

@@ -328,7 +328,7 @@ export const AttachmentPicker = React.forwardRef(
       () => [
         attachmentPickerBottomSheetHeight ??
           308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
-        fullScreenHeight - (topInset ?? 0) - handleHeight,
+        fullScreenHeight - topInset - handleHeight,
       ],
       [
         androidBottomBarHeightAdjustment,
@@ -339,14 +339,6 @@ export const AttachmentPicker = React.forwardRef(
         topInset,
       ],
     );
-
-    /**
-     * TODO: Remove the need to return null here, changing snapPoints breaks the position
-     * so initial render should occur after topInset is set currently
-     */
-    if (topInset === undefined) {
-      return null;
-    }
 
     return (
       <>

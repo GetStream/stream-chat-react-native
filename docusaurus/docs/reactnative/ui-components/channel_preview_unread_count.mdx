@@ -1,0 +1,42 @@
+---
+id: channel-preview-unread-count
+title: ChannelPreviewUnreadCount
+---
+
+import MaxUnreadCount from '../common-content/ui-components/channel-preview-messenger/props/max_unread_count.mdx';
+import Unread from '../common-content/ui-components/channel-preview-messenger/props/unread.mdx';
+import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+
+The `ChannelPreviewUnreadCount` is the UI component for displaying the unread count badge for each channel on a list.
+
+You can replace this default UI component using the `PreviewUnreadCount` prop on [ChannelList](../core-components/channel_list.mdx#preview).
+
+```jsx
+import { ChannelList } from 'stream-chat-react-native';
+
+const CustomPreviewUnreadCount = ({ unread, maxUnreadCount }) => {
+    return (
+        <View style={[someOtherStyle, { backgroundColor: 'blue' }]}>
+            <Text numberOfLines={1}>
+                {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
+            </Text>
+        </View>
+    );
+}
+
+<ChannelList PreviewUnreadCount={CustomPreviewUnreadCount} />
+```
+
+## Props
+
+### <div class="label required">required</div> **maxUnreadCount**
+
+<MaxUnreadCount/>
+
+### <div class="label required">required</div> **unread**
+
+<Unread/>
+
+### channel
+
+<Channel/>

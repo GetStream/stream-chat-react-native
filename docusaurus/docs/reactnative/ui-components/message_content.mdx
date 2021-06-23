@@ -1,0 +1,229 @@
+---
+id: message-content
+title: MessageContent
+---
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+import Attachment from '../common-content/core-components/channel/props/attachment.mdx'
+import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx'
+import FormatDate from '../common-content/core-components/channel/props/format_date.mdx'
+import Gallery from '../common-content/core-components/channel/props/gallery.mdx'
+import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx'
+import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx'
+import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx'
+import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx'
+import MessageStatus from '../common-content/core-components/channel/props/message_status.mdx'
+import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
+import Reply from '../common-content/core-components/channel/props/reply.mdx'
+import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx'
+
+import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
+import Members from '../common-content/contexts/channel-context/members.mdx';
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
+`MessageContent` is a child component of `MessageSimple`, and renders all the actual content of the message such as text, attachments, thread replies count etc.
+
+:::note
+Avatar of sender of message and reactions are not part of `MessageContent`
+:::
+
+## Basic Usage
+
+**Use Case**: Turn off `onLongPress` handler for `MessageContent`.
+
+```tsx
+import {Channel, MessageContent} from 'stream-chat-react-native';
+
+const CustomMessageContent = () => <MessageContent onLongPress={() => null} />
+
+<Channel MessageContent={CustomMessageContent} />
+```
+
+## Props
+
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<AdditionalTouchableProps />
+
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Alignment />
+
+### disabled
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Disabled />
+
+### formatDate
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<FormatDate />
+
+<!-- ### goToMessage -->
+
+### groupStyles
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<GroupStyles />
+
+### hasReactions
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<HasReactions />
+
+### isMyMessage
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<IsMyMessage />
+
+### lastGroupMessage
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<LastGroupMessage />
+
+### members
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Members />
+
+### message
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<MessageProp />
+
+### messageContentOrder
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<MessageContentOrder />
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnLongPress />
+
+### onlyEmojis
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnlyEmojis />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPress />
+
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPressIn />
+
+### otherAttachments
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OtherAttachments />
+
+<!-- ### preventPress -->
+
+<!-- ### showMessageStatus -->
+
+### quotedRepliesEnabled
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<QuotedRepliesEnabled />
+
+### threadList
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<ThreadList />
+
+### threadRepliesEnabled
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<ThreadRepliesEnabled />
+
+### Attachment
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<Attachment />
+
+### FileAttachmentGroup
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<FileAttachmentGroup />
+
+### Gallery
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<Gallery />
+
+### MessageDeleted
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<MessageDeleted />
+
+### MessageFooter
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<MessageFooter />
+
+### MessageHeader
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<MessageHeader />
+
+### MessageReplies
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<MessageReplies />
+
+### MessageStatus
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<MessageStatus />
+
+### Reply
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<Reply />

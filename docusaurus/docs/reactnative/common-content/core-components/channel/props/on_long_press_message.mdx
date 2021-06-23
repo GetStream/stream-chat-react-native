@@ -1,0 +1,16 @@
+Callback that is called, when user long presses a message. By default, it opens a messages actions overlay.
+Use this prop, to disable long press functionality or add custom behaviour for long press.
+
+```tsx
+<Channel
+  animatedLongPress={false}
+  onLongPressMessage={() => {}} />
+```
+
+```tsx
+onLongPressMessage = ({ message }) => Alert.alert(`User long pressed a message: ${message.text}`;
+```
+
+| Type |
+| - |
+| ([`MessageTouchableHandlerPayload`](/reactnative/object-types/message-touchable-handler-payload)) => void) |

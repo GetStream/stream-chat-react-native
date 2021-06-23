@@ -1,0 +1,293 @@
+---
+id: message-input
+title: MessageInput
+---
+
+import Disabled from '../common-content/contexts/channel-context/disabled.mdx'
+import Members from '../common-content/contexts/channel-context/members.mdx'
+import Watchers from '../common-content/contexts/channel-context/watchers.mdx'
+
+import ComponentType from '../common-content/contexts/suggestions-context/component_type.mdx'
+import Suggestions from '../common-content/contexts/suggestions-context/suggestions.mdx'
+import SuggestionsTitle from '../common-content/contexts/suggestions-context/suggestions_title.mdx'
+
+import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
+import Reply from '../common-content/core-components/channel/props/reply.mdx'
+import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx'
+import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx'
+import ImageUploadPreview from '../common-content/core-components/channel/props/image_upload_preview.mdx'
+import Input from '../common-content/core-components/channel/props/input.mdx'
+import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx'
+import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx'
+import SendButton from '../common-content/core-components/channel/props/send_button.mdx'
+import SendMessageAsync from '../common-content/core-components/channel/props/send_message_async.mdx'
+import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx'
+import Thread from '../common-content/core-components/channel/props/thread.mdx'
+
+import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx'
+import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx'
+import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx'
+import Editing from '../common-content/contexts/message-input-context/editing.mdx'
+import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx'
+import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
+import ImageUploads from '../common-content/contexts/message-input-context/image_uploads.mdx'
+import InputBoxRef from '../common-content/contexts/message-input-context/input_box_ref.mdx'
+import IsValidMessage from '../common-content/contexts/message-input-context/is_valid_message.mdx'
+import MentionedUsers from '../common-content/contexts/message-input-context/mentioned_users.mdx'
+import NumberOfUploads from '../common-content/contexts/message-input-context/number_of_uploads.mdx'
+import QuotedMessage from '../common-content/contexts/message-input-context/quoted_message.mdx'
+import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx'
+import ResetInput from '../common-content/contexts/message-input-context/reset_input.mdx'
+import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
+import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
+import UploadNewImage from '../common-content/contexts/message-input-context/upload_new_image.mdx'
+
+`MessageInput` component provides all the UI and necessary functionality (e.g, attachment picker, commands, mentions autocomplete etc.) for composing a message.
+This component must be used as child of `Channel` component.
+
+## Basic Usage
+
+```tsx
+<OverlayProvider>
+  <Chat client={client}>
+    <Channel channel={channel}>
+      <MessageInput />
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+## Props
+
+:::note
+All the configuration for `MessageInput` can be done on [`Channel`](../core-components/channel.mdx) component. Additionally please take a look at [Guide Section](../guides/message_input.mdx) about customizing MessageInput UI
+:::
+
+### clearEditingState
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ClearEditingState />
+
+### clearQuotedMessageState
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ClearQuotedMessageState />
+
+### closeAttachmentPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<CloseAttachmentPicker />
+
+### componentType
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<ComponentType />
+
+### disabled
+
+_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+
+<Disabled />
+
+### editing
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<Editing />
+
+### fileUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<FileUploads />
+
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<GiphyActive />
+
+### imageUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ImageUploads />
+
+### inputBoxRef
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<InputBoxRef />
+
+### isValidMessage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<IsValidMessage />
+
+### members
+
+_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+
+<Members />
+
+### quotedRepliesEnabled
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<QuotedRepliesEnabled />
+
+### suggestions
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<Suggestions />
+
+### suggestionsTitle
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<SuggestionsTitle />
+
+### additionalTextInputProps
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<AdditionalTextInputProps />
+
+<!-- ### asyncIds
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<AsyncIds />
+
+### asyncUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<AsyncUploads /> -->
+
+
+### maxNumberOfFiles
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<MaxNumberOfFiles />
+
+### mentionedUsers
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<MentionedUsers />
+
+### numberOfUploads
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<NumberOfUploads />
+
+### quotedMessage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<QuotedMessage />
+
+### removeImage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<RemoveImage />
+
+### resetInput
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ResetInput />
+
+<!-- ### sending
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<Sending /> -->
+
+### sendMessageAsync
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SendMessageAsync />
+
+### setGiphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SetGiphyActive />
+
+### showMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ShowMoreOptions />
+
+### thread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+
+<Thread />
+
+### uploadNewImage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<UploadNewImage />
+
+### watchers
+
+_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+
+<Watchers />
+
+### Reply
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<Reply />
+
+### FileUploadPreview
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<FileUploadPreview />
+
+### ImageUploadPreview
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ImageUploadPreview />
+
+### Input
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<Input />
+
+### InputButtons
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<InputButtons />
+
+### SendButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SendButton />
+
+### ShowThreadMessageInChannelButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ShowThreadMessageInChannelButton />

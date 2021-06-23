@@ -1,0 +1,116 @@
+---
+id: input-buttons
+title: InputButtons
+---
+
+import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx'
+
+import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
+import OpenCommandsPicker from '../common-content/contexts/message-input-context/open_commands_picker.mdx'
+import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx'
+import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
+import Text from '../common-content/contexts/message-input-context/text.mdx'
+import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx'
+
+import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx'
+import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx'
+import HasCommands from '../common-content/core-components/channel/props/has_commands.mdx'
+import HasFilePicker from '../common-content/core-components/channel/props/has_file_picker.mdx'
+import HasImagePicker from '../common-content/core-components/channel/props/has_image_picker.mdx'
+import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx'
+import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
+
+`InputButtons` is a UI component to render container for `AttachButton` and `CommandsButton` on left side of input box, within `MessageInput` component.
+
+You can replace this default UI component using the `InputButtons` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel InputButtons={CustomInputButtons} />
+```
+
+## Props
+
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<GiphyActive />
+
+### hasCommands
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<HasCommands />
+
+### hasFilePicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<HasFilePicker />
+
+### hasImagePicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<HasImagePicker />
+
+### openCommandsPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<OpenCommandsPicker />
+
+### selectedPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SelectedPicker />
+
+### setShowMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SetShowMoreOptions />
+
+### showMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ShowMoreOptions />
+
+### text
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<Text />
+
+### toggleAttachmentPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<ToggleAttachmentPicker />
+
+### uploadsEnabled
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<UploadsEnabled />
+
+### AttachButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<AttachButton />
+
+### CommandsButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<CommandsButton />
+
+### MoreOptionsButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<MoreOptionsButton />
+

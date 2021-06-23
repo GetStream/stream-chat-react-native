@@ -1,0 +1,31 @@
+---
+id: limitations
+sidebar_position: 7
+title: Limitations
+---
+
+Stream Chat for React Native allows for a vast a amount of customization.
+The theme, components, and functionality can almost all be modified or replaced.
+But it is important to remember **not all use cases are supported out of the box**.
+
+## Customizations
+
+For some use cases you will have to replace our components with ones you create yourself.
+Custom UI components are mostly provided as props on the `Channel` component and propagated throughout the UI via context.
+Some many need to be provided to other components such as `OverlayProvider` or `MessageList`, but `Channel` is the most common entry point for customizations.
+
+Most components when rendered receive very few props, instead the components operate independently of props by utilizing contexts themselves.
+When creating a custom component we strongly suggest you look at the source code on GitHub for the component you are replacing.
+This will not only give you a better idea of what contexts we are using to achieve the current UI, but also insight into any internal logic that may be taking place in the component that you may want to maintain.
+
+We use custom memoization equality checks on many components to limit unnecessary re-renders, replicating these memoization checks to fit the needs of your custom component will help in maintaining performance.
+This is particularly important inside of messages as many are rendered in a single message list, a change that triggers a re-render across all messages will be computationally expensive.
+
+## Platforms
+
+It is important to remember that when using React Native that there may be platform specific differences as the platform specific SDKs are being utilized.
+If you are using [Expo](https://expo.io/) there may be even more differences.
+We highly suggest you test on both platforms to ensure you are seeing consistent results.
+
+Libraries such as [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/), which we make use of, often function slightly differently on iOS and Android.
+If you are creating customizations that may overlap with React Native Gesture Handler usage you should once again look at the source code on GitHub for the component you are replacing to see if you need platform specific code. 

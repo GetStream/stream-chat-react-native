@@ -1,0 +1,24 @@
+Filter object, used to query channels from Stream. You can query on any of the custom fields you've defined on the Channel. You can also filter other built-in channel fields.
+
+See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a list of available `filter` fields.
+
+#### Example
+
+```js
+// Filter to query channels, which user 'vishal' and 'jaap' are members of.
+const filter = {
+  type: 'messaging',
+  members: {
+    $in: ['vishal', 'jaap']
+  }
+}
+```
+
+:::caution
+Avoid using inline objects as props. Please memoize the object before passing it to ChannelList component or use static reference to filters object.
+:::
+
+
+| Type |
+| - |
+| object |

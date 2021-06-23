@@ -1,0 +1,31 @@
+---
+id: file-attachment-group
+title: FileAttachmentGroup
+---
+
+import Files from '../common-content/contexts/message-context/files.mdx';
+
+`FileAttachmentGroup` is a UI component for rendering group of file attachments in message, within `MessageList`.
+
+You can replace this default UI component using the `FileAttachmentGroup` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel FileAttachmentGroup={CustomFileAttachmentGroup} />
+```
+
+## Props
+
+### <div class="label required">required</div> **messageId**
+
+Id of the current message.
+
+| Type |
+| - |
+| string |
+
+### files
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Files />
+

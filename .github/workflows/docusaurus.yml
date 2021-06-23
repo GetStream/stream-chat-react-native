@@ -3,7 +3,7 @@ name: docusaurus
 on:
   push:
     branches:
-      - docusaurus # default branch name for each repo that docs should be push from
+      - master # default branch name for each repo that docs should be push from
     paths:
       - docusaurus/**
 jobs:
@@ -13,5 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: push
         uses: GetStream/push-stream-chat-docusaurus-action@main
+        with:
+          target-branch: production
         env:
           DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}

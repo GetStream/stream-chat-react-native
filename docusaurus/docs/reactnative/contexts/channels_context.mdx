@@ -1,0 +1,240 @@
+---
+id: channels-context
+title: ChannelsContext
+---
+
+import AdditionalFlatListProps from '../common-content/core-components/channel-list/props/additional_flat_list_props.mdx';
+import LoadMoreThreshold from '../common-content/core-components/channel-list/props/load_more_threshold.mdx';
+import MaxUnreadCount from '../common-content/core-components/channel-list/props/max_unread_count.mdx';
+import NumberOfSkeletons from '../common-content/core-components/channel-list/props/number_of_skeletons.mdx';
+import OnSelect from '../common-content/core-components/channel-list/props/on_select.mdx';
+import SetFlatListRef from '../common-content/core-components/channel-list/props/set_flat_list_ref.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel-list/props/empty_state_indicator.mdx';
+import FooterLoadingIndicator from '../common-content/core-components/channel-list/props/footer_loading_indicator.mdx';
+import HeaderErrorIndicator from '../common-content/core-components/channel-list/props/header_error_indicator.mdx';
+import HeaderNetworkDownIndicator from '../common-content/core-components/channel-list/props/header_network_down_indicator.mdx';
+import LoadingErrorIndicator from '../common-content/core-components/channel-list/props/loading_error_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel-list/props/loading_indicator.mdx';
+import Preview from '../common-content/core-components/channel-list/props/preview.mdx';
+import PreviewAvatar from '../common-content/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../common-content/core-components/channel-list/props/preview_message.mdx';
+import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+import Skeleton from '../common-content/core-components/channel-list/props/skeleton.mdx';
+
+`ChannelsContext` is provided by [`ChannelList`](../core-components/channel_list.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ChannelsContext` can be consumed by any of the child  component of `ChannelList` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useContext(ChannelsContext);
+```
+
+Alternatively, you can also use `useChannelsContext` hook provided by library to consume ChannelsContext.
+
+```tsx
+import { useChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useChannelsContext();
+```
+## Value
+
+### additionalFlatListProps
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<AdditionalFlatListProps />
+
+### channels
+
+<!-- TODO: Change to new docs -->
+Array of channels currently loaded in `ChannelList` component. This value gets updated whenever `ChannelList` component makes a call to [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) either on first load or during pagination.
+
+| Type |
+| - |
+| array |
+
+### error
+
+Value is true when call to `client.queryChannels()` within ChannelList component fails, either during first load or during pagination.
+
+| Type |
+| - |
+| boolean |
+
+<!-- ### forceUpdate -->
+
+### hasNextPage
+
+Value is false when `ChannelList` component has loaded all the channels corresponding to [`filters`](../core-components/channel_list.mdx#required-filters).
+
+| Type |
+| - |
+| boolean |
+
+### loadingChannels
+
+Value is true when `ChannelList` component is loading the first page of channels.
+
+| Type |
+| - |
+| boolean |
+
+### loadMoreThreshold
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<LoadMoreThreshold />
+
+### loadingNextPage
+
+Value is true when `ChannelList` component is loading more channels as part of pagination. This will be set to true, when user scrolls to bottom of the list and [`hasNextPage`](#hasnextpage) is true.
+
+| Type |
+| - |
+| boolean |
+
+### loadNextPage
+
+Function to manually load next page for the `ChannelList` component
+
+| Type |
+| - |
+| function |
+
+### maxUnreadCount
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<MaxUnreadCount />
+
+### numberOfSkeletons
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<NumberOfSkeletons />
+
+### onSelect
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<OnSelect />
+
+### refreshing
+
+Value is true when `ChannelList` component is refreshing the list (using [`refreshList`](#refreshlist) function call). Refreshing state will be triggered either when user executes pull-to-refresh gesture or if network connection is being recovered.
+This value is attached to [refreshing](https://reactnative.dev/docs/flatlist#refreshing) prop of underlying `FlatList` component of `ChannelList`.
+
+| Type |
+| - |
+| boolean |
+
+### refreshList
+
+Function to manually resync or refresh the channels in `ChannelList` component.
+
+:::note
+Calling `refreshList` will display a [RefreshControl](https://reactnative.dev/docs/refreshcontrol) on underlying FlatList of `ChannelList` component.
+:::
+
+| Type |
+| - |
+| function |
+
+### reloadList
+
+Function to manually reload the channels in `ChannelList` component. 
+
+:::note
+Calling `reloadList` will wipe out the existing list of channels and show a loading indicator until new results are ready.
+:::
+
+### setFlatListRef
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<SetFlatListRef />
+
+### EmptyStateIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<EmptyStateIndicator />
+
+### FooterLoadingIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<FooterLoadingIndicator />
+
+### HeaderErrorIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<HeaderErrorIndicator />
+
+### HeaderNetworkDownIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<HeaderNetworkDownIndicator />
+
+### LoadingErrorIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<LoadingErrorIndicator />
+
+### LoadingIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<LoadingIndicator />
+
+### Preview
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<Preview />
+
+### PreviewAvatar
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<PreviewAvatar />
+
+### PreviewMessage
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<PreviewMessage />
+
+### PreviewStatus
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<PreviewStatus />
+
+### PreviewTitle
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<PreviewTitle />
+
+### PreviewUnreadCount
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<PreviewUnreadCount />
+
+### Skeleton
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
+
+<Skeleton />

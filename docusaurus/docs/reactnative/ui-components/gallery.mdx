@@ -1,0 +1,131 @@
+---
+id: gallery
+title: Gallery
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import Images from '../common-content/contexts/message-context/images.mdx';
+import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
+import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+
+import SetBlurType from '../common-content/contexts/overlay-context/set_blur_type.mdx';
+import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+
+`Gallery` is a UI component for rendering the `image` type attachments on message.
+
+## Basic Usage
+
+**Use Case:** Disable press handlers on gallery:
+
+```tsx
+import { Channel, Gallery } from 'stream-chat-react-native';
+
+<Channel Gallery={() => <Gallery preventPress />}
+```
+
+## Props
+
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+
+<AdditionalTouchableProps />
+
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Alignment />
+
+### groupStyles
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<GroupStyles />
+
+### hasThreadReplies
+
+Weather current message has any thread replies or not. This boolean is used for setting borderBottomLeftRadius for left aligned messages and borderBottomRightRadius for right aligned messages.
+
+| Type | Default |
+| - | - |
+| boolean | `message.reply_count` |
+
+### images
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<Images />
+
+### messageId
+
+Id of the current message.
+
+| Type |
+| - |
+| string |
+
+### messageText
+
+Text content of current message - `message.text`. This prop gets used for styling purpose of gallery.
+
+| Type |
+| - |
+| string |
+
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnLongPress />
+
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPress />
+
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<OnPressIn />
+
+### preventPress
+
+Disables the press handler, when true.
+
+| Type | Default |
+| - | - |
+| boolean | false |
+
+### setBlurType
+
+_(Overrides the value from [OverlayContext](../contexts/overlay_context.mdx))_
+
+<SetBlurType />
+
+### setOverlay
+
+_(Overrides the value from [OverlayContext](../contexts/overlay_context.mdx))_
+
+<SetOverlay />
+
+### threadList
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+
+<ThreadList />
+

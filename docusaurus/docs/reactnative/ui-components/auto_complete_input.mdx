@@ -1,0 +1,115 @@
+---
+id: auto-complete-input
+title: AutoCompleteInput
+---
+
+import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx'
+
+import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
+import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
+import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
+
+import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
+import OnChange from '../common-content/contexts/message-input-context/on_change.mdx'
+import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
+import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
+import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx'
+import Text from '../common-content/contexts/message-input-context/text.mdx'
+import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx'
+
+import CloseSuggestions from '../common-content/contexts/suggestions-context/close_suggestions.mdx'
+import OpenSuggestions from '../common-content/contexts/suggestions-context/open_suggestions.mdx'
+import UpdateSuggestions from '../common-content/contexts/suggestions-context/update_suggestions.mdx'
+
+
+`AutoCompleteInput` is a UI component to render the input box. This component provides autocomplete functionality for the commands and mentions feature.
+Commands suggestions will show up when user types "`/`", while mentions suggestions will show up when user types "`@`".
+
+Please check the guide of [Customize Message Input](../guides/message_input.mdx) for usage of this component.
+
+## Props
+
+### additionalTextInputProps
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<AdditionalTextInputProps />
+
+### closeSuggestions
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<CloseSuggestions />
+
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<GiphyActive />
+
+### giphyEnabled
+
+_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+
+<GiphyEnabled />
+
+### maxMessageLength
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<MaxMessageLength />
+
+### numberOfLines
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<NumberOfLines />
+
+### onChange
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<OnChange />
+
+### openSuggestions
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<OpenSuggestions />
+
+### setGiphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SetGiphyActive />
+
+### setInputBoxRef
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SetInputBoxRef />
+
+### setShowMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<SetShowMoreOptions />
+
+### text
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<Text />
+
+### triggerSettings
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+
+<TriggerSettings />
+
+### updateSuggestions
+
+_(Overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx))_
+
+<UpdateSuggestions />
+
