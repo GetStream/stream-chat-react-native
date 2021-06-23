@@ -20,7 +20,7 @@ Stream Chat for React Native provides an easy to implement flexible solution.
 Stream Chat for React Native provides a way to add chat to an existing or new application with very little code.
 The library was built with flexibility and customization in mind, starting with the out of the box form and function one would expect from a chat app you can modify the UI and UX as desired.
 
-Before starting make sure you have installed `stream-chat-react-native` as directed in the [getting started](/chat/docs/sdk/React%20Native) guide.
+Before starting make sure you have installed `stream-chat-react-native` as directed in the [getting started](/chat/docs/sdk/reactnative) guide.
 
 ## Creating a Chat Client
 
@@ -74,7 +74,7 @@ Channels are at the core of Stream Chat, they are where messages are contained, 
 Before delving into the UI components a channel is needed that can be displayed.
 Let’s start by initializing one.
 
-A <!-- TODO: Change to new docs -->[channel type](https://getstream.io/chat/docs/react-native/channel_features/) is required for creating a channel and controls the settings for a given channel.
+A <!-- TODO: Change to new docs -->[channel type](https://getstream.io/chat/docs/javascript/creating_channels#channel-data) is required for creating a channel and controls the settings for a given channel.
 There are 5 default types of channels.
 
 - `commerce`
@@ -161,7 +161,7 @@ The `OverlayProvider` allows users to interact with messages on long press above
 
 The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
 
-For additional information on the `OverlayProvider` check the [OverlayProvider docs](<!-- TODO: Change to new docs -->) for detailed usage instructions, including how to properly use the `OverlyProvider` with [React Navigation](https://reactnavigation.org/).
+For additional information on the `OverlayProvider` check the [OverlayProvider docs](../../core-components/overlay-provider) for detailed usage instructions, including how to properly use the `OverlyProvider` with [React Navigation](https://reactnavigation.org/).
 
 ```tsx
 import { OverlayProvider } from 'stream-chat-react-native';
@@ -178,7 +178,7 @@ export const Screen = () =>
 You can choose to wrap your entire application in `Chat` similar to what is required for the `OverlayProvider` or you can implement `Chat` at the screen level.
 `Chat` has one required prop, `client`, which is the instance of `StreamChat` [you created](#creating-a-chat-client).
 
-For additional information on the `Chat` component check the [Chat component docs](<!-- TODO: Change to new docs -->) for detailed usage instructions, including how to provide theming and translations to the app.
+For additional information on the `Chat` component check the [Chat component docs](../../core-components/chat) for detailed usage instructions, including how to provide theming and translations to the app.
 
 <Tabs
   defaultValue='app'
@@ -241,7 +241,7 @@ Stream Chat for React Native provides a `ChannelList` component out of the box f
 To functionally use the `ChannelList` an `onSelect` prop should be provided.
 The `onSelect` function is called with the selected `Channel` instance and can then be used to react to the user interaction, e.g. store the `Channel` in state and navigate to the appropriate channel screen.
 
-For additional information on the `ChannelList` component check the [ChannelList component docs](<!-- TODO: Change to new docs -->), these include instructions on how to filter and sort the `ChannelList`.
+For additional information on the `ChannelList` component check the [ChannelList component docs](../../core-components/channel-list), these include instructions on how to filter and sort the `ChannelList`.
 
 The `ChannelList` should be implemented inside of the UI components [previously configured](#configuring-ui-components) to provide the appropriate `contexts`.
 For the purpose of this guide the example implementation will continue to be given in a single component with the assumption that the client has already been instantiated, a user connected, and a channel the user has access to exists.
@@ -272,7 +272,7 @@ When creating a chat screen it is required that the `Channel` component wrap the
 `Channel` provides multiple `contexts` to the enclosed components and allows for modification and replacement of many of the components.
 Channel is the major entry point for modifying the look and feel of your chat application.
 
-For additional information on the `Channel` component, how to modify various features, adjusting for keyboard offsets, and more, check the [Channel component docs.](<!-- TODO: Change to new docs -->)
+For additional information on the `Channel` component, how to modify various features, adjusting for keyboard offsets, and more, check the [Channel component docs.](../../core-components/channel)
 
 The `Channel` component does not require any props, but will not function as desired without the `channel` prop being provided.
 The `channel` prop expects a `StreamChat` `Channel` instance.
@@ -313,7 +313,7 @@ The `Channel` component on it's own will not provide any UI.
 For this additional components are required, most notably the `MessageList` component.
 `MessageList` has no required props, and when used in concert with the `Channel` component should function properly out of the box.
 
-For additional information on the `MessageList` component, how to pass props to the underlying [`FlatList`](https://reactnative.dev/docs/flatlist), or use the `MessageList` for threads, check the [MessageList component docs.](<!-- TODO: Change to new docs -->)
+For additional information on the `MessageList` component, how to pass props to the underlying [`FlatList`](https://reactnative.dev/docs/flatlist), or use the `MessageList` for threads, check the [MessageList component docs.](../../ui-components/message-list)
 
 </div>
 <img src={messageList} alt="MessageList" width="280" style={{ objectFit: 'contain', paddingBottom: '8px', paddingLeft: '8px' }} />
