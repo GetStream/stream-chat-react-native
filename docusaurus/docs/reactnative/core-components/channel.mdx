@@ -117,7 +117,7 @@ import UploadsEnabled from '../common-content/core-components/channel/props/uplo
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
 
 
-`Channel` is a higher order component. It doesn't provide any UI itself, but mainly acts as a bridge between its child components such as [MessageList](../../ui-components/message-list), [MessageInput](../../ui-components/message-input) and [Thread](../../ui-components/thread) components. Channel provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
+`Channel` is a higher order component. It doesn't provide any UI itself, but mainly acts as a bridge between its child components such as [MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx) and [Thread](../ui-components/thread.mdx) components. Channel provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
 
 Channel is provided by `stream-chat-react-native` and can be imported from the library as following
 
@@ -126,7 +126,7 @@ import { Channel } from 'stream-chat-react-native';
 ```
 
 <!-- TODO: Change to new docs -->
-This component takes StreamChat `channel` as prop. You can either [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) before rendering Channel component. Or if you are navigating from [`ChannelList`](../channel-list) component, channel is available as parameter on [`onSelect`](../channel-list#required-onselect) prop function.
+This component takes StreamChat `channel` as prop. You can either [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) before rendering Channel component. Or if you are navigating from [`ChannelList`](./channel-list.mdx) component, channel is available as parameter on [`onSelect`](./channel-list.mdx#required-onselect) prop function.
 
 ## Usage
 
@@ -145,12 +145,12 @@ This component takes StreamChat `channel` as prop. You can either [create a chan
 
 Channel component is a provider of following contexts:
 
-- [ChannelContext](../../contexts/channel-context)
-- [MessageInputContext](../../contexts/message-input-context)
-- [MessagesContext](../../contexts/messages-context)
-- [PaginatedMessageListContext](../../contexts/paginated-message-list-context)
-- [ThreadContext](../../contexts/thread-context)
-- [TypingContext](../../contexts/typing-context)
+- [ChannelContext](../contexts/channel_context.mdx)
+- [MessageInputContext](../contexts/message_input_context.mdx)
+- [MessagesContext](../contexts/messages_context.mdx)
+- [PaginatedMessageListContext](../contexts/paginated_message_list_context.mdx)
+- [ThreadContext](../contexts/thread_context.mdx)
+- [TypingContext](../contexts/typing_context.mdx)
 
 
 ## UI Customizations

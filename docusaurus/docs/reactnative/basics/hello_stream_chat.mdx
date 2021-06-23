@@ -161,7 +161,7 @@ The `OverlayProvider` allows users to interact with messages on long press above
 
 The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay.
 
-For additional information on the `OverlayProvider` check the [OverlayProvider docs](../../core-components/overlay-provider) for detailed usage instructions, including how to properly use the `OverlyProvider` with [React Navigation](https://reactnavigation.org/).
+For additional information on the `OverlayProvider` check the [OverlayProvider docs](../core-components/overlay_provider.mdx) for detailed usage instructions, including how to properly use the `OverlyProvider` with [React Navigation](https://reactnavigation.org/).
 
 ```tsx
 import { OverlayProvider } from 'stream-chat-react-native';
@@ -178,7 +178,7 @@ export const Screen = () =>
 You can choose to wrap your entire application in `Chat` similar to what is required for the `OverlayProvider` or you can implement `Chat` at the screen level.
 `Chat` has one required prop, `client`, which is the instance of `StreamChat` [you created](#creating-a-chat-client).
 
-For additional information on the `Chat` component check the [Chat component docs](../../core-components/chat) for detailed usage instructions, including how to provide theming and translations to the app.
+For additional information on the `Chat` component check the [Chat component docs](../core-components/chat.mdx) for detailed usage instructions, including how to provide theming and translations to the app.
 
 <Tabs
   defaultValue='app'
@@ -241,7 +241,7 @@ Stream Chat for React Native provides a `ChannelList` component out of the box f
 To functionally use the `ChannelList` an `onSelect` prop should be provided.
 The `onSelect` function is called with the selected `Channel` instance and can then be used to react to the user interaction, e.g. store the `Channel` in state and navigate to the appropriate channel screen.
 
-For additional information on the `ChannelList` component check the [ChannelList component docs](../../core-components/channel-list), these include instructions on how to filter and sort the `ChannelList`.
+For additional information on the `ChannelList` component check the [ChannelList component docs](../core-components/channel_list.mdx), these include instructions on how to filter and sort the `ChannelList`.
 
 The `ChannelList` should be implemented inside of the UI components [previously configured](#configuring-ui-components) to provide the appropriate `contexts`.
 For the purpose of this guide the example implementation will continue to be given in a single component with the assumption that the client has already been instantiated, a user connected, and a channel the user has access to exists.
@@ -272,7 +272,7 @@ When creating a chat screen it is required that the `Channel` component wrap the
 `Channel` provides multiple `contexts` to the enclosed components and allows for modification and replacement of many of the components.
 Channel is the major entry point for modifying the look and feel of your chat application.
 
-For additional information on the `Channel` component, how to modify various features, adjusting for keyboard offsets, and more, check the [Channel component docs.](../../core-components/channel)
+For additional information on the `Channel` component, how to modify various features, adjusting for keyboard offsets, and more, check the [Channel component docs.](../core-components/channel.mdx)
 
 The `Channel` component does not require any props, but will not function as desired without the `channel` prop being provided.
 The `channel` prop expects a `StreamChat` `Channel` instance.
@@ -313,7 +313,7 @@ The `Channel` component on it's own will not provide any UI.
 For this additional components are required, most notably the `MessageList` component.
 `MessageList` has no required props, and when used in concert with the `Channel` component should function properly out of the box.
 
-For additional information on the `MessageList` component, how to pass props to the underlying [`FlatList`](https://reactnative.dev/docs/flatlist), or use the `MessageList` for threads, check the [MessageList component docs.](../../ui-components/message-list)
+For additional information on the `MessageList` component, how to pass props to the underlying [`FlatList`](https://reactnative.dev/docs/flatlist), or use the `MessageList` for threads, check the [MessageList component docs.](../ui-components/message_list.mdx)
 
 </div>
 <img src={messageList} alt="MessageList" width="280" style={{ objectFit: 'contain', paddingBottom: '8px', paddingLeft: '8px' }} />
@@ -357,7 +357,7 @@ Adding it to the app is as simple as rendering it below the `MessageList`.
 Be sure to set the `keyboardVerticalOffset` on `Channel` to the appropriate height based off any header spacing.
 As there is currently no header the `keyboardVerticalOffset` can be set to `0`.
 
-For additional information on the `MessageInput` component, how to modify it using `context`, or designate it for thread use via the `threadList` prop, check the [MessageInput component docs.](<!-- TODO: Change to new docs -->)
+For additional information on the `MessageInput` component, how to modify it using `context`, or designate it for thread use via the `threadList` prop, check the [MessageInput component docs.](../ui-components/message_input.mdx)
 
 </div>
 <img src={messageInput} alt="MessageInput" width="280" style={{ objectFit: 'contain', paddingBottom: '8px', paddingLeft: '8px' }} />
