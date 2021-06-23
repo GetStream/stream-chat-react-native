@@ -60,12 +60,6 @@ Array of channels currently loaded in `ChannelList` component. This value gets u
 | - |
 | array |
 
-### EmptyStateIndicator
-
-_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
-
-<EmptyStateIndicator />
-
 ### error
 
 Value is true when call to `client.queryChannels()` within ChannelList component fails, either during first load or during pagination.
@@ -73,12 +67,6 @@ Value is true when call to `client.queryChannels()` within ChannelList component
 | Type |
 | - |
 | boolean |
-
-### FooterLoadingIndicator
-
-_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
-
-<FooterLoadingIndicator />
 
 <!-- ### forceUpdate -->
 
@@ -89,18 +77,6 @@ Value is false when `ChannelList` component has loaded all the channels correspo
 | Type |
 | - |
 | boolean |
-
-### HeaderErrorIndicator
-
-_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
-
-<HeaderErrorIndicator />
-
-### HeaderNetworkDownIndicator
-
-_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
-
-<HeaderNetworkDownIndicator />
 
 ### loadingChannels
 
@@ -150,6 +126,65 @@ _(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
 
 <OnSelect />
 
+### refreshing
+
+Value is true when `ChannelList` component is refreshing the list (using [`refreshList`](#refreshlist) function call). Refreshing state will be triggered either when user executes pull-to-refresh gesture or if network connection is being recovered.
+This value is attached to [refreshing](https://reactnative.dev/docs/flatlist#refreshing) prop of underlying `FlatList` component of `ChannelList`.
+
+| Type |
+| - |
+| boolean |
+
+### refreshList
+
+Function to manually resync or refresh the channels in `ChannelList` component.
+
+:::note
+Calling `refreshList` will display a [RefreshControl](https://reactnative.dev/docs/refreshcontrol) on underlying FlatList of `ChannelList` component.
+:::
+
+| Type |
+| - |
+| function |
+
+### reloadList
+
+Function to manually reload the channels in `ChannelList` component. 
+
+:::note
+Calling `reloadList` will wipe out the existing list of channels and show a loading indicator until new results are ready.
+:::
+
+### setFlatListRef
+
+_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
+
+<SetFlatListRef />
+
+### EmptyStateIndicator
+
+_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
+
+<EmptyStateIndicator />
+
+### FooterLoadingIndicator
+
+_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
+
+<FooterLoadingIndicator />
+
+### HeaderErrorIndicator
+
+_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
+
+<HeaderErrorIndicator />
+
+### HeaderNetworkDownIndicator
+
+_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
+
+<HeaderNetworkDownIndicator />
+
 ### LoadingErrorIndicator
 
 _(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
@@ -197,41 +232,6 @@ _(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
 _(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
 
 <PreviewUnreadCount />
-
-### refreshing
-
-Value is true when `ChannelList` component is refreshing the list (using [`refreshList`](#refreshlist) function call). Refreshing state will be triggered either when user executes pull-to-refresh gesture or if network connection is being recovered.
-This value is attached to [refreshing](https://reactnative.dev/docs/flatlist#refreshing) prop of underlying `FlatList` component of `ChannelList`.
-
-| Type |
-| - |
-| boolean |
-
-### refreshList
-
-Function to manually resync or refresh the channels in `ChannelList` component.
-
-:::note
-Calling `refreshList` will display a [RefreshControl](https://reactnative.dev/docs/refreshcontrol) on underlying FlatList of `ChannelList` component.
-:::
-
-| Type |
-| - |
-| function |
-
-### reloadList
-
-Function to manually reload the channels in `ChannelList` component. 
-
-:::note
-Calling `reloadList` will wipe out the existing list of channels and show a loading indicator until new results are ready.
-:::
-
-### setFlatListRef
-
-_(Forwarded from [`ChannelList`](../../core-components/channel-list) props)_
-
-<SetFlatListRef />
 
 ### Skeleton
 

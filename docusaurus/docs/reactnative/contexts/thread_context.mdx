@@ -3,6 +3,9 @@ id: thread-context
 title: ThreadContext
 ---
 
+import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx'
+import thread from '../common-content/core-components/channel/props/thread.mdx'
+
 import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx'
 import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
 import OpenThread from '../common-content/contexts/thread-context/open_thread.mdx'
@@ -35,6 +38,12 @@ const value = useThreadContext();
 
 ## Value
 
+### allowThreadMessagesInChannel
+
+_(Forwarded from [`Channel`](../../core-components/channel) props)_
+
+<AllowThreadMessagesInChannel />
+
 ### closeThread
 
 <CloseThread />
@@ -55,6 +64,12 @@ const value = useThreadContext();
 
 <SetThreadLoadingMore />
 
+### thread
+
+_(Forwarded from [`Channel`](../../core-components/channel) props)_
+
+<Thread />
+
 ### threadHasMore
 
 <ThreadHasMore />
@@ -66,9 +81,3 @@ const value = useThreadContext();
 ### threadMessages
 
 <ThreadMessages />
-
-### Forwarded from Channel
-
-List of props that are forwarded from the [Channel](../../core-components/channel) component:
-- [allowThreadMessagesInChannel](../../core-components/channel#allowthreadmessagesinchannel)
-- [thread](../../core-components/channel#thread)
