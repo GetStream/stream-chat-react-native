@@ -10,7 +10,7 @@
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
 [![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/test/badge.svg?branch=master)](https://github.com/GetStream/stream-chat-react-native/actions)
-[![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.github.io/stream-chat-react-native/v3/)
+[![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative/)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
 
@@ -21,7 +21,7 @@
 - [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
-- [Internationalization (i18n)](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n))
+- [Internationalization (i18n)](https://getstream.io/chat/docs/sdk/reactnative/basics/translations/)
 - [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v300) 🚀
 
 ## Contents
@@ -92,7 +92,7 @@ Check out our tutorial on how to build a slack clone using react-native and stre
 
 ## 📋 Docs
 
-Please check following url for all the detailed documentation - https://github.com/GetStream/stream-chat-react-native/wiki#v300
+Please check following url for all the detailed documentation - https://getstream.io/chat/docs/sdk/reactnative/
 
 ## 💬 Keep in mind
 
@@ -100,18 +100,18 @@ Please check following url for all the detailed documentation - https://github.c
 
 2. Minor releases may come with some breaking changes, so always check the release notes before upgrading the minor version.
 
-You can see detailed documentation about the components at <https://getstream.github.io/stream-chat-react-native>
+You can see detailed documentation about the components at <https://getstream.io/chat/docs/sdk/reactnative/>
 
 ## 🛠 Setup (Setting up a chat app)
 
-Please follow this doc for setup - [Setup Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#installation)
+Please follow this doc for setup - [Setup Docs](https://getstream.io/chat/docs/sdk/reactnative/)
 ## 💪 TypeScript Support
 
 As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.
 
 ## ✈️ Internationalization
 
-Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
+Please read [Internationalization doc](https://getstream.io/chat/docs/sdk/reactnative/basics/translations/) for details.
 
 ## 🚀 Upgrading
 
@@ -164,7 +164,7 @@ Please refer to [Upgrade Helper](https://github.com/GetStream/stream-chat-react-
 
 ## 👏 Contributing
 
-We welcome code changes that improve this library or fix a problem, and please make sure to follow all best practices and test all the changes. Please check our [dev setup docs](https://github.com/GetStream/stream-chat-react-native/wiki/Dev-setup-for-contributing-to-the-library) to get you started. We are pleased to merge your code into the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
+We welcome code changes that improve this library or fix a problem, and please make sure to follow all best practices and test all the changes. Please check our [dev setup docs](https://getstream.io/chat/docs/sdk/reactnative/guides/dev-setup-and-sample-apps/) to get you started. We are pleased to merge your code into the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
 
 ## We are hiring
 
