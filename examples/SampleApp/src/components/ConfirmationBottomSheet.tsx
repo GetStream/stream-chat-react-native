@@ -87,7 +87,6 @@ export const ConfirmationBottomSheet: React.FC = () => {
           },
         ]}
       >
-        {/* using onPressOut instead of onPress works with touchables inside absolutely positioned parents and gives the same opacity feedback  */}
         <TouchableOpacity
           onPress={() => {
             setOverlay('none');
