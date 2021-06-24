@@ -44,7 +44,7 @@ Create your own class. Or using the Singleton structure you can call `getInstanc
 Tokens are used to authenticate a user.
 Typically, you send this token from your backend to the client when a user registers or logs in.
 See the <!-- TODO: Change to new docs -->[Tokens & Authentication](https://getstream.io/chat/docs/javascript/tokens_and_authentication/) documentation to learn more about creating tokens.
-For the purpose of this guide it will be assumed you have created and retrieved a `user_token`.
+You can use a [developer token](https://getstream.io/chat/docs/javascript/tokens_and_authentication/?language=javascript#developer-tokens) if desired, but for the purpose of this guide it will be assumed you have created and retrieved a `user_token`.
 
 To connect a user a the `connectUser` function should be called and provided with the user object and `user_token`.
 Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.  

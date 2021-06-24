@@ -14,21 +14,32 @@ The value `isOnline` provided by the [ChatContext](../contexts/chat_context.mdx#
 
 ## Basic Usage
 
-`Chat` should be inside of the `OverlayProvider` and if you choose can be implemented at a high level of your application, similar to the `OverlayProvider`.
+`Chat` should be rendered inside of the `OverlayProvider` and if you choose can be implemented at a high level of your application, similar to the `OverlayProvider`.
 
-```tsx
+```tsx {8,10}
 import { StreamChat } from 'stream-chat'; 
-import { Chat, OverlayProvider } from 'stream-chat-react-native';
+import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
 export const App = () =>
   <OverlayProvider>
     <Chat client={client}>
-      {/** App components */}
+      <ChannelList />
     </Chat>
   </OverlayProvider>;
 ```
+
+## Context Providers
+
+`Chat` contains providers for the `ChatContext`, `ThemeContext`, and `TranslationContext`.
+These can be accessed using the corresponding hooks.
+
+| Context | Hook |
+|- -|- -|
+| `ChatContext` | `useChatContext` |
+| `ThemeContext` | `useTheme` |
+| `TranslationContext` | `useTranslationContext` |
 
 ## Props
 
