@@ -1,11 +1,11 @@
-Function that overrides default behavior when a user gets added to a channel
-
-#### Params
-- `setChannels` Setter for internal state property - `channels`. It's created from [useState()](https://reactjs.org/docs/hooks-reference.html#usestate) hook.
-- `event` An [Event Object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.added_to_channel` event
-
-Please check the example in [Event Listener](#override-default-behavior) section
+Override for [Event Listener](#event-listeners) behavior when the user is added to a channel.
+The default behavior adds the channel to the list.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.added_to_channel` |

@@ -1,10 +1,11 @@
-Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
-
-#### Params
-
-- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
-- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.deleted` event
+Override for [Event Listener](#event-listeners) behavior when a channel is deleted.
+The default behavior removes the channel from the list.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.deleted` |
