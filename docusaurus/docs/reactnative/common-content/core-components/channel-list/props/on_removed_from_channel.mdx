@@ -1,12 +1,11 @@
-Function that overrides default behavior when a user gets removed from a channel
-
-#### Params
-
-- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
-- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.removed_from_channel` event
-
-Please check the example in [Event Listener](#override-default-behavior) section
+Override for [Event Listener](#event-listeners) behavior when the user is removed from a channel.
+The default behavior removes the channel from the list.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `notification.removed_from_channel` |
