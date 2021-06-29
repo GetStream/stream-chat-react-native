@@ -20,25 +20,17 @@ import HasImagePicker from '../common-content/core-components/channel/props/has_
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx'
 import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
 
-`InputButtons` is a UI component to render container for `AttachButton` and `CommandsButton` on left side of input box, within `MessageInput` component.
+A component rendered on the left side of the input box within [`MessageInput`](./message_input.mdx) that contains the `AttachButton` and the `CommandsButton`.
 
-You can replace this default UI component using the `InputButtons` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel InputButtons={CustomInputButtons} />
-```
+This is the default component provided to the prop `InputButtons` on the [`Channel`](../core-components/channel.mdx#inputbuttons) component.
 
 ## Props
 
-### giphyActive
-
-_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+### <div class="label" style={{ textTransform: 'none' }}>_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#giphyactive)_</div> giphyActive
 
 <GiphyActive />
 
-### hasCommands
-
-_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+### <div class="label" style={{ textTransform: 'none' }}>_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx)_</div> hasCommands
 
 <HasCommands />
 
