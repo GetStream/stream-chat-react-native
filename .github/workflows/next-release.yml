@@ -1,4 +1,4 @@
-name: Nightly Release
+name: Next Release
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - package
 
 jobs:
-  publish-nightly:
+  publish-next:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,8 +21,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Prepare git
         run: |
-          git config --global user.name "Stream Chat RN Nightly"
-          git config --global user.email "nightly@getstream.io"
+          git config --global user.name "Stream Chat RN Next"
+          git config --global user.email "next@getstream.io"
           git fetch
           git checkout master
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
@@ -33,8 +33,8 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Installation
         run: yarn
-      - name: Publish Nightly release
+      - name: Publish Next release
         run: |
-          yarn lerna publish --canary --preid nightly.${GITHUB_SHA::7} --dist-tag nightly --yes
+          yarn lerna publish --canary --preid next.${GITHUB_SHA::7} --dist-tag next --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
