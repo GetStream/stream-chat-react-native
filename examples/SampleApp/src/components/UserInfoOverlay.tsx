@@ -116,16 +116,15 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
 
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { client } =
-    useChatContext<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >();
+  const { client } = useChatContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
 

@@ -182,12 +182,12 @@ export const ChannelListScreen: React.FC = () => {
               LocalUserType
             >
               additionalFlatListProps={{
-                keyboardDismissMode: 'on-drag',
                 getItemLayout: (_, index) => ({
                   index,
                   length: 65,
                   offset: 65 * index,
                 }),
+                keyboardDismissMode: 'on-drag',
               }}
               filters={filters}
               HeaderNetworkDownIndicator={() => null}

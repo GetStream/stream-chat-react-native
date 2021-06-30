@@ -1,4 +1,9 @@
 {
   "packages": ["package", "examples/SampleApp"],
-  "version": "0.0.0"
+  "version": "independent",
+  "command": {
+    "version": {
+      "message": "chore(release): tag %v"
+    }
+  }
 }

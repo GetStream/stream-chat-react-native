@@ -1,7 +1,23 @@
 {
   "name": "root",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GetStream/stream-chat-react-native.git"
+  },
   "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "husky": "^6.0.0",
     "lerna": "^4.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py",
+      "commit-msg": "npx commitlint --edit $1"
+    }
+  },
+  "scripts": {
+    "lerna": "lerna"
   }
 }
