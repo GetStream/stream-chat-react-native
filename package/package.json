@@ -36,7 +36,10 @@
     "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
     "test": "TZ=UTC jest",
-    "validate-translations": "node bin/validate-translations.js"
+    "validate-translations": "node bin/validate-translations.js",
+    "get-version": "echo $npm_package_version",
+    "version": "bash ./bin/before-tag.sh",
+    "prepublishOnly": "bash ./bin/before-tag.sh && bash ./bin/release.sh"
   },
   "react-native-builder-bob": {
     "source": "src",

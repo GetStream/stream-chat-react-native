@@ -1,0 +1,40 @@
+name: Release Candidate
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - package
+
+jobs:
+  publish-release-candidate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Prepare git
+        run: |
+          git config --global user.name "Stream Chat RN Release Candidate"
+          git config --global user.email "release-candidate@getstream.io"
+          git fetch
+          git checkout master
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          cat .npmrc
+          echo "npm whoami"
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Installation
+        run: yarn
+      - name: Publish Release Candidate
+        run: |
+          yarn lerna publish prerelease --preid rc --dist-tag rc --yes
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
