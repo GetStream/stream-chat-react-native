@@ -5,7 +5,7 @@
 
 set -eux
 
-PACKAGE_VERSION=$(npm --loglevel silent run get-version)
+PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
 
 cd native-package
 npm publish --tag="$PACKAGE_VERSION"
