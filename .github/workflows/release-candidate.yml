@@ -23,7 +23,7 @@ jobs:
         run: |
           git config --global user.name "Stream Chat RN Release Candidate"
           git config --global user.email "release-candidate@getstream.io"
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Installation
