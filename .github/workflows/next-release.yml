@@ -17,16 +17,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Prepare git
+      - name: Prepare git & npm
         run: |
           git config --global user.name "Stream Chat RN Next"
           git config --global user.email "next@getstream.io"
-          git fetch
-          git checkout master
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
           cat .npmrc
-          echo "npm whoami"
-          npm whoami
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Installation
