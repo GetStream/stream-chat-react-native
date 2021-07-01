@@ -23,11 +23,11 @@ import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.m
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 
-`Gallery` is a UI component for rendering the `image` type attachments on message.
+A component to render "image" type attachments within the [`MessageList`](./message_list.mdx).
 
 ## Basic Usage
 
-**Use Case:** Disable press handlers on gallery:
+You can customize the `Gallery` component and provide it back to the SDK via the [`Gallery`](../core-components/channel.mdx#gallery) prop on `Channel` if desired.
 
 ```tsx
 import { Channel, Gallery } from 'stream-chat-react-native';
@@ -37,19 +37,15 @@ import { Channel, Gallery } from 'stream-chat-react-native';
 
 ## Props
 
-### additionalTouchableProps
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps
 
 <AdditionalTouchableProps />
 
-### alignment
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#alignment)_</div> alignment
 
 <Alignment />
 
-### groupStyles
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#groupstyles)_</div> groupStyles
 
 _(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
