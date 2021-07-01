@@ -29,6 +29,6 @@ jobs:
         run: yarn
       - name: Publish Next release
         run: |
-          yarn lerna publish --canary --preid next.${GITHUB_SHA::7} --dist-tag next --yes
+          yarn lerna publish prerelease --no-private --no-push --no-git-tag-version --dist-tag next --preid next.${GITHUB_SHA::7} --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
