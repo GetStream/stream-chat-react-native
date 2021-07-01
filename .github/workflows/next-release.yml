@@ -22,7 +22,6 @@ jobs:
           git config --global user.name "Stream Chat RN Next"
           git config --global user.email "next@getstream.io"
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> .npmrc
-          cat .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Installation
