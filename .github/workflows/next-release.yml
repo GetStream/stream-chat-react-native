@@ -3,9 +3,7 @@ name: Next Release
 on:
   push:
     branches:
-      - develop
-    paths:
-      - package
+      - lerna
 
 jobs:
   publish-next:
