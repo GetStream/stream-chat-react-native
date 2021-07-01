@@ -27,7 +27,7 @@
     "react-native-share": ">=4.1.0"
   },
   "scripts": {
-    "prepack": " cp ../README.md .",
+    "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
   }
 }
