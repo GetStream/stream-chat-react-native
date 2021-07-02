@@ -26,6 +26,8 @@ jobs:
           git config --global user.email "release-candidate@getstream.io"
       - name: Installation
         run: yarn && yarn lerna exec yarn install
+      - name: Lint
+        run: yarn lerna exec yarn lint-fix
       - name: Publish Release Candidate
         run: |
           yarn lerna publish prerelease --preid rc --dist-tag rc --no-verify-access --yes

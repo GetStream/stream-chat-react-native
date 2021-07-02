@@ -24,6 +24,8 @@ jobs:
           git config --global user.email "next@getstream.io"
       - name: Installation
         run: yarn && yarn lerna exec yarn install
+      - name: Lint
+        run: yarn lerna exec yarn lint-fix
       - name: Publish Next release
         run: |
           yarn lerna publish --canary --preid next --dist-tag next --no-verify-access --force-publish="*" --yes
