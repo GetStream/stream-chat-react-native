@@ -24,10 +24,8 @@ jobs:
           git config --global user.email "next@getstream.io"
       - name: Installation
         run: yarn && yarn lerna exec yarn install
-      - name: Lint
-        run: yarn lerna exec yarn lint-fix
       - name: Publish Next release
         run: |
-          yarn lerna publish --canary --preid next --dist-tag next --no-verify-access --force-publish="*" --yes
+          yarn lerna publish prerelease --no-private --no-push --no-git-tag-version --dist-tag next --preid next.${GITHUB_SHA::7} --no-verify-access --force-publish="*" --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
