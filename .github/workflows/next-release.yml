@@ -17,17 +17,15 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Prepare git & npm
+          registry-url: 'https://registry.npmjs.org'
+      - name: Prepare git
         run: |
           git config --global user.name "Stream Chat RN Next"
           git config --global user.email "next@getstream.io"
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Installation
         run: yarn
       - name: Publish Next release
         run: |
           yarn lerna publish prerelease --no-private --no-push --no-git-tag-version --dist-tag next --preid next.${GITHUB_SHA::7} --yes
         env:
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
