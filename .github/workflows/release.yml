@@ -21,11 +21,11 @@ jobs:
           git config --global user.email "release@getstream.io"
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
         env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Installation
         run: yarn
       - name: Publish release
         run: |
           yarn lerna publish --conventional-commits --conventional-graduate --yes
         env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

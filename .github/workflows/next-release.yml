@@ -23,11 +23,11 @@ jobs:
           git config --global user.email "next@getstream.io"
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
         env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Installation
         run: yarn
       - name: Publish Next release
         run: |
           yarn lerna publish prerelease --no-private --no-push --no-git-tag-version --dist-tag next --preid next.${GITHUB_SHA::7} --yes
         env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
