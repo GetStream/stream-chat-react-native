@@ -21,7 +21,7 @@ jobs:
           git config --global user.name "Stream Chat RN Release"
           git config --global user.email "release@getstream.io"
       - name: Installation
-        run: yarn
+        run: yarn && yarn lerna exec yarn install
       - name: Publish release
         run: |
           yarn lerna publish --conventional-commits --conventional-graduate --no-verify-access --yes

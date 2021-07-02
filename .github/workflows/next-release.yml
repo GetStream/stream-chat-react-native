@@ -23,7 +23,7 @@ jobs:
           git config --global user.name "Stream Chat RN Next"
           git config --global user.email "next@getstream.io"
       - name: Installation
-        run: yarn
+        run: yarn && yarn lerna exec yarn install
       - name: Publish Next release
         run: |
           yarn lerna publish prerelease --no-private --no-push --no-git-tag-version --dist-tag next --preid next.${GITHUB_SHA::7} --no-verify-access --yes

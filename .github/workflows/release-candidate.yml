@@ -25,7 +25,7 @@ jobs:
           git config --global user.name "Stream Chat RN Release Candidate"
           git config --global user.email "release-candidate@getstream.io"
       - name: Installation
-        run: yarn
+        run: yarn && yarn lerna exec yarn install
       - name: Publish Release Candidate
         run: |
           yarn lerna publish prerelease --preid rc --dist-tag rc --no-verify-access --yes
