@@ -29,3 +29,8 @@ jobs:
           yarn lerna publish --conventional-commits --conventional-graduate --no-verify-access --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Create merge back PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: merge-back-release
+          base: develop
