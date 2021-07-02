@@ -3,7 +3,8 @@
   "version": "independent",
   "command": {
     "version": {
-      "message": "chore(release): tag %v"
+      "message": "chore(release): tag %v",
+      "changelogPreset": "./changelog-preset.config.js"
     }
   }
 }
