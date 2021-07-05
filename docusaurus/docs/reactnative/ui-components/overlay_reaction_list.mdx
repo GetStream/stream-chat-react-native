@@ -4,31 +4,23 @@ title: OverlayReactionList
 ---
 
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
-
 import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
+import MessageOverlayContextData from '../common-content/contexts/message-overlay-context/data.mdx';
 
-UI component to render the reaction selector within message overlay.
+`OverlayReactionList` component is used to display reaction selector within message overlay.
 
-You can replace this default UI component using the `OverlayReactionList` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel OverlayReactionList={CustomOverlayReactionList} />
-```
+This is the default component provided to the prop [`OverlayReactionList`](../core-components/overlay_provider.mdx#overlayreactionlist) on the `OverlayProvider` component.
 
 ## Props
 
-### data
+### <div class="description">_Overrides the value from [MessageOverlayContext](../contexts/message_overlay_context.mdx#data)_</div> Data {#data}
 
-_(Overrides the value from [MessageOverlayContext](../contexts/message_overlay_context.mdx#data))_
+<MessageOverlayContextData />
 
-### setOverlay
-
-_(Overrides the value from [OverlayContext](../contexts/overlay_context.mdx))_
+### <div class="description">_Overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setoverlay)_</div> setOverlay {#setoverlay}
 
 <SetOverlay />
 
-### supportedReactions
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="description">_Overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)_</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
