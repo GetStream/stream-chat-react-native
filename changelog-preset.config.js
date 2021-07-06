@@ -6,7 +6,7 @@ module.exports = Promise.resolve()
     const oldWhatBump = preset.recommendedBumpOpts.whatBump;
     const newWhatBump = (commits, packageInfo) => {
       const parsedCommits = commits
-        // Removes commits that are not pull request merges.
+        // Removes commits that are not pull request merges or breaking change.
         .filter(
           (commit) => mergePRReg.test(commit.header) || commit.footer.includes('BREAKING CHANGE:'),
         )
