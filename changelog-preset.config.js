@@ -14,6 +14,10 @@ module.exports = Promise.resolve()
         )
         // For those, sets the body as the header once the actual pull request title is set as body
         .map((commit) => {
+          if (commit.footer && commit.footer.includes('BREAKING CHANGE:')) {
+            return commit;
+          }
+
           const [, type, scope, subject] =
             commit.body.match(packageInfo.config.parserOpts.headerPattern) || [];
           return { ...commit, header: commit.body, body: null, type, scope, subject };
