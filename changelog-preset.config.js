@@ -8,7 +8,9 @@ module.exports = Promise.resolve()
       const parsedCommits = commits
         // Removes commits that are not pull request merges or breaking change.
         .filter(
-          (commit) => mergePRReg.test(commit.header) || commit.footer.includes('BREAKING CHANGE:'),
+          (commit) =>
+            mergePRReg.test(commit.header) ||
+            (commit.footer && commit.footer.includes('BREAKING CHANGE:')),
         )
         // For those, sets the body as the header once the actual pull request title is set as body
         .map((commit) => {
