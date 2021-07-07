@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master # default branch name for each repo that docs should be push from
+      - develop
     paths:
       - docusaurus/**
 jobs:
@@ -14,6 +15,6 @@ jobs:
       - name: push
         uses: GetStream/push-stream-chat-docusaurus-action@main
         with:
-          target-branch: production
+          target-branch: ${{ github.ref == 'refs/heads/master' && 'production' || 'staging' }}
         env:
           DOCUSAURUS_GH_TOKEN: ${{ secrets.DOCUSAURUS_GH_TOKEN }}

@@ -142,7 +142,7 @@ export type AppTheme = Theme & {
 export type LoginConfig = {
   apiKey: string;
   userId: string;
+  userToken: string;
   userImage?: string;
   userName?: string;
-  userToken: string;
 };

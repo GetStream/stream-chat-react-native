@@ -25,7 +25,7 @@
     "expo-sharing": "^9.1.2"
   },
   "scripts": {
-    "prepack": " cp ../README.md .",
+    "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
   }
 }

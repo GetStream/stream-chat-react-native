@@ -1,0 +1,10 @@
+{
+  "packages": ["package", "examples/SampleApp"],
+  "version": "independent",
+  "command": {
+    "version": {
+      "message": "chore(release): tag %v",
+      "changelogPreset": "./changelog-preset.config.js"
+    }
+  }
+}

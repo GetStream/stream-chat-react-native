@@ -102,8 +102,8 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: white_snow }]}
       edges={['right', 'top', 'left']}
+      style={[styles.container, { backgroundColor: white_snow }]}
     >
       <ScrollView contentContainerStyle={styles.contentContainer} style={styles.scrollContainer}>
         <View style={styles.titleContainer}>
@@ -191,9 +191,9 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       <View
         style={[
           {
+            backgroundColor: white_snow,
             paddingBottom: bottom ? bottom : 16,
             paddingTop: 16,
-            backgroundColor: white_snow,
           },
         ]}
       >

@@ -86,12 +86,12 @@ const DrawerNavigator: React.FC = () => {
 
   return (
     <Drawer.Navigator
-      screenOptions={{
-        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
-      }}
       drawerContent={(props) => <MenuDrawer {...props} />}
       drawerStyle={{
         width: 300,
+      }}
+      screenOptions={{
+        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
       }}
     >
       <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />

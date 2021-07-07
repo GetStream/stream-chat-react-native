@@ -6,11 +6,11 @@ import {
   Group,
   MessageInput,
   MessageList,
+  SendButton,
+  SendButtonProps,
   User,
   UserAdd,
   useTheme,
-  SendButton,
-  SendButtonProps,
 } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';

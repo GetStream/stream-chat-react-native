@@ -23,9 +23,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   container: {
-    height: 224,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
+    height: 224,
   },
   description: {
     alignItems: 'center',

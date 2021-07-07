@@ -1,0 +1,40 @@
+name: Release Candidate
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - package
+
+jobs:
+  publish-release-candidate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Prepare git
+        run: |
+          git config --global user.name "Vishal Narkhede"
+          git config --global user.email "vishal@getstream.io"
+      - name: Installation
+        run: yarn && yarn lerna exec yarn install
+      - name: Lint
+        run: yarn lerna exec yarn lint-fix
+      - name: Publish Release Candidate
+        run: |
+          yarn lerna publish prerelease --preid rc --dist-tag rc --no-verify-access --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Create merge back PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: merge-back-release
+          base: develop

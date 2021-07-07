@@ -1,4 +1,4 @@
-# Changelog
+# Changelog (before conventional commits)
 
 ## [3.6.1] (2021-07-07)
 
