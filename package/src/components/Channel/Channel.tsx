@@ -1366,6 +1366,9 @@ const ChannelWithContext = <
     if (channel) {
       channel.state.removeMessage(message);
       setMessages(channel.state.messages);
+      if (thread) {
+        setThreadMessages(channel.state.threads[thread.id] || []);
+      }
     }
   };
 
