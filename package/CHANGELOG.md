@@ -1,5 +1,9 @@
 # Changelog (before conventional commits)
 
+## [3.6.1] (2021-07-07)
+
+- Fixed problem where it wasn't possible to clear giphy messages inside of a thread [6d8977d](https://github.com/GetStream/stream-chat-react-native/commit/6d8977d43e804db95c44d95b7a546f6534d0f5c7)
+
 ## [3.6.0] (2021-06-22)
 
 This release provides full support for Expo 41 and React Native 0.64
