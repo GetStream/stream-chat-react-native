@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-    paths:
-      - package
 
 jobs:
   publish-next:
