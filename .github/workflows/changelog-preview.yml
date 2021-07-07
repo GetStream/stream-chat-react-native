@@ -28,3 +28,8 @@ jobs:
             ```
             ${{ steps.generate_changelog.outputs.preview }}
             ```
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: steps.generate_changelog.outputs.exists != 'true'
+        with:
+          header: changelog_preview
+          message: No changelog generated for the current changes on this pull request.
