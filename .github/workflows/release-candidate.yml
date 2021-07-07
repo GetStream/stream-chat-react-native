@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - package
 
 jobs:
   publish-release-candidate:
