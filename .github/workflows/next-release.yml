@@ -22,8 +22,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Prepare git
         run: |
-          git config --global user.name "Stream Chat RN Next"
-          git config --global user.email "next@getstream.io"
+          git config --global user.name "Vishal Narkhede"
+          git config --global user.email "vishal@getstream.io"
       - name: Installation
         run: yarn && yarn lerna exec yarn install
       - name: Lint
