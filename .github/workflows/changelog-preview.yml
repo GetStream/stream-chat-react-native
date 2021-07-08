@@ -25,9 +25,13 @@ jobs:
         run: |
           yarn lerna version prerelease --conventional-commits --conventional-prerelease --preid rc --no-git-tag-version --no-push --yes
           CHANGELOG_PREVIEW=$(bash ./extractVersionChanges.sh)
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//$'\n'/'%0A'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//$'\r'/'%0D'}"
+
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
             echo "::set-output name=exists::true"
-            echo "::set-output name=preview::$CHANGELOG_PREVIEW"
+            echo "::set-output name=preview::$CHANGELOG_PREVIEW_ESCAPED"
           fi
       - uses: marocchino/sticky-pull-request-comment@v2
         if: steps.generate_changelog.outputs.exists == 'true'
