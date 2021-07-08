@@ -37,10 +37,7 @@ jobs:
         if: steps.generate_changelog.outputs.exists == 'true'
         with:
           header: changelog_preview
-          message: |
-            ```
-            ${{ steps.generate_changelog.outputs.preview }}
-            ```
+          message: ${{ steps.generate_changelog.outputs.preview }}
       - uses: marocchino/sticky-pull-request-comment@v2
         if: steps.generate_changelog.outputs.exists != 'true'
         with:
