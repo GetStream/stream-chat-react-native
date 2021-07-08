@@ -26,8 +26,8 @@ jobs:
           yarn lerna version prerelease --conventional-commits --conventional-prerelease --preid rc --no-git-tag-version --no-push --yes
           CHANGELOG_PREVIEW=$(bash ./extractVersionChanges.sh)
           CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
-          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//$'\n'/'%0A'}"
-          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//$'\r'/'%0D'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
             echo "::set-output name=exists::true"
