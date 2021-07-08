@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Prepare repository
-        run: git checkout "${GITHUB_REF:11}"
+        with:
+          ref: develop
       - name: Generate Changelog
         id: generate_changelog
         run: |
