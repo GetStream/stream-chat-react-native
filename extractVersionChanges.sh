@@ -6,7 +6,7 @@ extractLastVersion () {
         | head -1 \
         | awk -F: '{ print $2 }' \
         | sed 's/[",]//g')
-    PACKAGE_CHANGES="$(awk '/## \[/ { if (p) { exit }; p=1 } p' "$1")"
+    PACKAGE_CHANGES="$(awk '/^## \[?/ { if (p) { exit }; p=1 } p' "$1")"
     echo "#$PACKAGE_NAME"
     echo ""
     echo "$PACKAGE_CHANGES"
@@ -14,7 +14,9 @@ extractLastVersion () {
 
 }
 
-CHANGELOG_PREVIEW=$(git diff --name-only "*CHANGELOG.md" | while read file; do extractLastVersion "$file"; done)
+git add --all
+
+CHANGELOG_PREVIEW=$(git diff HEAD --name-only "*CHANGELOG.md" | while read file; do extractLastVersion "$file"; done)
 if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
     echo "# Change Log Preview"
     echo ""
