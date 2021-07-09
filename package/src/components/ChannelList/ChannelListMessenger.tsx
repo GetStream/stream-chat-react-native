@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
