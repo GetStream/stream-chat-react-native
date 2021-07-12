@@ -5,9 +5,9 @@ extractLastVersion () {
         | grep name \
         | head -1 \
         | awk -F: '{ print $2 }' \
-        | sed 's/[",]//g')
-    PACKAGE_CHANGES="$(awk '/^## \[?/ { if (p) { exit }; p=1 } p' "$1")"
-    echo "#$PACKAGE_NAME"
+        | sed 's/[ ",]//g')
+    PACKAGE_CHANGES="$(awk '$0 ~ ("^## \\[") { if (p) { exit }; p=1 } p' "$1")"
+    echo "# $PACKAGE_NAME"
     echo ""
     echo "$PACKAGE_CHANGES"
     echo ""
