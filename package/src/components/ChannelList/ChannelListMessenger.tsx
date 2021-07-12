@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+// RNGR's FlatList ist currently breaking the pull-to-refresh behaviour on Android
+// See https://github.com/software-mansion/react-native-gesture-handler/issues/598
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
