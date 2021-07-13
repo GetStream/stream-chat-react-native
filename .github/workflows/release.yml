@@ -26,7 +26,7 @@ jobs:
           git config --global user.name "Vishal Narkhede"
           git config --global user.email "vishal@getstream.io"
       - name: Installation
-        run: yarn && yarn lerna exec yarn install
+        run: yarn --frozen-lockfile && yarn lerna exec "yarn install --frozen-lockfile"
       - name: Lint
         run: yarn lerna exec yarn lint-fix
       - name: Publish release
