@@ -41,7 +41,7 @@ jobs:
         id: extract_tags
         run: |
           GENERATED_SDK_TAG=$(git describe --match "stream-chat-react-native-core@*" --abbrev=0 --tags)
-          PARSED_SDK_TAG=$(echo "$GENERATED_SDK_TAG" | sed -e 's/stream-chat-react-native-core@//g')
+          PARSED_SDK_TAG="v$(echo "$GENERATED_SDK_TAG" | sed -e 's/stream-chat-react-native-core@//g')"
           echo "::set-output name=tag::$GENERATED_SDK_TAG"
           echo "::set-output name=newtag::$PARSED_SDK_TAG"
       - name: Rename release
