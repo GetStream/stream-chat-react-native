@@ -40,6 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
       - name: Merge back changes
         run: |
+          git stash
           git checkout develop
           git pull origin develop
           git merge master

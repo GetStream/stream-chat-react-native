@@ -53,6 +53,7 @@ jobs:
           allow_override: true
       - name: Merge back changes
         run: |
+          git stash
           git checkout develop
           git pull origin develop
           git merge master
