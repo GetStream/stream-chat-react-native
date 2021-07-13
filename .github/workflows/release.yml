@@ -42,7 +42,8 @@ jobs:
           PARSED_SDK_TAG=$(echo "$GENERATED_SDK_TAG" | sed -e 's/stream-chat-react-native-core@//g')
           echo "::set-output name=tag::$GENERATED_SDK_TAG"
           echo "::set-output name=newtag::$PARSED_SDK_TAG"
-      - uses: meeDamian/github-release@2.0
+      - name: Rename release
+        uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.VERSION_BUMP_TOKEN }}
           tag: ${{ steps.generate_changelog.outputs.tag }}
