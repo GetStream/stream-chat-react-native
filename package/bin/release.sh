@@ -6,10 +6,11 @@
 set -eux
 
 PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
-PACKAGE_TAG=$(echo "$PACKAGE_VERSION" | cut -d"-" -f2 | cut -d"." -f1)
+PACKAGE_TAG=$(sed 's/.*-\(.*\)\..*/\1/' <<< "$PACKAGE_VERSION")
 
-if [[ ! -z "${PACKAGE_TAG}" ]]; then
-   cd native-package
+# If tag === version it means that its not a prerelease and shouuld set things to latest
+if [[ "${PACKAGE_TAG}" != "${PACKAGE_VERSION}" ]]; then
+    cd native-package
     npm publish --tag="$PACKAGE_TAG"
 
     cd ../expo-package
@@ -17,7 +18,6 @@ if [[ ! -z "${PACKAGE_TAG}" ]]; then
 else
     cd native-package
     npm publish
-
 
     cd ../expo-package
     npm publish
