@@ -1,0 +1,49 @@
+name: Changelog preview
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  generate_changelog_preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: develop
+          # pulls all commits (needed for lerna / semantic release to correctly version)
+          fetch-depth: '0'
+      # pulls all tags (needed for lerna / semantic release to correctly version)
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Installation
+        run: yarn && yarn lerna exec yarn install
+      - name: Generate Changelog
+        id: generate_changelog
+        run: |
+          yarn lerna version prerelease --conventional-commits --conventional-prerelease --preid rc --no-git-tag-version --no-push --yes
+          CHANGELOG_PREVIEW=$(bash ./extractVersionChanges.sh)
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
+          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
+
+          if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
+            echo "::set-output name=exists::true"
+            echo "::set-output name=preview::$CHANGELOG_PREVIEW_ESCAPED"
+          fi
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: steps.generate_changelog.outputs.exists == 'true'
+        with:
+          header: changelog_preview
+          message: ${{ steps.generate_changelog.outputs.preview }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: steps.generate_changelog.outputs.exists != 'true'
+        with:
+          header: changelog_preview
+          message: No changelog generated for the current changes on this pull request.

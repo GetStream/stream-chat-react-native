@@ -6,11 +6,11 @@ title: Dev Setup & Sample Apps
 
 If you're thinking about contributing to our SDK, you may want to test your changes while developing locally.
 A good starting point its setting up our SampleApp application: A project which implements all of our main features.
-The following steps can be used to run all our internal sample projects like 
+The following steps can be used to run all our internal sample projects like
 
 ### Cloning the SDK repo
 
-You can start by [forking our repository](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) and then 
+You can start by [forking our repository](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) and then
 cloning your fork into your local machine:
 
 ```
@@ -66,13 +66,13 @@ Because of that, there is a few specific steps you need to follow in order to ru
 
 ### Linking the SDK into your package.json
 
-First step is to link the SDK dependency to the locally cloned repository. 
+First step is to link the SDK dependency to the locally cloned repository.
 Replace the `stream-chat-react-native` dependency with following:
 
 ```json
-"stream-chat-react-native-core": "link:../stream-chat-react-native",
-"stream-chat-react-native": "link:../stream-chat-react-native/native-package", // If youre using the native package
-"stream-chat-expo": "link:../stream-chat-react-native/expo-package", // If youre using expo
+"stream-chat-react-native-core": "link:../stream-chat-react-native/package",
+"stream-chat-react-native": "link:../stream-chat-react-native/package/native-package", // If youre using the native package
+"stream-chat-expo": "link:../stream-chat-react-native/package/expo-package", // If youre using expo
 ```
 
 Here I am assuming that the clone of `stream-chat-react-native` and your app are under common directory. e.g.,
@@ -86,13 +86,12 @@ Here I am assuming that the clone of `stream-chat-react-native` and your app are
 ### Metro config
 
 If you run your app at this point, you will run into some issues related to `dependency collision`.
-Since metro bundler will have node_module dependencies from your `app` folder, `stream-chat-react-native` 
-folder and `stream-chat-react-native/native-package` folder. And it doesn't know how to resolve those 
+Since metro bundler will have node_module dependencies from your `app` folder, `stream-chat-react-native`
+folder and `stream-chat-react-native/native-package` folder. And it doesn't know how to resolve those
 dependencies.
 
-So you need to modify `metro.config.js`. We added some helpers for that inside of our package. 
+So you need to modify `metro.config.js`. We added some helpers for that inside of our package.
 You can copy-paste the following config:
-
 
 :::note
 If you're using an older `metro-config` version, you may need to replace
