@@ -50,6 +50,7 @@ jobs:
           token: ${{ secrets.VERSION_BUMP_TOKEN }}
           tag: ${{ steps.extract_tags.outputs.tag }}
           name: ${{ steps.extract_tags.outputs.newtag }}
+          allow_override: true
       - name: Merge back changes
         run: |
           git checkout develop
