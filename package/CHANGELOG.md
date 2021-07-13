@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.6.2 (2021-07-13)
+
+
+### Bug Fixes
+
+* **android:** use react native FlatList instead of RNGH's on ChannelListMessenger ([1267f64](https://github.com/GetStream/stream-chat-react-native/commit/1267f64d2f003477e12edbb8b1e833872416510d))
+
+
+
+
+
 ## 3.6.2-rc.0 (2021-07-13)
 
 
