@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.3](https://github.com/GetStream/stream-chat-react-native/compare/stream-chat-react-native-core@3.6.2...stream-chat-react-native-core@3.6.3) (2021-07-13)
+
+**Note:** Version bump only for package stream-chat-react-native-core
+
+
+
+
+
 ## 3.6.2 (2021-07-13)
 
 
