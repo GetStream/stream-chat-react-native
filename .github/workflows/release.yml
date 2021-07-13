@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           # pulls all commits (needed for lerna / semantic release to correctly version)
+          ref: master
           fetch-depth: '0'
           token: ${{ secrets.VERSION_BUMP_TOKEN }}
       # pulls all tags (needed for lerna / semantic release to correctly version)
