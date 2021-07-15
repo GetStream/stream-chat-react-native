@@ -13,9 +13,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: develop
-          # pulls all commits (needed for lerna / semantic release to correctly version)
+          # pulls all commits (needed for semantic release to correctly version)
           fetch-depth: '0'
-      # pulls all tags (needed for lerna / semantic release to correctly version)
+      # pulls all tags (needed for semantic release to correctly version)
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -23,17 +23,25 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
       - name: Installation
-        run: yarn && yarn lerna exec yarn install
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Generate Changelog
         id: generate_changelog
         run: |
-          yarn lerna version prerelease --conventional-commits --conventional-prerelease --preid rc --no-git-tag-version --no-push --yes
-          CHANGELOG_PREVIEW=$(bash ./extractVersionChanges.sh)
-          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
-          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
-          CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
+          GITHUB_REF='refs/heads/develop' yarn extract-changelog
+          echo "Changelog script finished! Checking if there are changes..."
+          CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md || true)
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
+            echo "Changelog found! Writing header to the file..."
+            echo '# Next releases' | cat - NEXT_RELEASE_CHANGELOG.md > NEXT_RELEASE_CHANGELOG.tmp.md && mv NEXT_RELEASE_CHANGELOG.tmp.md NEXT_RELEASE_CHANGELOG.md
+
+            echo "Changelog file ready! Setting up outputs"
+            CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
+            
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
+
             echo "::set-output name=exists::true"
             echo "::set-output name=preview::$CHANGELOG_PREVIEW_ESCAPED"
           fi
