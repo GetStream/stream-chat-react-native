@@ -24,7 +24,7 @@ configPromise.then((config) => {
           result,
         }))
         .then(({ tagExists, result }) => {
-          if (tagExists) {
+          if (tagExists && result.lastRelease && result.lastRelease.gitTag.includes('-next')) {
             return execa('git', ['push', '--delete', 'origin', result.lastRelease.gitTag]);
           }
         })
