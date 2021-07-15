@@ -1,9 +1,8 @@
 # Release process
 
-## Lerna
+## Workspaces & semantic-release
 
-We use lerna to manage the release process for our SDK and SampleApp. It has an option for conventional commits and we use it on every commit and pull request
-title so we can have automatically generated tags and changelogs. 
+We use workspaces and semantic-release to manage the release process for our SDK and SampleApp. It enforces conventional commits on every commit and pull request title so we can have automatically generated tags and changelogs. 
 
 ## Angular conventional commits
 
@@ -12,7 +11,7 @@ Also, we enforce that our pull request titles follow the spec because we only co
 
 ## Creating breaking changes
 
-Please follow [the spec](https://www.conventionalcommits.org/en/v1.0.0-beta.4/#commit-message-with-description-and-breaking-change-in-body) when adding breaking changes. Have in mind that the `!` in the commit message is not really supported from lerna yet so avoid that and just add the `BREAKING CHANGE:` flag to the commit body. As explained in the last section, you have two ways to trigger breaking changes: On commit level and on pull request level. The recommended is to do it at commit level in order to be more specific on whats breaking and which commits is generating the breaking change, but if thats not possible for some reason, you need to add it to the pull request merge body.
+Please follow [the spec](https://www.conventionalcommits.org/en/v1.0.0-beta.4/#commit-message-with-description-and-breaking-change-in-body) when adding breaking changes. Have in mind that the `!` in the commit message is not really supported yet so avoid that and just add the `BREAKING CHANGE:` flag to the commit body. As explained in the last section, you have two ways to trigger breaking changes: On commit level and on pull request level. The recommended is to do it at commit level in order to be more specific on whats breaking and which commits is generating the breaking change, but if thats not possible for some reason, you need to add it to the pull request merge body.
 
 ![image](https://user-images.githubusercontent.com/18744505/124764512-69f17c00-df0b-11eb-9747-c46127fba32d.png)
 

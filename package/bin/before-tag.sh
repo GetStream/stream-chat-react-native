@@ -2,7 +2,7 @@
 # shellcheck disable=SC2103
 
 
-# Runs before lerna tagging in order to set correct tags for internal native-package
+# Runs before semantic-relase tagging in order to set correct tags for internal native-package
 # and expo-package. also sets version.json. also runs before publishing a nightly release
 
 set -eux
