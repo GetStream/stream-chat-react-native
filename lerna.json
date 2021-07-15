@@ -1,4 +1,10 @@
 {
   "packages": ["package", "examples/SampleApp"],
-  "version": "independent"
+  "version": "independent",
+  "command": {
+    "run": {
+      "npmClient": "yarn",
+      "stream": true
+    }
+  }
 }
