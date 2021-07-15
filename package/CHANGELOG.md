@@ -1,5 +1,14 @@
 # Change Log
 
+### [3.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.4...v3.6.5) (2021-07-15)
+
+
+### Bug Fixes
+
+* **reactions:** Fix overflowing reactions list and double scroll on Android ([04dbc9b](https://github.com/GetStream/stream-chat-react-native/commit/04dbc9bf3e0f334215b6bac3221a8963951e97e2))
+
+
+
 ## [3.6.4](https://github.com/GetStream/stream-chat-react-native/compare/stream-chat-react-native-core@3.6.3...stream-chat-react-native-core@3.6.4) (2021-07-13)
 
 **Note:** Version bump only for package stream-chat-react-native-core
