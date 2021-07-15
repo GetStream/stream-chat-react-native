@@ -7,6 +7,7 @@ configPromise.then((config) => {
   return semanticRelease({
     ...config,
     dryRun: true,
+    ci: false,
     branches: ['master', { name: 'develop', channel: 'rc', prerelease: 'rc' }],
   }).then((result) => {
     if (result) {
