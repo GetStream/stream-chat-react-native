@@ -53,7 +53,10 @@ module.exports = Promise.resolve().then(() => {
     ],
   ];
 
-  if ((process.env.GH_TOKEN || process.env.GITHUB_TOKEN) && process.env.GIT_BRANCH === 'master') {
+  if (
+    (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) &&
+    process.env.GITHUB_REF === 'refs/heads/master'
+  ) {
     plugins.push([
       '@semantic-release/git',
       {
