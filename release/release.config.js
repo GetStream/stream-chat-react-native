@@ -67,7 +67,6 @@ module.exports = Promise.resolve().then(() => {
     ]);
   }
 
-  const rootPackage = require('../package.json');
   const lernaPackage = require('../lerna.json');
 
   return {

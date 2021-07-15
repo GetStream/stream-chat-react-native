@@ -11,19 +11,23 @@ configPromise.then((config) => {
       {
         name: 'semantic-release',
         channel: 'next',
-        prerelease: `next.${process.env.GITHUB_SHORT_SHA}`,
+        prerelease: 'next',
       },
     ],
   }).then((result) => {
-    return execa('git', ['ls-remote', 'origin', `refs/tags/${result.nextRelease.gitTag}`])
-      .then(({ stdout }) => ({
-        tagExists: stdout,
-        result,
-      }))
-      .then(({ tagExists, result }) => {
-        if (tagExists) {
-          return execa('git', ['push', '--delete', 'origin', result.nextRelease.gitTag]);
-        }
-      });
+    return (
+      result &&
+      result.nextRelease.gitTag &&
+      execa('git', ['ls-remote', 'origin', `refs/tags/${result.lastRelease.gitTag}`])
+        .then(({ stdout }) => ({
+          tagExists: stdout,
+          result,
+        }))
+        .then(({ tagExists, result }) => {
+          if (tagExists) {
+            return execa('git', ['push', '--delete', 'origin', result.lastRelease.gitTag]);
+          }
+        })
+    );
   });
 });
