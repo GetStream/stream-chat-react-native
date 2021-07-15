@@ -119,18 +119,19 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<
-    | StreamChatChannel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    | undefined
-  >(channelFromProp);
+  const [channel, setChannel] =
+    useState<
+      | StreamChatChannel<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalReactionType,
+          LocalUserType
+        >
+      | undefined
+    >(channelFromProp);
 
   const [selectedThread, setSelectedThread] =
     useState<
