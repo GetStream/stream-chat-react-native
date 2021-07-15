@@ -8,7 +8,7 @@ configPromise.then((config) => {
     ...config,
     branches: [
       'master',
-      { name: 'develop', channel: 'next', prerelease: `next.${GITHUB_SHORT_SHA}` },
+      { name: 'semantic-release', channel: 'next', prerelease: `next.${GITHUB_SHORT_SHA}` },
     ],
   }).then((result) => {
     return execa(`git`, ['push', '--delete', 'origin', result.nextRelease.gitTag]);
