@@ -143,27 +143,25 @@ export const NewDirectMessagingSendButton = (
   >,
 ) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } =
-    useChannelContext<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >();
+  const { channel } = useChannelContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >();
 
-  const { giphyActive, text } =
-    useMessageInputContext<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >();
+  const { giphyActive, text } = useMessageInputContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >();
 
   const sendMessage = async () => {
     if (!channel) return;

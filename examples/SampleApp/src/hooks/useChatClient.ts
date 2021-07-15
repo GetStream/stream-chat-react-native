@@ -18,16 +18,15 @@ import type {
 const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
 
 export const useChatClient = () => {
-  const [chatClient, setChatClient] =
-    useState<StreamChat<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  > | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
