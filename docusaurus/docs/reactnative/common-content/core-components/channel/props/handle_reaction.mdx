@@ -1,8 +1,12 @@
-Function to call, when a user adds a reaction on message by pressing on reaction icon in message overlay.
-This interceptor will neither change the standard functions nor block them. Use this function to add any analytics tracking call.
-
-Please refer to [Customize Message Actions](/reactnative/guides/customize-message-actions) for details.
+Function called when a reaction is selected in the message overlay, this is called on both the add and remove action.
+This function does not override the default behavior of the reaction being selected.
+Please refer to [the guide on customizing message actions](/reactnative/guides/customize-message-actions) for details.
 
 | Type |
 | - |
-| `(message, reactionType) => void` |
+| function |
+
+| Parameter | Description |
+| - | - |
+| message | message the action is called on |
+| reactionType | type of the reaction |
