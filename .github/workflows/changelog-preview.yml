@@ -28,11 +28,14 @@ jobs:
         id: generate_changelog
         run: |
           GITHUB_REF='refs/heads/develop' yarn extract-changelog
+          echo "Changelog script finished! Checking if there are changes..."
           CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md | true)
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
+            echo "Changelog found! Writing header to the file..."
             sed -i "" '1s/^/# Next releases\n\n/' ./NEXT_RELEASE_CHANGELOG.md
 
+            echo "Changelog file ready! Setting up outputs"
             CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
             
             CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
