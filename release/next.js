@@ -6,7 +6,6 @@ const execa = require('execa');
 configPromise.then((config) => {
   return semanticRelease({
     ...config,
-    dryRun: true,
     branches: [
       'master',
       { name: 'develop', channel: 'next', prerelease: `next.${GITHUB_SHORT_SHA}` },

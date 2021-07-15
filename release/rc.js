@@ -6,7 +6,6 @@ const execa = require('execa');
 configPromise.then((config) => {
   return semanticRelease({
     ...config,
-    dryRun: true,
     branches: ['develop', { name: 'master', channel: 'rc', prerelease: 'rc' }],
   });
 });

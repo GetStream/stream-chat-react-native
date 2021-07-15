@@ -7,7 +7,6 @@ configPromise.then((config) => {
   const newConfig = {
     ...config,
     branches: ['master'],
-    dryRun: true,
   };
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
     newConfig.plugins.push('@semantic-release/github');
