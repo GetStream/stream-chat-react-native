@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          token: ${{ secrets.VERSION_BUMP_TOKEN }}
           # pulls all commits (needed for semantic release to correctly version)
           fetch-depth: '0'
       # pulls all tags (needed for semantic release to correctly version)
@@ -35,8 +36,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
       - name: Merge back changes
-        env:
-          GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
         run: |
           git stash
           git checkout develop
