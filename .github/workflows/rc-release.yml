@@ -37,6 +37,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
       - name: Merge back changes
+        env:
+          GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
         run: |
           git stash
           git checkout develop
