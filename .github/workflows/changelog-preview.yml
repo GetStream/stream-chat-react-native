@@ -28,7 +28,7 @@ jobs:
         id: generate_changelog
         run: |
           yarn extract-changelog
-          CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
+          CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md | true)
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
             sed -i "" '1s/^/# Next releases\n\n/' ./NEXT_RELEASE_CHANGELOG.md
