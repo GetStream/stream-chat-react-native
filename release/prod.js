@@ -7,7 +7,20 @@ configPromise.then((config) => {
     branches: ['master'],
   };
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
-    newConfig.plugins.push('@semantic-release/github');
+    newConfig.plugins.concat([
+      plugins.push([
+        '@semantic-release/git',
+        {
+          assets: [
+            `${process.cwd()}/package.json`,
+            `${process.cwd()}/yarn.lock`,
+            `${process.cwd()}/CHANGELOG.md`,
+          ],
+          message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+        },
+      ]),
+      '@semantic-release/github',
+    ]);
   }
   return semanticRelease(newConfig);
 });

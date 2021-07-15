@@ -53,23 +53,6 @@ module.exports = Promise.resolve().then(() => {
     ],
   ];
 
-  if (
-    (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) &&
-    process.env.GITHUB_REF === 'refs/heads/master'
-  ) {
-    plugins.push([
-      '@semantic-release/git',
-      {
-        assets: [
-          `${process.cwd()}/package.json`,
-          `${process.cwd()}/yarn.lock`,
-          `${process.cwd()}/CHANGELOG.md`,
-        ],
-        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
-      },
-    ]);
-  }
-
   const lernaPackage = require('../lerna.json');
 
   return {
