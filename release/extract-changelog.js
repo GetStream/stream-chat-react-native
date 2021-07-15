@@ -4,12 +4,16 @@ const semanticRelease = require('semantic-release');
 const configPromise = require('./release.config.js');
 
 configPromise.then((config) => {
-  return semanticRelease({
+  const newConfig = {
     ...config,
     dryRun: true,
     ci: false,
     branches: ['master', { name: 'develop', channel: 'rc', prerelease: 'rc' }],
-  }).then((result) => {
+  };
+
+  newConfig.plugins = newConfig.plugins.filter((plugin) => plugin[0] !== '@semantic-release/npm');
+
+  return semanticRelease(newConfig).then((result) => {
     if (result) {
       const { nextRelease } = result;
 
