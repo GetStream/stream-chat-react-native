@@ -59,7 +59,7 @@ module.exports = Promise.resolve().then(() => {
       {
         assets: [
           `${process.cwd()}/package.json`,
-          `${process.cwd()}/yarn.lock.json`,
+          `${process.cwd()}/yarn.lock`,
           `${process.cwd()}/CHANGELOG.md`,
         ],
         message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
