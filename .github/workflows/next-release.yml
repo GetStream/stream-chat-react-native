@@ -3,7 +3,7 @@ name: Next Release
 on:
   push:
     branches:
-      - semantic-release
+      - develop
 
 jobs:
   publish-next:

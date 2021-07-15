@@ -9,7 +9,7 @@ configPromise.then((config) => {
     branches: [
       'master',
       {
-        name: 'semantic-release',
+        name: 'develop',
         channel: 'next',
         prerelease: 'next',
       },
