@@ -27,7 +27,7 @@ jobs:
       - name: Generate Changelog
         id: generate_changelog
         run: |
-          yarn extract-changelog
+          GITHUB_REF='refs/heads/develop' yarn extract-changelog
           CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md | true)
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
