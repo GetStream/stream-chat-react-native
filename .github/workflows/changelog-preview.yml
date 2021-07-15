@@ -33,7 +33,7 @@ jobs:
 
           if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
             echo "Changelog found! Writing header to the file..."
-            sed -i "" '1s/^/# Next releases\n\n/' ./NEXT_RELEASE_CHANGELOG.md
+            echo '# Next releases\n' | cat - NEXT_RELEASE_CHANGELOG.md > NEXT_RELEASE_CHANGELOG.tmp.md && mv NEXT_RELEASE_CHANGELOG.tmp.md NEXT_RELEASE_CHANGELOG.md
 
             echo "Changelog file ready! Setting up outputs"
             CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
