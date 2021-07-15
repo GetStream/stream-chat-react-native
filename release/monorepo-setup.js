@@ -88,8 +88,8 @@ async function extractSymlinkedPackages(globalConfig) {
 
   const symlinkedPackages = stdout
     .split('\n')
-    .filter((item) => item)
-    .map((item) => workspacesPaths.find((workspace) => workspace.name === item.split('/').pop()));
+    .map((item) => workspacesPaths.find((workspace) => workspace.name === item.split('/').pop()))
+    .filter((item) => item);
 
   const linkedWorkspacePackages = manualLinkedPackages;
 
