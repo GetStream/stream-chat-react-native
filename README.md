@@ -168,7 +168,7 @@ We welcome code changes that improve this library or fix a problem, and please m
 
 ## Git flow & Release process
 
-We enforce conventional commits and have an automated releasing process using lerna. Read our [git flow & release process guide](https://github.com/GetStream/stream-chat-react-native/blob/master/RELEASE_PROCESS.md) for more information
+We enforce conventional commits and have an automated releasing process using workspaces and semantic-release. Read our [git flow & release process guide](https://github.com/GetStream/stream-chat-react-native/blob/master/RELEASE_PROCESS.md) for more information
 
 ## We are hiring
 
