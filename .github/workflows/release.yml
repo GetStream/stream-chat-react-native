@@ -12,11 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          # pulls all commits (needed for lerna / semantic release to correctly version)
-          ref: master
+          # pulls all commits (needed for semantic release to correctly version)
           fetch-depth: '0'
-          token: ${{ secrets.VERSION_BUMP_TOKEN }}
-      # pulls all tags (needed for lerna / semantic release to correctly version)
+      # pulls all tags (needed for semantic release to correctly version)
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -28,29 +26,14 @@ jobs:
           git config --global user.name "Vishal Narkhede"
           git config --global user.email "vishal@getstream.io"
       - name: Installation
-        run: yarn --frozen-lockfile && yarn lerna exec "yarn install --frozen-lockfile"
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn lerna exec yarn lint-fix
-      - name: Publish release
-        run: |
-          yarn lerna publish --conventional-commits --conventional-graduate --create-release github --no-verify-access --yes
+        run: yarn workspaces run lint-fix
+      - name: Publish Release
+        run: yarn release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           GH_TOKEN: ${{ secrets.VERSION_BUMP_TOKEN }}
-      - name: Extract latest SDK tag
-        id: extract_tags
-        run: |
-          GENERATED_SDK_TAG=$(git describe --match "stream-chat-react-native-core@*" --abbrev=0 --tags)
-          PARSED_SDK_TAG="v$(echo "$GENERATED_SDK_TAG" | sed -e 's/stream-chat-react-native-core@//g')"
-          echo "::set-output name=tag::$GENERATED_SDK_TAG"
-          echo "::set-output name=newtag::$PARSED_SDK_TAG"
-      - name: Rename release
-        uses: meeDamian/github-release@2.0
-        with:
-          token: ${{ secrets.VERSION_BUMP_TOKEN }}
-          tag: ${{ steps.extract_tags.outputs.tag }}
-          name: ${{ steps.extract_tags.outputs.newtag }}
-          allow_override: true
       - name: Merge back changes
         run: |
           git stash

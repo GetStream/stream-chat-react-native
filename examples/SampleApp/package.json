@@ -15,6 +15,8 @@
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "postinstall": "patch-package",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@${version}' node ../../release/extract-changelog.js",
+    "bootstrap": "yarn install",
+    "bootstrap-ci": "yarn install --frozen-lockfile",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@${version}' node ../../release/prod",
     "release-rc": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@${version}' node ../../release/rc",
     "release-next": "echo \"Skipping next release for SampleApp\""

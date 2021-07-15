@@ -29,6 +29,7 @@
     "release-rc": "yarn workspaces run release-rc",
     "release-next": "yarn workspaces run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces run extract-changelog",
-    "bootstrap": "yarn workspaces run bootstrap"
+    "bootstrap": "yarn workspaces run bootstrap",
+    "bootstrap-ci": "yarn workspaces run bootstrap-ci"
   }
 }
