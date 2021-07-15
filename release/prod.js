@@ -1,8 +1,6 @@
 const semanticRelease = require('semantic-release');
 const configPromise = require('./release.config.js');
 
-const execa = require('execa');
-
 configPromise.then((config) => {
   const newConfig = {
     ...config,

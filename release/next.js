@@ -6,7 +6,7 @@ const execa = require('execa');
 configPromise.then((config) => {
   return semanticRelease({
     ...config,
-    tagFormat: `${process.env.TAG_FORMAT}.${process.env.GITHUB_SHORT_SHA}`,
+    tagFormat: `${process.env.TAG_FORMAT}-${process.env.GITHUB_SHORT_SHA}`,
     branches: ['master', { name: 'semantic-release', channel: 'next', prerelease: 'next' }],
   }).then((result) => {
     return execa(`git`, ['push', '--delete', 'origin', result.nextRelease.gitTag]);
