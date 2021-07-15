@@ -40,5 +40,5 @@ jobs:
           git stash
           git checkout develop
           git pull origin develop
-          git merge master
+          git merge master -m "chore: merge back release [skip ci]"
           git push origin develop
