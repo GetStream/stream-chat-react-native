@@ -28,7 +28,7 @@ jobs:
       - name: Installation
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn workspaces run lint-fix
+        run: yarn lerna-workspaces run lint-fix
       - name: Publish Release
         run: yarn release
         env:

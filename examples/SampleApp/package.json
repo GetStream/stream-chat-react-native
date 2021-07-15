@@ -13,7 +13,7 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "postinstall": "cp -r ./node_modules/@react-native-community/blur ../../node_modules && patch-package",
+    "postinstall": "patch-package",
     "extract-changelog": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@${version}' node ../../release/extract-changelog.js",
     "bootstrap": "yarn install",
     "bootstrap-ci": "yarn install --frozen-lockfile",

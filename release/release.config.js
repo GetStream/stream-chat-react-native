@@ -68,10 +68,11 @@ module.exports = Promise.resolve().then(() => {
   }
 
   const rootPackage = require('../package.json');
+  const lernaPackage = require('../lerna.json');
 
   return {
     extends: [`${__dirname}/monorepo-setup.js`],
-    workspaces: rootPackage.workspaces,
+    workspaces: lernaPackage.packages,
     filterRegex: mergeRegex,
     filterPath: process.env.FILTER_PATH,
     tagFormat: process.env.TAG_FORMAT,

@@ -1,10 +1,4 @@
 {
   "packages": ["package", "examples/SampleApp"],
-  "version": "independent",
-  "command": {
-    "version": {
-      "message": "chore(release): version bump [skip ci]",
-      "changelogPreset": "./changelog-preset.config.js"
-    }
-  }
+  "version": "independent"
 }

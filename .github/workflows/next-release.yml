@@ -30,7 +30,7 @@ jobs:
       - name: Installation
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn workspaces run lint-fix
+        run: yarn lerna-workspaces run lint-fix
       - name: Publish Next Release
         run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
         env:

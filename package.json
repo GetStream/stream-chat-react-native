@@ -12,6 +12,7 @@
     "@semantic-release/git": "^9.0.0",
     "execa": "^5.1.1",
     "husky": "^6.0.0",
+    "lerna": "^4.0.0",
     "semantic-release": "^17.4.4"
   },
   "husky": {
@@ -20,16 +21,13 @@
       "commit-msg": "npx commitlint --edit $1"
     }
   },
-  "workspaces": [
-    "package",
-    "examples/SampleApp"
-  ],
   "scripts": {
-    "release": "yarn workspaces run release",
-    "release-rc": "yarn workspaces run release-rc",
-    "release-next": "yarn workspaces run release-next",
-    "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn workspaces run extract-changelog",
-    "bootstrap": "yarn workspaces run bootstrap",
-    "bootstrap-ci": "yarn workspaces run bootstrap-ci"
+    "lerna-workspaces": "lerna",
+    "release": "yarn lerna-workspaces run release",
+    "release-rc": "yarn lerna-workspaces run release-rc",
+    "release-next": "yarn lerna-workspaces run release-next",
+    "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn lerna-workspaces run extract-changelog",
+    "bootstrap": "yarn lerna-workspaces run bootstrap",
+    "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci"
   }
 }
