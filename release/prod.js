@@ -26,14 +26,6 @@ configPromise.then((config) => {
 
     if (isSDK) {
       plugins.push('@semantic-release/github');
-    } else {
-      plugins.push([
-        '@semantic-release/github',
-        {
-          successComment:
-            ':tada: This PR is included on [<%- nextRelease.gitTag %>](https://github.com/semantic-release/github/releases/tag/<%- nextRelease.gitTag %>)',
-        },
-      ]);
     }
   }
   return semanticRelease(newConfig);
