@@ -1,7 +1,11 @@
-Full override of the reaction function on message and message overlay.
-
-Please refer to [Customize Message Actions](/reactnative/guides/customize-message-actions) for details.
+Full override of the reaction function on a message.
+This function must return a function that takes as a parameter the `reactionType` as a string.
+Please refer to [the guide on customizing message actions](/reactnative/guides/customize-message-actions) for details.
 
 | Type |
 | - |
-| `null` \| (reactionType: string) => [`MessageAction`](/reactnative/object-types/message-action) |
+| function \| null |
+
+| Parameter | Description |
+| - | - |
+| message	| message the action is called on |

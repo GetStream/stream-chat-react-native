@@ -1,7 +1,10 @@
-Use this prop to override message actions (which pop-up in message overlay).
-
-Please refer to [Customize Message Actions](/reactnative/guides/customize-message-actions) for details.
+An array of, or function that returns and array of, actions that can be performed on a message shown in the the message overlay.
+Please refer to [the guide on customizing message actions](/reactnative/guides/customize-message-actions) for details.
 
 | Type | Default |
 | - | - |
-| Array<[MessageAction](/reactnative/object-types/message-action)> \| (params) => Array<[MessageAction](/reactnative/object-types/message-action)> | [messageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/utils/messageActions.ts) |
+| array \| function | [messageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/utils/messageActions.ts) |
+
+| Parameter | Description |
+| - | - |
+| actionInfo | an object containing the original actions and relevant message data |
