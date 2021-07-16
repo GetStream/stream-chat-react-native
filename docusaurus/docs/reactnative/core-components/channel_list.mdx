@@ -41,61 +41,59 @@ import PreviewTitle from '../common-content/core-components/channel-list/props/p
 import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
 import Skeleton from '../common-content/core-components/channel-list/props/skeleton.mdx';
 
-ChannelList component is used to display list of channels using React Native's [FlatList](https://reactnative.dev/docs/flatlist). ChannelList is provided by `stream-chat-react-native` and can be imported from the library.
+The `ChannelList` displays a list of channels using React Native's [FlatList](https://reactnative.dev/docs/flatlist) component.
+`ChannelList` internally fetches a list of channels using the [client's query channels function](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript); to which you can pass the [`filters`](#filters), [`sort`](#sort) and [`options`](#options) parameters via props on `ChannelList`.
 
-```js
-import { ChannelList } from 'stream-chat-react-native';
-```
-This component fetches a list of channels using [Query Channels](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) api. This API looks like following:
+When a user presses on a channel in the list you can provide navigation logic via the [`onSelect`](#onselect) prop to navigate to the selected channel.
 
-```js
-const channels = await chatClient.queryChannels(filters, sort, options);
-```
+## Basic Usage
 
-You can provide the values for [`filters`](#recommended-filters), [`sort`](#recommended-sort) and [`options`](#recommended-options) as props (object) on ChannelList component. When user selects channel or presses on channel in list, you will want to navigate to Channel screen of selected channel. You can provide this navigation logic within as a callback function via prop [`onSelect`](#recommended-onselect)
+`ChannelList` should be rendered inside of the `OverlayProvider` and `Chat` so it is provided the appropriate contexts to function internally.
 
-:::note
-The ChannelList is a higher order component, and itself doesn't provide any UI. It internally uses ChannelListMessenger component, for UI implementation.
-:::
+```tsx {5-7,12-17}
+import { StreamChat } from 'stream-chat'; 
+import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
-## Usage
-
-```jsx
-const filters = { members: { $in: [ 'vishal', 'lucas', 'neil' ] } }
+const client = StreamChat.getInstance('api_key');
+const filters = { members: { $in: [ 'vishal', 'lucas', 'neil' ] } };
 const sort = { last_message_at: -1 };
-const options = { limit: 20, messages_limit: 30 }
+const options = { limit: 20, messages_limit: 30 };
 
-<ChannelList
-  filters={filters}
-  sort={sort}
-  options={options}
-  onSelect={(channel) => /** navigate to channel screen */ }
-/>
+export const App = () =>
+  <OverlayProvider>
+    <Chat client={client}>
+      <ChannelList
+        filters={filters}
+        sort={sort}
+        options={options}
+        onSelect={(channel) => /** navigate to channel screen */ }
+      />
+    </Chat>
+  </OverlayProvider>;
 ```
 
 ## Context Providers
 
-ChannelList component is a provider of [ChannelsContext](../contexts/channels_context.mdx). All the child components of ChannelList can access this context using a hook `useChannelsContext`.
+`ChannelList` contains the provider for the `ChannelsContext`.
+This can be accessed using the corresponding hook.
 
-```
-const { channels, refreshing } = useChannelsContext();
-```
+| Context | Hook |
+|- -|- -|
+| `ChannelsContext` | `useChannelsContext` |
 
 ## UI Customizations
 
-ChannelList component is highly customizable. For every child UI component of ChannelList, you can provide your own custom implementation.
+The `ChannelList` is highly customizable.
+The UI can be tailored to your design by replacing any number of components with custom components.
 
-For example, you can customize title component as following:
+Customizing the title can be done easily by providing a custom component to the appropriate prop.
 
-```jsx
-const CustomPreviewTitle = ({ channel }) => (
-  <Text>{channel.data.customProperty} - {channel.data.name}</Text>
-)
+```tsx
+const CustomPreviewTitle = ({ channel }) =>
+  <Text>{channel.data.customProperty} - {channel.data.name}</Text>;
 
 <ChannelList PreviewTitle={CustomPreviewTitle} />
 ```
-
-You can reference the following visuals, to check which [prop](#props) to use for customizing any of the sub-components.
 
 <Tabs
   defaultValue='list-item-components'
@@ -118,56 +116,65 @@ You can reference the following visuals, to check which [prop](#props) to use fo
 
 ## Event Listeners
 
-ChannelList component uses [Event Listeners](https://getstream.io/chat/docs/javascript/event_listening/?language=javascript), to dynamically update the list upon changes e.g., new incoming message, user gets added to new channel etc.
-ChannelList component adds listeners for following events, to keep itself updated:
+`ChannelList` uses [Event Listeners](https://getstream.io/chat/docs/javascript/event_listening/?language=javascript) to dynamically update when changes occur.
+If a new message is received, a user is added to a channel, or other events take place, the `ChannelList` will update its UI accordingly.
+
+The event type the `ChannelList` reacts to and its corresponding behavior can be overridden using the appropriate prop.
 
 | [Event Type](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) | Default Behavior | Prop to override |
 |- -|- -|- -|
-| `channel.deleted` | Remove channel from list | [onChannelDeleted](#onchanneldeleted) |
-| `channel.hidden` | Remove channel from list | [onChannelHidden](#onchannelhidden) |
+| `channel.deleted` | Remove channel from the list | [onChannelDeleted](#onchanneldeleted) |
+| `channel.hidden` | Remove channel from the list | [onChannelHidden](#onchannelhidden) |
 | `channel.truncated` | Updates the channel | [onChannelTruncated](#onchanneltruncated) |
 | `channel.updated` | Updates the channel | [onChannelUpdated](#onchannelupdated) |
-| `channel.visible` | Adds channel to list | [onChannelVisible](#onchannelvisible) |
-| `message.new` | Moves channel to top of the list | [lockChannelOrder](#lockchannelorder) |
-| `notification.added_to_channel` | Move new channel to top of the list and start watching it | [onAddedToChannel](#onaddedtochannel) |
-| `notification.message_new` | Move new channel to top of the list and start watching it | [onMessageNew](#onmessagenew) |
-| `notification.removed_from_channel` | Remove channel from list | [onRemovedFromChannel](#onremovedfromchannel) |
+| `channel.visible` | Adds the channel to the list | [onChannelVisible](#onchannelvisible) |
+| `message.new` | Moves the channel to top of the list | [lockChannelOrder](#lockchannelorder) |
+| `notification.added_to_channel` | Adds the new channel to the top of the list and starts watching it | [onAddedToChannel](#onaddedtochannel) |
+| `notification.message_new` | Adds the new channel to the top of the list and starts watching it | [onMessageNew](#onmessagenew) |
+| `notification.removed_from_channel` | Removes the channel from the list | [onRemovedFromChannel](#onremovedfromchannel) |
 
-You can override the default behaviour of each of these listeners via prop (listed in table above).
+### Overriding Behavior
 
-### Override Default Behavior
-Let's explore an example of overriding the default behaviour for event `notification.message_new`. User will receive this event, when new message appears on channel which current user is member of, and this channel not loaded in the list yet. `onMessageNew` prop is a function, which takes following two parameters:
+If the default behavior of an event listener is not desired it can be overridden using the corresponding prop.
 
-- `setChannels` {function} - Setter for internal state property - `channels`. It's created from `useState([])` hook.
-- `event` {object} - An Event object corresponding to `notification.message_new` event
+The `notification.message_new` event occurs when a message is received on a channel that is not loaded but the current user is a member of.
+The default behavior when this event occurs is to query the channel the message is received on, then add the channel to the top of the list.
 
-With default implementation, the channel corresponding to event `notification.message_new` will be queried and added to top of the list. If you want to add this channel to bottom of the list instead, here is how you can do it:
+If the desired behavior is to have the channel added to the bottom of the list instead, a custom `onMessageNew` function can be provided as a prop to replace the default functionality.
+`onMessageNew` receives two parameters when called, `setChannels`, a setter function for the internal `channels` state, and `event`, the `Event` object received for the `notification.message_new` event.
+These parameters can be used to create a function that achieves the desired custom behavior.
 
 ```tsx
-<ChannelList
-  onMessageNew={async (setChannels, event) => {
-    const newChannel = client.channel('messaging', event.channel.id);
-    await newChannel.watch();
-    setChannels(channels => [...channels, newChannel])
-  }}
-/>
+const addNewChannelToBottom = async (setChannels, event) => {
+  try {
+    if (event.channel?.id) {
+      const newChannel = client.channel('messaging', event.channel.id);
+      await newChannel.watch();
+      setChannels(channels => [...channels, newChannel]);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+<ChannelList onMessageNew={addNewChannelToBottom} />
 ```
 
 ## Props
 
-### <div class="label required">required</div> **filters**
+### filters
 
 <Filters />
 
-### <div class="label required">required</div> **sort**
+### sort
 
 <Sort />
 
-### <div class="label required">required</div> **options**
+### options
 
 <Options />
 
-### <div class="label required">required</div> **onSelect**
+### onSelect
 
 <OnSelect />
 

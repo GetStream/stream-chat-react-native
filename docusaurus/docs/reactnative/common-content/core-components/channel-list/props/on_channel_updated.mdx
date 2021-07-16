@@ -1,12 +1,11 @@
-Function that overrides default behavior when a channel gets updated
-
-#### Params
-
-- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
-- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.updated` event
-
-Please check the example in [Event Listener](#override-default-behavior) section
+Override for [Event Listener](#event-listeners) behavior when a channel is updated.
+The default behavior updates the `data` on a channel with that from the event.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.updated` |

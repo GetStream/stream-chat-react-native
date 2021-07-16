@@ -1,6 +1,16 @@
-Options object, used to query channels from Stream.
+[Options object](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript#query-options) passed internally to the [client query function](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) as a parameter.
 
-See [Channels Query Docs](https://getstream.io/chat/docs/query_channels) for a list of available `options` fields
+#### Example
+
+```tsx
+const options = { message_limit: 100 };
+```
+
+:::note
+
+Unlike the [filters](#filters) or [sort](#sort) objects, changing the options object alone will not re-query the list of channels.
+
+:::
 
 | Type |
 | - |

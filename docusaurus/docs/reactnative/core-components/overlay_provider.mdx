@@ -42,14 +42,33 @@ For detailed implementation instructions of the `OverlayProvider` with navigatio
 
 :::
 
-```tsx
-import { OverlayProvider } from 'stream-chat-react-native';
+```tsx {7,11}
+import { StreamChat } from 'stream-chat'; 
+import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
 
 export const App = () =>
   <OverlayProvider>
-    {/** App components */}
-  </OverlayProvider>
+    <Chat client={client}>
+      <ChannelList />
+    </Chat>
+  </OverlayProvider>;
 ```
+
+## Context Providers
+
+`OverlayProvider` contains providers for the `AttachmentPickerContext`, `ImageGalleryContext`, `MessageOverlayContext`, `OverlayContext`, `ThemeContext`, and `TranslationContext`.
+These can be accessed using the corresponding hooks.
+
+| Context | Hook |
+|- -|- -|
+| `AttachmentPickerContext` | `useAttachmentPickerContext` |
+| `ImageGalleryContext` | `useImageGalleryContext` |
+| `MessageOverlayContext` | `useMessageOverlayContext` |
+| `OverlayContext` | `useOverlayContext` |
+| `ThemeContext` | `useTheme` |
+| `TranslationContext` | `useTranslationContext` |
 
 ## UI Customizations
 
@@ -158,7 +177,7 @@ This can also be set via the `setBottomInset` function provided by the `useAttac
 ### topInset
 
 Distance from the top of the screen the attachment picker should open to when expanded.
-This is often set the to the header height.
+This is often set to the header height.
 
 :::tip
 

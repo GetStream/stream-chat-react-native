@@ -1,9 +1,17 @@
-Override image upload request, which occurs when user selects an image from image picker. Use this for storing attached images on your custom CDN.
+Override of the image upload request when a user selects an image from the image picker.
+The function must return a `Promise` that is resolved to an object with the key `file` that is the url of the uploaded image.
 
-```tsx
-(image: { name, uri }, channel) => Promise;
-```
+:::note
+
+This can be used to store image attachments in your own custom CDN.
+
+:::
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| image | `{ name, uri }` |
+| channel | current channel instance |

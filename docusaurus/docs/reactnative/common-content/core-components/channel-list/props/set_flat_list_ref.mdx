@@ -1,13 +1,17 @@
-Use this callback function to gain access to the underlying FlatList ref.
+Callback function to access the underlying [FlatList](https://reactnative.dev/docs/flatlist) ref.
 
 #### Example
 
-```jsx
-const flRef = useRef();
+```tsx
+const flatListRef = useRef();
 
-<ChannelList setFlatListRef={(ref) => flRef.current = ref} />
+<ChannelList setFlatListRef={(ref) => flatListRef.current = ref} />
 ```
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| ref | FlatList ref |
