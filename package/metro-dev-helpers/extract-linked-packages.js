@@ -4,10 +4,6 @@ const PATH = require('path');
 const { extractExtraNodeModules, findLinkedPackages } = require('./lib');
 
 const sdkBlacklistedPaths = [
-  '/examples/NativeMessaging',
-  '/examples/ExpoMessaging',
-  '/examples/TypeScriptMessaging',
-  '/examples/SampleApp',
   '/native-package/node_modules',
   '/expo-package/node_modules',
   '/node_modules',

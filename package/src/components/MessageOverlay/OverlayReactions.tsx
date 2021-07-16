@@ -1,6 +1,7 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { FlatList } from 'react-native-gesture-handler';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Avatar } from '../Avatar/Avatar';
@@ -22,12 +23,20 @@ const styles = StyleSheet.create({
   avatarContainer: {
     padding: 8,
   },
-  avatarInnerContainer: { alignSelf: 'center' },
+  avatarInnerContainer: {
+    alignSelf: 'center',
+  },
   avatarName: {
+    flex: 1,
     fontSize: 12,
     fontWeight: '700',
     paddingTop: 6,
     textAlign: 'center',
+  },
+  avatarNameContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexGrow: 1,
   },
   container: {
     alignItems: 'center',
@@ -38,6 +47,10 @@ const styles = StyleSheet.create({
   flatListContainer: {
     paddingHorizontal: 12,
     paddingVertical: 8,
+  },
+  flatListContentContainer: {
+    alignItems: 'center',
+    paddingBottom: 12,
   },
   reactionBubble: {
     alignItems: 'center',
@@ -142,6 +155,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
   } = useTheme();
 
   const width = useWindowDimensions().width;
+  const height = useWindowDimensions().height;
 
   const supportedReactionTypes = supportedReactions.map(
     (supportedReaction) => supportedReaction.type,
@@ -159,6 +173,15 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
         2) /
       (avatarSize + (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding) * 2),
+  );
+
+  const maxHeight = Math.floor(
+    height -
+      overlayPadding * 2 -
+      ((Number(flatListContainer.paddingVertical || 0) ||
+        styles.flatListContainer.paddingVertical) +
+        (Number(avatarContainer.padding || 0) || styles.avatarContainer.padding)) *
+        2,
   );
 
   const renderItem = ({ item: { alignment = 'left', image, name, type } }: { item: Reaction }) => {
@@ -248,7 +271,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
             </View>
           </View>
         </View>
-        <Text style={[styles.avatarName, { color: black }, avatarName]}>{name}</Text>
+        <View style={styles.avatarNameContainer}>
+          <Text style={[styles.avatarName, { color: black }, avatarName]}>{name}</Text>
+        </View>
       </View>
     );
   };
@@ -284,11 +309,12 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     >
       <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
       <FlatList
+        contentContainerStyle={styles.flatListContentContainer}
         data={filteredReactions}
         keyExtractor={({ name }, index) => `${name}_${index}`}
         numColumns={numColumns}
         renderItem={renderItem}
-        style={[styles.flatListContainer, flatListContainer]}
+        style={[styles.flatListContainer, flatListContainer, { maxHeight: maxHeight / numColumns }]}
       />
     </Animated.View>
   );

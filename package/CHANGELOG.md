@@ -1,4 +1,55 @@
-# Changelog
+# Change Log
+
+### [3.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.4...v3.6.5) (2021-07-15)
+
+
+### Bug Fixes
+
+* **reactions:** Fix overflowing reactions list and double scroll on Android ([04dbc9b](https://github.com/GetStream/stream-chat-react-native/commit/04dbc9bf3e0f334215b6bac3221a8963951e97e2))
+
+
+
+## [3.6.4](https://github.com/GetStream/stream-chat-react-native/compare/stream-chat-react-native-core@3.6.3...stream-chat-react-native-core@3.6.4) (2021-07-13)
+
+**Note:** Version bump only for package stream-chat-react-native-core
+
+
+
+
+
+## [3.6.3](https://github.com/GetStream/stream-chat-react-native/compare/stream-chat-react-native-core@3.6.2...stream-chat-react-native-core@3.6.3) (2021-07-13)
+
+**Note:** Version bump only for package stream-chat-react-native-core
+
+
+
+
+
+## 3.6.2 (2021-07-13)
+
+
+### Bug Fixes
+
+* **android:** use react native FlatList instead of RNGH's on ChannelListMessenger ([1267f64](https://github.com/GetStream/stream-chat-react-native/commit/1267f64d2f003477e12edbb8b1e833872416510d))
+
+
+
+
+
+## 3.6.2-rc.0 (2021-07-13)
+
+
+### Bug Fixes
+
+* **android:** use react native FlatList instead of RNGH's on ChannelListMessenger ([1267f64](https://github.com/GetStream/stream-chat-react-native/commit/1267f64d2f003477e12edbb8b1e833872416510d))
+
+
+
+
+
+## [3.6.1] (2021-07-07)
+
+- Fixed problem where it wasn't possible to clear giphy messages inside of a thread [6d8977d](https://github.com/GetStream/stream-chat-react-native/commit/6d8977d43e804db95c44d95b7a546f6534d0f5c7)
 
 ## [3.6.0] (2021-06-22)
 

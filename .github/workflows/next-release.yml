@@ -1,0 +1,37 @@
+name: Next Release
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  publish-next:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # pulls all commits (needed for semantic release to correctly version)
+          fetch-depth: '0'
+      # pulls all tags (needed for semantic release to correctly version)
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Prepare git
+        run: |
+          git config --global user.name "Vishal Narkhede"
+          git config --global user.email "vishal@getstream.io"
+      - name: Installation
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Lint
+        run: yarn lerna-workspaces run lint-fix
+      - name: Publish Next Release
+        run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

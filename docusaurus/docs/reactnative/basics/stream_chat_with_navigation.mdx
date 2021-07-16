@@ -7,8 +7,6 @@ title: Stream Chat with Navigation
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<!-- TODO: Change to new docs for links -->
-
 Stream Chat for React Native provides many features out of the box that require positioning on the screen in a certain manor to result in the desired UI.
 The `AttachmentPicker`, `ImageGallery`, and `MessageOverlay`, all need to be rendered in front of other components to have the desired effect.
 All of these elements are controlled by the `OverlayProvider`, when used together with navigation considerations need to be taken in how these will appear.
@@ -33,8 +31,6 @@ The [`NavigationContainer`](https://reactnavigation.org/docs/navigation-containe
 Nested navigators and screens all exist within the container.
 To ensure the `OverlayProvider` can render content above all of these screens, headers, tab-bars, etc. the `OverlayProvider` must be rendered around them.
 
-<!-- TODO: Change to new docs for links -->
-
 [As noted in Hello Stream Chat](./hello_stream_chat.mdx#chat) the `Chat` component can either surround the entire application or be rendered locally on a screen.
 You can choose whatever suits your needs best, theming, connection handling, and translations are all handled out of the box in the `Chat` component; and this may be a consideration in where in the app you want this component to be rendered.
 
@@ -43,7 +39,7 @@ You can choose whatever suits your needs best, theming, connection handling, and
 Having it higher in the _stack_ helps to ensure it is not unmounted at times when a connection is present.
 If `Chat` is unmounted with a connection present you may have to implement some connection handling functions yourself to ensure you reconnect when the app is, for instance, reopened from the background.
 The WebSocket connection closes on it's own approximately 15 seconds after the app is backgrounded.
-Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect <!-- TODO: Change to new docs for links -->[how Stream Chat handles Push Notifications](https://getstream.io/chat/docs/react-native/push_introduction/?language=javascript).
+Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect [how Stream Chat handles Push Notifications](../guides/push_notifications.mdx).
 
 :::
 

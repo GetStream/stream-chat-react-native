@@ -18,7 +18,7 @@ This will allow you to ensure the keys you are using in your theme object are co
 When you provide a theme as a prop a deep merge of the theme and default theme is performed so only styles designated in the custom theme overwrite the defaults. 
 We provide a helper type `DeepPartial` that makes all of the keys at every depth optional, this is to account for the deep merge that is performed.
 
-You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts).
+You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts).
 
 ```tsx
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
@@ -119,7 +119,7 @@ This syntax is indicating the component is named `FileAttachment` and the style 
 There are often multiple keys on a designated display name corresponding to different sub-components styles.
 In this case `file` has five sub-component keys that can modify the styling.
 
-The exported types and original theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts) can then be referenced to create a custom modification to the theme.
+The exported types and original theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts) can then be referenced to create a custom modification to the theme.
 
 ```tsx
 const theme: DeepPartial<Theme> = {
@@ -147,7 +147,7 @@ The resulting changes by applying the custom theme are easily seen in the change
 :::note
 
 Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types.
-The TypeScript documentation of [`Theme`](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts) should help you in this regard.
+The TypeScript documentation of [`Theme`](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts) should help you in this regard.
 Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple` -> `content` -> `markdown`.
 
 :::

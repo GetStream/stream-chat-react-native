@@ -1,7 +1,7 @@
 .PHONY: netlify
 .PHONY: example-build example-deps
 
-EXAMPLES_PATH = examples
+EXAMPLES_PATH = ../examples
 EXAMPLES = ExpoMessaging NativeMessaging SampleApp TypeScriptMessaging
 EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXAMPLES))
 EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXAMPLES_APPS))
