@@ -14,6 +14,7 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 import type { MessageFooterProps } from './MessageFooter';
 
@@ -75,7 +76,7 @@ const MessageDeletedWithContext = <
 >(
   props: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout } =
+  const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout, t } =
     props;
 
   const {
@@ -122,7 +123,7 @@ const MessageDeletedWithContext = <
       >
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
           markdownStyles={merge({ em: { color: grey } }, deletedText)}
-          message={{ ...message, text: '_Message deleted_' }}
+          message={{ ...message, text: `_${t('Message deleted')}_` }}
         />
       </View>
       <MessageFooter formattedDate={formattedDate} isDeleted />
@@ -204,12 +205,15 @@ export const MessageDeleted = <
 
   const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
+  const { t } = useTranslationContext();
+
   return (
     <MemoizedMessageDeleted
       {...{
         alignment,
         message,
         MessageFooter,
+        t,
       }}
       {...props}
     />
