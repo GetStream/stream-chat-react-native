@@ -44,7 +44,6 @@
     "bootstrap-ci": "yarn install --frozen-lockfile",
     "extract-changelog": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/extract-changelog.js",
     "release": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/prod",
-    "release-rc": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/rc",
     "release-next": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/next",
     "prepublishOnly": "echo 'running prepublishOnly for core package' && bash ./bin/before-tag.sh && bash ./bin/release.sh && echo 'finished running prepublishOnly for core package'",
     "prepack": " cp ../README.md .",
