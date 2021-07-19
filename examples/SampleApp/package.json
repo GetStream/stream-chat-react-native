@@ -18,7 +18,6 @@
     "bootstrap": "yarn install",
     "bootstrap-ci": "yarn install --frozen-lockfile",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
-    "release-rc": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/rc",
     "release-next": "echo \"Skipping next release for SampleApp\""
   },
   "dependencies": {

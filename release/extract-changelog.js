@@ -8,7 +8,7 @@ configPromise.then((config) => {
     ...config,
     dryRun: true,
     ci: false,
-    branches: ['master', { name: 'develop', channel: 'rc', prerelease: 'rc' }],
+    branches: ['develop'],
   };
 
   newConfig.plugins = newConfig.plugins.filter((plugin) => plugin[0] !== '@semantic-release/npm');
