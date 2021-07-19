@@ -70,7 +70,6 @@ export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
 export * from './ChannelPreview/hooks/useLatestMessagePreview';
 
 export * from './Chat/Chat';
-export * from './Chat/hooks/useAppStateListener';
 export * from './Chat/hooks/useCreateChatContext';
 export * from './Chat/hooks/useIsOnline';
 export * from './Chat/hooks/useMutedUsers';

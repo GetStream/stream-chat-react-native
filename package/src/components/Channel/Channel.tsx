@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
-import { AppState, KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 import {
   ChannelState,
   Channel as ChannelType,
@@ -13,6 +13,7 @@ import {
   Message as StreamMessage,
 } from 'stream-chat';
 
+import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
@@ -690,12 +691,7 @@ const ChannelWithContext = <
     [thread?.id, channelId],
   );
 
-  useEffect(() => {
-    AppState.addEventListener('change', handleAppBackground);
-    return () => {
-      AppState.removeEventListener('change', handleAppBackground);
-    };
-  }, [handleAppBackground]);
+  useAppStateListener(undefined, handleAppBackground);
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
     if (thread) {
