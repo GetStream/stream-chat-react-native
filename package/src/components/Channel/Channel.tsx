@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import { AppState, KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
 import {
   ChannelState,
   Channel as ChannelType,
@@ -9,6 +9,7 @@ import {
   MessageResponse,
   SendMessageAPIResponse,
   StreamChat,
+  Event as StreamEvent,
   Message as StreamMessage,
 } from 'stream-chat';
 
@@ -671,6 +672,30 @@ const ChannelWithContext = <
       resyncChannel();
     }
   };
+
+  const handleAppBackground = useCallback(
+    (state) => {
+      if (channel && (state === 'inactive' || state === 'background')) {
+        channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
+          At,
+          Ch,
+          Co,
+          Ev,
+          Me,
+          Re,
+          Us
+        >);
+      }
+    },
+    [thread?.id, channelId],
+  );
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppBackground);
+    return () => {
+      AppState.removeEventListener('change', handleAppBackground);
+    };
+  }, [handleAppBackground]);
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
     if (thread) {
