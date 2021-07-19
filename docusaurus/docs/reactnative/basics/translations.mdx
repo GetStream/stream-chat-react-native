@@ -76,7 +76,7 @@ Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be u
 Day.js is a dependency of the repo and used by default.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | Dayjs \| Moment | `Dayjs` |
 
 ### dayjsLocaleConfigForLanguage
@@ -93,7 +93,7 @@ To allow accessability to this option when using the default Day.js instance you
 Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | boolean | `false` |
 
 ### disableDateTimeTranslations
@@ -101,7 +101,7 @@ Enable [debug mode](https://www.i18next.com/overview/configuration-options#loggi
 Use the default English language date-times instead of those dictated by the language set.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | boolean | `false` |
 
 ### language
@@ -109,7 +109,7 @@ Use the default English language date-times instead of those dictated by the lan
 Language code for language to be used.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | string | `en` |
 
 ### logger
@@ -117,7 +117,7 @@ Language code for language to be used.
 Function to log warnings & errors from `Streami18n`.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | `(msg?: string) => void` | `console.warn` |
 
 ### translationsForLanguage
@@ -166,7 +166,7 @@ Fallback language setting for for i18next.
 i18next interpolation setting for integrating dynamic values into translations.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
 
 ### keySeparator
@@ -174,7 +174,7 @@ i18next interpolation setting for integrating dynamic values into translations.
 Override character to separate keys.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | string \| boolean | `false` |
 
 ### lng
@@ -190,7 +190,7 @@ Override language to use.
 Override character to split namespace from key.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | string \| boolean | `false` |
 
 ### parseMissingKeyHandler
@@ -198,7 +198,7 @@ Override character to split namespace from key.
 Function to handle keys missing translations for the selected language.
 
 | TYPE | DEFAULT |
-|- -|- -|
+| - | - |
 | `(key: string) => string` | `(key) => key` |
 
 ## Methods
@@ -256,7 +256,7 @@ streami18n.registerTranslation(
 #### Parameters
 
 | NAME | TYPE | REQUIRED |
-|- -|- -|- -|
+| - | - | - |
 | language | string | :heavy_check_mark: |
 | translation | object | :heavy_check_mark: |
 | customDayjsLocale | object | |
@@ -274,5 +274,5 @@ const t = await streami18n.setLanguage('nl');
 #### Parameters
 
 | NAME | TYPE | REQUIRED |
-|- -|- -|- -|
+| - | - | - |
 | language | string | :heavy_check_mark: |
