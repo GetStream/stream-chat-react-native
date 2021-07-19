@@ -24,7 +24,7 @@ configPromise.then((config) => {
     ]);
 
     if (isSDK) {
-      plugins.push('@semantic-release/github');
+      newConfig.plugins.push('@semantic-release/github');
     }
   }
   return semanticRelease(newConfig);
