@@ -1,12 +1,11 @@
-Function to customize behavior when a channel gets truncated
-
-#### Params
-
-- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
-- `event` [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.truncated` event
-
-Please check the example in [Event Listener](#override-default-behavior) section
+Override for [Event Listener](#event-listeners) behavior when a channel is truncated.
+The default behavior reloads the list.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.truncated` |

@@ -28,10 +28,10 @@ jobs:
         run: |
           git config --global user.name "Vishal Narkhede"
           git config --global user.email "vishal@getstream.io"
-      - name: Installation
+      - name: Installation && Build SDK
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn lerna-workspaces run lint-fix
+        run: yarn lerna-workspaces run lint
       - name: Publish Release Candidate
         run: yarn release-rc
         env:

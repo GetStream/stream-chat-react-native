@@ -1,8 +1,11 @@
-Function to call, when "Edit Message" action is invoked from message actions list.
-This interceptor will neither change the standard functions nor block them. Use this function to add any analytics tracking call.
-
-Please refer to [Customize Message Actions](/reactnative/guides/customize-message-actions) for details.
+Function called when the *Edit Message* action is invoked from message actions list.
+This function does not override the default behavior of the *Edit Message* action.
+Please refer to [the guide on customizing message actions](/reactnative/guides/customize-message-actions) for details.
 
 | Type |
 | - |
-| `(message) => void` |
+| function |
+
+| Parameter | Description |
+| - | - |
+| message | message the action is called on |

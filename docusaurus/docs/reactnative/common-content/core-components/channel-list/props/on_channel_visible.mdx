@@ -1,12 +1,11 @@
-Function that overrides default behavior when a channel gets visible. In absence of this prop, the channel will be added to the list.
-
-#### Params
-
-- `setChannels` Setter for internal state property - `channels`. It's created from useState() hook.
-- `event` An [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.visible` event
-
-Please check the example in [Event Listener](#override-default-behavior) section
+Override for [Event Listener](#event-listeners) behavior when a channel is made visible.
+The default behavior adds the channel to the list.
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| setChannels | Setter function for the internal `channels` state |
+| event | [Event object](https://getstream.io/chat/docs/react/event_object/#event-object) corresponding to `channel.visible` |

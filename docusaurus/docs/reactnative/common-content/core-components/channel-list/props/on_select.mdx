@@ -1,12 +1,23 @@
-This function gets called when user presses an item from list. You should implement logic for navigating to Channel screen, within this callback.
+Function called when a user presses an item in the `ChannelList`.
+The function is called with the [`Channel` instance](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) corresponding to the list item as the only parameter.
+This callback is often used for navigating to a channel screen.
 
-#### Params
-- `channel` A channel object
+#### Example
 
-```jsx
+```tsx
 onSelect={(channel) => { /** navigation logic */ }}
 ```
+
+:::note
+
+A `Channel` instance is not serializable and will therefore raise warnings if passed as a param through navigation to another screen.
+
+:::
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| channel | `Channel` instance |

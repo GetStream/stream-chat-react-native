@@ -28,6 +28,8 @@
     "release-next": "yarn lerna-workspaces run release-next",
     "extract-changelog": "rm -rf NEXT_RELEASE_CHANGELOG.md && yarn lerna-workspaces run extract-changelog",
     "bootstrap": "yarn lerna-workspaces run bootstrap",
-    "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci"
+    "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci",
+    "lint": "yarn lerna-workspaces run lint",
+    "build": "yarn lerna-workspaces run build"
   }
 }
