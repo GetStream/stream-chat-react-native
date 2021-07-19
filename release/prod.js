@@ -11,7 +11,7 @@ configPromise.then((config) => {
   };
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
     newConfig.plugins.push([
-      "@semantic-release/git",
+      '@semantic-release/git',
       {
         assets: [
           `${process.cwd()}/package.json`,
@@ -19,12 +19,12 @@ configPromise.then((config) => {
           `${process.cwd()}/CHANGELOG.md`,
         ],
         message:
-          "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+          'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
       },
     ]);
 
     if (isSDK) {
-      plugins.push("@semantic-release/github");
+      newConfig.plugins.push('@semantic-release/github');
     }
   }
   return semanticRelease(newConfig);
