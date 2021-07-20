@@ -13,9 +13,9 @@
 
 ```bash
    git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
+   cd stream-chat-react-native/package
    make
-   cd examples/SampleApp
+   cd ../examples/SampleApp
 ```
 
 - Run

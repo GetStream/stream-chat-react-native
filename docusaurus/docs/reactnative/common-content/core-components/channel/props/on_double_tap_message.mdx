@@ -1,6 +1,15 @@
-Callback that is called, when user double taps on message. Underlying message doesn't have any default handler for double tap gesture.
-Please check the example of [Double Tap Reaction](/reactnative/guides/message-customization#instagram-style-double-tap-reaction) in our Guides section.
+Function called when a user double taps a message.
+
+:::note
+
+The [double tap reaction guide](/reactnative/guides/message-customization#instagram-style-double-tap-reaction) can be used as a reference for implementing other double tap actions.
+
+:::
 
 | Type |
 | - |
-| ([`MessageTouchableHandlerPayload`](/reactnative/object-types/message-touchable-handler-payload)) => void) |
+| function |
+
+| Parameter | Description |
+| - | - |
+| payload	| `{ actionHandlers, message }` |

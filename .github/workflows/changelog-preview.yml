@@ -1,0 +1,57 @@
+name: Changelog preview
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  generate_changelog_preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: develop
+          # pulls all commits (needed for semantic release to correctly version)
+          fetch-depth: '0'
+      # pulls all tags (needed for semantic release to correctly version)
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Installation
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Generate Changelog
+        id: generate_changelog
+        run: |
+          GITHUB_REF='refs/heads/develop' yarn extract-changelog
+          echo "Changelog script finished! Checking if there are changes..."
+          CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md || true)
+
+          if [[ ! -z "${CHANGELOG_PREVIEW}" ]]; then
+            echo "Changelog found! Writing header to the file..."
+            echo '# Next releases' | cat - NEXT_RELEASE_CHANGELOG.md > NEXT_RELEASE_CHANGELOG.tmp.md && mv NEXT_RELEASE_CHANGELOG.tmp.md NEXT_RELEASE_CHANGELOG.md
+
+            echo "Changelog file ready! Setting up outputs"
+            CHANGELOG_PREVIEW=$(cat NEXT_RELEASE_CHANGELOG.md)
+            
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW//'%'/'%25'}"
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\n'/'%0A'}"
+            CHANGELOG_PREVIEW_ESCAPED="${CHANGELOG_PREVIEW_ESCAPED//$'\r'/'%0D'}"
+
+            echo "::set-output name=exists::true"
+            echo "::set-output name=preview::$CHANGELOG_PREVIEW_ESCAPED"
+          fi
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: steps.generate_changelog.outputs.exists == 'true'
+        with:
+          header: changelog_preview
+          message: ${{ steps.generate_changelog.outputs.preview }}
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: steps.generate_changelog.outputs.exists != 'true'
+        with:
+          header: changelog_preview
+          message: No changelog generated for the current changes on this pull request.

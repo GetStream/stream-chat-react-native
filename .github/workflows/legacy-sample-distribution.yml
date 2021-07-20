@@ -3,9 +3,9 @@ name: legacy-sample-distribution
 on:
   push:
     branches:
-      - master
-    paths-ignore:
-      - docusaurus/**   
+      - develop
+    paths:
+      - examples/SampleApp  
 jobs:
   build_and_deploy_ios_firebase:
     runs-on: [macos-latest]
