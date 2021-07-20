@@ -1,0 +1,46 @@
+---
+id: translation-context
+title: TranslationContext
+---
+
+`TranslationContext` is provided by [`OverlayProvider`](../core-components/overlay_provider.mdx) and [`Chat`](../core-components/chat.mdx) components. 
+Read the [translations section](../basics/translations/) for more information on how to customize your translations. 
+If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`TranslationContext` can be consumed by any of the child component of `OverlayProvider` or `Chat` components.
+
+```tsx
+import { useContext } from 'react';
+import { TranslationContext } from 'stream-chat-react-native';
+
+const { t, tDateTimeParser } = useContext(TranslationContext);
+```
+
+Alternatively, you can also use `useTranslationContext` hook provided by library to consume TranslationContext.
+
+```tsx
+import { useTheme } from 'stream-chat-react-native';
+
+const { t, tDateTimeParser } = useTranslationContext();
+```
+
+## Value
+
+### t
+
+Given a key, extracts the translated text from the Streami18n instance.
+
+| Type |
+| - |
+| function |
+
+### tDateTimeParser
+
+Used for translating dates and times into the desired local format.
+
+| Type |
+| - |
+| function |
+
