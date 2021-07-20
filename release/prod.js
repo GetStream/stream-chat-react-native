@@ -1,13 +1,13 @@
-const semanticRelease = require('semantic-release');
-const configPromise = require('./release.config.js');
+const semanticRelease = require("semantic-release");
+const configPromise = require("./release.config.js");
 
 configPromise.then((config) => {
   const currentPackage = require(`${process.cwd()}/package.json`);
-  const isSDK = currentPackage.name === 'stream-chat-react-native-core';
+  const isSDK = currentPackage.name === "stream-chat-react-native-core";
 
   const newConfig = {
     ...config,
-    branches: ['master'],
+    branches: ["master"],
   };
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
     newConfig.plugins.push([

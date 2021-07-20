@@ -1,4 +1,5 @@
 export * from './components';
+export * from './hooks';
 export { registerNativeHandlers, NetInfo } from './native';
 export * from './contexts';
 export * from './emoji-data/compiled';
@@ -8,7 +9,6 @@ export * from './icons';
 export * from './types/types';
 
 export * from './utils/Streami18n';
-export * from './utils/useStreami18n';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';
