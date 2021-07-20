@@ -5,19 +5,8 @@ title: ChannelPreviewMessage
 
 import LastMessagePreview from '../common-content/ui-components/channel-preview-messenger/props/last_message_preview.mdx'
 
-The `ChannelPreviewMessage` is the UI component for channel previews messages. Renders the message preview for each channel on a list.
-
-You can set `PreviewMessage` prop on `ChannelList` component to replace this default component:
-
-```jsx
-import { ChannelList } from 'stream-chat-react-native';
-
-const CustomPreviewMessage = ({ lastMessagePreview }) => (
-  <Text>text: {lastMessagePreview.previews.text}</Text>
-)
-
-<ChannelList PreviewMessage={CustomPreviewMessage} />
-```
+Component to render a preview of latest message on channel within the [`ChannelList`](./channel_list.mdx).
+This is the default component provided to the prop [`PreviewMessage`](../core-components/channel_list.mdx#preview) on the `ChannelList` component.
 
 ## Props
 
