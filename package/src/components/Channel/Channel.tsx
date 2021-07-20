@@ -674,22 +674,19 @@ const ChannelWithContext = <
     }
   };
 
-  const handleAppBackground = useCallback(
-    (state) => {
-      if (channel && (state === 'inactive' || state === 'background')) {
-        channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
-          At,
-          Ch,
-          Co,
-          Ev,
-          Me,
-          Re,
-          Us
-        >);
-      }
-    },
-    [thread?.id, channelId],
-  );
+  const handleAppBackground = useCallback(() => {
+    if (channel) {
+      channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >);
+    }
+  }, [thread?.id, channelId]);
 
   useAppStateListener(undefined, handleAppBackground);
 
