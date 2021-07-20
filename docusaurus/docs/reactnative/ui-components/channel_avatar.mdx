@@ -5,39 +5,28 @@ title: ChannelAvatar
 
 import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
 
-The `ChannelAvatar` is the default UI component for rendering avatar/image for channel within `ChannelList` component.
+Component to render avatar of a channel, within the [`ChannelList`](../core-components/channel_list.mdx) component.
 
-You can set `PreviewAvatar` prop on `ChannelList` component to replace this default component:
+## Basic Usage
+
+You can customize this component and provide it back to the SDK via the [`PreviewAvatar`](../core-components/channel_list.mdx#previewavatar) prop on `ChannelList` if desired.
+
+In the following sample we add an onPress handler on avatar. 
 
 ```jsx
-import { 
-  ChannelPreviewMessenger,
-  useChannelPreviewDisplayAvatar,
-  useChannelPreviewDisplayPresence,
-} from 'stream-chat-react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ChannelList, ChannelAvatar } from 'stream-chat-react-native';
 
-import { CustomGroupAvatar } from '...'; // your custom group avatar component
-import { CustomAvatar } from '...'; // your custom avatar component
-
-const CustomPreviewAvatar = ({ channel }) => {
-  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
-  const displayPresence = useChannelPreviewDisplayPresence(channel);
-
-  if (displayAvatar.images) {
-    return <CustomGroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />;
-  }
-
-  return (
-    <CustomAvatar
-      image={displayAvatar.image}
-      name={displayAvatar.name}
-      online={displayPresence}
-      size={40}
-    />
-  );
-}
-
-<ChannelList PreviewAvatar={CustomPreviewAvatar} />
+<ChannelList
+  PreviewAvatar={({ channel }) => (
+    <TouchableOpacity
+      disallowInterruption={true}
+      onPress={() => { /** Handler for press action */ }}
+    >
+      <ChannelAvatar channel={channel} />
+    </TouchableOpacity>
+  )}
+/>
 ```
 
 ## Props
