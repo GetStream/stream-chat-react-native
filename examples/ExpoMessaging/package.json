@@ -29,8 +29,8 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "3.0.0",
     "react-native-svg": "12.1.0",
-    "stream-chat-expo": "link:../../expo-package",
-    "stream-chat-react-native-core": "link:../.."
+    "stream-chat-expo": "link:../../package/expo-package",
+    "stream-chat-react-native-core": "link:../../package"
   },
   "devDependencies": {
     "@babel/core": "7.12.9",

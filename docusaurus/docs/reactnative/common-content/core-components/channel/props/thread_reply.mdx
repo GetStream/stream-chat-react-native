@@ -1,7 +1,11 @@
-Full override of the "Thread Reply" button in the Message Actions list, which shows up when user long presses a message .
-
-Please refer to [Customize Message Actions](/reactnative/guides/customize-message-actions) for details.
+Override of the *Thread Reply* [`MessageAction`](/reactnative/object-types/message-action) shown when a user long presses a message.
+The `threadReply` function receives as a parameter the relevant message and must return a `MessageAction`.
+Please refer to [the guide on customizing message actions](/reactnative/guides/customize-message-actions) for details.
 
 | Type |
 | - |
-| `null` \| (message) => [`MessageAction`](/reactnative/object-types/message-action) |
+| function \| null |
+
+| Parameter | Description |
+| - | - |
+| message	| message the action is called on |

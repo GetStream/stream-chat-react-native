@@ -209,6 +209,49 @@ android {
 }
 ```
 
+## GIF and WebP not displaying
+
+### Android
+
+GIF and WebP do not work without additional modules by default on Android.
+
+You will need to add some modules in your `android/app/build.gradle`
+
+```java
+dependencies {
+  // For Android versions less than Ice Cream Sandwich (API level 14)
+  implementation 'com.facebook.fresco:animated-base-support:1.3.0'
+
+  // For GIF support
+  implementation 'com.facebook.fresco:animated-gif:2.0.0'
+
+  // For WebP support, with animations
+  implementation 'com.facebook.fresco:animated-webp:2.1.0'
+
+  // For WebP support, without animations
+  implementation 'com.facebook.fresco:webpsupport:2.0.0'
+  ...
+}
+```
+
+## BlurView crashing
+
+### Android
+
+[`@react-native-community/blur`](https://github.com/Kureev/react-native-blur) utilizes the native Android library [`BlurView`](https://github.com/Dimezis/BlurView) for the Android implementation.
+A [bug in the `BlurView` library](https://github.com/Dimezis/BlurView/issues/110#issuecomment-786939860) is translated into the current version of `@react-native-community/blur`, a [fix has been merged](https://github.com/Kureev/react-native-blur/issues/405#issuecomment-810539226) but a new version is not yet released.
+
+Until a new version is released the best solution is to force Android to use the fixed native library in your `android/app/build.gradle`
+
+```java
+dependencies {
+  implementation('com.eightbitlab:blurview:1.6.6') {
+    force = true
+  }
+  ...
+}
+```
+
 ## Touchables not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
