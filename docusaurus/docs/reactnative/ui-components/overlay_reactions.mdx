@@ -7,23 +7,19 @@ import SupportedReactions from '../common-content/core-components/channel/props/
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 
-`OverlayReactions` is a UI component to render list of existing reactions within message overlay, which opens up when user long presses a message.
+`OverlayReactions` component is used to display the list of existing reactions within the message overlay, which opens up when the user long presses a message.
 
-You can replace this default UI component using the `OverlayReactions` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel OverlayReactions={CustomOverlayReactions} />
-```
+This is the default component provided to the prop [`OverlayReactions`](../core-components/overlay_provider.mdx#overlayreactions) on the `OverlayProvider` component.
 
 ## Props
 
-### <div class="label required">required</div> **alignment** 
+### alignment
 
 <Alignment />
 
 ### reactions
 
-List of existing reactions, which are extracted in following format:
+List of existing reactions which can be extracted from a message.
 
 ```tsx
 const reactions = message.latest_reactions.map((reaction) => ({
@@ -39,21 +35,21 @@ const reactions = message.latest_reactions.map((reaction) => ({
 | - |
 | array |
 
-### <div class="label required">required</div> **showScreen**
+### <div class="label required">required</div> **showScreen** {#showscreen}
 
-Share value from React Native Reanimated's [`useSharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/api/useSharedValue/) hook.
+`Shared` value from React Native Reanimated's [`useSharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/api/useSharedValue/) hook.
 
 | Type |
 | - |
 | object |
 
-### <div class="label required">required</div> **supportedReactions**
+### <div class="description">Overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
 
-### <div class="label required">required</div> **title**
+### <div class="label required">required</div> **title** {#title}
 
-Title for component.
+Title for the component.
 
 | Type |
 | - |
