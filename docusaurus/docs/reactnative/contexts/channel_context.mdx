@@ -63,7 +63,7 @@ _(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 ### error
 
-Value is true, when any api call to `channel.query()` during first load or pagination fails.
+True if any api call to `channel.query()` during first load or pagination fails.
 
 | Type |
 | - |
@@ -71,7 +71,7 @@ Value is true, when any api call to `channel.query()` during first load or pagin
 
 ### giphyEnabled
 
-Value is true, when giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
+True if giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
 
 | Type |
 | - |
@@ -85,7 +85,7 @@ _(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 ### isAdmin
 
-Value is true, when current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+True if current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
 const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role === 'admin';
@@ -97,7 +97,7 @@ const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role
 
 ### isModerator
 
-Value is true, when current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+True if current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
 const isModerator = channel?.state.membership.role === 'channel_moderator' || channel?.state.membership.role === 'moderator';
@@ -109,7 +109,7 @@ const isModerator = channel?.state.membership.role === 'channel_moderator' || ch
 
 ### isOwner
 
-Value is true, when current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
+True if current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
 
 ```tsx
 const isOwner = channel?.state.membership.role === 'owner';
@@ -146,7 +146,7 @@ loadChannelAtMessage({
 
 ### loading
 
-Value is true, when channel is loading messages during first load.
+True if channel is loading messages during first load.
 
 | Type |
 | - |
