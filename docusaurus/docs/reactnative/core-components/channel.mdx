@@ -27,7 +27,9 @@ import Card from '../common-content/core-components/channel/props/card.mdx';
 import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
 import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
 import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
+import CloseSuggestions from '../common-content/core-components/channel/props/close_suggestions.mdx';
 import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx';
+import CompressImageQuality from '../common-content/core-components/channel/props/compress_image_quality.mdx';
 import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
 import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
 import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
@@ -116,62 +118,84 @@ import TypingIndicatorContainer from '../common-content/core-components/channel/
 import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
 
+The `Channel` component is the main entry point for many Stream Chat customizations and contains the majority of the content providers and a significant amount of the logic utilized by Stream Chat for React Native.
+Components, custom and out of the box, channel information, and UI integrated chat functions are disseminated by the contexts contained in `Channel`.
+[MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx), and [Thread](../ui-components/thread.mdx) all rely on `Channel` to function correctly.
 
-`Channel` is a higher order component. It doesn't provide any UI itself, but mainly acts as a bridge between its child components such as [MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx) and [Thread](../ui-components/thread.mdx) components. Channel provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
 
-Channel is provided by `stream-chat-react-native` and can be imported from the library as following
+## Basic Usage
 
-```tsx
-import { Channel } from 'stream-chat-react-native';
-```
+`Channel` takes an instance of a StreamChat `channel` as a prop.
+You can [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript), or if you are navigating from the [`ChannelList`](./channel_list.mdx), access the selected channel via the parameter passed to the [`onSelect`](./channel_list.mdx#required-onselect) function.
 
-<!-- TODO: Change to new docs -->
-This component takes StreamChat `channel` as prop. You can either [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) before rendering Channel component. Or if you are navigating from [`ChannelList`](./channel_list.mdx) component, channel is available as parameter on [`onSelect`](./channel_list.mdx#required-onselect) prop function.
+```tsx {7-17,22,25}
+import { StreamChat } from 'stream-chat'; 
+import { Channel, Chat, MessageInput, MessageList, OverlayProvider } from 'stream-chat-react-native';
 
-## Usage
+const client = StreamChat.getInstance('api_key');
 
-```jsx
-<OverlayProvider>
-  <Chat client={client}>
-    <Channel channel={channel}>
-      <MessageList />
-      <MessageInput />
-    </Channel>
-  </Chat>
-</OverlayProvider>
+export const App = () => {
+  const [channel, setChannel] = useState();
+
+  useEffect(() => {
+    const createAndWatchChannel = async () => {
+      const newChannel = client.channel('messaging', 'channel_id');
+      await newChannel.watch();
+      setChannel(newChannel);
+    };
+
+    createAndWatchChannel()
+  }, []);
+
+  return (
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel channel={channel}>
+          <MessageList />
+          <MessageInput />
+        </Channel>
+      </Chat>
+    </OverlayProvider>
+  );
+};
 ```
 
 ## Context Providers
 
-Channel component is a provider of following contexts:
+`Channel` contains providers for the `ChannelContext`, `KeyboardContext`, `MessageInputContext`, `MessagesContext`, `PaginatedMessageListContext`, `SuggestionsContext`, `ThreadContext`, and `TypingContext`.
+These can be accessed using the corresponding hooks.
 
-- [ChannelContext](../contexts/channel_context.mdx)
-- [MessageInputContext](../contexts/message_input_context.mdx)
-- [MessagesContext](../contexts/messages_context.mdx)
-- [PaginatedMessageListContext](../contexts/paginated_message_list_context.mdx)
-- [ThreadContext](../contexts/thread_context.mdx)
-- [TypingContext](../contexts/typing_context.mdx)
-
+| Context | Hook |
+| - | - |
+| `ChannelContext` | `useChannelContext` |
+| `KeyboardContext` | `useKeyboardContext` |
+| `MessageInputContext` | `useMessageInputContext` |
+| `MessagesContext` | `useMessagesContext` |
+| `PaginatedMessageListContext` | `usePaginatedMessageListContext` |
+| `SuggestionsContext` | `useSuggestionsContext` |
+| `ThreadContext` | `useThreadContext` |
+| `TypingContext` | `useTypingContext` |
 
 ## UI Customizations
 
-Channel component makes it possible to customize any of the enclosed child components. For every child UI component of Channel, you can provide your own custom implementation. You can reference the following visuals, to check which prop to use for customizing.
+`Channel` is the entry point for customizing the majority of the Stream Chat for React Native SDK.
+The UI can be tailored to your design by replacing any number of components with custom components.
+Custom components provided as props to `Channel` will be utilized throughout the SDK where appropriate.
 
-For example, you can customize message avatar component as following:
+Customizing the message avatar can be done easily by providing a custom component to the appropriate prop.
 
-```jsx
+```tsx
+import { Image } from 'react-native';
 import { Channel, useMessageContext } from 'stream-chat-react-native';
 
 const CustomAvatar = () => {
-  const {message} = useMessageContext();
+  const { message } = useMessageContext();
 
-  return <Image source={{ src: message.user.image }} />
-}
+  return <Image source={{ uri: message.user?.image }} />
+};
 
 <Channel MessageAvatar={CustomAvatar} />
 ```
-
-You can reference the following visuals, to check which [prop](#props) to use for customizing any of the sub-components.
 
 <Tabs
   defaultValue='messages'
@@ -206,13 +230,14 @@ You can reference the following visuals, to check which [prop](#props) to use fo
 
 ## Props
 
-### <div class="label required">required</div> **channel**
+### channel
 
 <Channel />
 
-### <div class="label required">required</div> **keyboardVerticalOffset**
+### keyboardVerticalOffset
 
-Distance between top of the screen and top of Channel component. Generally this value needs to be - `headerHeight`.
+Distance between top of the screen and top of Channel component.
+This is often the header height.
 
 | Type |
 | - |
@@ -246,7 +271,9 @@ Distance between top of the screen and top of Channel component. Generally this 
 
 <BlockUser />
 
-<!-- ### closeSuggestions -->
+### closeSuggestions
+
+<CloseSuggestions />
 
 ### compressImageQuality
 
@@ -262,13 +289,19 @@ Distance between top of the screen and top of Channel component. Generally this 
 
 ### disableIfFrozenChannel
 
-If true, all the interactions with Channel component will be disabled if the channel is frozen.
+Disable all interaction with the Channel component if the channel is *frozen*.
 
 | Type | Default |
 | - | - |
 | boolean | true |
 
 ### disableKeyboardCompatibleView
+
+Enable or disable the underlying [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview#enabled).
+
+| Type | Default |
+| - | - |
+| boolean | false |
 
 ### disableTypingIndicator
 
@@ -288,30 +321,54 @@ If true, all the interactions with Channel component will be disabled if the cha
 
 ### doMarkReadRequest
 
-Overrides the Stream default mark read request for channel. This prop should be only used for some advanced purpose, where you want to conditionally allow or disallow some mark-read requests.
+Override the mark read request.
 
-:::caution
-Don't use this prop to disable read-recipts feature on chat. You should disable "Read Events" from dashboard for this purpose.
+:::note
+
+This prop should only be used for advanced functionality in which you want to conditionally allow mark-read requests.
+
+Don not use this function to disable the read-receipts feature.
+If you would like to disable read-receipts, this can be done via *Read Events* on the dashboard.
+
 :::
+
+#### Example
 
 ```tsx
 const doMarkReadRequest = (channel) => {
-  /** Some custom logic here */
-  return channel.markRead();
-}
+  if (/** Some custom logic here */) {
+    channel.markRead();
+  }
+};
 ```
 
 | Type |
 | - |
-| `(channel) => void` |
+| function |
+
+| Parameter | Description |
+| - | - |
+| channel | channel instance |
+
 
 ### doSendMessageRequest
 
-Overrides the Stream default send message request. This prop should be only used for some advanced purpose, where you want override the message object before sending the request.
+Override the send message request.
+This function must return a Promise equivalent to `client.sendMessage`.
+
+:::note
+
+This prop should only be used for advanced functionality in which you want to alter the message object before sending.
+
+:::
+
+#### Example
 
 ```tsx
 const doSendMessageRequest = (channelId, messageObject) => {
-  /** Some custom logic here */
+  if (/** Some custom logic here */) {
+    messageObject.isSpecial = true;
+  }
   return channel.sendMessage(messageObject);
 }
 ```
@@ -320,20 +377,39 @@ const doSendMessageRequest = (channelId, messageObject) => {
 | - |
 | function |
 
+| Parameter | Description |
+| - | - |
+| channelId | string |
+| messageObject | object |
+
 ### doUpdateMessageRequest
 
-Overrides the Stream default update message request. This prop should be only used for some advanced purpose, where you want override the message object before sending the update request.
+Override the update message request.
+This function must return a Promise equivalent to `client.updateMessage`.
+
+:::note
+
+This prop should only be used for advanced functionality in which you want to alter the message object before updating it.
+
+:::
+
 
 ```tsx
 const doUpdateMessageRequest = (channelId, messageObject) => {
-  /** Some custom logic here */
-  return client.updateMessage(messageObject);
+  const numberOfUpdates = (messageObject.numberOfUpdates ?? 0) + 1;
+  const messageToSend = { ...messageObject, numberOfUpdates };
+  return client.updateMessage(messageToSend);
 }
 ```
 
 | Type |
 | - |
 | function |
+
+| Parameter | Description |
+| - | - |
+| channelId | string |
+| messageObject | object |
 
 ### editMessage
 
@@ -359,7 +435,14 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 <GiphyEnabled />
 
-<!-- ### globalUnreadCountLimit -->
+### globalUnreadCountLimit
+
+Maximum number of unread messages to show as a count on a channel before adding a `+`.
+The max allowable is 255, which when reached displays as `255+`.
+
+| Type | Default |
+| - | - |
+| number | 255 |
 
 ### handleBlock
 
@@ -427,9 +510,27 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 ### keyboardBehavior
 
-<!-- ### loadingMore
+Behavior for the keyboard passed to the underlying [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview#behavior).
 
-### loadingMoreRecent -->
+| Type |
+| - |
+| 'height' \| 'position' \| 'padding' |
+
+### loadingMore
+
+Override the `loadingMore` value supplied by the channel query logic.
+
+| Type |
+| - |
+| boolean |
+
+### loadingMoreRecent
+
+Override the `loadingMoreRecent` value supplied by the channel query logic.
+
+| Type |
+| - |
+| boolean |
 
 ### markdownRules
 
@@ -439,51 +540,25 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 <MaxMessageLength />
 
-### quotedRepliesEnabled
-
-<QuotedRepliesEnabled />
-
-### reactionsEnabled
-
-<ReactionsEnabled />
-
-### readEventsEnabled
-
-<ReadEventsEnabled />
-
-### threadRepliesEnabled
-
-<ThreadRepliesEnabled />
-
-### typingEventsEnabled
-
-<TypingEventsEnabled />
-
-### uploadsEnabled
-
-<UploadsEnabled />
-
-### messageId
-
-If provided, enclosed MessageList will be loaded at given `messageId`, instead of latest message.
-
-| Type |
-| - |
-| string |
-
-
 ### maxNumberOfFiles
 
-Maximum number of files (documents + images), that can be attached per message.
+Maximum number of files (documents & images), that can be attached per message.
 
 | Type | Default |
 | - | - |
 | number | 10 |
 
-
 ### maxTimeBetweenGroupedMessages
 
 <MaxTimeBetweenGroupedMessages />
+
+### messageId
+
+Load the channel at a specified message instead of the most recent message.
+
+| Type |
+| - |
+| string |
 
 ### messageActions
 
@@ -531,9 +606,21 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <!-- ### openSuggestions -->
 
+### quotedRepliesEnabled
+
+<QuotedRepliesEnabled />
+
 ### quotedReply
 
 <QuotedReply />
+
+### reactionsEnabled
+
+<ReactionsEnabled />
+
+### readEventsEnabled
+
+<ReadEventsEnabled />
 
 ### retry
 
@@ -547,11 +634,15 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 ### setInputRef
 
-Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.html#callback-refs) on underlying TextInput component within enclosed MessageInput component.
+Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.html#callback-refs) on the underlying `TextInput` in [`MessageInput`](/reactnative/ui-components/message-input).
 
 | Type |
 | - |
-| `(ref) => void` |
+| function |
+
+| Parameter | Description |
+| - | - |
+| ref	| ref of the TextInput |
 
 ### supportedReactions
 
@@ -567,6 +658,18 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 ### threadReply
 
 <ThreadReply />
+
+### threadRepliesEnabled
+
+<ThreadRepliesEnabled />
+
+### typingEventsEnabled
+
+<TypingEventsEnabled />
+
+### uploadsEnabled
+
+<UploadsEnabled />
 
 <!-- ### updateSuggestions -->
 
@@ -667,16 +770,16 @@ you can simply use following props instead:
 - [`disableKeyboardCompatibleView`](#disablekeyboardcompatibleview)
 
 | Type | Default |
-|- -|- -|
-| Component, element | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
+| - | - |
+| component | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
 
 ### LoadingErrorIndicator
 
 UI component to render full screen error indicator, when channel fails to load.
 
 | Type | Default |
-|- -|- -|
-| Component, element | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Indicators/LoadingErrorIndicator.tsx) |
+| - | - |
+| component | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Indicators/LoadingErrorIndicator.tsx) |
 
 ### LoadingIndicator
 
@@ -777,8 +880,8 @@ UI component to render full screen error indicator, when channel fails to load.
 UI component to render upload progress indicator as an overlay above [ImageUploadPreview](#imageuploadpreview) and [FileUploadPreview](#fileuploadpreview).
 
 | Type | Default |
-|- -|- -|
-| Component, element | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/UploadProgressIndicator.tsx) |
+| - | - |
+| component | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/UploadProgressIndicator.tsx) |
 
 ### UrlPreview
 

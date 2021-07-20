@@ -55,8 +55,8 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   return (
     <ScreenHeader
       inSafeArea
-      titleText='Thread Reply'
       subtitleText={typing ? typing : `with ${thread?.user?.name}`}
+      titleText='Thread Reply'
     />
   );
 };

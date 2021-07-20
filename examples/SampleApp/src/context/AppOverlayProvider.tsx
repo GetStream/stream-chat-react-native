@@ -13,9 +13,9 @@ import { AppOverlayContext, AppOverlayContextValue, BlurType } from './AppOverla
 import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
 import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
 import { UserInfoOverlay } from '../components/UserInfoOverlay';
-import { BottomSheetOverlayProvider } from '../context/BottomSheetOverlayContext';
-import { ChannelInfoOverlayProvider } from '../context/ChannelInfoOverlayContext';
-import { UserInfoOverlayProvider } from '../context/UserInfoOverlayContext';
+import { BottomSheetOverlayProvider } from './BottomSheetOverlayContext';
+import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
+import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
 
 export const AppOverlayProvider: React.FC<{
   value?: Partial<AppOverlayContextValue>;

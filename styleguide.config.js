@@ -248,7 +248,7 @@ module.exports = {
     '@babel/polyfill',
     path.join(__dirname, 'src/styleguideComponents/register-react-native-web.js'),
   ],
-  styleguideDir: 'docs/v3',
+  styleguideDir: '../docs/v3',
   sortProps: (props) => props,
   styles: {
     StyleGuide: {

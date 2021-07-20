@@ -1,0 +1,150 @@
+{
+  "name": "stream-chat-react-native-core",
+  "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
+  "version": "3.6.5",
+  "author": {
+    "company": "Stream.io Inc",
+    "name": "Stream.io Inc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GetStream/stream-chat-react-native.git"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "src/index.ts",
+  "types": "lib/typescript/index.d.ts",
+  "files": [
+    "src",
+    "lib",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
+    "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations && yarn run --silent lint-fix-translations",
+    "lint-fix-translations": "prettier --check 'src/i18n/*.json' --write 'src/i18n/*.json' .eslintrc.json ../.prettierrc .babelrc",
+    "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
+    "copy-translations": "echo '\u001b[34mℹ\u001b[0m Copying translation files to \u001b[34mlib/typescript/i18n\u001b[0m' && cp -R -f ./src/i18n ./lib/typescript/i18n && echo '\u001b[32m✓\u001b[0m Done Copying Translations'",
+    "docs": "styleguidist build",
+    "docs-server": "styleguidist server",
+    "eslint": "eslint '**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
+    "lint": "prettier --ignore-path ../.prettierignore --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && yarn run validate-translations",
+    "lint-fix": "prettier --ignore-path ../.prettierignore --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0",
+    "prepare": "yarn run build",
+    "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify",
+    "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
+    "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
+    "test": "TZ=UTC jest",
+    "validate-translations": "node bin/validate-translations.js",
+    "get-version": "echo $npm_package_version",
+    "version": "bash ./bin/before-tag.sh",
+    "bootstrap": "yarn install",
+    "bootstrap-ci": "yarn install --frozen-lockfile",
+    "extract-changelog": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/extract-changelog.js",
+    "release": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/prod",
+    "release-next": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/next",
+    "prepublishOnly": "echo 'running prepublishOnly for core package' && bash ./bin/before-tag.sh && bash ./bin/release.sh && echo 'finished running prepublishOnly for core package'",
+    "prepack": " cp ../README.md .",
+    "postpack": "rm README.md"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "configFile": "./babel.config.js"
+        }
+      ],
+      [
+        "module",
+        {
+          "configFile": "./babel.config.js"
+        }
+      ],
+      "typescript"
+    ]
+  },
+  "dependencies": {
+    "@babel/runtime": "7.13.10",
+    "@gorhom/bottom-sheet": "3.6.4",
+    "anchorme": "^1.1.2",
+    "dayjs": "1.10.4",
+    "file-loader": "6.2.0",
+    "i18next": "20.2.4",
+    "lodash-es": "4.17.21",
+    "metro-react-native-babel-preset": "0.66.0",
+    "mime-types": "2.1.30",
+    "path": "0.12.7",
+    "react-art": "^17.0.2",
+    "react-native-markdown-package": "1.8.1",
+    "stream-chat": "3.9.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-native": "^0.60.0",
+    "react-native-gesture-handler": "^1.8.0",
+    "react-native-reanimated": "^2.0.0",
+    "react-native-svg": "^12.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.13.10",
+    "@babel/core": "7.13.10",
+    "@babel/plugin-proposal-object-rest-spread": "7.13.8",
+    "@babel/plugin-transform-runtime": "7.13.10",
+    "@babel/polyfill": "7.12.1",
+    "@babel/preset-env": "7.13.12",
+    "@babel/preset-typescript": "7.13.0",
+    "@react-native-community/eslint-config": "2.0.0",
+    "@react-native-community/eslint-plugin": "1.1.0",
+    "@react-native-community/netinfo": "6.0.0",
+    "@testing-library/jest-native": "4.0.1",
+    "@testing-library/react-native": "7.2.0",
+    "@types/eslint": "7.2.10",
+    "@types/jest": "26.0.23",
+    "@types/lodash": "4.14.169",
+    "@types/mime-types": "2.1.0",
+    "@types/react": "17.0.5",
+    "@types/react-native": "0.64.5",
+    "@types/react-test-renderer": "17.0.1",
+    "@typescript-eslint/eslint-plugin": "4.24.0",
+    "@typescript-eslint/parser": "4.24.0",
+    "babel-eslint": "10.1.0",
+    "babel-jest": "26.6.3",
+    "babel-loader": "8.2.2",
+    "babel-plugin-i18next-extract": "0.8.3",
+    "babel-plugin-module-resolver": "4.1.0",
+    "babel-plugin-react-native-web": "0.16.3",
+    "eslint": "7.26.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-babel": "5.3.1",
+    "eslint-plugin-jest": "24.3.6",
+    "eslint-plugin-markdown": "2.1.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-react": "7.23.2",
+    "eslint-plugin-sort-destructure-keys": "1.3.5",
+    "eslint-plugin-typescript-sort-keys": "1.6.0",
+    "jest": "26.6.3",
+    "moment": "2.29.1",
+    "prettier": "2.3.0",
+    "react": "17.0.2",
+    "react-docgen-typescript": "1.22.0",
+    "react-dom": "17.0.2",
+    "react-native": "0.64.1",
+    "react-native-builder-bob": "0.18.1",
+    "react-native-gesture-handler": "1.10.3",
+    "react-native-reanimated": "2.1.0",
+    "react-native-svg": "12.1.1",
+    "react-native-typescript-transformer": "1.2.13",
+    "react-native-web": "0.15.0",
+    "react-styleguidist": "11.1.6",
+    "react-test-renderer": "17.0.2",
+    "typescript": "4.2.4",
+    "uuid": "8.3.2",
+    "webpack": "4.44.2"
+  }
+}
