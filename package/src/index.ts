@@ -9,7 +9,6 @@ export * from './icons';
 export * from './types/types';
 
 export * from './utils/Streami18n';
-export * from './utils/useStreami18n';
 export * from './utils/utils';
 
 export { default as enTranslations } from './i18n/en.json';

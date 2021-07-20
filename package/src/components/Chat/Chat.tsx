@@ -13,7 +13,7 @@ import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
-import { useStreami18n } from '../../utils/useStreami18n';
+import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { SDK } from '../../native';
 import { version } from '../../version.json';
