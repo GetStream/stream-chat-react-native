@@ -610,6 +610,22 @@ const ChannelWithContext = <
     }
   }, [threadPropsExists]);
 
+  const handleAppBackground = useCallback(() => {
+    if (channel) {
+      channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >);
+    }
+  }, [thread?.id, channelId]);
+
+  useAppStateListener(undefined, handleAppBackground);
+
   /**
    * CHANNEL CONSTANTS
    */
@@ -673,22 +689,6 @@ const ChannelWithContext = <
       resyncChannel();
     }
   };
-
-  const handleAppBackground = useCallback(() => {
-    if (channel) {
-      channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
-        At,
-        Ch,
-        Co,
-        Ev,
-        Me,
-        Re,
-        Us
-      >);
-    }
-  }, [thread?.id, channelId]);
-
-  useAppStateListener(undefined, handleAppBackground);
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
     if (thread) {
