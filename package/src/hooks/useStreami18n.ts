@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
-import { Streami18n } from './Streami18n';
+import { Streami18n } from '../utils/Streami18n';
 
 export const useStreami18n = ({
   i18nInstance,

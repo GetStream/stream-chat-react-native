@@ -28,7 +28,7 @@ import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
-import { useStreami18n } from '../../utils/useStreami18n';
+import { useStreami18n } from '../../hooks/useStreami18n';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
