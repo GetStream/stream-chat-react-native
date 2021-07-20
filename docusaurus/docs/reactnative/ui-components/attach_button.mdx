@@ -6,21 +6,12 @@ title: AttachButton
 import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
-[Source](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/AttachButton.tsx)
-
-`AttachButton` is a default UI component for rendering attachment button within `MessageInput` component. When user presses this button, it opens the attachment picker bottom sheet.
-
-You can set `AttachButton` prop on Channel component to replace this default component:
-
-```tsx
-<Channel AttachButton={CustomAttachButton} />
-```
+A component to render a button to open the attachment picker, within the [`MessageInput`](./message_input.mdx).
+This is the default component provided to the prop [`AttachButton`](../core-components/channel.mdx#attachbutton) on the `Channel` component.
 
 ## Props
 
-### disabled
-
-_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#disabled)_</div> disabled {#disabled}
 
 <Disabled />
 
@@ -32,8 +23,6 @@ _(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
 | - |
 | function |
 
-### selectedPicker
-
-_(Overrides the value from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx))_
+### <div class="label description">_overrides the value from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx#selectedpicker)_</div> selectedPicker {#selectedpicker}
 
 <SelectedPicker />
