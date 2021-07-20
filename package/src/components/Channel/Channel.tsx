@@ -9,9 +9,11 @@ import {
   MessageResponse,
   SendMessageAPIResponse,
   StreamChat,
+  Event as StreamEvent,
   Message as StreamMessage,
 } from 'stream-chat';
 
+import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
@@ -607,6 +609,22 @@ const ChannelWithContext = <
       setThread(null);
     }
   }, [threadPropsExists]);
+
+  const handleAppBackground = useCallback(() => {
+    if (channel) {
+      channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >);
+    }
+  }, [thread?.id, channelId]);
+
+  useAppStateListener(undefined, handleAppBackground);
 
   /**
    * CHANNEL CONSTANTS

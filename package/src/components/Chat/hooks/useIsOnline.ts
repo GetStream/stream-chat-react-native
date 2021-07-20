@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useAppStateListener } from './useAppStateListener';
+import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
