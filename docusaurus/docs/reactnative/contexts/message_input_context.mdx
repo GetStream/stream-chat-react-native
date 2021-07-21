@@ -30,6 +30,7 @@ import SendButton from '../common-content/core-components/channel/props/send_but
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
 import SendMessageAsync from '../common-content/core-components/channel/props/send_message_async.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
+import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
 import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx';
 
@@ -257,17 +258,13 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <ResetInput />
 
-### selectedPicker
-
-_(Forwarded from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx))_
+### <div class="label description">_forwarded from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx#selectedpicker)_</div> selectedPicker {#selectedpicker}
 
 <SelectedPicker />
 
 <!-- ### sending -->
 
-### sendMessageAsync
-
-_(Forwarded from [Channel](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendmessageasync) props_</div> sendMessageAsync {#sendmessageasync}
 
 <SendMessageAsync />
 
@@ -321,7 +318,9 @@ _(Forwarded from [Channel](../core-components/channel.mdx) props)_
 
 <Text />
 
-<!-- ### thread -->
+### <div class="label description">_forwarded from [ThreadContext](../contexts/thread_context.mdx#thread)_</div> thread {#thread}
+
+<Thread />
 
 ### toggleAttachmentPicker
 
