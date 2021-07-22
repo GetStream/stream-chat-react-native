@@ -72,6 +72,7 @@ import Input from '../common-content/core-components/channel/props/input.mdx'
 import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx'
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx'
+import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx'
 // import Message from '../common-content/core-components/channel/props/message.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
@@ -541,11 +542,7 @@ Override the `loadingMoreRecent` value supplied by the channel query logic.
 
 ### maxNumberOfFiles
 
-Maximum number of files (documents & images), that can be attached per message.
-
-| Type | Default |
-| - | - |
-| number | 10 |
+<MaxNumberOfFiles />
 
 ### maxTimeBetweenGroupedMessages
 
@@ -629,7 +626,14 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <SelectReaction />
 
-<!-- ### sendImageAsync -->
+### sendImageAsync
+
+Sends a message with attachments in asynchronous way. By default, a message can't be sent until all the image/file attachments have been
+uploaded. If this prop is set to true, every attachment will be sent as a separate message, as soon as the upload is complete.
+
+| Type | Default |
+| - | - |
+| boolean | false |
 
 ### setInputRef
 

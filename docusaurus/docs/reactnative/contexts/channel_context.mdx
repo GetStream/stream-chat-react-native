@@ -8,7 +8,6 @@ import EnforceUniqueReaction from '../common-content/core-components/channel/pro
 import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
 import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
 import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
-import ScrollToFirstUnreadThreshold from '../common-content/core-components/channel/props/scroll_to_first_unread_threshold.mdx';
 import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx';
 import EmptyStateIndicator from '../common-content/core-components/channel/props/empty_state_indicator.mdx';
 import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
@@ -16,6 +15,7 @@ import NetworkDownIndicator from '../common-content/core-components/channel/prop
 
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import Members from '../common-content/contexts/channel-context/members.mdx';
+import ScrollToFirstUnreadThreshold from '../common-content/contexts/channel-context/scroll_to_first_unread_threshold.mdx';
 import Watchers from '../common-content/contexts/channel-context/watchers.mdx';
 
 `ChannelContext` is provided by [`Channel`](../core-components/channel.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
@@ -198,7 +198,7 @@ Function to reload a channel at most recent message. Promise returned by this fu
 | - |
 | () => Promise |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#scrolltofirstunreadthreshold)_ props</div> scrollToFirstUnreadThreshold {#scrolltofirstunreadthreshold}
+### scrollToFirstUnreadThreshold
 
 <ScrollToFirstUnreadThreshold />
 

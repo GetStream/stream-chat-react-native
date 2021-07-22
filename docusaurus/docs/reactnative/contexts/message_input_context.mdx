@@ -28,7 +28,6 @@ import NumberOfLines from '../common-content/core-components/channel/props/numbe
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
-import SendMessageAsync from '../common-content/core-components/channel/props/send_message_async.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
 import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
@@ -57,6 +56,7 @@ import ResetInput from '../common-content/contexts/message-input-context/reset_i
 import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
 import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx'
 import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
+import SetFileUploads from '../common-content/contexts/message-input-context/set_file_uploads.mdx'
 import SetImageUploads from '../common-content/contexts/message-input-context/set_image_uploads.mdx'
 import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
 import SetMentionedUsers from '../common-content/contexts/message-input-context/set_mentioned_users.mdx'
@@ -67,6 +67,7 @@ import SetText from '../common-content/contexts/message-input-context/set_text.m
 import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
 import Text from '../common-content/contexts/message-input-context/text.mdx'
 import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx'
+import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx'
 import UploadFile from '../common-content/contexts/message-input-context/upload_file.mdx';
 import UploadImage from '../common-content/contexts/message-input-context/upload_image.mdx';
 import UpdateMessage from '../common-content/contexts/message-input-context/update_message.mdx'
@@ -264,9 +265,7 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <!-- ### sending -->
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendmessageasync) props_</div> sendMessageAsync {#sendmessageasync}
-
-<SendMessageAsync />
+<!-- ### sendMessageAsync -->
 
 ### sendThreadMessageInChannel
 
@@ -276,7 +275,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <!-- ### setAsyncUploads -->
 
-<!-- ### setFileUploads -->
+### setFileUploads
+
+<SetFileUploads />
 
 ### setGiphyActive
 
@@ -326,7 +327,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <ToggleAttachmentPicker />
 
-<!-- ### triggerSettings -->
+### triggerSettings
+
+<TriggerSettings />
 
 ### updateMessage
 
