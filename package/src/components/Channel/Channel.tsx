@@ -974,12 +974,13 @@ const ChannelWithContext = <
 
       setHasMore(true);
       copyChannelState();
-      await reloadThread();
 
       if (failedMessages.length) {
         channel.state.addMessagesSorted(failedMessages);
         copyChannelState();
       }
+
+      await reloadThread();
 
       if (thread && failedThreadMessages.length) {
         channel.state.addMessagesSorted(failedThreadMessages);
