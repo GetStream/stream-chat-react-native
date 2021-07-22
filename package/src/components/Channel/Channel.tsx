@@ -899,7 +899,6 @@ const ChannelWithContext = <
        * Allow a buffer of 30 new messages, so that MessageList won't move its scroll position,
        * giving smooth user experience.
        */
-
       const state = await channel.watch({
         messages: {
           limit: messages.length + 30,
@@ -909,6 +908,20 @@ const ChannelWithContext = <
       const oldListTopMessage = messages[0];
       const oldListTopMessageId = messages[0]?.id;
       const oldListBottomMessage = messages[messages.length - 1];
+
+      if (
+        !oldListTopMessage || // previous list was empty
+        !oldListBottomMessage || // previous list was empty
+        !newListTopMessage || // new list is truncated
+        !newListBottomMessage // new list is truncated
+      ) {
+        /** Channel was truncated */
+        channel.state.clearMessages();
+        channel.state.setIsUpToDate(true);
+        channel.state.addMessagesSorted(state.messages);
+        copyChannelState();
+        return;
+      }
 
       const parseMessage = (message: typeof oldListTopMessage) =>
         ({
@@ -928,20 +941,6 @@ const ChannelWithContext = <
 
       const newListTopMessage = state.messages[0];
       const newListBottomMessage = state.messages[state.messages.length - 1];
-
-      if (
-        !oldListTopMessage || // previous list was empty
-        !oldListBottomMessage || // previous list was empty
-        !newListTopMessage || // new list is truncated
-        !newListBottomMessage // new list is truncated
-      ) {
-        /** Channel was truncated */
-        channel.state.clearMessages();
-        channel.state.setIsUpToDate(true);
-        channel.state.addMessagesSorted(state.messages);
-        copyChannelState();
-        return;
-      }
 
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
       const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
