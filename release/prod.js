@@ -9,19 +9,18 @@ configPromise.then((config) => {
     ...config,
     branches: ["master"],
   };
+
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
+    const commitMessage = 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}';
+
     newConfig.plugins.push([
-      '@semantic-release/git',
+      '@semantic-release/exec',
       {
-        assets: [
-          `${process.cwd()}/package.json`,
-          `${process.cwd()}/yarn.lock`,
-          `${process.cwd()}/CHANGELOG.md`,
-        ],
-        message:
-          'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+        prepareCmd: `git add --all && git commit -m "${commitMessage}" && git push origin master`,
       },
     ]);
+
+    newConfig.plugins.push('@semantic-release/git');
 
     if (isSDK) {
       newConfig.plugins.push('@semantic-release/github');
