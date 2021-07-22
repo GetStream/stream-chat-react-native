@@ -681,6 +681,9 @@ const ChannelWithContext = <
   const connectionRecoveredHandler = () => {
     if (channel) {
       copyChannelState();
+      if (thread) {
+        setThreadMessages([...channel.state.threads[thread.id]]);
+      }
     }
   };
 
@@ -863,6 +866,30 @@ const ChannelWithContext = <
       return;
     });
 
+  const reloadThread = async () => {
+    if (!channel || !thread?.id) return;
+
+    setThreadLoadingMore(true);
+    try {
+      const parentID = thread.id;
+
+      const limit = 50;
+      channel.state.threads[parentID] = [];
+      const queryResponse = await channel.getReplies(parentID, {
+        limit: 50,
+      });
+
+      const updatedHasMore = queryResponse.messages.length === limit;
+      const updatedThreadMessages = channel.state.threads[parentID] || [];
+      loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
+    } catch (err) {
+      console.warn('Thread loading request failed with error', err);
+      setError(err);
+      setThreadLoadingMore(false);
+      throw err;
+    }
+  };
+
   const resyncChannel = async () => {
     if (!channel) return;
 
@@ -899,6 +926,22 @@ const ChannelWithContext = <
         return;
       }
 
+      const parseMessage = (message: typeof oldListTopMessage) =>
+        ({
+          ...message,
+          created_at: message.created_at.toString(),
+          pinned_at: message.pinned_at?.toString(),
+          updated_at: message.updated_at?.toString(),
+        } as unknown as MessageResponse<At, Ch, Co, Me, Re, Us>);
+
+      const failedMessages = messages
+        .filter((message) => message.status === 'failed')
+        .map(parseMessage);
+
+      const failedThreadMessages = thread
+        ? threadMessages.filter((message) => message.status === 'failed').map(parseMessage)
+        : [];
+
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
       const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
       const newListTopMessageCreatedAt = newListTopMessage.created_at
@@ -927,8 +970,21 @@ const ChannelWithContext = <
 
       channel.state.clearMessages();
       channel.state.addMessagesSorted(finalMessages);
+
       setHasMore(true);
       copyChannelState();
+
+      if (failedMessages.length) {
+        channel.state.addMessagesSorted(failedMessages);
+        copyChannelState();
+      }
+
+      await reloadThread();
+
+      if (thread && failedThreadMessages.length) {
+        channel.state.addMessagesSorted(failedThreadMessages);
+        setThreadMessages([...channel.state.threads[thread.id]]);
+      }
     } catch (err) {
       setError(err);
       setLoading(false);
@@ -1454,30 +1510,6 @@ const ChannelWithContext = <
         throw err;
       }
     };
-
-  const reloadThread = async () => {
-    if (!channel || !thread?.id) return;
-
-    setThreadLoadingMore(true);
-    try {
-      const parentID = thread.id;
-
-      const limit = 50;
-      channel.state.threads[parentID] = [];
-      const queryResponse = await channel.getReplies(parentID, {
-        limit: 50,
-      });
-
-      const updatedHasMore = queryResponse.messages.length === limit;
-      const updatedThreadMessages = channel.state.threads[parentID] || [];
-      loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-    } catch (err) {
-      console.warn('Thread loading request failed with error', err);
-      setError(err);
-      setThreadLoadingMore(false);
-      throw err;
-    }
-  };
 
   const channelContext = useCreateChannelContext({
     ...channelConfig,
