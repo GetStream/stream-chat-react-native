@@ -909,6 +909,9 @@ const ChannelWithContext = <
       const oldListTopMessageId = messages[0]?.id;
       const oldListBottomMessage = messages[messages.length - 1];
 
+      const newListTopMessage = state.messages[0];
+      const newListBottomMessage = state.messages[state.messages.length - 1];
+
       if (
         !oldListTopMessage || // previous list was empty
         !oldListBottomMessage || // previous list was empty
@@ -938,9 +941,6 @@ const ChannelWithContext = <
       const failedThreadMessages = thread
         ? threadMessages.filter((message) => message.status === 'failed').map(parseMessage)
         : [];
-
-      const newListTopMessage = state.messages[0];
-      const newListBottomMessage = state.messages[state.messages.length - 1];
 
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
       const oldListBottomMessageCreatedAt = oldListBottomMessage.created_at;
