@@ -7,13 +7,12 @@ import AdditionalTouchableProps from '../common-content/core-components/channel/
 import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
 
-Component to render file attachments within the [`MessageList`](./message_list.mdx).
+`FileAttachment` is a UI component for rendering a single `file` type attachment in `FileAttachmentGroup`, within `MessageList`.
 
 ## Basic Usage
 
-You can customize this component and provide it back to the SDK via the [`FileAttachment`](../core-components/channel.mdx#fileattachment) prop on `Channel` if desired.
+**Use Case:** Custom icon size for file attachment.
 
-Changing the size of the file attachment icon can be easily accomplished.
 ```tsx
 import { Channel, FileAttachment } from 'stream-chat-react-native';
 
@@ -38,14 +37,20 @@ Size of an attachment icon. This value gets passed to [`FileAttachmentIcon`](#fi
 | - |
 | number |
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <AdditionalTouchableProps />
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#attachmentactions)_</div> AttachmentActions {#attachmentactions}
+### AttachmentActions
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <AttachmentActions />
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#fileattachmenticon)_</div> FileAttachmentIcon {#fileattachmenticon}
+### FileAttachmentIcon
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <FileAttachmentIcon />

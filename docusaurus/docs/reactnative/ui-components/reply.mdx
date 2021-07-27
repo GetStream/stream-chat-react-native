@@ -6,7 +6,7 @@ title: Reply
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 
-import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import MessageProp from '../common-content/contexts/message-context/alignment.mdx';
 
 import Editing from '../common-content/contexts/message-input-context/editing.mdx';
 import QuotedMessage from '../common-content/contexts/message-input-context/quoted_message.mdx';
@@ -21,22 +21,32 @@ You can replace this default UI component using the `Reply` prop on [Channel](..
 
 ## Props
 
-### <div class="description">overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#editing)</div> editing {#editing}
+### editing
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <Editing />
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#message)</div> message {#message}
+### message
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <MessageProp />
 
-### <div class="description">overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#quotedMessage)</div> quotedMessage {#quotedmessage}
+### quotedMessage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <QuotedMessage />
 
-### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#FileAttachmentIcon)</div> FileAttachmentIcon {#fileattachmenticon}
+### FileAttachmentIcon
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <FileAttachmentIcon />
 
-### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#MessageAvatar)</div> MessageAvatar {#messageavatar}
+### MessageAvatar
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <MessageAvatar />

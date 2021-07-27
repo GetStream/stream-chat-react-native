@@ -3,8 +3,6 @@ id: image-gallery-context
 title: ImageGalleryContext
 ---
 
-import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx'
-
 `ImageGalleryContext` is provided by [`OverlayProvider`](../core-components/overlay_provider.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -32,6 +30,7 @@ You can use this `ImageGalleryContext` in combination with `OverlayContext` to o
 ```tsx
 const { images, setImages } = useImageGalleryContext();
 const { setBlurType, setOverlay } = useOverlayContext();
+
 
 onPress={() => {
   setImages(messagesWithImage);
@@ -73,11 +72,15 @@ All the messages in channel which contain image attachments. Image viewer/galler
 
 ### setImage
 
-<SetImage />
+Setter for value [`image`](#image)
+
+| Type |
+| - |
+| `(image: {messageId?: string; url?: string;}) => void` |
 
 ### setImages
 
-Setter for value [images](#images).
+Setter for value [images](#images)
 
 | Type |
 | - |

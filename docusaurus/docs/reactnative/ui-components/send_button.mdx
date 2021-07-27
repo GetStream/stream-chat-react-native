@@ -7,19 +7,30 @@ import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
 import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx'
 
-Component to render the send button with the [`MessageInput`](./message_input.mdx) component.
-This is the default component provided to the prop [`SendButton`](../core-components/channel.mdx#sendbutton) on the `Channel` component.
+`SendButton` is the default UI component for "send message" button within `MessageInput`. Please check the guide of [Customize Message Input](../guides/message_input.mdx) for usage of this component.
+
+You can replace this default UI component using the `SendButton` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel SendButton={CustomSendButton} />
+```
 
 ## Props
 
-### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#disabled)_</div> disabled {#disabled}
+### disabled
+
+_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
 
 <Disabled />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#giphyactive)_</div> giphyActive {#giphyactive}
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <GiphyActive />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#sendmessage)_</div> sendMessage {#sendmessage}
+### sendMessage
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <SendMessage />

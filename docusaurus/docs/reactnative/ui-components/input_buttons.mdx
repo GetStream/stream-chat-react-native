@@ -20,65 +20,97 @@ import HasImagePicker from '../common-content/core-components/channel/props/has_
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx'
 import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
 
-Component to render the `AttachButton` and the `CommandsButton` on the left side of the input box within [`MessageInput`](./message_input.mdx).
+`InputButtons` is a UI component to render container for `AttachButton` and `CommandsButton` on left side of input box, within `MessageInput` component.
 
-This is the default component provided to the prop `InputButtons` on the [`Channel`](../core-components/channel.mdx#inputbuttons) component.
+You can replace this default UI component using the `InputButtons` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel InputButtons={CustomInputButtons} />
+```
 
 ## Props
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#giphyactive)_</div> giphyActive {#giphyactive}
+### giphyActive
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <GiphyActive />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#hascommands)_</div> hasCommands {#hascommands}
+### hasCommands
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <HasCommands />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#hasfilepicker)_</div> hasFilePicker {#hasfilepicker}
+### hasFilePicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <HasFilePicker />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#hasimagepicker)_</div> hasImagePicker {#hasimagepicker}
+### hasImagePicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <HasImagePicker />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#opencommandspicker)_</div> openCommandsPicker {#opencommandspicker}
+### openCommandsPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <OpenCommandsPicker />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#selectedpicker)_</div> selectedPicker {#selectedpicker}
+### selectedPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <SelectedPicker />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#setshowmoreoptions)_</div> setShowMoreOptions {#setshowmoreoptions}
+### setShowMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <SetShowMoreOptions />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#showmoreoptions)_</div> showMoreOptions {#showmoreoptions}
+### showMoreOptions
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <ShowMoreOptions />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#text)_</div> text {#text}
+### text
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <Text />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#toggleattachmentpicker)_</div> toggleAttachmentPicker {#toggleattachmentpicker}
+### toggleAttachmentPicker
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <ToggleAttachmentPicker />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#uploadsenabled)_</div> uploadsEnabled {#uploadsenabled}
+### uploadsEnabled
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <UploadsEnabled />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#attachbutton)_</div> AttachButton {#attachbutton}
+### AttachButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <AttachButton />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#commandsbutton)_</div> CommandsButton {#commandsbutton}
+### CommandsButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <CommandsButton />
 
-### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#moreoptionsbutton)_</div> MoreOptionsButton {#moreoptionsbutton}
+### MoreOptionsButton
+
+_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
 
 <MoreOptionsButton />
 

@@ -10,8 +10,13 @@ import OnOpenThread from '../common-content/contexts/message-context/on_open_thr
 import OnPress from '../common-content/contexts/message-context/on_press.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
-Component to render thread reply count and avatars of users who thread-replied to a message within the [`MessageList`](./message_list.mdx).
-This is the default component provided to the prop [`MessageReplies`](../core-components/channel.mdx#messagereplies) on the `Channel` component.
+`MessageReplies` is a UI component to render thread reply count and avatars of users who replied to the message in thread. Avatars are rendered using [`MessageRepliesAvatar`](./message_replies_avatars.mdx) component.
+
+You can replace this default UI component using the `MessageReplies` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel MessageReplies={CustomMessageReplies} />
+```
 
 ## Props
 
@@ -31,26 +36,38 @@ Color for the curved line next to the reply count.
 | - |
 | string |
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <Alignment />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
+### message
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <MessageProp />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnLongPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onopenthread)_</div> onOpenThread {#onopenthread}
+### onOpenThread
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnOpenThread />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
+### threadList
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <ThreadList />
