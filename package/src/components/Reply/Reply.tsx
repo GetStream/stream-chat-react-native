@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+import merge from 'lodash/merge';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -104,7 +105,10 @@ const ReplyWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, border, transparent, white },
+      colors: { blue_alice, border, grey, transparent, white },
+      messageSimple: {
+        content: { deletedText },
+      },
       reply: {
         container,
         fileAttachmentContainer,
@@ -182,50 +186,57 @@ const ReplyWithContext = <
             />
           ) : null
         ) : null}
-        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-          markdownStyles={{ text: styles.text, ...markdownStyles }}
-          message={{
-            ...quotedMessage,
-            text: quotedMessage.text
-              ? quotedMessage.text.length > 170
-                ? `${quotedMessage.text.slice(0, 170)}...`
-                : quotedMessage.text
-              : messageType === 'image'
-              ? t('Photo')
-              : messageType === 'file'
-              ? lastAttachment?.title || ''
-              : '',
-          }}
-          onlyEmojis={onlyEmojis}
-          styles={{
-            textContainer: [
-              {
-                marginRight: hasImage
-                  ? Number(
-                      stylesProp.imageAttachment?.height ||
-                        imageAttachment.height ||
-                        styles.imageAttachment.height,
-                    ) +
-                    Number(
-                      stylesProp.imageAttachment?.marginLeft ||
-                        imageAttachment.marginLeft ||
-                        styles.imageAttachment.marginLeft,
-                    )
-                  : messageType === 'file'
-                  ? attachmentSize +
-                    Number(
-                      stylesProp.fileAttachmentContainer?.paddingLeft ||
-                        fileAttachmentContainer.paddingLeft ||
-                        styles.fileAttachmentContainer.paddingLeft,
-                    )
-                  : undefined,
-              },
-              styles.textContainer,
-              textContainer,
-              stylesProp.textContainer,
-            ],
-          }}
-        />
+        {quotedMessage.deleted_at ? (
+          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+            markdownStyles={merge({ em: { color: grey } }, deletedText)}
+            message={{ ...quotedMessage, text: `_${t('Message deleted')}_` }}
+          />
+        ) : (
+          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+            markdownStyles={{ text: styles.text, ...markdownStyles }}
+            message={{
+              ...quotedMessage,
+              text: quotedMessage.text
+                ? quotedMessage.text.length > 170
+                  ? `${quotedMessage.text.slice(0, 170)}...`
+                  : quotedMessage.text
+                : messageType === 'image'
+                ? t('Photo')
+                : messageType === 'file'
+                ? lastAttachment?.title || ''
+                : '',
+            }}
+            onlyEmojis={onlyEmojis}
+            styles={{
+              textContainer: [
+                {
+                  marginRight: hasImage
+                    ? Number(
+                        stylesProp.imageAttachment?.height ||
+                          imageAttachment.height ||
+                          styles.imageAttachment.height,
+                      ) +
+                      Number(
+                        stylesProp.imageAttachment?.marginLeft ||
+                          imageAttachment.marginLeft ||
+                          styles.imageAttachment.marginLeft,
+                      )
+                    : messageType === 'file'
+                    ? attachmentSize +
+                      Number(
+                        stylesProp.fileAttachmentContainer?.paddingLeft ||
+                          fileAttachmentContainer.paddingLeft ||
+                          styles.fileAttachmentContainer.paddingLeft,
+                      )
+                    : undefined,
+                },
+                styles.textContainer,
+                textContainer,
+                stylesProp.textContainer,
+              ],
+            }}
+          />
+        )}
       </View>
     </View>
   );
@@ -251,8 +262,10 @@ const areEqual = <
     !!nextQuotedMessage &&
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
-      ? prevQuotedMessage.id === nextQuotedMessage.id
+      ? prevQuotedMessage.id === nextQuotedMessage.id &&
+        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
       : !!prevQuotedMessage === !!nextQuotedMessage;
+
   if (!quotedMessageEqual) return false;
 
   return true;

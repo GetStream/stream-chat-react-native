@@ -144,6 +144,14 @@ const areEqual = <
     prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
+  const quotedMessageEqual =
+    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
+    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+
+  console.log('message simple equal', prevMessage.text, quotedMessageEqual);
+
+  if (!quotedMessageEqual) return false;
+
   const channelEqual = prevChannel?.state.messages.length === nextChannel?.state.messages.length;
   if (!channelEqual) return false;
 
