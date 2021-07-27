@@ -7,11 +7,12 @@ import LastMessagePreview from '../common-content/ui-components/channel-preview-
 import FormatLatestMessageDate from '../common-content/ui-components/channel-preview-messenger/props/format_latest_message_date.mdx';
 import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
 
-The `ChannelPreviewStatus` is the UI component for displaying the last message status. Renders the last message date for each channel on a list.
+Component to render the status of the latest message on a channel within the [`ChannelList`](../core-components/channel_list.mdx).
 
 ## Basic Usage
 
-You can replace the default preview status UI component using the `PreviewStatus` prop on [ChannelList](../core-components/channel_list.mdx#preview).
+You can customize this component and provide it back to the SDK via the [`PreviewStatus`](../core-components/channel_list.mdx#previewstatus) prop on `ChannelList` if desired.
+
 <!-- Added the following phrase so users can search for "custom message date" and find this component once it defaults to rendering the last message date  -->
 In the following sample we display a custom message preview date. 
 
