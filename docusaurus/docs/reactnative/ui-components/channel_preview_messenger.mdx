@@ -16,8 +16,25 @@ import MaxUnreadCount from '../common-content/ui-components/channel-preview-mess
 import Unread from '../common-content/ui-components/channel-preview-messenger/props/unread.mdx';
 import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
 
-Component to render a list item within the [`ChannelList`](../core-components/channel_list.mdx).
-This is the default component provided to the prop [`Preview`](../core-components/channel_list.mdx#preview) on the `ChannelList` component.
+The `ChannelPreviewMessenger` is the UI component for channel previews. Renders a preview item for each channel in a list.
+
+
+## Basic Usage
+
+You can replace the default preview UI component using the `Preview` prop on [ChannelList](../core-components/channel_list.mdx#preview).
+
+```jsx
+import { ChannelList, ChannelPreviewMessenger } from 'stream-chat-react-native';
+
+const CustomListItem = ({ channel }) => {
+  return (
+    <View style={additionalWrapperStyles}>
+       <ChannelPreviewMessenger channel={channel} />
+    </View>
+  )
+}
+<ChannelList Preview={CustomListItem} />
+```
 
 ## Props
 
@@ -45,22 +62,32 @@ This is the default component provided to the prop [`Preview`](../core-component
 
 <Unread/>
 
-### <div class="label description">_overrides the value from [ChannelsContext](../contexts/channels_context.mdx#previewavatar)_</div> PreviewAvatar {#previewavatar}
+### PreviewAvatar
+
+_(Overrides the value from [ChannelsContext](../contexts/channels_context.mdx))_
 
 <PreviewAvatar/>
 
-### <div class="label description">_overrides the value from [ChannelsContext](../contexts/channels_context.mdx#previewmessage)_</div> PreviewMessage {#previewmessage}
+### PreviewMessage
+
+_(Overrides the value from [ChannelsContext](../contexts/channels_context.mdx))_
 
 <PreviewMessage/>
 
-### <div class="label description">_overrides the value from [ChannelsContext](../contexts/channels_context.mdx#previewstatus)_</div> PreviewStatus {#previewstatus}
+### PreviewStatus
+
+_(Overrides the value from [ChannelsContext](../contexts/channels_context.mdx))_
 
 <PreviewStatus/>
 
-### <div class="label description">_overrides the value from [ChannelsContext](../contexts/channels_context.mdx#previewtitle)_</div> PreviewTitle {#previewtitle}
+### PreviewTitle
+
+_(Overrides the value from [ChannelsContext](../contexts/channels_context.mdx))_
 
 <PreviewTitle/>
 
-### <div class="label description">_overrides the value from [ChannelsContext](../contexts/channels_context.mdx#previewunreadcount)_</div> PreviewUnreadCount {#previewunreadcount}
+### PreviewUnreadCount
+
+_(Overrides the value from [ChannelsContext](../contexts/channels_context.mdx))_
 
 <PreviewUnreadCount/>

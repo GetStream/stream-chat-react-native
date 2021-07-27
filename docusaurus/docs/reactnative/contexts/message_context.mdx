@@ -3,8 +3,6 @@ id: message-context
 title: MessageContext
 ---
 
-import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
-
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
@@ -25,7 +23,6 @@ import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.m
 import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
 import Reactions from '../common-content/contexts/message-context/reactions.mdx';
 import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
-import ShowMessageStatus from '../common-content/contexts/message-context/show_message_status.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
 `MessageContext` is provided by [`Message`](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
@@ -69,10 +66,10 @@ message.type === 'regular' && message.status === 'received'
 
 ### canModifyMessage
 
-True if one of the following condition is true:
+Value is true in one of following scenarios:
 
 <!-- TODO: Change to new docs -->
-- message is sent by the current user (connected to chat)
+- message is sent by current user (connected to chat)
 - current user has [`admin`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
 - current user has [`moderator`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
 
@@ -168,14 +165,6 @@ Callback function for toggling reaction from reaction selector.
 
 <LastGroupMessage />
 
-### lastReceivedId
-
-Most recent message id in the message list.
-
-| Type |
-| - |
-| string |
-
 ### message
 
 <MessageProp />
@@ -212,17 +201,9 @@ Most recent message id in the message list.
 
 <Reactions />
 
-### readEventsEnabled
-
-<ReadEventsEnabled />
-
 ### showMessageOverlay
 
 <ShowMessageOverlay />
-
-### showMessageStatus
-
-<ShowMessageStatus />
 
 ### threadList
 
@@ -230,6 +211,16 @@ Most recent message id in the message list.
 
 <!-- ### goToMessage -->
 
+### lastReceivedId
+
+Most recent message id in the message list.
+
+| Type |
+| - |
+| string |
+
 <!-- ### preventPress -->
 
 <!-- ### showAvatar -->
+
+<!-- ### showMessageStatus -->

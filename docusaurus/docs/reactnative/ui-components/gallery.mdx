@@ -3,8 +3,6 @@ id: gallery
 title: Gallery
 ---
 
-import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx';
-
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
 import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
@@ -25,11 +23,11 @@ import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.m
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 
-Component to render image attachments within the [`MessageList`](./message_list.mdx).
+`Gallery` is a UI component for rendering the `image` type attachments on message.
 
 ## Basic Usage
 
-You can customize the `Gallery` component and provide it back to the SDK via the [`Gallery`](../core-components/channel.mdx#gallery) prop on `Channel` if desired.
+**Use Case:** Disable press handlers on gallery:
 
 ```tsx
 import { Channel, Gallery } from 'stream-chat-react-native';
@@ -39,15 +37,21 @@ import { Channel, Gallery } from 'stream-chat-react-native';
 
 ## Props
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <AdditionalTouchableProps />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <Alignment />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#groupstyles)_</div> groupStyles {#groupstyles}
+### groupStyles
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <GroupStyles />
 
@@ -57,9 +61,11 @@ Weather current message has any thread replies or not. This boolean is used for 
 
 | Type | Default |
 | - | - |
-| boolean | `!!message.reply_count` |
+| boolean | `message.reply_count` |
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#images)_</div> images {#images}
+### images
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <Images />
 
@@ -79,39 +85,47 @@ Text content of current message - `message.text`. This prop gets used for stylin
 | - |
 | string |
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnLongPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPressIn />
 
 ### preventPress
 
-If true, onPress handler will be disabled.
+Disables the press handler, when true.
 
 | Type | Default |
 | - | - |
 | boolean | false |
 
-### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setblurtype)_</div> setBlurType {#setblurtype}
+### setBlurType
+
+_(Overrides the value from [OverlayContext](../contexts/overlay_context.mdx))_
 
 <SetBlurType />
 
-### <div class="label description">_overrides the value from [ImageGalleryContext](../contexts/image_gallery_context.mdx#setimage)_</div> setImage {#setimage}
+### setOverlay
 
-<SetImage />
-
-### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setoverlay)_</div> setOverlay {#setoverlay}
+_(Overrides the value from [OverlayContext](../contexts/overlay_context.mdx))_
 
 <SetOverlay />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
+### threadList
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <ThreadList />
 

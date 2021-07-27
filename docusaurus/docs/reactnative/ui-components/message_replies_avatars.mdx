@@ -7,14 +7,18 @@ title: MessageRepliesAvatar
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 import MessageProp from '../common-content/contexts/message-context/message.mdx';
 
-Component to render avatars of users who thread-replied to a message, within the [`MessageList`](./message_list.mdx).
+`MessageRepliesAvatar` is a UI component to render avatars of users, which replied to message in thread. This component gets rendered inside [`MessageReplies`](../message-replies).
 
 ## Props
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
+:::note
+This component uses default values for all the following props, from [`MessageContext`](../contexts/message_context.mdx)
+:::
+
+### <div class="label required">required</div> **alignment**
 
 <Alignment />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
+### <div class="label required">required</div> **message**
 
 <MessageProp />

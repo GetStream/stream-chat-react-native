@@ -11,7 +11,7 @@ import CloseThread from '../common-content/contexts/thread-context/close_thread.
 import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
 import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx'
 
-Component to render thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
+`Thread` component renders thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
 
 ## Basic Usage
 
@@ -53,11 +53,15 @@ When true, input box will be auto focused upon mounting.
 
 <!-- ### closeThreadOnDismount -->
 
-### <div class="description">overrides the value from [ChatContext](../contexts/chat_context.mdx#client)</div> client {#client}
+### client
+
+_(Overrides the value from [ChatContext](../contexts/chat_context.mdx))_
 
 <Client />
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#closeThread)</div> closeThread {#closeThread}
+### closeThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 <CloseThread />
 
@@ -69,7 +73,9 @@ When true, the underlying input box will be disabled.
 | - | - |
 | boolean | false |
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#loadMoreThread)</div> loadMoreThread {#loadMoreThread}
+### loadMoreThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 <LoadMoreThread />
 
@@ -81,11 +87,15 @@ Function which gets called when Thread component unmounts.
 | - |
 | function |
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#reloadThread)</div> reloadThread {#reloadThread}
+### reloadThread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 <ReloadThread />
 
-### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#thread)</div> thread {#thread}
+### thread
+
+_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 <Thread />
 
