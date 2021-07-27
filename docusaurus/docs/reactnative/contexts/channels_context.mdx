@@ -3,16 +3,6 @@ id: channels-context
 title: ChannelsContext
 ---
 
-import Channels from '../common-content/contexts/channels-context/channels.mdx';
-import Error from '../common-content/contexts/channels-context/error.mdx';
-import HasNextPage from '../common-content/contexts/channels-context/has_next_page.mdx';
-import LoadingChannels from '../common-content/contexts/channels-context/loading_channels.mdx';
-import LoadingNextPage from '../common-content/contexts/channels-context/loading_next_page.mdx';
-import LoadNextPage from '../common-content/contexts/channels-context/load_next_page.mdx';
-import Refreshing from '../common-content/contexts/channels-context/refreshing.mdx';
-import RefreshList from '../common-content/contexts/channels-context/refresh_list.mdx';
-import ReloadList from '../common-content/contexts/channels-context/reload_list.mdx';
-
 import AdditionalFlatListProps from '../common-content/core-components/channel-list/props/additional_flat_list_props.mdx';
 import LoadMoreThreshold from '../common-content/core-components/channel-list/props/load_more_threshold.mdx';
 import MaxUnreadCount from '../common-content/core-components/channel-list/props/max_unread_count.mdx';
@@ -23,7 +13,6 @@ import EmptyStateIndicator from '../common-content/core-components/channel-list/
 import FooterLoadingIndicator from '../common-content/core-components/channel-list/props/footer_loading_indicator.mdx';
 import HeaderErrorIndicator from '../common-content/core-components/channel-list/props/header_error_indicator.mdx';
 import HeaderNetworkDownIndicator from '../common-content/core-components/channel-list/props/header_network_down_indicator.mdx';
-import ListHeaderComponent from '../common-content/core-components/channel-list/props/list_header_component.mdx';
 import LoadingErrorIndicator from '../common-content/core-components/channel-list/props/loading_error_indicator.mdx';
 import LoadingIndicator from '../common-content/core-components/channel-list/props/loading_indicator.mdx';
 import Preview from '../common-content/core-components/channel-list/props/preview.mdx';
@@ -56,120 +45,196 @@ const { channels, reloadList } = useChannelsContext();
 ```
 ## Value
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#additionalflatlistprops)_ props</div> additionalFlatListProps {#additionalflatlistprops}
+### additionalFlatListProps
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <AdditionalFlatListProps />
 
 ### channels
 
-<Channels />
+<!-- TODO: Change to new docs -->
+Array of channels currently loaded in `ChannelList` component. This value gets updated whenever `ChannelList` component makes a call to [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) either on first load or during pagination.
+
+| Type |
+| - |
+| array |
 
 ### error
 
-<Error />
+Value is true when call to `client.queryChannels()` within ChannelList component fails, either during first load or during pagination.
+
+| Type |
+| - |
+| boolean |
 
 <!-- ### forceUpdate -->
 
 ### hasNextPage
 
-<HasNextPage />
+Value is false when `ChannelList` component has loaded all the channels corresponding to [`filters`](../core-components/channel_list.mdx#required-filters).
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#listheadercomponent)_ props</div> ListHeaderComponent {#listheadercomponent}
-
-<ListHeaderComponent />
+| Type |
+| - |
+| boolean |
 
 ### loadingChannels
 
-<LoadingChannels />
+Value is true when `ChannelList` component is loading the first page of channels.
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadmorethreshold)_ props</div> loadMoreThreshold {#loadmorethreshold}
+| Type |
+| - |
+| boolean |
+
+### loadMoreThreshold
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <LoadMoreThreshold />
 
 ### loadingNextPage
 
-<LoadingNextPage />
+Value is true when `ChannelList` component is loading more channels as part of pagination. This will be set to true, when user scrolls to bottom of the list and [`hasNextPage`](#hasnextpage) is true.
+
+| Type |
+| - |
+| boolean |
 
 ### loadNextPage
 
-<LoadNextPage />
+Function to manually load next page for the `ChannelList` component
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#maxunreadcount)_ props</div> maxUnreadCount {#maxunreadcount}
+| Type |
+| - |
+| function |
+
+### maxUnreadCount
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <MaxUnreadCount />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#numberofskeletons)_ props</div> numberOfSkeletons {#numberofskeletons}
+### numberOfSkeletons
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <NumberOfSkeletons />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#onselect)_ props</div> onSelect {#onselect}
+### onSelect
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <OnSelect />
 
 ### refreshing
 
-<Refreshing />
+Value is true when `ChannelList` component is refreshing the list (using [`refreshList`](#refreshlist) function call). Refreshing state will be triggered either when user executes pull-to-refresh gesture or if network connection is being recovered.
+This value is attached to [refreshing](https://reactnative.dev/docs/flatlist#refreshing) prop of underlying `FlatList` component of `ChannelList`.
+
+| Type |
+| - |
+| boolean |
 
 ### refreshList
 
-<RefreshList />
+Function to manually resync or refresh the channels in `ChannelList` component.
+
+:::note
+Calling `refreshList` will display a [RefreshControl](https://reactnative.dev/docs/refreshcontrol) on underlying FlatList of `ChannelList` component.
+:::
+
+| Type |
+| - |
+| function |
 
 ### reloadList
 
-<ReloadList />
+Function to manually reload the channels in `ChannelList` component. 
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#setflatlistref)_ props</div> setFlatListRef {#setflatlistref}
+:::note
+Calling `reloadList` will wipe out the existing list of channels and show a loading indicator until new results are ready.
+:::
+
+### setFlatListRef
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <SetFlatListRef />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#emptystateindicator)_ props</div> EmptyStateIndicator {#emptystateindicator}
+### EmptyStateIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <EmptyStateIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#footerloadingindicator)_ props</div> FooterLoadingIndicator {#footerloadingindicator}
+### FooterLoadingIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <FooterLoadingIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#headererrorindicator)_ props</div> HeaderErrorIndicator {#headererrorindicator}
+### HeaderErrorIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <HeaderErrorIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#headernetworkdownindicator)_ props</div> HeaderNetworkDownIndicator {#headernetworkdownindicator}
+### HeaderNetworkDownIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <HeaderNetworkDownIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadingerrorindicator)_ props</div> LoadingErrorIndicator {#loadingerrorindicator}
+### LoadingErrorIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <LoadingErrorIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadingindicator)_ props</div> LoadingIndicator {#loadingindicator}
+### LoadingIndicator
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <LoadingIndicator />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#preview)_ props</div> Preview {#preview}
+### Preview
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <Preview />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewavatar)_ props</div> PreviewAvatar {#previewavatar}
+### PreviewAvatar
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <PreviewAvatar />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewmessage)_ props</div> PreviewMessage {#previewmessage}
+### PreviewMessage
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <PreviewMessage />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewstatus)_ props</div> PreviewStatus {#previewstatus}
+### PreviewStatus
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <PreviewStatus />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewtitle)_ props</div> PreviewTitle {#previewtitle}
+### PreviewTitle
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <PreviewTitle />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewunreadcount)_ props</div> PreviewUnreadCount {#previewunreadcount}
+### PreviewUnreadCount
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <PreviewUnreadCount />
 
-### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#skeleton)_ props</div> Skeleton {#skeleton}
+### Skeleton
+
+_(Forwarded from [`ChannelList`](../core-components/channel_list.mdx) props)_
 
 <Skeleton />

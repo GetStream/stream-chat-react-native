@@ -10,9 +10,13 @@ import OnPressIn from '../common-content/contexts/message-context/on_press_in.md
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 
-Component to render giphy attachments within the [`MessageList`](./message_list.mdx).
+`Giphy` is a UI component for rendering the `giphy` type attachments on message.
 
-This is the default component provided to the prop [`Giphy`](../core-components/channel.mdx#giphy) on the `Channel` component.
+You can replace this default UI component using the `Giphy` prop on [Channel](../core-components/channel.mdx) component.
+
+```tsx
+<Channel Giphy={CustomGiphy}
+```
 
 ## Props
 
@@ -24,22 +28,32 @@ Attachment object for `giphy` type attachment.
 | - |
 | object |
 
-### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+### additionalTouchableProps
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <AdditionalTouchableProps />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#handleaction)_</div> handleAction {#handleaction}
+### handleAction
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <HandleAction />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnLongPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPress />
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
+### onPressIn
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPressIn />

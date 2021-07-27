@@ -11,13 +11,11 @@ import ShowMessageOverlay from '../common-content/contexts/message-context/show_
 
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
 
-`ReactionList` component is used to display the reactions added to a message right on top of it.
-
-This is the default component provided to the prop [`ReactionList`](../core-components/channel.mdx#reactionlist) on the `Channel` component.
+`ReactionList` is a UI component to render reactions added on message, on top of message. This is a child component of `MessageSimple`.
 
 ## Basic Usage
 
-**Use case**: Override the background color on the reaction list container.
+**Use Case** Override background color for reaction list container:
 
 ```tsx
 import { Channel, ReactionList } from 'stream-chat-react-native';
@@ -29,7 +27,7 @@ const ReactionListWithCustomBackground = () => <ReactionList fill={'#00DDD'} str
 
 ## Props
 
-### <div class="label required">required</div> **messageContentWidth** {#messagecontentwidth}
+### <div class="label required">required</div> **messageContentWidth** 
 
 Width of message content. This helps ReactionList align itself on the front-edge of the message content.
 This value gets computed in [`MessageContent`](./message_content.mdx) once the content gets loaded.
@@ -38,13 +36,15 @@ This value gets computed in [`MessageContent`](./message_content.mdx) once the c
 | - |
 | number |
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)</div> **alignment** {#alignment}
+### alignment
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <Alignment />
 
 ### fill
 
-Background color for reaction list container when [`alignment`](#alignment) is `left`.
+Background color for reaction list container, when [`alignment`](#alignment) is `left`.
 
 | Type |
 | - |
@@ -52,33 +52,41 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 
 <!-- ### radius -->
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)</div> onLongPress {#onlongpress}
+### onLongPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnLongPress />
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)</div> onPress {#onpress}
+### onPress
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <OnPress />
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#reactions)</div> reactions {#reactions}
+### reactions
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <Reactions />
 
 ### reactionSize
 
-Dimensions for each reaction icon.
+Dimension of each reaction icon.
 
 | Type |
 | - |
 | number |
 
-### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#showmessageoverlay)</div> showMessageOverlay {#showmessageoverlay}
+### showMessageOverlay
+
+_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
 
 <ShowMessageOverlay />
 
 ### stroke
 
-Background color for reaction list container when [`alignment`](#alignment) is `right`.
+Background color for reaction list container, when [`alignment`](#alignment) is `right`.
 
 | Type |
 | - |
@@ -86,6 +94,8 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 
 <!-- ### strokeSize -->
 
-### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
+### supportedReactions
+
+_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
 
 <SupportedReactions />

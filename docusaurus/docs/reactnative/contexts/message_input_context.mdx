@@ -28,8 +28,8 @@ import NumberOfLines from '../common-content/core-components/channel/props/numbe
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
+import SendMessageAsync from '../common-content/core-components/channel/props/send_message_async.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
-import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
 import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx';
 
@@ -46,7 +46,6 @@ import IsValidMessage from '../common-content/contexts/message-input-context/is_
 import MentionedUsers from '../common-content/contexts/message-input-context/mentioned_users.mdx'
 import NumberOfUploads from '../common-content/contexts/message-input-context/number_of_uploads.mdx'
 import OpenAttachmentPicker from '../common-content/contexts/message-input-context/open_attachment_picker.mdx'
-import OpenCommandsPicker from '../common-content/contexts/message-input-context/open_commands_picker.mdx'
 import OpenFilePicker from '../common-content/contexts/message-input-context/open_file_picker.mdx'
 import OpenMentionsPicker from '../common-content/contexts/message-input-context/open_mentions_picker.mdx'
 import QuotedMessage from '../common-content/contexts/message-input-context/quoted_message.mdx';
@@ -56,7 +55,6 @@ import ResetInput from '../common-content/contexts/message-input-context/reset_i
 import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
 import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx'
 import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
-import SetFileUploads from '../common-content/contexts/message-input-context/set_file_uploads.mdx'
 import SetImageUploads from '../common-content/contexts/message-input-context/set_image_uploads.mdx'
 import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
 import SetMentionedUsers from '../common-content/contexts/message-input-context/set_mentioned_users.mdx'
@@ -67,7 +65,6 @@ import SetText from '../common-content/contexts/message-input-context/set_text.m
 import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
 import Text from '../common-content/contexts/message-input-context/text.mdx'
 import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx'
-import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx'
 import UploadFile from '../common-content/contexts/message-input-context/upload_file.mdx';
 import UploadImage from '../common-content/contexts/message-input-context/upload_image.mdx';
 import UpdateMessage from '../common-content/contexts/message-input-context/update_message.mdx'
@@ -97,11 +94,16 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#additionaltextinputprops)_ props</div> additionalTextInputProps {#additionaltextinputprops}
+### additionalTextInputProps
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <AdditionalTextInputProps />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#autocompletetriggersettings)_ props</div> autoCompleteTriggerSettings {#autocompletetriggersettings}
+
+### autoCompleteTriggerSettings
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <AutoCompleteTriggerSettings />
 
@@ -113,15 +115,21 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <ClearQuotedMessageState />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#compressimagequality)_ props</div> compressImageQuality {#compressimagequality}
+### compressImageQuality
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <CompressImageQuality />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#dodocuploadrequest)_ props</div> doDocUploadRequest {#dodocuploadrequest}
+### doDocUploadRequest
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <DoDocUploadRequest />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#doimageuploadrequest)_ props</div> doImageUploadRequest {#doimageuploadrequest}
+### doImageUploadRequest
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <DoImageUploadRequest />
 
@@ -129,39 +137,57 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <Editing />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#editmessage)_ props</div> editMessage {#editmessage}
+### editMessage
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <EditMessage />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hascommands)_ props</div> hasCommands {#hascommands}
+### hasCommands
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <HasCommands />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hasfilepicker)_ props</div> hasFilePicker {#hasfilepicker}
+### hasFilePicker
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <HasFilePicker />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hasimagepicker)_ props</div> hasImagePicker {#hasimagepicker}
+### hasImagePicker
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <HasImagePicker />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#initialvalue)_ props</div> initialValue {#initialvalue}
+### initialValue
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <InitialValue />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#maxmessagelength)_ props</div> maxMessageLength {#maxmessagelength}
+### maxMessageLength
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <MaxMessageLength />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#maxnumberoffiles)_ props</div> maxNumberOfFiles {#maxnumberoffiles}
+### maxNumberOfFiles
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <MaxNumberOfFiles />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#numberoflines)_ props</div> numberOfLines {#numberoflines}
+### numberOfLines
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <NumberOfLines />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#onchangetext)_ props</div> onChangeText {#onchangetext}
+### onChangeText
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <OnChangeText />
 
@@ -169,7 +195,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <QuotedMessage />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendimageasync)_ props</div> sendImageAsync {#sendimageasync}
+### sendImageAsync
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <SendImageAsync />
 
@@ -181,9 +209,11 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <!-- ### setQuotedMessageState -->
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#uploadsenabled)_ props</div> uploadsEnabled {#uploadsenabled}
+### uploadsEnabled
 
-<UploadsEnabled />
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+
+<UploadsEnabled /> ---
 
 ### appendText
 
@@ -259,13 +289,19 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <ResetInput />
 
-### <div class="label description">_forwarded from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx#selectedpicker)_</div> selectedPicker {#selectedpicker}
+### selectedPicker
+
+_(Forwarded from [AttachmentPickerContext](../contexts/attachment_picker_context.mdx))_
 
 <SelectedPicker />
 
 <!-- ### sending -->
 
-<!-- ### sendMessageAsync -->
+### sendMessageAsync
+
+_(Forwarded from [Channel](../core-components/channel.mdx) props)_
+
+<SendMessageAsync /> ---
 
 ### sendThreadMessageInChannel
 
@@ -275,9 +311,7 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <!-- ### setAsyncUploads -->
 
-### setFileUploads
-
-<SetFileUploads />
+<!-- ### setFileUploads -->
 
 ### setGiphyActive
 
@@ -319,17 +353,13 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <Text />
 
-### <div class="label description">_forwarded from [ThreadContext](../contexts/thread_context.mdx#thread)_</div> thread {#thread}
-
-<Thread />
+<!-- ### thread -->
 
 ### toggleAttachmentPicker
 
 <ToggleAttachmentPicker />
 
-### triggerSettings
-
-<TriggerSettings />
+<!-- ### triggerSettings -->
 
 ### updateMessage
 
@@ -351,31 +381,45 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <UploadNewImage />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#attachbutton)_ props</div> AttachButton {#attachbutton}
+### AttachButton
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <AttachButton />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#commandsbutton)_ props</div> CommandsButton {#commandsbutton}
+### CommandsButton
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <CommandsButton />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#fileuploadpreview)_ props</div> FileUploadPreview {#fileuploadpreview}
+### FileUploadPreview
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <FileUploadPreview />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#imageuploadpreview)_ props</div> ImageUploadPreview {#imageuploadpreview}
+### ImageUploadPreview
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <ImageUploadPreview />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#input)_ props</div> Input {#input}
+### Input
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <Input />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#inputbuttons)_ props</div> InputButtons {#inputbuttons}
+### InputButtons
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <InputButtons />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#moreoptionsbutton)_ props</div> MoreOptionsButton {#moreoptionsbutton}
+### MoreOptionsButton
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <MoreOptionsButton />
 
@@ -383,10 +427,14 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <SendButton />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#showthreadmessageinchannelbutton)_ props</div> ShowThreadMessageInChannelButton {#showthreadmessageinchannelbutton}
+### ShowThreadMessageInChannelButton
 
-<ShowThreadMessageInChannelButton />
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#uploadprogressindicator)_ props</div> UploadProgressIndicator {#uploadprogressindicator}
+<ShowThreadMessageInChannelButton /> ---
 
-<UploadProgressIndicator />
+### UploadProgressIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+
+<UploadProgressIndicator /> ---

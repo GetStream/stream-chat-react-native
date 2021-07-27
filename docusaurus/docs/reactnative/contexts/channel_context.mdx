@@ -8,6 +8,7 @@ import EnforceUniqueReaction from '../common-content/core-components/channel/pro
 import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
 import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
 import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
+import ScrollToFirstUnreadThreshold from '../common-content/core-components/channel/props/scroll_to_first_unread_threshold.mdx';
 import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx';
 import EmptyStateIndicator from '../common-content/core-components/channel/props/empty_state_indicator.mdx';
 import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
@@ -15,7 +16,6 @@ import NetworkDownIndicator from '../common-content/core-components/channel/prop
 
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import Members from '../common-content/contexts/channel-context/members.mdx';
-import ScrollToFirstUnreadThreshold from '../common-content/contexts/channel-context/scroll_to_first_unread_threshold.mdx';
 import Watchers from '../common-content/contexts/channel-context/watchers.mdx';
 
 `ChannelContext` is provided by [`Channel`](../core-components/channel.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
@@ -45,11 +45,15 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#channel)_ props</div> channel {#channel}
+### channel
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <Channel />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#enforceuniquereaction)_ props</div> enforceUniqueReaction {#enforceuniquereaction}
+### enforceUniqueReaction
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <EnforceUniqueReaction />
 
@@ -59,7 +63,7 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 ### error
 
-True if any api call to `channel.query()` during first load or pagination fails.
+Value is true, when any api call to `channel.query()` during first load or pagination fails.
 
 | Type |
 | - |
@@ -67,19 +71,21 @@ True if any api call to `channel.query()` during first load or pagination fails.
 
 ### giphyEnabled
 
-True if giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
+Value is true, when giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
 
 | Type |
 | - |
 | boolean |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hidedateseparators)_ props</div> hideDateSeparators {#hidedateseparators}
+### hideDateSeparators
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <HideDateSeparators />
 
 ### isAdmin
 
-True if current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+Value is true, when current user (connected to chat client) has `admin` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
 const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role === 'admin';
@@ -91,7 +97,7 @@ const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role
 
 ### isModerator
 
-True if current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
+Value is true, when current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
 const isModerator = channel?.state.membership.role === 'channel_moderator' || channel?.state.membership.role === 'moderator';
@@ -103,7 +109,7 @@ const isModerator = channel?.state.membership.role === 'channel_moderator' || ch
 
 ### isOwner
 
-True if current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
+Value is true, when current user (connected to chat client) has `owner` level permissions for current channel type. Please read [User Permission](https://getstream.io/chat/docs/javascript/chat_permission_policies/) section for details.
 
 ```tsx
 const isOwner = channel?.state.membership.role === 'owner';
@@ -140,13 +146,15 @@ loadChannelAtMessage({
 
 ### loading
 
-True if channel is loading messages during first load.
+Value is true, when channel is loading messages during first load.
 
 | Type |
 | - |
 | boolean |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#loadingindicator)_ props</div> LoadingIndicator {#loadingindicator}
+### LoadingIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <LoadingIndicator />
 
@@ -159,7 +167,9 @@ Function to mark current channel as read, for current user. This function intern
 | - |
 | function |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#maxtimebetweengroupedmessages)_ props</div> maxTimeBetweenGroupedMessages {#maxtimebetweengroupedmessages}
+### maxTimeBetweenGroupedMessages
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <MaxTimeBetweenGroupedMessages />
 
@@ -186,7 +196,9 @@ Record<
 | - |
 | object |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#readeventsenabled)_ props</div> readEventsEnabled {#readeventsenabled}
+### readEventsEnabled
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <ReadEventsEnabled />
 
@@ -199,6 +211,8 @@ Function to reload a channel at most recent message. Promise returned by this fu
 | () => Promise |
 
 ### scrollToFirstUnreadThreshold
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <ScrollToFirstUnreadThreshold />
 
@@ -226,7 +240,9 @@ Id of message, which is highlighted currently. This value gets set when you load
 | - |
 | string |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#typingeventsenabled)_ props</div> typingEventsEnabled {#typingeventsenabled}
+### typingEventsEnabled
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <TypingEventsEnabled />
 
@@ -242,11 +258,15 @@ Total number of users, currently watching a channel.
 | - |
 | number |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#emptystateindicator)_ props</div> EmptyStateIndicator {#emptystateindicator}
+### EmptyStateIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <EmptyStateIndicator />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#networkdownindicator)_ props</div> NetworkDownIndicator {#networkdownindicator}
+### NetworkDownIndicator
+
+_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 <NetworkDownIndicator />
 
