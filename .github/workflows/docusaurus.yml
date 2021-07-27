@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - master # default branch name for each repo that docs should be push from
-      - vishal/walkthrough-docs
-    # paths:
-    #   - docusaurus/**
+      - develop
+    paths:
+      - docusaurus/**
 jobs:
   push_docusaurus:
     runs-on: ubuntu-latest
