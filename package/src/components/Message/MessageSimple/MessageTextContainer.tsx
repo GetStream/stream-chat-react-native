@@ -143,25 +143,14 @@ const areEqual = <
   prevProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    markdownStyles: prevMarkdownStyles,
-    message: prevMessage,
-    onlyEmojis: prevOnlyEmojis,
-  } = prevProps;
-  const {
-    markdownStyles: nextMarkdownStyles,
-    message: nextMessage,
-    onlyEmojis: nextOnlyEmojis,
-  } = nextProps;
+  const { message: prevMessage, onlyEmojis: prevOnlyEmojis } = prevProps;
+  const { message: nextMessage, onlyEmojis: nextOnlyEmojis } = nextProps;
 
   const messageTextEqual = prevMessage.text === nextMessage.text;
   if (!messageTextEqual) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
-
-  const markdownStylesColorEqual = prevMarkdownStyles?.em?.color === nextMarkdownStyles?.em?.color;
-  if (!markdownStylesColorEqual) return false;
 
   const mentionedUsersEqual =
     prevMessage.mentioned_users?.length === nextMessage.mentioned_users?.length &&

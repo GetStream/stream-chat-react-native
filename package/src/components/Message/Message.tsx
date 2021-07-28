@@ -1208,8 +1208,6 @@ const areEqual = <
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
     prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
 
-  console.log('message equal', prevMessage.text, quotedMessageEqual);
-
   if (!quotedMessageEqual) return false;
 
   const messageUserBannedEqual = prevMessage.user?.banned === nextMessage.user?.banned;

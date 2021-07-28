@@ -72,6 +72,8 @@ export const useCreateMessageContext = <
   }`;
   const membersValue = JSON.stringify(members);
 
+  const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
+
   const messageContext: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       actionsEnabled,
@@ -114,6 +116,7 @@ export const useCreateMessageContext = <
     }),
     [
       actionsEnabled,
+      quotedMessageDeletedValue,
       alignment,
       disabled,
       goToMessage,

@@ -186,57 +186,56 @@ const ReplyWithContext = <
             />
           ) : null
         ) : null}
-        {quotedMessage.deleted_at ? (
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-            markdownStyles={merge({ em: { color: grey } }, deletedText)}
-            message={{ ...quotedMessage, text: `_${t('Message deleted')}_` }}
-          />
-        ) : (
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-            markdownStyles={{ text: styles.text, ...markdownStyles }}
-            message={{
-              ...quotedMessage,
-              text: quotedMessage.text
-                ? quotedMessage.text.length > 170
-                  ? `${quotedMessage.text.slice(0, 170)}...`
-                  : quotedMessage.text
-                : messageType === 'image'
-                ? t('Photo')
-                : messageType === 'file'
-                ? lastAttachment?.title || ''
-                : '',
-            }}
-            onlyEmojis={onlyEmojis}
-            styles={{
-              textContainer: [
-                {
-                  marginRight: hasImage
-                    ? Number(
-                        stylesProp.imageAttachment?.height ||
-                          imageAttachment.height ||
-                          styles.imageAttachment.height,
-                      ) +
-                      Number(
-                        stylesProp.imageAttachment?.marginLeft ||
-                          imageAttachment.marginLeft ||
-                          styles.imageAttachment.marginLeft,
-                      )
-                    : messageType === 'file'
-                    ? attachmentSize +
-                      Number(
-                        stylesProp.fileAttachmentContainer?.paddingLeft ||
-                          fileAttachmentContainer.paddingLeft ||
-                          styles.fileAttachmentContainer.paddingLeft,
-                      )
-                    : undefined,
-                },
-                styles.textContainer,
-                textContainer,
-                stylesProp.textContainer,
-              ],
-            }}
-          />
-        )}
+        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+          markdownStyles={
+            quotedMessage.deleted_at
+              ? merge({ em: { color: grey } }, deletedText)
+              : { text: styles.text, ...markdownStyles }
+          }
+          message={{
+            ...quotedMessage,
+            text: quotedMessage.deleted_at
+              ? `_${t('Message deleted')}_`
+              : quotedMessage.text
+              ? quotedMessage.text.length > 170
+                ? `${quotedMessage.text.slice(0, 170)}...`
+                : quotedMessage.text
+              : messageType === 'image'
+              ? t('Photo')
+              : messageType === 'file'
+              ? lastAttachment?.title || ''
+              : '',
+          }}
+          onlyEmojis={onlyEmojis}
+          styles={{
+            textContainer: [
+              {
+                marginRight: hasImage
+                  ? Number(
+                      stylesProp.imageAttachment?.height ||
+                        imageAttachment.height ||
+                        styles.imageAttachment.height,
+                    ) +
+                    Number(
+                      stylesProp.imageAttachment?.marginLeft ||
+                        imageAttachment.marginLeft ||
+                        styles.imageAttachment.marginLeft,
+                    )
+                  : messageType === 'file'
+                  ? attachmentSize +
+                    Number(
+                      stylesProp.fileAttachmentContainer?.paddingLeft ||
+                        fileAttachmentContainer.paddingLeft ||
+                        styles.fileAttachmentContainer.paddingLeft,
+                    )
+                  : undefined,
+              },
+              styles.textContainer,
+              textContainer,
+              stylesProp.textContainer,
+            ],
+          }}
+        />
       </View>
     </View>
   );
