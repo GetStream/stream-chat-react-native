@@ -5,18 +5,11 @@ title: MoreOptionsButton
 
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
-`MoreOptionsButton` is a default UI component for a button, which when pressed toggles the visibility of `InputButtons`.
-
-You can replace this default UI component using the `MoreOptionsButton` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel MoreOptionsButton={CustomMoreOptionsButton} />
-```
+Component to render a button to toggle visibility of [`InputButtons`](./input_buttons.mdx) within the [`MessageInput`](./message_input.mdx).
+This is the default component provided to the prop [`MoreOptionsButton`](../core-components/channel.mdx#moreoptionsbutton) on the `Channel` component.
 
 ## Props
 
-### disabled
-
-_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#disabled)_</div> disabled {#disabled}
 
 <Disabled />

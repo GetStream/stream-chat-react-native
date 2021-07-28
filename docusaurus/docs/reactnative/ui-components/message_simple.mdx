@@ -11,77 +11,36 @@ import MessageAvatar from '../common-content/core-components/channel/props/messa
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
 
-`MessageSimple` is the default component for rendering message related UI. This component has been well optimized to save un-necessary re-renderings.
-If you would like to replace this default component with your own implementation, you can use the prop [`MessageSimple`](../core-components/channel.mdx#messagesimple) on `Channel` component.
+Component to render a message within the [`MessageList`](./message_list.mdx). This component has been well optimized to save un-necessary re-renderings.
+This is the default component provided to the prop [`MessageSimple`](../core-components/channel.mdx#messagesimple) on the `Channel` component.
 
-This component consumes the [`MessageContext`](../contexts/message_context.mdx) and handles the display and functionality for an individual message in a message list. The Message UI component is typically a combination following sub-components that each consume context and are responsible for one aspect of a message (ex: text, reactions, attachments).
-
-## Basic Usage
-
-**Use Case 1** Force `single` [`groupStyles`](../contexts/message_context.mdx#groupstyles) on message UI.
-
-> You can achieve the same result by using a prop [`noGroupByUser`](./message_list.mdx#nogroupbyuser) on `MessageList` component.
-
-```tsx
-import {Channel, MessageSimple} from 'stream-chat-react-native'
-
-const CustomMessageUI = () => <MessageSimple groupStyles={['single']} />
-
-<Channel MessageSimple={CustomMessageUI} />
-```
-
-**Use Case 2** Force `left` alignment on message UI (similar to slack)
-
-> You can achieve the same result by using a prop [`forceAlignMessages`](../core-components/channel.mdx#forcealignmessages) on `MessageList` component.
-
-```tsx
-import {Channel, MessageSimple} from 'stream-chat-react-native'
-
-const CustomMessageUI = () => <MessageSimple alignment={'left'} />
-
-<Channel MessageSimple={CustomMessageUI} />
-```
 
 ## Props
 
-### alignment
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
 
 <Alignment />
 
-### groupStyles
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#groupstyles)_</div> groupStyles {#groupstyles}
 
 <GroupStyles />
 
-### hasReactions
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#hasreactions)_</div> hasReactions {#hasreactions}
 
 <HasReactions />
 
-### message
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
 
 <MessageProp />
 
-### MessageAvatar
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#messageavatar)_</div> MessageAvatar {#messageavatar}
 
 <MessageAvatar />
 
-### MessageContent
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#messagecontent)_</div> MessageContent {#messagecontent}
 
 <MessageContent />
 
-### ReactionList
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#reactionlist)_</div> ReactionList {#reactionlist}
 
 <ReactionList />

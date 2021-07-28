@@ -28,7 +28,7 @@ const { loadingMore, loadMoreRecent, messages } = usePaginatedMessageListContext
 
 ### hasMore
 
-Value is false when `Channel` has loaded all the messages in history, via pagination. Channel component uses this value to decide if more messages should be queried from server when user reaches top of the `MessageList`.
+False if `Channel` has loaded all the messages in history, via pagination. Channel component uses this value to decide if more messages should be queried from server when user reaches top of the `MessageList`.
 
 | Type |
 | - |
@@ -36,7 +36,7 @@ Value is false when `Channel` has loaded all the messages in history, via pagina
 
 ### loadingMore
 
-Value is true, when `Channel` is querying more messages in the past from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at top of the list.
+True if `Channel` is querying more messages in the past from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at top of the list.
 
 | Type |
 | - |
@@ -44,7 +44,7 @@ Value is true, when `Channel` is querying more messages in the past from server,
 
 ### loadingMoreRecent
 
-Value is true, when `Channel` is querying more recent messages from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at bottom of the list.
+True if `Channel` is querying more recent messages from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at bottom of the list.
 
 | Type |
 | - |

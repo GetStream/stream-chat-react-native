@@ -7,31 +7,21 @@ import AllowThreadMessagesInChannel from '../common-content/core-components/chan
 import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
 import SetSendThreadMessageInChannel from '../common-content/contexts/message-input-context/set_send_thread_message_in_channel.mdx'
 
-`ShowThreadMessageInChannelButton` is a default UI component, for rendering a checkbox labeled "Also send to channel" within `Thread` component.
+Component to render a checkbox (labeled "Also send to channel"), within the [`Thread`](./thread.mdx) component.
 When this checkbox is checked by users, message sent as thread reply also gets added to parent channel's message list.
 
-You can replace this default UI component using the `ShowThreadMessageInChannelButton` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel ShowThreadMessageInChannelButton={CustomShowThreadMessageInChannelButton} />
-```
+This is the default component provided to the prop [`ShowThreadMessageInChannelButton`](../core-components/channel.mdx#showthreadmessageinchannelbutton) on the `Channel` component.
 
 ## Props
 
-### allowThreadMessagesInChannel
-
-_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+### <div class="label description">_overrides the value from [ThreadContext](../contexts/thread_context.mdx#allowthreadmessagesinchannel)_</div> allowThreadMessagesInChannel {#allowthreadmessagesinchannel}
 
 <AllowThreadMessagesInChannel />
 
-### sendThreadMessageInChannel
-
-_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#sendthreadmessageinchannel)_</div> sendThreadMessageInChannel {#sendthreadmessageinchannel}
 
 <SendThreadMessageInChannel />
 
-### setSendThreadMessageInChannel
-
-_(Overrides the value from [MessageInputContext](../contexts/message_input_context.mdx))_
+### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#setsendthreadmessageinchannel)_</div> setSendThreadMessageInChannel {#setsendthreadmessageinchannel}
 
 <SetSendThreadMessageInChannel />
