@@ -6,19 +6,8 @@ title: MessageDeleted
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 import MessageProp from '../common-content/contexts/message-context/message.mdx';
 
-UI component to render UI for deleted messages. [`MessageContent`](./message_content.mdx) component uses `MessageDeleted` component to render messages which have `deleted_at` property as non-empty.
-
-## Basic Usage
-
-**Use case** Always show the borders
-
-```tsx
-import {Channel, MessageDeleted} from 'stream-chat-react-native';
-
-const CustomMessageDeleted = ({ message }) => <MessageDeleted noBorder={false} />
-
-<Channel MessageDeleted={CustomMessageDeleted} />
-```
+Component to render a deleted message within the [`MessageList`](./message_list.mdx).
+This is the default component provided to the prop [`MessageDeleted`](../core-components/channel.mdx#messagedeleted) on the `Channel` component.
 
 ## Props
 
@@ -49,20 +38,17 @@ Weather to show the borders for deleted message or not. By default, this value i
 ```tsx
 const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
 ```
+
 | Type |
 | - |
 | boolean |
 
 <!-- ### <div class="label required">required</div> **onLayout** -->
 
-### alignment
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
 
 <Alignment />
 
-### message
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
 
 <MessageProp />

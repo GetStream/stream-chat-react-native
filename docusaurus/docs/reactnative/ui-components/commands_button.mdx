@@ -5,19 +5,12 @@ title: CommandsButton
 
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
-`CommandsButton` is a default UI component for rendering commands button within `MessageInput` component. When user presses this button, it opens suggestions autocomplete popup for commands.
-
-You can replace this default UI component using the `CommandsButton` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel CommandsButton={CustomButton} />
-```
+Component to render a button to open the commands picker, within the [`MessageInput`](./message_input.mdx).
+This is the default component provided to the prop [`CommandsButton`](../core-components/channel.mdx#commandsbutton) on the `Channel` component.
 
 ## Props
 
-### disabled
-
-_(Overrides the value from [ChannelContext](../contexts/channel_context.mdx))_
+### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#disabled)_</div> disabled {#disabled}
 
 <Disabled />
 
