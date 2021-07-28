@@ -1,0 +1,28 @@
+---
+id: message-system
+title: MessageSystem
+---
+
+import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
+
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+
+Component to render `system` type messages within the [`MessageList`](./message_list.mdx).
+
+This is the default component provided to the prop [`MessageSystem`](../core-components/channel.mdx#messagesystem) on the `Channel` component.
+Purpose of system messages is to inform user about changes to channel. System messages are part of message history, and have a property `type` set as `system`.
+You can add system messages within message history in following scenarios:
+
+- [A user gets added to or removed from channel](https://getstream.io/chat/docs/javascript/channel_members/?language=javascript)
+- [A user accepts invite to join a channel](https://getstream.io/chat/docs/javascript/channel_invites/?language=javascript#accepting-an-invite)
+- [Channel is updated](https://getstream.io/chat/docs/javascript/channel_update/?language=javascript&q=system#full-update-(overwrite))
+
+## Props
+
+### formatDate
+
+<FormatDate />
+
+### message
+
+<MessageProp />

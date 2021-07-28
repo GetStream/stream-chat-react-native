@@ -32,198 +32,130 @@ import OnPress from '../common-content/contexts/message-context/on_press.mdx';
 import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
 import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
 import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
+import ShowMessageStatus from '../common-content/contexts/message-context/show_message_status.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
-`MessageContent` is a child component of `MessageSimple`, and renders all the actual content of the message such as text, attachments, thread replies count etc.
-
-:::note
-Avatar of sender of message and reactions are not part of `MessageContent`
-:::
-
-## Basic Usage
-
-**Use Case**: Turn off `onLongPress` handler for `MessageContent`.
-
-```tsx
-import {Channel, MessageContent} from 'stream-chat-react-native';
-
-const CustomMessageContent = () => <MessageContent onLongPress={() => null} />
-
-<Channel MessageContent={CustomMessageContent} />
-```
+Component to render content of a message within the [`MessageList`](./message_list.mdx). Message avatar and reactions are not part of `MessageContent`.
+This is the default component provided to the prop [`MessageContent`](../core-components/channel.mdx#messagecontent) on the `Channel` component.
 
 ## Props
 
-### additionalTouchableProps
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
 
 <AdditionalTouchableProps />
 
-### alignment
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
 
 <Alignment />
 
-### disabled
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#disabled)_</div> disabled {#disabled}
 
 <Disabled />
 
-### formatDate
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#formatdate)_</div> formatDate {#formatdate}
 
 <FormatDate />
 
 <!-- ### goToMessage -->
 
-### groupStyles
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#groupstyles)_</div> groupStyles {#groupstyles}
 
 <GroupStyles />
 
-### hasReactions
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#hasreactions)_</div> hasReactions {#hasreactions}
 
 <HasReactions />
 
-### isMyMessage
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#ismymessage)_</div> isMyMessage {#ismymessage}
 
 <IsMyMessage />
 
-### lastGroupMessage
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#lastgroupmessage)_</div> lastGroupMessage {#lastgroupmessage}
 
 <LastGroupMessage />
 
-### members
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#members)_</div> members {#members}
 
 <Members />
 
-### message
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
 
 <MessageProp />
 
-### messageContentOrder
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#messagecontentorder)_</div> messageContentOrder {#messagecontentorder}
 
 <MessageContentOrder />
 
-### onLongPress
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
 
 <OnLongPress />
 
-### onlyEmojis
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlyemojis)_</div> onlyEmojis {#onlyemojis}
 
 <OnlyEmojis />
 
-### onPress
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
 
 <OnPress />
 
-### onPressIn
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
 
 <OnPressIn />
 
-### otherAttachments
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#otherattachments)_</div> otherAttachments {#otherattachments}
 
 <OtherAttachments />
 
 <!-- ### preventPress -->
 
-<!-- ### showMessageStatus -->
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#showmessagestatus)_</div> showMessageStatus {#showmessagestatus}
 
-### quotedRepliesEnabled
+<ShowMessageStatus />
 
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#quotedrepliesenabled)_</div> quotedRepliesEnabled {#quotedrepliesenabled}
 
 <QuotedRepliesEnabled />
 
-### threadList
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
 
 <ThreadList />
 
-### threadRepliesEnabled
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#threadrepliesenabled)_</div> threadRepliesEnabled {#threadrepliesenabled}
 
 <ThreadRepliesEnabled />
 
-### Attachment
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#attachment)_</div> Attachment {#attachment}
 
 <Attachment />
 
-### FileAttachmentGroup
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#fileattachmentgroup)_</div> FileAttachmentGroup {#fileattachmentgroup}
 
 <FileAttachmentGroup />
 
-### Gallery
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#gallery)_</div> Gallery {#gallery}
 
 <Gallery />
 
-### MessageDeleted
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#messagedeleted)_</div> MessageDeleted {#messagedeleted}
 
 <MessageDeleted />
 
-### MessageFooter
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#messagefooter)_</div> MessageFooter {#messagefooter}
 
 <MessageFooter />
 
-### MessageHeader
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#messageheader)_</div> MessageHeader {#messageheader}
 
 <MessageHeader />
 
-### MessageReplies
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#messagereplies)_</div> MessageReplies {#messagereplies}
 
 <MessageReplies />
 
-### MessageStatus
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#messagestatus)_</div> MessageStatus {#messagestatus}
 
 <MessageStatus />
 
-### Reply
-
-_(Overrides the value from [MessagesContext](../contexts/messages_context.mdx))_
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#reply)_</div> Reply {#reply}
 
 <Reply />
