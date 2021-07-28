@@ -73,11 +73,7 @@ export const AttachmentSelectionBar: React.FC = () => {
         </View>
       </TouchableOpacity>
       {hasFilePicker && (
-        <TouchableOpacity
-          disabled={imageUploads.length > 0}
-          hitSlop={{ bottom: 15, top: 15 }}
-          onPress={openFilePicker}
-        >
+        <TouchableOpacity hitSlop={{ bottom: 15, top: 15 }} onPress={openFilePicker}>
           <View style={[styles.icon, icon]}>
             <FileSelectorIcon
               numberOfImageUploads={imageUploads.length}
