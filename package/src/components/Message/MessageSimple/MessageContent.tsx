@@ -229,7 +229,9 @@ const MessageContentWithContext = <
       ? transparent
       : otherAttachments.length
       ? otherAttachments[0].type === 'giphy'
-        ? transparent
+        ? !message.quoted_message
+          ? transparent
+          : grey_gainsboro
         : blue_alice
       : alignment === 'left' || error
       ? transparent
