@@ -355,6 +355,7 @@ export type ChannelPropsWithContext<
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
     maxMessageLength?: number;
     messageId?: string;
+    mutesEnabled?: boolean;
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
@@ -472,6 +473,7 @@ const ChannelWithContext = <
     MessageSystem = MessageSystemDefault,
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
+    mutesEnabled: mutesEnabledProp,
     muteUser,
     myMessageTheme,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -1101,6 +1103,7 @@ const ChannelWithContext = <
     /**
      * Replace with backend flag once its ready
      */
+    mutesEnabled: mutesEnabledProp ?? clientChannelConfig?.mutes ?? true,
     quotedRepliesEnabled: quotedRepliesEnabledProp ?? true,
     reactionsEnabled: reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
     threadRepliesEnabled: threadRepliesEnabledProp ?? clientChannelConfig?.replies ?? true,

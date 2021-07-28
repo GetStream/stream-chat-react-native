@@ -192,6 +192,7 @@ export type MessagePropsWithContext<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
+    | 'mutesEnabled'
     | 'muteUser'
     | 'onDoubleTapMessage'
     | 'onLongPressMessage'
@@ -321,6 +322,7 @@ const MessageWithContext = <
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
+    mutesEnabled,
     muteUser: muteUserProp,
     onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
@@ -905,6 +907,7 @@ const MessageWithContext = <
             isThreadMessage,
             message,
             messageReactions,
+            mutesEnabled,
             muteUser,
             quotedRepliesEnabled,
             quotedReply,
