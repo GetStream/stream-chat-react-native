@@ -11,8 +11,7 @@ configPromise.then((config) => {
   };
 
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
-    const commitMessage =
-      'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}';
+    const commitMessage = 'chore(release): ${nextRelease.version} [skip ci]';
 
     newConfig.plugins.push([
       '@semantic-release/exec',
