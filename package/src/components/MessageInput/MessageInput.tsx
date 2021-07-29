@@ -45,6 +45,10 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
+  attachmentSeparator: {
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -487,8 +491,19 @@ const MessageInputWithContext = <
                     <Reply />
                   </View>
                 )}
-                {fileUploads.length ? <FileUploadPreview /> : null}
                 {imageUploads.length ? <ImageUploadPreview /> : null}
+                {imageUploads.length && fileUploads.length ? (
+                  <View
+                    style={[
+                      styles.attachmentSeparator,
+                      {
+                        borderBottomColor: grey_whisper,
+                        marginHorizontal: giphyActive ? 8 : 12,
+                      },
+                    ]}
+                  />
+                ) : null}
+                {fileUploads.length ? <FileUploadPreview /> : null}
                 <View
                   style={[
                     styles.autoCompleteInputContainer,
