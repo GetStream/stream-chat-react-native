@@ -58,6 +58,7 @@ import type {
 import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
+  mutesEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   reactionsEnabled?: boolean;
   threadRepliesEnabled?: boolean;
