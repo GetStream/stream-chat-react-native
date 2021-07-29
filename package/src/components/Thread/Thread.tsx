@@ -82,12 +82,10 @@ const ThreadWithContext = <
     additionalMessageInputProps,
     additionalMessageListProps,
     autoFocus = true,
-    client,
     closeThread,
     closeThreadOnDismount = true,
     disabled,
     loadMoreThread,
-    reloadThread,
     MessageInput = DefaultMessageInput,
     MessageList,
     onThreadDismount,
@@ -102,18 +100,6 @@ const ThreadWithContext = <
     if (thread?.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
-
-    const recoveredHandler = client.on('connection.recovered', reloadThread);
-    const changedHandler = client.on('connection.changed', (event) => {
-      if (event.online) {
-        reloadThread();
-      }
-    });
-
-    return () => {
-      recoveredHandler.unsubscribe();
-      changedHandler.unsubscribe();
-    };
   }, []);
 
   useEffect(

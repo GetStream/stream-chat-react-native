@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+import merge from 'lodash/merge';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -104,7 +105,10 @@ const ReplyWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, border, transparent, white },
+      colors: { blue_alice, border, grey, transparent, white },
+      messageSimple: {
+        content: { deletedText },
+      },
       reply: {
         container,
         fileAttachmentContainer,
@@ -183,10 +187,16 @@ const ReplyWithContext = <
           ) : null
         ) : null}
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-          markdownStyles={{ text: styles.text, ...markdownStyles }}
+          markdownStyles={
+            quotedMessage.deleted_at
+              ? merge({ em: { color: grey } }, deletedText)
+              : { text: styles.text, ...markdownStyles }
+          }
           message={{
             ...quotedMessage,
-            text: quotedMessage.text
+            text: quotedMessage.deleted_at
+              ? `_${t('Message deleted')}_`
+              : quotedMessage.text
               ? quotedMessage.text.length > 170
                 ? `${quotedMessage.text.slice(0, 170)}...`
                 : quotedMessage.text
@@ -251,8 +261,10 @@ const areEqual = <
     !!nextQuotedMessage &&
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
-      ? prevQuotedMessage.id === nextQuotedMessage.id
+      ? prevQuotedMessage.id === nextQuotedMessage.id &&
+        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
       : !!prevQuotedMessage === !!nextQuotedMessage;
+
   if (!quotedMessageEqual) return false;
 
   return true;

@@ -229,7 +229,9 @@ const MessageContentWithContext = <
       ? transparent
       : otherAttachments.length
       ? otherAttachments[0].type === 'giphy'
-        ? transparent
+        ? !message.quoted_message
+          ? transparent
+          : grey_gainsboro
         : blue_alice
       : alignment === 'left' || error
       ? transparent
@@ -452,7 +454,14 @@ const areEqual = <
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text;
+
   if (!messageEqual) return false;
+
+  const quotedMessageEqual =
+    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
+    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+
+  if (!quotedMessageEqual) return false;
 
   const prevAttachments = prevMessage.attachments;
   const nextAttachments = nextMessage.attachments;

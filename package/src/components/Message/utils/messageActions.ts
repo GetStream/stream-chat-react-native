@@ -32,6 +32,7 @@ export const messageActions = <
   isThreadMessage,
   message,
   messageReactions,
+  mutesEnabled,
   muteUser,
   quotedRepliesEnabled,
   quotedReply,
@@ -54,6 +55,7 @@ export const messageActions = <
   quotedReply: MessageAction | null;
   retry: MessageAction | null;
   threadReply: MessageAction | null;
+  mutesEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
 }): Array<MessageAction | null> | undefined => {
@@ -83,7 +85,7 @@ export const messageActions = <
     actions.push(copyMessage);
   }
 
-  if (!isMyMessage) {
+  if (mutesEnabled && !isMyMessage) {
     actions.push(muteUser);
   }
 

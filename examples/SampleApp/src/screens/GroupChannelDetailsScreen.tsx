@@ -36,7 +36,7 @@ import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel } from 'stream-chat';
+import type { Channel, UserResponse } from 'stream-chat';
 
 import type {
   LocalAttachmentType,
@@ -204,6 +204,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
   if (!channel) return null;
 
+  const channelCreatorId =
+    channel.data && (channel.data.created_by_id || (channel.data.created_by as UserResponse)?.id);
+
   /**
    * Opens confirmation sheet for leaving the group
    */
@@ -302,7 +305,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 </View>
               </View>
               <Text style={{ color: grey }}>
-                {channel.data?.created_by_id === member.user?.id ? 'owner' : ''}
+                {channelCreatorId === member.user?.id ? 'owner' : ''}
               </Text>
             </TouchableOpacity>
           );
