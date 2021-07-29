@@ -14,6 +14,23 @@
 * Fix messages disappearing on reconnect ([dc0fc3d](https://github.com/GetStream/stream-chat-react-native/commit/dc0fc3d21cbb38d3442f8f94d30bd1f795fb2ba8))
 * Fix quoted images/attachments ([2bb1f14](https://github.com/GetStream/stream-chat-react-native/commit/2bb1f14ce60d7455c4ff7272440965be0a7e32c8))
 
+
+### [3.6.7](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.6...v3.6.7) (2021-07-20)
+
+
+### Bug Fixes
+
+* Clean user's typing state when app goes to background ([d4b9f3e](https://github.com/GetStream/stream-chat-react-native/commit/d4b9f3e1b18af62b02620f68eb341624ebcfa5d3))
+
+
+### [3.6.6](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.5...v3.6.6) (2021-07-19)
+
+
+### Bug Fixes
+
+* Fix missing translations for message deleted ([7e7f653](https://github.com/GetStream/stream-chat-react-native/commit/7e7f6533904510fa0f02a22f5c7b45d4171cdefc))
+
+
 ### [3.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.4...v3.6.5) (2021-07-15)
 
 
