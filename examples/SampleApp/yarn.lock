@@ -7091,10 +7091,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@3.6.4:
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.6.4.tgz#dd846d9995ee1f7171abc152acd2c76b9ff76965"
-  integrity sha512-0AoEtbEIPBnaCCsMJlUTJ7bQF6Wx3/wRfudOVV0vVjW8BRLgkSL4E1BXFyhvq1S0d2+msQO5izev7zcFT/mpQA==
+stream-chat-react-native-core@3.6.5:
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.6.5.tgz#7e3e292d60f1b5a50ffda39485261a7ab29f5d7b"
+  integrity sha512-0VU9RxiTvHQCJvKvbXd8M2kMKEf6VNd5GTIOJetXG0z/SWCJT1IFlwfWE0tap2OA1ocG6uBMbNEK5oFc41HTJw==
   dependencies:
     "@babel/runtime" "7.13.10"
     "@gorhom/bottom-sheet" "3.6.4"
@@ -7122,6 +7122,21 @@ stream-chat@3.9.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.9.0.tgz#64019fa4f4a6c5551f623e687b46bfb0ef89b9c3"
   integrity sha512-WeRQQUwFXM6f+V6CE34Ryp9ePcOaRHdpZ+X/ONcT5a45xvFERmeqcG2j28TZXD4+UI63iJ1+0KBVipFvsIrSKw==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
+stream-chat@~3.13.1:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.13.1.tgz#1692246dd74968dee7596a6a8c1e1a02656bb634"
+  integrity sha512-JWgVwRgmAE/a7P9i+LK2Lr2C4dXfRaedm2c4jKsZuMPR6KwINIy0kgdGyds3Xqmp4/LPSfhXZJ7wExmlfo9+7g==
   dependencies:
     "@babel/runtime" "^7.13.10"
     "@types/jsonwebtoken" "^8.5.0"
