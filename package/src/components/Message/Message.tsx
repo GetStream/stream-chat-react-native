@@ -529,6 +529,10 @@ const MessageWithContext = <
   }, [attachmentImageLength]);
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
+    if (content === 'quoted_reply') {
+      return !!message.quoted_message;
+    }
+
     switch (content) {
       case 'attachments':
         return !!attachments.other.length;
@@ -1197,7 +1201,14 @@ const areEqual = <
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.updated_at === nextMessage.updated_at;
+
   if (!messageEqual) return false;
+
+  const quotedMessageEqual =
+    prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
+    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+
+  if (!quotedMessageEqual) return false;
 
   const messageUserBannedEqual = prevMessage.user?.banned === nextMessage.user?.banned;
   if (!messageUserBannedEqual) return false;
