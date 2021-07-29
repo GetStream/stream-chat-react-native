@@ -17,7 +17,7 @@ configPromise.then((config) => {
     newConfig.plugins.push([
       '@semantic-release/exec',
       {
-        prepareCmd: `git diff-index --quiet HEAD -- ${process.cwd()}/* && exit 0 || (git add ${process.cwd()}/\\* && git commit -m "${commitMessage}" && git push origin master)`,
+        prepareCmd: `git diff-index --quiet HEAD -- ${process.cwd()}/* && exit 0 || (git add ${process.cwd()}/package.json && git add ${process.cwd()}/CHANGELOG.md && git commit -m "${commitMessage}" && git push origin master)`,
       },
     ]);
 
