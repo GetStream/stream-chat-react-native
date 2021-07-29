@@ -1,5 +1,18 @@
 # Change Log
 
+### [0.0.29](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.28...SampleApp@v0.0.29) (2021-07-29)
+
+
+### Bug Fixes
+
+* Fix messages disappearing on reconnect ([dc0fc3d](https://github.com/GetStream/stream-chat-react-native/commit/dc0fc3d21cbb38d3442f8f94d30bd1f795fb2ba8))
+* fixing channel creation flow in sample app ([8c7db64](https://github.com/GetStream/stream-chat-react-native/commit/8c7db649b6333a8ea6ff32ab16da125ee9bd0262))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [0.0.26](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.25...SampleApp@v0.0.26) (2021-07-15)
 
 
