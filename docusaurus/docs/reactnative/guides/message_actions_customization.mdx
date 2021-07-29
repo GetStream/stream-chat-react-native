@@ -53,11 +53,14 @@ messageActions={({
   isThreadMessage, // boolean;
   message, // MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions, // boolean;
+  mutesEnabled, // boolean
   muteUser, // MessageAction | null;
+  reactionsEnabled, // boolean
   reply, // MessageAction | null;
   retry, // MessageAction | null;
   threadReply, // MessageAction | null;
-  repliesEnabled, // boolean;
+  threadRepliesEnabled, // boolean;
+  quotedRepliesEnabled, // boolean;
 }) => {
   return [] // Array<MessageAction>
 }}
