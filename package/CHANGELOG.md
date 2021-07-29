@@ -1,5 +1,19 @@
 # Change Log
 
+## [3.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.7...v3.7.0) (2021-07-29)
+
+
+### Features
+
+* added mutesEnabled prop on Channel component, to toggle  "Mute User" action ([b5c1f38](https://github.com/GetStream/stream-chat-react-native/commit/b5c1f38cf5a4510283a2ff30c2884eaf73662577))
+* Allow images and attachments on the same message ([9a36352](https://github.com/GetStream/stream-chat-react-native/commit/9a36352cd34c36b0dcf0552fe5dc50c5ebc9f513))
+
+
+### Bug Fixes
+
+* Fix messages disappearing on reconnect ([dc0fc3d](https://github.com/GetStream/stream-chat-react-native/commit/dc0fc3d21cbb38d3442f8f94d30bd1f795fb2ba8))
+* Fix quoted images/attachments ([2bb1f14](https://github.com/GetStream/stream-chat-react-native/commit/2bb1f14ce60d7455c4ff7272440965be0a7e32c8))
+
 ### [3.6.5](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.4...v3.6.5) (2021-07-15)
 
 
