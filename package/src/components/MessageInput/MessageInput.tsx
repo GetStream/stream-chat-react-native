@@ -197,6 +197,7 @@ const MessageInputWithContext = <
     sending,
     sendMessageAsync,
     setGiphyActive,
+    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     suggestionsTitle,
@@ -534,6 +535,7 @@ const MessageInputWithContext = <
                       disabled={disabled}
                       onPress={() => {
                         setGiphyActive(false);
+                        setShowMoreOptions(true);
                       }}
                       testID='close-button'
                     >
@@ -773,6 +775,7 @@ export const MessageInput = <
     sending,
     sendMessageAsync,
     setGiphyActive,
+    setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
@@ -820,6 +823,7 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setGiphyActive,
+        setShowMoreOptions,
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
