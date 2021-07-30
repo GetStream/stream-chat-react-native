@@ -127,6 +127,7 @@ const areEqual = <
   nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    giphyActive: prevGiphyActive,
     hasCommands: prevHasCommands,
     hasFilePicker: prevHasFilePicker,
     hasImagePicker: prevHasImagePicker,
@@ -137,6 +138,7 @@ const areEqual = <
   } = prevProps;
 
   const {
+    giphyActive: nextGiphyActive,
     hasCommands: nextHasCommands,
     hasFilePicker: nextHasFilePicker,
     hasImagePicker: nextHasImagePicker,
@@ -170,6 +172,10 @@ const areEqual = <
   }
 
   if ((!prevProps.text && nextText) || (prevText && !nextText)) {
+    return false;
+  }
+
+  if (prevGiphyActive !== nextGiphyActive) {
     return false;
   }
 
