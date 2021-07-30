@@ -590,6 +590,7 @@ export const MessageInputProvider = <
   const resetInput = (pendingAttachments: Attachment<At>[] = []) => {
     setFileUploads([]);
     setGiphyActive(false);
+    setShowMoreOptions(true);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
