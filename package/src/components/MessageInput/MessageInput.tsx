@@ -141,6 +141,7 @@ type MessageInputPropsWithContext<
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
+    | 'setShowMoreOptions'
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
