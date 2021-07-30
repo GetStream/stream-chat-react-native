@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.0...v3.7.1) (2021-07-30)
+
+
+### Bug Fixes
+
+* Fix giphy and attachment icon hiding issue ([1b1f8fe](https://github.com/GetStream/stream-chat-react-native/commit/1b1f8fef5a263a735922cd2dc2057b384676866c))
+
 ## [3.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.6.7...v3.7.0) (2021-07-29)
 
 
