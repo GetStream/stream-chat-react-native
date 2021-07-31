@@ -8,7 +8,7 @@ import loadMoreButton from '../assets/guides/channel-list-customization/load_mor
 
 Let's look at how to make some customizations to [`ChannelList`](../core-components/channel_list.mdx).
 
-## Customize Event Handlers
+## Customizing Event Handlers
 
 `ChannelList` uses [Event Listeners](https://getstream.io/chat/docs/javascript/event_listening/?language=javascript) to dynamically update when changes occur.
 If a new message is received, a user is added to a channel, or other events take place, the `ChannelList` will update its UI accordingly.
@@ -77,7 +77,7 @@ const customOnMessageNew = async (setChannels, event) => {
 
 Similarly, events other than notification.message_new can be handled as per application requirement.
 
-## Replace infinite scroll pagination with "Load More" button
+## Replacing infinite scroll pagination with "Load More" button
 
 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
 <div>
