@@ -122,7 +122,7 @@ You can replace the `Input` wholesale, as above, or create you own `MessageInput
 
 **NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
 
-## Customize Parts of MessageInput
+## Customizing nested components within MessageInput
 
 If you would like to only replace some internal UI component of `MessageInput`, you can do so by providing your own UI component for the default component which you want to replace, as a prop to `Channel` component.
 Following images show the prop names for replacing corresponding components. Within your own custom UI implementation, you can access all the stateful information via available contexts
@@ -183,7 +183,7 @@ const StreamButton = () => {
 />
 ```
 
-## Disable File Uploads or Image Uploads
+## Disabling File Uploads or Image Uploads
 
 There are three ways to disable file or image uploads from RN app:
 
