@@ -12,7 +12,7 @@ To customize the entire Input UI part of MessageInput component, you can add a c
 
 ## Changing layout of MessageInput
 
-Lets take a look at a simple example with following requirements:
+Let's take a look at a simple example with following requirements:
 
 - Stretch input box to full width
 - Button to send a message, open attachment picker and open commands picker -  below input box
@@ -236,9 +236,8 @@ const additionalTextInputProps = useMemo(() => {
 
 ## Replacing AttachmentPicker With Native Image Picker
 
-Attachment picker opens up as bottom sheet by default.
-It's easy to replace this default attachment picker with a device's native image picker, as shown in screenshots below.
-In this section, we will walk through the integration of native image picker to attach images in message.
+Attachment picker is rendered/displayed/opened inside of a bottom sheet by default.
+The default behavior can be easily replaced with the device's native image picker (as shown in screenshots below).
 
 <table>
   <tr>
@@ -252,9 +251,9 @@ In this section, we will walk through the integration of native image picker to 
   </tr>
 </table>
 
-Channel component takes a prop [AttachButton](../core-components/channel.mdx#attachbutton),
+Channel component receives a prop [AttachButton](../core-components/channel.mdx#attachbutton),
 which can be used to override the default attach button next to input box as following. This prop can be used to
-override default `onPress` handler for the `AttachButton` component.
+override the default `onPress` handler for the `AttachButton` component.
 
 ```tsx
 import { AttachButton, Channel } from 'stream-chat-react-native';
@@ -271,9 +270,8 @@ const CustomAttachButton = () => {
 
 ```
 
-Lets implement the `onPressHandler` to open action sheet showing options to choose attachment from Photo Library, Camera or Files.
-We will be using [`@expo/react-native-action-sheet`](https://github.com/expo/react-native-action-sheet)
-package for action sheet implementation in this example.
+In order to make the `onPressHandler` open the actionsheet and show the options to choose attachments from Photo Library, Camera or Files,
+you can use [`@expo/react-native-action-sheet`](https://github.com/expo/react-native-action-sheet) package for the action sheet implemented in this example.
 
 ```sh
 yarn add @expo/react-native-action-sheet
@@ -319,14 +317,14 @@ const CustomAttachButton = () => {
 </ActionSheetProvider>
 ```
 
-Now lets hook the relevant action handlers for buttons within actionsheet.
+Now let's hook the relevant action handlers for buttons within actionsheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_preview.mdx)) within `MessageInput` component
 by using a function `uploadNewImage` provided by [`MessageInputContext`](../contexts/message_input_context.mdx#uploadnewimage).
 
-For file attachments, SDK by default uses native file picker. You can reuse that functionality by adding `pickFile` function
-provided by [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as action handler within actionsheet.
+For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
+provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as action handler within actionsheet.
 
 ```tsx {4,10,12-21,23-30,43,46,49}
 import {
