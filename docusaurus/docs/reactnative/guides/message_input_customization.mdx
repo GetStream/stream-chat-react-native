@@ -253,8 +253,8 @@ In this section, we will walk through the integration of native image picker to 
 </table>
 
 Channel component takes a prop [AttachButton](../core-components/channel.mdx#attachbutton),
-which can be used to override the default attach button next to input box as following. We can use this prop to
-override default onPress handler for the default attach button.
+which can be used to override the default attach button next to input box as following. This prop can be used to
+override default `onPress` handler for the `AttachButton` component.
 
 ```tsx
 import { AttachButton, Channel } from 'stream-chat-react-native';
@@ -319,7 +319,7 @@ const CustomAttachButton = () => {
 </ActionSheetProvider>
 ```
 
-Now lets hook the relevant action handlers for buttons in actionsheet.
+Now lets hook the relevant action handlers for buttons within actionsheet.
 [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker) provides an image picker functionality
 with good support for configurable compression, multiple images and cropping. And selected images from image picker or camera can be wired in
 with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_preview.mdx)) within `MessageInput` component
