@@ -180,6 +180,7 @@ export const ImageGallery = <
     : vh(100);
   const halfScreenHeight = screenHeight / 2;
   const quarterScreenHeight = screenHeight / 4;
+  const snapPoints = React.useMemo(() => [0, (screenHeight * 9) / 10], []);
 
   /**
    * BottomSheet ref
@@ -1154,7 +1155,7 @@ export const ImageGallery = <
       />
       <BottomSheet
         animatedIndex={animatedBottomSheetIndex}
-        containerHeight={Dimensions.get('screen').height}
+        containerHeight={fullScreenHeight}
         handleComponent={() => (
           <ImageGridHandle
             closeGridView={closeGridView}
@@ -1165,7 +1166,7 @@ export const ImageGallery = <
         index={0}
         onChange={(index: number) => setCurrentBottomSheetIndex(index)}
         ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || [0, (screenHeight * 9) / 10]}
+        snapPoints={imageGalleryGridSnapPoints || snapPoints}
       >
         <ImageGrid
           closeGridView={closeGridView}
