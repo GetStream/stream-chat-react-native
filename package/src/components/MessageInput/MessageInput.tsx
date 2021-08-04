@@ -328,7 +328,11 @@ const MessageInputWithContext = <
         });
         setSelectedImages(updatedSelectedImages);
       } else if (imageUploadsLength > selectedImagesLength) {
-        /** User is editing some message which contains image attachments. */
+        /**
+         * User is editing some message which contains image attachments OR
+         * image attachment is added from custom image picker (other than the default bottomsheet image picker)
+         * using `uploadNewImage` function from `MessageInputContext`.
+         **/
         setSelectedImages(
           imageUploads
             .map((imageUpload) => ({
