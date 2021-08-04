@@ -292,6 +292,7 @@ const MessageInputWithContext = <
   useEffect(() => {
     if (imagesForInput) {
       if (selectedImagesLength > imageUploadsLength) {
+        /** User selected an image in bottom sheet attachment picker */
         const imagesToUpload = selectedImages.filter((selectedImage) => {
           const uploadedImage = imageUploads.find(
             (imageUpload) =>
@@ -301,6 +302,7 @@ const MessageInputWithContext = <
         });
         imagesToUpload.forEach((image) => uploadNewImage(image));
       } else if (selectedImagesLength < imageUploadsLength) {
+        /** User de-selected an image in bottom sheet attachment picker */
         const imagesToRemove = imageUploads.filter(
           (imageUpload) =>
             !selectedImages.find(
@@ -316,6 +318,7 @@ const MessageInputWithContext = <
   useEffect(() => {
     if (imagesForInput) {
       if (imageUploadsLength < selectedImagesLength) {
+        /** User removed some image from seleted images within ImageUploadPreview. */
         const updatedSelectedImages = selectedImages.filter((selectedImage) => {
           const uploadedImage = imageUploads.find(
             (imageUpload) =>
@@ -325,12 +328,13 @@ const MessageInputWithContext = <
         });
         setSelectedImages(updatedSelectedImages);
       } else if (imageUploadsLength > selectedImagesLength) {
+        /** User is editing some message which contains image attachments. */
         setSelectedImages(
           imageUploads
             .map((imageUpload) => ({
               height: imageUpload.file.height,
               source: imageUpload.file.source,
-              uri: imageUpload.url,
+              uri: imageUpload.url || imageUpload.file.uri,
               width: imageUpload.file.width,
             }))
             .filter(Boolean) as Asset[],
