@@ -290,6 +290,8 @@ export type InputMessageInputContextValue<
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
+  /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
+  autoCompleteSuggestionsLimit?: number;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */

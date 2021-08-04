@@ -73,6 +73,7 @@ type AutoCompleteInputPropsWithContext<
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
+    | 'autoCompleteSuggestionsLimit'
     | 'giphyActive'
     | 'maxMessageLength'
     | 'numberOfLines'
@@ -112,6 +113,7 @@ const AutoCompleteInputWithContext = <
 ) => {
   const {
     additionalTextInputProps,
+    autoCompleteSuggestionsLimit,
     closeSuggestions,
     giphyActive,
     giphyEnabled,
@@ -193,6 +195,7 @@ const AutoCompleteInputWithContext = <
               });
             }
           },
+          autoCompleteSuggestionsLimit,
         );
       }
     } else if (isCommandTrigger(trigger)) {
@@ -211,6 +214,7 @@ const AutoCompleteInputWithContext = <
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
             });
           },
+          autoCompleteSuggestionsLimit,
         );
       }
     } else {
@@ -495,6 +499,7 @@ export const AutoCompleteInput = <
   const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTextInputProps,
+    autoCompleteSuggestionsLimit,
     giphyActive,
     maxMessageLength,
     numberOfLines,
@@ -512,6 +517,7 @@ export const AutoCompleteInput = <
     <MemoizedAutoCompleteInput
       {...{
         additionalTextInputProps,
+        autoCompleteSuggestionsLimit,
         closeSuggestions,
         giphyActive,
         giphyEnabled,

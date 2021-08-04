@@ -55,6 +55,8 @@ export const ProgressIndicatorTypes: {
   RETRY: 'retry',
 });
 
+const autoCompleteSuggestionsDefaultLimit = 10;
+
 const isUserResponse = <Us extends DefaultUserType = DefaultUserType>(
   user: SuggestionUser<Us> | undefined,
 ): user is SuggestionUser<Us> => (user as SuggestionUser<Us>) !== undefined;
@@ -144,11 +146,16 @@ const queryMembers = async <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
+  limit = autoCompleteSuggestionsDefaultLimit,
 ): Promise<void> => {
   if (typeof query === 'string') {
-    const response = (await (channel as unknown as Channel).queryMembers({
-      name: { $autocomplete: query },
-    })) as ChannelMemberAPIResponse<Us>;
+    const response = (await (channel as unknown as Channel).queryMembers(
+      {
+        name: { $autocomplete: query },
+      },
+      {},
+      { limit },
+    )) as ChannelMemberAPIResponse<Us>;
 
     const users: SuggestionUser<Us>[] = [];
     response.members.forEach((member) => isUserResponse(member.user) && users.push(member.user));
@@ -181,6 +188,7 @@ export type TriggerSettings<
       query: SuggestionCommand<Co>['name'],
       text: string,
       onReady?: (data: SuggestionCommand<Co>[], q: SuggestionCommand<Co>['name']) => void,
+      limit?: number,
     ) => SuggestionCommand<Co>[];
     output: (entity: SuggestionCommand<Co>) => {
       caretPosition: string;
@@ -208,6 +216,7 @@ export type TriggerSettings<
       query: SuggestionUser<Us>['name'],
       _: string,
       onReady?: (data: SuggestionUser<Us>[], q: SuggestionUser<Us>['name']) => void,
+      limit?: number,
     ) => SuggestionUser<Us>[] | Promise<void> | void;
     output: (entity: SuggestionUser<Us>) => {
       caretPosition: string;
@@ -242,6 +251,7 @@ export type QueryMembersFunction<
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
+  limit?: number,
 ) => Promise<void>;
 
 /**
@@ -269,7 +279,7 @@ export const ACITriggerSettings = <
 }: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<Co, Us> => ({
   '/': {
     component: 'CommandsItem',
-    dataProvider: (query, text, onReady) => {
+    dataProvider: (query, text, onReady, limit = autoCompleteSuggestionsDefaultLimit) => {
       if (text.indexOf('/') !== 0) return [];
 
       const selectedCommands = !query
@@ -292,7 +302,7 @@ export const ACITriggerSettings = <
         return 0;
       });
 
-      const result = selectedCommands.slice(0, 10);
+      const result = selectedCommands.slice(0, limit);
 
       if (onReady) {
         onReady(result, query);
@@ -355,7 +365,7 @@ export const ACITriggerSettings = <
       onMentionSelectItem(item);
     },
     component: 'MentionsItem',
-    dataProvider: (query, _, onReady) => {
+    dataProvider: (query, _, onReady, limit = autoCompleteSuggestionsDefaultLimit) => {
       /**
        * By default, we return maximum 100 members via queryChannels api call.
        * Thus it is safe to assume, that if number of members in channel.state is < 100,
@@ -376,7 +386,7 @@ export const ACITriggerSettings = <
           return false;
         });
 
-        const data = matchingUsers.slice(0, 10);
+        const data = matchingUsers.slice(0, limit);
 
         if (onReady) {
           onReady(data, query);
@@ -387,11 +397,16 @@ export const ACITriggerSettings = <
 
       return (
         queryMembersDebounced as DebouncedFunc<QueryMembersFunction<At, Ch, Co, Ev, Me, Re, Us>>
-      )(channel, query, (data) => {
-        if (onReady) {
-          onReady(data, query);
-        }
-      });
+      )(
+        channel,
+        query,
+        (data) => {
+          if (onReady) {
+            onReady(data, query);
+          }
+        },
+        limit,
+      );
     },
     output: (entity) => ({
       caretPosition: 'next',

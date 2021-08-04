@@ -23,6 +23,7 @@ export const useCreateInputMessageInputContext = <
 >({
   additionalTextInputProps,
   AttachButton,
+  autoCompleteSuggestionsLimit,
   autoCompleteTriggerSettings,
   channelId,
   clearEditingState,
@@ -73,6 +74,7 @@ export const useCreateInputMessageInputContext = <
       () => ({
         additionalTextInputProps,
         AttachButton,
+        autoCompleteSuggestionsLimit,
         autoCompleteTriggerSettings,
         clearEditingState,
         clearQuotedMessageState,
