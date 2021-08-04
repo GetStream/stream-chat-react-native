@@ -3,22 +3,27 @@ id: upgrade-helper
 title: Upgrade Helper
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 import messagePropChangeBefore from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_before.png';
 import messagePropChangeAfter from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_after.png';
 
 
-Guide to help with upgrading from v2 to v3 of `stream-chat-react-native`.
+Guide to help with upgrades `stream-chat-react-native` library.
 
-Version 3 of React Native SDK has been a major architectural change. The new implementation takes advantage of React Context along with many popular
+## Upgrade to V3
+
+Version 3.x of React Native SDK has been a major architectural change. The new implementation takes advantage of React Context along with many popular
 community libraries such as [Reanimated V2](https://docs.swmansion.com/react-native-reanimated/docs) to deliver a superior chat experience.
 Upgrading will require re-implementing your integration but will yield performance and functional benefits.
 
-## Dependency changes
+### Dependency changes
 
 Before you begin the upgrade, we would recommend you to comment out all the component customizations related props on `ChannelList`, `Channel` or `MessageList` that you may have in your application.
 This way you can test setup part of upgrade independently from customizations.
 
-### Add peer-dependencies
+#### Add peer-dependencies
 
 v3 has introduced plenty of new peer-dependencies for the package. So please install the required dependencies:
 
@@ -35,7 +40,7 @@ Go through following links for necessary additional installation steps for the p
 - `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
 - `@react-native-community/blur` - [additional installation steps](/reactnative/basics/troubleshooting#blurview-crashing)
 
-### Remove `react-native-get-random-values`
+#### Remove `react-native-get-random-values`
 
 Remove the `react-native-get-random-values` dependency (unless you have used it explicitely in your application) which was required in v2 of `stream-chat-react-native`.
 
@@ -55,7 +60,7 @@ import { name as appName } from './app.json';
 AppRegistry.registerComponent(appName, () => App);
 ```
 
-### Import gesture handler dependency
+#### Import gesture handler dependency
 
 Import gesture handler dependency at the top of the entry file before anything else, this is usually your App.js or index.js file.
 
@@ -69,7 +74,7 @@ import { name as appName } from './app.json';
 AppRegistry.registerComponent(appName, () => App);
 ```
 
-### Add `stream-chat@3.x.x` dependency
+#### Add `stream-chat@3.x.x` dependency
 
 Minimum supported version of `stream-chat` - v3.x.
 Please check the [Compatibility Table](https://github.com/GetStream/stream-chat-react-native#-react-native-compatibility) to ensure you are using
@@ -79,7 +84,7 @@ correct version of `stream-chat` dependency.
 yarn add stream-chat@3.11.1
 ```
 
-## Add `OverlayProvider` component
+### Add `OverlayProvider` component
 
 [`OverlayProvider`](../core-components/overlay_provider.mdx) component should wrap the entire chat screen in your application. If you are using react-navigation, this component
 should wrap your stack provider. Please read more details in our [Configuring Components docs](../basics/hello_stream_chat.mdx#configuring-ui-components)
@@ -93,7 +98,7 @@ export const Screen = () =>
   </OverlayProvider>
 ```
 
-## Theme changes
+### Theme changes
 
 v2 of SDK used [Styled Components](https://styled-components.com/) for theming purpose, which we have abondoned in v3.
 So following pattern of theming will **NOT** work anymore
@@ -113,10 +118,12 @@ We have published a separate [guide](../customization/theming.mdx) for how to ap
 
 At this point if you launch the application, it should be working fine (assuming all the component customizations have been commented out) 🎉
 
-## Message customization prop change
+### Message customization prop change
 
-Message UI is the most common usecase of customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component,
-to provide custom component for rendering a message UI. But in v3, you need to provide `MessageSimple` prop on Channel component instead.
+Message UI is the most common usecase of customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component
+to customize message UI. But in v3, you need to provide `MessageSimple` prop on [`Channel`](../core-components/channel.mdx#messagesimple) component instead.
+
+More details are mentioned in next section regarding prop changes.
 
 <table>
   <tr>
@@ -134,35 +141,13 @@ to provide custom component for rendering a message UI. But in v3, you need to p
   </tr>
 </table>
 
-More details are mentioned in next section regarding prop changes.
-
-## Moving from prop drilling to context
+### Moving from prop drilling to context
 
 As part of v3, we have tried to get rid of prop drilling pattern as much as possible. We are moving towards using [react's context](https://reactjs.org/docs/context.html)
 based architecture.
 
 Let's take an [example](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)#senders-name-at-bottom-of-the-message) from v2 documentation
 which shows how to render message sender's name at bottom of the message:
-
-```tsx
-import { Chat, Channel, MessageList, MessageSimple } from 'stream-chat-react-native';
-
-const MessageWithSenderNameAtBottom = props => {
-  return (
-    <MessageSimple
-      {...props}
-      MessageFooter={props => <Text>{props.message.user.name}</Text>}
-    />
-  );
-};
-
-// In your rendering logic
-<Chat client={client}>
-  <Channel channel={channel}>
-    <MessageList Message={MessageWithSenderNameAtBottom} />
-  </Channel>
-</Chat>
-```
 
 To customize `MessageFooter`, you had to first create separate component to render `MessageSimple` component and then provide prop `MessageFooter` to `MessageSimple`.
 This is what the prop drilling looked like in v2 of the SDK. But in v3, this is much simplified as you can customize each of these deeply nested components
@@ -173,23 +158,135 @@ by providing relevant prop on one of the following 3 core components (depending 
 - [`ChannelList`](../core-components/channel_list.mdx#props)
 
 Additionally you have access to all the required values through contexts (`props.message` in this example).
-Please check documentation of [contexts](../customizations/contexts.mdx) for all the available contexts.
+Please check documentation of [contexts](../customization/contexts.mdx) for all the available contexts.
 
-The customization of MessageFooter will look like following after upgrade to v3.
+<Tabs
+  defaultValue='v2'
+  values={[
+    { label: 'MessageFooter customization in v2', value: 'v2' },
+    { label: 'MessageFooter customization in v3', value: 'v3' },
+  ]}
+>
+<TabItem value='v2'>
 
-```tsx
-import { Chat, Channel, MessageList, useMessageContext } from 'stream-chat-react-native';
+  ```tsx
+    import { Chat, Channel, MessageList, MessageSimple } from 'stream-chat-react-native';
 
-const FooterWithSenderName = () => {
-  const { message } = useMessageContext();
+    const MessageWithSenderNameAtBottom = props => {
+      return (
+        <MessageSimple
+          {...props}
+          MessageFooter={props => <Text>{props.message.user.name}</Text>}
+        />
+      );
+    };
 
-  return <Text>{props.message.user.name}</Text>;
-};
+    // In your rendering logic
+    <Chat client={client}>
+      <Channel channel={channel}>
+        <MessageList Message={MessageWithSenderNameAtBottom} />
+      </Channel>
+    </Chat>
+  ```
 
-// In your rendering logic
-<Chat client={client}>
-  <Channel channel={channel} MessageFooter={FooterWithSenderName}>
-    <MessageList />
-  </Channel>
-</Chat>
-```
+</TabItem>
+<TabItem value='v3'>
+
+  ```tsx
+    import { Chat, Channel, MessageList, useMessageContext } from 'stream-chat-react-native';
+
+    const FooterWithSenderName = () => {
+      const { message } = useMessageContext();
+
+      return <Text>{props.message.user.name}</Text>;
+    };
+
+    // In your rendering logic
+    <Chat client={client}>
+      <Channel channel={channel} MessageFooter={FooterWithSenderName}>
+        <MessageList />
+      </Channel>
+    </Chat>
+  ```
+
+</TabItem>
+</Tabs>
+
+
+Let's check a similar example for [`ChannelList`](../core-component/channel_list.mdx) component. To customize avatar component of channel, within `ChannelList`, you had to
+first customize `Preview` component which renders list item, and then provide avatar component on it. In v3, you can simply pass the `PreviewAvatar`
+component on `ChannelList` without having to go through prop drilling. Additionally you have access to [`ChannelsContext`](../contexts/channels_context.mdx)
+which provides access to all the necessary values and methods which `ChannelList` relies on.
+
+<Tabs
+  defaultValue='v2'
+  values={[
+    { label: 'PreviewAvatar customization in v2', value: 'v2' },
+    { label: 'PreviewAvatar customization in v3', value: 'v3' },
+  ]}
+>
+<TabItem value='v2'>
+
+  ```tsx
+    import { Chat, Channel, ChannelList, ChannelPreviewMessenger } from 'stream-chat-react-native';
+
+    const CustomAvatar = props => {/* custom component */};
+    const PreviewWithCustomAvatar = props => {
+      return (
+        <ChannelPreviewMessenger
+          {...props}
+          PreviewAvatar={CustomAvatar}
+        />
+      );
+    };
+
+    // In your rendering logic
+    <Chat client={client}>
+      <ChannelList Preview={PreviewWithCustomAvatar} />
+    </Chat>
+  ```
+
+</TabItem>
+<TabItem value='v3'>
+
+  ```tsx
+    import { Chat, Channel, ChannelList, useChannelsContext } from 'stream-chat-react-native';
+
+    const CustomAvatar = props => {
+      const { refreshing, reloadList } = useChannelsContext();
+      const { channel } = props;
+
+      return (/* custom component */)
+    };
+
+    // In your rendering logic
+    <Chat client={client}>
+      <ChannelList PreviewAvatar={CustomAvatar} />
+    </Chat>
+  ```
+
+</TabItem>
+</Tabs>
+
+### Reaction customization
+
+Rendering of reactions on message and reaction picker has changed as part of v3. There three major differences in reactions related UX.
+
+- Reactions were rendered as simple text emojis in v2, while reactions get rendered as SVG icons in v3.
+- Reaction picker used to show up as popup right above message in v2, on the other hand reaction picker will show up in overlay in v3.
+
+Please check the guide on [Message with custom reactions](../guides/message-customization/#message-with-custom-reactions) for details.
+
+Additionally please take a look at following props to customize reactions related components:
+
+- [`OverlayReactions`](../core-components/overlay_provider.mdx#overlayreactions)
+- [`OverlayReactionList`](../core-components/overlay_provider.mdx#overlayreactionlist)
+- [`ReactionList`](../core-components/channel.mdx#reactionlist)
+
+### Attachment picker
+
+In v2 of library, attachment picker was rendendered as actionsheet containing option for picking files from of native image and file picker.
+This UX has been modified in v3 of library, where attachment picker gets rendered as built-in bottomsheet.
+
+Its possible to use actionsheet based attachment picker (similar to v2 implementation). Please check the docs on [implementation of native image picker](../guides/message_input_customization.mdx#replacing-attachmentpicker-with-native-image-picker)
+
