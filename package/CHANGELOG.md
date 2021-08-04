@@ -1,5 +1,13 @@
 # Change Log
 
+### [3.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.1...v3.7.2) (2021-08-04)
+
+
+### Bug Fixes
+
+* **attachment-picker:** fixing sync logic between `imageUploads` and `selectedImages` ([46de905](https://github.com/GetStream/stream-chat-react-native/commit/46de9055b1df3e0a9cedbe2018628f7025f5cb27))
+* Fix infinite loop in bottom sheet or image gallery on notched iOS phones ([1bc81f0](https://github.com/GetStream/stream-chat-react-native/commit/1bc81f0aabedbd42d70624d4b3a13abe2e77d826))
+
 ### [3.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.0...v3.7.1) (2021-07-30)
 
 
