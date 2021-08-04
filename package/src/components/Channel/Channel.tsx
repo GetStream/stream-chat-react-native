@@ -559,6 +559,8 @@ const ChannelWithContext = <
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
 
+  const [syncingChannel, setSyncingChannel] = useState(false);
+
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
 
   const channelId = channel?.id || '';
@@ -735,7 +737,7 @@ const ChannelWithContext = <
       client.off('connection.changed', connectionChangedHandler);
       channel?.off(handleEvent);
     };
-  }, [channelId, connectionRecoveredHandler, handleEvent]);
+  }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
@@ -904,7 +906,8 @@ const ChannelWithContext = <
   };
 
   const resyncChannel = async () => {
-    if (!channel) return;
+    if (!channel || syncingChannel) return;
+    setSyncingChannel(true);
 
     setError(false);
     try {
@@ -1002,6 +1005,8 @@ const ChannelWithContext = <
       setError(err);
       setLoading(false);
     }
+
+    setSyncingChannel(false);
   };
 
   const reloadChannel = () =>
