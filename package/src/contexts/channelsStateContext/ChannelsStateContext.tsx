@@ -4,6 +4,7 @@ import type { ChannelContextValue } from '../channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../threadContext/ThreadContext';
 import type { TypingContextValue } from '../typingContext/TypingContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 import type {
   DefaultAttachmentType,
@@ -243,3 +244,28 @@ export const useChannelsStateContext = <
     Re,
     Us
   >;
+
+export const withChannelsStateContext = <
+  P extends UnknownType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+>(
+  Component: React.ComponentType<P>,
+): React.FC<Omit<P, keyof ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+  const WithChannelsStateContextComponent = (
+    props: Omit<P, keyof ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+  ) => {
+    const channelsStateContext = useChannelsStateContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+    return <Component {...(props as P)} {...channelsStateContext} />;
+  };
+  WithChannelsStateContextComponent.displayName = `WithChannelsStateContext${getDisplayName(
+    Component,
+  )}`;
+  return WithChannelsStateContextComponent;
+};
