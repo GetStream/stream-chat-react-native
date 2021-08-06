@@ -97,7 +97,8 @@ Following example demonstrates how to introduce a new/custom message action:
 
   ```jsx
   <Channel
-    messageActions={() => ([
+    channel={channel}
+    messageActions={({ dismissOverlay }) => ([
       {
         action: () => {
           channel.sendMessage({text: '👉'});
@@ -106,7 +107,7 @@ Following example demonstrates how to introduce a new/custom message action:
         icon: <PokeUserSVGIcon />,
         title: "Poke User",
       }
-    )]}
+    ])}
   >
     {/** MessageList and MessageInput component here */}
   </Channel>
