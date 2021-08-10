@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
+import { streamCacheSetup } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
@@ -14,8 +15,6 @@ import type {
   LocalUserType,
   LoginConfig,
 } from '../types';
-
-const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
 
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<
@@ -41,14 +40,22 @@ export const useChatClient = () => {
     >(config.apiKey, {
       timeout: 6000,
     });
-    const randomSeed = getRandomInt(1, 50);
-    const user = {
-      id: config.userId,
-      image: config.userImage,
-      name: config.userName,
-    };
 
-    await client.connectUser(user, config.userToken);
+    await streamCacheSetup(client, {
+      getItem: (key: string) => AsyncStore.getItem(key, null),
+      removeItem: (key: string) => AsyncStore.removeItem(key),
+      setItem: (key: string, value: any) => AsyncStore.setItem(key, value),
+    });
+
+    if (!client.user) {
+      const user = {
+        id: config.userId,
+        image: config.userImage,
+        name: config.userName,
+      };
+
+      await client.connectUser(user, config.userToken);
+    }
 
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
