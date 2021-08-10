@@ -50,8 +50,13 @@ export const usePaginatedChannels = <
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(
+    // TODO Check how to get the filter from sort prop and use it here
+    Object.values(client.activeChannels).sort((a, b) =>
+      (a.state.last_message_at || 0) < (b.state.last_message_at || 0) ? 1 : -1,
+    ),
+  );
 
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());

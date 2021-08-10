@@ -525,13 +525,13 @@ const ChannelWithContext = <
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(channel ? !channel?.state.messages : true);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
     PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-  >([]);
+  >(channel?.state.messages || []);
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
