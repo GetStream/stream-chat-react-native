@@ -1,0 +1,110 @@
+---
+id: offline-support
+sidebar_position: 4
+title: Offline Support
+---
+
+Stream Chat for React Native enables offline support by exposing two functions called `streamCacheSetup` and `streamCacheSetupSync`.
+Both cache functions require a `cacheInterface` object containing `getItem`, `setItem` and `removeItem` properties.
+
+This allows using any storage provider with Stream. Check [`streamCacheSetupSync`](#synchronousstorageproviders) for synchronous providers.
+
+## Asynchronous Storage Providers
+
+First, create the `cacheInterface` object.
+
+```ts
+
+import AsyncStorage from '@react-native-community/async-storage';
+import { CacheKeys, CacheValues } from 'stream-chat-react-native';
+
+const cacheInterface = {
+    getItem: async <Key extends CacheKeys>(key: Key) => {
+        const value = await AsyncStorage.getItem(key);
+
+        if (!value) {
+            return null;
+        }
+
+        return JSON.parse(value) as CacheValues[Key];
+    },
+    removeItem: async <Key extends CacheKeys>(key: Key) => {
+        await AsyncStorage.removeItem(key);
+    },
+    setItem: async <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
+        await AsyncStorage.setItem(key, JSON.stringify(value));
+    },
+};
+
+```
+
+Now call `streamCacheSetup` with the `cacheInterface` you just created. You will need to wait for it to
+finish before rendering Stream's components.
+
+```ts
+
+...
+import { CacheKeys, CacheValues, streamCacheSetup } from 'stream-chat-react-native';
+
+const client = // Your current client setup
+
+function App() {
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        streamCacheSetup(client, cacheInterface).then(() => setReady(true));
+    }, [])
+
+    return ready && (
+        // Stream chat components
+    );
+}
+
+```
+
+## Synchronous Storage Providers
+
+First, create the `cacheInterface` object.
+
+```ts
+
+import { MMKV } from 'react-native-mmkv';
+import { CacheKeys, CacheValues } from 'stream-chat-react-native';
+
+const cacheInterface = {
+    getItem: async <Key extends CacheKeys>(key: Key) => {
+        const value = MMKV.getString(key)
+
+        if (!value) {
+            return null;
+        }
+
+        return JSON.parse(value) as CacheValues[Key];
+    },
+    removeItem: <Key extends CacheKeys>(key: Key) => {
+        MMKV.delete(key);
+    },
+    setItem: <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
+        MMKV.set(key, JSON.stringify(value));
+    },
+};
+
+```
+
+One of the key differences between `streamCacheSetup` and `streamCacheSetupSync` is tha the synchronous option doesn't
+need to wait for anything in order to render the application, so you can just implement the following.
+
+```ts
+
+...
+import { CacheKeys, CacheValues, streamCacheSetup } from 'stream-chat-react-native';
+
+const client = // Your current client setup
+
+streamCacheSetup(client, cacheInterface);
+
+function App() {
+    ... // No changes needed in your component
+}
+
+```
