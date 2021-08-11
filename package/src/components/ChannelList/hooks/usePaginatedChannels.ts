@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import orderBy from 'lodash/orderBy';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
@@ -36,6 +37,29 @@ const DEFAULT_OPTIONS = {
   message_limit: 10,
 };
 
+const offlineSort = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+>(
+  channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[],
+  sortObj: ChannelSort<Ch>,
+) => {
+  const sortKeys: string[] = [];
+  const sortOrders: Array<boolean | 'asc' | 'desc'> = [];
+
+  Object.keys(sortObj).forEach((key) => {
+    sortKeys.push(`state.${key}`);
+    sortOrders.push(sortObj[key as keyof ChannelSort<Ch>] > 0 ? 'asc' : 'desc');
+  });
+
+  return orderBy(channels, sortKeys, sortOrders);
+};
+
 export const usePaginatedChannels = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -52,14 +76,13 @@ export const usePaginatedChannels = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(
     // TODO Check how to get the filter from sort prop and use it here
-    Object.values(client.activeChannels).sort((a, b) =>
-      (a.state.last_message_at || 0) < (b.state.last_message_at || 0) ? 1 : -1,
-    ),
+    offlineSort(Object.values(client.activeChannels), sort),
   );
 
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
+  const querying = useRef(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
@@ -67,6 +90,8 @@ export const usePaginatedChannels = <
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing) return;
+    querying.current = true;
+    setError(false);
 
     if (queryType === 'reload') {
       setLoadingChannels(true);
@@ -96,14 +121,18 @@ export const usePaginatedChannels = <
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
       setError(false);
+      querying.current = false;
     } catch (err) {
+      querying.current = false;
       await wait(2000);
 
-      if (retryCount === 3) {
+      // querying.current check is needed in order to make sure the next query call doesnt flick an error
+      // state and then succeed (reconnect case)
+      if (retryCount === 3 && !querying.current) {
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);
-        console.warn(err);
+        console.warn(err, refreshing, loadingChannels);
         return setError(true);
       }
 
