@@ -3,6 +3,7 @@ import orderBy from 'lodash/orderBy';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
+import { useActiveChannels } from '../../../contexts/channelsStateContext/useActiveChannels';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
@@ -75,9 +76,9 @@ export const usePaginatedChannels = <
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(
-    // TODO Check how to get the filter from sort prop and use it here
     offlineSort(Object.values(client.activeChannels), sort),
   );
+  const activeChannels = useActiveChannels();
 
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -108,7 +109,9 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
+        skipInitialization: activeChannels.current,
+      });
 
       channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
