@@ -172,7 +172,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
           <View
             style={{
               flex: 1,
