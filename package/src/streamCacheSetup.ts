@@ -1,7 +1,13 @@
 import { AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 
-import type { ChannelStateAndData, ClientStateAndData, StreamChat } from 'stream-chat';
+import type {
+  ChannelStateAndData,
+  ClientStateAndData,
+  OwnUserResponse,
+  StreamChat,
+  UserResponse,
+} from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -102,6 +108,12 @@ function initialize<
       caceInterface.removeItem(STREAM_CHAT_CLIENT_DATA);
       caceInterface.removeItem(STREAM_CHAT_CHANNELS_DATA);
     } else {
+      const socketUser = {
+        id: clientData.user.id,
+        name: clientData.user.name,
+      } as OwnUserResponse<Ch, Co, Us> | UserResponse<Us>;
+
+      client.connectUser(socketUser, clientData.token);
       client.reInitializeWithState(clientData, channelsData);
     }
   } else {
