@@ -4,12 +4,11 @@ sidebar_position: 4
 title: Offline Support
 ---
 
-Stream Chat for React Native enables offline support by exposing two functions called `streamCacheSetup` and `streamCacheSetupSync`.
-Both cache functions require a `cacheInterface` object containing `getItem`, `setItem` and `removeItem` properties.
+Stream Chat for React Native enables offline support by exposing a class called `StreamCache`. This allows using any storage provider with Stream.
+The constructor requires a client, a `cacheInterface` object containing `getItem`, `setItem` and `removeItem` properties and a
+token or token provider function.
 
-This allows using any storage provider with Stream. Check [`streamCacheSetupSync`](#synchronousstorageproviders) for synchronous providers.
-
-## Asynchronous Storage Providers
+## Creating a cache interface
 
 First, create the `cacheInterface` object.
 
@@ -28,43 +27,20 @@ const cacheInterface = {
 
         return JSON.parse(value) as CacheValues[Key];
     },
-    removeItem: async <Key extends CacheKeys>(key: Key) => {
-        await AsyncStorage.removeItem(key);
+    removeItem: <Key extends CacheKeys>(key: Key) => {
+        return AsyncStorage.removeItem(key);
     },
-    setItem: async <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
-        await AsyncStorage.setItem(key, JSON.stringify(value));
+    setItem: <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
+        return AsyncStorage.setItem(key, JSON.stringify(value));
     },
 };
 
 ```
 
-Now call `streamCacheSetup` with the `cacheInterface` you just created. You will need to wait for it to
-finish before rendering Stream's components.
+### Cache interface with synchronous storage providers
 
-```ts
-
-...
-import { CacheKeys, CacheValues, streamCacheSetup } from 'stream-chat-react-native';
-
-const client = // Your current client setup
-
-function App() {
-    const [ready, setReady] = useState(false);
-
-    useEffect(() => {
-        streamCacheSetup(client, cacheInterface).then(() => setReady(true));
-    }, [])
-
-    return ready && (
-        // Stream chat components
-    );
-}
-
-```
-
-## Synchronous Storage Providers
-
-First, create the `cacheInterface` object.
+Once we need to support both synchronous and asynchronous storage providers, you need to wrap the return values of your cache 
+interface into promises.
 
 ```ts
 
@@ -72,27 +48,38 @@ import { MMKV } from 'react-native-mmkv';
 import { CacheKeys, CacheValues } from 'stream-chat-react-native';
 
 const cacheInterface = {
-    getItem: async <Key extends CacheKeys>(key: Key) => {
+    getItem: <Key extends CacheKeys>(key: Key) => {
         const value = MMKV.getString(key)
 
         if (!value) {
-            return null;
+            return Promise.resolve(null);
         }
 
-        return JSON.parse(value) as CacheValues[Key];
+        return Promise.resolve(JSON.parse(value) as CacheValues[Key]);
     },
     removeItem: <Key extends CacheKeys>(key: Key) => {
-        MMKV.delete(key);
+        return Promise.resolve(MMKV.delete(key));
     },
     setItem: <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
-        MMKV.set(key, JSON.stringify(value));
+        return Promise.resolve(MMKV.set(key, JSON.stringify(value)));
     },
 };
 
 ```
 
-One of the key differences between `streamCacheSetup` and `streamCacheSetupSync` is tha the synchronous option doesn't
-need to wait for anything in order to render the application, so you can just implement the following.
+## Initializing the client with cached data
+
+Now, you need to initialize the cache. Please have in mind that you still need to handle authentication by yourself by passing a token or
+a token provider function as third parameter. 
+
+:::info
+
+If you use tokens without expiration date, just store/retrieve the token from your storage provider and send it to StreamCache.
+
+If you use tokens with expiration date, have a look at our client documentation on 
+[how to refresh expired tokens](https://getstream.io/chat/docs/react-native/tokens_and_authentication/?language=javascript&q=authen#how-to-refresh-expired-tokens)
+
+:::
 
 ```ts
 
@@ -100,11 +87,40 @@ need to wait for anything in order to render the application, so you can just im
 import { CacheKeys, CacheValues, streamCacheSetup } from 'stream-chat-react-native';
 
 const client = // Your current client setup
-
-streamCacheSetup(client, cacheInterface);
+const cacheInterface = // Your cache interface
 
 function App() {
-    ... // No changes needed in your component
+    const [ready, setReady] = useState(false);
+
+    const initializeApp = useCallback(async () => {
+        const config = // Your logics to get auth data
+        const cacheInstance = StreamCache.getInstance(client, cacheInterface, config.userToken);
+
+        if (await cacheInstance.hasCachedData()) {
+            console.info('Found cached data. Initializing cache...');
+            // initialize already takes care of calling connectUser internally
+            await cacheInstance.initialize();
+        } else {
+            console.info('No cache data found. Skipping cache initialization...');
+
+            const user = {
+                id: config.userId,
+                image: config.userImage,
+                name: config.userName,
+            };
+
+            // In case there is no cache, you need to authenticate by calling connectUser.
+            await client.connectUser(user, config.userToken);
+        }
+    }, [])
+
+    useEffect(() => {
+        initializeApp(config);
+    }, [])
+
+    return ready && (
+        // Stream chat components
+    );
 }
 
 ```

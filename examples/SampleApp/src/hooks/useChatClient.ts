@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
-import { streamCacheSetup } from 'stream-chat-react-native';
+import { StreamCache } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
@@ -47,8 +47,21 @@ export const useChatClient = () => {
       setItem: (key: string, value: any) => AsyncStore.setItem(key, value),
     };
 
-    await streamCacheSetup(client, cacheInterface, config.userToken);
+    const cacheInstance = StreamCache.getInstance(client, cacheInterface, config.userToken);
+    if (await cacheInstance.hasCachedData()) {
+      console.info('Found cached data. Initializing cache...');
+      await cacheInstance.initialize();
+    } else {
+      console.info('No cache data found. Skipping cache initialization...');
 
+      const user = {
+        id: config.userId,
+        image: config.userImage,
+        name: config.userName,
+      };
+
+      await client.connectUser(user, config.userToken);
+    }
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     setChatClient(client);
@@ -79,14 +92,12 @@ export const useChatClient = () => {
     } catch (e) {
       console.warn(e);
     }
-
     setIsConnecting(false);
   };
 
   const logout = () => {
     setChatClient(null);
     chatClient?.disconnect();
-    AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
 
   useEffect(() => {

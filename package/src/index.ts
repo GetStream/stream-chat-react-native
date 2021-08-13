@@ -6,12 +6,12 @@ export * from './emoji-data/compiled';
 
 export * from './icons';
 
-export * from './streamCacheSetup';
-
 export * from './types/types';
 
 export * from './utils/Streami18n';
 export * from './utils/utils';
+
+export { default as StreamCache } from './StreamCache';
 
 export { default as enTranslations } from './i18n/en.json';
 export { default as frTranslations } from './i18n/fr.json';

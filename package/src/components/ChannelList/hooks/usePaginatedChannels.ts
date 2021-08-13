@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import orderBy from 'lodash/orderBy';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useActiveChannels } from '../../../contexts/channelsStateContext/useActiveChannels';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import StreamCache from '../../../StreamCache';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
@@ -38,29 +38,6 @@ const DEFAULT_OPTIONS = {
   message_limit: 10,
 };
 
-const offlineSort = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[],
-  sortObj: ChannelSort<Ch>,
-) => {
-  const sortKeys: string[] = [];
-  const sortOrders: Array<boolean | 'asc' | 'desc'> = [];
-
-  Object.keys(sortObj).forEach((key) => {
-    sortKeys.push(`state.${key}`);
-    sortOrders.push(sortObj[key as keyof ChannelSort<Ch>] > 0 ? 'asc' : 'desc');
-  });
-
-  return orderBy(channels, sortKeys, sortOrders);
-};
-
 export const usePaginatedChannels = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -74,9 +51,10 @@ export const usePaginatedChannels = <
   options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
+  const cacheInstance = StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(
-    offlineSort(Object.values(client.activeChannels), sort),
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
+    cacheInstance.orderChannelsBasedOnCachedOrder(Object.values(client.activeChannels)),
   );
   const activeChannels = useActiveChannels();
 
@@ -88,6 +66,10 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    cacheInstance.syncChannelsCachedOrder(channels);
+  }, [channels]);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing) return;
