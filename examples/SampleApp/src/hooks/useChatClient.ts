@@ -41,21 +41,13 @@ export const useChatClient = () => {
       timeout: 6000,
     });
 
-    await streamCacheSetup(client, {
+    const cacheInterface = {
       getItem: (key: string) => AsyncStore.getItem(key, null),
       removeItem: (key: string) => AsyncStore.removeItem(key),
       setItem: (key: string, value: any) => AsyncStore.setItem(key, value),
-    });
+    };
 
-    if (!client.user) {
-      const user = {
-        id: config.userId,
-        image: config.userImage,
-        name: config.userName,
-      };
-
-      await client.connectUser(user, config.userToken);
-    }
+    await streamCacheSetup(client, cacheInterface, config.userToken);
 
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
