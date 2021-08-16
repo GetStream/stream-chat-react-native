@@ -322,14 +322,25 @@ export default class StreamCache<
 
   orderChannelsBasedOnCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
     const currentChannelsOrder = this.cachedChannelsOrder;
+    const channelsIndicesMap = channels.reduce((curr, next, index) => {
+      if (!next.id) return curr;
+      curr[next.id] = index;
+      return curr;
+    }, {} as { [index: string]: number });
 
     if (currentChannelsOrder) {
       return channels.sort((a, b) => {
-        if (a.id && b.id) {
-          return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
-        }
-        // TODO this sort logics seems to be wrong. Still need to fix it.
-        return 99999;
+        if (a.id === undefined && b.id === undefined) return -1;
+        if (a.id === undefined) return 1;
+        if (b.id === undefined) return -1;
+
+        if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
+          return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
+
+        if (currentChannelsOrder[a.id] === undefined) return 1;
+        if (currentChannelsOrder[b.id] === undefined) return -1;
+
+        return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
       });
     }
     return channels;
