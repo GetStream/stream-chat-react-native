@@ -69,7 +69,10 @@ export type CacheInterface<
     key: Key,
   ) => Promise<CacheValues<At, Ch, Co, Ev, Me, Re, Us>[Key] | null>;
   removeItem: <Key extends CacheKeys>(key: Key) => Promise<void>;
-  setItem: <Key extends CacheKeys>(key: Key, value: string) => Promise<void>;
+  setItem: <Key extends CacheKeys>(
+    key: Key,
+    value: CacheValues<At, Ch, Co, Ev, Me, Re, Us>[Key] | null,
+  ) => Promise<void>;
 };
 
 export type CacheInterfaceSync<
@@ -98,38 +101,8 @@ const MAX_MESSAGES_PER_THREAD = 300;
 
 // I would say middle ground is all channels store 800 messages, having ~100 threads
 // with ~100 messages and ending up with 2 * 100 * 100 = 20MB + 1.6MB from 800 regular messages
-
+const MAX_CHANNELS = 70;
 // If we store 70 channels, 70 * 21.6MB, we initialize the client with 1.5GB of data in memory already
-
-function cropOlderMessages<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(channelsData: ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us> | null) {
-  // This logics takes care of removing older messages when reinitializing the channel state in order to avoid
-  // a possible overflow
-  return channelsData.map((channelData) => {
-    const channelState = channelData.state;
-    const remainingMessagesMap: { [index: string]: boolean } = {};
-    const messages = channelState.messages.slice(-MAX_MESSAGES_PER_CHANNEL);
-
-    const pinnedMessages = channelState.pinnedMessages.filter((m) => remainingMessagesMap[m.id]);
-    const threads = Object.entries(channelState.threads).reduce((acc, next) => {
-      const [id, value] = next;
-      // Only adds threads for remaining messages
-      if (remainingMessagesMap[id]) {
-        acc[id] = value.slice(-MAX_MESSAGES_PER_THREAD);
-      }
-      return acc;
-    }, {} as Record<string, Array<ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>>>);
-
-    return { ...channelData, state: { ...channelState, messages, pinnedMessages, threads } };
-  });
-}
 
 export default class StreamCache<
   At extends UnknownType = DefaultAttachmentType,
@@ -201,7 +174,7 @@ export default class StreamCache<
     return StreamCache.instance as unknown as StreamCache<At, Ch, Co, Ev, Me, Re, Us>;
   }
 
-  startWatchers() {
+  private startWatchers() {
     AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState.match(/inactive|background/)) {
         const { channels: currentChannelsData, client: currentClientData } =
@@ -233,17 +206,34 @@ export default class StreamCache<
     });
   }
 
-  async rehydrate(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
-    const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+  private cropOlderMessages(channelsData: ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us> | null) {
+    // This logics takes care of removing older messages/channels when reinitializing the client state in order to avoid
+    // a possible memory overflow
+    const croppedChannelsData = this.orderChannelsBasedOnCachedOrder(channelsData).slice(
+      0,
+      MAX_CHANNELS,
+    );
 
-    this.cachedChannelsOrder = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER);
+    return croppedChannelsData.map((channelData) => {
+      const channelState = channelData.state;
+      const remainingMessagesMap: { [index: string]: boolean } = {};
+      const messages = channelState.messages.slice(-MAX_MESSAGES_PER_CHANNEL);
 
-    if (clientData && channelsData) {
-      this.client.reInitializeWithState(clientData, cropOlderMessages(channelsData));
-    }
+      const pinnedMessages = channelState.pinnedMessages.filter((m) => remainingMessagesMap[m.id]);
+      const threads = Object.entries(channelState.threads).reduce((acc, next) => {
+        const [id, value] = next;
+        // Only adds threads for remaining messages
+        if (remainingMessagesMap[id]) {
+          acc[id] = value.slice(-MAX_MESSAGES_PER_THREAD);
+        }
+        return acc;
+      }, {} as Record<string, Array<ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>>>);
+
+      return { ...channelData, state: { ...channelState, messages, pinnedMessages, threads } };
+    });
   }
 
-  connect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  private connect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
     const user = {
       id: clientData.user.id,
       name: clientData.user.name,
@@ -252,7 +242,7 @@ export default class StreamCache<
     return this.client.connectUser(user, this.tokenOrProvider);
   }
 
-  offlineConnect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  private offlineConnect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
     const user = {
       id: clientData.user.id,
       name: clientData.user.name,
@@ -261,7 +251,7 @@ export default class StreamCache<
     return this.client.reInitializeAuthState(user, this.tokenOrProvider);
   }
 
-  async hasNewVersion() {
+  private async hasNewVersion() {
     const sdkCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_SDK_VERSION);
     const clientCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_VERSION);
 
@@ -279,7 +269,7 @@ export default class StreamCache<
     return versionChanged;
   }
 
-  async hasCachedData() {
+  public async hasCachedData() {
     const newVersion = await this.hasNewVersion();
 
     if (newVersion) {
@@ -292,7 +282,17 @@ export default class StreamCache<
     return !!(clientData && channelsData);
   }
 
-  async initialize() {
+  public async rehydrate(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+    const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+
+    this.cachedChannelsOrder = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER);
+
+    if (clientData && channelsData) {
+      this.client.reInitializeWithState(clientData, this.cropOlderMessages(channelsData));
+    }
+  }
+
+  public async initialize() {
     const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
     const hasNetwork = await this.initialNetworkStatePromise;
 
@@ -311,7 +311,7 @@ export default class StreamCache<
     return Promise.all(promises);
   }
 
-  syncChannelsCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
+  public syncChannelsCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
     this.cachedChannelsOrder = channels.reduce((acc, next, index) => {
       if (next.id) {
         acc[next.id] = index;
@@ -320,7 +320,7 @@ export default class StreamCache<
     }, {} as { [index: string]: number });
   }
 
-  orderChannelsBasedOnCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
+  public orderChannelsBasedOnCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
     const currentChannelsOrder = this.cachedChannelsOrder;
     const channelsIndicesMap = channels.reduce((curr, next, index) => {
       if (!next.id) return curr;
@@ -329,7 +329,7 @@ export default class StreamCache<
     }, {} as { [index: string]: number });
 
     if (currentChannelsOrder) {
-      return channels.sort((a, b) => {
+      channels.sort((a, b) => {
         if (a.id === undefined && b.id === undefined) return -1;
         if (a.id === undefined) return 1;
         if (b.id === undefined) return -1;
@@ -346,7 +346,7 @@ export default class StreamCache<
     return channels;
   }
 
-  clear() {
+  public clear() {
     return Promise.all([
       this.cacheInterface.removeItem(STREAM_CHAT_SDK_VERSION),
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_VERSION),
