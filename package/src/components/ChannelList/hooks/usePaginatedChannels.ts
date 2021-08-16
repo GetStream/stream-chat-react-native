@@ -51,10 +51,12 @@ export const usePaginatedChannels = <
   options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
-  const cacheInstance = StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>();
+  const cacheInstance = StreamCache.hasInstance()
+    ? StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>()
+    : null;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
-    cacheInstance.getOrderedChannels(),
+    cacheInstance ? cacheInstance.getOrderedChannels() : [],
   );
   const activeChannels = useActiveChannels();
 
@@ -68,7 +70,10 @@ export const usePaginatedChannels = <
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    cacheInstance.syncChannelsCachedOrder(channels);
+    console.log(cacheInstance);
+    if (cacheInstance) {
+      cacheInstance.syncChannelsCachedOrder(channels);
+    }
   }, [channels]);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {

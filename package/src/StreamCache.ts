@@ -176,6 +176,10 @@ export default class StreamCache<
     return StreamCache.instance as unknown as StreamCache<At, Ch, Co, Ev, Me, Re, Us>;
   }
 
+  public static hasInstance() {
+    return !!StreamCache.instance;
+  }
+
   private startWatchers() {
     AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState.match(/inactive|background/)) {
