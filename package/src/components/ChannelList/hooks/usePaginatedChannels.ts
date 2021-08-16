@@ -54,7 +54,7 @@ export const usePaginatedChannels = <
   const cacheInstance = StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
-    cacheInstance.orderChannelsBasedOnCachedOrder(Object.values(client.activeChannels)),
+    cacheInstance.getOrderedChannels(),
   );
   const activeChannels = useActiveChannels();
 

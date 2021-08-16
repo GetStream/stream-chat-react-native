@@ -120,6 +120,7 @@ export default class StreamCache<
   private initialNetworkStatePromise: Promise<boolean>;
   private resolveInitialNetworkState?: (value: boolean | PromiseLike<boolean>) => void;
   private cachedChannelsOrder: ChannelsOrder;
+  private orderedChannels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
   private tokenOrProvider: TokenOrProvider;
 
   /**
@@ -136,6 +137,7 @@ export default class StreamCache<
     this.currentNetworkState = null;
     this.initialNetworkStatePromise = new Promise((res) => (this.resolveInitialNetworkState = res));
     this.cachedChannelsOrder = null;
+    this.orderedChannels = [];
     this.tokenOrProvider = tokenOrProvider;
 
     this.startWatchers();
@@ -251,6 +253,32 @@ export default class StreamCache<
     return this.client.reInitializeAuthState(user, this.tokenOrProvider);
   }
 
+  private orderChannelsBasedOnCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
+    const currentChannelsOrder = this.cachedChannelsOrder;
+    const channelsIndicesMap = channels.reduce((curr, next, index) => {
+      if (!next.id) return curr;
+      curr[next.id] = index;
+      return curr;
+    }, {} as { [index: string]: number });
+
+    if (currentChannelsOrder) {
+      channels.sort((a, b) => {
+        if (a.id === undefined && b.id === undefined) return -1;
+        if (a.id === undefined) return 1;
+        if (b.id === undefined) return -1;
+
+        if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
+          return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
+
+        if (currentChannelsOrder[a.id] === undefined) return 1;
+        if (currentChannelsOrder[b.id] === undefined) return -1;
+
+        return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
+      });
+    }
+    return channels;
+  }
+
   private async hasNewVersion() {
     const sdkCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_SDK_VERSION);
     const clientCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_VERSION);
@@ -289,6 +317,9 @@ export default class StreamCache<
 
     if (clientData && channelsData) {
       this.client.reInitializeWithState(clientData, this.cropOlderMessages(channelsData));
+      this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
+        Object.values(this.client.activeChannels),
+      );
     }
   }
 
@@ -311,6 +342,10 @@ export default class StreamCache<
     return Promise.all(promises);
   }
 
+  public getOrderedChannels() {
+    return this.orderedChannels;
+  }
+
   public syncChannelsCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
     this.cachedChannelsOrder = channels.reduce((acc, next, index) => {
       if (next.id) {
@@ -318,32 +353,6 @@ export default class StreamCache<
       }
       return acc;
     }, {} as { [index: string]: number });
-  }
-
-  public orderChannelsBasedOnCachedOrder(channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]) {
-    const currentChannelsOrder = this.cachedChannelsOrder;
-    const channelsIndicesMap = channels.reduce((curr, next, index) => {
-      if (!next.id) return curr;
-      curr[next.id] = index;
-      return curr;
-    }, {} as { [index: string]: number });
-
-    if (currentChannelsOrder) {
-      channels.sort((a, b) => {
-        if (a.id === undefined && b.id === undefined) return -1;
-        if (a.id === undefined) return 1;
-        if (b.id === undefined) return -1;
-
-        if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
-          return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
-
-        if (currentChannelsOrder[a.id] === undefined) return 1;
-        if (currentChannelsOrder[b.id] === undefined) return -1;
-
-        return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
-      });
-    }
-    return channels;
   }
 
   public clear() {
