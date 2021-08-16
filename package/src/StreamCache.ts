@@ -236,27 +236,10 @@ export default class StreamCache<
   async rehydrate(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
     const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
-    const sdkCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_SDK_VERSION);
-    const clientCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_VERSION);
-
     this.cachedChannelsOrder = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER);
 
     if (clientData && channelsData) {
-      const sdkVersionChanged = sdkCachedVersion !== CURRENT_SDK_VERSION;
-      const clientVersionChanged = clientCachedVersion !== CURRENT_CLIENT_VERSION;
-      if (sdkVersionChanged || clientVersionChanged) {
-        // This avoids problems if (accross versions) anything changes in the format of the cached data
-        console.info(
-          'Version change detected on Stream libraries, skipping offline initialization and cleaning up cache...',
-        );
-        this.clear();
-      } else {
-        this.client.reInitializeWithState(clientData, cropOlderMessages(channelsData));
-      }
-    } else {
-      console.info(
-        'No cache found for clientData or channelsData. Skipping offline initialization...',
-      );
+      this.client.reInitializeWithState(clientData, cropOlderMessages(channelsData));
     }
   }
 
@@ -269,23 +252,44 @@ export default class StreamCache<
     return this.client.connectUser(user, this.tokenOrProvider);
   }
 
-  async offlineConnect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  offlineConnect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
     const user = {
       id: clientData.user.id,
       name: clientData.user.name,
     } as OwnUserResponse<Ch, Co, Us> | UserResponse<Us>;
 
-    this.client.userID = clientData.user.id;
-    this.client.anonymous = false;
-    // TODO maybe move this logics to client instead of calling private methods?
-    // eslint-disable-next-line no-underscore-dangle
-    await this.client._setToken(user, this.tokenOrProvider);
-    // eslint-disable-next-line no-underscore-dangle
-    this.client._setUser(user);
+    return this.client.reInitializeAuthState(user, this.tokenOrProvider);
+  }
+
+  async hasNewVersion() {
+    const sdkCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_SDK_VERSION);
+    const clientCachedVersion = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_VERSION);
+
+    const sdkVersionChanged = sdkCachedVersion !== CURRENT_SDK_VERSION;
+    const clientVersionChanged = clientCachedVersion !== CURRENT_CLIENT_VERSION;
+
+    // This avoids problems if (accross versions) anything changes in the format of the cached data
+    const versionChanged = !!(sdkVersionChanged || clientVersionChanged);
+
+    if (versionChanged) {
+      console.info('Stream libraries changed version. Cleaning up cache...');
+      this.clear();
+    }
+
+    return versionChanged;
   }
 
   async hasCachedData() {
-    return !!(await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA));
+    const newVersion = await this.hasNewVersion();
+
+    if (newVersion) {
+      return false;
+    }
+
+    const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
+    const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+
+    return !!(clientData && channelsData);
   }
 
   async initialize() {

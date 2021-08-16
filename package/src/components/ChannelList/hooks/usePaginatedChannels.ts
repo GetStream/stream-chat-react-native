@@ -117,7 +117,7 @@ export const usePaginatedChannels = <
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);
-        console.warn(err, refreshing, loadingChannels);
+        console.warn(err);
         return setError(true);
       }
 
