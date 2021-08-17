@@ -76,6 +76,8 @@ type AutoCompleteInputPropsWithContext<
     | 'autoCompleteSuggestionsLimit'
     | 'giphyActive'
     | 'maxMessageLength'
+    | 'mentionAllAppUsersEnabled'
+    | 'mentionAllAppUsersQuery'
     | 'numberOfLines'
     | 'onChange'
     | 'setGiphyActive'
@@ -118,6 +120,8 @@ const AutoCompleteInputWithContext = <
     giphyActive,
     giphyEnabled,
     maxMessageLength,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
     openSuggestions,
@@ -195,7 +199,11 @@ const AutoCompleteInputWithContext = <
               });
             }
           },
-          autoCompleteSuggestionsLimit,
+          {
+            limit: autoCompleteSuggestionsLimit,
+            mentionAllAppUsersEnabled,
+            mentionAllAppUsersQuery,
+          },
         );
       }
     } else if (isCommandTrigger(trigger)) {
@@ -214,7 +222,9 @@ const AutoCompleteInputWithContext = <
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
             });
           },
-          autoCompleteSuggestionsLimit,
+          {
+            limit: autoCompleteSuggestionsLimit,
+          },
         );
       }
     } else {
@@ -502,6 +512,8 @@ export const AutoCompleteInput = <
     autoCompleteSuggestionsLimit,
     giphyActive,
     maxMessageLength,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
     setGiphyActive,
@@ -522,6 +534,8 @@ export const AutoCompleteInput = <
         giphyActive,
         giphyEnabled,
         maxMessageLength,
+        mentionAllAppUsersEnabled,
+        mentionAllAppUsersQuery,
         numberOfLines,
         onChange,
         openSuggestions,

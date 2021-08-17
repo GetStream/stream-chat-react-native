@@ -9,12 +9,14 @@ import type {
   Channel,
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
+  StreamChat,
   UserResponse,
 } from 'stream-chat';
 
 import type { CommandsItemProps } from '../components/AutoCompleteInput/CommandsItem';
 import type { EmojisItemProps } from '../components/AutoCompleteInput/EmojisItem';
 import type { MentionsItemProps } from '../components/AutoCompleteInput/MentionsItem';
+import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
 import type {
   SuggestionCommand,
   SuggestionUser,
@@ -55,7 +57,12 @@ export const ProgressIndicatorTypes: {
   RETRY: 'retry',
 });
 
-const autoCompleteSuggestionsDefaultLimit = 10;
+const defaultAutoCompleteSuggestionsLimit = 10;
+const defaultMentionAllAppUsersQuery = {
+  filters: {},
+  options: {},
+  sort: {},
+};
 
 const isUserResponse = <Us extends DefaultUserType = DefaultUserType>(
   user: SuggestionUser<Us> | undefined,
@@ -146,7 +153,7 @@ const queryMembers = async <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
-  limit = autoCompleteSuggestionsDefaultLimit,
+  limit = defaultAutoCompleteSuggestionsLimit,
 ): Promise<void> => {
   if (typeof query === 'string') {
     const response = (await (channel as unknown as Channel).queryMembers(
@@ -170,6 +177,57 @@ export const queryMembersDebounced = debounce(queryMembers, 200, {
   trailing: true,
 });
 
+const queryUsers = async <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+>(
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  query: SuggestionUser<Us>['name'],
+  onReady?: (users: SuggestionUser<Us>[]) => void,
+  options: {
+    limit?: number;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+  } = {},
+): Promise<void> => {
+  if (typeof query === 'string') {
+    const {
+      limit = defaultAutoCompleteSuggestionsLimit,
+      mentionAllAppUsersQuery = defaultMentionAllAppUsersQuery,
+    } = options;
+    const filters = {
+      id: { $ne: client.userID },
+      ...mentionAllAppUsersQuery?.filters,
+    };
+
+    if (query) {
+      // @ts-ignore
+      filters.$or = [{ id: { $autocomplete: query } }, { name: { $autocomplete: query } }];
+    }
+
+    const response = await client.queryUsers(
+      // @ts-ignore
+      filters,
+      { id: 1, ...mentionAllAppUsersQuery?.sort },
+      { limit, ...mentionAllAppUsersQuery?.options },
+    );
+    const users: SuggestionUser<Us>[] = [];
+    response.users.forEach((user) => isUserResponse(user) && users.push(user));
+    if (onReady && users) {
+      onReady(users);
+    }
+  }
+};
+
+export const queryUsersDebounced = debounce(queryUsers, 200, {
+  leading: false,
+  trailing: true,
+});
+
 export const isCommandTrigger = (trigger: Trigger): trigger is '/' => trigger === '/';
 
 export const isEmojiTrigger = (trigger: Trigger): trigger is ':' => trigger === ':';
@@ -188,7 +246,9 @@ export type TriggerSettings<
       query: SuggestionCommand<Co>['name'],
       text: string,
       onReady?: (data: SuggestionCommand<Co>[], q: SuggestionCommand<Co>['name']) => void,
-      limit?: number,
+      options?: {
+        limit?: number;
+      },
     ) => SuggestionCommand<Co>[];
     output: (entity: SuggestionCommand<Co>) => {
       caretPosition: string;
@@ -216,7 +276,11 @@ export type TriggerSettings<
       query: SuggestionUser<Us>['name'],
       _: string,
       onReady?: (data: SuggestionUser<Us>[], q: SuggestionUser<Us>['name']) => void,
-      limit?: number,
+      options?: {
+        limit?: number;
+        mentionAllAppUsersEnabled?: boolean;
+        mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+      },
     ) => SuggestionUser<Us>[] | Promise<void> | void;
     output: (entity: SuggestionUser<Us>) => {
       caretPosition: string;
@@ -236,8 +300,27 @@ export type ACITriggerSettingsParams<
   Us extends UnknownType = DefaultUserType,
 > = {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   onMentionSelectItem: (item: SuggestionUser<Us>) => void;
 };
+
+export type QueryUsersFunction<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+> = (
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  query: SuggestionUser<Us>['name'],
+  onReady?: (users: SuggestionUser<Us>[]) => void,
+  options?: {
+    limit?: number;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+  },
+) => Promise<void>;
 
 export type QueryMembersFunction<
   At extends UnknownType = DefaultAttachmentType,
@@ -251,7 +334,9 @@ export type QueryMembersFunction<
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
-  limit?: number,
+  options?: {
+    limit?: number;
+  },
 ) => Promise<void>;
 
 /**
@@ -275,13 +360,15 @@ export const ACITriggerSettings = <
   Us extends UnknownType = DefaultUserType,
 >({
   channel,
+  client,
   onMentionSelectItem,
 }: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<Co, Us> => ({
   '/': {
     component: 'CommandsItem',
-    dataProvider: (query, text, onReady, limit = autoCompleteSuggestionsDefaultLimit) => {
+    dataProvider: (query, text, onReady, options = {}) => {
       if (text.indexOf('/') !== 0) return [];
 
+      const { limit = defaultAutoCompleteSuggestionsLimit } = options;
       const selectedCommands = !query
         ? getCommands(channel)
         : getCommands(channel).filter((command) => query && command.name?.indexOf(query) !== -1);
@@ -365,7 +452,34 @@ export const ACITriggerSettings = <
       onMentionSelectItem(item);
     },
     component: 'MentionsItem',
-    dataProvider: (query, _, onReady, limit = autoCompleteSuggestionsDefaultLimit) => {
+    dataProvider: (
+      query,
+      _,
+      onReady,
+      options = {
+        limit: defaultAutoCompleteSuggestionsLimit,
+        mentionAllAppUsersEnabled: false,
+        mentionAllAppUsersQuery: defaultMentionAllAppUsersQuery,
+      },
+    ) => {
+      if (options?.mentionAllAppUsersEnabled) {
+        return (
+          queryUsersDebounced as DebouncedFunc<QueryUsersFunction<At, Ch, Co, Ev, Me, Re, Us>>
+        )(
+          client,
+          query,
+          (data) => {
+            if (onReady) {
+              onReady(data, query);
+            }
+          },
+          {
+            limit: options.limit,
+            mentionAllAppUsersQuery: options.mentionAllAppUsersQuery,
+          },
+        );
+      }
+
       /**
        * By default, we return maximum 100 members via queryChannels api call.
        * Thus it is safe to assume, that if number of members in channel.state is < 100,
@@ -386,7 +500,7 @@ export const ACITriggerSettings = <
           return false;
         });
 
-        const data = matchingUsers.slice(0, limit);
+        const data = matchingUsers.slice(0, options?.limit);
 
         if (onReady) {
           onReady(data, query);
@@ -405,7 +519,9 @@ export const ACITriggerSettings = <
             onReady(data, query);
           }
         },
-        limit,
+        {
+          limit: options.limit,
+        },
       );
     },
     output: (entity) => ({
