@@ -18,7 +18,7 @@ Component to render thread replies for a message, along with and input box for a
 ```tsx
 <OverlayProvider>
   <Chat client={client}>
-    <Channel channel={channel} thread={messageId}>
+    <Channel channel={channel} thread={messageId} threadList>
       <Thread />
     </Channel>
   </Chat>
