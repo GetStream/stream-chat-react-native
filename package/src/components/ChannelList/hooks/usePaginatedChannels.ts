@@ -4,7 +4,7 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useActiveChannels } from '../../../contexts/channelsStateContext/useActiveChannels';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import StreamCache from '../../../StreamCache';
+import { StreamCache } from '../../../StreamCache';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 

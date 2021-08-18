@@ -17,23 +17,30 @@ First, create the `cacheInterface` object.
 import AsyncStorage from '@react-native-community/async-storage';
 import { CacheKeys, CacheValues } from 'stream-chat-react-native';
 
-const cacheInterface = {
-    getItem: async <Key extends CacheKeys>(key: Key) => {
-        const value = await AsyncStorage.getItem(key);
+// Your custom types
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType,
+  LoginConfig,
+} from '../types';
 
-        if (!value) {
-            return null;
-        }
-
-        return JSON.parse(value) as CacheValues[Key];
-    },
-    removeItem: <Key extends CacheKeys>(key: Key) => {
-        return AsyncStorage.removeItem(key);
-    },
-    setItem: <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
-        return AsyncStorage.setItem(key, JSON.stringify(value));
-    },
-};
+const cacheInterface: CacheInterface<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > = {
+      getItem: (key) => AsyncStore.getItem(key, null),
+      removeItem: (key) => AsyncStore.removeItem(key),
+      setItem: (key, value) => AsyncStore.setItem(key, value),
+    };
 
 ```
 
@@ -47,8 +54,27 @@ interface into promises.
 import { MMKV } from 'react-native-mmkv';
 import { CacheKeys, CacheValues } from 'stream-chat-react-native';
 
-const cacheInterface = {
-    getItem: <Key extends CacheKeys>(key: Key) => {
+// Your custom types
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType,
+  LoginConfig,
+} from '../types';
+
+const cacheInterface: CacheInterface<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > = {
+    getItem: (key) => {
         const value = MMKV.getString(key)
 
         if (!value) {
@@ -57,10 +83,10 @@ const cacheInterface = {
 
         return Promise.resolve(JSON.parse(value) as CacheValues[Key]);
     },
-    removeItem: <Key extends CacheKeys>(key: Key) => {
+    removeItem: (key) => {
         return Promise.resolve(MMKV.delete(key));
     },
-    setItem: <Key extends CacheKeys>(key: Key, value: CacheValues[Key]) => {
+    setItem: (key, value) => {
         return Promise.resolve(MMKV.set(key, JSON.stringify(value)));
     },
 };
@@ -84,7 +110,7 @@ If you use tokens with expiration date, have a look at our client documentation 
 ```ts
 
 ...
-import { CacheKeys, CacheValues, streamCacheSetup } from 'stream-chat-react-native';
+import { CacheKeys, CacheValues, StreamCache } from 'stream-chat-react-native';
 
 const client = // Your current client setup
 const cacheInterface = // Your cache interface

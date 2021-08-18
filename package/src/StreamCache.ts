@@ -5,8 +5,8 @@ import type {
   Channel,
   ChannelFilters,
   ChannelSort,
-  ChannelState,
-  ChannelStateAndData,
+  ChannelStateAndDataInput,
+  ChannelStateAndDataOutput,
   ClientStateAndData,
   OwnUserResponse,
   StreamChat,
@@ -27,14 +27,14 @@ import type {
 
 export const STREAM_CHAT_CLIENT_DATA = 'STREAM_CHAT_CLIENT_DATA';
 export const STREAM_CHAT_CHANNELS_DATA = 'STREAM_CHAT_CHANNELS_DATA';
+export const STREAM_CHAT_CHANNELS_ORDER = 'STREAM_CHAT_CHANNELS_ORDER';
 const STREAM_CHAT_SDK_VERSION = 'STREAM_CHAT_SDK_VERSION';
 const STREAM_CHAT_CLIENT_VERSION = 'STREAM_CHAT_CLIENT_VERSION';
-const STREAM_CHAT_CHANNELS_ORDER = 'STREAM_CHAT_CHANNELS_ORDER';
 
 const CURRENT_SDK_VERSION = require('../package.json').version;
 const CURRENT_CLIENT_VERSION = require('stream-chat/package.json').version;
 
-type ChannelsOrder = { [index: string]: { [index: string]: number } };
+export type ChannelsOrder = { [index: string]: { [index: string]: number } };
 
 export type CacheKeys =
   | typeof STREAM_CHAT_CLIENT_DATA
@@ -42,53 +42,50 @@ export type CacheKeys =
   | typeof STREAM_CHAT_SDK_VERSION
   | typeof STREAM_CHAT_CLIENT_VERSION
   | typeof STREAM_CHAT_CHANNELS_ORDER;
-export type CacheValues<
+
+type CacheValuesDefault<
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+> = {
+  STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
+  STREAM_CHAT_CLIENT_DATA: ClientStateAndData<Ch, Co, Us>;
+  STREAM_CHAT_CLIENT_VERSION: string;
+  STREAM_CHAT_SDK_VERSION: string;
+};
+
+type CacheValues<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = {
-  STREAM_CHAT_CHANNELS_DATA: ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us>;
-  STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
-  STREAM_CHAT_CLIENT_DATA: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>;
-  STREAM_CHAT_CLIENT_VERSION: string;
-  STREAM_CHAT_SDK_VERSION: string;
+  get: CacheValuesDefault<Ch, Co, Us> & {
+    STREAM_CHAT_CHANNELS_DATA: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[];
+  };
+  set: CacheValuesDefault<Ch, Co, Us> & {
+    STREAM_CHAT_CHANNELS_DATA: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us>[];
+  };
 };
 
 export type CacheInterface<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = {
   getItem: <Key extends CacheKeys>(
     key: Key,
-  ) => Promise<CacheValues<At, Ch, Co, Ev, Me, Re, Us>[Key] | null>;
+  ) => Promise<CacheValues<At, Ch, Co, Me, Re, Us>['get'][Key] | null>;
   removeItem: <Key extends CacheKeys>(key: Key) => Promise<void>;
   setItem: <Key extends CacheKeys>(
     key: Key,
-    value: CacheValues<At, Ch, Co, Ev, Me, Re, Us>[Key] | null,
+    value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
   ) => Promise<void>;
-};
-
-export type CacheInterfaceSync<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  getItem: <Key extends CacheKeys>(key: Key) => CacheValues<At, Ch, Co, Ev, Me, Re, Us>[Key];
-  removeItem: <Key extends CacheKeys>(key: Key) => void;
-  setItem: <Key extends CacheKeys>(key: Key, value: string) => void;
 };
 
 // 1 message = ~2KB
@@ -106,7 +103,7 @@ const MAX_MESSAGES_PER_THREAD = 300;
 const MAX_CHANNELS = 70;
 // If we store 70 channels, 70 * 21.6MB, we initialize the client with 1.5GB of data in memory already
 
-export default class StreamCache<
+export class StreamCache<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -117,7 +114,7 @@ export default class StreamCache<
 > {
   private static instance: StreamCache; // type is undefined|StreamChat, unknown is due to TS limitations with statics
   private client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  private cacheInterface: CacheInterface<At, Ch, Co, Ev, Me, Re, Us>;
+  private cacheInterface: CacheInterface<At, Ch, Co, Me, Re, Us>;
   private currentNetworkState: boolean | null;
   private initialNetworkStatePromise: Promise<boolean>;
   private resolveInitialNetworkState?: (value: boolean | PromiseLike<boolean>) => void;
@@ -131,7 +128,7 @@ export default class StreamCache<
    */
   private constructor(
     client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-    cacheInterface: CacheInterface<At, Ch, Co, Ev, Me, Re, Us>,
+    cacheInterface: CacheInterface<At, Ch, Co, Me, Re, Us>,
     tokenOrProvider: TokenOrProvider,
   ) {
     this.client = client;
@@ -161,7 +158,7 @@ export default class StreamCache<
     Us extends UnknownType = DefaultUserType,
   >(
     client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-    cacheInterface?: CacheInterface<At, Ch, Co, Ev, Me, Re, Us>,
+    cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
     tokenOrProvider?: TokenOrProvider,
   ): StreamCache<At, Ch, Co, Ev, Me, Re, Us> {
     if (!StreamCache.instance) {
@@ -216,12 +213,12 @@ export default class StreamCache<
 
   // This logics takes care of removing older messages/channels when reinitializing the client state in order to avoid
   // a possible memory overflow
-  private cropOlderMessages(channelsData: ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us> | null) {
+  private cropOlderMessages(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]) {
     //
     const currentOrderedChannelsMapByFilterAndSort =
       this.orderChannelsBasedOnCachedOrder(channelsData);
     const croppedChannelsDataMapById = {} as {
-      [index: string]: ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us>;
+      [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>;
     };
 
     // This deals with the multiple channel lists on the same screen. It creates a map of channels
@@ -229,12 +226,14 @@ export default class StreamCache<
     // for each channel list.
     Object.keys(currentOrderedChannelsMapByFilterAndSort).forEach(
       (currentOrderedChannelsMapKey) => {
-        const croppedChannelsData = currentOrderedChannelsMapByFilterAndSort[
-          currentOrderedChannelsMapKey
-        ].slice(0, MAX_CHANNELS);
+        const croppedChannelsData =
+          currentOrderedChannelsMapByFilterAndSort[currentOrderedChannelsMapKey]?.slice(
+            0,
+            MAX_CHANNELS,
+          ) || [];
         croppedChannelsData.forEach((channelData) => {
           // Skips already existent channels in case they're repeated in both lists
-          if (!croppedChannelsDataMapById[channelData.id] && channelData.id) {
+          if (channelData.id && !croppedChannelsDataMapById[channelData.id]) {
             croppedChannelsDataMapById[channelData.id] = channelData;
           }
         });
@@ -254,25 +253,25 @@ export default class StreamCache<
           acc[id] = value.slice(-MAX_MESSAGES_PER_THREAD);
         }
         return acc;
-      }, {} as Record<string, Array<ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>>>);
+      }, {} as Record<string, ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>['state']['messages']>);
 
       return { ...channelData, state: { ...channelState, messages, pinnedMessages, threads } };
     });
   }
 
-  private connect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  private connect(clientData: ClientStateAndData<Ch, Co, Us>) {
     const user = {
-      id: clientData.user.id,
-      name: clientData.user.name,
+      id: clientData.user?.id,
+      name: clientData.user?.name,
     } as OwnUserResponse<Ch, Co, Us> | UserResponse<Us>;
 
     return this.client.connectUser(user, this.tokenOrProvider);
   }
 
-  private offlineConnect(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  private offlineConnect(clientData: ClientStateAndData<Ch, Co, Us>) {
     const user = {
-      id: clientData.user.id,
-      name: clientData.user.name,
+      id: clientData.user?.id,
+      name: clientData.user?.name,
     } as OwnUserResponse<Ch, Co, Us> | UserResponse<Us>;
 
     return this.client.reInitializeAuthState(user, this.tokenOrProvider);
@@ -281,31 +280,45 @@ export default class StreamCache<
   private orderChannelsBasedOnCachedOrder<
     C extends
       | Channel<At, Ch, Co, Ev, Me, Re, Us>[]
-      | ChannelStateAndData<At, Ch, Co, Ev, Me, Re, Us>,
+      | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
   >(channels: C) {
     const channelsOrder = {} as { [index: string]: C };
     Object.keys(this.cachedChannelsOrder).forEach((currentChannelsOrderKey) => {
       const currentChannelsOrder = this.cachedChannelsOrder?.[currentChannelsOrderKey];
-      const channelsIndicesMap = channels.reduce((curr, next, index) => {
+      const channelsIndicesMap = (
+        channels as ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
+      ).reduce((curr, next, index) => {
         if (!next.id) return curr;
         curr[next.id] = index;
         return curr;
       }, {} as { [index: string]: number });
 
       if (currentChannelsOrder) {
-        channels.sort((a, b) => {
-          if (a.id === undefined && b.id === undefined) return -1;
-          if (a.id === undefined) return 1;
-          if (b.id === undefined) return -1;
+        channels.sort(
+          (
+            a:
+              | Channel<At, Ch, Co, Ev, Me, Re, Us>
+              | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>,
+            b:
+              | Channel<At, Ch, Co, Ev, Me, Re, Us>
+              | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>,
+          ) => {
+            if (a.id === undefined && b.id === undefined) return -1;
+            if (a.id === undefined) return 1;
+            if (b.id === undefined) return -1;
 
-          if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
-            return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
+            if (
+              currentChannelsOrder[a.id] === undefined &&
+              currentChannelsOrder[b.id] === undefined
+            )
+              return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
 
-          if (currentChannelsOrder[a.id] === undefined) return 1;
-          if (currentChannelsOrder[b.id] === undefined) return -1;
+            if (currentChannelsOrder[a.id] === undefined) return 1;
+            if (currentChannelsOrder[b.id] === undefined) return -1;
 
-          return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
-        });
+            return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
+          },
+        );
       }
 
       channelsOrder[currentChannelsOrderKey] = channels;
@@ -344,14 +357,14 @@ export default class StreamCache<
     return !!(clientData && channelsData);
   }
 
-  public async rehydrate(clientData: ClientStateAndData<At, Ch, Co, Ev, Me, Re, Us>) {
+  public async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
     const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
     this.cachedChannelsOrder =
       (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER)) || {};
 
     if (clientData && channelsData) {
-      this.client.reInitializeWithState(clientData, this.cropOlderMessages(channelsData));
+      this.client.reInitializeWithState(clientData, this.cropOlderMessages(channelsData || []));
       this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
         Object.values(this.client.activeChannels),
       );
@@ -360,21 +373,24 @@ export default class StreamCache<
 
   public async initialize() {
     const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
-    const hasNetwork = await this.initialNetworkStatePromise;
+    if (clientData) {
+      const hasNetwork = await this.initialNetworkStatePromise;
 
-    const promises = [];
+      const promises = [];
 
-    if (hasNetwork) {
-      promises.push(this.connect(clientData));
-    } else {
-      // If there is no connection, dont wait for authenticate (aka connectUser), just use it to
-      // initialize user/socket on the client side
-      this.offlineConnect(clientData);
+      if (hasNetwork) {
+        promises.push(this.connect(clientData));
+      } else {
+        // If there is no connection, dont wait for authenticate (aka connectUser), just use it to
+        // initialize user/socket on the client side
+        this.offlineConnect(clientData);
+      }
+
+      promises.push(this.rehydrate(clientData));
+
+      return Promise.all(promises);
     }
-
-    promises.push(this.rehydrate(clientData));
-
-    return Promise.all(promises);
+    return null;
   }
 
   private getChannelsOrderKey(filters: ChannelFilters<Ch, Co, Us>, sort: ChannelSort<Ch>) {

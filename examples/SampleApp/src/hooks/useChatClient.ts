@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
-import { StreamCache } from 'stream-chat-react-native';
+import { CacheInterface, StreamCache } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
@@ -41,10 +41,17 @@ export const useChatClient = () => {
       timeout: 6000,
     });
 
-    const cacheInterface = {
-      getItem: (key: string) => AsyncStore.getItem(key, null),
-      removeItem: (key: string) => AsyncStore.removeItem(key),
-      setItem: (key: string, value: any) => AsyncStore.setItem(key, value),
+    const cacheInterface: CacheInterface<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    > = {
+      getItem: (key) => AsyncStore.getItem(key, null),
+      removeItem: (key) => AsyncStore.removeItem(key),
+      setItem: (key, value) => AsyncStore.setItem(key, value),
     };
 
     const cacheInstance = StreamCache.getInstance(client, cacheInterface, config.userToken);
