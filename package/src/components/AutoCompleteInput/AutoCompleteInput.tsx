@@ -73,8 +73,11 @@ type AutoCompleteInputPropsWithContext<
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
+    | 'autoCompleteSuggestionsLimit'
     | 'giphyActive'
     | 'maxMessageLength'
+    | 'mentionAllAppUsersEnabled'
+    | 'mentionAllAppUsersQuery'
     | 'numberOfLines'
     | 'onChange'
     | 'setGiphyActive'
@@ -112,10 +115,13 @@ const AutoCompleteInputWithContext = <
 ) => {
   const {
     additionalTextInputProps,
+    autoCompleteSuggestionsLimit,
     closeSuggestions,
     giphyActive,
     giphyEnabled,
     maxMessageLength,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
     openSuggestions,
@@ -193,6 +199,11 @@ const AutoCompleteInputWithContext = <
               });
             }
           },
+          {
+            limit: autoCompleteSuggestionsLimit,
+            mentionAllAppUsersEnabled,
+            mentionAllAppUsersQuery,
+          },
         );
       }
     } else if (isCommandTrigger(trigger)) {
@@ -210,6 +221,9 @@ const AutoCompleteInputWithContext = <
               data,
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
             });
+          },
+          {
+            limit: autoCompleteSuggestionsLimit,
           },
         );
       }
@@ -495,8 +509,11 @@ export const AutoCompleteInput = <
   const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTextInputProps,
+    autoCompleteSuggestionsLimit,
     giphyActive,
     maxMessageLength,
+    mentionAllAppUsersEnabled,
+    mentionAllAppUsersQuery,
     numberOfLines,
     onChange,
     setGiphyActive,
@@ -512,10 +529,13 @@ export const AutoCompleteInput = <
     <MemoizedAutoCompleteInput
       {...{
         additionalTextInputProps,
+        autoCompleteSuggestionsLimit,
         closeSuggestions,
         giphyActive,
         giphyEnabled,
         maxMessageLength,
+        mentionAllAppUsersEnabled,
+        mentionAllAppUsersQuery,
         numberOfLines,
         onChange,
         openSuggestions,
