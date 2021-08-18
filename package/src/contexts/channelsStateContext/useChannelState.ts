@@ -33,6 +33,11 @@ type StateManagerParams<
   key: Key;
 };
 
+/* 
+  This hook takes care of creating a useState-like interface which can be used later to call
+  updates to the ChannelsStateContext reducer. It receives the cid and key which it wants to update
+  and perform the state updates. Also supports a initialState.
+*/
 function useStateManager<
   Key extends Keys,
   At extends UnknownType = DefaultAttachmentType,
