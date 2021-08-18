@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-import { useActiveChannels } from '../../../contexts/channelsStateContext/useActiveChannels';
+import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { StreamCache } from '../../../StreamCache';
 
@@ -58,7 +58,8 @@ export const usePaginatedChannels = <
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
     cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
   );
-  const activeChannels = useActiveChannels();
+  const activeChannels = useActiveChannelsRefContext();
+
 
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
