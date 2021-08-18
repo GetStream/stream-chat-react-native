@@ -84,9 +84,9 @@
     "stream-chat": "~4.0.0"
   },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-native": "^0.60.0",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-reanimated": "^2.0.0",
     "react-native-svg": "^12.1.0"
