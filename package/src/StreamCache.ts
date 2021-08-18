@@ -1,6 +1,8 @@
 import { AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 
+import { removeChannelAttachments, removeMessageAttachments } from './StreamAttachmentStorage';
+
 import type {
   Channel,
   ChannelFilters,
@@ -103,6 +105,33 @@ const MAX_MESSAGES_PER_THREAD = 300;
 const MAX_CHANNELS = 70;
 // If we store 70 channels, 70 * 21.6MB, we initialize the client with 1.5GB of data in memory already
 
+function extractChannelMessagesMap<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+>(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null) {
+  const oldChannelsMessagesMap =
+    (channelsData || []).reduce((curr, next) => {
+      if (next.id) {
+        curr[next.id] = {};
+        next.state.messages.forEach((message) => {
+          curr[next.id as string][message.id] = true;
+        });
+        Object.values(next.state.threads).forEach((thread) =>
+          thread.forEach((threadMessage) => {
+            curr[next.id as string][threadMessage.id] = true;
+          }),
+        );
+      }
+      return curr;
+    }, {} as { [cid: string]: { [mid: string]: true } }) || {};
+
+  return oldChannelsMessagesMap;
+}
+
 export class StreamCache<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -179,16 +208,21 @@ export class StreamCache<
     return !!StreamCache.instance;
   }
 
+  private syncCache() {
+    const { channels: currentChannelsData, client: currentClientData } = this.client.getStateData();
+    return Promise.all([
+      this.cacheInterface.setItem(STREAM_CHAT_SDK_VERSION, CURRENT_SDK_VERSION),
+      this.cacheInterface.setItem(STREAM_CHAT_CLIENT_VERSION, CURRENT_CLIENT_VERSION),
+      this.cacheInterface.setItem(STREAM_CHAT_CLIENT_DATA, currentClientData),
+      this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, currentChannelsData),
+      this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_ORDER, this.cachedChannelsOrder),
+    ]);
+  }
+
   private startWatchers() {
     AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState.match(/inactive|background/)) {
-        const { channels: currentChannelsData, client: currentClientData } =
-          this.client.getStateData();
-        this.cacheInterface.setItem(STREAM_CHAT_SDK_VERSION, CURRENT_SDK_VERSION);
-        this.cacheInterface.setItem(STREAM_CHAT_CLIENT_VERSION, CURRENT_CLIENT_VERSION);
-        this.cacheInterface.setItem(STREAM_CHAT_CLIENT_DATA, currentClientData);
-        this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, currentChannelsData);
-        this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_ORDER, this.cachedChannelsOrder);
+        this.syncCache();
       }
     });
 
@@ -357,6 +391,39 @@ export class StreamCache<
     return !!(clientData && channelsData);
   }
 
+  public async syncCacheAndImages() {
+    const oldChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const oldChannelsMessagesMap = extractChannelMessagesMap(oldChannelsData);
+    await this.syncCache();
+    const newChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const newChannelsMessagesMap = extractChannelMessagesMap(newChannelsData);
+
+    const removedChannels: string[] = [];
+    const removedMessages: { channelId: string; messageId: string }[] = [];
+
+    // Extract array of paths for removed channels and messages
+    Object.keys(oldChannelsMessagesMap).forEach((oldChannelId) => {
+      if (!newChannelsMessagesMap[oldChannelId]) {
+        removedChannels.push(oldChannelId);
+        return;
+      }
+
+      Object.keys(oldChannelsMessagesMap[oldChannelId]).forEach((oldMessageId) => {
+        if (!newChannelsMessagesMap[oldChannelId][oldMessageId]) {
+          removedMessages.push({ channelId: oldChannelId, messageId: oldMessageId });
+        }
+      });
+    });
+
+    await Promise.all(removedChannels.map(removeChannelAttachments));
+
+    await Promise.all(
+      removedMessages.map(({ channelId, messageId }) =>
+        removeMessageAttachments(channelId, messageId),
+      ),
+    );
+  }
+
   public async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
     const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
@@ -368,6 +435,12 @@ export class StreamCache<
       this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
         Object.values(this.client.activeChannels),
       );
+
+      // We call syncCache when rehyrdating in order to replace whats stored in the cache
+      // with the cropped data. This needs to happen here because we can't crop the
+      // data when saving the cache cause the operation would cost more and maybe the user can
+      // kill the app before it happens.
+      this.syncCacheAndImages();
     }
   }
 

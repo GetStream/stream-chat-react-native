@@ -60,7 +60,6 @@ export const usePaginatedChannels = <
   );
   const activeChannels = useActiveChannelsRefContext();
 
-
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
@@ -112,6 +111,9 @@ export const usePaginatedChannels = <
       setOffset(newChannels.length);
       setError(false);
       querying.current = false;
+      // Once client.queryChannels remove old data from the client cache, we just synchronize the cache and images in order to
+      // remove older cached images
+      cacheInstance?.syncCacheAndImages();
     } catch (err) {
       querying.current = false;
       await wait(2000);
