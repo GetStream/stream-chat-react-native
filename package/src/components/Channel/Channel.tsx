@@ -392,7 +392,7 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
-    autoCompleteSuggestionsLimit = 10,
+    autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     blockUser,
     Card = CardDefault,
