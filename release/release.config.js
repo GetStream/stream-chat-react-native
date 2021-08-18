@@ -9,10 +9,7 @@ module.exports = Promise.resolve().then(() => {
       '@semantic-release/commit-analyzer',
       {
         preset: 'angular',
-        releaseRules: [
-          { breaking: true, release: 'minor' },
-          { type: 'workspaces', release: 'patch' },
-        ],
+        releaseRules: [{ type: 'workspaces', release: 'patch' }],
         parserOpts: {
           mergePattern: mergeRegex,
           noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
