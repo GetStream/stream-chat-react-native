@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 import merge from 'lodash/merge';
 
-import CachedAttachmentImage from '../Attachment/CachedAttachmentImage';
+import CachedAttachmentImage from '../CachedImages/CachedAttachmentImage';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';

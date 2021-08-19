@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import CachedAttachmentImage from './CachedAttachmentImage';
+import CachedAttachmentImage from '../CachedImages/CachedAttachmentImage';
 
 import {
   MessageContextValue,

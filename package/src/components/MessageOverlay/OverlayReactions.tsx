@@ -102,6 +102,7 @@ export type Reaction = {
 };
 
 export type OverlayReactionsProps = {
+  channelId: string | undefined;
   reactions: Reaction[];
   showScreen: Animated.SharedValue<number>;
   title: string;
@@ -126,6 +127,7 @@ const ReactionIcon: React.FC<
 export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
   const {
     alignment: overlayAlignment,
+    channelId,
     reactions,
     supportedReactions = reactionData,
     showScreen,
@@ -202,7 +204,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     return (
       <View style={[styles.avatarContainer, avatarContainer]}>
         <View style={styles.avatarInnerContainer}>
-          <Avatar image={image} name={name} size={avatarSize} />
+          <Avatar channelId={channelId} image={image} name={name} size={avatarSize} />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle

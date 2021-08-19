@@ -1,6 +1,42 @@
 import RNFS from 'react-native-fs';
 
+// Root dir for media storage
 const getStreamRootDir = () => `${RNFS.DocumentDirectoryPath}/StreamStorage`;
+
+/* 
+  Avatars
+*/
+const getStreamAvatarsDir = () => `${getStreamRootDir()}/avatars`;
+const getStreamChannelAvatarsDir = (cid: string) => `${getStreamAvatarsDir()}/${cid}`;
+
+export const getStreamChannelAvatarDir = (cid: string, fileUrl: string) =>
+  `${getStreamChannelAvatarsDir(cid)}/${fileUrl}`;
+
+export const checkIfLocalAvatar = (cid: string, fileId: string) =>
+  RNFS.exists(getStreamChannelAvatarDir(cid, fileId));
+
+export async function saveAvatar(cid: string, fileId: string, fileUrl: string) {
+  const avatarPath = getStreamChannelAvatarDir(cid, fileId);
+  const avatarDir = avatarPath.substr(0, avatarPath.lastIndexOf('/'));
+
+  if (!(await RNFS.exists(avatarDir))) {
+    await RNFS.mkdir(avatarDir);
+  }
+
+  return RNFS.downloadFile({
+    fromUrl: fileUrl,
+    toFile: avatarPath,
+  }).promise;
+}
+
+export function removeChannelAvatars(cid: string) {
+  return RNFS.unlink(getStreamChannelAvatarsDir(cid));
+}
+
+/* 
+  Attachments
+*/
+
 const getStreamAttachmentsDir = () => `${getStreamRootDir()}/attachments`;
 
 const getStreamChannelAttachmentsDir = (cid: string) => `${getStreamAttachmentsDir()}/${cid}`;

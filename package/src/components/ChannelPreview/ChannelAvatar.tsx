@@ -49,11 +49,19 @@ export const ChannelAvatar = <
   const displayPresence = useChannelPreviewDisplayPresence(channel);
 
   if (displayAvatar.images) {
-    return <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />;
+    return (
+      <GroupAvatar
+        channelId={channel.id}
+        images={displayAvatar.images}
+        names={displayAvatar.names}
+        size={40}
+      />
+    );
   }
 
   return (
     <Avatar
+      channelId={channel.id}
       image={displayAvatar.image}
       name={displayAvatar.name}
       online={displayPresence}

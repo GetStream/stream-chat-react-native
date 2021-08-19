@@ -11,7 +11,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import CachedAttachmentImage from './CachedAttachmentImage';
+import CachedAttachmentImage from '../CachedImages/CachedAttachmentImage';
 
 import {
   MessageContextValue,

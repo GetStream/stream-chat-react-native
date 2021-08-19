@@ -48,6 +48,11 @@ import {
   ImageGridHandle,
 } from './components/ImageGridHandle';
 
+import { getAttachmentId } from '../CachedImages/useCachedAttachment';
+import {
+  checkIfLocalAttachment,
+  getStreamChannelMessageAttachmentDir,
+} from '../../StreamMediaCache';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -348,6 +353,7 @@ export const ImageGallery = <
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
+      channelId: cur.cid,
       created_at: cur.created_at,
       id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
       messageId: cur.id,
@@ -397,10 +403,20 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    if (photos[index.value]?.uri) {
-      Image.getSize(photos[index.value].uri, (width, height) => {
-        const imageHeight = Math.floor(height * (screenWidth / width));
-        setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+    const photo = photos[index.value];
+    if (photo?.uri) {
+      const { channelId = '', messageId = '', uri: url = '' } = photo;
+      const attachmentId = getAttachmentId(url) || '';
+      checkIfLocalAttachment(channelId, messageId, attachmentId).then((existsOnCache) => {
+        Image.getSize(
+          existsOnCache
+            ? `file://${getStreamChannelMessageAttachmentDir(channelId, messageId, attachmentId)}`
+            : url,
+          (width, height) => {
+            const imageHeight = Math.floor(height * (screenWidth / width));
+            setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+          },
+        );
       });
     }
   }, [uriForCurrentImage]);
@@ -1199,6 +1215,7 @@ const styles = StyleSheet.create({
 export type Photo<Us extends UnknownType = DefaultUserType> = {
   id: string;
   uri: string;
+  channelId?: string;
   created_at?: string | Date;
   messageId?: string;
   user?: UserResponse<Us> | null;

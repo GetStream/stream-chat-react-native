@@ -1,7 +1,11 @@
 import { AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 
-import { removeChannelAttachments, removeMessageAttachments } from './StreamAttachmentStorage';
+import {
+  removeChannelAttachments,
+  removeChannelAvatars,
+  removeMessageAttachments,
+} from './StreamMediaCache';
 
 import type {
   Channel,
@@ -391,11 +395,11 @@ export class StreamCache<
     return !!(clientData && channelsData);
   }
 
-  public async syncCacheAndImages() {
-    const oldChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+  private async removeOlderImages(
+    oldChannelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
+    newChannelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
+  ) {
     const oldChannelsMessagesMap = extractChannelMessagesMap(oldChannelsData);
-    await this.syncCache();
-    const newChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
     const newChannelsMessagesMap = extractChannelMessagesMap(newChannelsData);
 
     const removedChannels: string[] = [];
@@ -415,13 +419,27 @@ export class StreamCache<
       });
     });
 
-    await Promise.all(removedChannels.map(removeChannelAttachments));
+    await Promise.all(
+      removedChannels.map((channelId) =>
+        Promise.all([removeChannelAttachments(channelId), removeChannelAvatars(channelId)]),
+      ),
+    );
 
     await Promise.all(
       removedMessages.map(({ channelId, messageId }) =>
         removeMessageAttachments(channelId, messageId),
       ),
     );
+  }
+
+  public async syncCacheAndImages() {
+    const oldChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    await this.syncCache();
+    const newChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+
+    if (!oldChannelsData) return;
+
+    await this.removeOlderImages(oldChannelsData, newChannelsData || []);
   }
 
   public async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
