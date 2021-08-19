@@ -1,7 +1,7 @@
 ---
 id: translations
 sidebar_position: 4
-title: Translations / i18n
+title: Adding Internationalization (i18n)
 ---
 
 If you deploy your app to users who speak another language, you might want to internationalize it.
@@ -18,12 +18,17 @@ At the moment we support the following languages (and more will be added in the 
 
 ## Usage
 
-Static translations inside of the Stream Chat for React Native components are provided by `Streami18n`.
+The `Streami18n` provides static translations for React Native components from the Stream Chat SDK.
 `Streami18n` is a class that uses a configuration of [i18next](https://www.i18next.com/) with a subset of the functionality exposed.
 `Streami18n` is provided by `stream-chat-react-native` and can be imported from the library.
 
-To create an instance of `Streami18n` you simply need to instantiate the class.
-No parameters are required, this will default to English (en). If you choose to use the default English settings with Day.js you do
+The only step you need to start using `Streami18n` is to create an instance of the class.
+
+```tsx
+const streami18n = new Streami18n();
+```
+
+`Streami18n` will default to English (en). If you choose to use the default English settings with Day.js you do
 not need to deal directly with an instance of `Streami18n`, this is taken care of for you.
 
 If you choose to change the language, translation, or date handling, you will need to provide your modified instance of `Streami18n` to the component library.
@@ -46,29 +51,36 @@ export const App = () =>
   </OverlayProvider>;
 ```
 
-### Switch/set language for components
+### Setting language for components
 
-As mentioned earlier, we provide built in translations for some languages such as French, Spanish etc out-of-the-box.
+Stream provides built in translations for some languages out-of-the-box.
 `Streami18n` accepts two optional parameters when being instantiated, [`options`](#options) and [`i18nextConfig`](#i18nextconfig).
 These parameters allow you to modify the `Streami18n` instance to your preferences.
 
-You can switch the default language for UI components as following:
+As an example, let's say we need to localize the UI of the application for a Dutch audience:
 
 ```tsx
-const streami18n = new Streami18n({ language: 'nl' });
+const streami18n = new Streami18n({ language: 'nl' }); // Instantiate Streami18n with Dutch strings.
 ```
 
 Alternatively, you can also use [`setLanguage`](#setlanguage) method on `Streami18n` class.
 This is useful especially if you want to build language toggle functionality within your app.
 
+For example, let's say an application needs to default to English but support French:
+
 ```tsx
 const streami18n = new Streami18n();
-streami18n.setLanguage('nl');
+
+...
+// Logic for how a user can change the language
+...
+
+streami18n.setLanguage('fr'); // The UI will change to French.
 ```
 
 ### Adding a new language
 
-Let's see how you can add support for additional languages in the SDK. As an example, we'll implement a custom Polish language translation.
+Let's see how you can add support for additional languages in the SDK. As an example, we'll implement a custom Polish language translation:
 
 ```tsx
 const streami18n = new Streami18n();
@@ -84,7 +96,7 @@ Please take a look at all the available texts [here](https://github.com/GetStrea
 
 ### Overriding existing languages
 
-Existing language can be overriden with the same process as [Adding a new language](#adding-a-new-language). As an example, we'll override the translations for Dutch language.
+You can also make line item changes to the strings for existing UI components. This is useful if you want to tweak an existing language to use regional spelling variants (American English vs. UK English, for example) same process as [Adding a new language](#adding-a-new-language). As an example, we'll override the translations for Dutch language:
 
 ```tsx
 const streami18n = new Streami18n();
@@ -97,7 +109,7 @@ streami18n.registerTranslation('nl', {
 ### Using device locale to set language
 
 [`react-native-localize`](https://github.com/zoontek/react-native-localize#-react-native-localize) package provides a toolbox for React Native app localization.
-You can use this package to access user preferred locale, and use it to set language for chat components.
+You can use this package to access user preferred locale, and use it to set language for chat components:
 
 ```tsx
 import * as RNLocalize from "react-native-localize";
@@ -132,7 +144,7 @@ const i18n = new Streami18n({
 });
 ```
 
-Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+You can add locale config for moment while registering translation via `registerTranslation` function:
 
 ```tsx
 const i18n = new Streami18n();
@@ -154,7 +166,7 @@ i18n.registerTranslation(
 );
 ```
 
-Alternatively you can also provide your own [`Moment`](https://momentjs.com/) object
+Alternatively, you can use a utility library to handle DateTime by providing your own [`Moment`](https://momentjs.com/) object:
 
 ```tsx
 import 'moment/locale/nl';
@@ -170,7 +182,7 @@ const i18n = new Streami18n({
 })
 ```
 
-Similarly you can also provide your own [Dayjs](https://day.js.org/docs/en/installation/installation) object
+Or by providing your own [Dayjs](https://day.js.org/docs/en/installation/installation) object:
 
 ```tsx
 import Dayjs from 'dayjs'
@@ -186,7 +198,11 @@ const i18n = new Streami18n({
 })
 ```
 
-If you would like to stick with english language for date-times in Stream components, you can set `disableDateTimeTranslations` to true.
+If you would like to stick with English language for date-times in Stream components, you can set `disableDateTimeTranslations` to true.
+
+### Translating messages
+
+If your application has a userbase that speaks more than one language, Stream's Chat Client provides the option to automatically translate messages. For more information on using automatic machine translation for messages, see the [Chat Client Guide on Translation](https://getstream.io/chat/docs/react-native/translation/?language=javascript).
 
 ## Options
 
@@ -230,10 +246,21 @@ Use the default English language date-times instead of those dictated by the lan
 ### language
 
 Language code for language to be used.
+The following options are available:
+
+- English (`en`)
+- French (`fr`)
+- Hindi (`hi`)
+- Italian (`it`)
+- Dutch (`nl`)
+- Turkish (`tr`)
+- Russian (`ru`)
 
 | TYPE | DEFAULT |
 | - | - |
 | string | `en` |
+
+
 
 ### logger
 
