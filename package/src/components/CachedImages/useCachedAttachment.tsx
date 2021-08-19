@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { StreamCache } from '../../StreamCache';
 import {
   checkIfLocalAttachment,
   getStreamChannelMessageAttachmentDir,
@@ -18,20 +19,27 @@ export const getAttachmentId = (uri: string | undefined) => {
   return parsedUrl?.split(/(images|media)\//)[2];
 };
 
-const useCachedAttachment = (config: {
+export const useCachedAttachment = (config: {
   cacheConfig: GalleryImageCacheConfig;
   source: ImageURISource;
 }) => {
   const [cachedSource, setCachedSource] = useState({
     ...config.source,
-    uri: '',
+    uri: !StreamCache.hasInstance() ? config.source.uri : '',
   });
 
   const setCachedSourceIfExists = async () => {
+    if (!StreamCache.hasInstance()) return;
+
     const { channelId, messageId } = config.cacheConfig;
     const attachmentId = getAttachmentId(config.source.uri);
 
     if (!messageId || !config.source.uri || !channelId || !attachmentId) {
+      if (!messageId || !channelId) {
+        console.warn(
+          "Attempted to use cached attachment without passing the cacheConfig prop to the cached image component. Please make sure you're sending the channelId and messageId",
+        );
+      }
       return setCachedSource((src) => ({
         ...src,
         uri: config.source.uri as string,
@@ -54,5 +62,3 @@ const useCachedAttachment = (config: {
 
   return cachedSource;
 };
-
-export default useCachedAttachment;

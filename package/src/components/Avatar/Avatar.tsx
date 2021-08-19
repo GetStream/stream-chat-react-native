@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ImageStyle, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
-import CachedAvatar from '../CachedImages/CachedAvatar';
+import { CachedAvatar } from '../CachedImages/CachedAvatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 

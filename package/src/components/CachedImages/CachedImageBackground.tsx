@@ -1,14 +1,14 @@
 import React from 'react';
 import { ImageBackground, ImageBackgroundProps, ImageURISource } from 'react-native';
 
-import useCachedAttachment from './useCachedAttachment';
+import { useCachedAttachment } from './useCachedAttachment';
 
 type GalleryImageCacheConfig = {
   channelId: string | undefined;
   messageId: string | undefined;
 };
 
-const GalleryImage: React.FC<
+export const CachedImageBackground: React.FC<
   Omit<ImageBackgroundProps, 'source'> & {
     cacheConfig: GalleryImageCacheConfig;
     source: ImageURISource;
@@ -19,5 +19,3 @@ const GalleryImage: React.FC<
 
   return cachedSource.uri ? <ImageBackground {...props} source={cachedSource} /> : null;
 };
-
-export default GalleryImage;

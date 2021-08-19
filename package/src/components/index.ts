@@ -28,6 +28,11 @@ export * from './AutoCompleteInput/SuggestionsList';
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
 
+export * from './CachedImages/CachedAnimatedGalleryImage';
+export * from './CachedImages/CachedAttachmentImage';
+export * from './CachedImages/CachedImageBackground';
+export * from './CachedImages/useCachedAttachment';
+
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';

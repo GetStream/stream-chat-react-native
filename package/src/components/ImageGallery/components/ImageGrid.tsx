@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
-import CachedImageBackground from '../../CachedImages/CachedImageBackground';
+import { CachedImageBackground } from '../../CachedImages/CachedImageBackground';
 
 import { Avatar } from '../../Avatar/Avatar';
 

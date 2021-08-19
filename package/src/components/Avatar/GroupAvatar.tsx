@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import CachedAvatar from '../CachedImages/CachedAvatar';
+import { CachedAvatar } from '../CachedImages/CachedAvatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 

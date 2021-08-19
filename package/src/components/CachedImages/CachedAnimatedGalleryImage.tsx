@@ -3,14 +3,14 @@ import Animated from 'react-native-reanimated';
 
 import type { ImageProps, ImageURISource } from 'react-native';
 
-import useCachedAttachment from './useCachedAttachment';
+import { useCachedAttachment } from './useCachedAttachment';
 
 type GalleryImageCacheConfig = {
   channelId: string | undefined;
   messageId: string | undefined;
 };
 
-const GalleryImage: React.FC<
+export const CachedAnimatedGalleryImage: React.FC<
   Omit<ImageProps, 'source'> & {
     cacheConfig: GalleryImageCacheConfig;
     source: ImageURISource;
@@ -21,5 +21,3 @@ const GalleryImage: React.FC<
 
   return cachedSource.uri ? <Animated.Image {...props} source={cachedSource} /> : null;
 };
-
-export default GalleryImage;

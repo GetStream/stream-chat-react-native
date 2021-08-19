@@ -30,7 +30,9 @@ export async function saveAvatar(cid: string, fileId: string, fileUrl: string) {
 }
 
 export function removeChannelAvatars(cid: string) {
-  return RNFS.unlink(getStreamChannelAvatarsDir(cid));
+  return RNFS.unlink(getStreamChannelAvatarsDir(cid)).catch(() =>
+    console.log('Skipping already deleted cached image...'),
+  );
 }
 
 /* 
@@ -64,7 +66,9 @@ export async function saveAttachment(cid: string, mid: string, fileId: string, f
 }
 
 export function removeMessageAttachments(cid: string, mid: string) {
-  return RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid));
+  return RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid)).catch(() =>
+    console.log('Skipping already deleted cached image...'),
+  );
 }
 
 export function removeChannelAttachments(cid: string) {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ImageProps, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import CachedAttachmentImage from '../CachedImages/CachedAttachmentImage';
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
 import {
   ImageGalleryContextValue,
