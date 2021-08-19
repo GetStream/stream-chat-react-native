@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { StreamCache } from '../../StreamCache';
-import {
-  checkIfLocalAttachment,
-  getStreamChannelMessageAttachmentDir,
-  saveAttachment,
-} from '../../StreamMediaCache';
+import StreamMediaCache from '../../StreamMediaCache';
 
 import type { ImageURISource } from 'react-native';
 
@@ -46,13 +42,22 @@ export const useCachedAttachment = (config: {
       }));
     }
 
-    if (!(await checkIfLocalAttachment(channelId, messageId, attachmentId))) {
-      await saveAttachment(channelId, messageId, attachmentId, config.source.uri as string);
+    if (!(await StreamMediaCache.checkIfLocalAttachment(channelId, messageId, attachmentId))) {
+      await StreamMediaCache.saveAttachment(
+        channelId,
+        messageId,
+        attachmentId,
+        config.source.uri as string,
+      );
     }
 
     return setCachedSource((src) => ({
       ...src,
-      uri: `file://${getStreamChannelMessageAttachmentDir(channelId, messageId, attachmentId)}`,
+      uri: `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
+        channelId,
+        messageId,
+        attachmentId,
+      )}`,
     }));
   };
 

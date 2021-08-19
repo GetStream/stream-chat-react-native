@@ -9,13 +9,13 @@ const getStreamRootDir = () => `${RNFS.DocumentDirectoryPath}/StreamStorage`;
 const getStreamAvatarsDir = () => `${getStreamRootDir()}/avatars`;
 const getStreamChannelAvatarsDir = (cid: string) => `${getStreamAvatarsDir()}/${cid}`;
 
-export const getStreamChannelAvatarDir = (cid: string, fileUrl: string) =>
+const getStreamChannelAvatarDir = (cid: string, fileUrl: string) =>
   `${getStreamChannelAvatarsDir(cid)}/${fileUrl}`;
 
-export const checkIfLocalAvatar = (cid: string, fileId: string) =>
+const checkIfLocalAvatar = (cid: string, fileId: string) =>
   RNFS.exists(getStreamChannelAvatarDir(cid, fileId));
 
-export async function saveAvatar(cid: string, fileId: string, fileUrl: string) {
+async function saveAvatar(cid: string, fileId: string, fileUrl: string) {
   const avatarPath = getStreamChannelAvatarDir(cid, fileId);
   const avatarDir = avatarPath.substr(0, avatarPath.lastIndexOf('/'));
 
@@ -29,9 +29,9 @@ export async function saveAvatar(cid: string, fileId: string, fileUrl: string) {
   }).promise;
 }
 
-export function removeChannelAvatars(cid: string) {
+function removeChannelAvatars(cid: string) {
   return RNFS.unlink(getStreamChannelAvatarsDir(cid)).catch(() =>
-    console.log('Skipping already deleted cached image...'),
+    console.log('Skipping already deleted channel cached avatars...'),
   );
 }
 
@@ -45,13 +45,13 @@ const getStreamChannelAttachmentsDir = (cid: string) => `${getStreamAttachmentsD
 const getStreamChannelMessageAttachmentsDir = (cid: string, mid: string) =>
   `${getStreamChannelAttachmentsDir(cid)}/${mid}`;
 
-export const getStreamChannelMessageAttachmentDir = (cid: string, mid: string, fileUrl: string) =>
+const getStreamChannelMessageAttachmentDir = (cid: string, mid: string, fileUrl: string) =>
   `${getStreamChannelMessageAttachmentsDir(cid, mid)}/${fileUrl}`;
 
-export const checkIfLocalAttachment = (cid: string, mid: string, fileId: string) =>
+const checkIfLocalAttachment = (cid: string, mid: string, fileId: string) =>
   RNFS.exists(getStreamChannelMessageAttachmentDir(cid, mid, fileId));
 
-export async function saveAttachment(cid: string, mid: string, fileId: string, fileUrl: string) {
+async function saveAttachment(cid: string, mid: string, fileId: string, fileUrl: string) {
   const attachmentPath = getStreamChannelMessageAttachmentDir(cid, mid, fileId);
   const attachmentDir = attachmentPath.substr(0, attachmentPath.lastIndexOf('/'));
 
@@ -65,12 +65,26 @@ export async function saveAttachment(cid: string, mid: string, fileId: string, f
   }).promise;
 }
 
-export function removeMessageAttachments(cid: string, mid: string) {
+function removeChannelAttachments(cid: string) {
+  return RNFS.unlink(getStreamChannelAttachmentsDir(cid)).catch(() =>
+    console.log('Skipping already deleted channel cached images...'),
+  );
+}
+
+function removeMessageAttachments(cid: string, mid: string) {
   return RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid)).catch(() =>
     console.log('Skipping already deleted cached image...'),
   );
 }
 
-export function removeChannelAttachments(cid: string) {
-  return RNFS.unlink(getStreamChannelAttachmentsDir(cid));
-}
+export default {
+  checkIfLocalAttachment,
+  checkIfLocalAvatar,
+  getStreamChannelAvatarDir,
+  getStreamChannelMessageAttachmentDir,
+  removeChannelAttachments,
+  removeChannelAvatars,
+  removeMessageAttachments,
+  saveAttachment,
+  saveAvatar,
+};

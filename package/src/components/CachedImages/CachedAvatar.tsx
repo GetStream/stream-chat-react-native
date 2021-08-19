@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, ImageProps, ImageURISource } from 'react-native';
 
 import { StreamCache } from '../../StreamCache';
-import { checkIfLocalAvatar, getStreamChannelAvatarDir, saveAvatar } from '../../StreamMediaCache';
+import StreamMediaCache from '../../StreamMediaCache';
 
 export const CachedAvatar: React.FC<
   Omit<ImageProps, 'source'> & {
@@ -34,13 +34,13 @@ export const CachedAvatar: React.FC<
       }));
     }
 
-    if (!(await checkIfLocalAvatar(channelId, parsedUrl))) {
-      await saveAvatar(channelId, parsedUrl, props.source.uri as string);
+    if (!(await StreamMediaCache.checkIfLocalAvatar(channelId, parsedUrl))) {
+      await StreamMediaCache.saveAvatar(channelId, parsedUrl, props.source.uri as string);
     }
 
     setCachedSource((src) => ({
       ...src,
-      uri: `file://${getStreamChannelAvatarDir(channelId, parsedUrl)}`,
+      uri: `file://${StreamMediaCache.getStreamChannelAvatarDir(channelId, parsedUrl)}`,
     }));
   };
 

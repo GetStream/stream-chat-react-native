@@ -12,6 +12,7 @@ export * from './utils/Streami18n';
 export * from './utils/utils';
 
 export * from './StreamCache';
+export { default as StreamMediaCache } from './StreamMediaCache';
 
 export { default as enTranslations } from './i18n/en.json';
 export { default as frTranslations } from './i18n/fr.json';

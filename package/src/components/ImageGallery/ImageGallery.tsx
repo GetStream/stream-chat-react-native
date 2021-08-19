@@ -49,10 +49,7 @@ import {
 } from './components/ImageGridHandle';
 
 import { getAttachmentId } from '../CachedImages/useCachedAttachment';
-import {
-  checkIfLocalAttachment,
-  getStreamChannelMessageAttachmentDir,
-} from '../../StreamMediaCache';
+import StreamMediaCache from '../../StreamMediaCache';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -407,17 +404,23 @@ export const ImageGallery = <
     if (photo?.uri) {
       const { channelId = '', messageId = '', uri: url = '' } = photo;
       const attachmentId = getAttachmentId(url) || '';
-      checkIfLocalAttachment(channelId, messageId, attachmentId).then((existsOnCache) => {
-        Image.getSize(
-          existsOnCache
-            ? `file://${getStreamChannelMessageAttachmentDir(channelId, messageId, attachmentId)}`
-            : url,
-          (width, height) => {
-            const imageHeight = Math.floor(height * (screenWidth / width));
-            setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
-          },
-        );
-      });
+      StreamMediaCache.checkIfLocalAttachment(channelId, messageId, attachmentId).then(
+        (existsOnCache) => {
+          Image.getSize(
+            existsOnCache
+              ? `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
+                  channelId,
+                  messageId,
+                  attachmentId,
+                )}`
+              : url,
+            (width, height) => {
+              const imageHeight = Math.floor(height * (screenWidth / width));
+              setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+            },
+          );
+        },
+      );
     }
   }, [uriForCurrentImage]);
 

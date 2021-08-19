@@ -1,11 +1,7 @@
 import { AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 
-import {
-  removeChannelAttachments,
-  removeChannelAvatars,
-  removeMessageAttachments,
-} from './StreamMediaCache';
+import StreamMediaCache from './StreamMediaCache';
 
 import type {
   Channel,
@@ -421,13 +417,16 @@ export class StreamCache<
 
     await Promise.all(
       removedChannels.map((channelId) =>
-        Promise.all([removeChannelAttachments(channelId), removeChannelAvatars(channelId)]),
+        Promise.all([
+          StreamMediaCache.removeChannelAttachments(channelId),
+          StreamMediaCache.removeChannelAvatars(channelId),
+        ]),
       ),
     );
 
     await Promise.all(
       removedMessages.map(({ channelId, messageId }) =>
-        removeMessageAttachments(channelId, messageId),
+        StreamMediaCache.removeMessageAttachments(channelId, messageId),
       ),
     );
   }
