@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.2...v3.7.3) (2021-08-20)
+
+
+### Bug Fixes
+
+* Hotfix for peer deps collision ([83cf002](https://github.com/GetStream/stream-chat-react-native/commit/83cf002a86c3ccd683b2ad7440388f8e781baa11))
+
 ### [3.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.1...v3.7.2) (2021-08-04)
 
 
