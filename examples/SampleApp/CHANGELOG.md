@@ -1,5 +1,17 @@
 # Change Log
 
+### [0.0.32](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.31...SampleApp@v0.0.32) (2021-08-20)
+
+
+### Bug Fixes
+
+* Hotfix for peer deps collision ([83cf002](https://github.com/GetStream/stream-chat-react-native/commit/83cf002a86c3ccd683b2ad7440388f8e781baa11))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [0.0.31](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.30...SampleApp@v0.0.31) (2021-08-04)
 
 
