@@ -1,5 +1,17 @@
 # Change Log
 
+### [0.0.33](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.32...SampleApp@v0.0.33) (2021-08-22)
+
+
+### Bug Fixes
+
+* Channel concurrency fixes ([eab95f0](https://github.com/GetStream/stream-chat-react-native/commit/eab95f0be97226793f9bc8bc2bc2ad4cfe2c93aa))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [0.0.32](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.31...SampleApp@v0.0.32) (2021-08-20)
 
 
