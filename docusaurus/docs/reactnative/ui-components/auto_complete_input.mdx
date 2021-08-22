@@ -6,7 +6,10 @@ title: AutoCompleteInput
 import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx'
 
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx'
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx'
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx'
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
 
 import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
@@ -34,6 +37,10 @@ Check the [Customize Message Input guide]([Customize Message Input](../guides/me
 
 <AdditionalTextInputProps />
 
+### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#autocompletesuggestionslimit)_</div> autoCompleteSuggestionsLimit {#autocompletesuggestionslimit}
+
+<AutoCompleteSuggestionsLimit />
+
 ### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#closesuggestions)_</div> closeSuggestions {#closesuggestions}
 
 <CloseSuggestions />
@@ -53,6 +60,14 @@ Check the [Customize Message Input guide]([Customize Message Input](../guides/me
 ### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#numberoflines)_</div> numberOfLines {#numberoflines}
 
 <NumberOfLines />
+
+### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#mentionallappusersenabled)_</div> mentionAllAppUsersEnabled {#mentionallappusersenabled}
+
+<MentionAllAppUsersEnabled />
+
+### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#mentionallappusersquery)_</div> mentionAllAppUsersQuery {#mentionallappusersquery}
+
+<MentionAllAppUsersQuery />
 
 ### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#onchange)_</div> onChange {#onchange}
 
