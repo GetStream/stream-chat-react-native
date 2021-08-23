@@ -8,7 +8,10 @@ import {
   SendFileAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  UserFilters,
+  UserOptions,
   UserResponse,
+  UserSort,
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
@@ -77,6 +80,12 @@ export type ImageUpload = {
 export type InputConfig = {
   maxMessageLength?: number;
   uploadsEnabled?: boolean;
+};
+
+export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
+  filters?: UserFilters<Us>;
+  options?: UserOptions;
+  sort?: UserSort<Us>;
 };
 
 export type LocalMessageInputContext<
@@ -290,6 +299,8 @@ export type InputMessageInputContextValue<
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
+  /** Max number of suggestions to display in autocomplete list. Defaults to 10. */
+  autoCompleteSuggestionsLimit?: number;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
@@ -363,6 +374,9 @@ export type InputMessageInputContextValue<
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  mentionAllAppUsersEnabled?: boolean;
+  /** Object containing filters/sort/options overrides for an @mention user query */
+  mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
@@ -759,10 +773,12 @@ export const MessageInputProvider = <
     ? value.autoCompleteTriggerSettings
       ? value.autoCompleteTriggerSettings({
           channel,
+          client,
           onMentionSelectItem: onSelectItem,
         })
       : ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
           channel,
+          client,
           onMentionSelectItem: onSelectItem,
         })
     : ({} as TriggerSettings<Co, Us>);

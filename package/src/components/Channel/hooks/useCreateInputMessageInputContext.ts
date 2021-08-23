@@ -23,6 +23,7 @@ export const useCreateInputMessageInputContext = <
 >({
   additionalTextInputProps,
   AttachButton,
+  autoCompleteSuggestionsLimit,
   autoCompleteTriggerSettings,
   channelId,
   clearEditingState,
@@ -43,6 +44,8 @@ export const useCreateInputMessageInputContext = <
   InputButtons,
   maxMessageLength,
   maxNumberOfFiles,
+  mentionAllAppUsersEnabled,
+  mentionAllAppUsersQuery,
   MoreOptionsButton,
   numberOfLines,
   onChangeText,
@@ -73,6 +76,7 @@ export const useCreateInputMessageInputContext = <
       () => ({
         additionalTextInputProps,
         AttachButton,
+        autoCompleteSuggestionsLimit,
         autoCompleteTriggerSettings,
         clearEditingState,
         clearQuotedMessageState,
@@ -92,6 +96,8 @@ export const useCreateInputMessageInputContext = <
         InputButtons,
         maxMessageLength,
         maxNumberOfFiles,
+        mentionAllAppUsersEnabled,
+        mentionAllAppUsersQuery,
         MoreOptionsButton,
         numberOfLines,
         onChangeText,
