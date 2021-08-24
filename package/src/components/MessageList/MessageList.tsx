@@ -864,6 +864,7 @@ const MessageListWithContext = <
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
+        initialNumToRender={20}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
