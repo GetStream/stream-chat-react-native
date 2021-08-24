@@ -440,7 +440,7 @@ export class StreamCache<
     await this.removeOlderImages(oldChannelsData, newChannelsData || []);
   }
 
-  public async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
+  private async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
     const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
     this.cachedChannelsOrder =
