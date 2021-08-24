@@ -109,21 +109,7 @@ export const Screen = () =>
 
 ### Theme changes
 
-v2 of SDK used [Styled Components](https://styled-components.com/) for theming purpose, which we have abondoned in v3.
-So following pattern of theming will **NOT** work anymore
-
-```tsx
-const theme = {
-  'message.actionSheet.titleContainer': `background-color: 'black', padding: 10px`,
-  'message.actionSheet.titleText': `color: 'white'`,
-};
-
-<Chat client={chatClient} style={theme}>
-</Chat>
-```
-
-We have published a separate [guide](../customization/theming.mdx) for how to apply custom theme on chat components.
-
+v2 of SDK used [Styled Components](https://styled-components.com/) for theming purpose, which we have abondoned in v3 in favor of using the default approach for React Native style sheets. We've published a separate [guide](../customization/theming.mdx) for how to apply custom theme on chat components.
 
 At this point if you launch the application, it should be working fine (assuming all the component customizations have been commented out) 🎉.
 
