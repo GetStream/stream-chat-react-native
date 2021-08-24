@@ -8,9 +8,10 @@ import TabItem from '@theme/TabItem';
 
 import messagePropChangeBefore from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_before.png';
 import messagePropChangeAfter from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_after.png';
+import attachmentPicker from '../assets/guides/upgrade-helper-v2-to-v3/attachment_picker.png';
 
 
-Guide to help with upgrades `stream-chat-react-native` library.
+Guide to help with upgrades of `stream-chat-react-native` library.
 
 ## Upgrade to V3
 
@@ -20,7 +21,7 @@ Upgrading will require re-implementing your integration but will yield performan
 
 ### Dependency changes
 
-Before you begin the upgrade, we would recommend you to comment out all the component customizations related props on `ChannelList`, `Channel` or `MessageList` that you may have in your application.
+Before you begin the upgrade, we would recommend you to comment out all the customization related props on `ChannelList`, `Channel`, `MessageList` and `MessageInput` that you may have in your application.
 This way you can test setup part of upgrade independently from customizations.
 
 #### Add peer-dependencies
@@ -39,6 +40,12 @@ Go through following links for necessary additional installation steps for the p
 - `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 - `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
 - `@react-native-community/blur` - [additional installation steps](/reactnative/basics/troubleshooting#blurview-crashing)
+
+If you are using expo, the please install the corresponding dependencies instead.
+
+```bash
+expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
+```
 
 #### Remove `react-native-get-random-values`
 
@@ -116,7 +123,7 @@ const theme = {
 We have published a separate [guide](../customization/theming.mdx) for how to apply custom theme on chat components.
 
 
-At this point if you launch the application, it should be working fine (assuming all the component customizations have been commented out) 🎉
+At this point if you launch the application, it should be working fine (assuming all the component customizations have been commented out) 🎉.
 
 ### Message customization prop change
 
@@ -268,7 +275,13 @@ which provides access to all the necessary values and methods which `ChannelList
 </TabItem>
 </Tabs>
 
-### Reaction customization
+### Message action changes
+
+In v2 of the library, message actions such as "Copy Message", "Edit Message" etc, were rendered in actionsheet. In v3 of library these
+actions get rendered within overlay when you long press the message. Also we have provided finer control over customizing these actions
+as per usecase. Please take a look at guide for [customizing message actions](./message_actions_customization.mdx) for reference.
+
+### Reaction customization changes
 
 Rendering of reactions on message and reaction picker has changed as part of v3. There three major differences in reactions related UX.
 
@@ -283,10 +296,12 @@ Additionally please take a look at following props to customize reactions relate
 - [`OverlayReactionList`](../core-components/overlay_provider.mdx#overlayreactionlist)
 - [`ReactionList`](../core-components/channel.mdx#reactionlist)
 
-### Attachment picker
+### Attachment picker changes
 
 In v2 of library, attachment picker was rendendered as actionsheet containing option for picking files from of native image and file picker.
 This UX has been modified in v3 of library, where attachment picker gets rendered as built-in bottomsheet.
+
+<img src={attachmentPicker} />
 
 Its possible to use actionsheet based attachment picker (similar to v2 implementation). Please check the docs on [implementation of native image picker](../guides/message_input_customization.mdx#replacing-attachmentpicker-with-native-image-picker)
 
