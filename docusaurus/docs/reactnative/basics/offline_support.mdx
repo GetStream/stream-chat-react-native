@@ -196,6 +196,10 @@ update the stored channels order everytime it changes.
 
 ```
 
+Also, its a good idea to call `cacheInstance.syncCacheAndImages()` every time you refresh your channel list
+in order to remove cached images from older messages. This helps StreamCache to avoid huge cache objects and
+possible memory overflow problems.
+
 ### Attachments `Image`
 
 Our attachment components use React Native's default Image component to render image attachments
@@ -207,3 +211,91 @@ you're supposed to replace all `Images` with our `CachedAttachmentImage`.
 Our gallery components use React Native's default ImageBackground component internally. If you've made
 any kind of customizations to the gallery, please have in mind that you should replace your `ImageBackground`
 component with our `CachedImageBackground`.
+
+## StreamCache
+
+A singleton used to manipulate Stream's cache in the application. It supports any cache storage provider and uses 
+some methods from StreamMediaCache in order to keep the media cache up-to-date with the data cache.
+
+### getInstance
+
+This method gets the existent instance of StreamCache. If it doesnt exists, the method will initialize the
+instance. Note that if you're initializing the instance, you need to provide the `client`, `cacheInterface` 
+and `tokenOrProvider` parameters as explained in previous sections.
+
+### hasInstance
+
+Used to check if StreamCache is initialized. This is useful when you want to conditionally load things from
+cache only when it is active.
+
+### hasCachedData
+
+Used to check if StreamCache has cached data. This is useful when initializing the application and you need
+to manually authenticate if there is no cached data.
+
+### syncCacheAndImages
+
+Syncs the cached data with the current client state. It will also remove cached images from channels/messages
+that got removed when syncing the data.
+
+### initialize
+
+Initializes the client with data from cache.
+
+### getOrderedChannels
+
+Get the list of cached channels ordered with the last saved channels order. This is based on 
+`filter` and `sort` parameters.
+
+### syncChannelsCachedOrder
+
+Syncs the channels order based on the `filter` and `sort` parameters.
+
+### clear
+
+Clears all cached data. This is useful when you're unauthenticating and want to remove the user's cached data.
+
+## StreamMediaCache
+
+In case you want to manipulate the media caching manually, the package exposes an object called `StreamMediaCache`
+which exposes the methods we use for storing/retrieving media from the file system.
+
+### checkIfLocalAttachment,
+
+Used to check if attachment exists in file system cache.
+
+### checkIfLocalAvatar,
+
+Used to check if avatar exists in file system cache.
+
+### clear
+
+Clears the whole Stream's file system cache.
+
+### getStreamChannelAvatarDir
+
+Given a channelId and fileUrl, it returns the path where the cached avatar should be stored.
+
+### getStreamChannelMessageAttachmentDir
+
+Given a channelId and messageId, it returns the path where the cached attachment should be stored.
+
+### removeChannelAttachments
+
+Given a channelId, clears the cached attachments related to that channel.
+
+### removeChannelAvatars
+
+Given a channelId, clears the cached avatars related to that channel.
+
+### removeMessageAttachments
+
+Given a channelId and a messageId, clears the attachments related to that message.
+
+### saveAttachment
+
+Given a channelId, messageId, fileId and fileUrl, saves the attachment in the file system.
+
+### saveAvatar
+
+Given a channelId, fileId and fileUrl, saves the avatr in the file system.
