@@ -137,7 +137,7 @@ export function useChannelState<
       setState,
       state,
     },
-    [],
+    channel?.state?.messages || [],
   );
 
   const [read, setRead] = useStateManager(
