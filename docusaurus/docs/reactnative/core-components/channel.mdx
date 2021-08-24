@@ -16,6 +16,7 @@ import NetworkDownIndicator from '../common-content/core-components/channel/prop
 import AdditionalKeyboardAvoidingViewProps from '../common-content/core-components/channel/props/additional_keyboard_avoiding_view_props.mdx'
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx'
 import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx'
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx'
 import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx'
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 import AnimatedLongPress from '../common-content/core-components/channel/props/animated_long_press.mdx';
@@ -73,6 +74,8 @@ import InputButtons from '../common-content/core-components/channel/props/input_
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx'
 import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx'
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx'
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx'
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
 import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
@@ -263,6 +266,10 @@ This is often the header height.
 ### allowThreadMessagesInChannel
 
 <AllowThreadMessagesInChannel />
+
+### autoCompleteSuggestionsLimit
+
+<AutoCompleteSuggestionsLimit />
 
 ### autoCompleteTriggerSettings
 
@@ -548,6 +555,14 @@ Override the `loadingMoreRecent` value supplied by the channel query logic.
 ### maxTimeBetweenGroupedMessages
 
 <MaxTimeBetweenGroupedMessages />
+
+### mentionAllAppUsersEnabled
+
+<MentionAllAppUsersEnabled />
+
+### mentionAllAppUsersQuery
+
+<MentionAllAppUsersQuery />
 
 ### messageId
 
