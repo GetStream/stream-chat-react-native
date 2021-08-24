@@ -21,11 +21,11 @@ export const useCachedAttachment = (config: {
 }) => {
   const [cachedSource, setCachedSource] = useState({
     ...config.source,
-    uri: !StreamCache.hasInstance() ? config.source.uri : '',
+    uri: !StreamCache.shouldCacheMedia() ? config.source.uri : '',
   });
 
   const setCachedSourceIfExists = async () => {
-    if (!StreamCache.hasInstance()) return;
+    if (!StreamCache.shouldCacheMedia()) return;
 
     const { channelId, messageId } = config.cacheConfig;
     const attachmentId = getAttachmentId(config.source.uri);

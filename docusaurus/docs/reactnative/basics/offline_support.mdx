@@ -6,7 +6,7 @@ title: Offline Support
 
 Stream Chat for React Native enables offline support by exposing a class called `StreamCache`. This allows using any storage provider with Stream.
 The constructor requires a client, a `cacheInterface` object containing `getItem`, `setItem` and `removeItem` properties and a
-token or token provider function.
+token or token provider function. `cacheMedia` param is not required and defaults to true.
 
 ## Creating a cache interface
 
@@ -221,7 +221,7 @@ some methods from StreamMediaCache in order to keep the media cache up-to-date w
 
 This method gets the existent instance of StreamCache. If it doesnt exists, the method will initialize the
 instance. Note that if you're initializing the instance, you need to provide the `client`, `cacheInterface` 
-and `tokenOrProvider` parameters as explained in previous sections.
+and `tokenOrProvider` parameters as explained in previous sections. 
 
 ### hasInstance
 
@@ -232,6 +232,12 @@ cache only when it is active.
 
 Used to check if StreamCache has cached data. This is useful when initializing the application and you need
 to manually authenticate if there is no cached data.
+
+### shouldCacheMedia
+
+Used to check if StreamCache should cache media. This is useful when you want to create your own image component
+and want it to be controlled by the StreamCache. The value is always the same as the `cacheMedia` value provided
+when instantiating StreamCache.
 
 ### syncCacheAndImages
 

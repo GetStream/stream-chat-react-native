@@ -142,6 +142,7 @@ export class StreamCache<
   Us extends UnknownType = DefaultUserType,
 > {
   private static instance: StreamCache; // type is undefined|StreamChat, unknown is due to TS limitations with statics
+  private static cacheMedia: boolean;
   private client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   private cacheInterface: CacheInterface<At, Ch, Co, Me, Re, Us>;
   private currentNetworkState: boolean | null;
@@ -189,6 +190,7 @@ export class StreamCache<
     client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
     cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
     tokenOrProvider?: TokenOrProvider,
+    cacheMedia = true,
   ): StreamCache<At, Ch, Co, Ev, Me, Re, Us> {
     if (!StreamCache.instance) {
       if (!(client && cacheInterface)) {
@@ -199,6 +201,8 @@ export class StreamCache<
         cacheInterface,
         tokenOrProvider,
       ) as unknown as StreamCache;
+
+      StreamCache.cacheMedia = cacheMedia;
     }
 
     return StreamCache.instance as unknown as StreamCache<At, Ch, Co, Ev, Me, Re, Us>;
@@ -206,6 +210,10 @@ export class StreamCache<
 
   public static hasInstance() {
     return !!StreamCache.instance;
+  }
+
+  public static shouldCacheMedia() {
+    return !!StreamCache.instance && StreamCache.cacheMedia;
   }
 
   private syncCache() {

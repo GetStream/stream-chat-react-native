@@ -12,11 +12,11 @@ export const CachedAvatar: React.FC<
 > = (props) => {
   const [cachedSource, setCachedSource] = useState({
     ...props.source,
-    uri: !StreamCache.hasInstance() ? props.source.uri : '',
+    uri: !StreamCache.shouldCacheMedia() ? props.source.uri : '',
   });
 
   const setCachedSourceIfExists = async () => {
-    if (!StreamCache.hasInstance()) return;
+    if (!StreamCache.shouldCacheMedia()) return;
 
     const { channelId } = props;
     const url = props.source.uri;
