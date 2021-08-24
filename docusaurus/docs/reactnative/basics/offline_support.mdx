@@ -153,6 +153,11 @@ function App() {
 
 ```
 
+## Clearing cache
+
+If you want to clear the cache, you can just call `StreamCache.getInstance().clear()` or `StreamMediaCache.clear()` in case 
+you only want to clear cached media. StreamCache's clear method already takes care of clearing the StreamMediaCache.
+
 ## Custom components & offline support
 
 If you're using your own custom components/hooks, you may need to pay attention to check if you're customizing any of the key
