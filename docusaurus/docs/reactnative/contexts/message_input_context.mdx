@@ -7,6 +7,7 @@ import SelectedPicker from '../common-content/contexts/attachment-picker-context
 
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx'
 import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx';
 import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx';
 import CompressImageQuality from '../common-content/core-components/channel/props/compress_image_quality.mdx';
@@ -23,6 +24,8 @@ import Input from '../common-content/core-components/channel/props/input.mdx';
 import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx';
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
 import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx';
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx'
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx'
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx';
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
@@ -101,6 +104,10 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <AdditionalTextInputProps />
 
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#autocompletesuggestionslimit)_ props</div> autoCompleteSuggestionsLimit {#autocompletesuggestionslimit}
+
+<AutoCompleteSuggestionsLimit />
+
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#autocompletetriggersettings)_ props</div> autoCompleteTriggerSettings {#autocompletetriggersettings}
 
 <AutoCompleteTriggerSettings />
@@ -156,6 +163,14 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#maxnumberoffiles)_ props</div> maxNumberOfFiles {#maxnumberoffiles}
 
 <MaxNumberOfFiles />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#mentionallappusersenabled)_ props</div> mentionAllAppUsersEnabled {#mentionallappusersenabled}
+
+<MentionAllAppUsersEnabled />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#mentionallappusersquery)_ props</div> mentionAllAppUsersQuery {#mentionallappusersquery}
+
+<MentionAllAppUsersQuery />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#numberoflines)_ props</div> numberOfLines {#numberoflines}
 
