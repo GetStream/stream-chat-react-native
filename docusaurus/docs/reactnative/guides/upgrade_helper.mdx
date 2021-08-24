@@ -1,6 +1,6 @@
 ---
 id: upgrade-helper
-title: Upgrade Helper
+title: Upgrading from V2 to V3
 ---
 
 import Tabs from '@theme/Tabs';
@@ -10,29 +10,31 @@ import messagePropChangeBefore from '../assets/guides/upgrade-helper-v2-to-v3/me
 import messagePropChangeAfter from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_after.png';
 import attachmentPicker from '../assets/guides/upgrade-helper-v2-to-v3/attachment_picker.png';
 
+For version 3.x of the Stream Chat React Native SDK, we focused on improving the speed and performance of our UI components to create a fast and responsive chat experience for the end user. Some of the key changes we made include, changes to the architecture of the SDK to provide better performance and improved 
 
-Guide to help with upgrades of `stream-chat-react-native` library.
+- Prominent use [React Context](https://reactjs.org/docs/context.html) to make passing data through the application easier.
+- The addition of `OverlayProvider` a new component that wraps the application and lets users interact with messages through long-clicks.
+- Better support for Typescript.
+- Simpler UI Theming.
+- The addition of new community libraries to improve performance and add more features to the end user's experience.
 
-## Upgrade to V3
+To make these improvements, we made major architectural changes to the SDK. Because of this, upgrading will require some additional work. This page will walk you through the steps involved in upgrading the React Native SDK for Stream Chat from version 2 to version 3.
 
-Version 3.x of React Native SDK has been a major architectural change. The new implementation takes advantage of React Context along with many popular
-community libraries such as [Reanimated V2](https://docs.swmansion.com/react-native-reanimated/docs) to deliver a superior chat experience.
-Upgrading will require re-implementing your integration but will yield performance and functional benefits.
 
-### Dependency changes
+### Before starting
 
-Before you begin the upgrade, we would recommend you to comment out all the customization related props on `ChannelList`, `Channel`, `MessageList` and `MessageInput` that you may have in your application.
-This way you can test setup part of upgrade independently from customizations.
+Before you begin the upgrade, we recommend commenting-out all Stream Chat SDK v2 props related to theming and custom components for `ChannelList`, `Channel`, `MessageList` and `MessageInput` in your application.
+This this will let you test the setup for the upgrade independently from customizations.
 
 #### Add peer-dependencies
 
-v3 has introduced plenty of new peer-dependencies for the package. So please install the required dependencies:
+Stream Chat v3 includes new peer-dependencies for the package. You can use this script to install the dependencies:
 
 ```bash
 yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
 ```
 
-Go through following links for necessary additional installation steps for the peer dependencies:
+After adding these dependencies, go through following links and follow any additional installation steps:
 
 - `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
 - `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/installation).
@@ -49,13 +51,13 @@ expo install @react-native-community/netinfo expo-blur expo-document-picker expo
 
 #### Remove `react-native-get-random-values`
 
-Remove the `react-native-get-random-values` dependency (unless you have used it explicitely in your application) which was required in v2 of `stream-chat-react-native`.
+v2 required that you have `react-native-get-random-values` and import it into your application in your root file; Version 3 no longer uses this. As long as you aren't using `react-native-get-random-values` for anything other than Stream Chat's peer dependency, you can safely remove it by removing it from your package.json: 
 
 ```bash
 yarn remove react-native-get-random-values
 ```
 
-Also remove the following line from your root (`index.js`/`index.ts`) file
+And deleting the import statement for `react-native-get-random-values` from your root (`index.js`/`index.ts`) file:
 
 ```tsx {1}
 import * from react-native-get-random-values; // <-- REMOVE THIS
@@ -69,7 +71,7 @@ AppRegistry.registerComponent(appName, () => App);
 
 #### Import gesture handler dependency
 
-Import gesture handler dependency at the top of the entry file before anything else, this is usually your App.js or index.js file.
+v3 requires you to import the gesture handler dependency at the top of your application's entry file (usually your App.js or index.js) before any other dependencies:
 
 ```tsx {1}
 import 'react-native-gesture-handler';
@@ -83,7 +85,7 @@ AppRegistry.registerComponent(appName, () => App);
 
 #### Add `stream-chat@3.x.x` dependency
 
-Minimum supported version of `stream-chat` - v3.x.
+The minimum supported version of `stream-chat` - v3.x.
 Please check the [Compatibility Table](https://github.com/GetStream/stream-chat-react-native#-react-native-compatibility) to ensure you are using
 correct version of `stream-chat` dependency.
 
@@ -93,7 +95,7 @@ yarn add stream-chat@3.11.1
 
 ### Add `OverlayProvider` component
 
-[`OverlayProvider`](../core-components/overlay_provider.mdx) component should wrap the entire chat screen in your application. If you are using react-navigation, this component
+[`OverlayProvider`](../core-components/overlay_provider.mdx) component is new to version three and you will need to add it to your application. The `OverlayProvider` should wrap the entire chat screen in your application. If you are using react-navigation, this component
 should wrap your stack provider. Please read more details in our [Configuring Components docs](../basics/hello_stream_chat.mdx#configuring-ui-components)
 
 ```tsx
@@ -127,10 +129,8 @@ At this point if you launch the application, it should be working fine (assuming
 
 ### Message customization prop change
 
-Message UI is the most common usecase of customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component
-to customize message UI. But in v3, you need to provide `MessageSimple` prop on [`Channel`](../core-components/channel.mdx#messagesimple) component instead.
-
-More details are mentioned in next section regarding prop changes.
+Message UI is the most common usecase for customization. In v2 of the library, you could provide a `Message` prop to `MessageList` component
+to customize message UI. But in v3, you need to provide `MessageSimple` prop on the [`Channel`](../core-components/channel.mdx#messagesimple) component instead.
 
 <table>
   <tr>
@@ -148,17 +148,19 @@ More details are mentioned in next section regarding prop changes.
   </tr>
 </table>
 
+
 ### Moving from prop drilling to context
 
-As part of v3, we have tried to get rid of prop drilling pattern as much as possible. We are moving towards using [react's context](https://reactjs.org/docs/context.html)
+As part of v3, we have tried to get rid of prop drilling pattern as much as possible. We are moving towards using [React's context](https://reactjs.org/docs/context.html)
 based architecture.
 
 Let's take an [example](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)#senders-name-at-bottom-of-the-message) from v2 documentation
 which shows how to render message sender's name at bottom of the message:
 
-To customize `MessageFooter`, you had to first create separate component to render `MessageSimple` component and then provide prop `MessageFooter` to `MessageSimple`.
-This is what the prop drilling looked like in v2 of the SDK. But in v3, this is much simplified as you can customize each of these deeply nested components
-by providing relevant prop on one of the following 3 core components (depending on which component needs to be customized).
+To customize `MessageFooter`, you had to create a separate component to render a `MessageSimple` component and then provide `MessageFooter` as a prop to `MessageSimple`. This is what the prop drilling looked like in v2 of the SDK. This approach was rigid and made updating components a chore.
+
+In v3, we're using React contexts to simplify this process. Now, thanks to contexts, you can customize each of these deeply nested components
+by providing a relevant prop to one of the following 3 core components (depending on which component needs to be customized). React contexts will  will provide the prop to all of the child components in nested in the core components as global-like data.
 
 - [`OverlayProvider`](../core-components/overlay_provider.mdx#props)
 - [`Channel`](../core-components/channel.mdx#props)
@@ -277,9 +279,9 @@ which provides access to all the necessary values and methods which `ChannelList
 
 ### Message action changes
 
-In v2 of the library, message actions such as "Copy Message", "Edit Message" etc, were rendered in actionsheet. In v3 of library these
-actions get rendered within overlay when you long press the message. Also we have provided finer control over customizing these actions
-as per usecase. Please take a look at guide for [customizing message actions](./message_actions_customization.mdx) for reference.
+In v2 of the library, message actions such as "Copy Message", "Edit Message" etc, were rendered in actionsheet. In v3 of the library these
+actions get rendered within the overlay when a user long-presses the message. Also, we have provided finer control over customizing these actions
+according to your use case. Please take a look at guide for [customizing message actions](./message_actions_customization.mdx) for reference.
 
 ### Reaction customization changes
 
@@ -298,8 +300,8 @@ Additionally please take a look at following props to customize reactions relate
 
 ### Attachment picker changes
 
-In v2 of library, attachment picker was rendendered as actionsheet containing option for picking files from of native image and file picker.
-This UX has been modified in v3 of library, where attachment picker gets rendered as built-in bottomsheet.
+In v2 of the library, attachment picker was rendendered as actionsheet containing option for picking files from of native image and file picker.
+We've modified this UX in v3. In the new version, attachment picker gets rendered as built-in bottomsheet.
 
 <img src={attachmentPicker} />
 
