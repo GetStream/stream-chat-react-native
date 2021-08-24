@@ -77,9 +77,16 @@ function removeMessageAttachments(cid: string, mid: string) {
   );
 }
 
+function clear() {
+  return RNFS.unlink(getStreamRootDir()).catch(() =>
+    console.log('Skipping already cleared media cache'),
+  );
+}
+
 export default {
   checkIfLocalAttachment,
   checkIfLocalAvatar,
+  clear,
   getStreamChannelAvatarDir,
   getStreamChannelMessageAttachmentDir,
   removeChannelAttachments,

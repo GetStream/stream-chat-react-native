@@ -513,6 +513,7 @@ export class StreamCache<
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_DATA),
       this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_DATA),
       this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_ORDER),
+      StreamMediaCache.clear(),
     ]);
   }
 }
