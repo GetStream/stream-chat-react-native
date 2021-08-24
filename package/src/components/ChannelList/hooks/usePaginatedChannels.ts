@@ -60,7 +60,6 @@ export const usePaginatedChannels = <
   );
   const activeChannels = useActiveChannelsRefContext();
 
-
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());

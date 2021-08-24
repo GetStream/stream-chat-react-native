@@ -112,8 +112,8 @@ If you use tokens with expiration date, have a look at our client documentation 
 ...
 import { CacheKeys, CacheValues, StreamCache } from 'stream-chat-react-native';
 
-const client = // Your current client setup
-const cacheInterface = // Your cache interface
+const client = StreamChat.getInstance(api_key) // Your current client setup
+const cacheInterface = { /** Your cache interface, as described in previous step */ }
 
 function App() {
     const [ready, setReady] = useState(false);
@@ -145,7 +145,9 @@ function App() {
     }, [])
 
     return ready && (
-        // Stream chat components
+        <Chat client={client}>
+          // Stream chat components
+        </Chat>
     );
 }
 

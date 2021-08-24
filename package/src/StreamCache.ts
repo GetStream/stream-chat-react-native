@@ -214,7 +214,6 @@ export class StreamCache<
   // This logics takes care of removing older messages/channels when reinitializing the client state in order to avoid
   // a possible memory overflow
   private cropOlderMessages(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]) {
-    //
     const currentOrderedChannelsMapByFilterAndSort =
       this.orderChannelsBasedOnCachedOrder(channelsData);
     const croppedChannelsDataMapById = {} as {
