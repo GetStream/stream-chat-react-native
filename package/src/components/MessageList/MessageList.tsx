@@ -950,7 +950,6 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    threadList,
     typingEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -973,13 +972,6 @@ export const MessageList = <
   const { overlay } = useOverlayContext();
   const { loadMoreThread, thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
-
-  // This needs to happen here because there is already a threadList prop added to the MessageList
-  if (thread?.id && !threadList) {
-    throw new Error(
-      'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
-    );
-  }
 
   return (
     <MessageListWithContext
