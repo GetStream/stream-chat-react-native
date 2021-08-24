@@ -152,3 +152,53 @@ function App() {
 }
 
 ```
+
+## Custom components & offline support
+
+If you're using your own custom components/hooks, you may need to pay attention to check if you're customizing any of the key
+components/hooks we use to make the offline support work. In order to make things easier for you, the package is exposing some
+lower level methods and components that you can easily use in order to make your components work offline.
+
+:::note
+
+If you're not adding customizations to any of the following components/hooks, please ignore this step.
+
+:::
+
+### usePaginatedChannel
+
+Not a component, but if you're using your own hook to fetch the `channel list` items, you may need to have a look at our
+[usePaginatedChannel]() hook. The secret is basically adding an `useEffect` with your channels as dependency so you can
+update the stored channels order everytime it changes.
+
+```ts
+
+    const cacheInstance = StreamCache.hasInstance()
+    ? StreamCache.getInstance()
+    : null;
+
+    // If cache is instantiated, get ordered channels from it. Otherwise use empty array.
+    const [channels, setChannels] = useState(() =>
+        cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
+    );
+
+    // If cache is instantiated, update channels cached order everytime channels array changes.
+    useEffect(() => {
+        if (cacheInstance) {
+        cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
+        }
+  }, [channels]);
+
+```
+
+### Attachments `Image`
+
+Our attachment components use React Native's default Image component to render image attachments
+in the chat. If you're adding any kind of customizations to the attachments, please have in mind that
+you're supposed to replace all `Images` with our `CachedAttachmentImage`.
+
+### Gallery `ImageBackground`
+
+Our gallery components use React Native's default ImageBackground component internally. If you've made
+any kind of customizations to the gallery, please have in mind that you should replace your `ImageBackground`
+component with our `CachedImageBackground`.
