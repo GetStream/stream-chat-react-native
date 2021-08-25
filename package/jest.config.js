@@ -13,6 +13,7 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__'],
+  transformIgnorePatterns: ['node_modules/!(react-native-reanimated)'],
   testRegex: [
     /**
      * If you want to test single file, mention it here
