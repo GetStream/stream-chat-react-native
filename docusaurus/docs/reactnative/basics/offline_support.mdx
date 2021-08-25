@@ -8,6 +8,15 @@ Stream Chat for React Native enables offline support by exposing a class called 
 The constructor requires a client, a `cacheInterface` object containing `getItem`, `setItem` and `removeItem` properties and a
 token or token provider function. `cacheMedia` param is not required and defaults to true.
 
+:::info
+
+Please have in mind that we don't encrypt the data or block the access to the folder where images are stored.
+Once the set/get functions are provided to the `StreamCache` singleton, you should implement the data encryption in there when needed.
+Also, we store the cached media in the `DocumentDirectoryPath`, which other apps dont have access by default but this 
+can be changed on application level, so please make sure you're not allowing other apps to access your `DocumentDirectoryPath`.
+
+:::
+
 ## Creating a cache interface
 
 First, create the `cacheInterface` object.
