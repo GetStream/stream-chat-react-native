@@ -1,5 +1,7 @@
 // eslint-disable-next-line no-undef
 module.exports = {
+  testEnvironment: 'jsdom',
+
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },

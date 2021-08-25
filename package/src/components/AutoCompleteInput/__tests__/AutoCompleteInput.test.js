@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
@@ -23,13 +23,14 @@ describe('AutoCompleteInput', () => {
     <Chat client={chatClient}>
       <SuggestionsProvider value={props}>
         <AutoCompleteInput
+          giphyEnabled
           onChange={jest.fn}
           triggerSettings={ACITriggerSettings({
             channel,
             onMentionSelectItem: jest.fn(),
             t: jest.fn(),
           })}
-          value={props.value}
+          text={props.text}
         />
       </SuggestionsProvider>
     </Chat>
@@ -67,8 +68,7 @@ describe('AutoCompleteInput', () => {
       expect(props.openSuggestions).toHaveBeenCalledTimes(0);
     });
 
-    props.value = '/';
-    rerender(getComponent(props));
+    rerender(getComponent({ ...props, text: '/' }));
 
     await waitFor(() => {
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
@@ -76,7 +76,7 @@ describe('AutoCompleteInput', () => {
       expect(props.openSuggestions).toHaveBeenCalledTimes(1);
     });
 
-    props.value = '';
+    rerender(getComponent({ ...props, text: '' }));
     rerender(getComponent(props));
 
     await waitFor(() => {

@@ -32,10 +32,10 @@ describe('MentionsItem', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image')).toBeFalsy();
-      expect(queryByTestId('avatar-text')).toBeTruthy();
+      expect(queryByTestId('avatar-image').props.source).toMatchObject({
+        uri: 'https://getstream.io/random_png/?name=T U&size=40',
+      });
       expect(queryByTestId('mentions-item-name')).toBeTruthy();
-      expect(getByTestId('avatar-text')).toHaveTextContent('TU');
       expect(getByTestId('mentions-item-name')).toHaveTextContent('Test User');
     });
   });
