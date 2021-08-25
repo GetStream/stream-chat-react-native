@@ -15,7 +15,6 @@ describe('Avatar', () => {
 
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
-      expect(queryByTestId('avatar-text')).toBeFalsy();
     });
   });
 
@@ -31,7 +30,6 @@ describe('Avatar', () => {
 
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
-      expect(queryByTestId('avatar-text')).toBeFalsy();
     });
   });
 
@@ -47,11 +45,10 @@ describe('Avatar', () => {
 
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
-      expect(queryByTestId('avatar-text')).toBeFalsy();
     });
   });
 
-  it('should render an avatar with no image but a name and default size', async () => {
+  it('should render an avatar with a random image and no size', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' />
@@ -59,13 +56,13 @@ describe('Avatar', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image')).toBeFalsy();
-      expect(queryByTestId('avatar-text')).toBeTruthy();
-      expect(getByTestId('avatar-text')).toHaveTextContent('TU');
+      expect(queryByTestId('avatar-image').props.source).toMatchObject({
+        uri: 'https://getstream.io/random_png/?name=T U&size=undefined',
+      });
     });
   });
 
-  it('should render an avatar with no image but a name and custom size', async () => {
+  it('should render an avatar with a random image and custom size', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' size={20} />
@@ -73,9 +70,9 @@ describe('Avatar', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image')).toBeFalsy();
-      expect(queryByTestId('avatar-text')).toBeTruthy();
-      expect(getByTestId('avatar-text')).toHaveTextContent('TU');
+      expect(queryByTestId('avatar-image').props.source).toMatchObject({
+        uri: 'https://getstream.io/random_png/?name=T U&size=20',
+      });
     });
   });
 });
