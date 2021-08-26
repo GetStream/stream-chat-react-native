@@ -24,6 +24,7 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 
 /**
  * We are gonna use following custom UI components for preview and list.
@@ -39,7 +40,7 @@ const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
 );
 
 const ChannelListComponent = (props) => {
-  const { channels, onSelect } = props;
+  const { channels, onSelect } = useChannelsContext();
   return (
     <View testID='channel-list'>
       {channels.map((channel) => (
@@ -167,9 +168,7 @@ describe('ChannelList', () => {
           </Chat>,
         );
 
-        await waitFor(() => {
-          expect(getByTestId('channel-list')).toBeTruthy();
-        });
+        await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
         const newMessage = sendNewMessageOnChannel3();
 

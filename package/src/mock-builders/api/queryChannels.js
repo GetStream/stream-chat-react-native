@@ -13,5 +13,5 @@ export const queryChannelsApi = (channels = []) => {
     duration: 0.01,
   };
 
-  return mockedApiResponse(result, 'get');
+  return mockedApiResponse(result, 'post');
 };
