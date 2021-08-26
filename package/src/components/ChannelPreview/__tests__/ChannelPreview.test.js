@@ -96,26 +96,29 @@ describe('ChannelPreview', () => {
     ['message.deleted', dispatchMessageDeletedEvent],
   ];
 
-  it.each(eventCases)('should update the last event message', async (eventType, dispatcher) => {
-    const c = generateChannel();
-    await initializeChannel(c);
+  it.skip.each(eventCases)(
+    'should update the last event message',
+    async (eventType, dispatcher) => {
+      const c = generateChannel();
+      await initializeChannel(c);
 
-    const { getByTestId } = render(getComponent());
+      const { getByTestId } = render(getComponent());
 
-    await waitFor(() => getByTestId('channel-id'));
+      await waitFor(() => getByTestId('channel-id'));
 
-    const message = generateMessage({
-      user: clientUser,
-    });
+      const message = generateMessage({
+        user: clientUser,
+      });
 
-    act(() => {
-      dispatcher(chatClient, message, channel);
-    });
+      act(() => {
+        dispatcher(chatClient, message, channel);
+      });
 
-    await waitFor(() => {
-      expect(getByTestId('last-event-message')).toHaveTextContent(message.text);
-    });
-  });
+      await waitFor(() => {
+        expect(getByTestId('last-event-message')).toHaveTextContent(message.text);
+      });
+    },
+  );
 
   it('should update the unread count on "message.new" event', async () => {
     const c = generateChannel();
