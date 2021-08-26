@@ -43,6 +43,7 @@ import { vh, vw } from '../../utils/utils';
 import type { ReplyProps } from '../Reply/Reply';
 
 import { MessageProvider } from '../../contexts/messageContext/MessageContext';
+import { useUserFormat } from '../../contexts/formatContext/UserFormatContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -305,6 +306,8 @@ const MessageOverlayWithContext = <
 
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
+  const { formatImage, formatName } = useUserFormat<Us>();
+
   return (
     <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
       <MessageProvider value={messageContext}>
@@ -507,8 +510,8 @@ const MessageOverlayWithContext = <
                                 reactions={message.latest_reactions.map((reaction) => ({
                                   alignment:
                                     clientId && clientId === reaction.user?.id ? 'right' : 'left',
-                                  image: reaction?.user?.image,
-                                  name: reaction?.user?.name || reaction.user_id || '',
+                                  image: formatImage(reaction?.user),
+                                  name: formatName(reaction?.user) || reaction.user_id || '',
                                   type: reaction.type,
                                 }))}
                                 showScreen={showScreen}

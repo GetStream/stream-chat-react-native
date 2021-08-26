@@ -5,6 +5,7 @@ import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Avatar } from '../../Avatar/Avatar';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 import { vw } from '../../../utils/utils';
 
 import type { Photo } from '../ImageGallery';
@@ -71,9 +72,12 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
+  const { formatImage } = useUserFormat<Us>();
   if (imageComponent) {
     return imageComponent({ item: restItem });
   }
+
+  const userImage = formatImage(user);
 
   return (
     <TouchableOpacity onPress={selectAndClose}>
@@ -83,14 +87,14 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
       >
         {avatarComponent
           ? avatarComponent({ item: restItem })
-          : !!user?.image && (
+          : !!userImage && (
               <Avatar
                 containerStyle={[
                   styles.avatarImageWrapper,
                   { backgroundColor: white },
                   gridAvatarWrapper,
                 ]}
-                image={user.image}
+                image={userImage}
                 imageStyle={gridAvatar}
                 size={22}
               />

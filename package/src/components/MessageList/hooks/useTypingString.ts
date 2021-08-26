@@ -4,6 +4,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { useTypingContext } from '../../../contexts/typingContext/TypingContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 import type {
   DefaultAttachmentType,
@@ -29,8 +30,9 @@ export const useTypingString = <
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
   const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { formatName } = useUserFormat<Us>();
 
-  const filteredTypingUsers = filterTypingUsers({ client, thread, typing });
+  const filteredTypingUsers = filterTypingUsers({ client, thread, typing }, formatName);
 
   if (filteredTypingUsers.length === 1) {
     return t('{{ user }} is typing', { user: filteredTypingUsers[0] });

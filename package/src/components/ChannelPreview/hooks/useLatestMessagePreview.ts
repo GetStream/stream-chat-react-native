@@ -6,6 +6,8 @@ import {
   TDateTimeParser,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
+import type { FormatName } from '../../../contexts/formatContext/UserFormatContext';
 
 import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
 
@@ -63,6 +65,7 @@ const getLatestMessageDisplayText = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
   t: (key: string) => string,
+  formatName: FormatName<Us>,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
   if (message.deleted_at) return [{ bold: false, text: t('Message deleted') }];
@@ -73,7 +76,7 @@ const getLatestMessageDisplayText = <
     messageOwnerId === currentUserId
       ? t('You')
       : members.length > 2
-      ? message.user?.name || message.user?.username || message.user?.id || ''
+      ? formatName(message.user) || ''
       : '';
   const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
   const boldOwner = ownerText.includes('@');
@@ -82,7 +85,7 @@ const getLatestMessageDisplayText = <
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
     const mentionedUsers = Array.isArray(message.mentioned_users)
       ? message.mentioned_users.reduce((acc, cur) => {
-          const userName = cur.name || cur.id || '';
+          const userName = formatName(cur) || cur.id || '';
           if (userName) {
             acc += `${acc.length ? '|' : ''}@${userName}`;
           }
@@ -205,8 +208,9 @@ const getLatestMessagePreview = <
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
+  formatName: FormatName<Us>;
 }) => {
-  const { channel, client, lastMessage, readEvents, t, tDateTimeParser } = params;
+  const { channel, client, lastMessage, readEvents, t, tDateTimeParser, formatName } = params;
 
   const messages = channel.state.messages;
 
@@ -228,7 +232,7 @@ const getLatestMessagePreview = <
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
-    previews: getLatestMessageDisplayText(channel, client, message, t),
+    previews: getLatestMessageDisplayText(channel, client, message, t, formatName),
     status: getLatestMessageReadStatus(channel, client, message, readEvents),
   };
 };
@@ -282,6 +286,7 @@ export const useLatestMessagePreview = <
     status: 0,
   });
 
+  const { formatName } = useUserFormat<Us>();
   const readStatus = getLatestMessageReadStatus(
     channel,
     client,
@@ -308,6 +313,7 @@ export const useLatestMessagePreview = <
           readEvents,
           t,
           tDateTimeParser,
+          formatName,
         }),
       ),
     [channelLastMessageString, forceUpdate, readEvents, readStatus],

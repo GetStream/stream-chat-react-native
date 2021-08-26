@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { FormatName, useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 import { vw } from '../../../utils/utils';
 
@@ -27,17 +28,20 @@ export const getChannelPreviewDisplayName = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->({
-  channelName,
-  currentUserId,
-  maxCharacterLength,
-  members,
-}: {
-  maxCharacterLength: number;
-  channelName?: string;
-  currentUserId?: string;
-  members?: Channel<At, Ch, Co, Ev, Me, Re, Us>['state']['members'];
-}) => {
+>(
+  {
+    channelName,
+    currentUserId,
+    maxCharacterLength,
+    members,
+  }: {
+    maxCharacterLength: number;
+    channelName?: string;
+    currentUserId?: string;
+    members?: Channel<At, Ch, Co, Ev, Me, Re, Us>['state']['members'];
+  },
+  formatName: FormatName<Us>,
+) => {
   if (channelName) return channelName;
 
   const channelMembers = Object.values(members || {});
@@ -45,7 +49,7 @@ export const getChannelPreviewDisplayName = <
 
   const name = otherMembers.slice(0).reduce((returnString, currentMember, index, originalArray) => {
     const returnStringLength = returnString.length;
-    const currentMemberName = currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+    const currentMemberName = formatName(currentMember.user) || 'Unknown User';
     // a rough approximation of when the +Number shows up
     if (returnStringLength + (currentMemberName.length + 2) < maxCharacterLength) {
       if (returnStringLength) {
@@ -84,23 +88,30 @@ export const useChannelPreviewDisplayName = <
   const channelName = channel?.data?.name;
   const maxCharacterLength = characterLength || maxCharacterLengthDefault;
 
+  const { formatName } = useUserFormat<Us>();
   const [displayName, setDisplayName] = useState(
-    getChannelPreviewDisplayName({
-      channelName,
-      currentUserId,
-      maxCharacterLength,
-      members,
-    }),
-  );
-
-  useEffect(() => {
-    setDisplayName(
-      getChannelPreviewDisplayName({
+    getChannelPreviewDisplayName(
+      {
         channelName,
         currentUserId,
         maxCharacterLength,
         members,
-      }),
+      },
+      formatName,
+    ),
+  );
+
+  useEffect(() => {
+    setDisplayName(
+      getChannelPreviewDisplayName(
+        {
+          channelName,
+          currentUserId,
+          maxCharacterLength,
+          members,
+        },
+        formatName,
+      ),
     );
   }, [channelName, currentUserId, maxCharacterLength, numOfMembers]);
 

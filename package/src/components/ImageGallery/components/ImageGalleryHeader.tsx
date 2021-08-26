@@ -17,6 +17,7 @@ import {
   isDayOrMoment,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 import { Close } from '../../../icons';
 
 import type { Photo } from '../ImageGallery';
@@ -103,7 +104,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
   const { setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
 
   const parsedDate = tDateTimeParser(photo?.created_at);
-
+  const { formatName } = useUserFormat<Us>();
   /**
    * .calendar is required on moment types, but in reality it
    * is unavailable on first render. We therefore check if it
@@ -158,7 +159,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.userName, { color: black }, usernameText]}>
-                {photo?.user?.name || t('Unknown User')}
+                {formatName(photo?.user) || t('Unknown User')}
               </Text>
               <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>
             </View>

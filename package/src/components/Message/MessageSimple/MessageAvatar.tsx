@@ -8,6 +8,7 @@ import {
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 import type {
   DefaultAttachmentType,
@@ -54,6 +55,7 @@ const MessageAvatarWithContext = <
       },
     },
   } = useTheme();
+  const { formatImage, formatName } = useUserFormat<Us>();
 
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
@@ -64,8 +66,8 @@ const MessageAvatarWithContext = <
     >
       {visible ? (
         <Avatar
-          image={message.user?.image}
-          name={message.user?.name || message.user?.id}
+          image={formatImage(message.user)}
+          name={formatName(message.user)}
           size={size || BASE_AVATAR_SIZE}
         />
       ) : (

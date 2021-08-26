@@ -32,6 +32,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 type MessageFooterComponentProps = {
   formattedDate: string | Date;
@@ -122,10 +123,12 @@ const MessageFooterWithContext = <
     );
   }
 
+  const { formatName } = useUserFormat<Us>();
   if (lastGroupMessage === false) {
     return null;
   }
 
+  const userName = formatName(message.user);
   return (
     <View style={metaContainer} testID='message-status-time'>
       {otherAttachments.length && otherAttachments[0].actions ? (
@@ -145,8 +148,8 @@ const MessageFooterWithContext = <
           </Text>
         </>
       ) : null}
-      {Object.keys(members).length > 2 && alignment === 'left' && message.user?.name ? (
-        <Text style={[{ color: grey }, messageUser]}>{message.user.name}</Text>
+      {Object.keys(members).length > 2 && alignment === 'left' && userName ? (
+        <Text style={[{ color: grey }, messageUser]}>{userName}</Text>
       ) : null}
       {showMessageStatus && <MessageStatus />}
       <Text style={[{ color: grey, textAlign: alignment }, metaText]}>{formattedDate}</Text>

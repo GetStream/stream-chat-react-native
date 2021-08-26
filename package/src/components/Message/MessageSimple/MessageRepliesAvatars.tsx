@@ -16,6 +16,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 const styles = StyleSheet.create({
   avatarContainer: {
@@ -70,6 +71,7 @@ export const MessageRepliesAvatars = <
 
   const avatars = message.thread_participants?.slice(-2) || [];
   const hasMoreThanOneReply = avatars.length > 1;
+  const { formatImage, formatName } = useUserFormat<Us>();
 
   return (
     <View
@@ -98,8 +100,8 @@ export const MessageRepliesAvatars = <
               },
               avatar,
             ]}
-            image={user.image}
-            name={user.name}
+            image={formatImage(user)}
+            name={formatName(user)}
             size={avatarSize ? avatarSize : i === 1 ? 18 : 16}
           />
         </View>

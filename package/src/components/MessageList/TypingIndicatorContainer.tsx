@@ -7,6 +7,7 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
+import { useUserFormat } from '../../contexts/formatContext/UserFormatContext';
 
 import type {
   DefaultAttachmentType,
@@ -57,7 +58,8 @@ const TypingIndicatorContainerWithContext = <
       messageList: { typingIndicatorContainer },
     },
   } = useTheme();
-  const typingUsers = filterTypingUsers({ client, thread, typing });
+  const { formatName } = useUserFormat<Us>();
+  const typingUsers = filterTypingUsers({ client, thread, typing }, formatName);
 
   if (!typingUsers.length) {
     return null;

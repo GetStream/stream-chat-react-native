@@ -1,3 +1,4 @@
+import type { FormatName } from '../../../contexts/formatContext/UserFormatContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
@@ -32,11 +33,10 @@ export const filterTypingUsers = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->({
-  client,
-  thread,
-  typing,
-}: FilterTypingUsersParams<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  { client, thread, typing }: FilterTypingUsersParams<At, Ch, Co, Ev, Me, Re, Us>,
+  formatName: FormatName<Us>,
+) => {
   const nonSelfUsers: string[] = [];
 
   if (!client || !client.user || !typing) return nonSelfUsers;
@@ -59,7 +59,7 @@ export const filterTypingUsers = <
       return;
     }
 
-    const user = typing[typingKey].user?.name || typing[typingKey].user?.id;
+    const user = formatName(typing[typingKey].user);
     if (user) {
       nonSelfUsers.push(user);
     }

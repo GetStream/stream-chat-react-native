@@ -4,6 +4,7 @@ import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-nati
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
@@ -109,7 +110,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
     },
   } = useTheme();
   const { t } = useTranslationContext();
-
+  const { formatName } = useUserFormat<Us>();
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       opacity: opacity.value,
@@ -126,7 +127,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
     setShareMenuOpen(true);
     try {
       const localImage = await saveFile({
-        fileName: `${photo.user?.name || photo.user_id || 'ChatPhoto'}-${
+        fileName: `${formatName(photo.user) || photo.user_id || 'ChatPhoto'}-${
           photo.messageId
         }-${selectedIndex}.jpg`,
         fromUrl: photo.uri,

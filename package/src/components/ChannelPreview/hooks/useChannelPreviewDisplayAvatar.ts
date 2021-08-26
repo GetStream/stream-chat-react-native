@@ -14,6 +14,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { UserFormatContextValue } from '../../../contexts/formatContext/UserFormatContext';
+import { useUserFormat } from '../../../contexts/formatContext/UserFormatContext';
 
 export const getChannelPreviewDisplayAvatar = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -26,6 +28,7 @@ export const getChannelPreviewDisplayAvatar = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  format: UserFormatContextValue<Us>,
 ) => {
   const currentUserId = client?.user?.id;
   const channelData = channel?.data;
@@ -38,18 +41,20 @@ export const getChannelPreviewDisplayAvatar = <
       name: channelName,
     };
   } else if (currentUserId) {
+    const { formatImage, formatName } = format;
+
     const members = Object.values(channel.state?.members);
     const otherMembers = members.filter((member) => member.user?.id !== currentUserId);
 
     if (otherMembers.length === 1) {
       return {
-        image: otherMembers[0].user?.image,
-        name: channelName || otherMembers[0].user?.name,
+        image: formatImage(otherMembers[0].user),
+        name: channelName || formatName(otherMembers[0].user),
       };
     }
     return {
-      images: otherMembers.slice(0, 4).map((member) => member.user?.image || ''),
-      names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
+      images: otherMembers.slice(0, 4).map((member) => formatImage(member.user) || ''),
+      names: otherMembers.slice(0, 4).map((member) => formatName(member.user) || ''),
     };
   }
   return {
@@ -81,12 +86,13 @@ export const useChannelPreviewDisplayAvatar = <
   const name = channelData?.name;
   const id = client?.user?.id;
 
+  const userFormat = useUserFormat<Us>();
   const [displayAvatar, setDisplayAvatar] = useState(
-    getChannelPreviewDisplayAvatar(channel, client),
+    getChannelPreviewDisplayAvatar(channel, client, userFormat),
   );
 
   useEffect(() => {
-    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
+    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client, userFormat));
   }, [id, image, name]);
 
   return displayAvatar;
