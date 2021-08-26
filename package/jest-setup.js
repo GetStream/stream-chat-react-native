@@ -37,4 +37,14 @@ registerNativeHandlers({
 });
 
 require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
+
+jest.mock('@gorhom/bottom-sheet', () => {
+  const react = require('react-native');
+  return {
+    __esModule: true,
+    default: react.View,
+    BottomSheetScrollView: react.ScrollView,
+    BottomSheetFlatList: react.FlatList,
+  };
+});
 // jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
