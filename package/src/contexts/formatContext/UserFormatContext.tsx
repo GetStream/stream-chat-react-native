@@ -20,7 +20,7 @@ export const UserFormatContext = React.createContext<UserFormatContextValue>({
     user?.name || user?.username || user?.id,
 });
 
-export const FormatProvider = <Us extends UnknownType = DefaultUserType>({
+export const UserFormatProvider = <Us extends UnknownType = DefaultUserType>({
   children,
   value,
 }: PropsWithChildren<{ value: UserFormatContextValue<Us> }>) => (
