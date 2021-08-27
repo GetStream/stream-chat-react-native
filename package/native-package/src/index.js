@@ -154,7 +154,7 @@ registerNativeHandlers({
   },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
-      const path = RNFS.DocumentDirectoryPath + '/' + fileName;
+      const path = RNFS.CachesDirectoryPath + '/' + encodeURIComponent(fileName);
       await RNFS.downloadFile({ fromUrl, toFile: path }).promise;
       return 'file://' + path;
     } catch (error) {
