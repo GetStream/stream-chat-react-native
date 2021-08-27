@@ -53,6 +53,12 @@ jobs:
         # installation already takes care of calling prepare which calls build
         # for the sdk package
         run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - uses: actions/cache@v2
+        with:
+          path: './examples/SampleApp/ios/Pods'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/ios/Podfile.lock') }}
+      - name: Install Pods
+        run: cd ./examples/SampleApp && npx pod-install
       - name: Build
         run: yarn detox-sample-ios:build
       - name: Test

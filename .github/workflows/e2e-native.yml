@@ -53,6 +53,12 @@ jobs:
         # installation already takes care of calling prepare which calls build
         # for the sdk package
         run: yarn --frozen-lockfile && cd ./examples/NativeMessaging && yarn --frozen-lockfile
+      - uses: actions/cache@v2
+        with:
+          path: './examples/NativeMessaging/ios/Pods'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/NativeMessaging/ios/Podfile.lock') }}
+      - name: Install Pods
+        run: cd ./examples/NativeMessaging && npx pod-install
       - name: Build
         run: yarn detox-native-ios:build
       - name: Test
