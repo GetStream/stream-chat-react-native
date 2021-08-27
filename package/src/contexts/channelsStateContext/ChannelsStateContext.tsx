@@ -1,14 +1,4 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-} from 'react';
-
-import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
+import React, { ReactNode, useCallback, useContext, useMemo, useReducer } from 'react';
 
 import type { ChannelContextValue } from '../channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
@@ -229,15 +219,9 @@ export const ChannelsStateProvider = <
     [state],
   );
 
-  const activeChannelsRef = useRef(Object.keys(state));
-
-  useEffect(() => {
-    activeChannelsRef.current = Object.keys(state);
-  }, [state]);
-
   return (
     <ChannelsStateContext.Provider value={value as unknown as ChannelsStateContextValue}>
-      <ActiveChannelsProvider value={activeChannelsRef}>{children}</ActiveChannelsProvider>
+      {children}
     </ChannelsStateContext.Provider>
   );
 };
