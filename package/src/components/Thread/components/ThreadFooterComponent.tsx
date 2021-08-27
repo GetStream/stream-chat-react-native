@@ -146,18 +146,6 @@ const areEqual = <
     prevThread?.reply_count === nextThread?.reply_count;
   if (!threadEqual) return false;
 
-  const latestReactionsEqual =
-    prevThread &&
-    nextThread &&
-    Array.isArray(prevThread.latest_reactions) &&
-    Array.isArray(nextThread.latest_reactions)
-      ? prevThread.latest_reactions.length === nextThread.latest_reactions.length &&
-        prevThread.latest_reactions.every(
-          ({ type }, index) => type === nextThread.latest_reactions?.[index].type,
-        )
-      : prevThread?.latest_reactions === nextThread?.latest_reactions;
-  if (!latestReactionsEqual) return false;
-
   return true;
 };
 

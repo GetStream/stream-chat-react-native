@@ -30,7 +30,7 @@ We suggest you keep track of a `thread` state on your own and provide it to any 
 
 ```tsx {2}
 <Chat client={chatClient} i18nInstance={streami18n}>
-  <Channel channel={channel} thread={thread} threadList>
+  <Channel channel={channel} thread={thread}>
     <Thread onThreadDismount={() => setThread(null)} />
   </Channel>
 </Chat>
@@ -73,7 +73,7 @@ To do this make sure your `Channel` components are always aware of the thread st
 ```
 
 ```tsx
-<Channel channel={channel} thread={thread} threadList>
+<Channel channel={channel} thread={thread}>
   <Thread onThreadDismount={() => setThread(null)} />
 </Channel>
 ```
