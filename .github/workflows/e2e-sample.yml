@@ -16,18 +16,21 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/cache@v2
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
-      - uses: actions/cache@v2
-        with:
-          path: './examples/SampleApp/node_modules'
-          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/yarn.lock') }}
       - name: Installation & Build Package
         # installation already takes care of calling prepare which calls build
         # for the sdk package
         run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Install Java JDK
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: '11'
+      - name: Prepare Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          avd-name: Pixel4
+          script: echo "Finished creating virtual device"
       - name: Build
         run: yarn detox-sample-android:build
       - name: Test
@@ -41,24 +44,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: actions/cache@v2
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
-      - uses: actions/cache@v2
-        with:
-          path: './examples/SampleApp/node_modules'
-          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/yarn.lock') }}
       - name: Installation & Build Package
         # installation already takes care of calling prepare which calls build
         # for the sdk package
         run: yarn --frozen-lockfile && yarn bootstrap-ci
-      - uses: actions/cache@v2
-        with:
-          path: './examples/SampleApp/ios/Pods'
-          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/ios/Podfile.lock') }}
       - name: Install Pods
         run: cd ./examples/SampleApp && npx pod-install
+      - name: Install Detox Dependencies
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
       - name: Build
         run: yarn detox-sample-ios:build
       - name: Test
