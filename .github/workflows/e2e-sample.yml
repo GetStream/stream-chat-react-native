@@ -8,7 +8,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  sample_app_android:
+  android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: yarn detox-sample-android:test
 
-  sample_app_ios:
+  ios:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
