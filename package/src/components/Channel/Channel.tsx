@@ -523,7 +523,6 @@ const ChannelWithContext = <
     supportedReactions = reactionData,
     t,
     thread: threadProps,
-    threadList,
     threadMessages,
     threadRepliesEnabled: threadRepliesEnabledProp,
     threadReply,
@@ -1563,7 +1562,6 @@ const ChannelWithContext = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    threadList,
     watcherCount,
     watchers,
   });

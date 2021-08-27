@@ -181,7 +181,6 @@ export type ChannelContextValue<
    * You will see a highlighted background for targetted message, when opened.
    */
   targetedMessage?: string;
-  threadList?: boolean;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 } & ChannelConfig;
 
