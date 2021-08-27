@@ -1,0 +1,59 @@
+name: e2e-native-messaging
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  native_messaging_android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v2
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: './examples/NativeMessaging/node_modules'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/NativeMessaging/yarn.lock') }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Build
+        run: yarn detox-native-android:build
+      - name: Test
+        run: yarn detox-native-android:test
+
+  native_messaging_ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v2
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: './examples/NativeMessaging/node_modules'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/NativeMessaging/yarn.lock') }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && cd ./examples/NativeMessaging && yarn --frozen-lockfile
+      - name: Build
+        run: yarn detox-native-ios:build
+      - name: Test
+        run: yarn detox-native-ios:test

@@ -1,0 +1,59 @@
+name: e2e-sample-app
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  sample_app_android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v2
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: './examples/SampleApp/node_modules'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/yarn.lock') }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Build
+        run: yarn detox-sample-android:build
+      - name: Test
+        run: yarn detox-sample-android:test
+
+  sample_app_ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/cache@v2
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-root-${{ hashFiles('./yarn.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: './examples/SampleApp/node_modules'
+          key: ${{ runner.os }}-sample-${{ hashFiles('./examples/SampleApp/yarn.lock') }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Build
+        run: yarn detox-sample-ios:build
+      - name: Test
+        run: yarn detox-sample-ios:test
