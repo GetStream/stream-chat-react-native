@@ -75,7 +75,6 @@ import {
   ChannelContextValue,
   ChannelProvider,
 } from '../../contexts/channelContext/ChannelContext';
-import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   InputConfig,
@@ -101,7 +100,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { TypingContextValue, TypingProvider } from '../../contexts/typingContext/TypingContext';
 import {
   LOLReaction,
   LoveReaction,
@@ -113,7 +112,6 @@ import { FlatList as FlatListDefault } from '../../native';
 import { generateRandomId, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
-import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
 
 import type {
   DefaultAttachmentType,
@@ -202,7 +200,6 @@ export type ChannelPropsWithContext<
       'messages' | 'loadingMore' | 'loadingMoreRecent'
     >
   > &
-  UseChannelStateValue<At, Ch, Co, Ev, Me, Re, Us> &
   Partial<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -281,7 +278,6 @@ export type ChannelPropsWithContext<
   Partial<
     Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'allowThreadMessagesInChannel' | 'thread'>
   > & {
-    shouldSyncChannel: boolean;
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -363,10 +359,6 @@ export type ChannelPropsWithContext<
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
-    /**
-     * Tells if channel is rendering a thread list
-     */
-    threadList?: boolean;
     threadRepliesEnabled?: boolean;
     typingEventsEnabled?: boolean;
     uploadsEnabled?: boolean;
@@ -386,9 +378,9 @@ const ChannelWithContext = <
   const {
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
+    animatedLongPress,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
-    animatedLongPress,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
@@ -421,8 +413,8 @@ const ChannelWithContext = <
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
-    FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
+    FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
     flagMessage,
     FlatList = FlatListDefault,
@@ -461,12 +453,12 @@ const ChannelWithContext = <
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
     markdownRules,
+    messageId,
     maxMessageLength: maxMessageLengthProp,
     maxNumberOfFiles = 10,
     maxTimeBetweenGroupedMessages,
     mentionAllAppUsersEnabled = false,
     mentionAllAppUsersQuery,
-    members,
     Message = MessageDefault,
     messageActions,
     MessageAvatar = MessageAvatarDefault,
@@ -475,11 +467,10 @@ const ChannelWithContext = <
     MessageDeleted = MessageDeletedDefault,
     MessageFooter = MessageFooterDefault,
     MessageHeader,
-    messageId,
     MessageList = MessageListDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
-    messages,
+    messages: messagesProp,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
@@ -493,15 +484,14 @@ const ChannelWithContext = <
     onChangeText,
     onDoubleTapMessage,
     onLongPressMessage,
-    onPressInMessage,
     onPressMessage,
+    onPressInMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
     quotedReply,
     ReactionList = ReactionListDefault,
     reactionsEnabled: reactionsEnabledProp,
-    read,
     readEventsEnabled: readEventsEnabledProp,
     Reply = ReplyDefault,
     retry,
@@ -510,23 +500,13 @@ const ChannelWithContext = <
     SendButton = SendButtonDefault,
     sendImageAsync = false,
     setInputRef,
-    setMembers,
-    setMessages,
-    setRead,
-    setThreadMessages,
-    setTyping,
-    setWatcherCount,
-    setWatchers,
-    shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StickyHeader,
     supportedReactions = reactionData,
     t,
     thread: threadProps,
-    threadMessages,
     threadRepliesEnabled: threadRepliesEnabledProp,
     threadReply,
-    typing,
     typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
@@ -534,8 +514,6 @@ const ChannelWithContext = <
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     uploadsEnabled: uploadsEnabledProp,
     UrlPreview = CardDefault,
-    watcherCount,
-    watchers,
   } = props;
 
   const {
@@ -554,13 +532,32 @@ const ChannelWithContext = <
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
+  const [messages, setMessages] = useState<
+    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+  >([]);
+
+  const [members, setMembers] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
+  >({});
   const [quotedMessage, setQuotedMessage] =
     useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
+  const [read, setRead] = useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']>({});
   const [thread, setThread] = useState<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']>(
     threadProps || null,
   );
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
+  const [threadMessages, setThreadMessages] = useState<
+    ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
+  >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
+  const [typing, setTyping] = useState<TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']>(
+    {},
+  );
+  const [watcherCount, setWatcherCount] =
+    useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']>();
+  const [watchers, setWatchers] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
+  >({});
 
   const [syncingChannel, setSyncingChannel] = useState(false);
 
@@ -569,7 +566,7 @@ const ChannelWithContext = <
   const channelId = channel?.id || '';
   useEffect(() => {
     const initChannel = () => {
-      if (!channel || !shouldSyncChannel) return;
+      if (!channel) return;
 
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
@@ -610,7 +607,7 @@ const ChannelWithContext = <
 
   const threadPropsExists = !!threadProps;
   useEffect(() => {
-    if (threadProps && shouldSyncChannel) {
+    if (threadProps) {
       setThread(threadProps);
       if (channel && threadProps?.id) {
         setThreadMessages(channel.state.threads?.[threadProps.id] || []);
@@ -689,7 +686,7 @@ const ChannelWithContext = <
   });
 
   const connectionRecoveredHandler = () => {
-    if (channel && shouldSyncChannel) {
+    if (channel) {
       copyChannelState();
       if (thread) {
         setThreadMessages([...channel.state.threads[thread.id]]);
@@ -698,31 +695,29 @@ const ChannelWithContext = <
   };
 
   const connectionChangedHandler = (event: ConnectionChangeEvent) => {
-    if (event.online && shouldSyncChannel) {
+    if (event.online) {
       resyncChannel();
     }
   };
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
-    if (shouldSyncChannel) {
-      if (thread) {
-        const updatedThreadMessages =
-          (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
-        setThreadMessages(updatedThreadMessages);
-      }
+    if (thread) {
+      const updatedThreadMessages =
+        (thread.id && channel && channel.state.threads[thread.id]) || threadMessages;
+      setThreadMessages(updatedThreadMessages);
+    }
 
-      if (channel && thread && event.message?.id === thread.id) {
-        const updatedThread = channel.state.formatMessage(event.message);
-        setThread(updatedThread);
-      }
+    if (channel && thread && event.message?.id === thread.id) {
+      const updatedThread = channel.state.formatMessage(event.message);
+      setThread(updatedThread);
+    }
 
-      if (event.type === 'typing.start' || event.type === 'typing.stop') {
-        copyTypingState();
-      } else if (event.type === 'message.read') {
-        copyReadState();
-      } else if (channel) {
-        copyChannelState();
-      }
+    if (event.type === 'typing.start' || event.type === 'typing.stop') {
+      copyTypingState();
+    } else if (event.type === 'message.read') {
+      copyReadState();
+    } else if (channel) {
+      copyChannelState();
     }
   };
 
@@ -888,18 +883,12 @@ const ChannelWithContext = <
       const limit = 50;
       channel.state.threads[parentID] = [];
       const queryResponse = await channel.getReplies(parentID, {
-        limit,
+        limit: 50,
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
       const updatedThreadMessages = channel.state.threads[parentID] || [];
       loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-      const { messages } = await channel.getMessagesById([parentID]);
-      const [threadMessage] = messages;
-      if (threadMessage) {
-        const formattedMessage = channel.state.formatMessage(threadMessage);
-        setThread(formattedMessage);
-      }
     } catch (err) {
       console.warn('Thread loading request failed with error', err);
       setError(err);
@@ -1613,7 +1602,7 @@ const ChannelWithContext = <
       loadingMoreRecentProp !== undefined ? loadingMoreRecentProp : loadingMoreRecent,
     loadMore,
     loadMoreRecent,
-    messages,
+    messages: messagesProp || messages,
     setLoadingMore,
     setLoadingMoreRecent,
   });
@@ -1792,28 +1781,6 @@ export const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
-
-  const {
-    members,
-    messages,
-    read,
-    setMembers,
-    setMessages,
-    setRead,
-    setThreadMessages,
-    setTyping,
-    setWatcherCount,
-    setWatchers,
-    threadMessages,
-    typing,
-    watcherCount,
-    watchers,
-  } = useChannelState<At, Ch, Co, Ev, Me, Re, Us>(
-    props.channel,
-    props.threadList ? props.thread?.id : undefined,
-  );
-
   return (
     <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
       {...{
@@ -1821,23 +1788,6 @@ export const Channel = <
         t,
       }}
       {...props}
-      shouldSyncChannel={shouldSyncChannel}
-      {...{
-        members,
-        messages: props.messages || messages,
-        read,
-        setMembers,
-        setMessages,
-        setRead,
-        setThreadMessages,
-        setTyping,
-        setWatcherCount,
-        setWatchers,
-        threadMessages,
-        typing,
-        watcherCount,
-        watchers,
-      }}
     />
   );
 };

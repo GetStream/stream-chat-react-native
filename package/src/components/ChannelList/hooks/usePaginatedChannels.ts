@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-import { useActiveChannels } from '../../../contexts/channelsStateContext/useActiveChannels';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
@@ -51,7 +50,6 @@ export const usePaginatedChannels = <
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const activeChannels = useActiveChannels();
 
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [error, setError] = useState(false);
@@ -80,9 +78,7 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
-        skipInitialization: activeChannels.current,
-      });
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
 
       channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 

@@ -22,7 +22,6 @@ import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../com
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
@@ -215,7 +214,7 @@ export const OverlayProvider = <
         <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>{children}</ChannelsStateProvider>
+              {children}
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}
