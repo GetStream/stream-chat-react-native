@@ -202,15 +202,15 @@ const getLatestMessagePreview = <
 >(params: {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+  formatName: FormatName<Us>;
   readEvents: boolean;
   t: (key: string) => string;
   tDateTimeParser: TDateTimeParser;
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
-  formatName: FormatName<Us>;
 }) => {
-  const { channel, client, lastMessage, readEvents, t, tDateTimeParser, formatName } = params;
+  const { channel, client, formatName, lastMessage, readEvents, t, tDateTimeParser } = params;
 
   const messages = channel.state.messages;
 
@@ -309,11 +309,11 @@ export const useLatestMessagePreview = <
         getLatestMessagePreview({
           channel,
           client,
+          formatName,
           lastMessage,
           readEvents,
           t,
           tDateTimeParser,
-          formatName,
         }),
       ),
     [channelLastMessageString, forceUpdate, readEvents, readStatus],

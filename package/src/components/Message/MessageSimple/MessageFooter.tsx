@@ -91,6 +91,7 @@ const MessageFooterWithContext = <
     },
   } = useTheme();
   const { t } = useTranslationContext();
+  const { formatName } = useUserFormat<Us>();
 
   if (isDeleted) {
     return (
@@ -123,7 +124,6 @@ const MessageFooterWithContext = <
     );
   }
 
-  const { formatName } = useUserFormat<Us>();
   if (lastGroupMessage === false) {
     return null;
   }
