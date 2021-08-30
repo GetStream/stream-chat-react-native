@@ -1,4 +1,4 @@
-describe('Example', () => {
+describe('NativeMessaging', () => {
   beforeAll(async () => {
     await device.launchApp();
   });
@@ -7,7 +7,7 @@ describe('Example', () => {
     await device.reloadReactNative();
     await waitFor(element(by.id('channel-list-messenger')))
       .toBeVisible()
-      .withTimeout(10000);
+      .withTimeout(5000);
   });
 
   it('should render channel list', async () => {

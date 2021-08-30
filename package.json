@@ -38,9 +38,9 @@
     "detox-sample-ios:build": "detox build --configuration ios.sample.release",
     "detox-native-android:build": "detox build --configuration android.native.release",
     "detox-native-ios:build": "detox build --configuration ios.native.release",
-    "detox-sample-android:test": "detox test --configuration android.sample.release",
-    "detox-sample-ios:test": "detox test --configuration ios.sample.release",
-    "detox-native-android:test": "detox test --configuration android.native.release",
-    "detox-native-ios:test": "detox test --configuration ios.native.release"
+    "detox-sample-android:test": "detox test --configuration android.sample.release e2e/SampleApp",
+    "detox-sample-ios:test": "detox test --configuration ios.sample.release e2e/SampleApp",
+    "detox-native-android:test": "detox test --configuration android.native.release e2e/NativeMessaging",
+    "detox-native-ios:test": "detox test --configuration ios.native.release e2e/NativeMessaging"
   }
 }
