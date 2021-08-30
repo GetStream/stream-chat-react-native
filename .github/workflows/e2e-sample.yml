@@ -9,7 +9,7 @@ on:
 
 jobs:
   android:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -24,17 +24,15 @@ jobs:
         uses: joschi/setup-jdk@v2
         with:
           java-version: '11'
+      - name: Build
+        run: yarn detox-sample-android:build
       - name: Prepare Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
           target: google_apis
           avd-name: Pixel4
-          script: echo "Finished creating virtual device"
-      - name: Build
-        run: yarn detox-sample-android:build
-      - name: Test
-        run: yarn detox-sample-android:test
+          script: yarn detox-sample-android:test
 
   ios:
     runs-on: macos-latest
