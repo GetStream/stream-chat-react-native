@@ -22,9 +22,11 @@ jobs:
         uses: joschi/setup-jdk@v2
         with:
           java-version: '11'
+      - name: Generate keystore
+        run: cd ./examples/NativeMessaging/android/app && keytool -genkey -noprompt -dname "CN=automation, OU=RN, O=getstream L=NA, S=NA, C=NA" -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000
       - name: Build
         run: yarn detox-native-android:build
-      - name: Prepare Emulator
+      - name: Test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29

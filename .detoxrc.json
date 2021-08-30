@@ -43,7 +43,7 @@
       "name": "Android SampleApp Debug",
       "type": "android.apk",
       "binaryPath": "examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk",
-      "build": "cd examples/SampleApp/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release"
+      "build": "cd examples/SampleApp/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=debug"
     },
     "android.sample.release": {
       "name": "Android SampleApp Release",

@@ -26,7 +26,7 @@ jobs:
           java-version: '11'
       - name: Build
         run: yarn detox-sample-android:build
-      - name: Prepare Emulator
+      - name: Test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
