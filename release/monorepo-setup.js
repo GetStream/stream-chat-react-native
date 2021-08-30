@@ -8,8 +8,21 @@ const git = async (args, options = {}) => {
   return stdout;
 };
 
+const revertRegexSubject = new RegExp('^Revert "(.*)"');
+const revertRegexBody = new RegExp('This reverts commit ([a-z0-9]*)');
+
 async function filterCommits(path, regex, pluginConfig, commits) {
+  const revertedCommits = commits
+    .filter((commit) => {
+      return revertRegexSubject.test(commit.subject);
+    })
+    .map((commit) => {
+      const [_, reverted] = commit.body.match(revertRegexBody);
+      return reverted;
+    });
+
   const mergeCommits = commits.filter((commit) => {
+    if (revertedCommits.includes(commit.hash)) return false;
     const regexPassed = regex ? regex.test(commit.subject) : true;
     const noteKeywordsPassed = pluginConfig.parserOpts.noteKeywords.find(
       (keyword) => commit.body && commit.body.includes(keyword),

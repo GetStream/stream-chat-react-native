@@ -10,6 +10,8 @@ import enTranslations from '../i18n/en.json';
 import frTranslations from '../i18n/fr.json';
 import hiTranslations from '../i18n/hi.json';
 import itTranslations from '../i18n/it.json';
+import jaTranslations from '../i18n/ja.json';
+import koTranslations from '../i18n/ko.json';
 import nlTranslations from '../i18n/nl.json';
 import ruTranslations from '../i18n/ru.json';
 import trTranslations from '../i18n/tr.json';
@@ -20,6 +22,8 @@ const defaultLng = 'en';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/hi';
 import 'dayjs/locale/it';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/ko';
 import 'dayjs/locale/nl';
 import 'dayjs/locale/ru';
 import 'dayjs/locale/tr';
@@ -355,6 +359,8 @@ export class Streami18n {
     fr: { [defaultNS]: frTranslations },
     hi: { [defaultNS]: hiTranslations },
     it: { [defaultNS]: itTranslations },
+    ja: { [defaultNS]: jaTranslations },
+    ko: { [defaultNS]: koTranslations },
     nl: { [defaultNS]: nlTranslations },
     ru: { [defaultNS]: ruTranslations },
     tr: { [defaultNS]: trTranslations },

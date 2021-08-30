@@ -1,5 +1,23 @@
 # Change Log
 
+## [4.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.3...v4.0.0) (2021-08-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* Parent channels rendering threads should add a threadList prop if thread is active
+
+### Features
+
+* added support for props - `autoCompleteSuggestionsLimit`, `mentionAllAppUsersEnabled` and `mentionAllAppUsersQuery` on Channel component ([ff15650](https://github.com/GetStream/stream-chat-react-native/commit/ff1565085182516fb02c8699c198332b71a2cc35))
+
+
+### Bug Fixes
+
+* **concurrency:** Channels concurrency general improvements ([bfb9f66](https://github.com/GetStream/stream-chat-react-native/commit/bfb9f66f309bbfaf6b96e9b0afbfca6601cf1143))
+* Channel concurrency fixes ([eab95f0](https://github.com/GetStream/stream-chat-react-native/commit/eab95f0be97226793f9bc8bc2bc2ad4cfe2c93aa))
+* move channel states to parent level & filter out active channels on channel list refresh ([7c7b714](https://github.com/GetStream/stream-chat-react-native/commit/7c7b71426fd3bacf029f1af68dc894fc01e7348d))
+
 ### [3.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.2...v3.7.3) (2021-08-20)
 
 
