@@ -74,7 +74,7 @@ const MessageStatusWithContext = <
 
   if (message.status === 'sending') {
     return (
-      <View style={[styles.statusContainer, statusContainer]}>
+      <View style={[styles.statusContainer, statusContainer]} testID='sending-container'>
         <Time {...timeIcon} />
       </View>
     );
@@ -88,7 +88,10 @@ const MessageStatusWithContext = <
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
-          <Text style={[styles.readByCount, { color: accent_blue }, readByCount]}>
+          <Text
+            style={[styles.readByCount, { color: accent_blue }, readByCount]}
+            testID='read-by-container'
+          >
             {message.readBy}
           </Text>
         ) : null}
@@ -103,7 +106,7 @@ const MessageStatusWithContext = <
 
   if (message.status === 'received' && message.type !== 'ephemeral' && !threadList) {
     return (
-      <View style={[styles.statusContainer, statusContainer]}>
+      <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
         <Check {...checkIcon} />
       </View>
     );

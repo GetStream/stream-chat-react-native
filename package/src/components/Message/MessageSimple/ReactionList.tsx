@@ -268,6 +268,7 @@ const ReactionListWithContext = <
         },
         container,
       ]}
+      testID='reaction-list'
     >
       {reactions.length ? (
         <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>

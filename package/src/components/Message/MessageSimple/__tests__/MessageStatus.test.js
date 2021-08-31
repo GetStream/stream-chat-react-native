@@ -43,11 +43,7 @@ describe('MessageStatus', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus
-          lastReceivedId={message.id}
-          message={{ ...message, status: 'received' }}
-          readBy={[{ id }]}
-        />
+        <MessageStatus lastReceivedId={message.id} message={{ ...message, status: 'received' }} />
       </Chat>,
     );
 
@@ -58,48 +54,32 @@ describe('MessageStatus', () => {
 
   it('should render message status with read by container', async () => {
     const user = generateUser();
-    const message = generateMessage({ user });
+    const message = generateMessage({ readBy: 2, user });
 
     const { getByTestId, getByText, rerender, toJSON } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus
-          lastReceivedId={message.id}
-          message={message}
-          readBy={[{ id }, { id: user.id, name: user.name }]}
-        />
+        <MessageStatus lastReceivedId={message.id} message={message} />
       </Chat>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('avatar-text')).toBeTruthy();
       expect(getByTestId('read-by-container')).toBeTruthy();
-      expect(getByText(user.name.charAt(0))).toBeTruthy();
+      expect(getByText(message.readBy.toString())).toBeTruthy();
     });
 
     const staticUser = generateStaticUser(0);
-    const staticMessage = generateMessage({ staticUser });
+    const staticMessage = generateMessage({ readBy: 2, staticUser });
 
     rerender(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus
-          lastReceivedId={staticMessage.id}
-          message={staticMessage}
-          readBy={[
-            { id },
-            {
-              id: staticUser.id,
-              image: staticUser.image,
-              name: staticUser.name,
-            },
-          ]}
-        />
+        <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
       </Chat>,
     );
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
-      expect(getByTestId('avatar-image')).toBeTruthy();
       expect(getByTestId('read-by-container')).toBeTruthy();
+      expect(getByText(staticMessage.readBy.toString())).toBeTruthy();
     });
   });
 

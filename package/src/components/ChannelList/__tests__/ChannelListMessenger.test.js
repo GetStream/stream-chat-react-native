@@ -18,13 +18,13 @@ let chatClient;
 const Component = ({ loadingChannels = false }) => (
   <Chat client={chatClient}>
     <ChannelList
-      loadingChannels={loadingChannels}
-      List={ChannelListMessenger}
       filters={{
         members: {
           $in: ['vishal', 'neil'],
         },
       }}
+      List={ChannelListMessenger}
+      loadingChannels={loadingChannels}
     />
   </Chat>
 );

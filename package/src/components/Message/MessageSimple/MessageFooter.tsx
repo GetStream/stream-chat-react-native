@@ -93,7 +93,7 @@ const MessageFooterWithContext = <
 
   if (isDeleted) {
     return (
-      <View style={metaContainer} testID='message-footer'>
+      <View style={metaContainer} testID='message-deleted'>
         <Eye pathFill={isDeleted ? undefined : grey} {...eyeIcon} />
         <Text
           style={[
