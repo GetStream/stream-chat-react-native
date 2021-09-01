@@ -64,7 +64,11 @@ export const AttachmentSelectionBar: React.FC = () => {
 
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight ?? 52 }]}>
-      <TouchableOpacity hitSlop={{ bottom: 15, top: 15 }} onPress={() => setPicker('images')}>
+      <TouchableOpacity
+        hitSlop={{ bottom: 15, top: 15 }}
+        onPress={() => setPicker('images')}
+        testID='upload-photo-touchable'
+      >
         <View style={[styles.icon, icon]}>
           <ImageSelectorIcon
             numberOfImageUploads={imageUploads.length}
@@ -73,7 +77,11 @@ export const AttachmentSelectionBar: React.FC = () => {
         </View>
       </TouchableOpacity>
       {hasFilePicker && (
-        <TouchableOpacity hitSlop={{ bottom: 15, top: 15 }} onPress={openFilePicker}>
+        <TouchableOpacity
+          hitSlop={{ bottom: 15, top: 15 }}
+          onPress={openFilePicker}
+          testID='upload-file-touchable'
+        >
           <View style={[styles.icon, icon]}>
             <FileSelectorIcon
               numberOfImageUploads={imageUploads.length}
@@ -82,7 +90,11 @@ export const AttachmentSelectionBar: React.FC = () => {
           </View>
         </TouchableOpacity>
       )}
-      <TouchableOpacity hitSlop={{ bottom: 15, top: 15 }} onPress={takeAndUploadImage}>
+      <TouchableOpacity
+        hitSlop={{ bottom: 15, top: 15 }}
+        onPress={takeAndUploadImage}
+        testID='take-photo-touchable'
+      >
         <View style={[styles.icon, icon]}>
           <CameraSelectorIcon
             numberOfImageUploads={imageUploads.length}

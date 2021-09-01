@@ -25,12 +25,12 @@ describe('AutoCompleteInput', () => {
         <AutoCompleteInput
           giphyEnabled
           onChange={jest.fn}
+          text={props.text}
           triggerSettings={ACITriggerSettings({
             channel,
             onMentionSelectItem: jest.fn(),
             t: jest.fn(),
           })}
-          text={props.text}
         />
       </SuggestionsProvider>
     </Chat>
