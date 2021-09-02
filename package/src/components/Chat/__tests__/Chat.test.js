@@ -99,7 +99,7 @@ describe('Chat', () => {
       });
     });
 
-    it.skip('calls setActiveChannel to set a new channel in context', async () => {
+    it('calls setActiveChannel to set a new channel in context', async () => {
       let context;
 
       render(
@@ -112,10 +112,11 @@ describe('Chat', () => {
         </Chat>,
       );
 
-      const channel = { cid: 'cid', query: jest.fn() };
+      const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
 
       await waitFor(() => expect(context.channel).toBeUndefined());
       act(() => context.setActiveChannel(channel));
+
       await waitFor(() => expect(context.channel).toStrictEqual(channel));
     });
   });

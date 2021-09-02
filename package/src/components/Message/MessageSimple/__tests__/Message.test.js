@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { Message } from '../../Message';
@@ -7,7 +6,6 @@ import { Message } from '../../Message';
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
 import { MessageInput } from '../../../MessageInput/MessageInput';
-import { MessageList } from '../../../MessageList/MessageList';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
@@ -17,17 +15,6 @@ import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
-import { ImageGalleryProvider } from '../../../../contexts/imageGalleryContext/ImageGalleryContext';
-
-function MockedFlatList(props) {
-  if (!props.data.length && props.ListEmptyComponent) return props.ListEmptyComponent();
-
-  const items = props.data.map((item, index) => {
-    const key = props.keyExtractor(item, index);
-    return <View key={key}>{props.renderItem({ index, item })}</View>;
-  });
-  return <View testID={props.testID}>{items}</View>;
-}
 
 describe('Message', () => {
   let channel;

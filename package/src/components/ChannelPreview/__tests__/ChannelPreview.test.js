@@ -8,10 +8,8 @@ import { Chat } from '../../Chat/Chat';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import dispatchMessageDeletedEvent from '../../../mock-builders/event/messageDeleted';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
-import dispatchMessageUpdatedEvent from '../../../mock-builders/event/messageUpdated';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
@@ -21,8 +19,11 @@ const ChannelPreviewUIComponent = (props) => (
   <>
     <Text testID='channel-id'>{props.channel.id}</Text>
     <Text testID='unread-count'>{props.unread}</Text>
-    <Text testID='last-event-message'>{props && props.lastMessage && props.lastMessage.text}</Text>
-    <Text testID='latest-message'>{props.latestMessage && props.latestMessage.text}</Text>
+    <Text testID='latest-message'>
+      {props.latestMessagePreview &&
+        props.latestMessagePreview.messageObject &&
+        props.latestMessagePreview.messageObject.text}
+    </Text>
   </>
 );
 
@@ -90,35 +91,26 @@ describe('ChannelPreview', () => {
     });
   });
 
-  const eventCases = [
-    ['message.new', dispatchMessageNewEvent],
-    ['message.updated', dispatchMessageUpdatedEvent],
-    ['message.deleted', dispatchMessageDeletedEvent],
-  ];
+  it('should update the lastest message on "message.new" event', async () => {
+    const c = generateChannel();
+    await initializeChannel(c);
 
-  it.skip.each(eventCases)(
-    'should update the last event message',
-    async (eventType, dispatcher) => {
-      const c = generateChannel();
-      await initializeChannel(c);
+    const { getByTestId } = render(getComponent());
 
-      const { getByTestId } = render(getComponent());
+    await waitFor(() => getByTestId('channel-id'));
 
-      await waitFor(() => getByTestId('channel-id'));
+    const message = generateMessage({
+      user: clientUser,
+    });
 
-      const message = generateMessage({
-        user: clientUser,
-      });
+    act(() => {
+      dispatchMessageNewEvent(chatClient, message, channel);
+    });
 
-      act(() => {
-        dispatcher(chatClient, message, channel);
-      });
-
-      await waitFor(() => {
-        expect(getByTestId('last-event-message')).toHaveTextContent(message.text);
-      });
-    },
-  );
+    await waitFor(() => {
+      expect(getByTestId('latest-message')).toHaveTextContent(message.text);
+    });
+  });
 
   it('should update the unread count on "message.new" event', async () => {
     const c = generateChannel();
