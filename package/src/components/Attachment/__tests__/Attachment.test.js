@@ -101,8 +101,8 @@ describe('Attachment', () => {
     const action = generateAttachmentAction();
     const { getByTestId } = render(
       getActionComponent({
-        handleAction,
         actions: [action],
+        handleAction,
       }),
     );
 

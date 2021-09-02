@@ -49,7 +49,7 @@ describe('Avatar', () => {
   });
 
   it('should render an avatar with a random image and no size', async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' />
       </ThemeProvider>,
@@ -63,7 +63,7 @@ describe('Avatar', () => {
   });
 
   it('should render an avatar with a random image and custom size', async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' size={20} />
       </ThemeProvider>,

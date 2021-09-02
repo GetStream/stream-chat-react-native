@@ -9,7 +9,7 @@ const args = 'a string list of args';
 const name = 'giphy';
 
 describe('CommandsItem', () => {
-  it.only('should render CommandsItem with no avatar image but a name', async () => {
+  it('should render CommandsItem with no avatar image but a name', async () => {
     const { getByTestId, queryByTestId } = render(
       <ThemeProvider>
         <CommandsItem item={{ args, name }} />

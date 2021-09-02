@@ -76,11 +76,11 @@ describe('Channel', () => {
     const nullChannel = {
       ...channel,
       cid: null,
-      on: () => {},
       off: () => {},
+      on: () => {},
       watch: () => {},
     };
-    const { getByTestId, toJSON } = renderComponent({ channel: nullChannel });
+    const { getByTestId } = renderComponent({ channel: nullChannel });
 
     await waitFor(() => {
       expect(getByTestId('no-channel')).toBeTruthy();
