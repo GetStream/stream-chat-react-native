@@ -5,7 +5,6 @@ exports[`MessageAvatar should render message avatar 1`] = `
   style={
     Array [
       Object {
-        "marginLeft": 0,
         "marginRight": 8,
       },
       Object {},
@@ -13,37 +12,51 @@ exports[`MessageAvatar should render message avatar 1`] = `
   }
   testID="message-avatar"
 >
-  <View
-    style={
-      Array [
-        Object {
-          "alignItems": "center",
-        },
-        Object {},
-      ]
-    }
-  >
-    <Image
-      accessibilityLabel="initials"
-      onError={[Function]}
-      resizeMethod="resize"
-      source={
-        Object {
-          "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
-        }
-      }
+  <View>
+    <View
       style={
         Array [
+          Object {
+            "alignItems": "center",
+            "justifyContent": "center",
+            "overflow": "hidden",
+          },
           Object {
             "borderRadius": 16,
             "height": 32,
             "width": 32,
           },
           Object {},
+          undefined,
         ]
       }
-      testID="avatar-image"
-    />
+    >
+      <Image
+        accessibilityLabel="avatar-image"
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
+          }
+        }
+        style={
+          Array [
+            Object {
+              "borderRadius": 16,
+              "height": 32,
+              "width": 32,
+            },
+            Object {
+              "borderRadius": 16,
+              "height": 32,
+              "width": 32,
+            },
+            undefined,
+          ]
+        }
+        testID="avatar-image"
+      />
+    </View>
   </View>
 </View>
 `;
