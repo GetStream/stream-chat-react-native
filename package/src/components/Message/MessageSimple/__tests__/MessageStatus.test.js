@@ -22,21 +22,6 @@ describe('MessageStatus', () => {
   });
   afterEach(cleanup);
 
-  it('should render message status with spacer', async () => {
-    const user = generateUser();
-    const message = generateMessage({ user });
-
-    const { getByTestId } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={message.id} message={message} readBy={[{ id }]} />
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('spacer')).toBeTruthy();
-    });
-  });
-
   it('should render message status with delivered container', async () => {
     const user = generateUser();
     const message = generateMessage({ user });

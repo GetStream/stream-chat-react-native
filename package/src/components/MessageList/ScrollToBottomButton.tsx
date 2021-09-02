@@ -76,7 +76,11 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props)
   if (!showNotification) return null;
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.touchable, touchable]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.touchable, touchable]}
+      testID='message-notification'
+    >
       <View style={[styles.wrapper, wrapper]}>
         <View style={[styles.container, { backgroundColor: white, shadowColor: black }, container]}>
           <Down />
@@ -95,6 +99,7 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props)
                 { color: white },
                 unreadCountNotificationText,
               ]}
+              testID='unread-count'
             >
               {unreadCount}
             </Text>

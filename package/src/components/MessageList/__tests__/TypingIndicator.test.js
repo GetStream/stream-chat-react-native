@@ -1,12 +1,11 @@
 import React from 'react';
-import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { TypingIndicator } from '../TypingIndicator';
 
 import { Chat } from '../../Chat/Chat';
 
-import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { TypingProvider } from '../../../contexts/typingContext/TypingContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
@@ -31,15 +30,15 @@ describe('TypingIndicator', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
+          <TypingProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelProvider>
+          </TypingProvider>
         </TranslationProvider>
       </Chat>,
     );
-    expect(t).toHaveBeenCalledWith('{{ firstUser }} and {{ secondUser }} are typing...', {
+    expect(t).toHaveBeenCalledWith('{{ firstUser }} and {{ nonSelfUserLength }} more are typing', {
       firstUser: user1.name,
-      secondUser: user2.name,
+      nonSelfUserLength: 1,
     });
     await waitFor(() => {
       expect(getByTestId('typing-indicator')).toBeTruthy();
@@ -58,98 +57,17 @@ describe('TypingIndicator', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
+          <TypingProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelProvider>
+          </TypingProvider>
         </TranslationProvider>
       </Chat>,
     );
-    expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
+    expect(t).toHaveBeenCalledWith('{{ user }} is typing', {
       user: user1.name,
     });
     await waitFor(() => {
       expect(getByTestId('typing-indicator')).toBeTruthy();
-    });
-  });
-
-  it('should render typing Avatar for one user', async () => {
-    const t = jest.fn((key) => key);
-    const user0 = generateUser();
-    const user1 = generateUser();
-
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = { user1: { user: user1 } };
-
-    const { getByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
-            <TypingIndicator Avatar={View} />
-          </ChannelProvider>
-        </TranslationProvider>
-      </Chat>,
-    );
-    expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
-      user: user1.name,
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('typing-indicator')).toBeTruthy();
-      expect(getByTestId('typing-avatar-0')).toBeTruthy();
-      expect(queryByTestId('typing-avatar-1')).toBeFalsy();
-    });
-  });
-
-  it('should render typing Avatar for two users', async () => {
-    const t = jest.fn((key) => key);
-    const user0 = generateUser();
-    const user1 = generateUser();
-    const user2 = generateUser();
-
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = { user1: { user: user1 }, user2: { user: user2 } };
-
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
-            <TypingIndicator Avatar={View} />
-          </ChannelProvider>
-        </TranslationProvider>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('typing-indicator')).toBeTruthy();
-      expect(getByTestId('typing-avatar-0')).toBeTruthy();
-      expect(getByTestId('typing-avatar-1')).toBeTruthy();
-    });
-  });
-
-  it('should render no typing Avatars', async () => {
-    const t = jest.fn((key) => key);
-    const user0 = generateUser();
-
-    chatClient = await getTestClientWithUser({ id: user0.id });
-    await chatClient.setUser(user0, 'testToken');
-    const typing = {};
-
-    const { getByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
-            <TypingIndicator Avatar={View} />
-          </ChannelProvider>
-        </TranslationProvider>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('typing-indicator')).toBeTruthy();
-      expect(queryByTestId('typing-avatar-0')).toBeFalsy();
-      expect(queryByTestId('typing-avatar-1')).toBeFalsy();
     });
   });
 
@@ -167,9 +85,9 @@ describe('TypingIndicator', () => {
     const { toJSON } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelProvider value={{ typing }}>
+          <TypingProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelProvider>
+          </TypingProvider>
         </TranslationProvider>
       </Chat>,
     );
