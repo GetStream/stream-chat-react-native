@@ -32,8 +32,8 @@ export const useConnectionRecovered = <
 }: Parameters) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const refRefreshList = useRef(refreshList)
-  refRefreshList.current = refreshList
+  const refRefreshList = useRef(refreshList);
+  refRefreshList.current = refreshList;
 
   useEffect(() => {
     const handleEvent = () => {
