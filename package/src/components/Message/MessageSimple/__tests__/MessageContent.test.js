@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { Message } from '../../Message';
+import { MessageContent } from '../../MessageSimple/MessageContent';
 
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
@@ -85,7 +86,7 @@ describe('MessageContent', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('message-failed')).toBeTruthy();
+      expect(getByTestId('message-error')).toBeTruthy();
     });
   });
 
@@ -98,7 +99,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
@@ -107,11 +108,15 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({
-      message,
-      // eslint-disable-next-line react/display-name
-      MessageHeader: (props) => <View {...props} />,
-    });
+    const ContextMessageHeader = (props) => <View {...props} testID='message-header' />;
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} MessageHeader={ContextMessageHeader}>
+          <Message groupStyles={['bottom']} message={message} />
+        </Channel>
+      </Chat>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
@@ -123,11 +128,15 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = renderMessage({
-      message,
-      // eslint-disable-next-line react/display-name
-      MessageFooter: (props) => <View {...props} />,
-    });
+    const ContextMessageFooter = (props) => <View {...props} testID='message-footer' />;
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} MessageFooter={ContextMessageFooter}>
+          <Message groupStyles={['bottom']} message={message} />
+        </Channel>
+      </Chat>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
@@ -146,7 +155,7 @@ describe('MessageContent', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('show-time')).toBeTruthy();
+      expect(getByTestId('message-status-time')).toBeTruthy();
       expect(queryAllByTestId('message-footer')).toHaveLength(0);
     });
   });
@@ -208,7 +217,22 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId } = renderMessage({ message });
+    // This needs to be mocked like that cause native onLayout on MessageContent would never
+    // trigger.
+    const MessageContentWithMockedMessageContentWidth = (props) => {
+      useEffect(() => {
+        props.setMessageContentWidth(100);
+      }, []);
+      return <MessageContent {...props} />;
+    };
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
+          <Message groupStyles={['bottom']} message={message} reactionsEnabled />
+        </Channel>
+      </Chat>,
+    );
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();

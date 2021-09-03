@@ -1,6 +1,6 @@
 import React from 'react';
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
-import { act } from 'react-test-renderer';
+import { View } from 'react-native';
+import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { MessageList } from '../MessageList';
 
@@ -18,6 +18,17 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+
+function MockedFlatList(props) {
+  if (!props.data.length && props.ListEmptyComponent) return props.ListEmptyComponent();
+
+  const items = props.data.map((item, index) => {
+    const key = props.keyExtractor(item, index);
+    return <View key={key}>{props.renderItem({ index, item })}</View>;
+  });
+  return <View testID={props.testID}>{items}</View>;
+}
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -34,12 +45,15 @@ describe('MessageList', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
+    channel.initialized = true;
 
     const { getByText, queryAllByTestId } = render(
       <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
+        <ImageGalleryProvider>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <MessageList />
+          </Channel>
+        </ImageGalleryProvider>
       </Chat>,
     );
 
@@ -50,7 +64,7 @@ describe('MessageList', () => {
       expect(queryAllByTestId('message-notification')).toHaveLength(0);
       expect(getByText(newMessage.text)).toBeTruthy();
     });
-  });
+  }, 10000);
 
   it('should render a system message in the list', async () => {
     const user1 = generateUser();
@@ -70,9 +84,17 @@ describe('MessageList', () => {
 
     const { getByTestId, queryAllByTestId } = render(
       <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
+        <ChatContext.Consumer>
+          {(context) => (
+            <ChatProvider value={{ ...context, isOnline: true }}>
+              <ImageGalleryProvider>
+                <Channel channel={channel} FlatList={MockedFlatList}>
+                  <MessageList />
+                </Channel>
+              </ImageGalleryProvider>
+            </ChatProvider>
+          )}
+        </ChatContext.Consumer>
       </Chat>,
     );
 
@@ -97,9 +119,17 @@ describe('MessageList', () => {
 
     const { getByTestId, queryAllByTestId } = render(
       <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
+        <ChatContext.Consumer>
+          {(context) => (
+            <ChatProvider value={{ ...context, isOnline: true }}>
+              <ImageGalleryProvider>
+                <Channel channel={channel} FlatList={MockedFlatList}>
+                  <MessageList />
+                </Channel>
+              </ImageGalleryProvider>
+            </ChatProvider>
+          )}
+        </ChatContext.Consumer>
       </Chat>,
     );
 
@@ -126,9 +156,11 @@ describe('MessageList', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
+        <ImageGalleryProvider>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <MessageList />
+          </Channel>
+        </ImageGalleryProvider>
       </Chat>,
     );
 
@@ -154,9 +186,11 @@ describe('MessageList', () => {
         <ChatContext.Consumer>
           {(context) => (
             <ChatProvider value={{ ...context, isOnline: false }}>
-              <Channel channel={channel}>
-                <MessageList />
-              </Channel>
+              <ImageGalleryProvider>
+                <Channel channel={channel}>
+                  <MessageList />
+                </Channel>
+              </ImageGalleryProvider>
             </ChatProvider>
           )}
         </ChatContext.Consumer>
@@ -167,89 +201,7 @@ describe('MessageList', () => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('error-notification')).toBeTruthy();
-      expect(getByText('Connection failure, reconnecting now...')).toBeTruthy();
-    });
-  });
-
-  it('should render ScrollToBottomButton when new message is received and user has scroll up in list, then remove ScrollToBottomButton on scroll down', async () => {
-    const user1 = generateUser();
-    const user2 = generateUser();
-    const messages = new Array(50).fill(generateMessage({ user: user1 }));
-    const mockedChannel = generateChannel({
-      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
-      messages,
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('message-flat-list')).toBeTruthy();
-      expect(queryAllByTestId('message-notification')).toHaveLength(0);
-    });
-
-    const eventDataUp = {
-      nativeEvent: {
-        contentOffset: {
-          y: 500,
-        },
-        contentSize: {
-          // Dimensions of the scrollable content
-          height: 500,
-          width: 100,
-        },
-        layoutMeasurement: {
-          // Dimensions of the device
-          height: 100,
-          width: 100,
-        },
-      },
-    };
-    fireEvent.scroll(getByTestId('message-flat-list'), eventDataUp);
-
-    act(() => {
-      const newMessage = generateMessage({
-        timestamp: new Date(),
-        user: user2,
-      });
-      dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('message-notification')).toBeTruthy();
-    });
-
-    const eventDataDown = {
-      nativeEvent: {
-        contentOffset: {
-          y: 0,
-        },
-        contentSize: {
-          // Dimensions of the scrollable content
-          height: 500,
-          width: 100,
-        },
-        layoutMeasurement: {
-          // Dimensions of the device
-          height: 100,
-          width: 100,
-        },
-      },
-    };
-    fireEvent.scroll(getByTestId('message-flat-list'), eventDataDown);
-
-    await waitFor(() => {
-      expect(queryAllByTestId('message-notification')).toHaveLength(0);
+      expect(getByText('Reconnecting...')).toBeTruthy();
     });
   });
 
@@ -272,9 +224,11 @@ describe('MessageList', () => {
 
     const { queryAllByTestId, toJSON } = render(
       <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <MessageList />
-        </Channel>
+        <ImageGalleryProvider>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <MessageList />
+          </Channel>
+        </ImageGalleryProvider>
       </Chat>,
     );
 

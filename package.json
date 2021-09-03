@@ -31,6 +31,7 @@
     "bootstrap": "yarn lerna-workspaces run bootstrap",
     "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci",
     "lint": "yarn lerna-workspaces run lint",
+    "test:unit": "yarn lerna-workspaces run test:unit",
     "build": "yarn lerna-workspaces run build"
   }
 }

@@ -1,79 +1,161 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AttachButton should render a disabled AttachButton 1`] = `
-<View
-  accessible={true}
-  focusable={true}
-  isTVSelectable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
+<RNGestureHandlerButton
+  collapsable={false}
+  hitSlop={
     Object {
-      "marginRight": 8,
-      "opacity": 1,
+      "bottom": 15,
+      "left": 15,
+      "right": 5,
+      "top": 15,
     }
   }
+  onGestureEvent={[Function]}
+  onGestureHandlerEvent={[Function]}
+  onGestureHandlerStateChange={[Function]}
+  onHandlerStateChange={[Function]}
+  rippleColor={0}
   testID="attach-button"
 >
-  <Image
-    source={
+  <View
+    accessible={true}
+    hitSlop={
       Object {
-        "testUri": "../../../src/images/icons/plus-outline.png",
+        "bottom": 15,
+        "left": 15,
+        "right": 5,
+        "top": 15,
       }
     }
     style={
-      Array [
-        Object {
-          "height": 15,
-          "width": 15,
-        },
-        Object {},
-      ]
+      Object {
+        "opacity": 1,
+      }
     }
-  />
-</View>
+  >
+    <RNSVGSvgView
+      align="xMidYMid"
+      bbHeight={24}
+      bbWidth={24}
+      focusable={false}
+      height={24}
+      meetOrSlice={0}
+      minX={0}
+      minY={0}
+      pathFill="#7A7A7A"
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "borderWidth": 0,
+          },
+          Object {
+            "flex": 0,
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      vbHeight={24}
+      vbWidth={24}
+      width={24}
+    >
+      <RNSVGGroup>
+        <RNSVGPath
+          clipRule={0}
+          d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
+          fill={4286216826}
+          fillRule={0}
+          propList={
+            Array [
+              "fill",
+              "fillRule",
+            ]
+          }
+        />
+      </RNSVGGroup>
+    </RNSVGSvgView>
+  </View>
+</RNGestureHandlerButton>
 `;
 
 exports[`AttachButton should render an enabled AttachButton 1`] = `
-<View
-  accessible={true}
-  focusable={true}
-  isTVSelectable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
+<RNGestureHandlerButton
+  collapsable={false}
+  hitSlop={
     Object {
-      "marginRight": 8,
-      "opacity": 1,
+      "bottom": 15,
+      "left": 15,
+      "right": 5,
+      "top": 15,
     }
   }
+  onGestureEvent={[Function]}
+  onGestureHandlerEvent={[Function]}
+  onGestureHandlerStateChange={[Function]}
+  onHandlerStateChange={[Function]}
+  rippleColor={0}
   testID="attach-button"
 >
-  <Image
-    source={
+  <View
+    accessible={true}
+    hitSlop={
       Object {
-        "testUri": "../../../src/images/icons/plus-outline.png",
+        "bottom": 15,
+        "left": 15,
+        "right": 5,
+        "top": 15,
       }
     }
     style={
-      Array [
-        Object {
-          "height": 15,
-          "width": 15,
-        },
-        Object {},
-      ]
+      Object {
+        "opacity": 1,
+      }
     }
-  />
-</View>
+  >
+    <RNSVGSvgView
+      align="xMidYMid"
+      bbHeight={24}
+      bbWidth={24}
+      focusable={false}
+      height={24}
+      meetOrSlice={0}
+      minX={0}
+      minY={0}
+      pathFill="#7A7A7A"
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "borderWidth": 0,
+          },
+          Object {
+            "flex": 0,
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      vbHeight={24}
+      vbWidth={24}
+      width={24}
+    >
+      <RNSVGGroup>
+        <RNSVGPath
+          clipRule={0}
+          d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
+          fill={4286216826}
+          fillRule={0}
+          propList={
+            Array [
+              "fill",
+              "fillRule",
+            ]
+          }
+        />
+      </RNSVGGroup>
+    </RNSVGSvgView>
+  </View>
+</RNGestureHandlerButton>
 `;

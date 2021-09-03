@@ -95,47 +95,7 @@ describe('Chat', () => {
         expect(context.channel).toBeUndefined();
         expect(context.client).toBe(chatClient);
         expect(context.connectionRecovering).toBeFalsy();
-        expect(context.isOnline).toBeTruthy();
-        expect(context.logger).toBeInstanceOf(Function);
         expect(context.setActiveChannel).toBeInstanceOf(Function);
-      });
-    });
-
-    it('updates the context when props change', async () => {
-      let context;
-      const logger = () => true;
-
-      const { rerender } = render(
-        <Chat client={chatClient} logger={logger}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
-      );
-
-      await waitFor(() => {
-        expect(context.client).toBe(chatClient);
-        expect(context.logger).toBe(logger);
-      });
-
-      const newClient = getTestClient();
-      const newLogger = () => false;
-
-      rerender(
-        <Chat client={newClient} logger={newLogger}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
-      );
-
-      await waitFor(() => {
-        expect(context.client).toBe(newClient);
-        expect(context.logger).toBe(newLogger);
       });
     });
 
@@ -152,10 +112,11 @@ describe('Chat', () => {
         </Chat>,
       );
 
-      const channel = { cid: 'cid', query: jest.fn() };
+      const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
 
       await waitFor(() => expect(context.channel).toBeUndefined());
       act(() => context.setActiveChannel(channel));
+
       await waitFor(() => expect(context.channel).toStrictEqual(channel));
     });
   });

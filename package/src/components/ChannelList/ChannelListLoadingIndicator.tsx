@@ -19,7 +19,10 @@ export const ChannelListLoadingIndicator: React.FC = () => {
   const { numberOfSkeletons, Skeleton } = useChannelsContext();
 
   return (
-    <View style={[styles.container, { backgroundColor: white_snow }]}>
+    <View
+      style={[styles.container, { backgroundColor: white_snow }]}
+      testID='channel-list-loading-indicator'
+    >
       {Array.from(Array(numberOfSkeletons)).map((_, index) => (
         <Skeleton key={`skeleton_${index}`} />
       ))}

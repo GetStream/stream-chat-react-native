@@ -10,47 +10,10 @@ import nlTranslations from '../../i18n/nl.json';
 Dayjs.extend(localeData);
 
 const customDayjsLocaleConfig = {
-  calendar: {
-    lastDay: '[Í gjár kl.] LT',
-    lastWeek: '[síðstu] dddd [kl] LT',
-    nextDay: '[Í morgin kl.] LT',
-    nextWeek: 'dddd [kl.] LT',
-    sameDay: '[Í dag kl.] LT',
-    sameElse: 'L',
-  },
-  dayOfMonthOrdinalParse: /\d{1,2}\./,
-  formats: {
-    L: 'DD/MM/YYYY',
-    LL: 'D MMMM YYYY',
-    LLL: 'D MMMM YYYY HH:mm',
-    LLLL: 'dddd D. MMMM, YYYY HH:mm',
-    LT: 'HH:mm',
-    LTS: 'HH:mm:ss',
-  },
   months:
     'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
   monthsShort: 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
   ordinal: '%d.',
-  relativeTime: {
-    d: 'ein dagur',
-    dd: '%d dagar',
-    future: 'um %s',
-    h: 'ein tími',
-    hh: '%d tímar',
-    M: 'ein mánaði',
-    m: 'ein minutt',
-    MM: '%d mánaðir',
-    mm: '%d minuttir',
-    past: '%s síðani',
-    s: 'fá sekund',
-    ss: '%d sekundir',
-    y: 'eitt ár',
-    yy: '%d ár',
-  },
-  week: {
-    dow: 1, // Monday is the first day of the week.
-    doy: 4, // The week that contains Jan 4th is the first week of the year.
-  },
   weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split('_'),
   weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
   weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
@@ -128,10 +91,10 @@ describe('Streami18n instance - with built-in language', () => {
       expect(tDateTimeParser() instanceof Dayjs).toBe(true);
       const localeConfig = tDateTimeParser().localeData();
       for (const key in streami18nOptions.dayjsLocaleConfigForLanguage) {
-        if (localeConfig[key]) {
-          expect(localeConfig[key]()).toStrictEqual(
-            streami18nOptions.dayjsLocaleConfigForLanguage[key],
-          );
+        if (typeof localeConfig[key] === 'function') {
+          expect(localeConfig[key]()).toStrictEqual(customDayjsLocaleConfig[key]);
+        } else {
+          expect(localeConfig[key]).toStrictEqual(customDayjsLocaleConfig[key]);
         }
       }
     });
@@ -197,8 +160,10 @@ describe('registerTranslation - register new language `mr` (Marathi)', () => {
 
     const localeConfig = tDateTimeParser().localeData();
     for (const key in customDayjsLocaleConfig) {
-      if (localeConfig[key]) {
-        expect(customDayjsLocaleConfig[key]).toStrictEqual(localeConfig[key]());
+      if (typeof localeConfig[key] === 'function') {
+        expect(localeConfig[key]()).toStrictEqual(customDayjsLocaleConfig[key]);
+      } else {
+        expect(localeConfig[key]).toStrictEqual(customDayjsLocaleConfig[key]);
       }
     }
   });

@@ -11,19 +11,30 @@ import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();
   let chatClient;
   let channel;
 
-  const getComponent = () => (
-    <Chat client={chatClient}>
-      <Channel channel={channel}>
-        <MessageInput />
-      </Channel>
-    </Chat>
-  );
+  const getComponent = ({ attachmentValue }) => {
+    const CameraSelectorIcon = () => null;
+    const FileSelectorIcon = () => null;
+    const ImageSelectorIcon = () => null;
+
+    return (
+      <Chat client={chatClient}>
+        <AttachmentPickerProvider
+          value={{ ...attachmentValue, CameraSelectorIcon, FileSelectorIcon, ImageSelectorIcon }}
+        >
+          <Channel channel={channel}>
+            <MessageInput />
+          </Channel>
+        </AttachmentPickerProvider>
+      </Chat>
+    );
+  };
 
   const initializeChannel = async (c) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
@@ -44,19 +55,28 @@ describe('MessageInput', () => {
 
   it('should render MessageInput', async () => {
     await initializeChannel(generateChannel());
+    const openPicker = jest.fn();
+    const closePicker = jest.fn();
+    const attachmentValue = { closePicker, openPicker };
 
-    const { getByTestId, queryByTestId, queryByText, toJSON } = render(getComponent());
+    const { getByTestId, queryByTestId, queryByText, toJSON } = render(
+      getComponent({ attachmentValue }),
+    );
 
     await waitFor(() => {
-      expect(queryByTestId('upload-photo-item')).toBeTruthy();
-      expect(queryByTestId('upload-file-item')).toBeTruthy();
       expect(queryByTestId('attach-button')).toBeTruthy();
+    });
+
+    fireEvent.press(getByTestId('attach-button'));
+
+    await waitFor(() => {
+      expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
+      expect(queryByTestId('upload-file-touchable')).toBeTruthy();
+      expect(queryByTestId('take-photo-touchable')).toBeTruthy();
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
       expect(queryByTestId('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
     });
-
-    fireEvent.press(getByTestId('attach-button'));
 
     const snapshot = toJSON();
 

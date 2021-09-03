@@ -367,7 +367,7 @@ const MessageContentWithContext = <
           })}
         </View>
         {error && (
-          <View style={StyleSheet.absoluteFill}>
+          <View style={StyleSheet.absoluteFill} testID='message-error'>
             <View style={errorIconContainer}>
               <Error pathFill={accent_red} {...errorIcon} />
             </View>
