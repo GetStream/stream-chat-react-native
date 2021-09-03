@@ -7,7 +7,8 @@
     "ios": "npx react-native run-ios",
     "lint": "eslint .",
     "start": "npx react-native start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-community/blur": "3.6.0",
@@ -41,6 +42,7 @@
     "eslint": "7.26.0",
     "jest": "26.6.3",
     "metro-react-native-babel-preset": "0.66.0",
+    "patch-package": "^6.4.7",
     "react-test-renderer": "17.0.2"
   },
   "jest": {

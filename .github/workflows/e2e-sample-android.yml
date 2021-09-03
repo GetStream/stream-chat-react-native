@@ -1,0 +1,35 @@
+name: e2e-sample-android
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Install Java JDK
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: '11'
+      - name: Build
+        run: yarn detox-sample-android:build
+      - name: Test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          avd-name: Pixel4
+          script: yarn detox-sample-android:test

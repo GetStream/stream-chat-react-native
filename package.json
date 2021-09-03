@@ -11,8 +11,10 @@
     "@semantic-release/changelog": "^5.0.1",
     "@semantic-release/exec": "^5.0.0",
     "@semantic-release/git": "^9.0.0",
+    "detox": "^18.20.2",
     "execa": "^5.1.1",
     "husky": "^6.0.0",
+    "jest": "^27.0.6",
     "lerna": "^4.0.0",
     "semantic-release": "^17.4.4"
   },
@@ -31,7 +33,15 @@
     "bootstrap": "yarn lerna-workspaces run bootstrap",
     "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci",
     "lint": "yarn lerna-workspaces run lint",
+    "build": "yarn lerna-workspaces run build",
     "test:unit": "yarn lerna-workspaces run test:unit",
-    "build": "yarn lerna-workspaces run build"
+    "detox-sample-android:build": "detox build --configuration android.sample.release",
+    "detox-sample-ios:build": "detox build --configuration ios.sample.release",
+    "detox-native-android:build": "detox build --configuration android.native.release",
+    "detox-native-ios:build": "detox build --configuration ios.native.release",
+    "detox-sample-android:test": "detox test --configuration android.sample.release e2e/SampleApp",
+    "detox-sample-ios:test": "detox test --configuration ios.sample.release e2e/SampleApp",
+    "detox-native-android:test": "detox test --configuration android.native.release e2e/NativeMessaging",
+    "detox-native-ios:test": "detox test --configuration ios.native.release e2e/NativeMessaging"
   }
 }

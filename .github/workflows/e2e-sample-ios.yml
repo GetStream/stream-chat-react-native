@@ -1,0 +1,32 @@
+name: e2e-sample-ios
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Install Pods
+        run: cd ./examples/SampleApp && npx pod-install
+      - name: Install Detox Dependencies
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+      - name: Build
+        run: yarn detox-sample-ios:build
+      - name: Test
+        run: yarn detox-sample-ios:test
