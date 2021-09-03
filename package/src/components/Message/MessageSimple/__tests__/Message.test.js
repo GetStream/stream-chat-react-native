@@ -37,14 +37,15 @@ describe('Message', () => {
 
     renderMessage = (options) =>
       render(
-        <Chat client={chatClient}>
-          <OverlayProvider>
+        <OverlayProvider>
+          <Chat client={chatClient}>
             <Channel channel={channel}>
               <Message groupStyles={['bottom']} {...options} />
               <MessageInput />
             </Channel>
-          </OverlayProvider>
-        </Chat>,
+          </Chat>
+          ,
+        </OverlayProvider>,
       );
   });
 
