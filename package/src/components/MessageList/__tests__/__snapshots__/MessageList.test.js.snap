@@ -931,7 +931,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
               ]
             }
           >
-            Sep 2
+            Sep 3
           </Text>
         </View>
       </View>
