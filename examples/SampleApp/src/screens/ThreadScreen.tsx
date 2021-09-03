@@ -93,7 +93,6 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         enforceUniqueReaction
         keyboardVerticalOffset={0}
         thread={thread}
-        threadList
       >
         <View style={styles.container}>
           <ThreadHeader thread={thread} />

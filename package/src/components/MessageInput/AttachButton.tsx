@@ -59,7 +59,7 @@ const AttachButtonWithContext = <
     <TouchableOpacity
       disabled={disabled}
       hitSlop={{ bottom: 15, left: 15, right: 5, top: 15 }}
-      onPress={handleOnPress}
+      onPress={disabled ? () => null : handleOnPress}
       style={[attachButton]}
       testID='attach-button'
     >

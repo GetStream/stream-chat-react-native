@@ -57,20 +57,25 @@ describe('ScrollToBottomButton', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it('should display the text New Messages', async () => {
+  it('should display the unread count', async () => {
     const t = jest.fn((key) => key);
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
-    const { getByText } = render(
+    const { getByTestId, getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t }}>
-          <ScrollToBottomButton onPress={() => null} showNotification={true} t={t} />
+          <ScrollToBottomButton
+            onPress={() => null}
+            showNotification={true}
+            t={t}
+            unreadCount={3}
+          />
         </TranslationProvider>
       </ThemeProvider>,
     );
-    expect(t).toHaveBeenCalledWith('New Messages');
     await waitFor(() => {
-      expect(getByText('New Messages')).toBeTruthy();
+      expect(getByTestId('unread-count')).toBeTruthy();
+      expect(getByText('3')).toBeTruthy();
     });
   });
 

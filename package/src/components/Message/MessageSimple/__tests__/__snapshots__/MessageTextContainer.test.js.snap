@@ -5,23 +5,11 @@ exports[`MessageTextContainer should render message text container 1`] = `
   style={
     Array [
       Object {
-        "marginTop": 2,
-        "paddingHorizontal": 8,
-        "paddingVertical": 5,
-      },
-      Object {
-        "alignSelf": "flex-end",
-        "borderColor": "transparent",
-        "borderWidth": 0,
-      },
-      Object {
-        "backgroundColor": "#EBEBEB",
-        "borderBottomLeftRadius": 16,
-        "borderBottomRightRadius": 16,
-        "borderTopLeftRadius": 16,
-        "borderTopRightRadius": 16,
+        "maxWidth": 250,
+        "paddingHorizontal": 16,
       },
       Object {},
+      undefined,
     ]
   }
   testID="message-text-container"
@@ -43,15 +31,15 @@ exports[`MessageTextContainer should render message text container 1`] = `
           "flexDirection": "row",
           "flexWrap": "wrap",
           "justifyContent": "flex-start",
-          "marginBottom": 0,
-          "marginTop": 0,
+          "marginBottom": 8,
+          "marginTop": 8,
         }
       }
     >
       <Text
         style={
           Object {
-            "color": "#222222",
+            "color": "#000000",
           }
         }
       >

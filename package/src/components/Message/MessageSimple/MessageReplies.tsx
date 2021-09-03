@@ -133,7 +133,7 @@ const MessageRepliesWithContext = <
   return (
     <View style={styles.curveContainer}>
       {alignment === 'left' && (
-        <>
+        <View testID='message-replies-left'>
           {!noBorder && (
             <View
               style={[
@@ -145,7 +145,7 @@ const MessageRepliesWithContext = <
             />
           )}
           <MessageRepliesAvatars alignment={alignment} message={message} />
-        </>
+        </View>
       )}
       <TouchableOpacity
         disabled={preventPress}
@@ -187,7 +187,7 @@ const MessageRepliesWithContext = <
         </Text>
       </TouchableOpacity>
       {alignment === 'right' && (
-        <>
+        <View testID='message-replies-right'>
           <MessageRepliesAvatars alignment={alignment} message={message} />
           {!noBorder && (
             <View
@@ -199,7 +199,7 @@ const MessageRepliesWithContext = <
               ]}
             />
           )}
-        </>
+        </View>
       )}
     </View>
   );
@@ -220,14 +220,12 @@ const areEqual = <
   const {
     message: prevMessage,
     noBorder: prevNoBorder,
-    onOpenThread: prevOnOpenThread,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
   const {
     message: nextMessage,
     noBorder: nextNoBorder,
-    onOpenThread: nextOnOpenThread,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
@@ -243,9 +241,6 @@ const areEqual = <
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
-
-  const onOpenThreadEqual = prevOnOpenThread === nextOnOpenThread;
-  if (!onOpenThreadEqual) return false;
 
   return true;
 };

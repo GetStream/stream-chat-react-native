@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "4.0.0",
+  "version": "3.8.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -36,7 +36,7 @@
     "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify",
     "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
-    "test": "TZ=UTC jest",
+    "test:unit": "TZ=UTC jest",
     "validate-translations": "node bin/validate-translations.js",
     "get-version": "echo $npm_package_version",
     "version": "bash ./bin/before-tag.sh",
@@ -81,7 +81,7 @@
     "path": "0.12.7",
     "react-art": "^17.0.2",
     "react-native-markdown-package": "1.8.1",
-    "stream-chat": "~4.0.0"
+    "stream-chat": "~3.13.1"
   },
   "peerDependencies": {
     "react": "*",

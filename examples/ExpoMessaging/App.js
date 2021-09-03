@@ -105,7 +105,7 @@ const ThreadScreen = () => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread} threadList>
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View
             style={{
               flex: 1,

@@ -34,6 +34,7 @@
     "bootstrap-ci": "yarn lerna-workspaces run bootstrap-ci",
     "lint": "yarn lerna-workspaces run lint",
     "build": "yarn lerna-workspaces run build",
+    "test:unit": "yarn lerna-workspaces run test:unit",
     "detox-sample-android:build": "detox build --configuration android.sample.release",
     "detox-sample-ios:build": "detox build --configuration ios.sample.release",
     "detox-native-android:build": "detox build --configuration android.native.release",

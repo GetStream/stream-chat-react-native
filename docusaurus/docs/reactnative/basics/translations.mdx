@@ -15,6 +15,8 @@ At the moment we support the following languages (and more will be added in the 
 - [Dutch (nl)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/nl.json)
 - [Turkish (tr)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/tr.json)
 - [Russian (ru)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ru.json)
+- [Japanese (ja)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ja.json)
+- [Korean (ko)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ko.json)
 
 ## Usage
 
@@ -36,7 +38,7 @@ Two components require your custom instance of `Streami18n` to properly pass you
 Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
 Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
 
-```tsx {5,8}
+```tsx {5,8-9}
 import { StreamChat } from 'stream-chat'; 
 import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
 
@@ -255,6 +257,8 @@ The following options are available:
 - Dutch (`nl`)
 - Turkish (`tr`)
 - Russian (`ru`)
+- Japanese (`ja`)
+- Korean (`ko`)
 
 | TYPE | DEFAULT |
 | - | - |
