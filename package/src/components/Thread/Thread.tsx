@@ -6,6 +6,7 @@ import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessagesContextValue,
@@ -163,9 +164,16 @@ export const Thread = <
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { threadList } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { MessageList } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { closeThread, loadMoreThread, reloadThread, thread } =
     useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  if (thread?.id && !threadList) {
+    throw new Error(
+      'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
+    );
+  }
 
   return (
     <ThreadWithContext<At, Ch, Co, Ev, Me, Re, Us>

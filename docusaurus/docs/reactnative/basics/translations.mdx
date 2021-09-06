@@ -4,7 +4,8 @@ sidebar_position: 4
 title: Adding Internationalization (i18n)
 ---
 
-If you deploy your app to users who speak another language, you'll need to internationalize it. That means you need to write the app in a way that makes it possible to localize values like text and layouts for each language or locale that the app supports.
+If you deploy your app to users who speak another language, you'll need to internationalize it.
+Stream’s Chat Client provides the option to translate the user-created contents of messages in addition to the UI.
 The React Native SDK's UI Components are available in multiple languages out-of-the-box.
 At the moment we support the following languages (and more will be added in the future):
 
@@ -15,6 +16,8 @@ At the moment we support the following languages (and more will be added in the 
 - [Dutch (nl)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/nl.json)
 - [Turkish (tr)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/tr.json)
 - [Russian (ru)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ru.json)
+- [Japanese (ja)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ja.json)
+- [Korean (ko)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ko.json)
 
 ## Usage
 
@@ -36,7 +39,7 @@ Two components require your custom instance of `Streami18n` to properly pass you
 Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
 Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
 
-```tsx {5,8}
+```tsx {5,8-9}
 import { StreamChat } from 'stream-chat'; 
 import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
 
@@ -255,6 +258,8 @@ The following options are available:
 - Dutch (`nl`)
 - Turkish (`tr`)
 - Russian (`ru`)
+- Japanese (`ja`)
+- Korean (`ko`)
 
 | TYPE | DEFAULT |
 | - | - |

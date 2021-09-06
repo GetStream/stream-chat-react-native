@@ -26,6 +26,7 @@ module.exports = (api) => {
           },
         ],
         'module-resolver',
+        'react-native-reanimated/plugin',
       ],
       presets: ['@babel/env', 'module:metro-react-native-babel-preset', '@babel/preset-typescript'],
     };

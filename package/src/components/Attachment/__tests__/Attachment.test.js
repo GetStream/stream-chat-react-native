@@ -50,7 +50,7 @@ describe('Attachment', () => {
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('card-attachment')).toBeTruthy();
+      expect(getByTestId('giphy-attachment')).toBeTruthy();
     });
   });
 
@@ -59,7 +59,7 @@ describe('Attachment', () => {
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('card-attachment')).toBeTruthy();
+      expect(getByTestId('giphy-attachment')).toBeTruthy();
     });
   });
 
@@ -80,7 +80,7 @@ describe('Attachment', () => {
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('image-attachment-single')).toBeTruthy();
+      expect(getByTestId('image-multiple')).toBeTruthy();
     });
   });
 
@@ -97,12 +97,12 @@ describe('Attachment', () => {
   });
 
   it('should call actionHandler on click', async () => {
-    const actionHandler = jest.fn();
+    const handleAction = jest.fn();
     const action = generateAttachmentAction();
     const { getByTestId } = render(
       getActionComponent({
-        actionHandler,
         actions: [action],
+        handleAction,
       }),
     );
 
@@ -116,7 +116,7 @@ describe('Attachment', () => {
     fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledTimes(2);
+      expect(handleAction).toHaveBeenCalledTimes(2);
     });
   });
 

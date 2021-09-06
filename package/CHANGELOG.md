@@ -1,5 +1,13 @@
 # Change Log
 
+## [3.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.3...v3.8.0) (2021-08-30)
+
+
+### Features
+
+* added support for japanese and korean language ([5708201](https://github.com/GetStream/stream-chat-react-native/commit/5708201c43b7e12c4cb96879527ccd59026b73a8))
+* added support for props - `autoCompleteSuggestionsLimit`, `mentionAllAppUsersEnabled` and `mentionAllAppUsersQuery` on Channel component ([ff15650](https://github.com/GetStream/stream-chat-react-native/commit/ff1565085182516fb02c8699c198332b71a2cc35))
+
 ## [4.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.3...v4.0.0) (2021-08-22)
 
 

@@ -17,6 +17,18 @@ Please follow [the spec](https://www.conventionalcommits.org/en/v1.0.0-beta.4/#c
 
 Please have in mind that the only line you have to add is the selected one. Github already takes care of adding the PR title to the body of the merge commit.
 
+## Reverting a release
+
+If you've released something you were not supposed to and want to remove that release from npm, remove the git tag and then rollback the changes, you have a few options:
+
+### Reset master branch
+
+Cleanest way is to just reset the master branch and remove the last few commits, so the ideal is just do reset and force-push.
+
+### Revert unwanted commits
+
+If you want some of the newest commits but want to remove older ones you can just revert the commit with `git revert MERGE_PR_COMMIT_HASH`. Please have in mind that in case your merge commit contains a commit with a breaking change flag, you need to revert that commit BEFORE reverting the PR merge commit.
+
 ## Git flow
 
 ### develop & next tags

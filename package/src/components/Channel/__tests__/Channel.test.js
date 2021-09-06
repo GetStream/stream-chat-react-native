@@ -73,10 +73,18 @@ describe('Channel', () => {
   });
 
   it('should render a simple text error if the channel id does not exist', async () => {
-    const nullChannel = { ...channel, cid: null };
+    const nullChannel = {
+      ...channel,
+      cid: null,
+      off: () => {},
+      on: () => {},
+      watch: () => {},
+    };
     const { getByTestId } = renderComponent({ channel: nullChannel });
 
-    await waitFor(() => expect(getByTestId('no-channel')).toBeTruthy());
+    await waitFor(() => {
+      expect(getByTestId('no-channel')).toBeTruthy();
+    });
   });
 
   it('should watch the current channel on mount', async () => {
@@ -120,38 +128,12 @@ describe('Channel', () => {
     await waitFor(() => expect(channelOnSpy).toHaveBeenCalledWith(expect.any(Function)));
   });
 
-  it('should mark a channel as read if the user inits a channel with unread messages', async () => {
-    const watchSpy = jest.spyOn(channel, 'watch');
-    const countUnreadSpy = jest.spyOn(channel, 'countUnread').mockImplementationOnce(() => 1);
-    const markReadSpy = jest.spyOn(channel, 'markRead');
-
-    renderComponent({ channel });
-
-    await waitFor(() => {
-      expect(watchSpy).toHaveBeenCalledWith();
-      expect(countUnreadSpy).toHaveBeenCalledWith();
-      expect(markReadSpy).toHaveBeenCalledWith();
-    });
-  });
-
-  it('should use the doMarkReadRequest prop to mark channel as read', async () => {
-    jest.spyOn(channel, 'countUnread').mockImplementationOnce(() => 1);
-    const doMarkReadRequest = jest.fn();
-
-    renderComponent({
-      channel,
-      doMarkReadRequest,
-    });
-
-    await waitFor(() => expect(doMarkReadRequest).toHaveBeenCalledTimes(1));
-  });
-
   it('should be able to open threads', async () => {
     const threadMessage = messages[0];
     const hasThread = jest.fn();
     // this renders Channel, calls openThread from a child context consumer with a message,
     // and then calls hasThread with the thread id if it was set.
-    renderComponent(
+    const { rerender } = renderComponent(
       { channel },
       ({ openThread, thread }) => {
         if (!thread) {
@@ -161,6 +143,23 @@ describe('Channel', () => {
         }
       },
       ThreadContext,
+    );
+
+    rerender(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <CallbackEffectWithContext
+            callback={({ openThread, thread }) => {
+              if (!thread) {
+                openThread(threadMessage);
+              } else {
+                hasThread(thread.id);
+              }
+            }}
+            context={ThreadContext}
+          />
+        </Channel>
+      </Chat>,
     );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
@@ -177,7 +176,6 @@ describe('Channel', () => {
         messages: newMessages,
       }),
     );
-  const limit = 10;
 
   it('should call the channel query method to load more messages', async () => {
     const channelQuerySpy = jest.spyOn(channel, 'query');
@@ -186,69 +184,13 @@ describe('Channel', () => {
 
     renderComponent(
       { channel },
-      ({ loadMoreEarlier }) => {
+      () => {
         useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-        loadMoreEarlier(limit);
       },
       MessagesContext,
     );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
-  });
-
-  it('should enable editing messages', async () => {
-    const newText = 'something entirely different';
-    const updatedMessage = { ...messages[0], text: newText };
-    const clientUpdateMessageSpy = jest.spyOn(chatClient, 'updateMessage');
-
-    renderComponent(
-      { channel },
-      ({ editMessage }) => {
-        editMessage(updatedMessage);
-      },
-      MessagesContext,
-    );
-
-    await waitFor(() => expect(clientUpdateMessageSpy).toHaveBeenCalledWith(updatedMessage));
-  });
-
-  it('should use doUpdateMessageRequest for the editMessage callback if provided', async () => {
-    const doUpdateMessageRequest = jest.fn((channelId, message) => message);
-    renderComponent(
-      { channel, doUpdateMessageRequest },
-      ({ editMessage }) => {
-        editMessage(messages[0]);
-      },
-      MessagesContext,
-    );
-
-    await waitFor(() =>
-      expect(doUpdateMessageRequest).toHaveBeenCalledWith(channel.cid, messages[0]),
-    );
-  });
-
-  it('should allow removing messages', async () => {
-    let allMessagesRemoved = false;
-    const removeSpy = jest.spyOn(channel.state, 'removeMessage');
-
-    renderComponent(
-      { channel },
-      ({ messages: contextMessages, removeMessage }) => {
-        if (contextMessages.length > 0) {
-          // if there are messages passed as the context, remove them
-          removeMessage({ id: contextMessages[0].id });
-        } else {
-          // once they're all gone, set to true so we can verify that we no longer have messages
-          allMessagesRemoved = true;
-        }
-      },
-      MessagesContext,
-    );
-
-    await waitFor(() => {
-      expect(removeSpy).toHaveBeenCalledWith({ id: messages[0].id });
-      expect(allMessagesRemoved).toBe(true);
-    });
   });
 
   describe('ChannelContext', () => {

@@ -24,8 +24,18 @@ describe('ChannelPreviewMessenger', () => {
       <ChannelPreviewMessenger
         channel={channel}
         client={chatClient}
-        latestMessagePreview={generateMessage()}
-        setActiveChannel={jest.fn()}
+        latestMessagePreview={{
+          created_at: '',
+          messageObject: generateMessage(),
+          previews: [
+            {
+              bold: true,
+              text: 'This is the message preview text',
+            },
+          ],
+          status: 0 | 1 | 2, // read states of latest message.
+        }}
+        onSelect={jest.fn()}
         {...props}
       />
     </Chat>
@@ -48,12 +58,12 @@ describe('ChannelPreviewMessenger', () => {
   });
 
   it('should call setActiveChannel on click', async () => {
-    const setActiveChannel = jest.fn();
+    const onSelect = jest.fn();
     await initializeChannel(generateChannel());
 
     const { getByTestId } = render(
       getComponent({
-        setActiveChannel,
+        onSelect,
         watchers: {},
       }),
     );
@@ -63,7 +73,7 @@ describe('ChannelPreviewMessenger', () => {
 
     await waitFor(() => {
       // eslint-disable-next-line jest/prefer-called-with
-      expect(setActiveChannel).toHaveBeenCalledTimes(1);
+      expect(onSelect).toHaveBeenCalledTimes(1);
     });
   });
 

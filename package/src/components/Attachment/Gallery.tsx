@@ -61,6 +61,7 @@ const GalleryImage: React.FC<
             : uri.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`)
           : uri,
       }}
+      testID='image-attachment-single'
     />
   );
 };
