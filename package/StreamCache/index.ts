@@ -1,7 +1,7 @@
 import { AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 
-import StreamMediaCache from './StreamMediaCache';
+import StreamMediaCache from '../StreamMediaCache';
 
 import type {
   Channel,
@@ -25,16 +25,17 @@ import type {
   DefaultReactionType,
   DefaultUserType,
   UnknownType,
-} from './types/types';
+} from '../types/types';
 
-export const STREAM_CHAT_CLIENT_DATA = 'STREAM_CHAT_CLIENT_DATA';
-export const STREAM_CHAT_CHANNELS_DATA = 'STREAM_CHAT_CHANNELS_DATA';
-export const STREAM_CHAT_CHANNELS_ORDER = 'STREAM_CHAT_CHANNELS_ORDER';
-const STREAM_CHAT_SDK_VERSION = 'STREAM_CHAT_SDK_VERSION';
-const STREAM_CHAT_CLIENT_VERSION = 'STREAM_CHAT_CLIENT_VERSION';
-
-const CURRENT_SDK_VERSION = require('../package.json').version;
-const CURRENT_CLIENT_VERSION = require('stream-chat/package.json').version;
+import {
+  CURRENT_CLIENT_VERSION,
+  CURRENT_SDK_VERSION,
+  STREAM_CHAT_CHANNELS_DATA,
+  STREAM_CHAT_CHANNELS_ORDER,
+  STREAM_CHAT_CLIENT_DATA,
+  STREAM_CHAT_CLIENT_VERSION,
+  STREAM_CHAT_SDK_VERSION,
+} from './constants';
 
 export type ChannelsOrder = { [index: string]: { [index: string]: number } };
 
@@ -89,21 +90,6 @@ export type CacheInterface<
     value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
   ) => Promise<void>;
 };
-
-// 1 message = ~2KB
-// 2 * 800 = ~1.6MB of messages per channel
-const MAX_MESSAGES_PER_CHANNEL = 800;
-// 2 * 300 = ~600KB of messages per thread
-const MAX_MESSAGES_PER_THREAD = 300;
-// If all messages are threads storing 500+ messages - worst case scenario
-// 800 * 300 * 2 = ~500MB per channel total
-// If there are no threads in channel - best case scenario
-// 2 & 800 = ~1.6MB per channel total
-
-// I would say middle ground is all channels store 800 messages, having ~100 threads
-// with ~100 messages and ending up with 2 * 100 * 100 = 20MB + 1.6MB from 800 regular messages
-const MAX_CHANNELS = 70;
-// If we store 70 channels, 70 * 21.6MB, we initialize the client with 1.5GB of data in memory already
 
 function extractChannelMessagesMap<
   At extends UnknownType = DefaultAttachmentType,
@@ -253,54 +239,8 @@ export class StreamCache<
     });
   }
 
-  // This logics takes care of removing older messages/channels when reinitializing the client state in order to avoid
-  // a possible memory overflow
-  private cropOlderMessages(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]) {
-    const currentOrderedChannelsMapByFilterAndSort =
-      this.orderChannelsBasedOnCachedOrder(channelsData);
-    const croppedChannelsDataMapById = {} as {
-      [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>;
-    };
-
-    // This deals with the multiple channel lists on the same screen. It creates a map of channels
-    // in order to avoid repetitions when reInitializing the client. Uses latest 70 channels
-    // for each channel list.
-    Object.keys(currentOrderedChannelsMapByFilterAndSort).forEach(
-      (currentOrderedChannelsMapKey) => {
-        const croppedChannelsData =
-          currentOrderedChannelsMapByFilterAndSort[currentOrderedChannelsMapKey]?.slice(
-            0,
-            MAX_CHANNELS,
-          ) || [];
-        croppedChannelsData.forEach((channelData) => {
-          // Skips already existent channels in case they're repeated in both lists
-          if (channelData.id && !croppedChannelsDataMapById[channelData.id]) {
-            croppedChannelsDataMapById[channelData.id] = channelData;
-          }
-        });
-      },
-    );
-
-    return Object.values(croppedChannelsDataMapById).map((channelData) => {
-      const channelState = channelData.state;
-      const remainingMessagesMap: { [index: string]: boolean } = {};
-      const messages = channelState.messages.slice(-MAX_MESSAGES_PER_CHANNEL);
-
-      const pinnedMessages = channelState.pinnedMessages.filter((m) => remainingMessagesMap[m.id]);
-      const threads = Object.entries(channelState.threads).reduce((acc, next) => {
-        const [id, value] = next;
-        // Only adds threads for remaining messages
-        if (remainingMessagesMap[id]) {
-          acc[id] = value.slice(-MAX_MESSAGES_PER_THREAD);
-        }
-        return acc;
-      }, {} as Record<string, ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>['state']['messages']>);
-
-      return { ...channelData, state: { ...channelState, messages, pinnedMessages, threads } };
-    });
-  }
-
   private connect(clientData: ClientStateAndData<Ch, Co, Us>) {
+    // TODO: Maybe a way to allow user to customize this? Ask Vish if needed
     const user = {
       id: clientData.user?.id,
       name: clientData.user?.name,
@@ -329,40 +269,29 @@ export class StreamCache<
       const channelsIndicesMap = (
         channels as ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
       ).reduce((curr, next, index) => {
-        if (!next.id) return curr;
+        if (!next.id || !currentChannelsOrder[next.id]) return curr;
         curr[next.id] = index;
         return curr;
       }, {} as { [index: string]: number });
 
       if (currentChannelsOrder) {
-        channels.sort(
-          (
-            a:
-              | Channel<At, Ch, Co, Ev, Me, Re, Us>
-              | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>,
-            b:
-              | Channel<At, Ch, Co, Ev, Me, Re, Us>
-              | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>,
-          ) => {
-            if (a.id === undefined && b.id === undefined) return -1;
-            if (a.id === undefined) return 1;
-            if (b.id === undefined) return -1;
+        channels.sort((a, b) => {
+          if (a.id === undefined && b.id === undefined) return -1;
+          if (a.id === undefined) return 1;
+          if (b.id === undefined) return -1;
 
-            if (
-              currentChannelsOrder[a.id] === undefined &&
-              currentChannelsOrder[b.id] === undefined
-            )
-              return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
+          if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
+            return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
 
-            if (currentChannelsOrder[a.id] === undefined) return 1;
-            if (currentChannelsOrder[b.id] === undefined) return -1;
+          if (currentChannelsOrder[a.id] === undefined) return 1;
+          if (currentChannelsOrder[b.id] === undefined) return -1;
 
-            return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
-          },
-        );
+          return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
+        });
       }
-
-      channelsOrder[currentChannelsOrderKey] = channels;
+      channelsOrder[currentChannelsOrderKey] = (
+        channels as ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
+      ).filter((c) => c.id && currentChannelsOrder[c.id] !== undefined) as C;
     });
     return channelsOrder;
   }
@@ -455,16 +384,10 @@ export class StreamCache<
       (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER)) || {};
 
     if (clientData && channelsData) {
-      this.client.reInitializeWithState(clientData, this.cropOlderMessages(channelsData || []));
+      this.client.reInitializeWithState(clientData, channelsData || []);
       this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
         Object.values(this.client.activeChannels),
       );
-
-      // We call syncCache when rehyrdating in order to replace whats stored in the cache
-      // with the cropped data. This needs to happen here because we can't crop the
-      // data when saving the cache cause the operation would cost more and maybe the user can
-      // kill the app before it happens.
-      this.syncCacheAndImages();
     }
   }
 
