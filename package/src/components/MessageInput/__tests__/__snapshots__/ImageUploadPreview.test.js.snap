@@ -1,665 +1,604 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1 uploaded, and 1 failed image 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "height": 70,
-        "padding": 10,
-      },
-      Object {},
-    ]
-  }
->
-  <RCTScrollView
-    data={
-      Array [
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+<View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
           },
-          "id": "0",
-          "state": "uploading",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "1",
-          "state": "uploaded",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "2",
-          "state": "upload_failed",
-        },
-      ]
-    }
-    disableVirtualization={false}
-    getItem={[Function]}
-    getItemCount={[Function]}
-    horizontal={true}
-    initialNumToRender={10}
-    keyExtractor={[Function]}
-    maxToRenderPerBatch={10}
-    numColumns={1}
-    onContentSizeChange={[Function]}
-    onEndReachedThreshold={2}
-    onLayout={[Function]}
-    onMomentumScrollEnd={[Function]}
-    onScroll={[Function]}
-    onScrollBeginDrag={[Function]}
-    onScrollEndDrag={[Function]}
-    removeClippedSubviews={false}
-    renderItem={[Function]}
-    scrollEventThrottle={50}
-    stickyHeaderIndices={Array []}
-    style={
-      Object {
-        "flex": 1,
+          Object {},
+          Object {},
+        ]
       }
-    }
-    updateCellsBatchingPeriod={50}
-    viewabilityConfigCallbackPairs={Array []}
-    windowSize={21}
-  >
-    <View>
+    >
       <View
-        onLayout={[Function]}
         style={
           Array [
             Object {
-              "flexDirection": "row",
+              "overflow": "hidden",
             },
-            null,
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
           ]
         }
+        testID="active-upload-progress-indicator"
       >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
         <View
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
               },
               Object {},
             ]
           }
         >
           <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <ActivityIndicator
-                  animating={true}
-                  color="grey"
-                  hidesWhenStopped={true}
-                  size="small"
-                  testID="upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
+                "bottom": 0,
                 "justifyContent": "center",
-                "opacity": 1,
+                "left": 0,
                 "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
+                "right": 0,
+                "top": 0,
               }
             }
-            testID="remove-image-upload-preview"
           >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
+            <ActivityIndicator
+              animating={true}
+              color="#F2F2F2"
+              hidesWhenStopped={true}
+              size="small"
+              testID="upload-progress-indicator"
             />
           </View>
         </View>
       </View>
       <View
-        onLayout={[Function]}
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
         }
+        testID="remove-image-upload-preview"
       >
-        <View
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
               },
-              Object {},
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
             ]
           }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
         >
-          <View
-            testID="inactive-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
                 Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
+                  "fill",
+                  "fillRule",
                 ]
               }
             />
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
-      </View>
-      <View
-        onLayout={[Function]}
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
-        }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
-              },
-              Object {},
-            ]
-          }
-        >
-          <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                accessible={true}
-                focusable={true}
-                isTVSelectable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "opacity": 1,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <Image
-                  source={
-                    Object {
-                      "testUri": "../../../src/images/reload1.png",
-                    }
-                  }
-                  style={
-                    Object {
-                      "height": 18,
-                      "width": 18,
-                    }
-                  }
-                  testID="retry-upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
+          </RNSVGGroup>
+        </RNSVGSvgView>
       </View>
     </View>
-  </RCTScrollView>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {},
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="inactive-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {
+            "marginRight": 8,
+          },
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="active-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        >
+          <View
+            accessible={true}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "alignItems": "center",
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "opacity": 1,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={18}
+              bbWidth={18}
+              focusable={false}
+              height={18}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#F2F2F2"
+              style={
+                Array [
+                  Object {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  Object {
+                    "flex": 0,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="retry-upload-progress-indicator"
+              vbHeight={24}
+              vbWidth={24}
+              width={18}
+            >
+              <RNSVGGroup>
+                <RNSVGPath
+                  clipRule={0}
+                  d="M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z"
+                  fill={4294111986}
+                  fillRule={0}
+                  propList={
+                    Array [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
 </View>
 `;
 
 exports[`ImageUploadPreview should render ImageUploadPreview with all failed images 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "height": 70,
-        "padding": 10,
-      },
-      Object {},
-    ]
-  }
->
-  <RCTScrollView
-    data={
-      Array [
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+<View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
           },
-          "id": "0",
-          "state": "upload_failed",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "1",
-          "state": "upload_failed",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "2",
-          "state": "upload_failed",
-        },
-      ]
-    }
-    disableVirtualization={false}
-    getItem={[Function]}
-    getItemCount={[Function]}
-    horizontal={true}
-    initialNumToRender={10}
-    keyExtractor={[Function]}
-    maxToRenderPerBatch={10}
-    numColumns={1}
-    onContentSizeChange={[Function]}
-    onEndReachedThreshold={2}
-    onLayout={[Function]}
-    onMomentumScrollEnd={[Function]}
-    onScroll={[Function]}
-    onScrollBeginDrag={[Function]}
-    onScrollEndDrag={[Function]}
-    removeClippedSubviews={false}
-    renderItem={[Function]}
-    scrollEventThrottle={50}
-    stickyHeaderIndices={Array []}
-    style={
-      Object {
-        "flex": 1,
+          Object {},
+          Object {},
+        ]
       }
-    }
-    updateCellsBatchingPeriod={50}
-    viewabilityConfigCallbackPairs={Array []}
-    windowSize={21}
-  >
-    <View>
+    >
       <View
-        onLayout={[Function]}
         style={
           Array [
             Object {
-              "flexDirection": "row",
+              "overflow": "hidden",
             },
-            null,
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
           ]
         }
+        testID="active-upload-progress-indicator"
       >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
         <View
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
               },
               Object {},
             ]
           }
         >
           <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                accessible={true}
-                focusable={true}
-                isTVSelectable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "opacity": 1,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <Image
-                  source={
-                    Object {
-                      "testUri": "../../../src/images/reload1.png",
-                    }
-                  }
-                  style={
-                    Object {
-                      "height": 18,
-                      "width": 18,
-                    }
-                  }
-                  testID="retry-upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
             accessible={true}
             focusable={true}
-            isTVSelectable={true}
             onClick={[Function]}
             onResponderGrant={[Function]}
             onResponderMove={[Function]}
@@ -670,1220 +609,1441 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
+                "bottom": 0,
                 "justifyContent": "center",
+                "left": 0,
                 "opacity": 1,
                 "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
+                "right": 0,
+                "top": 0,
               }
             }
-            testID="remove-image-upload-preview"
           >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={18}
+              bbWidth={18}
+              focusable={false}
+              height={18}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#F2F2F2"
               style={
                 Array [
                   Object {
-                    "height": 10,
-                    "width": 10,
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
                   },
-                  Object {},
+                  Object {
+                    "flex": 0,
+                    "height": 18,
+                    "width": 18,
+                  },
                 ]
               }
-            />
+              testID="retry-upload-progress-indicator"
+              vbHeight={24}
+              vbWidth={24}
+              width={18}
+            >
+              <RNSVGGroup>
+                <RNSVGPath
+                  clipRule={0}
+                  d="M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z"
+                  fill={4294111986}
+                  fillRule={0}
+                  propList={
+                    Array [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
           </View>
         </View>
       </View>
       <View
-        onLayout={[Function]}
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
         }
+        testID="remove-image-upload-preview"
       >
-        <View
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
               },
-              Object {},
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
             ]
           }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
         >
-          <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
                 Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
+                  "fill",
+                  "fillRule",
                 ]
               }
             />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                accessible={true}
-                focusable={true}
-                isTVSelectable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "opacity": 1,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <Image
-                  source={
-                    Object {
-                      "testUri": "../../../src/images/reload1.png",
-                    }
-                  }
-                  style={
-                    Object {
-                      "height": 18,
-                      "width": 18,
-                    }
-                  }
-                  testID="retry-upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
-      </View>
-      <View
-        onLayout={[Function]}
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
-        }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
-              },
-              Object {},
-            ]
-          }
-        >
-          <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                accessible={true}
-                focusable={true}
-                isTVSelectable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "opacity": 1,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <Image
-                  source={
-                    Object {
-                      "testUri": "../../../src/images/reload1.png",
-                    }
-                  }
-                  style={
-                    Object {
-                      "height": 18,
-                      "width": 18,
-                    }
-                  }
-                  testID="retry-upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
+          </RNSVGGroup>
+        </RNSVGSvgView>
       </View>
     </View>
-  </RCTScrollView>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {},
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="active-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        >
+          <View
+            accessible={true}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "alignItems": "center",
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "opacity": 1,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={18}
+              bbWidth={18}
+              focusable={false}
+              height={18}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#F2F2F2"
+              style={
+                Array [
+                  Object {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  Object {
+                    "flex": 0,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="retry-upload-progress-indicator"
+              vbHeight={24}
+              vbWidth={24}
+              width={18}
+            >
+              <RNSVGGroup>
+                <RNSVGPath
+                  clipRule={0}
+                  d="M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z"
+                  fill={4294111986}
+                  fillRule={0}
+                  propList={
+                    Array [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {
+            "marginRight": 8,
+          },
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="active-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        >
+          <View
+            accessible={true}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "alignItems": "center",
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "opacity": 1,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <RNSVGSvgView
+              align="xMidYMid"
+              bbHeight={18}
+              bbWidth={18}
+              focusable={false}
+              height={18}
+              meetOrSlice={0}
+              minX={0}
+              minY={0}
+              pathFill="#F2F2F2"
+              style={
+                Array [
+                  Object {
+                    "backgroundColor": "transparent",
+                    "borderWidth": 0,
+                  },
+                  Object {
+                    "flex": 0,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="retry-upload-progress-indicator"
+              vbHeight={24}
+              vbWidth={24}
+              width={18}
+            >
+              <RNSVGGroup>
+                <RNSVGPath
+                  clipRule={0}
+                  d="M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z"
+                  fill={4294111986}
+                  fillRule={0}
+                  propList={
+                    Array [
+                      "fill",
+                      "fillRule",
+                    ]
+                  }
+                />
+              </RNSVGGroup>
+            </RNSVGSvgView>
+          </View>
+        </View>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
 </View>
 `;
 
 exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded images 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "height": 70,
-        "padding": 10,
-      },
-      Object {},
-    ]
-  }
->
-  <RCTScrollView
-    data={
-      Array [
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+<View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
           },
-          "id": "0",
-          "state": "uploaded",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "1",
-          "state": "uploaded",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "2",
-          "state": "uploaded",
-        },
-      ]
-    }
-    disableVirtualization={false}
-    getItem={[Function]}
-    getItemCount={[Function]}
-    horizontal={true}
-    initialNumToRender={10}
-    keyExtractor={[Function]}
-    maxToRenderPerBatch={10}
-    numColumns={1}
-    onContentSizeChange={[Function]}
-    onEndReachedThreshold={2}
-    onLayout={[Function]}
-    onMomentumScrollEnd={[Function]}
-    onScroll={[Function]}
-    onScrollBeginDrag={[Function]}
-    onScrollEndDrag={[Function]}
-    removeClippedSubviews={false}
-    renderItem={[Function]}
-    scrollEventThrottle={50}
-    stickyHeaderIndices={Array []}
-    style={
-      Object {
-        "flex": 1,
+          Object {},
+          Object {},
+        ]
       }
-    }
-    updateCellsBatchingPeriod={50}
-    viewabilityConfigCallbackPairs={Array []}
-    windowSize={21}
-  >
-    <View>
+    >
       <View
-        onLayout={[Function]}
         style={
           Array [
             Object {
-              "flexDirection": "row",
+              "overflow": "hidden",
             },
-            null,
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
           ]
         }
+        testID="inactive-upload-progress-indicator"
       >
-        <View
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
               },
               Object {},
             ]
           }
-        >
-          <View
-            testID="inactive-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
+        />
       </View>
       <View
-        onLayout={[Function]}
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
         }
+        testID="remove-image-upload-preview"
       >
-        <View
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
               },
-              Object {},
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
             ]
           }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
         >
-          <View
-            testID="inactive-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
                 Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
+                  "fill",
+                  "fillRule",
                 ]
               }
             />
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
-      </View>
-      <View
-        onLayout={[Function]}
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
-        }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
-              },
-              Object {},
-            ]
-          }
-        >
-          <View
-            testID="inactive-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
+          </RNSVGGroup>
+        </RNSVGSvgView>
       </View>
     </View>
-  </RCTScrollView>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {},
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="inactive-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {
+            "marginRight": 8,
+          },
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="inactive-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
 </View>
 `;
 
 exports[`ImageUploadPreview should render ImageUploadPreview with all uploading images 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "height": 70,
-        "padding": 10,
-      },
-      Object {},
-    ]
-  }
->
-  <RCTScrollView
-    data={
-      Array [
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+<View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
           },
-          "id": "0",
-          "state": "uploading",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "1",
-          "state": "uploading",
-        },
-        Object {
-          "file": Object {
-            "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-          },
-          "id": "2",
-          "state": "uploading",
-        },
-      ]
-    }
-    disableVirtualization={false}
-    getItem={[Function]}
-    getItemCount={[Function]}
-    horizontal={true}
-    initialNumToRender={10}
-    keyExtractor={[Function]}
-    maxToRenderPerBatch={10}
-    numColumns={1}
-    onContentSizeChange={[Function]}
-    onEndReachedThreshold={2}
-    onLayout={[Function]}
-    onMomentumScrollEnd={[Function]}
-    onScroll={[Function]}
-    onScrollBeginDrag={[Function]}
-    onScrollEndDrag={[Function]}
-    removeClippedSubviews={false}
-    renderItem={[Function]}
-    scrollEventThrottle={50}
-    stickyHeaderIndices={Array []}
-    style={
-      Object {
-        "flex": 1,
+          Object {},
+          Object {},
+        ]
       }
-    }
-    updateCellsBatchingPeriod={50}
-    viewabilityConfigCallbackPairs={Array []}
-    windowSize={21}
-  >
-    <View>
+    >
       <View
-        onLayout={[Function]}
         style={
           Array [
             Object {
-              "flexDirection": "row",
+              "overflow": "hidden",
             },
-            null,
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
           ]
         }
+        testID="active-upload-progress-indicator"
       >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
         <View
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
               },
               Object {},
             ]
           }
         >
           <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <ActivityIndicator
-                  animating={true}
-                  color="grey"
-                  hidesWhenStopped={true}
-                  size="small"
-                  testID="upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
+                "bottom": 0,
                 "justifyContent": "center",
-                "opacity": 1,
+                "left": 0,
                 "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
+                "right": 0,
+                "top": 0,
               }
             }
-            testID="remove-image-upload-preview"
           >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
+            <ActivityIndicator
+              animating={true}
+              color="#F2F2F2"
+              hidesWhenStopped={true}
+              size="small"
+              testID="upload-progress-indicator"
             />
           </View>
         </View>
       </View>
       <View
-        onLayout={[Function]}
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
         }
+        testID="remove-image-upload-preview"
       >
-        <View
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
           style={
             Array [
               Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
               },
-              Object {},
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
             ]
           }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
         >
-          <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
                 Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
+                  "fill",
+                  "fillRule",
                 ]
               }
             />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <ActivityIndicator
-                  animating={true}
-                  color="grey"
-                  hidesWhenStopped={true}
-                  size="small"
-                  testID="upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
-      </View>
-      <View
-        onLayout={[Function]}
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            null,
-          ]
-        }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "flex-start",
-                "flexDirection": "row",
-                "height": 50,
-                "marginLeft": 5,
-              },
-              Object {},
-            ]
-          }
-        >
-          <View
-            testID="active-upload-progress-indicator"
-          >
-            <Image
-              resizeMode="cover"
-              source={
-                Object {
-                  "uri": "http://www.jackblack.com/tenac_iousd.bmp",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "borderRadius": 10,
-                    "height": 50,
-                    "width": 50,
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#0000004D",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "opacity": 0,
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            />
-            <View
-              style={
-                Array [
-                  Object {
-                    "alignItems": "center",
-                    "backgroundColor": "#FFFFFF00",
-                    "height": "100%",
-                    "justifyContent": "center",
-                    "position": "absolute",
-                    "width": "100%",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "alignItems": "center",
-                    "bottom": 0,
-                    "justifyContent": "center",
-                    "left": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              >
-                <ActivityIndicator
-                  animating={true}
-                  color="grey"
-                  hidesWhenStopped={true}
-                  size="small"
-                  testID="upload-progress-indicator"
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            accessible={true}
-            focusable={true}
-            isTVSelectable={true}
-            onClick={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "#FFFFFF",
-                "borderRadius": 20,
-                "height": 20,
-                "justifyContent": "center",
-                "opacity": 1,
-                "position": "absolute",
-                "right": 5,
-                "top": 5,
-                "width": 20,
-              }
-            }
-            testID="remove-image-upload-preview"
-          >
-            <Image
-              source={
-                Object {
-                  "testUri": "../../../src/images/icons/close-round.png",
-                }
-              }
-              style={
-                Array [
-                  Object {
-                    "height": 10,
-                    "width": 10,
-                  },
-                  Object {},
-                ]
-              }
-            />
-          </View>
-        </View>
+          </RNSVGGroup>
+        </RNSVGSvgView>
       </View>
     </View>
-  </RCTScrollView>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {},
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="active-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        >
+          <View
+            style={
+              Object {
+                "alignItems": "center",
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <ActivityIndicator
+              animating={true}
+              color="#F2F2F2"
+              hidesWhenStopped={true}
+              size="small"
+              testID="upload-progress-indicator"
+            />
+          </View>
+        </View>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
+  <View>
+    <View
+      style={
+        Array [
+          Object {
+            "flexDirection": "row",
+            "height": 100,
+            "marginLeft": 8,
+          },
+          Object {
+            "marginRight": 8,
+          },
+          Object {},
+        ]
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {
+              "overflow": "hidden",
+            },
+            Object {
+              "borderRadius": 10,
+              "height": 100,
+              "width": 100,
+            },
+          ]
+        }
+        testID="active-upload-progress-indicator"
+      >
+        <Image
+          resizeMode="cover"
+          source={
+            Object {
+              "uri": "http://www.jackblack.com/tenac_iousd.bmp",
+            }
+          }
+          style={
+            Array [
+              Object {
+                "borderRadius": 10,
+                "height": 100,
+                "width": 100,
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "opacity": 0,
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        />
+        <View
+          style={
+            Array [
+              Object {
+                "alignItems": "center",
+                "height": "100%",
+                "justifyContent": "center",
+                "position": "absolute",
+                "width": "100%",
+              },
+              Object {
+                "backgroundColor": "#00000033",
+              },
+              Object {},
+            ]
+          }
+        >
+          <View
+            style={
+              Object {
+                "alignItems": "center",
+                "bottom": 0,
+                "justifyContent": "center",
+                "left": 0,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+              }
+            }
+          >
+            <ActivityIndicator
+              animating={true}
+              color="#F2F2F2"
+              hidesWhenStopped={true}
+              size="small"
+              testID="upload-progress-indicator"
+            />
+          </View>
+        </View>
+      </View>
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "backgroundColor": "#00000099",
+            "borderRadius": 24,
+            "opacity": 1,
+            "position": "absolute",
+            "right": 8,
+            "top": 8,
+          }
+        }
+        testID="remove-image-upload-preview"
+      >
+        <RNSVGSvgView
+          align="xMidYMid"
+          bbHeight={24}
+          bbWidth={24}
+          focusable={false}
+          height={24}
+          meetOrSlice={0}
+          minX={0}
+          minY={0}
+          pathFill="#FFFFFF"
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "borderWidth": 0,
+              },
+              Object {
+                "flex": 0,
+                "height": 24,
+                "width": 24,
+              },
+            ]
+          }
+          vbHeight={24}
+          vbWidth={24}
+          width={24}
+        >
+          <RNSVGGroup>
+            <RNSVGPath
+              clipRule={0}
+              d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+              fill={4294967295}
+              fillRule={0}
+              propList={
+                Array [
+                  "fill",
+                  "fillRule",
+                ]
+              }
+            />
+          </RNSVGGroup>
+        </RNSVGSvgView>
+      </View>
+    </View>
+  </View>
 </View>
 `;

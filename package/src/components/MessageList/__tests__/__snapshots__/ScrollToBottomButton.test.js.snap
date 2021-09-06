@@ -2,58 +2,104 @@
 
 exports[`ScrollToBottomButton should render the message notification and match snapshot 1`] = `
 <View
+  accessible={true}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
   style={
     Object {
-      "bottom": 0,
+      "bottom": 20,
       "opacity": 1,
       "position": "absolute",
+      "right": 20,
     }
   }
   testID="message-notification"
 >
   <View
-    accessible={true}
-    focusable={true}
-    isTVSelectable={true}
-    onClick={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
     style={
-      Object {
-        "alignItems": "center",
-        "backgroundColor": "#006CFF",
-        "borderRadius": 13,
-        "height": 27,
-        "justifyContent": "center",
-        "opacity": 1,
-        "transform": Array [
-          Object {
-            "translateY": 9,
-          },
-        ],
-        "width": 112,
-        "zIndex": 10,
-      }
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": 50,
+          "justifyContent": "flex-end",
+        },
+        Object {},
+      ]
     }
   >
-    <Text
+    <View
       style={
         Array [
           Object {
-            "color": "#FFFFFF",
-            "fontSize": 12,
-            "fontWeight": "600",
+            "alignItems": "center",
+            "borderRadius": 20,
+            "elevation": 5,
+            "height": 40,
+            "justifyContent": "center",
+            "shadowOffset": Object {
+              "height": 2,
+              "width": 0,
+            },
+            "shadowOpacity": 0.25,
+            "shadowRadius": 4,
+            "width": 40,
+          },
+          Object {
+            "backgroundColor": "#FFFFFF",
+            "shadowColor": "#000000",
           },
           Object {},
         ]
       }
     >
-      New Messages
-    </Text>
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={24}
+        bbWidth={24}
+        focusable={false}
+        height={24}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        style={
+          Array [
+            Object {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            Object {
+              "flex": 0,
+              "height": 24,
+              "width": 24,
+            },
+          ]
+        }
+        vbHeight={24}
+        vbWidth={24}
+        width={24}
+      >
+        <RNSVGGroup>
+          <RNSVGPath
+            clipRule={0}
+            d="M5.305 8.306a1.046 1.046 0 000 1.478l5.904 5.91c.228.228.536.33.834.302.27 0 .539-.101.744-.306l5.907-5.907a1.044 1.044 0 10-1.477-1.477l-5.22 5.22-5.216-5.22a1.043 1.043 0 00-1.476 0z"
+            fill={4278190080}
+            fillRule={0}
+            propList={
+              Array [
+                "fill",
+                "fillRule",
+              ]
+            }
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
   </View>
 </View>
 `;

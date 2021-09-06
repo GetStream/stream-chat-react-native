@@ -19,7 +19,7 @@ describe('MessageAvatar', () => {
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
-    const { getByTestId, getByText, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getByTestId, queryAllByTestId, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
         <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
       </ThemeProvider>,
@@ -27,8 +27,6 @@ describe('MessageAvatar', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-avatar')).toBeTruthy();
-      expect(getByTestId('avatar-text')).toBeTruthy();
-      expect(getByText(staticUser.name.charAt(0))).toBeTruthy();
     });
 
     rerender(
@@ -39,7 +37,6 @@ describe('MessageAvatar', () => {
 
     await waitFor(() => {
       expect(getByTestId('spacer')).toBeTruthy();
-      expect(queryAllByTestId('avatar-text')).toHaveLength(0);
       expect(queryAllByTestId('avatar-image')).toHaveLength(0);
     });
 
@@ -49,14 +46,18 @@ describe('MessageAvatar', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageAvatar alignment='left' groupStyles={['single']} message={staticMessage} />
+        <MessageAvatar
+          alignment='left'
+          groupStyles={['single']}
+          message={staticMessage}
+          showAvatar
+        />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
       expect(getByTestId('message-avatar')).toBeTruthy();
       expect(getByTestId('avatar-image')).toBeTruthy();
-      expect(queryAllByText(staticUser.name.charAt(0))).toHaveLength(0);
       expect(toJSON()).toMatchSnapshot();
     });
   });

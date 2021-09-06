@@ -8,6 +8,7 @@ import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
+import { MessageRepliesAvatars } from '../MessageRepliesAvatars';
 
 afterEach(cleanup);
 
@@ -27,6 +28,7 @@ describe('MessageReplies', () => {
             alignment='right'
             groupStyles={['bottom']}
             message={message}
+            MessageRepliesAvatars={MessageRepliesAvatars}
             openThread={onPressMock}
           />
         </ThemeProvider>
@@ -37,10 +39,10 @@ describe('MessageReplies', () => {
       expect(getByTestId('message-replies')).toBeTruthy();
       expect(getByTestId('message-replies-right')).toBeTruthy();
       expect(queryAllByTestId('message-replies-left')).toHaveLength(0);
-      expect(t).toHaveBeenCalledWith('{{ replyCount }} replies', {
+      expect(t).toHaveBeenCalledWith('{{ replyCount }} Thread Replies', {
         replyCount: message.reply_count,
       });
-      expect(getByText('{{ replyCount }} replies')).toBeTruthy();
+      expect(getByText('{{ replyCount }} Thread Replies')).toBeTruthy();
     });
 
     const message2 = generateMessage({
@@ -55,20 +57,22 @@ describe('MessageReplies', () => {
             alignment='left'
             groupStyles={['bottom']}
             message={message2}
-            openThread={onPressMock}
+            MessageRepliesAvatars={MessageRepliesAvatars}
+            onPress={onPressMock}
           />
         </ThemeProvider>
       </TranslationProvider>,
     );
 
     fireEvent.press(getByTestId('message-replies'));
+
     await waitFor(() => {
       expect(onPressMock).toHaveBeenCalled();
       expect(getByTestId('message-replies')).toBeTruthy();
       expect(getByTestId('message-replies-left')).toBeTruthy();
       expect(queryAllByTestId('message-replies-right')).toHaveLength(0);
-      expect(t).toHaveBeenCalledWith('1 reply');
-      expect(getByText('1 reply')).toBeTruthy();
+      expect(t).toHaveBeenCalledWith('1 Thread Reply');
+      expect(getByText('1 Thread Reply')).toBeTruthy();
       expect(toJSON()).toMatchSnapshot();
     });
   });
@@ -86,7 +90,7 @@ describe('MessageReplies', () => {
             alignment='right'
             groupStyles={['bottom']}
             message={message}
-            openThread={() => null}
+            onPress={() => null}
           />
         </ThemeProvider>
       </TranslationProvider>,
@@ -110,7 +114,7 @@ describe('MessageReplies', () => {
             alignment='right'
             groupStyles={['bottom']}
             message={message2}
-            openThread={() => null}
+            onPress={() => null}
             threadList
           />
         </ThemeProvider>
