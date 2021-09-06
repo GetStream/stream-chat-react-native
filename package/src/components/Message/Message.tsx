@@ -1114,7 +1114,7 @@ const MessageWithContext = <
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
       waitFor={doubleTapRef}
     >
-      <Animated.View>
+      <Animated.View testID='message-wrapper'>
         <TapGestureHandler
           enabled={!preventPress}
           numberOfTaps={2}

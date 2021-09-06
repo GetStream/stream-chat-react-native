@@ -1,4 +1,4 @@
-name: Check PR
+name: Lint & Unit Tests
 
 on:
   pull_request:
@@ -22,3 +22,5 @@ jobs:
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
         run: yarn lint
+      - name: Test
+        run: yarn test:unit

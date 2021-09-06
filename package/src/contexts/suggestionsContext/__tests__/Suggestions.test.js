@@ -5,7 +5,8 @@ import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { SuggestionsProvider, useSuggestionsContext } from '../SuggestionsContext';
 
 const SuggestionsContextConsumer = ({ fn }) => {
-  fn(useSuggestionsContext());
+  const value = useSuggestionsContext();
+  fn(value);
   return <View testID='children' />;
 };
 
@@ -38,8 +39,9 @@ describe('SuggestionsProvider', () => {
     await waitFor(() => {
       expect(context).toBeInstanceOf(Object);
       expect(context.closeSuggestions).toBeInstanceOf(Function);
+      expect(typeof context.componentType).toBe('string');
       expect(context.openSuggestions).toBeInstanceOf(Function);
-      expect(context.setInputBoxContainerRef).toBeInstanceOf(Function);
+      expect(typeof context.suggestionsViewActive).toBe('boolean');
       expect(context.updateSuggestions).toBeInstanceOf(Function);
     });
   });

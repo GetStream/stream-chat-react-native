@@ -55,7 +55,7 @@ const SendButtonWithContext = <
   return (
     <TouchableOpacity
       disabled={disabled}
-      onPress={sendMessage}
+      onPress={disabled ? () => null : sendMessage}
       style={[sendButton]}
       testID='send-button'
     >

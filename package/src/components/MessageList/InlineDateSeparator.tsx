@@ -48,7 +48,10 @@ export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }
     : new Date(tDate).toDateString();
 
   return (
-    <View style={[styles.container, { backgroundColor: overlay_dark }, container]}>
+    <View
+      style={[styles.container, { backgroundColor: overlay_dark }, container]}
+      testID='date-separator'
+    >
       <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
     </View>
   );
