@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -32,9 +32,12 @@ export const useConnectionRecovered = <
 }: Parameters) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
+  const refRefreshList = useRef(refreshList);
+  refRefreshList.current = refreshList;
+
   useEffect(() => {
     const handleEvent = () => {
-      refreshList();
+      refRefreshList.current();
       setForceUpdate((count) => count + 1);
     };
 
