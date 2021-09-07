@@ -4,5 +4,5 @@ export const STREAM_CHAT_CHANNELS_ORDER = 'STREAM_CHAT_CHANNELS_ORDER';
 export const STREAM_CHAT_SDK_VERSION = 'STREAM_CHAT_SDK_VERSION';
 export const STREAM_CHAT_CLIENT_VERSION = 'STREAM_CHAT_CLIENT_VERSION';
 
-export const CURRENT_SDK_VERSION = require('../package.json').version;
+export const CURRENT_SDK_VERSION = require('../../package.json').version;
 export const CURRENT_CLIENT_VERSION = require('stream-chat/package.json').version;
