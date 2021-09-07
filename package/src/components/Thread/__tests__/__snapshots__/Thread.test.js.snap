@@ -858,45 +858,7 @@ exports[`Thread should match thread snapshot 1`] = `
             "top": 0,
           }
         }
-      >
-        <View
-          style={
-            Array [
-              Object {
-                "alignItems": "center",
-                "alignSelf": "center",
-                "borderRadius": 8,
-                "height": 16,
-                "justifyContent": "center",
-                "marginTop": 8,
-                "paddingHorizontal": 8,
-              },
-              Object {
-                "backgroundColor": "#00000099",
-              },
-              Object {},
-            ]
-          }
-        >
-          <Text
-            style={
-              Array [
-                Object {
-                  "fontSize": 12,
-                  "textAlign": "center",
-                  "textAlignVertical": "center",
-                },
-                Object {
-                  "color": "#FFFFFF",
-                },
-                Object {},
-              ]
-            }
-          >
-            Sep 3
-          </Text>
-        </View>
-      </View>
+      />
       <View
         style={
           Array [
