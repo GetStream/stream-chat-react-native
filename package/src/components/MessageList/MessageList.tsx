@@ -349,8 +349,8 @@ const MessageListWithContext = <
   const [lastReceivedId, setLastReceivedId] = useState(getLastReceivedMessage(messageList)?.id);
   const [scrollToBottomButtonVisible, setScrollToBottomButtonVisible] = useState(false);
 
-  const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
-  const stickyHeaderDateRef = useRef(new Date());
+  const [stickyHeaderDate, setStickyHeaderDate] = useState<Date | undefined>();
+  const stickyHeaderDateRef = useRef<Date | undefined>();
   /**
    * channel.lastRead throws error if the channel is not initialized.
    */
@@ -396,7 +396,7 @@ const MessageListWithContext = <
         lastItem?.item?.created_at &&
         !lastItem.item.deleted_at &&
         typeof lastItem.item.created_at !== 'string' &&
-        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current.toDateString()
+        lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
       ) {
         stickyHeaderDateRef.current = lastItem.item.created_at;
         setStickyHeaderDate(lastItem.item.created_at);
@@ -819,11 +819,14 @@ const MessageListWithContext = <
   }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
 
   const stickyHeaderFormatDate =
-    stickyHeaderDate.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate = tDateTimeParser(stickyHeaderDate);
-  const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
-    ? tStickyHeaderDate.format(stickyHeaderFormatDate)
-    : new Date(tStickyHeaderDate).toDateString();
+    stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
+  const tStickyHeaderDate = stickyHeaderDate ? tDateTimeParser(stickyHeaderDate) : null;
+  const stickyHeaderDateToRender =
+    tStickyHeaderDate === null
+      ? null
+      : isDayOrMoment(tStickyHeaderDate)
+      ? tStickyHeaderDate.format(stickyHeaderFormatDate)
+      : new Date(tStickyHeaderDate).toDateString();
 
   const dismissImagePicker = () => {
     if (!hasMoved && selectedPicker) {
@@ -890,11 +893,12 @@ const MessageListWithContext = <
       {!loading && (
         <>
           <View style={styles.stickyHeader}>
-            {StickyHeader ? (
-              <StickyHeader dateString={stickyHeaderDateToRender} />
-            ) : messageListLengthAfterUpdate ? (
-              <DateHeader dateString={stickyHeaderDateToRender} />
-            ) : null}
+            {stickyHeaderDateToRender &&
+              (StickyHeader ? (
+                <StickyHeader dateString={stickyHeaderDateToRender} />
+              ) : messageListLengthAfterUpdate ? (
+                <DateHeader dateString={stickyHeaderDateToRender} />
+              ) : null)}
           </View>
           {!disableTypingIndicator && TypingIndicator && typingEventsEnabled !== false && (
             <TypingIndicatorContainer>
