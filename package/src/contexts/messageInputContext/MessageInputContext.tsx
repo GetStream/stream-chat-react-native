@@ -664,13 +664,21 @@ export const MessageInputProvider = <
         return;
       }
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        attachments.push({
-          asset_url: file.url,
-          file_size: file.file.size,
-          mime_type: file.file.type,
-          title: file.file.name,
-          type: 'file',
-        } as Attachment<At>);
+        if (file.file.type?.startsWith('image/')) {
+          attachments.push({
+            fallback: file.file.name,
+            image_url: file.url,
+            type: 'image',
+          } as Attachment<At>);
+        } else {
+          attachments.push({
+            asset_url: file.url,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'file',
+          } as Attachment<At>);
+        }
       }
     }
 
