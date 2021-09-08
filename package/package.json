@@ -77,7 +77,6 @@
     "i18next": "20.2.4",
     "lodash-es": "4.17.21",
     "metro-react-native-babel-preset": "0.66.0",
-    "mime-types": "2.1.30",
     "path": "0.12.7",
     "react-art": "^17.0.2",
     "react-native-markdown-package": "1.8.1",
