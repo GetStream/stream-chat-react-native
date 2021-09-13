@@ -1,5 +1,17 @@
 # Change Log
 
+### [0.0.34](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.33...SampleApp@v0.0.34) (2021-09-13)
+
+
+### Bug Fixes
+
+* delegate content type detection to backend for image/file uploads ([8de7d8d](https://github.com/GetStream/stream-chat-react-native/commit/8de7d8d22a3e6152185db3f86ce705af904e75c6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [0.0.33](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.32...SampleApp@v0.0.33) (2021-08-30)
 
 
