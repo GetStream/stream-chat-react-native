@@ -1,5 +1,14 @@
 # Change Log
 
+### [3.8.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.0...v3.8.1) (2021-09-13)
+
+
+### Bug Fixes
+
+* allow images attached through file picker to display in gallery view ([afd84a9](https://github.com/GetStream/stream-chat-react-native/commit/afd84a9d7536f2e47ce1e7888ca29c46a9f81e32))
+* delegate content type detection to backend for image/file uploads ([8de7d8d](https://github.com/GetStream/stream-chat-react-native/commit/8de7d8d22a3e6152185db3f86ce705af904e75c6))
+* share photo functionality ([41231a0](https://github.com/GetStream/stream-chat-react-native/commit/41231a0eee5e74a7063bdc6f901862c028e55880))
+
 ## [3.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.7.3...v3.8.0) (2021-08-30)
 
 
