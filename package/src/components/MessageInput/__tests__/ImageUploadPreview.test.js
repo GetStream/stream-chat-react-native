@@ -16,14 +16,14 @@ describe('ImageUploadPreview', () => {
       generateImageUploadPreview({ state: FileState.UPLOADING }),
     ];
     const removeImage = jest.fn();
-    const retryUpload = jest.fn();
+    const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -36,14 +36,14 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(imageUploads.length);
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
       expect(removeImage).toHaveBeenCalledTimes(0);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     fireEvent.press(getAllByTestId('remove-image-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeImage).toHaveBeenCalledTimes(1);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     rerender(
@@ -54,7 +54,7 @@ describe('ImageUploadPreview', () => {
             id: `${index}`,
           }))}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -73,14 +73,14 @@ describe('ImageUploadPreview', () => {
       generateImageUploadPreview({ state: FileState.UPLOADED }),
     ];
     const removeImage = jest.fn();
-    const retryUpload = jest.fn();
+    const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -93,14 +93,14 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
       expect(removeImage).toHaveBeenCalledTimes(0);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     fireEvent.press(getAllByTestId('remove-image-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeImage).toHaveBeenCalledTimes(1);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     rerender(
@@ -111,7 +111,7 @@ describe('ImageUploadPreview', () => {
             id: `${index}`,
           }))}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -130,14 +130,14 @@ describe('ImageUploadPreview', () => {
       generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
     ];
     const removeImage = jest.fn();
-    const retryUpload = jest.fn();
+    const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -150,21 +150,21 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(imageUploads.length);
       expect(removeImage).toHaveBeenCalledTimes(0);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     fireEvent.press(getAllByTestId('remove-image-upload-preview')[0]);
 
     await waitFor(() => {
       expect(removeImage).toHaveBeenCalledTimes(1);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
 
     await waitFor(() => {
       expect(removeImage).toHaveBeenCalledTimes(1);
-      expect(retryUpload).toHaveBeenCalledTimes(1);
+      expect(uploadImage).toHaveBeenCalledTimes(1);
     });
 
     rerender(
@@ -175,7 +175,7 @@ describe('ImageUploadPreview', () => {
             id: `${index}`,
           }))}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -194,14 +194,14 @@ describe('ImageUploadPreview', () => {
       generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
     ];
     const removeImage = jest.fn();
-    const retryUpload = jest.fn();
+    const uploadImage = jest.fn();
 
     const { queryAllByTestId, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );
@@ -214,7 +214,7 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(1);
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
       expect(removeImage).toHaveBeenCalledTimes(0);
-      expect(retryUpload).toHaveBeenCalledTimes(0);
+      expect(uploadImage).toHaveBeenCalledTimes(0);
     });
 
     rerender(
@@ -225,7 +225,7 @@ describe('ImageUploadPreview', () => {
             id: `${index}`,
           }))}
           removeImage={removeImage}
-          retryUpload={retryUpload}
+          uploadImage={uploadImage}
         />
       </ThemeProvider>,
     );

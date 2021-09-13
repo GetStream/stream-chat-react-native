@@ -10,6 +10,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
         "justifyContent": "center",
         "marginBottom": 10,
       },
+      undefined,
       Object {},
     ]
   }
@@ -23,7 +24,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
           "height": 0.5,
         },
         Object {
-          "backgroundColor": "#EBEBEB",
+          "backgroundColor": "#ECEBEB",
         },
         Object {},
       ]
@@ -44,10 +45,12 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "#00000080",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",
+          },
+          Object {
+            "color": "#7A7A7A",
           },
           Object {},
         ]
@@ -59,10 +62,12 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "#00000080",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",
+          },
+          Object {
+            "color": "#7A7A7A",
           },
           Object {},
         ]
@@ -79,7 +84,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
           "height": 0.5,
         },
         Object {
-          "backgroundColor": "#EBEBEB",
+          "backgroundColor": "#ECEBEB",
         },
         Object {},
       ]

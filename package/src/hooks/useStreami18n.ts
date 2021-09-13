@@ -30,7 +30,7 @@ export const useStreami18n = ({
     });
 
     setLoadingTranslators(false);
-  }, [i18nInstanceExists]);
+  }, [i18nInstanceExists, i18nInstance]);
 
   return loadingTranslators;
 };

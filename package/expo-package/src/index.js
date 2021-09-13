@@ -123,7 +123,7 @@ registerNativeHandlers({
   },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
-      const path = FileSystem.documentDirectory + fileName;
+      const path = FileSystem.cacheDirectory + encodeURIComponent(fileName);
       const downloadedImage = await FileSystem.downloadAsync(fromUrl, path);
       return downloadedImage.uri;
     } catch (error) {

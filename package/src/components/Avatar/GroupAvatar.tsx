@@ -95,7 +95,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
         imageError
           ? url
           : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size / 2)}`),
-      ).catch(() => {
+      )?.catch(() => {
         // do nothing, not a big deal that prefetch failed
       });
       if (index < 2) {

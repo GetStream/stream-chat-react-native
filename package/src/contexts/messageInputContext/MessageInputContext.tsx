@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import uniq from 'lodash/uniq';
-import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
@@ -55,6 +54,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+
+const MIME_TYPE_OCTET_STREAM = 'application/octet-stream';
 
 export type FileUpload = {
   file: {
@@ -569,20 +570,14 @@ export const MessageInputProvider = <
     });
     if (!result.cancelled && result.docs) {
       result.docs.forEach((doc) => {
-        const mimeType = lookup(doc.name);
-
-        if (mimeType && mimeType?.startsWith('image/')) {
-          /**
-           * TODO: The current tight coupling of images to the image
-           * picker does not allow images picked from the file picker
-           * to be rendered in a preview via the uploadNewImage call.
-           * This should be updated alongside allowing image a file
-           * uploads together.
-           */
-          uploadNewFile(doc);
-        } else {
-          uploadNewFile(doc);
-        }
+        /**
+         * TODO: The current tight coupling of images to the image
+         * picker does not allow images picked from the file picker
+         * to be rendered in a preview via the uploadNewImage call.
+         * This should be updated alongside allowing image a file
+         * uploads together.
+         */
+        uploadNewFile(doc);
       });
     }
   };
@@ -664,13 +659,21 @@ export const MessageInputProvider = <
         return;
       }
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
-        attachments.push({
-          asset_url: file.url,
-          file_size: file.file.size,
-          mime_type: file.file.type,
-          title: file.file.name,
-          type: 'file',
-        } as Attachment<At>);
+        if (file.file.type?.startsWith('image/')) {
+          attachments.push({
+            fallback: file.file.name,
+            image_url: file.url,
+            type: 'image',
+          } as Attachment<At>);
+        } else {
+          attachments.push({
+            asset_url: file.url,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'file',
+          } as Attachment<At>);
+        }
       }
     }
 
@@ -823,7 +826,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, file.type);
+        response = await channel.sendFile(file.uri, file.name, MIME_TYPE_OCTET_STREAM);
       }
     } catch (error) {
       console.warn(error);
@@ -903,14 +906,11 @@ export const MessageInputProvider = <
             width: file.width,
           }));
 
-      const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
-      const contentType = lookup(filename) || 'multipart/form-data';
-
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
+          channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -937,7 +937,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, contentType);
+          response = await channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM);
         }
       }
 
@@ -983,9 +983,8 @@ export const MessageInputProvider = <
     uri?: string;
   }) => {
     const id = generateRandomId();
-    const mimeType = lookup(file.name);
     const newFile = {
-      file: { ...file, type: mimeType || file?.type },
+      file: { ...file, type: MIME_TYPE_OCTET_STREAM },
       id,
       state: FileState.UPLOADING,
     };
