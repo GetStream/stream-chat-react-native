@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.8.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.1...v3.8.2) (2021-09-14)
+
+
+### Bug Fixes
+
+* fixed markdown issues with lists ([e40777a](https://github.com/GetStream/stream-chat-react-native/commit/e40777a7dedeb8f89ba8f03e295d06b9c7df610f))
+
 ### [3.8.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.0...v3.8.1) (2021-09-13)
 
 
