@@ -34,6 +34,13 @@ const defaultMarkdownStyles: MarkdownStyle = {
     padding: 3,
     paddingHorizontal: 5,
   },
+  list: {
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  listItemText: {
+    flex: 0,
+  },
   mentions: {
     fontWeight: '700',
   },
