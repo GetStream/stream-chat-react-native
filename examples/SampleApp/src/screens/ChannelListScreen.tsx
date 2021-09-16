@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
-
+import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
@@ -76,7 +76,17 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<any>>(null);
+  const scrollRef = useRef<FlatList<
+    Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalEventType,
+      LocalReactionType,
+      LocalUserType
+    >
+  > | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -108,7 +118,19 @@ export const ChannelListScreen: React.FC = () => {
 
   if (!chatClient) return null;
 
-  const setScrollRef = (ref: React.RefObject<FlatList<any>>) => {
+  const setScrollRef = (
+    ref: React.RefObject<FlatList<
+      Channel<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalEventType,
+        LocalReactionType,
+        LocalUserType
+      >
+    > | null>,
+  ) => {
     scrollRef.current = ref;
   };
 
@@ -173,10 +195,10 @@ export const ChannelListScreen: React.FC = () => {
             loading={loading}
             loadMore={loadMore}
             messages={messages}
+            ref={scrollRef}
             refreshing={refreshing}
             refreshList={refreshList}
             showResultCount
-            scrollRef={scrollRef}
           />
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
@@ -208,8 +230,8 @@ export const ChannelListScreen: React.FC = () => {
               }}
               options={options}
               Preview={ChannelPreview}
-              sort={sort}
               setFlatListRef={setScrollRef}
+              sort={sort}
             />
           </View>
         </View>

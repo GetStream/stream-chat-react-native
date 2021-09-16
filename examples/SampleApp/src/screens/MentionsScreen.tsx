@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { AtMentions, useTheme } from 'stream-chat-react-native';
+import { MessageResponse } from 'stream-chat';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
@@ -11,6 +12,14 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { AppContext } from '../context/AppContext';
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType,
+} from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -62,7 +71,16 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList<any>>(null);
+  const scrollRef = useRef<FlatList<
+    MessageResponse<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >
+  > | null>(null);
 
   useScrollToTop(scrollRef);
 
@@ -84,9 +102,9 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
         loading={loading}
         loadMore={loadMore}
         messages={messages}
+        ref={scrollRef}
         refreshing={refreshing}
         refreshList={refreshList}
-        scrollRef={scrollRef}
       />
     </View>
   );
