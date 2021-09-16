@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.8.3](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.2...v3.8.3) (2021-09-16)
+
+
+### Bug Fixes
+
+* type definition directory structure ([9a4d2c3](https://github.com/GetStream/stream-chat-react-native/commit/9a4d2c30fef18222f25396e7453686d503a69462))
+
 ### [3.8.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.1...v3.8.2) (2021-09-14)
 
 

@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "3.8.2",
+  "version": "3.8.3",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
