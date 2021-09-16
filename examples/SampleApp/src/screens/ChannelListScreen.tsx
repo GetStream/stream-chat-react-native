@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
 
@@ -76,7 +76,7 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<FlatList<any>>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,6 +107,10 @@ export const ChannelListScreen: React.FC = () => {
   );
 
   if (!chatClient) return null;
+
+  const setScrollRef = (ref: React.RefObject<FlatList<any>>) => {
+    scrollRef.current = ref;
+  };
 
   return (
     <View
@@ -205,7 +209,7 @@ export const ChannelListScreen: React.FC = () => {
               options={options}
               Preview={ChannelPreview}
               sort={sort}
-              setFlatListRef={(ref) => (scrollRef.current = ref)}
+              setFlatListRef={setScrollRef}
             />
           </View>
         </View>

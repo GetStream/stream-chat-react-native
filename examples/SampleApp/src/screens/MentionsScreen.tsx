@@ -62,7 +62,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList>(null);
+  const scrollRef = useRef<FlatList<any>>(null);
 
   useScrollToTop(scrollRef);
 

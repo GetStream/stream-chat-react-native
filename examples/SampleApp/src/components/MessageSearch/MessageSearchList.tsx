@@ -72,7 +72,7 @@ export type MessageSearchListProps = {
   refreshing: boolean;
   refreshList: () => void;
   showResultCount?: boolean;
-  scrollRef?: React.Ref<FlatList>;
+  scrollRef: React.Ref<FlatList<any>>;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = ({
   EmptySearchIndicator,
