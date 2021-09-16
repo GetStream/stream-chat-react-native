@@ -72,6 +72,7 @@ export type MessageSearchListProps = {
   refreshing: boolean;
   refreshList: () => void;
   showResultCount?: boolean;
+  scrollRef?: React.Ref<FlatList>;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = ({
   EmptySearchIndicator,
@@ -81,6 +82,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
   refreshing,
   refreshList,
   showResultCount = false,
+  scrollRef,
 }) => {
   const {
     theme: {
@@ -124,6 +126,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
         onEndReached={loadMore}
         onRefresh={refreshList}
         refreshing={refreshing}
+        ref={scrollRef}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
