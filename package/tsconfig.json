@@ -30,7 +30,7 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["./src/**/*", "__mocks__"],
+  "include": ["./src/**/*"],
   "exclude": [
     "./src/components/docs/*",
     "./src/emoji-data/*.js",
