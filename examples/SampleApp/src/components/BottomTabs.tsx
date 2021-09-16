@@ -80,6 +80,11 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
         const isFocused = state.index === index;
 
         const onPress = () => {
+          navigation.emit({
+            canPreventDefault: true,
+            target: route.key,
+            type: 'tabPress',
+          });
           if (!isFocused) {
             navigation.navigate(route.name);
           }
