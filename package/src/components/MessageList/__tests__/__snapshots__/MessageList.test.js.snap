@@ -286,7 +286,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         ]
                       }
                     >
-                      2:50 PM
+                      8:20 PM
                     </Text>
                   </View>
                 </View>
@@ -583,7 +583,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         ]
                       }
                     >
-                      2:49 PM
+                      8:19 PM
                     </Text>
                   </View>
                 </View>
@@ -842,7 +842,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         ]
                       }
                     >
-                      2:48 PM
+                      8:18 PM
                     </Text>
                   </View>
                 </View>

@@ -286,7 +286,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         ]
                       }
                     >
-                      2:50 PM
+                      8:20 PM
                     </Text>
                   </View>
                 </View>
@@ -545,7 +545,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         ]
                       }
                     >
-                      2:50 PM
+                      8:20 PM
                     </Text>
                   </View>
                 </View>
@@ -804,7 +804,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         ]
                       }
                     >
-                      2:50 PM
+                      8:20 PM
                     </Text>
                   </View>
                 </View>
