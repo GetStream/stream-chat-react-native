@@ -34,6 +34,10 @@ const styles = StyleSheet.create({
   dismiss: {
     borderRadius: 24,
     height: 24,
+    width: 24,
+    position: 'absolute',
+    right: 14,
+    top: 4,
   },
   fileContainer: {
     borderRadius: 12,
@@ -113,72 +117,74 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => (
-    <UploadProgressIndicator
-      action={() => {
-        uploadFile({ newFile: item });
-      }}
-      active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
-      style={styles.overlay}
-      type={
-        item.state === FileState.UPLOADING
-          ? ProgressIndicatorTypes.IN_PROGRESS
-          : item.state === FileState.UPLOAD_FAILED
-          ? ProgressIndicatorTypes.RETRY
-          : undefined
-      }
-    >
-      <View
-        style={[
-          styles.fileContainer,
-          index === fileUploads.length - 1
-            ? {
-                marginBottom: 0,
-              }
-            : {},
-          {
-            borderColor: grey_whisper,
-            width: flatListWidth - 16,
-          },
-          fileContainer,
-        ]}
+    <View>
+      <UploadProgressIndicator
+        action={() => {
+          uploadFile({ newFile: item });
+        }}
+        active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
+        style={styles.overlay}
+        type={
+          item.state === FileState.UPLOADING
+            ? ProgressIndicatorTypes.IN_PROGRESS
+            : item.state === FileState.UPLOAD_FAILED
+            ? ProgressIndicatorTypes.RETRY
+            : undefined
+        }
       >
-        <View style={[styles.fileContentContainer, fileContentContainer]}>
-          <FileAttachmentIcon mimeType={item.file.type} />
-          <View style={[styles.fileTextContainer, fileTextContainer]}>
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.filenameText,
-                {
-                  color: black,
-                  width:
-                    flatListWidth -
-                    16 - // 16 = horizontal padding
-                    40 - // 40 = file icon size
-                    24 - // 24 = close icon size
-                    24, // 24 = internal padding
-                },
-                filenameText,
-              ]}
-            >
-              {item.file.name || ''}
-            </Text>
-            <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-              {getFileSizeDisplayText(item.file.size)}
-            </Text>
+        <View
+          style={[
+            styles.fileContainer,
+            index === fileUploads.length - 1
+              ? {
+                  marginBottom: 0,
+                }
+              : {},
+            {
+              borderColor: grey_whisper,
+              width: flatListWidth - 16,
+            },
+            fileContainer,
+          ]}
+        >
+          <View style={[styles.fileContentContainer, fileContentContainer]}>
+            <FileAttachmentIcon mimeType={item.file.type} />
+            <View style={[styles.fileTextContainer, fileTextContainer]}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.filenameText,
+                  {
+                    color: black,
+                    width:
+                      flatListWidth -
+                      16 - // 16 = horizontal padding
+                      40 - // 40 = file icon size
+                      24 - // 24 = close icon size
+                      24, // 24 = internal padding
+                  },
+                  filenameText,
+                ]}
+              >
+                {item.file.name || ''}
+              </Text>
+              <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
+                {getFileSizeDisplayText(item.file.size)}
+              </Text>
+            </View>
           </View>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            removeFile(item.id);
-          }}
-          style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
-          testID='remove-file-upload-preview'
-        >
-          <Close />
-        </TouchableOpacity>
-      </View>
-    </UploadProgressIndicator>
+      </UploadProgressIndicator>
+      <TouchableOpacity
+        onPress={() => {
+          removeFile(item.id);
+        }}
+        style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
+        testID='remove-file-upload-preview'
+      >
+        <Close />
+      </TouchableOpacity>
+    </View>
   );
 
   const fileUploadsLength = fileUploads.length;
