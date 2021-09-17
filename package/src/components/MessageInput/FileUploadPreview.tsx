@@ -117,7 +117,7 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => (
-    <View>
+    <>
       <UploadProgressIndicator
         action={() => {
           uploadFile({ newFile: item });
@@ -184,7 +184,7 @@ const FileUploadPreviewWithContext = <
       >
         <Close />
       </TouchableOpacity>
-    </View>
+    </>
   );
 
   const fileUploadsLength = fileUploads.length;
