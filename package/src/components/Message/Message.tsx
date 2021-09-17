@@ -666,7 +666,6 @@ const MessageWithContext = <
     error = message.type === 'error' || message.status === 'failed',
   ) => {
     await dismissKeyboard();
-
     const blockUser = blockUserProp
       ? blockUserProp(message)
       : blockUserProp === null
@@ -920,6 +919,13 @@ const MessageWithContext = <
             threadReply,
           });
 
+    let messageActionsWithoutCopyAction;
+    if (!message.text) {
+      messageActionsWithoutCopyAction = messageActions.filter(
+        (action) => action.title !== 'Copy Message',
+      );
+    }
+
     setData({
       alignment,
       clientId: client.userID,
@@ -928,7 +934,9 @@ const MessageWithContext = <
       handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageActions: !message.text
+        ? messageActionsWithoutCopyAction
+        : (messageActions?.filter(Boolean) as MessageAction[] | undefined),
       messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
