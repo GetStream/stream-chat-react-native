@@ -8,12 +8,12 @@ export const generateMessage = (options = {}) => {
 
   return {
     attachments: [],
-    created_at: timestamp.toString(),
+    created_at: options.creted_at || timestamp.toString(),
     html: '<p>regular</p>',
     id: uuidv4(),
     text: uuidv4(),
     type: 'regular',
-    updated_at: timestamp.toString(),
+    updated_at: options.updated_at || timestamp.toString(),
     user: generateUser(),
     ...options,
   };
