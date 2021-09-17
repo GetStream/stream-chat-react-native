@@ -666,6 +666,15 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 | - | - |
 | ref	| ref of the TextInput |
 
+### stateUpdateThrottleInterval
+
+Throttling interval (in milliseconds) for react state update for channel. By default state updates are throttled at 500ms, but for high concurrency
+application this prop should be adjusted to 1000ms to avoid exccesive overload on JS thread.
+
+| Type | Default |
+| - | - |
+| number | 500 |
+
 ### supportedReactions
 
 <SupportedReactions />
