@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
   dismiss: {
     borderRadius: 24,
     height: 24,
-    width: 24,
     position: 'absolute',
     right: 14,
     top: 4,
+    width: 24,
   },
   fileContainer: {
     borderRadius: 12,
