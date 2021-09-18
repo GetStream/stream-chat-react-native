@@ -200,68 +200,6 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -320,6 +258,72 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               />
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -504,69 +508,73 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
+          </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
                 Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
                   "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
                   Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
+                    "fill",
+                    "fillRule",
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -753,68 +761,6 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -919,6 +865,72 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               </RNSVGSvgView>
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
     </View>
@@ -1126,68 +1138,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -1292,6 +1242,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               </RNSVGSvgView>
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -1476,68 +1492,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -1642,6 +1596,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               </RNSVGSvgView>
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -1828,68 +1848,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -1994,6 +1952,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               </RNSVGSvgView>
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
     </View>
@@ -2201,69 +2225,73 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
+          </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
                 Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
                   "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
                   Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
+                    "fill",
+                    "fillRule",
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -2448,69 +2476,73 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
+          </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
                 Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
                   "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
                   Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
+                    "fill",
+                    "fillRule",
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -2697,69 +2729,73 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
+          </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
                 Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
                   "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
                   Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
+                    "fill",
+                    "fillRule",
                   ]
                 }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
-          </View>
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
     </View>
@@ -2967,68 +3003,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -3087,6 +3061,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -3271,68 +3311,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -3391,6 +3369,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
       <View>
@@ -3577,68 +3621,6 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                 />
               </View>
             </View>
-            <View
-              accessible={true}
-              focusable={true}
-              onClick={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={
-                Object {
-                  "backgroundColor": "#00000099",
-                  "borderRadius": 24,
-                  "height": 24,
-                  "opacity": 1,
-                }
-              }
-              testID="remove-file-upload-preview"
-            >
-              <RNSVGSvgView
-                align="xMidYMid"
-                bbHeight={24}
-                bbWidth={24}
-                focusable={false}
-                height={24}
-                meetOrSlice={0}
-                minX={0}
-                minY={0}
-                style={
-                  Array [
-                    Object {
-                      "backgroundColor": "transparent",
-                      "borderWidth": 0,
-                    },
-                    Object {
-                      "flex": 0,
-                      "height": 24,
-                      "width": 24,
-                    },
-                  ]
-                }
-                vbHeight={24}
-                vbWidth={24}
-                width={24}
-              >
-                <RNSVGGroup>
-                  <RNSVGPath
-                    clipRule={0}
-                    d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                    fill={4278190080}
-                    fillRule={0}
-                    propList={
-                      Array [
-                        "fill",
-                        "fillRule",
-                      ]
-                    }
-                  />
-                </RNSVGGroup>
-              </RNSVGSvgView>
-            </View>
           </View>
           <View
             style={
@@ -3697,6 +3679,72 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
             </View>
           </View>
+        </View>
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "backgroundColor": "#00000099",
+              "borderRadius": 24,
+              "height": 24,
+              "opacity": 1,
+              "position": "absolute",
+              "right": 14,
+              "top": 4,
+              "width": 24,
+            }
+          }
+          testID="remove-file-upload-preview"
+        >
+          <RNSVGSvgView
+            align="xMidYMid"
+            bbHeight={24}
+            bbWidth={24}
+            focusable={false}
+            height={24}
+            meetOrSlice={0}
+            minX={0}
+            minY={0}
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "transparent",
+                  "borderWidth": 0,
+                },
+                Object {
+                  "flex": 0,
+                  "height": 24,
+                  "width": 24,
+                },
+              ]
+            }
+            vbHeight={24}
+            vbWidth={24}
+            width={24}
+          >
+            <RNSVGGroup>
+              <RNSVGPath
+                clipRule={0}
+                d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
+                fill={4278190080}
+                fillRule={0}
+                propList={
+                  Array [
+                    "fill",
+                    "fillRule",
+                  ]
+                }
+              />
+            </RNSVGGroup>
+          </RNSVGSvgView>
         </View>
       </View>
     </View>
