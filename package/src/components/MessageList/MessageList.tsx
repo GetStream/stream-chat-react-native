@@ -131,6 +131,7 @@ type MessageListPropsWithContext<
     | 'channel'
     | 'disabled'
     | 'EmptyStateIndicator'
+    | 'hideStickyDateHeader'
     | 'loadChannelAtMessage'
     | 'loading'
     | 'LoadingIndicator'
@@ -264,6 +265,7 @@ const MessageListWithContext = <
     FlatList,
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
+    hideStickyDateHeader,
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
@@ -410,7 +412,7 @@ const MessageListWithContext = <
    */
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
-      if (viewableItems) {
+      if (viewableItems && !hideStickyDateHeader) {
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
       setInitialScrollIfNeeded();
@@ -820,9 +822,10 @@ const MessageListWithContext = <
 
   const stickyHeaderFormatDate =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate = stickyHeaderDate ? tDateTimeParser(stickyHeaderDate) : null;
+  const tStickyHeaderDate =
+    stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
   const stickyHeaderDateToRender =
-    tStickyHeaderDate === null
+    tStickyHeaderDate === null || hideStickyDateHeader
       ? null
       : isDayOrMoment(tStickyHeaderDate)
       ? tStickyHeaderDate.format(stickyHeaderFormatDate)
@@ -944,6 +947,7 @@ export const MessageList = <
     disabled,
     EmptyStateIndicator,
     error,
+    hideStickyDateHeader,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -989,6 +993,7 @@ export const MessageList = <
         EmptyStateIndicator,
         error,
         FlatList,
+        hideStickyDateHeader,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
