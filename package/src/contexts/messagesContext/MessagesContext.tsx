@@ -97,6 +97,7 @@ export type MessagesContextValue<
   DateHeader: React.ComponentType<DateHeaderProps>;
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
+  enableMessageGroupingByUser: boolean;
   /**
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)

@@ -943,6 +943,7 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     error,
     loadChannelAtMessage,
     loading,
@@ -987,6 +988,7 @@ export const MessageList = <
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
+        enableMessageGroupingByUser,
         error,
         FlatList,
         initialScrollToFirstUnreadMessage,
@@ -1021,6 +1023,7 @@ export const MessageList = <
         TypingIndicatorContainer,
       }}
       {...props}
+      noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
 };

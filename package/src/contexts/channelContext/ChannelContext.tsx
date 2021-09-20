@@ -164,6 +164,7 @@ export type ChannelContextValue<
    */
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
+  enableMessageGroupingByUser?: boolean;
   lastRead?: Date;
   /**
    * Maximum time in milliseconds that should occur between messages
