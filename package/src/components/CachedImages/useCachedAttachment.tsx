@@ -21,7 +21,7 @@ export const useCachedAttachment = (config: {
   const mountedState = useRef(true);
   // No need to use the returned value once we are using it to trigger a rerender and
   // force images to load
-  useNetworkState(mountedState);
+  const lastOnlineStatus = useNetworkState(mountedState);
   useEffect(
     () => () => {
       mountedState.current = false;
@@ -75,7 +75,7 @@ export const useCachedAttachment = (config: {
 
   useEffect(() => {
     setCachedSourceIfExists();
-  }, []);
+  }, [lastOnlineStatus]);
 
   return cachedSource;
 };

@@ -16,9 +16,7 @@ export const useCachedAvatar = (
 ) => {
   // Stores when component gets unmounted so we can avoid calling setState after image promise resolves
   const mountedState = useRef(true);
-  // No need to use the returned value once we are using it to trigger a rerender and
-  // force images to load
-  useNetworkState(mountedState);
+  const lastOnlineStatus = useNetworkState(mountedState);
   useEffect(
     () => () => {
       mountedState.current = false;
@@ -64,7 +62,7 @@ export const useCachedAvatar = (
 
   useEffect(() => {
     setCachedSourceIfExists();
-  }, []);
+  }, [lastOnlineStatus]);
 
   return cachedSource;
 };
