@@ -21,7 +21,7 @@ export const ChannelListFooterLoadingIndicator: React.FC = () => {
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, container]} testID='channel-list-footer-loading-indicator'>
       <Spinner />
     </View>
   );

@@ -3,9 +3,9 @@ name: sample-distribution
 on:
   push:
     branches:
-      - develop
-    paths:
-      - examples/SampleApp
+      - offline-mode
+    # paths:
+    #   - examples/SampleApp
 jobs:
   build_and_deploy_ios_testflight_qa:
     runs-on: [macos-latest]
@@ -19,11 +19,10 @@ jobs:
           bundle update --bundler
       - name: RN setup
         run: |
+          yarn && yarn bootstrap-ci;
+          cd package/native-package
           yarn;
-          cd native-package
-          yarn;
-          cd ../examples/SampleApp
-          yarn;
+          cd ../../examples/SampleApp
           cd ios
           pod install
       - name: Build and release Testflight QA
@@ -47,10 +46,8 @@ jobs:
       - name: RN setup
         run: |
           yarn add global react-native-cli;
-          yarn;
-          cd native-package
-          yarn;
-          cd ../examples/SampleApp
+          yarn && yarn bootstrap-ci;
+          cd package/native-package
           yarn;
       - name: Build
         run: |

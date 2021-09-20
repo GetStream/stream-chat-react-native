@@ -3,30 +3,6 @@
   "runnerConfig": "e2e/config.json",
   "skipLegacyWorkersInjection": true,
   "apps": {
-    "ios.native.debug": {
-      "name": "iOS NativeMessaging Debug",
-      "type": "ios.app",
-      "binaryPath": "examples/NativeMessaging/ios/build/Build/Products/Debug-iphonesimulator/NativeMessaging.app",
-      "build": "cd examples/NativeMessaging && xcodebuild -workspace ios/NativeMessaging.xcworkspace -scheme NativeMessaging -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build"
-    },
-    "ios.native.release": {
-      "name": "iOS NativeMessaging Release",
-      "type": "ios.app",
-      "binaryPath": "examples/NativeMessaging/ios/build/Build/Products/Release-iphonesimulator/NativeMessaging.app",
-      "build": "cd examples/NativeMessaging && xcodebuild -workspace ios/NativeMessaging.xcworkspace -scheme NativeMessaging -configuration Release -sdk iphonesimulator -derivedDataPath ios/build"
-    },
-    "android.native.debug": {
-      "name": "Android NativeMessaging Debug",
-      "type": "android.apk",
-      "binaryPath": "examples/NativeMessaging/android/app/build/outputs/apk/debug/app-debug.apk",
-      "build": "cd examples/NativeMessaging/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug"
-    },
-    "android.native.release": {
-      "name": "Android NativeMessaging Release",
-      "type": "android.apk",
-      "binaryPath": "examples/NativeMessaging/android/app/build/outputs/apk/release/app-release.apk",
-      "build": "cd examples/NativeMessaging/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release"
-    },
     "ios.sample.debug": {
       "name": "iOS SampleApp Debug",
       "type": "ios.app",
@@ -42,8 +18,8 @@
     "android.sample.debug": {
       "name": "Android SampleApp Debug",
       "type": "android.apk",
-      "binaryPath": "examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk",
-      "build": "cd examples/SampleApp/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=debug"
+      "binaryPath": "examples/SampleApp/android/app/build/outputs/apk/debug/app-debug.apk",
+      "build": "cd examples/SampleApp/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug"
     },
     "android.sample.release": {
       "name": "Android SampleApp Release",
@@ -62,27 +38,11 @@
     "emulator": {
       "type": "android.emulator",
       "device": {
-        "avdName": "Pixel4"
+        "avdName": "Pixel_29_AOSP"
       }
     }
   },
   "configurations": {
-    "ios.native.debug": {
-      "device": "simulator",
-      "app": "ios.native.debug"
-    },
-    "ios.native.release": {
-      "device": "simulator",
-      "app": "ios.native.release"
-    },
-    "android.native.debug": {
-      "device": "emulator",
-      "app": "android.native.debug"
-    },
-    "android.native.release": {
-      "device": "emulator",
-      "app": "android.native.release"
-    },
     "ios.sample.debug": {
       "device": "simulator",
       "app": "ios.sample.debug"

@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  ImageProps,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ImageProps, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
 import {
   ImageGalleryContextValue,
@@ -41,18 +35,24 @@ import type {
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {
+    channelId: string | undefined;
     height: number | string;
+    messageId: string | undefined;
     uri: string;
   }
 > = (props) => {
-  const { height, uri, ...rest } = props;
+  const { channelId, height, messageId, uri, ...rest } = props;
 
   const [error, setError] = useState(false);
 
   return (
-    <Image
+    <CachedAttachmentImage
       key={uri}
       {...rest}
+      cacheConfig={{
+        channelId,
+        messageId,
+      }}
       onError={() => setError(true)}
       source={{
         uri: uri.includes('&h=%2A')
@@ -112,6 +112,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+    channelId: string | undefined;
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
@@ -131,6 +132,7 @@ const GalleryWithContext = <
   const {
     additionalTouchableProps,
     alignment,
+    channelId,
     groupStyles,
     hasThreadReplies,
     images,
@@ -264,7 +266,9 @@ const GalleryWithContext = <
                 {...additionalTouchableProps}
               >
                 <MemoizedGalleryImage
+                  channelId={channelId}
                   height={height}
+                  messageId={messageId}
                   resizeMode='cover'
                   style={[
                     styles.flex,
@@ -451,6 +455,7 @@ export const Gallery = <
       {...{
         additionalTouchableProps,
         alignment,
+        channelId: message.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         images,

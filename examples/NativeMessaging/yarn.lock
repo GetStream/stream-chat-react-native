@@ -6725,6 +6725,21 @@ stream-chat-react-native-core@3.8.0:
   version "0.0.0"
   uid ""
 
+stream-chat@4.0.0-offline-caching.2:
+  version "4.0.0-offline-caching.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-4.0.0-offline-caching.2.tgz#cb601fc9bde6a8f1f1aa32bad47bfca3d68f895f"
+  integrity sha512-caZKmiwNncvJqjYO6EixLlo6UslrgfLnIVgWGrsh8N409I1JEAWvaQaxapnSMxTcHqAaypcA+8RenfAKCXgDaQ==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
 stream-chat@~3.13.1:
   version "3.13.1"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.13.1.tgz#1692246dd74968dee7596a6a8c1e1a02656bb634"

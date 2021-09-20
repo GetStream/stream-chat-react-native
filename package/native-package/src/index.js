@@ -95,8 +95,11 @@ registerNativeHandlers({
       let unsubscribe;
       // For NetInfo >= 3.x.x
       if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
-          listener(isConnected);
+        unsubscribe = NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
+          // Initialize with truthy value when internetReachable is still loading
+          // if it resolves to false, listener is triggered with false value and network
+          // status is updated
+          listener(isInternetReachable === null ? isConnected : isConnected && isInternetReachable);
         });
         return unsubscribe;
       } else {

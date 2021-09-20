@@ -8,6 +8,7 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -48,13 +49,15 @@ describe('MessageList', () => {
     channel.initialized = true;
 
     const { getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     const newMessage = generateMessage({ user: user2 });
@@ -83,19 +86,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -118,19 +123,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
@@ -155,13 +162,15 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -182,19 +191,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: false }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: false }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -223,13 +234,15 @@ describe('MessageList', () => {
     await channel.query();
 
     const { queryAllByTestId, toJSON } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {

@@ -91,6 +91,7 @@ export const MessageRepliesAvatars = <
           }
         >
           <Avatar
+            channelId={message.cid}
             containerStyle={[
               i === 1 && {
                 borderColor: white_snow,

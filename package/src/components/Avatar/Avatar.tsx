@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  ImageStyle,
-  PixelRatio,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { ImageStyle, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
+
+import { CachedAvatar } from '../CachedImages/CachedAvatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -39,6 +33,7 @@ const getInitials = (fullName: string) =>
     .join(' ');
 
 export type AvatarProps = {
+  channelId: string | undefined;
   /** size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -58,6 +53,7 @@ export type AvatarProps = {
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
+    channelId,
     containerStyle,
     image: imageProp,
     imageStyle,
@@ -91,8 +87,9 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
           containerStyle,
         ]}
       >
-        <Image
+        <CachedAvatar
           accessibilityLabel={testID || 'avatar-image'}
+          channelId={channelId}
           onError={() => setImageError(true)}
           source={{
             uri:

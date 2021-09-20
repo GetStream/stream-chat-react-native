@@ -10,26 +10,56 @@ on:
 jobs:
   test:
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Installation & Build Package
-        # installation already takes care of calling prepare which calls build
-        # for the sdk package
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
-      - name: Install Java JDK
+      - name: Install node_modules
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Use specific Java version for sdkmanager to work
         uses: joschi/setup-jdk@v2
         with:
-          java-version: '11'
-      - name: Build
-        run: yarn detox-sample-android:build
-      - name: Test
-        uses: reactivecircus/android-emulator-runner@v2
+          java-version: 'openjdk8'
+          architecture: 'x64'
+
+      - name: Build Android App
+        uses: nick-invision/retry@v2
         with:
-          api-level: 29
-          target: google_apis
-          avd-name: Pixel4
-          script: yarn detox-sample-android:test
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn detox-sample-android:build
+
+      - name: Download Android Emulator Image
+        run: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;default;x86_64"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name Pixel_29_AOSP -d pixel -k 'system-images;android-29;default;x86_64'
+          $ANDROID_HOME/emulator/emulator -list-avds
+
+      - name: Launch Emulator
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cpu 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          $ANDROID_HOME/platform-tools/adb devices
+          echo "Emulator started"
+
+      - name: Test
+        id: detoxRun
+        run: yarn detox-sample-android:test --record-logs failing --record-videos failing
+
+      - uses: actions/upload-artifact@v2
+        if: failure() && steps.detoxRun.outcome == 'failure'
+        with:
+          name: detox-artifacts
+          path: ./artifacts

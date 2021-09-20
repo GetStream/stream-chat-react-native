@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
+import { CachedAvatar } from '../CachedImages/CachedAvatar';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
@@ -22,6 +24,7 @@ const getInitials = (fullName: string) =>
     .join(' ');
 
 export type GroupAvatarProps = {
+  channelId: string | undefined;
   /** total size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -36,7 +39,7 @@ export type GroupAvatarProps = {
  * GroupAvatar - A round group of avatar images with fallbacks to users' initials
  */
 export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
-  const { containerStyle, images, names, size, testID } = props;
+  const { channelId, containerStyle, images, names, size, testID } = props;
   const {
     theme: {
       groupAvatar: { container, image },
@@ -144,8 +147,9 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
           ]}
         >
           {column.map(({ height, name, url, width }, rowIndex) => (
-            <Image
+            <CachedAvatar
               accessibilityLabel={testID || 'avatar-image'}
+              channelId={channelId}
               key={`avatar-${url}-${rowIndex}`}
               onError={() => setImageError(true)}
               source={{

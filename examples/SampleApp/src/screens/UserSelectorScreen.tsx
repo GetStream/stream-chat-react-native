@@ -122,7 +122,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
               switchUser(u.id);
             }}
             style={[styles.userContainer, { borderBottomColor: border }]}
-            testID='user-selector-button'
+            testID={`user-selector-button-${u.id}`}
           >
             <Image
               source={{

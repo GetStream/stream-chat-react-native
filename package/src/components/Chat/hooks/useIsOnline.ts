@@ -85,12 +85,16 @@ export const useIsOnline = <
     const setConnectionListener = () => {
       NetInfo.fetch().then((netInfoState) => {
         notifyChatClient(netInfoState);
+        setUnsubscribeNetInfo(() =>
+          NetInfo.addEventListener((netInfoState) => {
+            if (netInfoState === false && !client.wsConnection?.isHealthy) {
+              setConnectionRecovering(true);
+              setIsOnline(false);
+            }
+            notifyChatClient(netInfoState);
+          }),
+        );
       });
-      setUnsubscribeNetInfo(
-        NetInfo.addEventListener((netInfoState) => {
-          notifyChatClient(netInfoState);
-        }),
-      );
     };
 
     const setInitialOnlineState = async () => {

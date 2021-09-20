@@ -10,16 +10,20 @@ on:
 jobs:
   test:
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Installation & Build Package
-        # installation already takes care of calling prepare which calls build
-        # for the sdk package
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Install node_modules
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Install Pods
         run: cd ./examples/SampleApp && npx pod-install
       - name: Install Detox Dependencies
@@ -29,4 +33,12 @@ jobs:
       - name: Build
         run: yarn detox-sample-ios:build
       - name: Test
-        run: yarn detox-sample-ios:test
+        id: detoxRun
+        # Sudo is needed to run offline tests
+        # -E should only pass secrets if theyre exposed to the job through ENV param
+        run: sudo -E yarn detox-sample-ios:test --record-logs failing --record-videos failing
+      - uses: actions/upload-artifact@v2
+        if: failure() && steps.detoxRun.outcome == 'failure'
+        with:
+          name: detox-artifacts
+          path: ./artifacts
