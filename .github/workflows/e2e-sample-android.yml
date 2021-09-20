@@ -33,7 +33,7 @@ jobs:
       - name: Build Android App
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 15
+          timeout_minutes: 25
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn detox-sample-android:build
