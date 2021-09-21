@@ -17,26 +17,30 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Install node_modules
-        uses: nick-invision/retry@v2.4.1
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: yarn --frozen-lockfile && yarn bootstrap-ci
+        id: installDeps
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Install node_modules retry
+        if: failure() && steps.installDeps.outcome == 'failure'
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+
       - name: Install Pods
         run: cd ./examples/SampleApp && npx pod-install
       - name: Install Detox Dependencies
         run: |
           brew tap wix/brew
           brew install applesimutils
+
       - name: Build
         run: yarn detox-sample-ios:build
+
       - name: Test
         id: detoxRun
         # Sudo is needed to run offline tests
         # -E should only pass secrets if theyre exposed to the job through ENV param
         run: sudo -E yarn detox-sample-ios:test --record-logs failing --record-videos failing
+
       - uses: actions/upload-artifact@v2
         if: failure() && steps.detoxRun.outcome == 'failure'
         with:
