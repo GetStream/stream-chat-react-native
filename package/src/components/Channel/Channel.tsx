@@ -189,6 +189,7 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideStickyDateHeader'
     | 'hideDateSeparators'
     | 'LoadingIndicator'
     | 'maxTimeBetweenGroupedMessages'
@@ -450,6 +451,7 @@ const ChannelWithContext = <
     hasFilePicker = true,
     hasImagePicker = true,
     hideDateSeparators = false,
+    hideStickyDateHeader = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -1575,6 +1577,7 @@ const ChannelWithContext = <
       giphyEnabled ??
       !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
+    hideStickyDateHeader,
     isAdmin,
     isModerator,
     isOwner,

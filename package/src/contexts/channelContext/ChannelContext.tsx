@@ -53,6 +53,7 @@ export type ChannelContextValue<
    * Hide inline date separators on channel
    */
   hideDateSeparators: boolean;
+  hideStickyDateHeader: boolean;
   /**
    * Returns true if the current user has admin privileges
    */
