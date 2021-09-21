@@ -29,18 +29,16 @@ jobs:
         run: cd ./examples/SampleApp && npx pod-install
       - name: Install Detox Dependencies
         run: |
-          sudo brew tap wix/brew
-          sudo brew install applesimutils
-          sudo xcrun simctl list
+          brew tap wix/brew
+          brew install applesimutils
+          xcrun simctl list
 
       - name: Build
         run: yarn detox-sample-ios:build
 
       - name: Test
         id: detoxRun
-        # Sudo is needed to run offline tests
-        # -E should only pass secrets if theyre exposed to the job through ENV param
-        run: sudo -E yarn detox-sample-ios:test --record-logs failing --record-videos failing
+        run: yarn detox-sample-ios:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
         if: failure() && steps.detoxRun.outcome == 'failure'
