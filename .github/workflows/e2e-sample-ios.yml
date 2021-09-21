@@ -19,11 +19,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install node_modules
-        id: installDeps
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
-      - name: Install node_modules retry
-        if: failure() && steps.installDeps.outcome == 'failure'
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn --frozen-lockfile && yarn bootstrap-ci
 
       - name: Install Pods
         run: cd ./examples/SampleApp && npx pod-install
