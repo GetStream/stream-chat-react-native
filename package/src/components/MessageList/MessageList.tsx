@@ -946,6 +946,7 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
     loadChannelAtMessage,
@@ -991,6 +992,7 @@ export const MessageList = <
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
+        enableMessageGroupingByUser,
         error,
         FlatList,
         hideStickyDateHeader,
@@ -1026,6 +1028,7 @@ export const MessageList = <
         TypingIndicatorContainer,
       }}
       {...props}
+      noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
 };

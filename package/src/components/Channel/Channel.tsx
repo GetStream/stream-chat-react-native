@@ -187,6 +187,7 @@ export type ChannelPropsWithContext<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
     | 'EmptyStateIndicator'
+    | 'enableMessageGroupingByUser'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
     | 'hideStickyDateHeader'
@@ -424,6 +425,7 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
+    enableMessageGroupingByUser = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentIcon = FileIconDefault,
@@ -1571,6 +1573,7 @@ const ChannelWithContext = <
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
     giphyEnabled:
@@ -1670,6 +1673,7 @@ const ChannelWithContext = <
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     editMessage: editMessageProp,
+    enableMessageGroupingByUser,
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
