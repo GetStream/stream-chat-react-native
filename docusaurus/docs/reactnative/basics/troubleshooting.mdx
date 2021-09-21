@@ -234,24 +234,6 @@ dependencies {
 }
 ```
 
-## BlurView crashing
-
-### Android
-
-[`@react-native-community/blur`](https://github.com/Kureev/react-native-blur) utilizes the native Android library [`BlurView`](https://github.com/Dimezis/BlurView) for the Android implementation.
-A [bug in the `BlurView` library](https://github.com/Dimezis/BlurView/issues/110#issuecomment-786939860) is translated into the current version of `@react-native-community/blur`, a [fix has been merged](https://github.com/Kureev/react-native-blur/issues/405#issuecomment-810539226) but a new version is not yet released.
-
-Until a new version is released the best solution is to force Android to use the fixed native library in your `android/app/build.gradle`
-
-```java
-dependencies {
-  implementation('com.eightbitlab:blurview:1.6.6') {
-    force = true
-  }
-  ...
-}
-```
-
 ## Touchables not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
