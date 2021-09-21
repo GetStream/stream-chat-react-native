@@ -31,7 +31,7 @@ jobs:
         run: |
           brew tap wix/brew
           brew install applesimutils
-          applesimutils --list
+          xcrun simctl list
 
       - name: Build
         run: yarn detox-sample-ios:build
@@ -40,7 +40,7 @@ jobs:
         id: detoxRun
         # Sudo is needed to run offline tests
         # -E should only pass secrets if theyre exposed to the job through ENV param
-        run: sudo -E npx detox test --configuration ios.sample.release e2e/entries/SampleApp.e2e.js --record-logs failing --record-videos failing
+        run: sudo -E yarn detox-sample-ios:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
         if: failure() && steps.detoxRun.outcome == 'failure'
