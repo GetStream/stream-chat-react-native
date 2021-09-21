@@ -23,12 +23,12 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: |
-          yarn && yarn bootstrap-ci;
-          cd package/native-package
-          yarn;
-          cd ../../examples/SampleApp
-          cd ios
-          pod install
+            yarn && yarn bootstrap-ci;
+            cd package/native-package
+            yarn;
+            cd ../../examples/SampleApp
+            cd ios
+            pod install
       - name: Build and release Testflight QA
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -53,10 +53,10 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           command: |
-          yarn add global react-native-cli;
-          yarn && yarn bootstrap-ci;
-          cd package/native-package
-          yarn;
+            yarn add global react-native-cli;
+            yarn && yarn bootstrap-ci;
+            cd package/native-package
+            yarn;
       - name: Build
         run: |
           cd examples/SampleApp
@@ -73,6 +73,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Upload APK
+        # https://getstream.io/downloads/rn-sample-app.apk
         run: |
           cp examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk rn-sample-app.apk
           aws s3 cp rn-sample-app.apk s3://${{ secrets.AWS_S3_BUCKET }} --sse AES256
