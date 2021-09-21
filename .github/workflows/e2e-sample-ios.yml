@@ -29,9 +29,9 @@ jobs:
         run: cd ./examples/SampleApp && npx pod-install
       - name: Install Detox Dependencies
         run: |
-          brew tap wix/brew
-          brew install applesimutils
-          xcrun simctl list
+          sudo brew tap wix/brew
+          sudo brew install applesimutils
+          sudo xcrun simctl list
 
       - name: Build
         run: yarn detox-sample-ios:build
