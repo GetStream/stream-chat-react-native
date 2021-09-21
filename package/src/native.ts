@@ -1,4 +1,4 @@
-import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
+import { FlatList as DefaultFlatList } from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
@@ -6,13 +6,6 @@ const fail = () => {
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
   );
 };
-
-type BlurView = React.ComponentType<{
-  blurAmount?: number;
-  blurType?: string;
-  style?: StyleProp<ViewStyle>;
-}>;
-export let BlurView: BlurView = fail;
 
 type CompressImage = ({
   compressImageQuality,
@@ -111,7 +104,6 @@ export let triggerHaptic: TriggerHaptic = fail;
 export let SDK: string;
 
 type Handlers = {
-  BlurView?: BlurView;
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
@@ -127,10 +119,6 @@ type Handlers = {
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
-  if (handlers.BlurView) {
-    BlurView = handlers.BlurView;
-  }
-
   if (handlers.compressImage) {
     compressImage = handlers.compressImage;
   }
