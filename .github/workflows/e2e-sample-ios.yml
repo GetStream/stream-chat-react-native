@@ -31,6 +31,7 @@ jobs:
         run: |
           brew tap wix/brew
           brew install applesimutils
+          applesimutils --list
 
       - name: Build
         run: yarn detox-sample-ios:build
