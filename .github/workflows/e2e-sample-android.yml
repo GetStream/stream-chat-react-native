@@ -50,14 +50,22 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cpu 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
+          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP --noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 4000 -cores 2 &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
           $ANDROID_HOME/platform-tools/adb devices
           echo "Emulator started"
 
       - name: Test
         id: detoxRun
-        run: yarn detox-sample-android:test --record-logs failing --record-videos failing
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+        run: |
+          $ANDROID_HOME/platform-tools/adb devices
+          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
+          yarn detox-sample-android:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
         if: failure() && steps.detoxRun.outcome == 'failure'
