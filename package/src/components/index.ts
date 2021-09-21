@@ -138,6 +138,7 @@ export * from './MessageList/utils/getReadStates';
 
 export * from './MessageOverlay/MessageActions';
 export * from './MessageOverlay/MessageOverlay';
+export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
 
