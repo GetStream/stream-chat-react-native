@@ -38,9 +38,9 @@
     "lint": "yarn lerna-workspaces run lint",
     "build": "yarn lerna-workspaces run build",
     "test:unit": "yarn lerna-workspaces run test:unit",
-    "detox-sample-android:build": "npx detox build --configuration android.sample.release",
-    "detox-sample-ios:build": "npx detox build --configuration ios.sample.release",
-    "detox-sample-android:test": "npx detox test --configuration android.sample.release e2e/entries/SampleApp.e2e.js",
-    "detox-sample-ios:test": "npx detox test --configuration ios.sample.release e2e/entries/SampleApp.e2e.js"
+    "detox-sample-android:build": "detox build --configuration android.sample.release",
+    "detox-sample-ios:build": "detox build --configuration ios.sample.release",
+    "detox-sample-android:test": "detox test --configuration android.sample.release e2e/entries/SampleApp.e2e.js",
+    "detox-sample-ios:test": "detox test --configuration ios.sample.release e2e/entries/SampleApp.e2e.js"
   }
 }

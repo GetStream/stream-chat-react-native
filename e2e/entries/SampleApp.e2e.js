@@ -34,6 +34,10 @@ describe('SampleApp', () => {
     await device.launchApp();
   });
 
+  afterAll(async () => {
+    await backend.client.closeConnection();
+  });
+
   describe('Online', () => {
     describe('Authentication flow', () => {
       beforeEach(async () => {
@@ -86,8 +90,6 @@ describe('SampleApp', () => {
         await waitFor(element(by.id('network-down-indicator')))
           .not.toBeVisible()
           .withTimeout(5000);
-
-        await closeConnection();
       });
 
       commonChannelListTests(true);
