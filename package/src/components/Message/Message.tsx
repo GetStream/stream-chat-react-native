@@ -9,6 +9,7 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -1170,27 +1171,29 @@ const MessageWithContext = <
           onGestureEvent={onDoubleTap}
           ref={doubleTapRef}
         >
-          <Animated.View
-            style={[
-              style,
-              {
-                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-              },
-              scaleStyle,
-            ]}
-          >
+          <View style={[message.pinned && { backgroundColor: '#FBF4DD' }]}>
             <Animated.View
               style={[
-                StyleSheet.absoluteFillObject,
-                targetedMessageUnderlay,
-                { backgroundColor: targetedMessageBackground },
-                targetedStyle,
+                style,
+                {
+                  backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+                },
+                scaleStyle,
               ]}
-            />
-            <MessageProvider value={messageContext}>
-              <MessageSimple />
-            </MessageProvider>
-          </Animated.View>
+            >
+              <Animated.View
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  targetedMessageUnderlay,
+                  { backgroundColor: targetedMessageBackground },
+                  targetedStyle,
+                ]}
+              />
+              <MessageProvider value={messageContext}>
+                <MessageSimple />
+              </MessageProvider>
+            </Animated.View>
+          </View>
         </TapGestureHandler>
       </Animated.View>
     </TapGestureHandler>
