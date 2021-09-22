@@ -76,8 +76,15 @@ jobs:
         run: |
           yarn detox-sample-android:test --record-logs failing --record-videos failing
 
-      - uses: actions/upload-artifact@v2
+      # Sometimes Detox don't attach the android emulator properly when running in CI.
+      - name: Test retry (Sometimes detox)
         if: failure() && steps.detoxRun.outcome == 'failure'
+        id: detoxRun2
+        run: |
+          yarn detox-sample-android:test --record-logs failing --record-videos failing
+
+      - uses: actions/upload-artifact@v2
+        if: failure() && steps.detoxRun2.outcome == 'failure'
         with:
           name: detox-artifacts
           path: ./artifacts
