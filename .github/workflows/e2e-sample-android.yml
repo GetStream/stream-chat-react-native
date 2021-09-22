@@ -46,37 +46,12 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Launch Emulator
-        id: emu1
-        timeout-minutes: 15
+        timeout-minutes: 10
         continue-on-error: true
         run: |
           echo "Starting emulator"
           nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82' &&
-          echo "::set-output name=success::true"
-
-      - name: Launch Emulator Retry
-        id: emu2
-        if: steps.emu1.outputs.success == 'true'
-        timeout-minutes: 15
-        continue-on-error: true
-        run: |
-          echo "Starting emulator, second attempt"
-          $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 qemu-system-x86_64-headless || true
-          sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82' &&
-          echo "::set-output name=success::true"
-
-      - name: Emulator Status
-        if: always()
-        run: |
-          if ${{ steps.emu1.outputs.success == 'true' || steps.emu2.outputs.success == 'true' }}; then
-             echo "Emulator Started"
-          else
-             exit 1
-          fi
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
 
       - name: Test
         id: detoxRun
