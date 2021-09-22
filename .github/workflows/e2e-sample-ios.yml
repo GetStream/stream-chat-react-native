@@ -39,7 +39,7 @@ jobs:
 
       - name: Test
         id: detoxRun
-        run: yarn detox-sample-ios:test --record-logs failing --record-videos failing
+        run: FORCE_IOS_OFFLINE=true yarn detox-sample-ios:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
         if: failure() && steps.detoxRun.outcome == 'failure'

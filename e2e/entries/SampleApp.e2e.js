@@ -6,6 +6,9 @@ const { disableNetwork, enableNetwork, wait, populateChannel } = require('../uti
 
 jest.retryTimes(3);
 
+const describeSkipIf = (condition, ...params) =>
+  condition ? describe.skip(...params) : describe(...params);
+
 describe('SampleApp', () => {
   const backend = {
     client,
@@ -67,8 +70,10 @@ describe('SampleApp', () => {
     commonMessageListTests(backend);
   });
 
-  if (process.getuid() == process.env.SUDO_UID || device.getPlatform() === 'android') {
-    describe('Offline', () => {
+  describeSkipIf(
+    process.env.PLATFORM === 'ios' && !process.env.FORCE_IOS_OFFLINE,
+    'Offline',
+    () => {
       beforeAll(async () => {
         await device.sendToHome();
 
@@ -94,6 +99,6 @@ describe('SampleApp', () => {
 
       commonChannelListTests(true);
       commonMessageListTests(backend, true);
-    });
-  }
+    },
+  );
 });
