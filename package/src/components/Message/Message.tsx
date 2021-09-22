@@ -75,6 +75,8 @@ import {
   SendUp,
   ThreadReply,
   UserDelete,
+  Pin,
+  Unpin,
 } from '../../icons';
 import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
@@ -185,6 +187,7 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handlePinMessage'
     | 'handleQuotedReply'
     | 'handleReaction'
     | 'handleRetry'
@@ -199,6 +202,7 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'pinMessage'
     | 'quotedRepliesEnabled'
     | 'quotedReply'
     | 'reactionsEnabled'
@@ -309,6 +313,7 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction: handleReactionProp,
     handleRetry,
@@ -334,6 +339,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    pinMessage: pinMessageProp,
     preventPress,
     quotedRepliesEnabled,
     reactionsEnabled,
@@ -648,6 +654,15 @@ const MessageWithContext = <
     setEditingState(message);
   };
 
+  const handlePinMessageUtil = async () => {
+    const messagePinnedStatus = message.pinned;
+    if (!messagePinnedStatus) {
+      await client.pinMessage(message, null);
+    } else {
+      await client.unpinMessage(message);
+    }
+  };
+
   const handleToggleBanUser = async () => {
     const messageUser = message.user;
     if (!messageUser) {
@@ -752,6 +767,38 @@ const MessageWithContext = <
           },
           icon: <Edit pathFill={grey} />,
           title: t('Edit Message'),
+        };
+
+    const pinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handlePinMessageUtil();
+          },
+          icon: <Pin pathFill={grey} height={23} width={24} />,
+          title: t('Pin to Conversation'),
+        };
+
+    const unpinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handlePinMessageUtil();
+          },
+          icon: <Unpin pathFill={grey} />,
+          title: t('Unpin from Conversation'),
         };
 
     const flagMessage = flagMessageProp
@@ -913,11 +960,13 @@ const MessageWithContext = <
             messageReactions,
             mutesEnabled,
             muteUser,
+            pinMessage,
             quotedRepliesEnabled,
             quotedReply,
             retry,
             threadRepliesEnabled,
             threadReply,
+            unpinMessage,
           });
 
     setData({
@@ -1203,7 +1252,8 @@ const areEqual = <
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at;
+    prevMessage.updated_at === nextMessage.updated_at &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 

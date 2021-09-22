@@ -32,6 +32,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MessagePinned } from './MessagePinned';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -279,6 +280,7 @@ const MessageContentWithContext = <
         container,
       ]}
     >
+      {message.pinned && <MessagePinned />}
       {MessageHeader && (
         <MessageHeader
           alignment={alignment}
@@ -453,7 +455,8 @@ const areEqual = <
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 

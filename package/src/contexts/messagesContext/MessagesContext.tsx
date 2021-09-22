@@ -315,6 +315,8 @@ export type MessagesContextValue<
   handleFlag?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
   handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  /** Handler to access when a pin/unpin user action is invoked*/
+  handlePinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /** Handler to access when a quoted reply action is invoked */
   handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to process a reaction */
@@ -544,6 +546,12 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * Full override of the pin message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
+  pinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the quoted reply button in the Message Actions
    *

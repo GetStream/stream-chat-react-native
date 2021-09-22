@@ -34,11 +34,13 @@ export const messageActions = <
   messageReactions,
   mutesEnabled,
   muteUser,
+  pinMessage,
   quotedRepliesEnabled,
   quotedReply,
   retry,
   threadRepliesEnabled,
   threadReply,
+  unpinMessage,
 }: {
   blockUser: MessageAction | null;
   canModifyMessage: boolean;
@@ -52,12 +54,14 @@ export const messageActions = <
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
   muteUser: MessageAction | null;
+  pinMessage: MessageAction | null;
   quotedReply: MessageAction | null;
   retry: MessageAction | null;
   threadReply: MessageAction | null;
   mutesEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
+  unpinMessage: MessageAction | null;
 }): Array<MessageAction | null> | undefined => {
   if (messageReactions) {
     return undefined;
@@ -85,12 +89,20 @@ export const messageActions = <
     actions.push(copyMessage);
   }
 
-  if (mutesEnabled && !isMyMessage) {
-    actions.push(muteUser);
-  }
-
   if (!isMyMessage) {
     actions.push(flagMessage);
+  }
+
+  if (!message.pinned) {
+    actions.push(pinMessage);
+  }
+
+  if (message.pinned) {
+    actions.push(unpinMessage);
+  }
+
+  if (mutesEnabled && !isMyMessage) {
+    actions.push(muteUser);
   }
 
   if (!isMyMessage && canModifyMessage) {

@@ -44,6 +44,17 @@ export type StackNavigatorParamList = {
       LocalUserType
     >;
   };
+  ChannelPinnedMessagesScreen: {
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
+  };
   ChannelListScreen: undefined;
   ChannelScreen: {
     channel?: Channel<

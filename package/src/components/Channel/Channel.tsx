@@ -233,6 +233,7 @@ export type ChannelPropsWithContext<
       | 'handleEdit'
       | 'handleFlag'
       | 'handleMute'
+      | 'handlePinMessage'
       | 'handleReaction'
       | 'handleQuotedReply'
       | 'handleRetry'
@@ -262,6 +263,7 @@ export type ChannelPropsWithContext<
       | 'onPressInMessage'
       | 'onPressMessage'
       | 'OverlayReactionList'
+      | 'pinMessage'
       | 'quotedReply'
       | 'ReactionList'
       | 'Reply'
@@ -430,6 +432,7 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction,
     handleRetry,
@@ -488,6 +491,7 @@ const ChannelWithContext = <
     onPressInMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
+    pinMessage,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
     quotedReply,
     ReactionList = ReactionListDefault,
@@ -1635,6 +1639,7 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction,
     handleRetry,
@@ -1665,6 +1670,7 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
+    pinMessage,
     quotedReply,
     ReactionList,
     removeMessage,
