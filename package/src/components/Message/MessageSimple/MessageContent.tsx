@@ -280,7 +280,6 @@ const MessageContentWithContext = <
         container,
       ]}
     >
-      {message.pinned && <MessagePinned />}
       {MessageHeader && (
         <MessageHeader
           alignment={alignment}

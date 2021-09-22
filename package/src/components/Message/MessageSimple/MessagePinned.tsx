@@ -13,6 +13,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginBottom: 8,
+    marginTop: 5,
+    marginLeft: 30,
   },
   text: {
     marginLeft: 5,
@@ -63,7 +65,12 @@ const MessagePinnedWithContext = <
 
   return (
     <View
-      style={[styles.view, { justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end' }]}
+      style={[
+        styles.view,
+        {
+          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+        },
+      ]}
       testID='message-avatar'
     >
       <Pin height={16} width={24} pathFill={grey} />
@@ -104,7 +111,7 @@ const MemoizedMessagePinned = React.memo(
   areEqual,
 ) as typeof MessagePinnedWithContext;
 
-export type MessageAvatarProps<
+export type MessagePinnedProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -123,10 +130,9 @@ export const MessagePinned = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 >(
-  props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, lastGroupMessage, message, showAvatar } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, lastGroupMessage, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessagePinned
@@ -134,7 +140,6 @@ export const MessagePinned = <
         alignment,
         lastGroupMessage,
         message,
-        showAvatar,
       }}
       {...props}
     />

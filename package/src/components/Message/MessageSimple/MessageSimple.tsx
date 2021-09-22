@@ -21,13 +21,13 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { MessagePinned } from './MessagePinned';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-end',
     flexDirection: 'row',
   },
+  innerView: {},
 });
 
 export type MessageSimplePropsWithContext<
@@ -44,7 +44,7 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'MessageAvatar' | 'MessageContent' | 'ReactionList'
+    'MessageAvatar' | 'MessageContent' | 'ReactionList' | 'MessagePinned'
   >;
 
 const MessageSimpleWithContext = <
@@ -66,6 +66,7 @@ const MessageSimpleWithContext = <
     message,
     MessageAvatar,
     MessageContent,
+    MessagePinned,
     ReactionList,
   } = props;
 
@@ -85,22 +86,26 @@ const MessageSimpleWithContext = <
   const showReactions = hasReactions && ReactionList;
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-          marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 8) : 0,
-          marginTop: showReactions ? 2 : 0,
-        },
-        container,
-      ]}
-      testID='message-simple-wrapper'
-    >
-      {alignment === 'left' && <MessageAvatar />}
-      <MessageContent setMessageContentWidth={setMessageContentWidth} />
-      {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
-    </View>
+    <>
+      {message.pinned && <MessagePinned />}
+      <View
+        style={[
+          styles.container,
+          {
+            justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+            marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 8) : 0,
+            marginTop: showReactions ? 2 : 0,
+          },
+          container,
+        ]}
+        testID='message-simple-wrapper'
+      >
+        {alignment === 'left' && <MessageAvatar />}
+
+        <MessageContent setMessageContentWidth={setMessageContentWidth} />
+        {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
+      </View>
+    </>
   );
 };
 
@@ -142,7 +147,8 @@ const areEqual = <
     prevMessage.deleted_at === nextMessage.deleted_at &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
 
   const quotedMessageEqual =
@@ -212,7 +218,7 @@ export const MessageSimple = <
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageAvatar, MessageContent, ReactionList } =
+  const { MessageAvatar, MessageContent, ReactionList, MessagePinned } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -225,6 +231,7 @@ export const MessageSimple = <
         message,
         MessageAvatar,
         MessageContent,
+        MessagePinned,
         ReactionList,
       }}
       {...props}

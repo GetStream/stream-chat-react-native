@@ -45,6 +45,7 @@ import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
+import { MessagePinned as MessagePinnedDefault } from '../Message/MessageSimple/MessagePinned';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
@@ -250,6 +251,7 @@ export type ChannelPropsWithContext<
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
+      | 'MessagePinned'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -471,6 +473,7 @@ const ChannelWithContext = <
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
+    MessagePinned = MessagePinnedDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     messages: messagesProp,
@@ -1657,6 +1660,7 @@ const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList,
+    MessagePinned,
     MessageReplies,
     MessageRepliesAvatars,
     MessageSimple,
