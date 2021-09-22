@@ -191,8 +191,10 @@ export type ChannelPropsWithContext<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
     | 'EmptyStateIndicator'
+    | 'enableMessageGroupingByUser'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideStickyDateHeader'
     | 'hideDateSeparators'
     | 'LoadingIndicator'
     | 'maxTimeBetweenGroupedMessages'
@@ -366,6 +368,7 @@ export type ChannelPropsWithContext<
      */
     KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
     keyboardVerticalOffset?: number;
+    legacyImageViewerSwipeBehaviour?: boolean;
     /**
      * Custom loading error indicator to override the Stream default
      */
@@ -433,6 +436,7 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
+    enableMessageGroupingByUser = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -460,6 +464,7 @@ const ChannelWithContext = <
     hasFilePicker = true,
     hasImagePicker = true,
     hideDateSeparators = false,
+    hideStickyDateHeader = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -470,6 +475,7 @@ const ChannelWithContext = <
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
+    legacyImageViewerSwipeBehaviour = true,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
@@ -1596,13 +1602,16 @@ const ChannelWithContext = <
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
     giphyEnabled:
       giphyEnabled ??
       !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
+    hideStickyDateHeader,
     isAdmin,
+    isChannelActive: shouldSyncChannel,
     isModerator,
     isOwner,
     lastRead,
@@ -1695,6 +1704,7 @@ const ChannelWithContext = <
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     editMessage: editMessageProp,
+    enableMessageGroupingByUser,
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
@@ -1717,6 +1727,7 @@ const ChannelWithContext = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
     messageActions,

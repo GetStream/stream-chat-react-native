@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { NetInfo } from '../../../native';
@@ -41,22 +41,23 @@ export const useIsOnline = <
 
   const clientExits = !!client;
 
-  const onBackground = closeConnectionOnBackground
-    ? () => {
-        for (const cid in client.activeChannels) {
-          const channel = client.activeChannels[cid];
-          channel?.state.setIsUpToDate(false);
-        }
-        client.closeConnection();
-        setIsOnline(false);
-      }
-    : undefined;
+  const onBackground = useCallback(() => {
+    if (!closeConnectionOnBackground) return;
 
-  const onForeground = closeConnectionOnBackground
-    ? () => {
-        client.openConnection();
-      }
-    : undefined;
+    for (const cid in client.activeChannels) {
+      const channel = client.activeChannels[cid];
+      channel?.state.setIsUpToDate(false);
+    }
+
+    client.closeConnection();
+    setIsOnline(false);
+  }, [closeConnectionOnBackground, client]);
+
+  const onForeground = useCallback(() => {
+    if (!closeConnectionOnBackground) return;
+
+    client.openConnection();
+  }, [closeConnectionOnBackground, client]);
 
   useAppStateListener(onForeground, onBackground);
 

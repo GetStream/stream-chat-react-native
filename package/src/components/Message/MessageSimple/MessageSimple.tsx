@@ -43,7 +43,7 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'MessageAvatar' | 'MessageContent' | 'ReactionList'
+    'enableMessageGroupingByUser' | 'MessageAvatar' | 'MessageContent' | 'ReactionList'
   >;
 
 const MessageSimpleWithContext = <
@@ -60,6 +60,7 @@ const MessageSimpleWithContext = <
   const {
     alignment,
     channel,
+    enableMessageGroupingByUser,
     groupStyles,
     hasReactions,
     message,
@@ -89,7 +90,11 @@ const MessageSimpleWithContext = <
         styles.container,
         {
           justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-          marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 8) : 0,
+          marginBottom: hasMarginBottom
+            ? isVeryLastMessage && enableMessageGroupingByUser
+              ? 30
+              : 8
+            : 0,
           marginTop: showReactions ? 2 : 0,
         },
         container,
@@ -211,7 +216,7 @@ export const MessageSimple = <
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageAvatar, MessageContent, ReactionList } =
+  const { enableMessageGroupingByUser, MessageAvatar, MessageContent, ReactionList } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -219,6 +224,7 @@ export const MessageSimple = <
       {...{
         alignment,
         channel,
+        enableMessageGroupingByUser,
         groupStyles,
         hasReactions,
         message,
