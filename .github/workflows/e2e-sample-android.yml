@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - master
+      - v4
     types: [opened, synchronize]
 
 jobs:
