@@ -47,11 +47,35 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Launch Emulator
-        timeout-minutes: 10
         continue-on-error: true
+        timeout-minutes: 3
         run: |
           echo "Starting emulator"
           nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
+
+      - name: Emulator Status Check
+        id: emu1Check
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+
+      - name: Launch Emulator Rety
+        timeout-minutes: 3
+        continue-on-error: true
+        if: failure() && steps.emu1Check.outcome == 'failure'
+        run: |
+          echo "Starting emulator, second attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 emulator-5554 || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
+
+      - name: Emulator Status Check 2
+        continue-on-error: true
+        timeout-minutes: 3
+        if: failure() && steps.emu1Check.outcome == 'failure'
+        run: |
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
 
       - name: Test
@@ -62,8 +86,6 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
           $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
           $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
-          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
-          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
           yarn detox-sample-android:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
