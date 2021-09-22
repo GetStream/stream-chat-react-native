@@ -1207,6 +1207,7 @@ const areEqual = <
   const {
     goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
+    members: prevMembers,
     message: prevMessage,
     mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
@@ -1216,12 +1217,16 @@ const areEqual = <
   const {
     goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
+    members: nextMembers,
     message: nextMessage,
     mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
     targetedMessage: nextTargetedMessage,
   } = nextProps;
+
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  if (!membersEqual) return false;
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
