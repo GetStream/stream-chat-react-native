@@ -1,5 +1,7 @@
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import {
   ChannelState,
   Channel as ChannelType,
@@ -21,8 +23,6 @@ import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginated
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
 import { useCreateTypingContext } from './hooks/useCreateTypingContext';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
-import { heavyDebounce } from './utils/debounce';
-import { lightThrottle } from './utils/throttle';
 
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
@@ -159,6 +159,17 @@ export const reactionData: ReactionData[] = [
  */
 const scrollToFirstUnreadThreshold = 4;
 
+const defaultThrottleInterval = 500;
+const defaultDebounceInterval = 500;
+const throttleOptions = {
+  leading: false,
+  trailing: true,
+};
+const debounceOptions = {
+  leading: true,
+  trailing: true,
+};
+
 /**
  * Number of unread messages to show in first frame, when channel loads at first
  * unread message. Only applicable if unread count > scrollToFirstUnreadThreshold.
@@ -178,8 +189,10 @@ export type ChannelPropsWithContext<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
     | 'EmptyStateIndicator'
+    | 'enableMessageGroupingByUser'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'hideStickyDateHeader'
     | 'hideDateSeparators'
     | 'LoadingIndicator'
     | 'maxTimeBetweenGroupedMessages'
@@ -353,6 +366,7 @@ export type ChannelPropsWithContext<
      */
     KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
     keyboardVerticalOffset?: number;
+    legacyImageViewerSwipeBehaviour?: boolean;
     /**
      * Custom loading error indicator to override the Stream default
      */
@@ -363,6 +377,7 @@ export type ChannelPropsWithContext<
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
+    stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
      */
@@ -419,6 +434,7 @@ const ChannelWithContext = <
     doUpdateMessageRequest,
     editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
+    enableMessageGroupingByUser = true,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
@@ -446,6 +462,7 @@ const ChannelWithContext = <
     hasFilePicker = true,
     hasImagePicker = true,
     hideDateSeparators = false,
+    hideStickyDateHeader = false,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
@@ -456,6 +473,7 @@ const ChannelWithContext = <
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
+    legacyImageViewerSwipeBehaviour = true,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
@@ -519,6 +537,7 @@ const ChannelWithContext = <
     setWatchers,
     shouldSyncChannel,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
+    stateUpdateThrottleInterval = defaultThrottleInterval,
     StickyHeader,
     supportedReactions = reactionData,
     t,
@@ -651,43 +670,65 @@ const ChannelWithContext = <
   /**
    * CHANNEL METHODS
    */
-  const markRead: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['markRead'] = lightThrottle(
-    () => {
-      if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
-        return;
-      }
+  const markRead: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['markRead'] = useRef(
+    throttle(
+      () => {
+        if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
+          return;
+        }
 
-      if (doMarkReadRequest) {
-        doMarkReadRequest(channel);
-      } else {
-        logChatPromiseExecution(channel.markRead(), 'mark read');
-      }
-    },
-  );
+        if (doMarkReadRequest) {
+          doMarkReadRequest(channel);
+        } else {
+          logChatPromiseExecution(channel.markRead(), 'mark read');
+        }
+      },
+      defaultThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
 
-  const copyTypingState = lightThrottle(() => {
-    if (channel) {
-      setTyping({ ...channel.state.typing });
-    }
-  });
+  const copyTypingState = useRef(
+    throttle(
+      () => {
+        if (channel) {
+          setTyping({ ...channel.state.typing });
+        }
+      },
+      stateUpdateThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
 
-  const copyReadState = lightThrottle(() => {
-    if (channel) {
-      setRead({ ...channel.state.read });
-    }
-  });
+  const copyReadState = useRef(
+    throttle(
+      () => {
+        if (channel) {
+          setRead({ ...channel.state.read });
+        }
+      },
+      stateUpdateThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
 
-  const copyChannelState = lightThrottle(() => {
-    setLoading(false);
-    if (channel) {
-      setMembers({ ...channel.state.members });
-      setMessages([...channel.state.messages]);
-      setRead({ ...channel.state.read });
-      setTyping({ ...channel.state.typing });
-      setWatcherCount(channel.state.watcher_count);
-      setWatchers({ ...channel.state.watchers });
-    }
-  });
+  const copyChannelState = useRef(
+    throttle(
+      () => {
+        setLoading(false);
+        if (channel) {
+          setMembers({ ...channel.state.members });
+          setMessages([...channel.state.messages]);
+          setRead({ ...channel.state.read });
+          setTyping({ ...channel.state.typing });
+          setWatcherCount(channel.state.watcher_count);
+          setWatchers({ ...channel.state.watchers });
+        }
+      },
+      stateUpdateThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
 
   const connectionRecoveredHandler = () => {
     if (channel && shouldSyncChannel) {
@@ -1319,17 +1360,21 @@ const ChannelWithContext = <
     };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreFinished = heavyDebounce(
-    (
-      updatedHasMore: boolean,
-      newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-    ) => {
-      setLoadingMore(false);
-      setError(false);
-      setHasMore(updatedHasMore);
-      setMessages(newMessages);
-    },
-  );
+  const loadMoreFinished = useRef(
+    debounce(
+      (
+        updatedHasMore: boolean,
+        newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+      ) => {
+        setLoadingMore(false);
+        setError(false);
+        setHasMore(updatedHasMore);
+        setMessages(newMessages);
+      },
+      defaultDebounceInterval,
+      debounceOptions,
+    ),
+  ).current;
 
   const loadMore: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadMore'] = async (
     limit = 20,
@@ -1404,13 +1449,17 @@ const ChannelWithContext = <
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreRecentFinished = heavyDebounce(
-    (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
-      setLoadingMoreRecent(false);
-      setMessages(newMessages);
-      setError(false);
-    },
-  );
+  const loadMoreRecentFinished = useRef(
+    debounce(
+      (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
+        setLoadingMoreRecent(false);
+        setMessages(newMessages);
+        setError(false);
+      },
+      defaultDebounceInterval,
+      debounceOptions,
+    ),
+  ).current;
 
   const editMessage: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editMessage'] = (
     updatedMessage,
@@ -1485,16 +1534,20 @@ const ChannelWithContext = <
     }, [setThread, setThreadMessages]);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreThreadFinished = heavyDebounce(
-    (
-      newThreadHasMore: boolean,
-      updatedThreadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string],
-    ) => {
-      setThreadHasMore(newThreadHasMore);
-      setThreadLoadingMore(false);
-      setThreadMessages(updatedThreadMessages);
-    },
-  );
+  const loadMoreThreadFinished = useRef(
+    debounce(
+      (
+        newThreadHasMore: boolean,
+        updatedThreadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string],
+      ) => {
+        setThreadHasMore(newThreadHasMore);
+        setThreadLoadingMore(false);
+        setThreadMessages(updatedThreadMessages);
+      },
+      defaultDebounceInterval,
+      debounceOptions,
+    ),
+  ).current;
 
   const loadMoreThread: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadMoreThread'] =
     async () => {
@@ -1539,12 +1592,14 @@ const ChannelWithContext = <
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     enforceUniqueReaction,
     error,
     giphyEnabled:
       giphyEnabled ??
       !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
+    hideStickyDateHeader,
     isAdmin,
     isChannelActive: shouldSyncChannel,
     isModerator,
@@ -1639,6 +1694,7 @@ const ChannelWithContext = <
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     editMessage: editMessageProp,
+    enableMessageGroupingByUser,
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
@@ -1661,6 +1717,7 @@ const ChannelWithContext = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
     messageActions,

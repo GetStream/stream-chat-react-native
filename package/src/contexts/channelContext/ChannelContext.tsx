@@ -53,6 +53,7 @@ export type ChannelContextValue<
    * Hide inline date separators on channel
    */
   hideDateSeparators: boolean;
+  hideStickyDateHeader: boolean;
   /**
    * Returns true if the current user has admin privileges
    */
@@ -164,6 +165,7 @@ export type ChannelContextValue<
    */
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
+  enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
   lastRead?: Date;
   /**

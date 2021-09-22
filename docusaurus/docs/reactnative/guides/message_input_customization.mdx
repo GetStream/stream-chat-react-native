@@ -183,6 +183,48 @@ const StreamButton = () => {
 />
 ```
 
+## Storing image and file attachment to custom CDN
+
+When you select an image or file from image picker or file picker, it gets uploaded to Stream's CDN by default.
+But you can choose to upload attachments to your own CDN using following two props on Channel component:
+
+- [`doImageUploadRequest`](../core-components/channel.mdx#doimageuploadrequest): For images picked from image picker
+- [`doDocUploadRequest`](../core-components/channel.mdx#dodocuploadrequest): For files picked from file picker
+
+```tsx
+<Channel
+  doDocUploadRequest={(file, channel) =>
+    chatClient?.sendFile(
+      `${channel._channelURL()}/file`, // replace this with your own cdn url
+      file.uri,
+      'name_for_file',
+    )
+  }
+  doImageUploadRequest={(file, channel) =>
+    chatClient?.sendFile(
+      `https://customcdnurl.com`, // replace this with your own cdn url
+      file.uri,
+      'name_for_file',
+    )
+  }
+/>
+```
+
+:::note
+
+Usage of `chatClient?.sendFile` is optional in above examples. You may choose to use any HTTP client for uploading the file.
+But make sure to return a promise that is resolved to an object with the key `file` that is the url of the uploaded file.
+
+For example:
+
+```tsx
+{
+  file: 'https://us-east.stream-io-cdn.com/62344/images/a4f988f5-6a9c-47b0-aab9-7a27b74d7515.60D6041A-D012-4721-B794-19267B8F352B.jpg'
+}
+```
+
+:::
+
 ## Disabling File Uploads or Image Uploads
 
 There are three ways to disable file or image uploads from RN app:

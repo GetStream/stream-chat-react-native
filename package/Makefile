@@ -2,9 +2,13 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = ../examples
-EXAMPLES = ExpoMessaging NativeMessaging SampleApp TypeScriptMessaging
-EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXAMPLES))
-EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXAMPLES_APPS))
+NATIVE_EXAMPLES = NativeMessaging SampleApp TypeScriptMessaging
+NATIVE_EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(NATIVE_EXAMPLES))
+NATIVE_EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(NATIVE_EXAMPLES_APPS))
+
+EXPO_EXAMPLES = ExpoMessaging
+EXPO_EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXPO_EXAMPLES))
+EXPO_EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXPO_EXAMPLES_APPS))
 
 WRAPPER_PACKAGES = native-package expo-package
 WRAPPER_PACKAGES_DEPS = $(addsuffix /node_modules/installed_dependencies,$(WRAPPER_PACKAGES))
@@ -14,10 +18,15 @@ LIB_SOURCES = $(wildcard *.js) $(wildcard */*.js) $(wildcard */*.scss) $(wildcar
 
 CHAT_DEPS = ../client/package.json
 
-example-deps: $(EXAMPLES_APPS_DEPS)
+native-example-deps: $(NATIVE_EXAMPLES_APPS_DEPS)
+expo-example-deps: $(EXPO_EXAMPLES_APPS_DEPS)
 
-$(EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
+$(NATIVE_EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
 	cd $* && yarn install && npx pod-install
+	touch $@
+
+$(EXPO_EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
+	cd $* && yarn install
 	touch $@
 
 $(WRAPPER_PACKAGES_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) node_modules/installed_dependencies

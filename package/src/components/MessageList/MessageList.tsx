@@ -131,6 +131,7 @@ type MessageListPropsWithContext<
     | 'channel'
     | 'disabled'
     | 'EmptyStateIndicator'
+    | 'hideStickyDateHeader'
     | 'loadChannelAtMessage'
     | 'loading'
     | 'LoadingIndicator'
@@ -158,6 +159,7 @@ type MessageListPropsWithContext<
     | 'initialScrollToFirstUnreadMessage'
     | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
+    | 'legacyImageViewerSwipeBehaviour'
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
@@ -265,11 +267,13 @@ const MessageListWithContext = <
     FlatList,
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
+    hideStickyDateHeader,
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
     isListActive = false,
+    legacyImageViewerSwipeBehaviour,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -412,7 +416,7 @@ const MessageListWithContext = <
    */
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
-      if (viewableItems) {
+      if (viewableItems && !hideStickyDateHeader) {
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
       setInitialScrollIfNeeded();
@@ -787,44 +791,63 @@ const MessageListWithContext = <
     [messageListLengthAfterUpdate],
   );
 
-  const messagesWithImages = messageList.filter((message) => {
-    if (!message.deleted_at && message.attachments) {
-      return message.attachments.some(
-        (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
-      );
-    }
-    return false;
-  });
+  const messagesWithImages =
+    legacyImageViewerSwipeBehaviour &&
+    messageList.filter((message) => {
+      if (!message.deleted_at && message.attachments) {
+        return message.attachments.some(
+          (attachment) =>
+            attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            (attachment.image_url || attachment.thumb_url),
+        );
+      }
+      return false;
+    });
 
   /**
    * This is for the useEffect to run again in the case that a message
    * gets edited with more or the same number of images
    */
-  const imageString = messagesWithImages
-    .map((message) =>
-      message.attachments
-        ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
-        .join(),
-    )
-    .join();
+  const imageString =
+    legacyImageViewerSwipeBehaviour &&
+    messagesWithImages &&
+    messagesWithImages
+      .map((message) =>
+        message.attachments
+          ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
+          .join(),
+      )
+      .join();
 
-  const numberOfMessagesWithImages = messagesWithImages.length;
+  const numberOfMessagesWithImages =
+    legacyImageViewerSwipeBehaviour && messagesWithImages && messagesWithImages.length;
   const threadExists = !!thread;
+
   useEffect(() => {
-    if (isListActive && ((threadList && thread) || (!threadList && !thread))) {
-      setImages(messagesWithImages);
+    if (
+      legacyImageViewerSwipeBehaviour &&
+      isListActive &&
+      ((threadList && thread) || (!threadList && !thread))
+    ) {
+      setImages(messagesWithImages as MessageType<At, Ch, Co, Ev, Me, Re, Us>[]);
     }
-  }, [imageString, numberOfMessagesWithImages, threadExists, threadList, isListActive]);
+  }, [
+    imageString,
+    isListActive,
+    legacyImageViewerSwipeBehaviour,
+    numberOfMessagesWithImages,
+    threadExists,
+    threadList,
+  ]);
 
   const stickyHeaderFormatDate =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate = stickyHeaderDate ? tDateTimeParser(stickyHeaderDate) : null;
+  const tStickyHeaderDate =
+    stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
   const stickyHeaderDateToRender =
-    tStickyHeaderDate === null
+    tStickyHeaderDate === null || hideStickyDateHeader
       ? null
       : isDayOrMoment(tStickyHeaderDate)
       ? tStickyHeaderDate.format(stickyHeaderFormatDate)
@@ -945,7 +968,9 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     error,
+    hideStickyDateHeader,
     isChannelActive,
     loadChannelAtMessage,
     loading,
@@ -968,6 +993,7 @@ export const MessageList = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    legacyImageViewerSwipeBehaviour,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -990,12 +1016,15 @@ export const MessageList = <
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
+        enableMessageGroupingByUser,
         error,
         FlatList,
+        hideStickyDateHeader,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
         isListActive: isChannelActive,
+        legacyImageViewerSwipeBehaviour,
         loadChannelAtMessage,
         loading,
         LoadingIndicator,
@@ -1025,6 +1054,7 @@ export const MessageList = <
         TypingIndicatorContainer,
       }}
       {...props}
+      noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
 };

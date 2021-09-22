@@ -1,5 +1,43 @@
 # Change Log
 
+### [0.1.1](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.1.0...SampleApp@v0.1.1) (2021-09-16)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [0.1.0](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.35...SampleApp@v0.1.0) (2021-09-16)
+
+
+### Features
+
+* scroll to top of the list, when bottom tab is pressed ([cfc3983](https://github.com/GetStream/stream-chat-react-native/commit/cfc398338d19cc5a685ee9a76ef57f6d3d659506))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [0.0.35](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.34...SampleApp@v0.0.35) (2021-09-14)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [0.0.34](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.33...SampleApp@v0.0.34) (2021-09-13)
+
+
+### Bug Fixes
+
+* delegate content type detection to backend for image/file uploads ([8de7d8d](https://github.com/GetStream/stream-chat-react-native/commit/8de7d8d22a3e6152185db3f86ce705af904e75c6))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [0.0.33](https://github.com/GetStream/stream-chat-react-native/compare/SampleApp@v0.0.32...SampleApp@v0.0.33) (2021-08-30)
 
 

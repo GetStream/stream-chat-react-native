@@ -1577,10 +1577,10 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-stream-chat-react-native-core@3.7.2:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.7.2.tgz#5cd97beb3349ead2b365e29343ad33c19c8641b7"
-  integrity sha512-XfU91ZJu8NP9EyPrU88W7VWcwrChKI0SJ+gvEyREujHKL3b31kOy7aB4PbuZ4d/imLuG4Zm5Sud6mvWPZ3hkew==
+stream-chat-react-native-core@3.8.0:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.8.0.tgz#1928df5cef797c31fe37bb0c5849f36006fb5869"
+  integrity sha512-JUlfl0zgy8coFDv8727NnBfcLMGYV2pFRYGt5RfiFlPKlbUhDCjJQvHda/J23UM8UxYqvJ2VSd0O8+tVeVCeKg==
   dependencies:
     "@babel/runtime" "7.13.10"
     "@gorhom/bottom-sheet" "3.6.4"
