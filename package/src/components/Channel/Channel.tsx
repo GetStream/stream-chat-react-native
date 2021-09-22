@@ -1546,6 +1546,7 @@ const ChannelWithContext = <
       !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     isAdmin,
+    isChannelActive: shouldSyncChannel,
     isModerator,
     isOwner,
     lastRead,

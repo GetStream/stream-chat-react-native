@@ -202,6 +202,7 @@ type MessageListPropsWithContext<
     HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
+    isListActive?: boolean;
     /** Turn off grouping of messages by user */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
@@ -268,6 +269,7 @@ const MessageListWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
+    isListActive = false,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -813,10 +815,10 @@ const MessageListWithContext = <
   const numberOfMessagesWithImages = messagesWithImages.length;
   const threadExists = !!thread;
   useEffect(() => {
-    if ((threadList && thread) || (!threadList && !thread)) {
+    if (isListActive && ((threadList && thread) || (!threadList && !thread))) {
       setImages(messagesWithImages);
     }
-  }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
+  }, [imageString, numberOfMessagesWithImages, threadExists, threadList, isListActive]);
 
   const stickyHeaderFormatDate =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
@@ -944,6 +946,7 @@ export const MessageList = <
     disabled,
     EmptyStateIndicator,
     error,
+    isChannelActive,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -992,6 +995,7 @@ export const MessageList = <
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
+        isListActive: isChannelActive,
         loadChannelAtMessage,
         loading,
         LoadingIndicator,
