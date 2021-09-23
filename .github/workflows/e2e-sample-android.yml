@@ -73,6 +73,8 @@ jobs:
 
       - name: Test
         id: detoxRun
+        timeout-minutes: 30
+        continue-on-error: true
         run: |
           yarn detox-sample-android:test --record-logs failing --record-videos failing
 
@@ -80,6 +82,7 @@ jobs:
       - name: Test retry (Sometimes detox)
         if: failure() && steps.detoxRun.outcome == 'failure'
         id: detoxRun2
+        timeout-minutes: 30
         run: |
           yarn detox-sample-android:test --record-logs failing --record-videos failing
 
