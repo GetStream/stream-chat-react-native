@@ -60,7 +60,6 @@ export const usePaginatedPinnedMessages = (
         return;
       }
 
-      // TODO: Use this when support for attachment_type is ready.
       const res = await chatClient?.search(
         {
           cid: { $in: [channel.cid] },

@@ -656,8 +656,8 @@ const MessageWithContext = <
   };
 
   const handleTogglePinMessage = async () => {
-    const messagePinnedStatus = message.pinned;
-    if (!messagePinnedStatus) {
+    const MessagePinnedHeaderStatus = message.pinned;
+    if (!MessagePinnedHeaderStatus) {
       await client.pinMessage(message, null);
     } else {
       await client.unpinMessage(message);

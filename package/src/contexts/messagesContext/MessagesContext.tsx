@@ -29,7 +29,7 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
-import type { MessagePinnedProps } from 'src/components/Message/MessageSimple/MessagePinned';
+import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
@@ -166,7 +166,7 @@ export type MessagesContextValue<
   /**
    * Custom message pinned component
    */
-  MessagePinned: React.ComponentType<MessagePinnedProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)

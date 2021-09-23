@@ -10,15 +10,15 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
-  text: {
-    marginLeft: 5,
-  },
-  view: {
+  container: {
     display: 'flex',
     flexDirection: 'row',
     marginBottom: 8,
     marginLeft: 30,
     marginTop: 5,
+  },
+  label: {
+    marginLeft: 5,
   },
 });
 
@@ -34,7 +34,7 @@ import type {
 } from '../../../types/types';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-export type MessagePinnedPropsWithContext<
+export type MessagePinnedHeaderPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -44,7 +44,7 @@ export type MessagePinnedPropsWithContext<
   Us extends DefaultUserType = DefaultUserType,
 > = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
 
-const MessagePinnedWithContext = <
+const MessagePinnedHeaderWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -53,12 +53,13 @@ const MessagePinnedWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 >(
-  props: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, message } = props;
   const {
     theme: {
       colors: { grey },
+      MessagePinnedHeader: { container, label },
     },
   } = useTheme();
   const { t } = useTranslationContext();
@@ -66,15 +67,16 @@ const MessagePinnedWithContext = <
   return (
     <View
       style={[
-        styles.view,
+        styles.container,
         {
           justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
         },
+        container,
       ]}
       testID='message-pinned'
     >
       <Pin height={16} pathFill={grey} width={24} />
-      <Text style={[{ color: grey }, styles.text]}>
+      <Text style={[{ color: grey }, styles.label, label]}>
         Pinned by{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
       </Text>
@@ -91,8 +93,8 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  prevProps: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message: prevMessage } = prevProps;
   const { message: nextMessage } = nextProps;
@@ -106,12 +108,12 @@ const areEqual = <
   return true;
 };
 
-const MemoizedMessagePinned = React.memo(
-  MessagePinnedWithContext,
+const MemoizedMessagePinnedHeader = React.memo(
+  MessagePinnedHeaderWithContext,
   areEqual,
-) as typeof MessagePinnedWithContext;
+) as typeof MessagePinnedHeaderWithContext;
 
-export type MessagePinnedProps<
+export type MessagePinnedHeaderProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -119,9 +121,9 @@ export type MessagePinnedProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
-> = Partial<MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
-export const MessagePinned = <
+export const MessagePinnedHeader = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -130,12 +132,12 @@ export const MessagePinned = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 >(
-  props: MessagePinnedProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, lastGroupMessage, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
-    <MemoizedMessagePinned
+    <MemoizedMessagePinnedHeader
       {...{
         alignment,
         lastGroupMessage,
@@ -146,4 +148,4 @@ export const MessagePinned = <
   );
 };
 
-MessagePinned.displayName = 'MessagePinned{messageSimple{pinned}}';
+MessagePinnedHeader.displayName = 'MessagePinnedHeader{messageSimple{pinned}}';

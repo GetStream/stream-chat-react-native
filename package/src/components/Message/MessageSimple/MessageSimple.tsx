@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     flexDirection: 'row',
   },
-  innerView: {},
 });
 
 export type MessageSimplePropsWithContext<
@@ -47,7 +46,7 @@ export type MessageSimplePropsWithContext<
     | 'enableMessageGroupingByUser'
     | 'MessageAvatar'
     | 'MessageContent'
-    | 'MessagePinned'
+    | 'MessagePinnedHeader'
     | 'ReactionList'
   >;
 
@@ -71,7 +70,7 @@ const MessageSimpleWithContext = <
     message,
     MessageAvatar,
     MessageContent,
-    MessagePinned,
+    MessagePinnedHeader,
     ReactionList,
   } = props;
 
@@ -92,7 +91,7 @@ const MessageSimpleWithContext = <
 
   return (
     <>
-      {message.pinned && <MessagePinned />}
+      {message.pinned && <MessagePinnedHeader />}
       <View
         style={[
           styles.container,
@@ -230,7 +229,7 @@ export const MessageSimple = <
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
-    MessagePinned,
+    MessagePinnedHeader,
     ReactionList,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -245,7 +244,7 @@ export const MessageSimple = <
         message,
         MessageAvatar,
         MessageContent,
-        MessagePinned,
+        MessagePinnedHeader,
         ReactionList,
       }}
       {...props}

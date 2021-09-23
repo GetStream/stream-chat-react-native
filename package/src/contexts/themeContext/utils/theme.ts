@@ -314,6 +314,10 @@ export type Theme = {
     };
     typingIndicatorContainer: ViewStyle;
   };
+  MessagePinnedHeader: {
+    container: ViewStyle;
+    label: TextStyle;
+  };
   messageSimple: {
     actions: {
       button: ViewStyle & {
@@ -747,6 +751,10 @@ export const defaultTheme: Theme = {
       wrapper: {},
     },
     typingIndicatorContainer: {},
+  },
+  MessagePinnedHeader: {
+    container: {},
+    label: {},
   },
   messageSimple: {
     actions: {

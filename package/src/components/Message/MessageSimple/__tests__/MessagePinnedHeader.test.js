@@ -1,7 +1,7 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { MessagePinned } from '../MessagePinned';
+import { MessagePinnedHeader } from '../MessagePinnedHeader';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -13,7 +13,7 @@ import { generateStaticUser } from '../../../../mock-builders/generator/user';
 
 afterEach(cleanup);
 
-describe('MessagePinned', () => {
+describe('MessagePinnedHeader', () => {
   it('should render message pinned', async () => {
     const staticUser = generateStaticUser(0);
     const message = generateMessage({
@@ -21,7 +21,7 @@ describe('MessagePinned', () => {
     });
     const { getByTestId, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinned alignment='right' message={message} />
+        <MessagePinnedHeader alignment='right' message={message} />
       </ThemeProvider>,
     );
 
@@ -31,7 +31,7 @@ describe('MessagePinned', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinned alignment='right' message={message} />
+        <MessagePinnedHeader alignment='right' message={message} />
       </ThemeProvider>,
     );
 
@@ -41,7 +41,7 @@ describe('MessagePinned', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessagePinned alignment='left' message={staticMessage} />
+        <MessagePinnedHeader alignment='left' message={staticMessage} />
       </ThemeProvider>,
     );
 

@@ -1,6 +1,6 @@
 ---
 id: message-pinned
-title: MessagePinned
+title: MessagePinnedHeader
 ---
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
@@ -11,14 +11,14 @@ Component to render the pinned message label (user) of a message within the [`Me
 
 ## Basic Usage
 
-You can customize the `MessagePinned` component and provide it back to the SDK via the [`MessagePinned`](../core-components/channel.mdx#messagepinned) prop on `Channel` if desired.
+You can customize the `MessagePinnedHeader` component and provide it back to the SDK via the [`MessagePinnedHeader`](../core-components/channel.mdx#MessagePinnedHeader) prop on `Channel` if desired.
 
 ```tsx
 import {Channel, MessageAvatar} from 'stream-chat-react-native';
 
-const MessageAvatarComponent = () => <MessagePinned />
+const MessagePinnedHeaderComponent = () => <MessagePinnedHeader />
 
-<Channel MessageAvatar={MessageAvatarComponent} />
+<Channel MessageAvatar={MessagePinnedHeaderComponent} />
 ```
 
 ## Props
