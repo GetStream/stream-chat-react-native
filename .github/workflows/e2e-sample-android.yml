@@ -33,6 +33,7 @@ jobs:
           architecture: 'x64'
 
       - name: Build Android App
+        continue-on-error: true
         id: buildApp
         run: yarn detox-sample-android:build
 
