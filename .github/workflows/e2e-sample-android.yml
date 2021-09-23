@@ -40,54 +40,40 @@ jobs:
         if: failure() && steps.buildApp.outcome == 'failure'
         run: yarn detox-sample-android:build
 
-      - name: Download Android Emulator Image
-        run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;default;x86_64"
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name Pixel_29_AOSP -d pixel -k 'system-images;android-29;default;x86_64'
-          $ANDROID_HOME/emulator/emulator -list-avds
-
-      - name: Launch Emulator
-        id: emu1
-        timeout-minutes: 15
+      - name: Run tests
+        id: runTests
         continue-on-error: true
-        run: |
-          echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-          $ANDROID_HOME/platform-tools/adb devices
-          echo "Emulator started"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          cores: 2
+          ram-size: 6000
+          avd-name: Pixel_29_AOSP
+          force-avd-creation: false
+          disable-animations: true
+          disable-spellchecker: true
+          emulator-options: -gpu host -no-audio -no-snapshot -no-window
+          script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
-      - name: Launch Emulator Retry
-        timeout-minutes: 15
-        continue-on-error: true
-        if: failure() && steps.emu1.outcome == 'failure'
-        run: |
-          echo "Starting emulator, second attempt"
-          $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 emulator-5554 || true
-          sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd Pixel_29_AOSP -cores 2 -memory 6000 -gpu host -no-audio -no-snapshot -no-window &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-          $ANDROID_HOME/platform-tools/adb devices
-          echo "Emulator started"
-
-      - name: Test
-        id: detoxRun
-        timeout-minutes: 30
-        continue-on-error: true
-        run: |
-          yarn detox-sample-android:test --record-logs failing --record-videos failing
-
-      # Sometimes Detox don't attach the android emulator properly when running in CI.
-      - name: Test retry (Sometimes detox)
-        if: failure() && steps.detoxRun.outcome == 'failure'
-        id: detoxRun2
-        timeout-minutes: 30
-        run: |
-          yarn detox-sample-android:test --record-logs failing --record-videos failing
+      - name: Run tests retry
+        id: runTests2
+        if: failure() && steps.runTests.outcome == 'failure'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          cores: 2
+          ram-size: 6000
+          avd-name: Pixel_29_AOSP
+          force-avd-creation: false
+          disable-animations: true
+          disable-spellchecker: true
+          emulator-options: -gpu host -no-audio -no-snapshot -no-window
+          script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
-        if: failure() && steps.detoxRun2.outcome == 'failure'
+        if: failure() && steps.runTests2.outcome == 'failure'
         with:
           name: detox-artifacts
           path: ./artifacts
