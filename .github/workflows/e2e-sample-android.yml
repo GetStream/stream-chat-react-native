@@ -46,15 +46,13 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          arch: x86_64
-          cores: 2
-          ram-size: 6000
+          ram-size: 4000
           avd-name: Pixel_29_AOSP
-          force-avd-creation: false
           disable-animations: true
           disable-spellchecker: true
+          target: google_apis
           emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
-          emulator-options: -gpu host -no-audio -no-snapshot -no-window
+          emulator-options: -gpu swiftshader_indirect -no-audio -no-snapshot -no-window -no-boot-anim -camera-back none
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
       - name: Run tests retry
@@ -63,15 +61,14 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          arch: x86_64
-          cores: 2
-          ram-size: 6000
+          ram-size: 4000
           avd-name: Pixel_29_AOSP
           force-avd-creation: false
           disable-animations: true
           disable-spellchecker: true
+          target: google_apis
           emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
-          emulator-options: -gpu host -no-audio -no-snapshot -no-window
+          emulator-options: -gpu swiftshader_indirect -no-audio -no-snapshot -no-window -no-boot-anim -camera-back none
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
       - uses: actions/upload-artifact@v2
