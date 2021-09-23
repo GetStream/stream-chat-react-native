@@ -116,7 +116,7 @@ export const useMessageList = <
     .map((msg) => ({
       ...msg,
       dateSeparator: dateSeparators[msg.id] || undefined,
-      groupStyles: messageGroupStyles[msg.id] || [],
+      groupStyles: messageGroupStyles[msg.id] || ['single'],
       readBy: msg.id ? readData[msg.id] || false : false,
     }));
 

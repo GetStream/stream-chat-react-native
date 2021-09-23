@@ -98,6 +98,8 @@ export type MessagesContextValue<
   DateHeader: React.ComponentType<DateHeaderProps>;
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
+
+  enableMessageGroupingByUser: boolean;
   /**
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)
@@ -293,6 +295,7 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
+
   editMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the flag message button in the Message Actions
@@ -334,6 +337,7 @@ export type MessagesContextValue<
   handleRetry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
   /**

@@ -98,19 +98,23 @@ export type GalleryPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<ImageGalleryContextValue, 'setImage'> &
+> = Pick<ImageGalleryContextValue, 'setImage' | 'setImages'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'alignment'
     | 'groupStyles'
     | 'images'
+    | 'message'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
     | 'preventPress'
     | 'threadList'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
+  > &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
     hasThreadReplies?: boolean;
     messageId?: string;
@@ -134,6 +138,8 @@ const GalleryWithContext = <
     groupStyles,
     hasThreadReplies,
     images,
+    legacyImageViewerSwipeBehaviour,
+    message,
     messageId,
     messageText,
     onLongPress,
@@ -142,6 +148,7 @@ const GalleryWithContext = <
     preventPress,
     setBlurType,
     setImage,
+    setImages,
     setOverlay,
     threadList,
   } = props;
@@ -217,6 +224,9 @@ const GalleryWithContext = <
         >
           {column.map(({ height, url }, rowIndex) => {
             const defaultOnPress = () => {
+              if (!legacyImageViewerSwipeBehaviour) {
+                setImages([message]);
+              }
               setImage({ messageId, url });
               setBlurType(blurType);
               setOverlay('gallery');
@@ -413,7 +423,7 @@ export const Gallery = <
     threadList: propThreadList,
   } = props;
 
-  const { setImage: contextSetImage } = useImageGalleryContext();
+  const { setImage: contextSetImage, setImages } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -425,8 +435,10 @@ export const Gallery = <
     preventPress: contextPreventPress,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { additionalTouchableProps: contextAdditionalTouchableProps } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+    legacyImageViewerSwipeBehaviour,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setBlurType: contextSetBlurType, setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
@@ -454,6 +466,8 @@ export const Gallery = <
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         images,
+        legacyImageViewerSwipeBehaviour,
+        message,
         messageId: messageId || message?.id,
         messageText: messageText || message?.text,
         onLongPress,
@@ -462,6 +476,7 @@ export const Gallery = <
         preventPress,
         setBlurType,
         setImage,
+        setImages,
         setOverlay,
         threadList,
       }}

@@ -44,7 +44,11 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'MessageAvatar' | 'MessageContent' | 'ReactionList' | 'MessagePinned'
+    | 'enableMessageGroupingByUser'
+    | 'MessageAvatar'
+    | 'MessageContent'
+    | 'MessagePinned'
+    | 'ReactionList'
   >;
 
 const MessageSimpleWithContext = <
@@ -61,6 +65,7 @@ const MessageSimpleWithContext = <
   const {
     alignment,
     channel,
+    enableMessageGroupingByUser,
     groupStyles,
     hasReactions,
     message,
@@ -93,7 +98,11 @@ const MessageSimpleWithContext = <
           styles.container,
           {
             justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-            marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 8) : 0,
+            marginBottom: hasMarginBottom
+              ? isVeryLastMessage && enableMessageGroupingByUser
+                ? 30
+                : 8
+              : 0,
             marginTop: showReactions ? 2 : 0,
           },
           container,
@@ -101,7 +110,6 @@ const MessageSimpleWithContext = <
         testID='message-simple-wrapper'
       >
         {alignment === 'left' && <MessageAvatar />}
-
         <MessageContent setMessageContentWidth={setMessageContentWidth} />
         {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
       </View>
@@ -218,14 +226,20 @@ export const MessageSimple = <
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageAvatar, MessageContent, MessagePinned, ReactionList } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    enableMessageGroupingByUser,
+    MessageAvatar,
+    MessageContent,
+    MessagePinned,
+    ReactionList,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageSimple<At, Ch, Co, Ev, Me, Re, Us>
       {...{
         alignment,
         channel,
+        enableMessageGroupingByUser,
         groupStyles,
         hasReactions,
         message,
