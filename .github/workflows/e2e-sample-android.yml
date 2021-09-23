@@ -53,6 +53,7 @@ jobs:
           force-avd-creation: false
           disable-animations: true
           disable-spellchecker: true
+          emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           emulator-options: -gpu host -no-audio -no-snapshot -no-window
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
@@ -69,6 +70,7 @@ jobs:
           force-avd-creation: false
           disable-animations: true
           disable-spellchecker: true
+          emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           emulator-options: -gpu host -no-audio -no-snapshot -no-window
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
 
