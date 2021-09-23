@@ -204,6 +204,7 @@ type MessageListPropsWithContext<
     HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
+    isListActive?: boolean;
     /** Turn off grouping of messages by user */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
@@ -271,6 +272,7 @@ const MessageListWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
+    isListActive = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAtMessage,
     loading,
@@ -843,11 +845,16 @@ const MessageListWithContext = <
   const threadExists = !!thread;
 
   useEffect(() => {
-    if (legacyImageViewerSwipeBehaviour && ((threadList && thread) || (!threadList && !thread))) {
+    if (
+      legacyImageViewerSwipeBehaviour &&
+      isListActive &&
+      ((threadList && thread) || (!threadList && !thread))
+    ) {
       setImages(messagesWithImages as MessageType<At, Ch, Co, Ev, Me, Re, Us>[]);
     }
   }, [
     imageString,
+    isListActive,
     legacyImageViewerSwipeBehaviour,
     numberOfMessagesWithImages,
     threadExists,
@@ -983,6 +990,7 @@ export const MessageList = <
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
+    isChannelActive,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -1034,6 +1042,7 @@ export const MessageList = <
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
+        isListActive: isChannelActive,
         legacyImageViewerSwipeBehaviour,
         loadChannelAtMessage,
         loading,

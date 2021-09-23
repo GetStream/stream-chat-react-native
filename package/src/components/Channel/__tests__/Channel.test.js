@@ -21,6 +21,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -47,12 +48,14 @@ const messages = [generateMessage({ user })];
 
 const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
   render(
-    <Chat client={chatClient}>
-      <Channel {...props}>
-        {props.children}
-        <CallbackEffectWithContext {...{ callback, context }} />
-      </Channel>
-    </Chat>,
+    <ChannelsStateProvider>
+      <Chat client={chatClient}>
+        <Channel {...props}>
+          {props.children}
+          <CallbackEffectWithContext {...{ callback, context }} />
+        </Channel>
+      </Chat>
+    </ChannelsStateProvider>,
   );
 
 describe('Channel', () => {
@@ -146,20 +149,22 @@ describe('Channel', () => {
     );
 
     rerender(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <CallbackEffectWithContext
-            callback={({ openThread, thread }) => {
-              if (!thread) {
-                openThread(threadMessage);
-              } else {
-                hasThread(thread.id);
-              }
-            }}
-            context={ThreadContext}
-          />
-        </Channel>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <CallbackEffectWithContext
+              callback={({ openThread, thread }) => {
+                if (!thread) {
+                  openThread(threadMessage);
+                } else {
+                  hasThread(thread.id);
+                }
+              }}
+              context={ThreadContext}
+            />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });

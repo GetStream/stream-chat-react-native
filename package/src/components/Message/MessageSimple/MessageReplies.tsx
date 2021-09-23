@@ -220,12 +220,14 @@ const areEqual = <
   const {
     message: prevMessage,
     noBorder: prevNoBorder,
+    onOpenThread: prevOnOpenThread,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
   const {
     message: nextMessage,
     noBorder: nextNoBorder,
+    onOpenThread: nextOnOpenThread,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
@@ -241,6 +243,9 @@ const areEqual = <
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
+
+  const onOpenThreadEqual = prevOnOpenThread === nextOnOpenThread;
+  if (!onOpenThreadEqual) return false;
 
   return true;
 };
