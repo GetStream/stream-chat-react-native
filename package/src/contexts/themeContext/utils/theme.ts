@@ -314,10 +314,6 @@ export type Theme = {
     };
     typingIndicatorContainer: ViewStyle;
   };
-  MessagePinnedHeader: {
-    container: ViewStyle;
-    label: TextStyle;
-  };
   messageSimple: {
     actions: {
       button: ViewStyle & {
@@ -417,6 +413,10 @@ export type Theme = {
       sendContainer: ViewStyle;
       shuffleButton: ViewStyle;
       title: TextStyle;
+    };
+    pinnedHeader: {
+      container: ViewStyle;
+      label: TextStyle;
     };
     reactionList: {
       container: ViewStyle;
@@ -752,10 +752,6 @@ export const defaultTheme: Theme = {
     },
     typingIndicatorContainer: {},
   },
-  MessagePinnedHeader: {
-    container: {},
-    label: {},
-  },
   messageSimple: {
     actions: {
       button: {},
@@ -885,6 +881,10 @@ export const defaultTheme: Theme = {
       sendContainer: {},
       shuffleButton: {},
       title: {},
+    },
+    pinnedHeader: {
+      container: {},
+      label: {},
     },
     reactionList: {
       container: {},

@@ -59,9 +59,10 @@ const MessagePinnedHeaderWithContext = <
   const {
     theme: {
       colors: { grey },
-      MessagePinnedHeader: { container, label },
+      messageSimple: { pinnedHeader },
     },
   } = useTheme();
+  const { container, label } = pinnedHeader;
   const { t } = useTranslationContext();
   const { client } = useChatContext();
   return (
