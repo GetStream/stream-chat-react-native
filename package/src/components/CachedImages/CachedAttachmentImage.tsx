@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, ImageProps, ImageURISource } from 'react-native';
+import { Image, ImageProps, ImageURISource, StyleSheet, View } from 'react-native';
+import Placeholder from './Placeholder';
 
 import { useCachedAttachment } from './useCachedAttachment';
 
@@ -7,6 +8,17 @@ type GalleryImageCacheConfig = {
   channelId: string | undefined;
   messageId: string | undefined;
 };
+
+const styles = StyleSheet.create({
+  placeholderWrapper: {
+    alignItems: 'center',
+    backgroundColor: '#E9EAED',
+    display: 'flex',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+});
 
 export const CachedAttachmentImage: React.FC<
   Omit<ImageProps, 'source'> & {
@@ -17,5 +29,13 @@ export const CachedAttachmentImage: React.FC<
   const { cacheConfig, source } = props;
   const cachedSource = useCachedAttachment({ cacheConfig, source });
 
-  return cachedSource.uri ? <Image {...props} source={cachedSource} /> : null;
+  return cachedSource.uri ? (
+    <Image {...props} source={cachedSource} />
+  ) : (
+    <View style={props.style}>
+      <View style={styles.placeholderWrapper}>
+        <Placeholder />
+      </View>
+    </View>
+  );
 };
