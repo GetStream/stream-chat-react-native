@@ -200,19 +200,27 @@ export class StreamCache<
   }
 
   private syncCache() {
-    const { channels: currentChannelsData, client: currentClientData } = this.client.getStateData();
-    return Promise.all([
-      this.cacheInterface.setItem(STREAM_CHAT_SDK_VERSION, CURRENT_SDK_VERSION),
-      this.cacheInterface.setItem(STREAM_CHAT_CLIENT_VERSION, CURRENT_CLIENT_VERSION),
-      this.cacheInterface.setItem(STREAM_CHAT_CLIENT_DATA, currentClientData),
-      this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, currentChannelsData),
-      this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_ORDER, this.cachedChannelsOrder),
-    ]);
+    if (this.client.userID) {
+      const { channels: currentChannelsData, client: currentClientData } =
+        this.client.getStateData();
+
+      return Promise.all([
+        this.cacheInterface.setItem(STREAM_CHAT_SDK_VERSION, CURRENT_SDK_VERSION),
+        this.cacheInterface.setItem(STREAM_CHAT_CLIENT_VERSION, CURRENT_CLIENT_VERSION),
+        this.cacheInterface.setItem(STREAM_CHAT_CLIENT_DATA, currentClientData),
+        this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, currentChannelsData),
+        this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_ORDER, this.cachedChannelsOrder),
+      ]);
+    }
+
+    return Promise.resolve(null);
   }
 
   private startWatchers() {
     AppState.addEventListener('change', (nextAppState) => {
+      console.log('oooi', nextAppState);
       if (nextAppState.match(/inactive|background/)) {
+        console.log('backgrounddd');
         this.syncCache();
       }
     });
@@ -410,8 +418,8 @@ export class StreamCache<
     );
   }
 
-  public clear() {
-    return Promise.all([
+  public async clear() {
+    await Promise.all([
       this.cacheInterface.removeItem(STREAM_CHAT_SDK_VERSION),
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_VERSION),
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_DATA),

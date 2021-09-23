@@ -102,12 +102,13 @@ export const useChatClient = () => {
     setIsConnecting(false);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setChatClient(null);
-    chatClient?.disconnect();
+    chatClient?.disconnectUser();
 
     if (StreamCache.hasInstance()) {
-      StreamCache.getInstance().clear();
+      await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
+      await StreamCache.getInstance().clear();
     }
   };
 
