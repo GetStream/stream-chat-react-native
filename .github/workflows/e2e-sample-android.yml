@@ -50,7 +50,7 @@ jobs:
           avd-name: Pixel_29_AOSP
           disable-animations: true
           disable-spellchecker: true
-          target: google_apis
+          target: default
           emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           emulator-options: -gpu swiftshader_indirect -no-audio -no-snapshot -no-window -no-boot-anim -camera-back none
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
@@ -66,7 +66,7 @@ jobs:
           force-avd-creation: false
           disable-animations: true
           disable-spellchecker: true
-          target: google_apis
+          target: default
           emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
           emulator-options: -gpu swiftshader_indirect -no-audio -no-snapshot -no-window -no-boot-anim -camera-back none
           script: yarn detox-sample-android:test --record-logs failing --record-videos failing
