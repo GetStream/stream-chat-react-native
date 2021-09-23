@@ -48,7 +48,7 @@ jobs:
 
       - name: Launch Emulator
         id: emu1
-        timeout-minutes: 3
+        timeout-minutes: 5
         continue-on-error: true
         run: |
           echo "Starting emulator"
