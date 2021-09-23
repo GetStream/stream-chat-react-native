@@ -2,13 +2,7 @@ const { promisify } = require('util');
 const client = require('../client');
 const { commonChannelListTests } = require('../common/basic-channel-list.e2e');
 const { commonMessageListTests } = require('../common/basic-message-list.e2e');
-const {
-  disableNetwork,
-  enableNetwork,
-  wait,
-  populateChannel,
-  findOnInfiniteFlatlist,
-} = require('../utils');
+const { disableNetwork, enableNetwork, wait, populateChannel } = require('../utils');
 
 jest.retryTimes(3);
 
@@ -57,19 +51,17 @@ describe('SampleApp', () => {
       });
 
       it('should render user list', async () => {
-        await findOnInfiniteFlatlist(
-          element(by.id('user-selector-screen')),
-          element(by.id('user-selector-button-e2etest1')),
-          'up',
-        );
+        await waitFor(element(by.id('user-selector-button-e2etest1')))
+          .toBeVisible()
+          .whileElement(by.id('users-list'))
+          .scroll(300, 'down');
       });
 
       it('should redirect to channel list when user is selected', async () => {
-        await findOnInfiniteFlatlist(
-          element(by.id('user-selector-screen')),
-          element(by.id('user-selector-button-e2etest1')),
-          'up',
-        );
+        await waitFor(element(by.id('user-selector-button-e2etest1')))
+          .toBeVisible()
+          .whileElement(by.id('users-list'))
+          .scroll(300, 'down');
 
         await element(by.id('user-selector-button-e2etest1')).tap();
         await waitFor(element(by.id('channel-list-messenger')))
