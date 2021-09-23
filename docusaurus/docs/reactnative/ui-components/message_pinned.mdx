@@ -1,0 +1,34 @@
+---
+id: message-pinned
+title: MessagePinned
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
+
+Component to render the pinned message label (user) of a message within the [`MessageList`](./message_list.mdx).
+
+## Basic Usage
+
+You can customize the `MessagePinned` component and provide it back to the SDK via the [`MessagePinned`](../core-components/channel.mdx#messagepinned) prop on `Channel` if desired.
+
+```tsx
+import {Channel, MessageAvatar} from 'stream-chat-react-native';
+
+const MessageAvatarComponent = () => <MessagePinned />
+
+<Channel MessageAvatar={MessageAvatarComponent} />
+```
+
+## Props
+
+This component uses default values for all the following props, from [`MessageContext`](../contexts/message_context.mdx)
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
+
+<Alignment />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
+
+<MessageProp />

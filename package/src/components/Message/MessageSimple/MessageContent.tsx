@@ -32,7 +32,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { MessagePinned } from './MessagePinned';
 
 const styles = StyleSheet.create({
   containerInner: {

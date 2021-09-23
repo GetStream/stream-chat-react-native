@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Pin } from 'stream-chat-react-native';
+import { Pin } from '../../../icons/Pin';
 
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
   view: {
@@ -31,6 +32,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { useChatContext } from 'stream-chat-react-native';
 
 export type MessagePinnedPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -40,10 +42,7 @@ export type MessagePinnedPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
->;
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
 
 const MessagePinnedWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -56,13 +55,14 @@ const MessagePinnedWithContext = <
 >(
   props: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment } = props;
+  const { message, alignment } = props;
   const {
     theme: {
       colors: { grey },
     },
   } = useTheme();
-
+  const { t } = useTranslationContext();
+  const { client } = useChatContext();
   return (
     <View
       style={[
@@ -71,10 +71,13 @@ const MessagePinnedWithContext = <
           justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
         },
       ]}
-      testID='message-avatar'
+      testID='message-pinned'
     >
       <Pin height={16} width={24} pathFill={grey} />
-      <Text style={[{ color: grey }, styles.text]}>Pinned by You</Text>
+      <Text style={[{ color: grey }, styles.text]}>
+        Pinned by{' '}
+        {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}
+      </Text>
     </View>
   );
 };
@@ -91,18 +94,15 @@ const areEqual = <
   prevProps: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
-  const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
-
-  const userEqual =
-    prevMessage.user?.image === nextMessage.user?.image &&
-    prevMessage.user?.name === nextMessage.user?.name &&
-    prevMessage.user?.id === nextMessage.user?.id;
-  if (!userEqual) return false;
-
+  const { message: prevMessage } = prevProps;
+  const { message: nextMessage } = nextProps;
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
+  if (!messageEqual) return false;
   return true;
 };
 
