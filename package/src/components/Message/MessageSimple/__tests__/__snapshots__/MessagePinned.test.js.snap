@@ -72,7 +72,9 @@ exports[`MessagePinned should render message pinned 1`] = `
       ]
     }
   >
-    Pinned by You
+    Pinned by
+     
+    You
   </Text>
 </View>
 `;

@@ -32,7 +32,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { useChatContext } from 'stream-chat-react-native';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 export type MessagePinnedPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
