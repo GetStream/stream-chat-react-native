@@ -218,7 +218,7 @@ export const MessageSimple = <
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageAvatar, MessageContent, ReactionList, MessagePinned } =
+  const { MessageAvatar, MessageContent, MessagePinned, ReactionList } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (

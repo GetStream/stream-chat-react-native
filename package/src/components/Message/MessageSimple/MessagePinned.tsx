@@ -10,15 +10,15 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
+  text: {
+    marginLeft: 5,
+  },
   view: {
     display: 'flex',
     flexDirection: 'row',
     marginBottom: 8,
-    marginTop: 5,
     marginLeft: 30,
-  },
-  text: {
-    marginLeft: 5,
+    marginTop: 5,
   },
 });
 
@@ -55,7 +55,7 @@ const MessagePinnedWithContext = <
 >(
   props: MessagePinnedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, alignment } = props;
+  const { alignment, message } = props;
   const {
     theme: {
       colors: { grey },
@@ -73,7 +73,7 @@ const MessagePinnedWithContext = <
       ]}
       testID='message-pinned'
     >
-      <Pin height={16} width={24} pathFill={grey} />
+      <Pin height={16} pathFill={grey} width={24} />
       <Text style={[{ color: grey }, styles.text]}>
         Pinned by{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}

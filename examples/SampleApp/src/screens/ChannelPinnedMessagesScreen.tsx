@@ -112,7 +112,7 @@ const EmptyListComponent = () => {
   } = useTheme();
   return (
     <View style={styles.emptyContainer}>
-      <Message height={110} width={130} fill={grey_gainsboro} />
+      <Message fill={grey_gainsboro} height={110} width={130} />
       <Text style={[styles.noFiles, { color: black }]}>No pinned messages</Text>
       <Text style={[styles.noFilesDetails, { color: grey }]}>
         Long-press an important message and choose Pin to conversation.

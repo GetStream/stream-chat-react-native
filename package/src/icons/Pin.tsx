@@ -5,8 +5,8 @@ import { IconProps, RootPath, RootSvg } from './utils/base';
 export const Pin: React.FC<IconProps> = (props) => (
   <RootSvg
     height={props.height}
-    width={props.width}
     viewBox={`0 0 ${props.height} ${props.width}`}
+    width={props.width}
     {...props}
   >
     <RootPath

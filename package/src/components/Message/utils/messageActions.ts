@@ -58,10 +58,10 @@ export const messageActions = <
   quotedReply: MessageAction | null;
   retry: MessageAction | null;
   threadReply: MessageAction | null;
+  unpinMessage: MessageAction | null;
   mutesEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
-  unpinMessage: MessageAction | null;
 }): Array<MessageAction | null> | undefined => {
   if (messageReactions) {
     return undefined;

@@ -155,8 +155,8 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               <Avatar
                 image={item.user?.image}
                 name={item.user?.name}
-                size={40}
                 online={item?.user?.online}
+                size={40}
               />
               <View style={styles.flex}>
                 <View style={styles.row}>

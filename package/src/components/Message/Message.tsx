@@ -73,11 +73,11 @@ import {
   Edit,
   MessageFlag,
   Mute,
+  Pin,
   SendUp,
   ThreadReply,
-  UserDelete,
-  Pin,
   Unpin,
+  UserDelete,
 } from '../../icons';
 import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
@@ -655,7 +655,7 @@ const MessageWithContext = <
     setEditingState(message);
   };
 
-  const handlePinMessageUtil = async () => {
+  const handleTogglePinMessage = async () => {
     const messagePinnedStatus = message.pinned;
     if (!messagePinnedStatus) {
       await client.pinMessage(message, null);
@@ -780,9 +780,9 @@ const MessageWithContext = <
             if (handlePinMessage) {
               handlePinMessage(message);
             }
-            handlePinMessageUtil();
+            handleTogglePinMessage();
           },
-          icon: <Pin pathFill={grey} height={23} width={24} />,
+          icon: <Pin height={23} pathFill={grey} width={24} />,
           title: t('Pin to Conversation'),
         };
 
@@ -796,7 +796,7 @@ const MessageWithContext = <
             if (handlePinMessage) {
               handlePinMessage(message);
             }
-            handlePinMessageUtil();
+            handleTogglePinMessage();
           },
           icon: <Unpin pathFill={grey} />,
           title: t('Unpin from Conversation'),

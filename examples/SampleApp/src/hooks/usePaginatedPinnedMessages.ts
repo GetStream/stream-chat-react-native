@@ -13,6 +13,7 @@ import type {
   LocalReactionType,
   LocalUserType,
 } from '../types';
+import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
 export const usePaginatedPinnedMessages = (
   channel: Channel<
@@ -30,6 +31,7 @@ export const usePaginatedPinnedMessages = (
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [messages, setMessages] = useState<
     MessageResponse<
       LocalAttachmentType,
@@ -65,7 +67,7 @@ export const usePaginatedPinnedMessages = (
         },
         { pinned: true },
         {
-          limit: 10,
+          limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
         },
       );
@@ -79,11 +81,11 @@ export const usePaginatedPinnedMessages = (
 
       setMessages((existingMessages) => existingMessages.concat(newMessages));
 
-      if (newMessages.length < 10) {
+      if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;
       }
-    } catch (e) {
-      // do nothing;
+    } catch (error) {
+      setError(error);
     }
     queryInProgress.current = false;
     setLoading(false);
@@ -98,6 +100,7 @@ export const usePaginatedPinnedMessages = (
   }, []);
 
   return {
+    error,
     loading,
     loadMore,
     messages,

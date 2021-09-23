@@ -44,6 +44,7 @@ export type StackNavigatorParamList = {
       LocalUserType
     >;
   };
+  ChannelListScreen: undefined;
   ChannelPinnedMessagesScreen: {
     channel: Channel<
       LocalAttachmentType,
@@ -55,7 +56,6 @@ export type StackNavigatorParamList = {
       LocalUserType
     >;
   };
-  ChannelListScreen: undefined;
   ChannelScreen: {
     channel?: Channel<
       LocalAttachmentType,
