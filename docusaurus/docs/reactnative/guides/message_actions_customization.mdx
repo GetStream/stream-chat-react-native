@@ -73,6 +73,8 @@ Following example demonstrates how to:
 - Only show "Copy Message", "Edit Message" actions from default action set.
 - Show "Edit Message" messages from current user.
 
+Additionally following example demonstrates how you can add custom styles for message action title.
+
   ```jsx
   <Channel
     messageActions={({
@@ -80,7 +82,17 @@ Following example demonstrates how to:
       editMessage,
       isMyMessage,
     }) => isMyMessage
-      ? [copyMessage, editMessage]
+      ? [
+          copyMessage,
+          editMessage,
+          {
+            ...deleteMessage,
+            textStyle: {
+              color: 'red',
+              fontWeight: 'bold'
+            }
+          }
+        ]
       : [copyMessage]
     }
   >
