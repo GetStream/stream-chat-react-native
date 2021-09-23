@@ -59,7 +59,7 @@ jobs:
 
       - name: Run tests retry
         id: runTests2
-        if: failure() && steps.runTests.outcome == 'failure'
+        if: steps.runTests.outcome == 'failure'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
