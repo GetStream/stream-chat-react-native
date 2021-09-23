@@ -8,9 +8,11 @@ export function useNetworkState(mountedState: { current: boolean }) {
   useEffect(() => {
     NetInfo.addEventListener((state) => {
       if (mountedState.current) {
-        if (state.isConnected && state.isInternetReachable && networkState.current === false) {
+        if (state.isConnected && state.isInternetReachable) {
+          if (networkState.current === false) {
+            setLastOnlineStatus(Date.now());
+          }
           networkState.current = true;
-          setLastOnlineStatus(Date.now());
         } else {
           networkState.current = false;
         }
