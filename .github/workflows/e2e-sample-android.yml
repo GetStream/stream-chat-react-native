@@ -48,7 +48,7 @@ jobs:
 
       - name: Launch Emulator
         id: emu1
-        timeout-minutes: 5
+        timeout-minutes: 15
         continue-on-error: true
         run: |
           echo "Starting emulator"
@@ -58,7 +58,7 @@ jobs:
           echo "Emulator started"
 
       - name: Launch Emulator Retry
-        timeout-minutes: 5
+        timeout-minutes: 15
         continue-on-error: true
         if: failure() && steps.emu1.outcome == 'failure'
         run: |
