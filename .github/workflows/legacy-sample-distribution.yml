@@ -3,9 +3,9 @@ name: legacy-sample-distribution
 on:
   push:
     branches:
-      - offline-mode
-    # paths:
-    #   - examples/SampleApp
+      - v4
+    paths:
+      - examples/SampleApp
 jobs:
   build_and_deploy_ios_firebase:
     runs-on: [macos-latest]
