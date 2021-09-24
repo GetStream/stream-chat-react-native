@@ -66,7 +66,6 @@ export const usePaginatedChannels = <
   const querying = useRef(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -90,7 +89,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : offset,
+      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : channels.length,
       ...options,
     };
 
@@ -108,7 +107,6 @@ export const usePaginatedChannels = <
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setOffset(newChannels.length);
       setError(false);
       querying.current = false;
       // Once client.queryChannels remove old data from the client cache, we just synchronize the cache and images in order to

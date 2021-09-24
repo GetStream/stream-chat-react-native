@@ -433,7 +433,26 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (!loading && channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
+    /**
+     * 1. !initialScrollToFirstUnreadMessage && channel.countUnread() > 0
+     *
+     *    In this case MessageList won't scroll to first unread message when opened, so we can mark
+     *    the channel as read right after opening.
+     *
+     * 2. initialScrollToFirstUnreadMessage && channel.countUnread() <= scrollToFirstUnreadThreshold
+     *
+     *    In this case MessageList will be opened to first unread message.
+     *    But if there are not enough (scrollToFirstUnreadThreshold) unread messages, then MessageList
+     *    won't need to scroll up. So we can safely mark the channel as read right after opening.
+     */
+    const shouldMarkReadOnFirstLoad =
+      !loading &&
+      channel &&
+      ((!initialScrollToFirstUnreadMessage && channel.countUnread() > 0) ||
+        (initialScrollToFirstUnreadMessage &&
+          channel.countUnread() <= scrollToFirstUnreadThreshold));
+
+    if (shouldMarkReadOnFirstLoad) {
       markRead();
     }
   }, [loading]);
