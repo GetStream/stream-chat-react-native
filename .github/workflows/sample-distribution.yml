@@ -6,6 +6,7 @@ on:
       - v4.0.0
     paths:
       - examples/SampleApp
+      - package
 jobs:
   build_and_deploy_ios_testflight_qa:
     runs-on: [macos-latest]
