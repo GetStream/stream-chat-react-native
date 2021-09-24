@@ -45,6 +45,7 @@ import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageDeleted as MessageDeletedDefault } from '../Message/MessageSimple/MessageDeleted';
 import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
+import { MessagePinnedHeader as MessagePinnedHeaderDefault } from '../Message/MessageSimple/MessagePinnedHeader';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
@@ -249,6 +250,7 @@ export type ChannelPropsWithContext<
       | 'handleEdit'
       | 'handleFlag'
       | 'handleMute'
+      | 'handlePinMessage'
       | 'handleReaction'
       | 'handleQuotedReply'
       | 'handleRetry'
@@ -265,6 +267,7 @@ export type ChannelPropsWithContext<
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
+      | 'MessagePinnedHeader'
       | 'MessageReplies'
       | 'MessageRepliesAvatars'
       | 'MessageSimple'
@@ -278,6 +281,7 @@ export type ChannelPropsWithContext<
       | 'onPressInMessage'
       | 'onPressMessage'
       | 'OverlayReactionList'
+      | 'pinMessage'
       | 'quotedReply'
       | 'ReactionList'
       | 'Reply'
@@ -374,6 +378,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     mutesEnabled?: boolean;
+    pinMessageEnabled?: boolean;
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
@@ -454,6 +459,7 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction,
     handleRetry,
@@ -495,6 +501,7 @@ const ChannelWithContext = <
     MessageHeader,
     messageId,
     MessageList = MessageListDefault,
+    MessagePinnedHeader = MessagePinnedHeaderDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     messages,
@@ -515,6 +522,8 @@ const ChannelWithContext = <
     onPressMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
+    pinMessage,
+    pinMessageEnabled: pinMessageEnabledProp,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
     quotedReply,
     ReactionList = ReactionListDefault,
@@ -1165,6 +1174,7 @@ const ChannelWithContext = <
      * Replace with backend flag once its ready
      */
     mutesEnabled: mutesEnabledProp ?? clientChannelConfig?.mutes ?? true,
+    pinMessageEnabled: pinMessageEnabledProp ?? true,
     quotedRepliesEnabled: quotedRepliesEnabledProp ?? true,
     reactionsEnabled: reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
     threadRepliesEnabled: threadRepliesEnabledProp ?? clientChannelConfig?.replies ?? true,
@@ -1710,6 +1720,7 @@ const ChannelWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction,
     handleRetry,
@@ -1728,6 +1739,7 @@ const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList,
+    MessagePinnedHeader,
     MessageReplies,
     MessageRepliesAvatars,
     MessageSimple,
@@ -1741,6 +1753,7 @@ const ChannelWithContext = <
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
+    pinMessage,
     quotedReply,
     ReactionList,
     removeMessage,

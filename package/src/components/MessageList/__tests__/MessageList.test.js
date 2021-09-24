@@ -225,6 +225,11 @@ describe('MessageList', () => {
         generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
         generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
         generateStaticMessage('Message3', { user: user2 }, '2020-05-06T14:50:00.000Z'),
+        generateStaticMessage(
+          'Message4',
+          { pinned: true, user: user1 },
+          '2020-05-06T14:50:00.000Z',
+        ),
       ],
     });
 
@@ -246,7 +251,7 @@ describe('MessageList', () => {
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('date-separator')).toHaveLength(2);
+      expect(queryAllByTestId('date-separator')).toHaveLength(3);
       expect(toJSON()).toMatchSnapshot();
     });
   });

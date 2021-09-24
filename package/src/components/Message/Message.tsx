@@ -9,6 +9,7 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -72,8 +73,10 @@ import {
   Edit,
   MessageFlag,
   Mute,
+  Pin,
   SendUp,
   ThreadReply,
+  Unpin,
   UserDelete,
 } from '../../icons';
 import { triggerHaptic } from '../../native';
@@ -185,6 +188,7 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handlePinMessage'
     | 'handleQuotedReply'
     | 'handleReaction'
     | 'handleRetry'
@@ -199,6 +203,8 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'pinMessage'
+    | 'pinMessageEnabled'
     | 'quotedRepliesEnabled'
     | 'quotedReply'
     | 'reactionsEnabled'
@@ -309,6 +315,7 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction: handleReactionProp,
     handleRetry,
@@ -334,6 +341,8 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    pinMessage: pinMessageProp,
+    pinMessageEnabled,
     preventPress,
     quotedRepliesEnabled,
     reactionsEnabled,
@@ -648,6 +657,15 @@ const MessageWithContext = <
     setEditingState(message);
   };
 
+  const handleTogglePinMessage = async () => {
+    const MessagePinnedHeaderStatus = message.pinned;
+    if (!MessagePinnedHeaderStatus) {
+      await client.pinMessage(message, null);
+    } else {
+      await client.unpinMessage(message);
+    }
+  };
+
   const handleToggleBanUser = async () => {
     const messageUser = message.user;
     if (!messageUser) {
@@ -752,6 +770,38 @@ const MessageWithContext = <
           },
           icon: <Edit pathFill={grey} />,
           title: t('Edit Message'),
+        };
+
+    const pinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handleTogglePinMessage();
+          },
+          icon: <Pin height={23} pathFill={grey} width={24} />,
+          title: t('Pin to Conversation'),
+        };
+
+    const unpinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handleTogglePinMessage();
+          },
+          icon: <Unpin pathFill={grey} />,
+          title: t('Unpin from Conversation'),
         };
 
     const flagMessage = flagMessageProp
@@ -913,11 +963,14 @@ const MessageWithContext = <
             messageReactions,
             mutesEnabled,
             muteUser,
+            pinMessage,
+            pinMessageEnabled,
             quotedRepliesEnabled,
             quotedReply,
             retry,
             threadRepliesEnabled,
             threadReply,
+            unpinMessage,
           });
 
     setData({
@@ -1121,27 +1174,29 @@ const MessageWithContext = <
           onGestureEvent={onDoubleTap}
           ref={doubleTapRef}
         >
-          <Animated.View
-            style={[
-              style,
-              {
-                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-              },
-              scaleStyle,
-            ]}
-          >
+          <View style={[message.pinned && { backgroundColor: '#FBF4DD' }]}>
             <Animated.View
               style={[
-                StyleSheet.absoluteFillObject,
-                targetedMessageUnderlay,
-                { backgroundColor: targetedMessageBackground },
-                targetedStyle,
+                style,
+                {
+                  backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+                },
+                scaleStyle,
               ]}
-            />
-            <MessageProvider value={messageContext}>
-              <MessageSimple />
-            </MessageProvider>
-          </Animated.View>
+            >
+              <Animated.View
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  targetedMessageUnderlay,
+                  { backgroundColor: targetedMessageBackground },
+                  targetedStyle,
+                ]}
+              />
+              <MessageProvider value={messageContext}>
+                <MessageSimple />
+              </MessageProvider>
+            </Animated.View>
+          </View>
         </TapGestureHandler>
       </Animated.View>
     </TapGestureHandler>
@@ -1203,7 +1258,8 @@ const areEqual = <
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at;
+    prevMessage.updated_at === nextMessage.updated_at &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 

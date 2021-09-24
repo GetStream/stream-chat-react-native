@@ -56,6 +56,7 @@ import HandleDelete from '../common-content/core-components/channel/props/handle
 import HandleEdit from '../common-content/core-components/channel/props/handle_edit.mdx';
 import HandleFlag from '../common-content/core-components/channel/props/handle_flag.mdx';
 import HandleMute from '../common-content/core-components/channel/props/handle_mute.mdx';
+import HandlePinMessage from '../common-content/core-components/channel/props/handle_pin_message.mdx';
 import HandleQuotedReply from '../common-content/core-components/channel/props/handle_quoted_reply.mdx';
 import HandleReaction from '../common-content/core-components/channel/props/handle_reaction.mdx';
 import HandleRetry from '../common-content/core-components/channel/props/handle_retry.mdx';
@@ -83,6 +84,7 @@ import MessageContentOrder from '../common-content/core-components/channel/props
 import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx';
 import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx';
 import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx';
+import MessagePinnedHeader from '../common-content/core-components/channel/props/message_pinned_header.mdx';
 import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx';
 import MessageRepliesAvatars from '../common-content/core-components/channel/props/message_replies_avatars.mdx';
 import MessageSimple from '../common-content/core-components/channel/props/message_simple.mdx';
@@ -100,6 +102,8 @@ import OnLongPressMessage from '../common-content/core-components/channel/props/
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
+import PinMessage from '../common-content/core-components/channel/props/pin_message.mdx';
+import PinMessageEnabled from '../common-content/core-components/channel/props/pin_message_enabled.mdx';
 import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
 import QuotedReply from '../common-content/core-components/channel/props/quoted_reply.mdx';
 import ReactionsEnabled from '../common-content/core-components/channel/props/reactions_enabled.mdx'
@@ -476,6 +480,10 @@ The max allowable is 255, which when reached displays as `255+`.
 
 <HandleMute />
 
+### handlePinMessage
+
+<HandlePinMessage />
+
 ### handleReaction
 
 <HandleReaction />
@@ -621,6 +629,14 @@ Provide a custom array of messages to render in `MessageList`. -->
 <OnPressInMessage />
 
 <!-- ### openSuggestions -->
+
+### pinMessage
+
+<PinMessage />
+
+### pinMessageEnabled
+
+<PinMessageEnabled />
 
 ### quotedRepliesEnabled
 
@@ -842,6 +858,10 @@ Component to render full screen error indicator, when channel fails to load.
 ### MessageHeader
 
 <MessageHeader />
+
+## MessagePinnedHeader
+
+<MessagePinnedHeader />
 
 <!-- ### MessageList -->
 

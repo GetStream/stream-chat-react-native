@@ -414,6 +414,10 @@ export type Theme = {
       shuffleButton: ViewStyle;
       title: TextStyle;
     };
+    pinnedHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+    };
     reactionList: {
       container: ViewStyle;
       middleIcon: ViewStyle;
@@ -877,6 +881,10 @@ export const defaultTheme: Theme = {
       sendContainer: {},
       shuffleButton: {},
       title: {},
+    },
+    pinnedHeader: {
+      container: {},
+      label: {},
     },
     reactionList: {
       container: {},
