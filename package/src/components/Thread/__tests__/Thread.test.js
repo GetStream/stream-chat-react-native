@@ -94,7 +94,6 @@ describe('Thread', () => {
       </ChannelsStateProvider>,
     );
 
-    expect(t).toHaveBeenCalledWith('Loading messages...');
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Also send to channel');
       expect(getByText('Also send to channel')).toBeTruthy();

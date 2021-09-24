@@ -73,6 +73,7 @@ function SvgComponent(
           backgroundColor: `hsl(${color.current}, 40%, 50%)`,
         },
       ]}
+      testID='avatar-placeholder'
     >
       <Text style={styles.text}>{props.initials}</Text>
     </View>

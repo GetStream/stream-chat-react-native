@@ -150,6 +150,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       >
                         <Image
                           accessibilityLabel="avatar-image"
+                          id="ViriBoi2"
+                          initials="V"
                           onError={[Function]}
                           source={
                             Object {
@@ -451,6 +453,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       >
                         <Image
                           accessibilityLabel="avatar-image"
+                          id="ViriBoi2"
+                          initials="V"
                           onError={[Function]}
                           source={
                             Object {
@@ -714,6 +718,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       >
                         <Image
                           accessibilityLabel="avatar-image"
+                          id="GrantyBoi2"
+                          initials="G"
                           onError={[Function]}
                           source={
                             Object {
