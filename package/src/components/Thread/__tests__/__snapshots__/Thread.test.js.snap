@@ -824,7 +824,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   "paddingHorizontal": 8,
                 },
                 Object {
-                  "backgroundColor": "#00000099",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
