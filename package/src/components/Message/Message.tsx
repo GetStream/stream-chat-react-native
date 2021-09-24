@@ -204,6 +204,7 @@ export type MessagePropsWithContext<
     | 'onPressMessage'
     | 'OverlayReactionList'
     | 'pinMessage'
+    | 'pinMessageEnabled'
     | 'quotedRepliesEnabled'
     | 'quotedReply'
     | 'reactionsEnabled'
@@ -341,6 +342,7 @@ const MessageWithContext = <
     openThread,
     OverlayReactionList,
     pinMessage: pinMessageProp,
+    pinMessageEnabled,
     preventPress,
     quotedRepliesEnabled,
     reactionsEnabled,
@@ -962,6 +964,7 @@ const MessageWithContext = <
             mutesEnabled,
             muteUser,
             pinMessage,
+            pinMessageEnabled,
             quotedRepliesEnabled,
             quotedReply,
             retry,

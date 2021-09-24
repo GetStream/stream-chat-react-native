@@ -374,6 +374,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     mutesEnabled?: boolean;
+    pinMessageEnabled?: boolean;
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
@@ -513,6 +514,7 @@ const ChannelWithContext = <
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     pinMessage,
+    pinMessageEnabled: pinMessageEnabledProp,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
     quotedReply,
     ReactionList = ReactionListDefault,
@@ -1155,6 +1157,7 @@ const ChannelWithContext = <
      * Replace with backend flag once its ready
      */
     mutesEnabled: mutesEnabledProp ?? clientChannelConfig?.mutes ?? true,
+    pinMessageEnabled: pinMessageEnabledProp ?? true,
     quotedRepliesEnabled: quotedRepliesEnabledProp ?? true,
     reactionsEnabled: reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
     threadRepliesEnabled: threadRepliesEnabledProp ?? clientChannelConfig?.replies ?? true,

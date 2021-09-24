@@ -60,6 +60,7 @@ import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
   mutesEnabled?: boolean;
+  pinMessageEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   reactionsEnabled?: boolean;
   threadRepliesEnabled?: boolean;
@@ -406,6 +407,7 @@ export type MessagesContextValue<
         message,
         messageReactions,
         muteUser,
+        pinMessageEnabled,
         quotedRepliesEnabled,
         quotedReply,
         retry,
@@ -428,6 +430,7 @@ export type MessagesContextValue<
         quotedReply: MessageAction | null;
         retry: MessageAction | null;
         threadReply: MessageAction | null;
+        pinMessageEnabled?: boolean;
         quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
       }) => (MessageAction | null)[] | undefined);

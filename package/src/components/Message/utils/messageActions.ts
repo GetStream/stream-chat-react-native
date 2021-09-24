@@ -35,6 +35,7 @@ export const messageActions = <
   mutesEnabled,
   muteUser,
   pinMessage,
+  pinMessageEnabled,
   quotedRepliesEnabled,
   quotedReply,
   retry,
@@ -60,6 +61,7 @@ export const messageActions = <
   threadReply: MessageAction | null;
   unpinMessage: MessageAction | null;
   mutesEnabled?: boolean;
+  pinMessageEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
 }): Array<MessageAction | null> | undefined => {
@@ -93,11 +95,11 @@ export const messageActions = <
     actions.push(flagMessage);
   }
 
-  if (!message.pinned) {
+  if (pinMessageEnabled && !message.pinned) {
     actions.push(pinMessage);
   }
 
-  if (message.pinned) {
+  if (pinMessageEnabled && message.pinned) {
     actions.push(unpinMessage);
   }
 
