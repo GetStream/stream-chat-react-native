@@ -572,7 +572,7 @@ const ChannelWithContext = <
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!channel?.state.messages.length);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
@@ -790,7 +790,8 @@ const ChannelWithContext = <
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
-    setLoading(true);
+    // Skips setting loading state when there are messages in the channel
+    setLoading(!channel?.state.messages.length);
 
     try {
       await queryCall();
