@@ -3,7 +3,7 @@ name: sample-distribution
 on:
   push:
     branches:
-      - v4
+      - v4.0.0
     paths:
       - examples/SampleApp
 jobs:
