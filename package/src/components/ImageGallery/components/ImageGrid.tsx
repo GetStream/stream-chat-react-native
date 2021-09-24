@@ -94,6 +94,7 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
                   { backgroundColor: white },
                   gridAvatarWrapper,
                 ]}
+                id={item.channelId}
                 image={user.image}
                 imageStyle={gridAvatar}
                 size={22}

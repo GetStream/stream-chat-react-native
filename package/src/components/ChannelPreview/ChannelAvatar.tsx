@@ -52,6 +52,7 @@ export const ChannelAvatar = <
     return (
       <GroupAvatar
         channelId={channel.id}
+        ids={displayAvatar.ids}
         images={displayAvatar.images}
         names={displayAvatar.names}
         size={40}
@@ -62,6 +63,7 @@ export const ChannelAvatar = <
   return (
     <Avatar
       channelId={channel.id}
+      id={displayAvatar.id}
       image={displayAvatar.image}
       name={displayAvatar.name}
       online={displayPresence}

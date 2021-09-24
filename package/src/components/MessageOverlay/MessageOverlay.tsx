@@ -508,6 +508,7 @@ const MessageOverlayWithContext = <
                                 reactions={message.latest_reactions.map((reaction) => ({
                                   alignment:
                                     clientId && clientId === reaction.user?.id ? 'right' : 'left',
+                                  id: reaction?.user?.id || '',
                                   image: reaction?.user?.image,
                                   name: reaction?.user?.name || reaction.user_id || '',
                                   type: reaction.type,

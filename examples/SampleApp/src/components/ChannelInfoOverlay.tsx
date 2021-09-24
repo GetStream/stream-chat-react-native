@@ -318,6 +318,8 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             item ? (
                               <View style={styles.userItemContainer}>
                                 <Avatar
+                                  channelID={channel.id}
+                                  id={item.id}
                                   image={item.image}
                                   name={item.name || item.id}
                                   online={item.online}

@@ -300,6 +300,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                         </Text>
                         <View style={styles.userItemContainer}>
                           <Avatar
+                            channelId={channel.id}
+                            id={member.user?.id}
                             image={member.user?.image}
                             name={member.user?.name || member.user?.id}
                             online={member.user?.online}

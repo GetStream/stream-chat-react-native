@@ -61,7 +61,14 @@ const MentionsItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
 
   return (
     <View style={[styles.container, container]}>
-      <Avatar channelId={channelId} image={image} name={name} online={online} size={avatarSize} />
+      <Avatar
+        channelId={channelId}
+        id={id}
+        image={image}
+        name={name}
+        online={online}
+        size={avatarSize}
+      />
       <View style={[styles.column, column]}>
         <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
           {name || id}

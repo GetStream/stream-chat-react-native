@@ -99,6 +99,7 @@ export const MessageRepliesAvatars = <
               },
               avatar,
             ]}
+            id={user.id}
             image={user.image}
             name={user.name}
             size={avatarSize ? avatarSize : i === 1 ? 18 : 16}

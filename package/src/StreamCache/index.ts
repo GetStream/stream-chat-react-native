@@ -128,7 +128,7 @@ export class StreamCache<
   Us extends UnknownType = DefaultUserType,
 > {
   public currentNetworkState: boolean | null;
-  private static instance: StreamCache; // type is undefined|StreamChat, unknown is due to TS limitations with statics
+  private static instance: StreamCache;
   private static cacheMedia: boolean;
   private client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   private cacheInterface: CacheInterface<At, Ch, Co, Me, Re, Us>;

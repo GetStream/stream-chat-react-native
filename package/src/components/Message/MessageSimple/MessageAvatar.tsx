@@ -65,6 +65,7 @@ const MessageAvatarWithContext = <
       {visible ? (
         <Avatar
           channelId={message.cid}
+          id={message.user?.id}
           image={message.user?.image}
           name={message.user?.name || message.user?.id}
           size={size || BASE_AVATAR_SIZE}

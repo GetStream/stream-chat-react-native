@@ -31,13 +31,13 @@ export const useCachedAvatar = (
   });
 
   const setCachedSourceIfExists = async () => {
-    if (!StreamCache.shouldCacheMedia()) return;
+    if (!StreamCache.shouldCacheMedia() || !config.source.uri) return;
 
     const { channelId } = config;
     const url = config.source.uri;
     const pathname = extractPathname(url);
 
-    if (!config.source.uri || !channelId || !pathname) {
+    if (!channelId || !pathname) {
       if (!channelId) {
         console.warn(
           'Attempted to use cached avatar without passing the channelId prop to the cached image component. Falling back to network.',
