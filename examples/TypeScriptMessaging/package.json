@@ -10,7 +10,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.0.4",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-community/netinfo": "6.0.0",
@@ -51,13 +50,6 @@
   },
   "jest": {
     "preset": "react-native",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
   }
 }

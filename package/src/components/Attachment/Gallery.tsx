@@ -115,7 +115,7 @@ export type GalleryPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
   > &
-  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+  Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
     hasThreadReplies?: boolean;
     messageId?: string;
@@ -148,7 +148,6 @@ const GalleryWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setBlurType,
     setImage,
     setImages,
     setOverlay,
@@ -158,7 +157,6 @@ const GalleryWithContext = <
   const {
     theme: {
       colors: { overlay },
-      imageGallery: { blurType },
       messageSimple: {
         gallery: {
           galleryContainer,
@@ -230,7 +228,6 @@ const GalleryWithContext = <
                 setImages([message]);
               }
               setImage({ messageId, url });
-              setBlurType(blurType);
               setOverlay('gallery');
             };
 
@@ -421,7 +418,6 @@ export const Gallery = <
     onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
-    setBlurType: propSetBlurType,
     setImage: propSetImage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
@@ -443,7 +439,7 @@ export const Gallery = <
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setBlurType: contextSetBlurType, setOverlay: contextSetOverlay } = useOverlayContext();
+  const { setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
 
@@ -457,7 +453,6 @@ export const Gallery = <
   const onPress = propOnPress || contextOnPress;
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
-  const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
@@ -479,7 +474,6 @@ export const Gallery = <
         onPress,
         onPressIn,
         preventPress,
-        setBlurType,
         setImage,
         setImages,
         setOverlay,

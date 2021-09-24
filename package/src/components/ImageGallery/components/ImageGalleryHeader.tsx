@@ -100,7 +100,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { setOverlay, translucentStatusBar } = useOverlayContext();
 
   const parsedDate = tDateTimeParser(photo?.created_at);
 
@@ -132,7 +132,6 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
 
   const hideOverlay = () => {
     setOverlay('none');
-    setBlurType(undefined);
   };
 
   return (

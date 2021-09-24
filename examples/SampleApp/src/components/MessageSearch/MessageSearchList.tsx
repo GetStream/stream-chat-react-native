@@ -69,8 +69,8 @@ export type MessageSearchListProps = {
         LocalUserType
       >[]
     | undefined;
-  refreshing: boolean;
-  refreshList: () => void;
+  refreshing?: boolean;
+  refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
@@ -157,6 +157,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
                 id={item.user?.id}
                 image={item.user?.image}
                 name={item.user?.name}
+                online={item?.user?.online}
                 size={40}
               />
               <View style={styles.flex}>

@@ -29,12 +29,12 @@ import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent }
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
+import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
 import { useStreami18n } from '../../hooks/useStreami18n';
-import { BlurView } from '../../native';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
-import { BlurType, OverlayContext, OverlayProviderProps } from './OverlayContext';
+import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -141,7 +141,6 @@ export const OverlayProvider = <
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
-  const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
@@ -153,7 +152,6 @@ export const OverlayProvider = <
   useEffect(() => {
     const backAction = () => {
       if (overlay !== 'none') {
-        setBlurType(undefined);
         setOverlay('none');
         return true;
       }
@@ -202,7 +200,6 @@ export const OverlayProvider = <
 
   const overlayContext = {
     overlay,
-    setBlurType,
     setOverlay,
     style: value?.style,
     translucentStatusBar,
@@ -225,10 +222,7 @@ export const OverlayProvider = <
                     pointerEvents={overlay === 'none' ? 'none' : 'auto'}
                     style={[StyleSheet.absoluteFill, overlayStyle]}
                   >
-                    <BlurView
-                      blurType={blurType}
-                      style={[StyleSheet.absoluteFill, { height, width }]}
-                    />
+                    <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                   </Animated.View>
                   <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
                     MessageActions={MessageActions}
