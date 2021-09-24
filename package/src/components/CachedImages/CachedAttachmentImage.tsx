@@ -1,8 +1,10 @@
 import React from 'react';
-import { Image, ImageProps, ImageURISource, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import Placeholder from './Placeholder';
 
 import { useCachedAttachment } from './useCachedAttachment';
+
+import type { ImageProps, ImageURISource } from 'react-native';
 
 type GalleryImageCacheConfig = {
   channelId: string | undefined;

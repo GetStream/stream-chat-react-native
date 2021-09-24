@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Image } from 'react-native';
 
 import { StreamCache } from '../../StreamCache';
 import StreamMediaCache from '../../StreamMediaCache';
@@ -61,13 +62,16 @@ export const useCachedAttachment = (config: {
       );
     }
     if (mountedState.current) {
+      const uri = `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
+        channelId,
+        messageId,
+        pathname,
+      )}`;
+
+      await Image.prefetch(uri);
       setCachedSource((src) => ({
         ...src,
-        uri: `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
-          channelId,
-          messageId,
-          pathname,
-        )}`,
+        uri,
       }));
     }
   };

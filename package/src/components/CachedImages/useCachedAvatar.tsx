@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Image } from 'react-native';
 
 import { StreamCache } from '../../StreamCache';
 import StreamMediaCache from '../../StreamMediaCache';
@@ -17,12 +18,12 @@ export const useCachedAvatar = (
   // Stores when component gets unmounted so we can avoid calling setState after image promise resolves
   const mountedState = useRef(true);
   const lastOnlineStatus = useNetworkState(mountedState);
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    mountedState.current = true;
+    return () => {
       mountedState.current = false;
-    },
-    [],
-  );
+    };
+  }, []);
 
   const [cachedSource, setCachedSource] = useState({
     ...config.source,
@@ -53,9 +54,12 @@ export const useCachedAvatar = (
     }
 
     if (mountedState.current) {
+      const uri = `file://${StreamMediaCache.getStreamChannelAvatarDir(channelId, pathname)}`;
+
+      await Image.prefetch(uri);
       setCachedSource((src) => ({
         ...src,
-        uri: `file://${StreamMediaCache.getStreamChannelAvatarDir(channelId, pathname)}`,
+        uri,
       }));
     }
   };
