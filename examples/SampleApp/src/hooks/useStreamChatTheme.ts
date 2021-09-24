@@ -23,8 +23,7 @@ export const useStreamChatTheme = () => {
             grey_whisper: '#1C1E22',
             icon_background: '#FFFFFF',
             modal_shadow: '#000000',
-            overlay: '#00000066', // 66 = 40% opacity
-            overlay_dark: '#FFFFFFCC', // CC = 80% opacity
+            overlay: '#FFFFFFCC', // CC = 80% opacity
             shadow_icon: '#00000080', // 80 = 50% opacity
             targetedMessageBackground: '#302D22',
             transparent: 'transparent',
@@ -48,8 +47,7 @@ export const useStreamChatTheme = () => {
             grey_whisper: '#ECEBEB',
             icon_background: '#FFFFFF',
             modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
-            overlay: '#00000033', // 33 = 20% opacity
-            overlay_dark: '#00000099', // 99 = 60% opacity
+            overlay: '#00000099', // 99 = 60% opacity
             shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
             targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
             transparent: 'transparent',
@@ -57,9 +55,6 @@ export const useStreamChatTheme = () => {
             white_smoke: '#F2F2F2',
             white_snow: '#FCFCFC',
           },
-    imageGallery: {
-      blurType: colorScheme === 'dark' ? 'dark' : 'light',
-    },
   });
   const [chatStyle, setChatStyle] = useState(getChatStyle());
 

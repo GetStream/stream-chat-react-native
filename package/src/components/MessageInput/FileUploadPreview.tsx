@@ -102,7 +102,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper, overlay_dark },
+      colors: { black, grey, grey_whisper, overlay },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -182,7 +182,7 @@ const FileUploadPreviewWithContext = <
           onPress={() => {
             removeFile(item.id);
           }}
-          style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
+          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
           testID='remove-file-upload-preview'
         >
           <Close />

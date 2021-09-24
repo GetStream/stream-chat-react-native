@@ -160,7 +160,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { overlay, setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   /**
@@ -646,7 +646,6 @@ export const ImageGallery = <
               () => {
                 showScreen.value = 0;
                 runOnJS(setOverlay)('none');
-                runOnJS(setBlurType)(undefined);
               },
             );
             scale.value = withTiming(0.6, {

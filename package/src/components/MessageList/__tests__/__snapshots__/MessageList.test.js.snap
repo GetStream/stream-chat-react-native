@@ -1371,7 +1371,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "paddingHorizontal": 8,
                 },
                 Object {
-                  "backgroundColor": "#00000099",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1973,7 +1973,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "paddingHorizontal": 8,
                 },
                 Object {
-                  "backgroundColor": "#00000099",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]

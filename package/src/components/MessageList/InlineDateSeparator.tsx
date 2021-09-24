@@ -31,7 +31,7 @@ export type InlineDateSeparatorProps = {
 export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }) => {
   const {
     theme: {
-      colors: { overlay_dark, white },
+      colors: { overlay, white },
       inlineDateSeparator: { container, text },
     },
   } = useTheme();
@@ -49,7 +49,7 @@ export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }
 
   return (
     <View
-      style={[styles.container, { backgroundColor: overlay_dark }, container]}
+      style={[styles.container, { backgroundColor: overlay }, container]}
       testID='date-separator'
     >
       <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
