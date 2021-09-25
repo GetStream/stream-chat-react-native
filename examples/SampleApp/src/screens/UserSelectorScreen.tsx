@@ -106,7 +106,11 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       style={[styles.container, { backgroundColor: white_snow }]}
       testID='user-selector-screen'
     >
-      <ScrollView contentContainerStyle={styles.contentContainer} style={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        style={styles.scrollContainer}
+        testID='users-list'
+      >
         <View style={styles.titleContainer}>
           <StreamLogo />
           <Text style={[styles.title, { color: black }]}>Welcome to Stream Chat</Text>
@@ -122,7 +126,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
               switchUser(u.id);
             }}
             style={[styles.userContainer, { borderBottomColor: border }]}
-            testID='user-selector-button'
+            testID={`user-selector-button-${u.id}`}
           >
             <Image
               source={{

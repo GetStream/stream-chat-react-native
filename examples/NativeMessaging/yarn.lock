@@ -5851,6 +5851,13 @@ react-native-document-picker@5.0.4:
   resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-5.0.4.tgz#86a874e093284b21896581985b8b6e13e04a4251"
   integrity sha512-PN3NYZFgz6McbcfH5Cu3yf3nE4UBAiJYdL26F5cjypOoCFhdfLz0NM13V/tVOLGhWZXNUmI3g4dhPQBthq+pJg==
 
+react-native-easy-toast@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-easy-toast/-/react-native-easy-toast-2.0.0.tgz#059671ed23efd7fbe2855a1c3e4d21e6c4222a84"
+  integrity sha512-mLvHOy/slCJfgrLfOercIhVKslTF6D7NrJ7XLTRK3BCim7kNO1JdAgQ5+IF6bqdcUcFMIW/GwiauUbnSpynr8Q==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-fs@2.18.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.18.0.tgz#987b99cc90518ef26663a8d60e62104694b41c21"
@@ -6704,6 +6711,21 @@ stream-chat-react-native-core@3.8.3:
 "stream-chat-react-native@link:../../package/native-package":
   version "0.0.0"
   uid ""
+
+stream-chat@4.0.0-offline-caching.2:
+  version "4.0.0-offline-caching.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-4.0.0-offline-caching.2.tgz#cb601fc9bde6a8f1f1aa32bad47bfca3d68f895f"
+  integrity sha512-caZKmiwNncvJqjYO6EixLlo6UslrgfLnIVgWGrsh8N409I1JEAWvaQaxapnSMxTcHqAaypcA+8RenfAKCXgDaQ==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
 
 stream-chat@~3.13.1:
   version "3.13.1"

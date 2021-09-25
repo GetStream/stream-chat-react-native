@@ -97,6 +97,7 @@ import {
   SuggestionsProvider,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useToastContext } from '../../contexts/toastContext/ToastContext';
 import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
@@ -111,6 +112,7 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
+import { StreamCache } from '../../StreamCache';
 import { generateRandomId, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
@@ -579,7 +581,7 @@ const ChannelWithContext = <
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!channel?.state.messages.length);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
@@ -594,6 +596,8 @@ const ChannelWithContext = <
   const [syncingChannel, setSyncingChannel] = useState(false);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
+
+  const toast = useToastContext();
 
   const channelId = channel?.id || '';
   useEffect(() => {
@@ -795,7 +799,8 @@ const ChannelWithContext = <
 
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
-    setLoading(true);
+    // Skips setting loading state when there are messages in the channel
+    setLoading(!channel?.state.messages.length);
 
     try {
       await queryCall();
@@ -1312,6 +1317,12 @@ const ChannelWithContext = <
     } as StreamMessage<At, Me, Us>;
 
     try {
+      if (!StreamCache.getInstance().currentNetworkState) {
+        console.log(t('Something went wrong'));
+        toast.show(t('Something went wrong'), 2000);
+        throw new Error('No network connection');
+      }
+
       let messageResponse = {} as SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>;
 
       if (doSendMessageRequest) {

@@ -159,7 +159,7 @@ function reducer(state: ChannelsState, action: Action) {
       const currentCount = state[action.payload.cid]?.subscriberCount ?? 0;
 
       // If there last subscribed Channel component unsubscribes, we clear the channel state.
-      if (currentCount === 0) {
+      if (currentCount <= 1) {
         const stateShallowCopy = {
           ...state,
         };

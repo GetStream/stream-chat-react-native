@@ -4,6 +4,7 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { StreamCache } from '../../../StreamCache';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
@@ -50,20 +51,33 @@ export const usePaginatedChannels = <
   options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
+  const cacheInstance = StreamCache.hasInstance()
+    ? StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>()
+    : null;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
+    cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
+  );
   const activeChannels = useActiveChannelsRefContext();
 
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
+  const querying = useRef(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (cacheInstance) {
+      cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
+    }
+  }, [channels]);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing) return;
+    querying.current = true;
+    setError(false);
 
     if (queryType === 'reload') {
       setLoadingChannels(true);
@@ -75,7 +89,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : offset,
+      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : channels.length,
       ...options,
     };
 
@@ -93,12 +107,20 @@ export const usePaginatedChannels = <
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setOffset(newChannels.length);
       setError(false);
+      querying.current = false;
+      // Once client.queryChannels remove old data from the client cache, we just synchronize the cache and images in order to
+      // remove older cached images
+      if (cacheInstance) {
+        cacheInstance?.syncCacheAndImages();
+      }
     } catch (err) {
+      querying.current = false;
       await wait(2000);
 
-      if (retryCount === 3) {
+      // querying.current check is needed in order to make sure the next query call doesnt flick an error
+      // state and then succeed (reconnect case)
+      if (retryCount === 3 && !querying.current) {
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);

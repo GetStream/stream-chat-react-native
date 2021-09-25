@@ -153,6 +153,8 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               testID='channel-preview-button'
             >
               <Avatar
+                channelId={item.channel?.id}
+                id={item.user?.id}
                 image={item.user?.image}
                 name={item.user?.name}
                 online={item?.user?.online}

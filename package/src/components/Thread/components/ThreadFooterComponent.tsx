@@ -84,7 +84,7 @@ const ThreadFooterComponentWithContext = <
   const replyCount = thread.reply_count;
 
   return (
-    <View style={styles.threadHeaderContainer}>
+    <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
       <View style={styles.messagePadding}>
         <Message groupStyles={['single']} message={thread} preventPress threadList />
       </View>
