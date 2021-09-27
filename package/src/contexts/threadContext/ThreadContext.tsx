@@ -3,8 +3,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 import { getDisplayName } from '../utils/getDisplayName';
 
 import type { ChannelState } from 'stream-chat';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

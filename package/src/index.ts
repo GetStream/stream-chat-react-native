@@ -6,6 +6,7 @@ export * from './emoji-data/compiled';
 
 export * from './icons';
 
+export * from './types/messageTypes';
 export * from './types/types';
 
 export * from './utils/Streami18n';

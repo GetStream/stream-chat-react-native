@@ -8,11 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-  useMessageList,
-} from './hooks/useMessageList';
+import { isMessageWithStylesReadByAndDateSeparator, useMessageList } from './hooks/useMessageList';
 import { InlineLoadingMoreIndicator } from './InlineLoadingMoreIndicator';
 import { InlineLoadingMoreRecentIndicator } from './InlineLoadingMoreRecentIndicator';
 import { InlineLoadingMoreThreadIndicator } from './InlineLoadingMoreThreadIndicator';
@@ -53,6 +49,7 @@ import {
 
 import type { Channel as StreamChannel } from 'stream-chat';
 
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

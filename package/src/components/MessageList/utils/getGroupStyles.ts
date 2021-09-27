@@ -1,9 +1,8 @@
 import type { DateSeparators } from './getDateSeparators';
 
-import type { GroupType } from '../hooks/useMessageList';
-
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import type { GroupType } from '../../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

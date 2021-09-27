@@ -36,7 +36,6 @@ import type { MessageSimpleProps } from '../../components/Message/MessageSimple/
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
@@ -45,6 +44,7 @@ import type { OverlayReactionListProps } from '../../components/MessageOverlay/O
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

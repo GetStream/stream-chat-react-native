@@ -111,8 +111,7 @@ import {
 import { FlatList as FlatListDefault } from '../../native';
 import { generateRandomId, ReactionData } from '../../utils/utils';
 
-import type { MessageType } from '../MessageList/hooks/useMessageList';
-
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

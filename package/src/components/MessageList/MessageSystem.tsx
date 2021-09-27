@@ -8,8 +8,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { MessageType } from './hooks/useMessageList';
-
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

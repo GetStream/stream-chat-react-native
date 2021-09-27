@@ -26,10 +26,7 @@ import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 import { removeReservedFields } from './utils/removeReservedFields';
 
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
+import { isMessageWithStylesReadByAndDateSeparator } from '../MessageList/hooks/useMessageList';
 
 import {
   ChannelContextValue,
@@ -81,6 +78,7 @@ import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
 
+import type { MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

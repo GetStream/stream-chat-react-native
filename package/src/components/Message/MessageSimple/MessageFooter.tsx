@@ -19,9 +19,8 @@ import type { Attachment } from 'stream-chat';
 
 import type { MessageStatusProps } from './MessageStatus';
 
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import type { MessageType } from '../../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

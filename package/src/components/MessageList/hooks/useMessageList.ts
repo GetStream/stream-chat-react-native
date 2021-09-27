@@ -10,8 +10,10 @@ import {
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import type { ChannelState, MessageResponse } from 'stream-chat';
-
+import type {
+  MessagesWithStylesReadByAndDateSeparator,
+  MessageType,
+} from '../../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -28,34 +30,6 @@ export type UseMessageListParams = {
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
-
-export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
-
-export type MessagesWithStylesReadByAndDateSeparator<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = MessageResponse<At, Ch, Co, Me, Re, Us> & {
-  groupStyles: GroupType[];
-  readBy: boolean | number;
-  dateSeparator?: Date;
-};
-
-export type MessageType<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> =
-  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-  | MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>;
-
 // Type guards to check MessageType
 export const isMessageWithStylesReadByAndDateSeparator = <
   At extends UnknownType = DefaultAttachmentType,

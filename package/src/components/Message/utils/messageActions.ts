@@ -1,6 +1,5 @@
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
 import type { MessageAction } from '../../../contexts/messageOverlayContext/MessageOverlayContext';
+import type { MessageType } from '../../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

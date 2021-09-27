@@ -8,10 +8,10 @@ import type { Attachment } from 'stream-chat';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
-import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionsProps } from '../../components/MessageOverlay/MessageActions';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
+import type { GroupType, MessageType } from '../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

@@ -1,3 +1,4 @@
+import type { MessageType } from '../../../types/messageTypes';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -8,7 +9,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
   At extends UnknownType = DefaultAttachmentType,
