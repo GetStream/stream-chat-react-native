@@ -154,7 +154,7 @@ const ReactionListWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, white },
+      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, targetedMessageBackground, white },
       messageSimple: {
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
@@ -206,7 +206,7 @@ const ReactionListWithContext = <
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
-  const stroke = propStroke || white;
+  const stroke = propStroke || targetedMessageBackground;
   const strokeSize = propStrokeSize || themeStrokeSize;
 
   const x1 = alignmentLeft
@@ -277,14 +277,14 @@ const ReactionListWithContext = <
             <Circle cx={x2} cy={y2} fill={stroke} r={radius * 2 + strokeSize * 3} />
             <Circle cx={x1} cy={y1} fill={fill} r={radius + strokeSize} />
             <Circle cx={x2} cy={y2} fill={fill} r={radius * 2 + strokeSize} />
-            <Circle cx={x1} cy={y1} fill={alignmentLeft ? fill : stroke} r={radius} />
-            <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
+            <Circle cx={x1} cy={y1} fill={alignmentLeft ? fill : white} r={radius} />
+            <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
           </Svg>
           <View
             style={[
               styles.reactionBubbleBackground,
               {
-                backgroundColor: alignmentLeft ? fill : stroke,
+                backgroundColor: alignmentLeft ? fill : white,
                 borderColor: fill,
                 borderRadius: reactionSize,
                 borderWidth: strokeSize,
@@ -297,14 +297,14 @@ const ReactionListWithContext = <
           />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
-              <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
+              <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
             </Svg>
           </View>
           <View
             style={[
               styles.reactionBubble,
               {
-                backgroundColor: alignmentLeft ? fill : stroke,
+                backgroundColor: alignmentLeft ? fill : white,
                 borderRadius: reactionSize - strokeSize * 2,
                 height: reactionSize - strokeSize * 2,
                 left: left + strokeSize,

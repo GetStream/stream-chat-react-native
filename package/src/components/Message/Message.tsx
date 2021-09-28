@@ -1218,7 +1218,7 @@ const MessageWithContext = <
           onGestureEvent={onDoubleTap}
           ref={doubleTapRef}
         >
-          <View style={[message.pinned && { backgroundColor: '#FBF4DD' }]}>
+          <View style={[message.pinned && { backgroundColor: targetedMessageBackground }]}>
             <Animated.View
               style={[
                 style,

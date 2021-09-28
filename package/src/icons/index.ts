@@ -49,6 +49,7 @@ export * from './ODT';
 export * from './PDF';
 export * from './Picture';
 export * from './Pin';
+export * from './PinHeader';
 export * from './PPT';
 export * from './PPTX';
 export * from './RAR';
