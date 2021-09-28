@@ -129,8 +129,8 @@ export type GalleryPropsWithContext<
      * TODO[major]: remove messageId and messageText
      * TODO: Fix circular dependencies of imports
      */
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     hasThreadReplies?: boolean;
+    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     messageId?: string;
     messageText?: string;
   };
@@ -213,7 +213,7 @@ const GalleryWithContext = <
   }, [] as { height: number | string; url: string }[][]);
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
-  const messageText = messageTextProp || message.text;
+  const messageText = messageTextProp || message?.text;
 
   return (
     <View
@@ -239,12 +239,19 @@ const GalleryWithContext = <
         >
           {column.map(({ height, url }, rowIndex) => {
             const defaultOnPress = () => {
-              if (!legacyImageViewerSwipeBehaviour) {
+              // Added if-else to keep the logic readable, instead of DRY.
+              // if - legacyImageViewerSwipeBehaviour is disabled
+              // else - legacyImageViewerSwipeBehaviour is enabled
+              if (!legacyImageViewerSwipeBehaviour && message) {
                 setImages([message]);
+                setImage({ messageId: messageId || message.id, url });
+                setBlurType(blurType);
+                setOverlay('gallery');
+              } else if (legacyImageViewerSwipeBehaviour) {
+                setImage({ messageId: messageId || message?.id, url });
+                setBlurType(blurType);
+                setOverlay('gallery');
               }
-              setImage({ messageId: messageId || message.id, url });
-              setBlurType(blurType);
-              setOverlay('gallery');
             };
 
             return (
