@@ -252,6 +252,7 @@ export type ChannelPropsWithContext<
       | 'handleThreadReply'
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
+      | 'legacyImageViewerSwipeBehaviour'
       | 'markdownRules'
       | 'Message'
       | 'messageActions'
@@ -362,7 +363,6 @@ export type ChannelPropsWithContext<
      */
     KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
     keyboardVerticalOffset?: number;
-    legacyImageViewerSwipeBehaviour?: boolean;
     /**
      * Custom loading error indicator to override the Stream default
      */
@@ -466,6 +466,7 @@ const ChannelWithContext = <
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
+    // TODO[major]: switch to false.
     legacyImageViewerSwipeBehaviour = true,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
