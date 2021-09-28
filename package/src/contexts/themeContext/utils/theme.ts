@@ -17,6 +17,7 @@ export const Colors = {
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
   grey: '#7A7A7A',
+  grey_dark: '#72767E',
   grey_gainsboro: '#DBDBDB',
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',

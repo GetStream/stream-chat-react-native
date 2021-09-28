@@ -25,7 +25,7 @@ export const useStreamChatTheme = () => {
             modal_shadow: '#000000',
             overlay: '#FFFFFFCC', // CC = 80% opacity
             shadow_icon: '#00000080', // 80 = 50% opacity
-            targetedMessageBackground: '#302D22',
+            targetedMessageBackground: '#333024',
             transparent: 'transparent',
             white: '#101418',
             white_smoke: '#13151B',

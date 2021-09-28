@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Pin } from '../../../icons/Pin';
+import { PinHeader } from '../../../icons';
 
 import {
   MessageContextValue,
@@ -17,9 +17,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginTop: 5,
   },
-  label: {
-    marginLeft: 5,
-  },
+  label: {},
 });
 
 import type {
@@ -76,7 +74,7 @@ const MessagePinnedHeaderWithContext = <
       ]}
       testID='message-pinned'
     >
-      <Pin height={16} pathFill={grey} width={24} />
+      <PinHeader pathFill={grey} />
       <Text style={[{ color: grey }, styles.label, label]}>
         Pinned by{' '}
         {message?.pinned_by?.id === client?.user?.id ? t('You') : message?.pinned_by?.name}

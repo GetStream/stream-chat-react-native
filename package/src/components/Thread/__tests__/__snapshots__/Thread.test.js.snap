@@ -232,7 +232,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 "overflow": "hidden",
                               },
                               Object {
-                                "backgroundColor": "transparent",
+                                "backgroundColor": "#FFFFFF",
                                 "borderBottomLeftRadius": 0,
                                 "borderBottomRightRadius": 16,
                                 "borderColor": "#ECEBEB",
@@ -520,7 +520,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 "overflow": "hidden",
                               },
                               Object {
-                                "backgroundColor": "transparent",
+                                "backgroundColor": "#FFFFFF",
                                 "borderBottomLeftRadius": 0,
                                 "borderBottomRightRadius": 16,
                                 "borderColor": "#ECEBEB",
@@ -808,7 +808,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 "overflow": "hidden",
                               },
                               Object {
-                                "backgroundColor": "transparent",
+                                "backgroundColor": "#FFFFFF",
                                 "borderBottomLeftRadius": 0,
                                 "borderBottomRightRadius": 16,
                                 "borderColor": "#ECEBEB",
