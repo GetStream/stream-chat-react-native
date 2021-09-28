@@ -28,6 +28,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -104,7 +105,6 @@ export type GalleryPropsWithContext<
     | 'alignment'
     | 'groupStyles'
     | 'images'
-    | 'message'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
@@ -116,6 +116,20 @@ export type GalleryPropsWithContext<
     'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
   > &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+    /**
+     * `message` prop has been introduced here as part of `legacyImageViewerSwipeBehaviour` prop.
+     * https://github.com/GetStream/stream-chat-react-native/commit/d5eac6193047916f140efe8e396a671675c9a63f
+     * messageId and messageText may seem redundant now, but to avoid breaking change as part
+     * of minor release, we are keeping those props.
+     *
+     * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
+     * here, but due to some circular dependencies within the SDK, it causes "exccesive deep nesting" issue with
+     * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
+     *
+     * TODO[major]: remove messageId and messageText
+     * TODO: Fix circular dependencies of imports
+     */
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
@@ -141,7 +155,7 @@ const GalleryWithContext = <
     legacyImageViewerSwipeBehaviour,
     message,
     messageId,
-    messageText,
+    messageText: messageTextProp,
     onLongPress,
     onPress,
     onPressIn,
@@ -199,6 +213,7 @@ const GalleryWithContext = <
   }, [] as { height: number | string; url: string }[][]);
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+  const messageText = messageTextProp || message.text;
 
   return (
     <View
@@ -227,7 +242,7 @@ const GalleryWithContext = <
               if (!legacyImageViewerSwipeBehaviour) {
                 setImages([message]);
               }
-              setImage({ messageId, url });
+              setImage({ messageId: messageId || message.id, url });
               setBlurType(blurType);
               setOverlay('gallery');
             };
