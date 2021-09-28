@@ -218,9 +218,7 @@ export class StreamCache<
 
   private startWatchers() {
     AppState.addEventListener('change', (nextAppState) => {
-      console.log('oooi', nextAppState);
       if (nextAppState.match(/inactive|background/)) {
-        console.log('backgrounddd');
         this.syncCache();
       }
     });

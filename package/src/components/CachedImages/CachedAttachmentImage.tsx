@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import Placeholder from './Placeholder';
 
+import base64Placeholder from './base64Placeholder';
 import { useCachedAttachment } from './useCachedAttachment';
 
 import type { ImageProps, ImageURISource } from 'react-native';
@@ -12,6 +12,10 @@ type GalleryImageCacheConfig = {
 };
 
 const styles = StyleSheet.create({
+  placeholder: {
+    height: '50%',
+    width: '50%',
+  },
   placeholderWrapper: {
     alignItems: 'center',
     backgroundColor: '#E9EAED',
@@ -36,7 +40,7 @@ export const CachedAttachmentImage: React.FC<
   ) : (
     <View style={props.style}>
       <View style={styles.placeholderWrapper}>
-        <Placeholder />
+        <Image resizeMode='contain' source={base64Placeholder} style={styles.placeholder} />
       </View>
     </View>
   );

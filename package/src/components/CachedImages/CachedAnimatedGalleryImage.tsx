@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import Placeholder from './Placeholder';
 
 import type { ImageProps, ImageURISource } from 'react-native';
 
+import base64Placeholder from './base64Placeholder';
 import { useCachedAttachment } from './useCachedAttachment';
 
 type GalleryImageCacheConfig = {
@@ -13,6 +13,10 @@ type GalleryImageCacheConfig = {
 };
 
 const styles = StyleSheet.create({
+  placeholder: {
+    height: '50%',
+    width: '50%',
+  },
   placeholderWrapper: {
     alignItems: 'center',
     backgroundColor: '#E9EAED',
@@ -37,7 +41,7 @@ export const CachedAnimatedGalleryImage: React.FC<
   ) : (
     <Animated.View style={props.style}>
       <View style={styles.placeholderWrapper}>
-        <Placeholder />
+        <Image resizeMode='contain' source={base64Placeholder} style={styles.placeholder} />
       </View>
     </Animated.View>
   );
