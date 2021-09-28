@@ -6,33 +6,34 @@ title: Performance Boost
 
 import channelSettings from '../assets/guides/performance-boost/channel_settings.jpeg'
 
-React Native Chat SDK provides feature rich components which caters to all the types of chat messaging applications.
-Although some of the features or components may come with performance cost, which you will want to avoid for the cases of high
-concurrency applications such as livestreaming. In this guide we have noted down some tips for improving the performance of your
+React Native Chat SDK provides feature-rich components which cater to all types of chat messaging applications.
+Some of the features or components may come with a performance cost you will want to avoid for high
+concurrency applications such as livestreaming. In this guide, we have noted down some tips for improving the performance of your
 chat application if you are expecting heavy traffic on your chat.
 
 ## Channel Settings
 
 Within each channel type, some settings are available that apply to all channels of that type.
-Among these settings are the ability to enable/disable each event type.
-When disabled, events of that type (for channels of this type) will not be passed through to a client's open WebSocket connection.
-It's also important to note that increasing the events enabled on a channel type also increases the load on clients in those channels.
+Among these settings is the ability to enable or disable each event type.
+While disabled, an event of a selected type will not be passed through to a client's open WebSocket connection in the channel type it has been set.
+It's also important to note that increasing the number of enabled events for a channel type also increases the load on clients in those channels.
 
-- For Livestream type channels, we recommend disabling Connect, Read Events, and Typing Events. These will cause performance issues and don't generally add to the user experience in these use cases.
+- For the Livestream channel type, we recommend disabling Connect, Read Events, and Typing Events. These will cause performance issues and don't generally add to the user experience in these use cases.
 - Also consider using [Slow Mode](https://getstream.io/chat/docs/slow_mode/?language=js#channel-slow-mode) for Livestream events.
 
 <img src={channelSettings} />
 
 ## State update throttling
 
-[Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from websocket.
-By default these state updates are throttled to once per 500 ms. For high traffic applications, you may want to adjust throttling
-interval to a higher number. You can configure throttle interval via props on Channel component:
-
-- `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.
-- `stateUpdateThrottleInterval` prop adjusts the throttling interval for state updates for all the other updates to channel except new message.
-
-We recommend following configuration, but you can adjust it as per your requirement.
+The [Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from the websocket.	 
+  
+ By default, these state updates are throttled to once per 500 ms. For high-traffic applications, you may want to adjust the throttling interval to a higher number. You can configure throttle interval via the following props on the Channel component:	 
+   
+ - The `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.	 
+  
+ - The `stateUpdateThrottleInterval` prop adjusts the throttling interval for state updates for all the other updates to a channel except new message.	 
+  
+We recommend the following configuration, but you can adjust it to fit the requirements of your application.
 
 ```tsx
 <Channel
@@ -43,12 +44,12 @@ We recommend following configuration, but you can adjust it as per your requirem
 
 :::note
 - These props are available in version >= v3.9.0
-- Changes to `stateUpdateThrottleInterval` will result in delays in adding a reaction to message. So try not to keep too high value for this prop.
+- Changes to `stateUpdateThrottleInterval` will result in delays in adding a reaction to a message. Therefore, you should avoid setting the value too high.
 :::
 
 ## Heavy UI features
 
-You can relieve the JS thread by disabling some of the heavy features as mentioned below.
+You can lighten the load for the JS thread by disabling some of the heavier features mentioned below.
 
 :::note
 These props are available in version >= v3.9.0
@@ -56,13 +57,12 @@ These props are available in version >= v3.9.0
 
 ### Image Viewer
 
-By default, when you open (or press on) an image attachment, it opens the image in full screen image viewer.
-And within the viewer, you can keep swiping left to scroll through all the images within channel (which have been loaded so far).
-This creates quite a lot of extra work for JS thread in terms of keeping track of image attachments loaded in channel and pre-populating them in the viewer
-for smooth transitions.
+By default, when you open (press) an image attachment it opens the image in a full-screen image viewer.
+Within the viewer, you can keep swiping left to scroll through all the images that have been loaded within a channel so far.
+This creates quite a lot of extra work for the JS thread to keep track of image attachments loaded in a channel and pre-populating them in the viewer for smooth transitions.
 
-Since v3.9.0 we have introduced an alternate UX for image viewer, where image attachments of only the selected messages will be loaded in the viewer.
-You can enable this alternate UX by setting a prop `legacyImageViewerSwipeBehaviour` as false on Channel component.
+In v3.9.0, we introduced an alternate UX for the image viewer where image attachments are only loaded for the selected messages in a viewer.
+You can enable this alternate UX by setting the prop `legacyImageViewerSwipeBehaviour` to false on a Channel component.
 
 ```tsx
 <Channel legacyImageViewerSwipeBehaviour={false} />
@@ -70,9 +70,10 @@ You can enable this alternate UX by setting a prop `legacyImageViewerSwipeBehavi
 
 ### Sticky Date Header and Inline Date Separator
 
-By default MessageList component renders sticky date header a the top, and date separators in between messages from different dates.
-Computation and insertion of these dates can be heavy for message list when there are lot of messages in channel, since it involves iterating
-through the entire list. For livestream applications we would recommend disabling these features using following two props on Channel component.
+By default, the MessageList component renders a sticky date header at the top of the list, and date separators between messages from different dates.
+Computation and insertion of these dates can be heavy for a message list when there are a lot of messages in the channel since it involves iterating through the entire list. 
+
+For livestream applications, we would recommend disabling these features using the following two props on a Channel component:
 
 ```tsx
 <Channel
@@ -83,8 +84,9 @@ through the entire list. For livestream applications we would recommend disablin
 
 ### Message grouping
 
-Messages from same user are grouped by default in the MessageList component. Computations of these groups involves iterating through entire list of messages,
-and thus can be heavy if length of message list is too long. You can disable this feature by setting `enableMessageGroupingByUser` prop as false on Channel component.
+Messages from the same user are grouped by default in the MessageList component. Creating these groups involves iterating through the entire list of messages and thus can be heavy if the length of the message list is too long. 
+
+You can disable this feature by setting the `enableMessageGroupingByUser` prop to false on a Channel component.
 
 ```tsx
 <Channel enableMessageGroupingByUser={false} />
