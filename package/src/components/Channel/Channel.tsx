@@ -259,6 +259,7 @@ export type ChannelPropsWithContext<
       | 'handleThreadReply'
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
+      | 'legacyImageViewerSwipeBehaviour'
       | 'markdownRules'
       | 'Message'
       | 'messageActions'
@@ -372,7 +373,6 @@ export type ChannelPropsWithContext<
      */
     KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
     keyboardVerticalOffset?: number;
-    legacyImageViewerSwipeBehaviour?: boolean;
     /**
      * Custom loading error indicator to override the Stream default
      */
@@ -380,6 +380,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     mutesEnabled?: boolean;
+    newMessageStateUpdateThrottleInterval?: number;
     pinMessageEnabled?: boolean;
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
@@ -481,6 +482,7 @@ const ChannelWithContext = <
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
+    // TODO[major]: switch to false.
     legacyImageViewerSwipeBehaviour = true,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
@@ -515,6 +517,7 @@ const ChannelWithContext = <
     mutesEnabled: mutesEnabledProp,
     muteUser,
     myMessageTheme,
+    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
@@ -701,6 +704,18 @@ const ChannelWithContext = <
     ),
   ).current;
 
+  const copyMessagesState = useRef(
+    throttle(
+      () => {
+        if (channel) {
+          setMessages([...channel.state.messages]);
+        }
+      },
+      newMessageStateUpdateThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
+
   const copyTypingState = useRef(
     throttle(
       () => {
@@ -775,6 +790,8 @@ const ChannelWithContext = <
         copyTypingState();
       } else if (event.type === 'message.read') {
         copyReadState();
+      } else if (event.type === 'message.new') {
+        copyMessagesState();
       } else if (channel) {
         copyChannelState();
       }
