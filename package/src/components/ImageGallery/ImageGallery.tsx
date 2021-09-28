@@ -406,7 +406,6 @@ export const ImageGallery = <
       const filePathname = extractPathname(url) || '';
       StreamMediaCache.checkIfLocalAttachment(channelId, messageId, filePathname).then(
         (existsOnCache) => {
-          console.log(existsOnCache, channelId, messageId, filePathname);
           Image.getSize(
             existsOnCache
               ? `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
