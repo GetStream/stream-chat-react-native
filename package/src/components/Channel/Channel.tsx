@@ -370,6 +370,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     mutesEnabled?: boolean;
+    newMessageStateUpdateThrottleInterval?: number;
     quotedRepliesEnabled?: boolean;
     reactionsEnabled?: boolean;
     readEventsEnabled?: boolean;
@@ -497,6 +498,7 @@ const ChannelWithContext = <
     mutesEnabled: mutesEnabledProp,
     muteUser,
     myMessageTheme,
+    newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
@@ -682,6 +684,18 @@ const ChannelWithContext = <
     ),
   ).current;
 
+  const copyMessagesState = useRef(
+    throttle(
+      () => {
+        if (channel) {
+          setMessages([...channel.state.messages]);
+        }
+      },
+      newMessageStateUpdateThrottleInterval,
+      throttleOptions,
+    ),
+  ).current;
+
   const copyTypingState = useRef(
     throttle(
       () => {
@@ -755,6 +769,8 @@ const ChannelWithContext = <
       copyTypingState();
     } else if (event.type === 'message.read') {
       copyReadState();
+    } else if (event.type === 'message.new') {
+      copyMessagesState();
     } else if (channel) {
       copyChannelState();
     }
