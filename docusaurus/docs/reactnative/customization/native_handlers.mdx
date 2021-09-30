@@ -14,20 +14,66 @@ The non *core* packages call a function from the core package, `registerNativeHa
 If desired the native handlers can be overridden.
 The same function that is called internally to set the handlers can be used to override them, `registerNativeHandlers`.
 If the function returns the same type of data as the original function it should seamlessly work with the rest of the SDK.
-You should look at the default implementation to ensure any override conforms to the appropriate type definition provided by the SDK.
+You should look at the [default implementation](https://github.com/GetStream/stream-chat-react-native/blob/master/package/native-package/src/index.js)
+to ensure any override conforms to the appropriate type definition provided by the SDK.
+
+:::note
+This should be done outside of the component lifecycle to prevent unnecessarily re-registering the same handler repeatedly. 
+:::
+
+### Example: Override haptic feedback handler
 
 Haptic feedback is used in the app to indicate certain presses, and within the image viewer to indicate zoom limits are hit.
 If haptic feedback is not desired in your application you can easily remove it by registering a different handler to the function.
 
 ```tsx
-import { registerNativeHandlers } from 'stream-chat-react-native';
+import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
   triggerHaptic: () => null,
 });
 ```
 
-This should be done outside of the component lifecycle to prevent unnecessarily re-registering the same handler repeatedly. 
+### Example: Override camera handler
+
+[`takePhoto`](#takephoto) handler is used to take a picture from camera and use it as image attachment which composing a message.
+By default, SDK uses [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) library for this purpose.
+Although its possible to replace it with custom implementation, using [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker) library in following example:
+
+```tsx
+import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import { launchCamera } from 'react-native-image-picker';
+
+registerNativeHandlers({
+  takePhoto: () =>
+    new Promise((resolve, reject) => {
+      launchCamera(
+        {
+          cameraType: 'back',
+        },
+        (response) => {
+          if (response.errorMessage) {
+            resolve({ cancelled: true });
+            return;
+          }
+
+          const photo = response?.assets?.[0];
+          if (photo?.height && photo.width && photo.uri) {
+            resolve({
+              cancelled: false,
+              height: photo.height,
+              source: 'camera',
+              uri: photo.uri,
+              width: photo.width,
+            });
+          }
+
+          resolve({ cancelled: true });
+        },
+      );
+    }),
+});
+```
 
 ## Handlers
 
@@ -89,7 +135,7 @@ A object containing two keys, `addEventListener` and `fetch`, which are function
 
 **Expo:** [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
 
-### PickDocument
+### pickDocument
 
 A function to open the document picker and return documents picked from it.
 
