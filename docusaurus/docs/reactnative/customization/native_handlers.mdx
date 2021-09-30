@@ -23,7 +23,7 @@ This should be done outside of the component lifecycle to prevent unnecessarily 
 
 ### Example: Override haptic feedback handler
 
-Haptic feedback is used in the app to indicate certain presses, and within the image viewer to indicate zoom limits are hit.
+Haptic feedback is used in the app to indicate certain presses, and within the image viewer to indicate when zoom limits are hit.
 If haptic feedback is not desired in your application you can easily remove it by registering a different handler to the function.
 
 ```tsx
@@ -36,9 +36,9 @@ registerNativeHandlers({
 
 ### Example: Override camera handler
 
-[`takePhoto`](#takephoto) handler is used to take a picture from camera and use it as image attachment which composing a message.
+The [`takePhoto`](#takephoto) handler is used to take a picture from the camera and use it as an image attachment while composing a message.
 By default, SDK uses [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) library for this purpose.
-Although its possible to replace it with custom implementation, using [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker) library in following example:
+Although it's possible to replace it with a custom implementation, using [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker) library in the following example:
 
 ```tsx
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
