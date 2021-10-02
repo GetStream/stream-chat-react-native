@@ -121,7 +121,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId, queryAllByTestId, queryByTestId, toJSON } = render(
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -141,7 +141,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
@@ -162,7 +161,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId, queryAllByTestId, toJSON } = render(
+    const { getByTestId, queryAllByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -186,7 +185,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(getByTestId('only-visible-to-you')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
@@ -207,7 +205,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId, queryAllByTestId, queryByTestId, toJSON } = render(
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -231,7 +229,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
@@ -252,7 +249,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { queryAllByTestId, queryByTestId, toJSON } = render(
+    const { queryAllByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -276,7 +273,6 @@ describe('MessageList', () => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryByTestId('message-deleted')).toBeNull();
       expect(queryByTestId('only-visible-to-you')).toBeNull();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
@@ -296,7 +292,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId, queryAllByTestId, toJSON } = render(
+    const { getByTestId, queryAllByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -315,7 +311,6 @@ describe('MessageList', () => {
     await waitFor(() => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(getByTestId('message-deleted')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
