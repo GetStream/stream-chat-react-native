@@ -153,6 +153,7 @@ type MessageListPropsWithContext<
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'deletedMessagesVisibilityType'
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
@@ -260,6 +261,7 @@ const MessageListWithContext = <
     client,
     closePicker,
     DateHeader,
+    deletedMessagesVisibilityType,
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
@@ -318,6 +320,7 @@ const MessageListWithContext = <
   );
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+    deletedMessagesVisibilityType,
     inverted,
     noGroupByUser,
     threadList,
@@ -396,9 +399,11 @@ const MessageListWithContext = <
         item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
       };
 
+      const isMessageTypeDeleted = lastItem.item.type === 'deleted';
+
       if (
         lastItem?.item?.created_at &&
-        !lastItem.item.deleted_at &&
+        !isMessageTypeDeleted &&
         typeof lastItem.item.created_at !== 'string' &&
         lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
       ) {
@@ -811,7 +816,8 @@ const MessageListWithContext = <
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
     messageList.filter((message) => {
-      if (!message.deleted_at && message.attachments) {
+      const isMessageTypeDeleted = message.type === 'deleted';
+      if (!isMessageTypeDeleted && message.attachments) {
         return message.attachments.some(
           (attachment) =>
             attachment.type === 'image' &&
@@ -999,6 +1005,7 @@ export const MessageList = <
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     DateHeader,
+    deletedMessagesVisibilityType,
     disableTypingIndicator,
     FlatList,
     initialScrollToFirstUnreadMessage,
@@ -1024,6 +1031,7 @@ export const MessageList = <
         client,
         closePicker,
         DateHeader,
+        deletedMessagesVisibilityType,
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,

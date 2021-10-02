@@ -55,7 +55,10 @@ type MessageFooterPropsWithContext<
   | 'showMessageStatus'
   | 'lastGroupMessage'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageStatus'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'deletedMessagesVisibilityType' | 'MessageStatus'
+  > &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = <
@@ -71,6 +74,7 @@ const MessageFooterWithContext = <
 ) => {
   const {
     alignment,
+    deletedMessagesVisibilityType,
     formattedDate,
     isDeleted,
     lastGroupMessage,
@@ -94,19 +98,24 @@ const MessageFooterWithContext = <
   if (isDeleted) {
     return (
       <View style={metaContainer} testID='message-deleted'>
-        <Eye pathFill={isDeleted ? undefined : grey} {...eyeIcon} />
-        <Text
-          style={[
-            {
-              color: grey,
-              textAlign: alignment,
-            },
-            metaText,
-            deletedMetaText,
-          ]}
-        >
-          {t('Only visible to you')}
-        </Text>
+        {deletedMessagesVisibilityType === 'sender' && (
+          <>
+            <Eye pathFill={isDeleted ? undefined : grey} {...eyeIcon} />
+            <Text
+              style={[
+                {
+                  color: grey,
+                  textAlign: alignment,
+                },
+                metaText,
+                deletedMetaText,
+              ]}
+              testID='only-visible-to-you'
+            >
+              {t('Only visible to you')}
+            </Text>
+          </>
+        )}
         <Text
           style={[
             {
@@ -194,8 +203,15 @@ const areEqual = <
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
 
+  const deletedMessagesVisibilityTypeEqual =
+    prevProps.deletedMessagesVisibilityType === nextProps.deletedMessagesVisibilityType;
+  if (!deletedMessagesVisibilityTypeEqual) return false;
+
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
@@ -253,12 +269,14 @@ export const MessageFooter = <
   const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { MessageStatus } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { deletedMessagesVisibilityType, MessageStatus } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageFooter
       {...{
         alignment,
+        deletedMessagesVisibilityType,
         lastGroupMessage,
         members,
         message,

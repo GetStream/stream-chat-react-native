@@ -90,12 +90,12 @@ describe('MessageContent', () => {
     });
   });
 
-  it('renders a message deleted message when `message.deleted_at` exists', async () => {
+  it('renders a message deleted message when `message.type` is `deleted`', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId } = renderMessage({
-      message: { ...message, deleted_at: true },
+      message: { ...message, type: 'deleted' },
     });
 
     await waitFor(() => {

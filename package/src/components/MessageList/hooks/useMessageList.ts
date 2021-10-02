@@ -24,6 +24,7 @@ import type {
 } from '../../../types/types';
 
 export type UseMessageListParams = {
+  deletedMessagesVisibilityType?: 'both' | 'none' | 'receiver' | 'sender';
   inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
@@ -82,7 +83,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { inverted, noGroupByUser, threadList } = params;
+  const { deletedMessagesVisibilityType, inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
     useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -112,7 +113,18 @@ export const useMessageList = <
   const readData = getReadStates(client.userID, messageList, readList);
 
   const messagesWithStylesReadByAndDateSeparator = messageList
-    .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)
+    .filter((msg) => {
+      const isMessageTypeDeleted = msg.type === 'deleted';
+      if (deletedMessagesVisibilityType === 'sender') {
+        return !isMessageTypeDeleted || msg.user?.id === client.userID;
+      } else if (deletedMessagesVisibilityType === 'receiver') {
+        return !isMessageTypeDeleted || msg.user?.id !== client.userID;
+      } else if (deletedMessagesVisibilityType === 'none') {
+        return !isMessageTypeDeleted;
+      } else {
+        return msg;
+      }
+    })
     .map((msg) => ({
       ...msg,
       dateSeparator: dateSeparators[msg.id] || undefined,
