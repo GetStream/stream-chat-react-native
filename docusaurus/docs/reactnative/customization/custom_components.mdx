@@ -107,17 +107,6 @@ const MySenderComponent = () => {
 
 This allows you as a developer to not only customize the look and feel of every part of the UI, but also decide what information is shown where based on your own design.
 
-### Hiding deleted messages from the channel
-
-The `deleteMessagesVisibiltyType` prop in the Channel component enables changing the visibility of the deleted messages to both sender and receiver, none of them or either of them.
-
-```tsx
-<Channel
-  ...
-  deletedMessagesVisibiltyType="sender"
->
-```
-
 :::caution
 
 Custom components within a `Message` should draw from mostly static contexts with the exception of their own `MessageContext`.
