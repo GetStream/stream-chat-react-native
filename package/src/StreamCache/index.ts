@@ -30,6 +30,7 @@ import type {
 import {
   CURRENT_CLIENT_VERSION,
   CURRENT_SDK_VERSION,
+  STREAM_CHAT_CHANNEL_DATA,
   STREAM_CHAT_CHANNELS_DATA,
   STREAM_CHAT_CHANNELS_ORDER,
   STREAM_CHAT_CLIENT_DATA,
@@ -38,9 +39,10 @@ import {
 } from './constants';
 
 export type ChannelsOrder = { [index: string]: { [index: string]: number } };
-
+type STREAM_CHAT_CHANNEL_DATA_KEY = `${typeof STREAM_CHAT_CHANNEL_DATA}_${string}`;
 export type CacheKeys =
   | typeof STREAM_CHAT_CLIENT_DATA
+  | STREAM_CHAT_CHANNEL_DATA_KEY
   | typeof STREAM_CHAT_CHANNELS_DATA
   | typeof STREAM_CHAT_SDK_VERSION
   | typeof STREAM_CHAT_CLIENT_VERSION
@@ -66,11 +68,11 @@ type CacheValues<
   Us extends UnknownType = DefaultUserType,
 > = {
   get: CacheValuesDefault<Ch, Co, Us> & {
-    STREAM_CHAT_CHANNELS_DATA: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[];
-  };
+    STREAM_CHAT_CHANNELS_DATA: string[];
+  } & { [index: STREAM_CHAT_CHANNEL_DATA_KEY]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
   set: CacheValuesDefault<Ch, Co, Us> & {
-    STREAM_CHAT_CHANNELS_DATA: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us>[];
-  };
+    STREAM_CHAT_CHANNELS_DATA: string[];
+  } & { [index: STREAM_CHAT_CHANNEL_DATA_KEY]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
 };
 
 export type CacheInterface<
@@ -199,6 +201,36 @@ export class StreamCache<
     return !!StreamCache.instance && StreamCache.cacheMedia;
   }
 
+  private setChannelsDataNormalized(
+    channelsData: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us>[],
+  ) {
+    const filteredChannelsData = channelsData.filter((channelData) => channelData.id);
+    const channelsDataIds = filteredChannelsData.map((channelData) => channelData.id as string);
+    return [
+      this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, channelsDataIds),
+      Promise.all(
+        filteredChannelsData.map((channelData) =>
+          this.cacheInterface.setItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelData.id}`, channelData),
+        ),
+      ),
+    ] as const;
+  }
+
+  private async getChannelsDataNormalized() {
+    const channelsDataIds = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+
+    if (!channelsDataIds) return [];
+
+    return Promise.all(
+      channelsDataIds.map(
+        (channelId) =>
+          this.cacheInterface.getItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`) as Promise<
+            ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>
+          >,
+      ),
+    );
+  }
+
   private syncCache() {
     if (this.client.userID) {
       const { channels: currentChannelsData, client: currentClientData } =
@@ -208,8 +240,8 @@ export class StreamCache<
         this.cacheInterface.setItem(STREAM_CHAT_SDK_VERSION, CURRENT_SDK_VERSION),
         this.cacheInterface.setItem(STREAM_CHAT_CLIENT_VERSION, CURRENT_CLIENT_VERSION),
         this.cacheInterface.setItem(STREAM_CHAT_CLIENT_DATA, currentClientData),
-        this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, currentChannelsData),
         this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_ORDER, this.cachedChannelsOrder),
+        ...this.setChannelsDataNormalized(currentChannelsData),
       ]);
     }
 
@@ -311,7 +343,7 @@ export class StreamCache<
     }
 
     const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
-    const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const channelsData = await this.getChannelsDataNormalized();
 
     return !!(clientData && channelsData);
   }
@@ -357,9 +389,9 @@ export class StreamCache<
   }
 
   public async syncCacheAndImages() {
-    const oldChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const oldChannelsData = await this.getChannelsDataNormalized();
     await this.syncCache();
-    const newChannelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const newChannelsData = await this.getChannelsDataNormalized();
 
     if (!oldChannelsData) return;
 
@@ -367,7 +399,7 @@ export class StreamCache<
   }
 
   private async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
-    const channelsData = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
+    const channelsData = await this.getChannelsDataNormalized();
 
     this.cachedChannelsOrder =
       (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER)) || {};
@@ -417,12 +449,20 @@ export class StreamCache<
   }
 
   public async clear() {
+    const channelsIds = (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA)) || [];
+    const channelsPromise = Promise.all(
+      channelsIds.map((channelId) =>
+        this.cacheInterface.removeItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`),
+      ),
+    );
+
     await Promise.all([
       this.cacheInterface.removeItem(STREAM_CHAT_SDK_VERSION),
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_VERSION),
       this.cacheInterface.removeItem(STREAM_CHAT_CLIENT_DATA),
       this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_DATA),
       this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_ORDER),
+      channelsPromise,
       StreamMediaCache.clear(),
     ]);
   }
