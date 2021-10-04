@@ -12,6 +12,7 @@ import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentP
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
+import { ToastProvider } from '../toastContext/ToastContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -22,17 +23,18 @@ import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../com
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
+import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
+import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
 import { useStreami18n } from '../../hooks/useStreami18n';
-import { BlurView } from '../../native';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
-import { BlurType, OverlayContext, OverlayProviderProps } from './OverlayContext';
+import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -139,7 +141,6 @@ export const OverlayProvider = <
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
-  const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
@@ -151,7 +152,6 @@ export const OverlayProvider = <
   useEffect(() => {
     const backAction = () => {
       if (overlay !== 'none') {
-        setBlurType(undefined);
         setOverlay('none');
         return true;
       }
@@ -200,7 +200,6 @@ export const OverlayProvider = <
 
   const overlayContext = {
     overlay,
-    setBlurType,
     setOverlay,
     style: value?.style,
     translucentStatusBar,
@@ -209,43 +208,44 @@ export const OverlayProvider = <
   if (loadingTranslators) return null;
 
   return (
-    <TranslationProvider value={translators}>
-      <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-          <AttachmentPickerProvider value={attachmentPickerContext}>
-            <ImageGalleryProvider>
-              {children}
-              <ThemeProvider style={overlayContext.style}>
-                <Animated.View
-                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                  style={[StyleSheet.absoluteFill, overlayStyle]}
-                >
-                  <BlurView
-                    blurType={blurType}
-                    style={[StyleSheet.absoluteFill, { height, width }]}
+    <ToastProvider>
+      <TranslationProvider value={translators}>
+        <OverlayContext.Provider value={overlayContext}>
+          <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+            <AttachmentPickerProvider value={attachmentPickerContext}>
+              <ImageGalleryProvider>
+                <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>
+                  {children}
+                </ChannelsStateProvider>
+                <ThemeProvider style={overlayContext.style}>
+                  <Animated.View
+                    pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                    style={[StyleSheet.absoluteFill, overlayStyle]}
+                  >
+                    <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
+                  </Animated.View>
+                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                    MessageActions={MessageActions}
+                    overlayOpacity={overlayOpacity}
+                    OverlayReactionList={OverlayReactionList}
+                    OverlayReactions={OverlayReactions}
+                    visible={overlay === 'message'}
                   />
-                </Animated.View>
-                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  MessageActions={MessageActions}
-                  overlayOpacity={overlayOpacity}
-                  OverlayReactionList={OverlayReactionList}
-                  OverlayReactions={OverlayReactions}
-                  visible={overlay === 'message'}
-                />
-                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                  imageGalleryCustomComponents={imageGalleryCustomComponents}
-                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'gallery'}
-                />
-                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-              </ThemeProvider>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </MessageOverlayProvider>
-      </OverlayContext.Provider>
-    </TranslationProvider>
+                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                    imageGalleryCustomComponents={imageGalleryCustomComponents}
+                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                    numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'gallery'}
+                  />
+                  <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+                </ThemeProvider>
+              </ImageGalleryProvider>
+            </AttachmentPickerProvider>
+          </MessageOverlayProvider>
+        </OverlayContext.Provider>
+      </TranslationProvider>
+    </ToastProvider>
   );
 };

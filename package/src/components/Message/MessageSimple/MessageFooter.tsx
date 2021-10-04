@@ -215,7 +215,8 @@ const areEqual = <
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
 
   const otherAttachmentsEqual =

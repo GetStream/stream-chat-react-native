@@ -156,7 +156,10 @@ const ChannelPreviewMessengerWithContext = <
       testID='channel-preview-button'
     >
       <PreviewAvatar channel={channel} />
-      <View style={[styles.contentContainer, contentContainer]}>
+      <View
+        style={[styles.contentContainer, contentContainer]}
+        testID={`channel-preview-content-${channel.id}`}
+      >
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
           <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />

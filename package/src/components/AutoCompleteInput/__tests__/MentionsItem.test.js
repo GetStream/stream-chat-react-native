@@ -32,8 +32,10 @@ describe('MentionsItem', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image').props.source).toMatchObject({
-        uri: 'https://getstream.io/random_png/?name=T U&size=40',
+      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
+        borderRadius: 16,
+        height: 32,
+        width: 32,
       });
       expect(queryByTestId('mentions-item-name')).toBeTruthy();
       expect(getByTestId('mentions-item-name')).toHaveTextContent('Test User');

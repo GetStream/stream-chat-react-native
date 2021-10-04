@@ -213,7 +213,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -230,7 +230,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -271,7 +271,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -522,7 +522,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -774,7 +774,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -791,7 +791,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -878,7 +878,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -1151,7 +1151,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1168,7 +1168,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1255,7 +1255,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -1505,7 +1505,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1522,7 +1522,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1609,7 +1609,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -1861,7 +1861,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1878,7 +1878,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1965,7 +1965,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -2239,7 +2239,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -2490,7 +2490,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -2743,7 +2743,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -3016,7 +3016,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3033,7 +3033,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3074,7 +3074,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -3324,7 +3324,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3341,7 +3341,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3382,7 +3382,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,
@@ -3634,7 +3634,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3651,7 +3651,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
                   "width": "100%",
                 },
                 Object {
-                  "backgroundColor": "#00000033",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -3692,7 +3692,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
           onStartShouldSetResponder={[Function]}
           style={
             Object {
-              "backgroundColor": "#00000099",
+              "backgroundColor": "#000000CC",
               "borderRadius": 24,
               "height": 24,
               "opacity": 1,

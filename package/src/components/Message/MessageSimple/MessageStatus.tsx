@@ -65,7 +65,7 @@ const MessageStatusWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue },
+      colors: { accent_blue, grey_dark },
       messageSimple: {
         status: { checkAllIcon, checkIcon, readByCount, statusContainer, timeIcon },
       },
@@ -98,7 +98,7 @@ const MessageStatusWithContext = <
         {typeof message.readBy === 'number' || message.readBy === true ? (
           <CheckAll pathFill={accent_blue} {...checkAllIcon} />
         ) : (
-          <Check {...checkIcon} />
+          <Check pathFill={grey_dark} {...checkIcon} />
         )}
       </View>
     );
@@ -107,7 +107,7 @@ const MessageStatusWithContext = <
   if (message.status === 'received' && message.type !== 'ephemeral' && !threadList) {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
-        <Check {...checkIcon} />
+        <Check pathFill={grey_dark} {...checkIcon} />
       </View>
     );
   }

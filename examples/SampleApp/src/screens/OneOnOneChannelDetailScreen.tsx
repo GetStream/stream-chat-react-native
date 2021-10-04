@@ -22,6 +22,7 @@ import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
 import { Notification } from '../icons/Notification';
 import { Picture } from '../icons/Picture';
+import { Pin } from '../icons/Pin';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { RouteProp } from '@react-navigation/native';
@@ -344,6 +345,36 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
               }}
               value={muted}
             />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ChannelPinnedMessagesScreen', {
+              channel,
+            });
+          }}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: border,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Pin fill={grey} />
+            <Text
+              style={[
+                styles.itemText,
+                {
+                  color: black,
+                },
+              ]}
+            >
+              Pinned Messages
+            </Text>
+          </View>
+          <View>
+            <GoForward fill={grey} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity

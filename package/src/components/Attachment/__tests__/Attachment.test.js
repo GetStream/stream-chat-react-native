@@ -14,12 +14,19 @@ import {
   generateImageAttachment,
   generateImgurAttachment,
 } from '../../../mock-builders/generator/attachment';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 
-const getAttachmentComponent = (props) => (
-  <ThemeProvider>
-    <Attachment {...props} />;
-  </ThemeProvider>
-);
+const getAttachmentComponent = (props) => {
+  const message = generateMessage();
+  return (
+    <ThemeProvider>
+      <MessageProvider value={{ message }}>
+        <Attachment {...props} />
+      </MessageProvider>
+    </ThemeProvider>
+  );
+};
 const getActionComponent = (props) => (
   <ThemeProvider>
     <AttachmentActions {...props} />;

@@ -12,6 +12,7 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();
@@ -24,15 +25,17 @@ describe('MessageInput', () => {
     const ImageSelectorIcon = () => null;
 
     return (
-      <Chat client={chatClient}>
-        <AttachmentPickerProvider
-          value={{ ...attachmentValue, CameraSelectorIcon, FileSelectorIcon, ImageSelectorIcon }}
-        >
-          <Channel channel={channel}>
-            <MessageInput />
-          </Channel>
-        </AttachmentPickerProvider>
-      </Chat>
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <AttachmentPickerProvider
+            value={{ ...attachmentValue, CameraSelectorIcon, FileSelectorIcon, ImageSelectorIcon }}
+          >
+            <Channel channel={channel}>
+              <MessageInput />
+            </Channel>
+          </AttachmentPickerProvider>
+        </Chat>
+      </ChannelsStateProvider>
     );
   };
 

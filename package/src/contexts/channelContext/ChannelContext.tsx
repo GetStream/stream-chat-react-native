@@ -166,6 +166,7 @@ export type ChannelContextValue<
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
+  isChannelActive?: boolean;
   lastRead?: Date;
   /**
    * Maximum time in milliseconds that should occur between messages
@@ -183,6 +184,7 @@ export type ChannelContextValue<
    * You will see a highlighted background for targetted message, when opened.
    */
   targetedMessage?: string;
+  threadList?: boolean;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 } & ChannelConfig;
 

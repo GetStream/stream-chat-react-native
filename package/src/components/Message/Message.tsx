@@ -9,6 +9,7 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
@@ -59,6 +60,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useToastContext } from '../../contexts/toastContext/ToastContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
@@ -72,11 +74,14 @@ import {
   Edit,
   MessageFlag,
   Mute,
+  Pin,
   SendUp,
   ThreadReply,
+  Unpin,
   UserDelete,
 } from '../../icons';
 import { triggerHaptic } from '../../native';
+import { StreamCache } from '../../StreamCache';
 import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
@@ -185,6 +190,7 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handlePinMessage'
     | 'handleQuotedReply'
     | 'handleReaction'
     | 'handleRetry'
@@ -199,6 +205,8 @@ export type MessagePropsWithContext<
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
+    | 'pinMessage'
+    | 'pinMessageEnabled'
     | 'quotedRepliesEnabled'
     | 'quotedReply'
     | 'reactionsEnabled'
@@ -311,6 +319,7 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction: handleReactionProp,
     handleRetry,
@@ -336,6 +345,8 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
+    pinMessage: pinMessageProp,
+    pinMessageEnabled,
     preventPress,
     quotedRepliesEnabled,
     reactionsEnabled,
@@ -361,6 +372,8 @@ const MessageWithContext = <
     threadReply: threadReplyProp,
     updateMessage,
   } = props;
+
+  const toast = useToastContext();
 
   const {
     theme: {
@@ -650,6 +663,15 @@ const MessageWithContext = <
     setEditingState(message);
   };
 
+  const handleTogglePinMessage = async () => {
+    const MessagePinnedHeaderStatus = message.pinned;
+    if (!MessagePinnedHeaderStatus) {
+      await client.pinMessage(message, null);
+    } else {
+      await client.unpinMessage(message);
+    }
+  };
+
   const handleToggleBanUser = async () => {
     const messageUser = message.user;
     if (!messageUser) {
@@ -675,13 +697,17 @@ const MessageWithContext = <
       ? null
       : {
           action: () => async () => {
-            setOverlay('none');
-            if (message.user?.id) {
-              if (handleBlock) {
-                handleBlock(message);
-              }
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (message.user?.id) {
+                if (handleBlock) {
+                  handleBlock(message);
+                }
 
-              await handleToggleBanUser();
+                await handleToggleBanUser();
+              }
             }
           },
           icon: <UserDelete pathFill={grey} />,
@@ -695,11 +721,15 @@ const MessageWithContext = <
       : {
           // using depreciated Clipboard from react-native until expo supports the community version or their own
           action: () => {
-            setOverlay('none');
-            if (handleCopy) {
-              handleCopy(message);
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (handleCopy) {
+                handleCopy(message);
+              }
+              Clipboard.setString(message.text || '');
             }
-            Clipboard.setString(message.text || '');
           },
           icon: <Copy pathFill={grey} />,
           title: t('Copy Message'),
@@ -711,28 +741,32 @@ const MessageWithContext = <
       ? null
       : {
           action: () => {
-            setOverlay('alert');
-            if (message.id) {
-              Alert.alert(
-                t('Delete Message'),
-                t('Are you sure you want to permanently delete this message?'),
-                [
-                  { onPress: () => setOverlay('none'), text: t('Cancel') },
-                  {
-                    onPress: async () => {
-                      setOverlay('none');
-                      if (handleDelete) {
-                        handleDelete(message);
-                      }
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('alert');
+              if (message.id) {
+                Alert.alert(
+                  t('Delete Message'),
+                  t('Are you sure you want to permanently delete this message?'),
+                  [
+                    { onPress: () => setOverlay('none'), text: t('Cancel') },
+                    {
+                      onPress: async () => {
+                        setOverlay('none');
+                        if (handleDelete) {
+                          handleDelete(message);
+                        }
 
-                      await handleDeleteMessage();
+                        await handleDeleteMessage();
+                      },
+                      style: 'destructive',
+                      text: t('Delete'),
                     },
-                    style: 'destructive',
-                    text: t('Delete'),
-                  },
-                ],
-                { cancelable: false },
-              );
+                  ],
+                  { cancelable: false },
+                );
+              }
             }
           },
           icon: <Delete pathFill={accent_red} />,
@@ -746,14 +780,50 @@ const MessageWithContext = <
       ? null
       : {
           action: () => {
-            setOverlay('none');
-            if (handleEdit) {
-              handleEdit(message);
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (handleEdit) {
+                handleEdit(message);
+              }
+              handleEditMessage();
             }
-            handleEditMessage();
           },
           icon: <Edit pathFill={grey} />,
           title: t('Edit Message'),
+        };
+
+    const pinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handleTogglePinMessage();
+          },
+          icon: <Pin height={23} pathFill={grey} width={24} />,
+          title: t('Pin to Conversation'),
+        };
+
+    const unpinMessage = pinMessageProp
+      ? pinMessageProp(message)
+      : pinMessageProp === null
+      ? null
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handlePinMessage) {
+              handlePinMessage(message);
+            }
+            handleTogglePinMessage();
+          },
+          icon: <Unpin pathFill={grey} />,
+          title: t('Unpin from Conversation'),
         };
 
     const flagMessage = flagMessageProp
@@ -762,50 +832,54 @@ const MessageWithContext = <
       ? null
       : {
           action: () => {
-            setOverlay('alert');
-            if (message.id) {
-              Alert.alert(
-                t('Flag Message'),
-                t(
-                  'Do you want to send a copy of this message to a moderator for further investigation?',
-                ),
-                [
-                  { onPress: () => setOverlay('none'), text: t('Cancel') },
-                  {
-                    onPress: async () => {
-                      try {
-                        if (handleFlag) {
-                          handleFlag(message);
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('alert');
+              if (message.id) {
+                Alert.alert(
+                  t('Flag Message'),
+                  t(
+                    'Do you want to send a copy of this message to a moderator for further investigation?',
+                  ),
+                  [
+                    { onPress: () => setOverlay('none'), text: t('Cancel') },
+                    {
+                      onPress: async () => {
+                        try {
+                          if (handleFlag) {
+                            handleFlag(message);
+                          }
+                          await client.flagMessage(message.id);
+                          Alert.alert(
+                            t('Message flagged'),
+                            t('The message has been reported to a moderator.'),
+                            [
+                              {
+                                onPress: () => setOverlay('none'),
+                                text: t('Dismiss'),
+                              },
+                            ],
+                          );
+                        } catch (err) {
+                          Alert.alert(
+                            t('Something went wrong'),
+                            t("The operation couldn't be completed."),
+                            [
+                              {
+                                onPress: () => setOverlay('none'),
+                                text: t('Dismiss'),
+                              },
+                            ],
+                          );
                         }
-                        await client.flagMessage(message.id);
-                        Alert.alert(
-                          t('Message flagged'),
-                          t('The message has been reported to a moderator.'),
-                          [
-                            {
-                              onPress: () => setOverlay('none'),
-                              text: t('Dismiss'),
-                            },
-                          ],
-                        );
-                      } catch (err) {
-                        Alert.alert(
-                          t('Something went wrong'),
-                          t("The operation couldn't be completed."),
-                          [
-                            {
-                              onPress: () => setOverlay('none'),
-                              text: t('Dismiss'),
-                            },
-                          ],
-                        );
-                      }
+                      },
+                      text: t('Flag'),
                     },
-                    text: t('Flag'),
-                  },
-                ],
-                { cancelable: false },
-              );
+                  ],
+                  { cancelable: false },
+                );
+              }
             }
           },
           icon: <MessageFlag pathFill={grey} />,
@@ -816,11 +890,15 @@ const MessageWithContext = <
       ? selectReaction
         ? selectReaction(message)
         : async (reactionType: string) => {
-            if (handleReactionProp) {
-              handleReactionProp(message, reactionType);
-            }
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              if (handleReactionProp) {
+                handleReactionProp(message, reactionType);
+              }
 
-            await handleToggleReaction(reactionType);
+              await handleToggleReaction(reactionType);
+            }
           }
       : undefined;
 
@@ -830,13 +908,17 @@ const MessageWithContext = <
       ? null
       : {
           action: async () => {
-            setOverlay('none');
-            if (message.user?.id) {
-              if (handleMute) {
-                handleMute(message);
-              }
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (message.user?.id) {
+                if (handleMute) {
+                  handleMute(message);
+                }
 
-              await handleToggleMuteUser();
+                await handleToggleMuteUser();
+              }
             }
           },
           icon: <Mute pathFill={grey} />,
@@ -849,11 +931,15 @@ const MessageWithContext = <
       ? null
       : {
           action: () => {
-            setOverlay('none');
-            if (handleQuotedReply) {
-              handleQuotedReply(message);
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (handleQuotedReply) {
+                handleQuotedReply(message);
+              }
+              handleQuotedReplyMessage();
             }
-            handleQuotedReplyMessage();
           },
           icon: <CurveLineLeftUp pathFill={grey} />,
           title: t('Reply'),
@@ -865,13 +951,17 @@ const MessageWithContext = <
       ? null
       : {
           action: async () => {
-            setOverlay('none');
-            const messageWithoutReservedFields = removeReservedFields(message);
-            if (handleRetry) {
-              handleRetry(messageWithoutReservedFields);
-            }
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              const messageWithoutReservedFields = removeReservedFields(message);
+              if (handleRetry) {
+                handleRetry(messageWithoutReservedFields);
+              }
 
-            await handleResendMessage();
+              await handleResendMessage();
+            }
           },
           icon: <SendUp pathFill={accent_blue} />,
           title: t('Resend'),
@@ -883,11 +973,15 @@ const MessageWithContext = <
       ? null
       : {
           action: () => {
-            setOverlay('none');
-            if (handleThreadReply) {
-              handleThreadReply(message);
+            if (!StreamCache.getInstance().currentNetworkState) {
+              toast.show(t('Something went wrong'), 2000);
+            } else {
+              setOverlay('none');
+              if (handleThreadReply) {
+                handleThreadReply(message);
+              }
+              onOpenThread();
             }
-            onOpenThread();
           },
           icon: <ThreadReply pathFill={grey} />,
           title: t('Thread Reply'),
@@ -915,11 +1009,14 @@ const MessageWithContext = <
             messageReactions,
             mutesEnabled,
             muteUser,
+            pinMessage,
+            pinMessageEnabled,
             quotedRepliesEnabled,
             quotedReply,
             retry,
             threadRepliesEnabled,
             threadReply,
+            unpinMessage,
           });
 
     setData({
@@ -1123,27 +1220,29 @@ const MessageWithContext = <
           onGestureEvent={onDoubleTap}
           ref={doubleTapRef}
         >
-          <Animated.View
-            style={[
-              style,
-              {
-                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-              },
-              scaleStyle,
-            ]}
-          >
+          <View style={[message.pinned && { backgroundColor: targetedMessageBackground }]}>
             <Animated.View
               style={[
-                StyleSheet.absoluteFillObject,
-                targetedMessageUnderlay,
-                { backgroundColor: targetedMessageBackground },
-                targetedStyle,
+                style,
+                {
+                  backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+                },
+                scaleStyle,
               ]}
-            />
-            <MessageProvider value={messageContext}>
-              <MessageSimple />
-            </MessageProvider>
-          </Animated.View>
+            >
+              <Animated.View
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  targetedMessageUnderlay,
+                  { backgroundColor: targetedMessageBackground },
+                  targetedStyle,
+                ]}
+              />
+              <MessageProvider value={messageContext}>
+                <MessageSimple />
+              </MessageProvider>
+            </Animated.View>
+          </View>
         </TapGestureHandler>
       </Animated.View>
     </TapGestureHandler>
@@ -1165,6 +1264,7 @@ const areEqual = <
   const {
     goToMessage: prevGoToMessage,
     lastReceivedId: prevLastReceivedId,
+    members: prevMembers,
     message: prevMessage,
     mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
@@ -1174,12 +1274,16 @@ const areEqual = <
   const {
     goToMessage: nextGoToMessage,
     lastReceivedId: nextLastReceivedId,
+    members: nextMembers,
     message: nextMessage,
     mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
     targetedMessage: nextTargetedMessage,
   } = nextProps;
+
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  if (!membersEqual) return false;
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
@@ -1208,7 +1312,8 @@ const areEqual = <
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at;
+    prevMessage.updated_at === nextMessage.updated_at &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 

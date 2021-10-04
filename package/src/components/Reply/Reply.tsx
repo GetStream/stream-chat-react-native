@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+import { ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 import merge from 'lodash/merge';
 
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
@@ -174,7 +175,11 @@ const ReplyWithContext = <
               <FileAttachmentIcon mimeType={lastAttachment.mime_type} size={attachmentSize} />
             </View>
           ) : hasImage ? (
-            <Image
+            <CachedAttachmentImage
+              cacheConfig={{
+                channelId: quotedMessage.cid,
+                messageId: quotedMessage.id,
+              }}
               onError={() => setError(true)}
               source={{
                 uri:

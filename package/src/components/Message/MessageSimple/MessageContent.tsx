@@ -165,7 +165,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent },
+      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -236,7 +236,7 @@ const MessageContentWithContext = <
           : grey_gainsboro
         : blue_alice
       : alignment === 'left' || error
-      ? transparent
+      ? white
       : grey_gainsboro;
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
@@ -458,7 +458,8 @@ const areEqual = <
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 

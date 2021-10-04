@@ -12,9 +12,12 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Avatar,
+  StreamCache,
   useChannelPreviewDisplayName,
   useOverlayContext,
   useTheme,
+  useToastContext,
+  useTranslationContext,
 } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
@@ -48,6 +51,7 @@ import type {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
+import { Pin } from '../icons/Pin';
 
 const styles = StyleSheet.create({
   actionContainer: {
@@ -166,6 +170,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
+  const toast = useToastContext();
+  const { t } = useTranslationContext();
   const { setOverlay: setAppOverlay } = useAppOverlayContext();
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
@@ -211,14 +217,18 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    * Opens confirmation sheet for leaving the group
    */
   const openLeaveGroupConfirmationSheet = () => {
-    if (chatClient?.user?.id) {
-      setBottomSheetOverlayData({
-        confirmText: 'LEAVE',
-        onConfirm: leaveGroup,
-        subtext: `Are you sure you want to leave the group ${groupName || ''}?`,
-        title: 'Leave group',
-      });
-      setAppOverlay('confirmation');
+    if (!StreamCache.getInstance().currentNetworkState) {
+      toast.show(t('Something went wrong'), 2000);
+    } else {
+      if (chatClient?.user?.id) {
+        setBottomSheetOverlayData({
+          confirmText: 'LEAVE',
+          onConfirm: leaveGroup,
+          subtext: `Are you sure you want to leave the group ${groupName || ''}?`,
+          title: 'Leave group',
+        });
+        setAppOverlay('confirmation');
+      }
     }
   };
 
@@ -226,11 +236,15 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    * Cancels the confirmation sheet.
    */
   const openAddMembersSheet = () => {
-    if (chatClient?.user?.id) {
-      setBottomSheetOverlayData({
-        channel,
-      });
-      setAppOverlay('addMembers');
+    if (!StreamCache.getInstance().currentNetworkState) {
+      toast.show(t('Something went wrong'), 2000);
+    } else {
+      if (chatClient?.user?.id) {
+        setBottomSheetOverlayData({
+          channel,
+        });
+        setAppOverlay('addMembers');
+      }
     }
   };
 
@@ -294,6 +308,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             >
               <View style={styles.memberRow}>
                 <Avatar
+                  channelId={channel.id}
+                  id={member.user?.id}
                   image={member.user?.image}
                   name={member.user?.name}
                   online={member.user?.online}
@@ -414,13 +430,17 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View>
               <Switch
                 onValueChange={async () => {
-                  if (muted) {
-                    await channel.unmute();
+                  if (!StreamCache.getInstance().currentNetworkState) {
+                    toast.show(t('Something went wrong'), 2000);
                   } else {
-                    await channel.mute();
-                  }
+                    if (muted) {
+                      await channel.unmute();
+                    } else {
+                      await channel.mute();
+                    }
 
-                  setMuted((previousState) => !previousState);
+                    setMuted((previousState) => !previousState);
+                  }
                 }}
                 trackColor={{
                   false: white_smoke,
@@ -428,6 +448,36 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 }}
                 value={muted}
               />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelPinnedMessagesScreen', {
+                channel,
+              });
+            }}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <Pin fill={grey} />
+              <Text
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
+              >
+                Pinned Messages
+              </Text>
+            </View>
+            <View>
+              <GoForward height={24} width={24} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity

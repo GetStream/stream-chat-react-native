@@ -1,5 +1,7 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
 import {
   MessageContextValue,
@@ -116,6 +118,8 @@ export type GiphyPropsWithContext<
 > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
     attachment: Attachment<At>;
+    channelId: string | undefined;
+    messageId: string | undefined;
   };
 
 const GiphyWithContext = <
@@ -132,7 +136,9 @@ const GiphyWithContext = <
   const {
     additionalTouchableProps,
     attachment,
+    channelId,
     handleAction,
+    messageId,
     onLongPress,
     onPress,
     onPressIn,
@@ -143,7 +149,7 @@ const GiphyWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, overlay_dark, white },
+      colors: { accent_blue, black, border, grey, overlay, white },
       messageSimple: {
         giphy: {
           cancel,
@@ -177,13 +183,17 @@ const GiphyWithContext = <
       ]}
     >
       <View style={styles.margin}>
-        <Image
+        <CachedAttachmentImage
+          cacheConfig={{
+            channelId,
+            messageId,
+          }}
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
+          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
@@ -267,13 +277,17 @@ const GiphyWithContext = <
       {...additionalTouchableProps}
     >
       <View>
-        <Image
+        <CachedAttachmentImage
+          cacheConfig={{
+            channelId,
+            messageId,
+          }}
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
+          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
@@ -352,7 +366,7 @@ export const Giphy = <
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
+  const { handleAction, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -360,7 +374,9 @@ export const Giphy = <
     <MemoizedGiphy
       {...{
         additionalTouchableProps,
+        channelId: message.cid,
         handleAction,
+        messageId: message.id,
         onLongPress,
         onPress,
         onPressIn,
