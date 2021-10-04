@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { useTargetedMessage } from 'stream-chat-react-native';
+import { useTargetedMessage } from '../../Channel/hooks/useTargetedMessage';
 
 import {
   MessageContextValue,
