@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
+import { useTargetedMessage } from 'stream-chat-react-native';
 
 import {
   MessageContextValue,
@@ -108,6 +109,7 @@ export type ReactionListPropsWithContext<
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
+  | 'message'
   | 'onLongPress'
   | 'onPress'
   | 'onPressIn'
@@ -138,6 +140,7 @@ const ReactionListWithContext = <
   const {
     alignment,
     fill: propFill,
+    message,
     messageContentWidth,
     onLongPress,
     onPress,
@@ -154,7 +157,15 @@ const ReactionListWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, targetedMessageBackground, white },
+      colors: {
+        accent_blue,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        targetedMessageBackground,
+        white,
+        white_snow,
+      },
       messageSimple: {
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
@@ -172,6 +183,7 @@ const ReactionListWithContext = <
   } = useTheme();
 
   const opacity = useSharedValue(0);
+  const { targetedMessage } = useTargetedMessage(message.id);
 
   const width = useWindowDimensions().width;
 
@@ -202,11 +214,14 @@ const ReactionListWithContext = <
     return null;
   }
 
+  console.log(targetedMessage);
+
   const alignmentLeft = alignment === 'left';
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
-  const stroke = propStroke || targetedMessageBackground;
+  const highlighted = message.pinned || targetedMessage === message.id;
+  const stroke = propStroke || (highlighted ? targetedMessageBackground : white_snow);
   const strokeSize = propStrokeSize || themeStrokeSize;
 
   const x1 = alignmentLeft
@@ -343,11 +358,23 @@ const areEqual = <
   prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messageContentWidth: prevMessageContentWidth, reactions: prevReactions } = prevProps;
-  const { messageContentWidth: nextMessageContentWidth, reactions: nextReactions } = nextProps;
+  const {
+    message: prevMessage,
+    messageContentWidth: prevMessageContentWidth,
+    reactions: prevReactions,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    messageContentWidth: nextMessageContentWidth,
+    reactions: nextReactions,
+  } = nextProps;
 
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
   if (!messageContentWidthEqual) return false;
+
+  const messageEqual = prevMessage.pinned === nextMessage.pinned;
+
+  if (!messageEqual) return false;
 
   const reactionsEqual =
     prevReactions.length === nextReactions.length &&
@@ -393,6 +420,7 @@ export const ReactionList = <
 ) => {
   const {
     alignment,
+    message,
     onLongPress,
     onPress,
     onPressIn,
@@ -406,6 +434,7 @@ export const ReactionList = <
     <MemoizedReactionList
       {...{
         alignment,
+        message,
         onLongPress,
         onPress,
         onPressIn,
