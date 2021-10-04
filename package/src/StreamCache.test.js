@@ -8,105 +8,105 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import {
+  STREAM_CHAT_CHANNEL_DATA,
   STREAM_CHAT_CHANNELS_DATA,
   STREAM_CHAT_CHANNELS_ORDER,
   STREAM_CHAT_CLIENT_DATA,
 } from './StreamCache/constants';
 
 const mockCachedData = () => ({
-  [STREAM_CHAT_CHANNELS_DATA]: [
-    {
-      _data: {},
-      data: {},
-      id: '3e1fe535-a893-4b42-bef8-72dafd265c76',
-      state: {
-        isUpToDate: true,
-        last_message_at: '2021-09-06T18:44:35.000Z',
-        members: {},
-        membership: {},
-        messages: [
-          {
-            __html: '<p>regular</p>',
-            attachments: [],
-            created_at: '2021-09-06T18:43:54.000Z',
-            html: '<p>regular</p>',
-            id: 'adc0afce-3916-4a21-8fb3-666882dfb666',
-            pinned_at: null,
-            status: 'received',
-            text: 'Message Text',
-            type: 'regular',
-            updated_at: '2021-09-06T18:43:54.000Z',
-            user: {
-              banned: false,
-              created_at: '2020-04-27T13:39:49.331742Z',
-              id: 'c0158140-3b7f-4361-90a2-41e32179aab7',
-              image: '7405d0e3-36ed-4028-bce8-f3427148a6ef',
-              name: 'aa2096f7-5154-4479-b8b4-2caa705a6e58',
-              online: false,
-              role: 'user',
-              updated_at: '2020-04-27T13:39:49.332087Z',
-            },
+  [STREAM_CHAT_CHANNELS_DATA]: ['3e1fe535-a893-4b42-bef8-72dafd265c76'],
+  [`${STREAM_CHAT_CHANNEL_DATA}_3e1fe535-a893-4b42-bef8-72dafd265c76`]: {
+    _data: {},
+    data: {},
+    id: '3e1fe535-a893-4b42-bef8-72dafd265c76',
+    state: {
+      isUpToDate: true,
+      last_message_at: '2021-09-06T18:44:35.000Z',
+      members: {},
+      membership: {},
+      messages: [
+        {
+          __html: '<p>regular</p>',
+          attachments: [],
+          created_at: '2021-09-06T18:43:54.000Z',
+          html: '<p>regular</p>',
+          id: 'adc0afce-3916-4a21-8fb3-666882dfb666',
+          pinned_at: null,
+          status: 'received',
+          text: 'Message Text',
+          type: 'regular',
+          updated_at: '2021-09-06T18:43:54.000Z',
+          user: {
+            banned: false,
+            created_at: '2020-04-27T13:39:49.331742Z',
+            id: 'c0158140-3b7f-4361-90a2-41e32179aab7',
+            image: '7405d0e3-36ed-4028-bce8-f3427148a6ef',
+            name: 'aa2096f7-5154-4479-b8b4-2caa705a6e58',
+            online: false,
+            role: 'user',
+            updated_at: '2020-04-27T13:39:49.332087Z',
           },
+        },
+        {
+          __html: '<p>regular</p>',
+          attachments: [],
+          created_at: '2021-09-06T18:44:35.000Z',
+          html: '<p>regular</p>',
+          id: '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9',
+          pinned_at: null,
+          status: 'received',
+          text: 'Thread Text',
+          type: 'regular',
+          updated_at: '2021-09-06T18:44:35.000Z',
+          user: {
+            banned: false,
+            created_at: '2020-04-27T13:39:49.331742Z',
+            id: '17f33e91-972f-482d-a384-4d5fa18605dc',
+            image: '8da9522d-6062-4986-94b1-d580960d9a1f',
+            name: '41613033-8b2d-4232-b226-1535affc75ae',
+            online: false,
+            role: 'user',
+            updated_at: '2020-04-27T13:39:49.332087Z',
+          },
+        },
+      ],
+      mutedUsers: [],
+      pinnedMessages: [],
+      read: {
+        Neil: { last_read: '2021-09-06T18:44:35.000Z', user: { id: 'Neil', mutes: [] } },
+      },
+      threads: {
+        '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9': [
           {
             __html: '<p>regular</p>',
             attachments: [],
-            created_at: '2021-09-06T18:44:35.000Z',
+            created_at: '2021-09-06T18:43:26.000Z',
             html: '<p>regular</p>',
-            id: '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9',
+            id: 'd8534d19-e211-4977-a997-48ebb202853a',
+            parent_id: '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9',
             pinned_at: null,
             status: 'received',
-            text: 'Thread Text',
+            text: 'Response Message Text',
             type: 'regular',
-            updated_at: '2021-09-06T18:44:35.000Z',
+            updated_at: '2021-09-06T18:43:26.000Z',
             user: {
               banned: false,
               created_at: '2020-04-27T13:39:49.331742Z',
-              id: '17f33e91-972f-482d-a384-4d5fa18605dc',
-              image: '8da9522d-6062-4986-94b1-d580960d9a1f',
-              name: '41613033-8b2d-4232-b226-1535affc75ae',
+              id: 'c0a5da32-7075-46cc-85ac-b90d0e4c0ac8',
+              image: '6424a618-733e-4d0f-907f-ebb023d67dc4',
+              name: 'f98b082e-4230-4e5b-88f5-b060714f2487',
               online: false,
               role: 'user',
               updated_at: '2020-04-27T13:39:49.332087Z',
             },
           },
         ],
-        mutedUsers: [],
-        pinnedMessages: [],
-        read: {
-          Neil: { last_read: '2021-09-06T18:44:35.000Z', user: { id: 'Neil', mutes: [] } },
-        },
-        threads: {
-          '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9': [
-            {
-              __html: '<p>regular</p>',
-              attachments: [],
-              created_at: '2021-09-06T18:43:26.000Z',
-              html: '<p>regular</p>',
-              id: 'd8534d19-e211-4977-a997-48ebb202853a',
-              parent_id: '3d7f8b03-18e4-4599-a8ac-1f86f0e802c9',
-              pinned_at: null,
-              status: 'received',
-              text: 'Response Message Text',
-              type: 'regular',
-              updated_at: '2021-09-06T18:43:26.000Z',
-              user: {
-                banned: false,
-                created_at: '2020-04-27T13:39:49.331742Z',
-                id: 'c0a5da32-7075-46cc-85ac-b90d0e4c0ac8',
-                image: '6424a618-733e-4d0f-907f-ebb023d67dc4',
-                name: 'f98b082e-4230-4e5b-88f5-b060714f2487',
-                online: false,
-                role: 'user',
-                updated_at: '2020-04-27T13:39:49.332087Z',
-              },
-            },
-          ],
-        },
-        unreadCount: 0,
       },
-      type: 'messaging',
+      unreadCount: 0,
     },
-  ],
+    type: 'messaging',
+  },
   [STREAM_CHAT_CHANNELS_ORDER]: {
     'filter-sort-based': {
       '3e1fe535-a893-4b42-bef8-72dafd265c76': 0,
@@ -409,7 +409,9 @@ describe('StreamCache instance', () => {
 
     expect(chatClient.reInitializeWithState).toHaveBeenCalledWith(
       cachedData[STREAM_CHAT_CLIENT_DATA],
-      cachedData[STREAM_CHAT_CHANNELS_DATA],
+      cachedData[STREAM_CHAT_CHANNELS_DATA].map(
+        (channelId) => cachedData[`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`],
+      ),
     );
 
     expect(cacheInstance.orderChannelsBasedOnCachedOrder).toHaveBeenCalledWith(
@@ -515,13 +517,17 @@ describe('StreamCache instance', () => {
 
     cacheInstance.removeOlderImages = jest.fn();
 
-    const oldCachedData = cachedData[STREAM_CHAT_CHANNELS_DATA];
+    const oldCachedData = cachedData[STREAM_CHAT_CHANNELS_DATA].map(
+      (channelId) => cachedData[`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`],
+    );
 
     await cacheInstance.syncCacheAndImages();
 
     expect(cacheInstance.removeOlderImages).toBeCalledWith(
       oldCachedData,
-      cachedData[STREAM_CHAT_CHANNELS_DATA],
+      cachedData[STREAM_CHAT_CHANNELS_DATA].map(
+        (channelId) => cachedData[`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`],
+      ),
     );
   });
 
@@ -554,7 +560,11 @@ describe('StreamCache instance', () => {
 
     // json parsing to avoid reference error once we are just mocking a cache (avoid inconsistency)
     const cacheDataWithoutExtraMessageAndChannel = JSON.parse(
-      JSON.stringify(cachedData[STREAM_CHAT_CHANNELS_DATA]),
+      JSON.stringify(
+        cachedData[STREAM_CHAT_CHANNELS_DATA].map(
+          (channelId) => cachedData[`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`],
+        ),
+      ),
     );
 
     const message2 = generateMessage({ text: 'Message Text2' });
@@ -568,7 +578,9 @@ describe('StreamCache instance', () => {
 
     await cacheInstance.syncCache();
 
-    const cacheDataWithExtraMessageAndChannel = cachedData[STREAM_CHAT_CHANNELS_DATA];
+    const cacheDataWithExtraMessageAndChannel = cachedData[STREAM_CHAT_CHANNELS_DATA].map(
+      (channelId) => cachedData[`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`],
+    );
 
     await cacheInstance.removeOlderImages(
       cacheDataWithExtraMessageAndChannel,
