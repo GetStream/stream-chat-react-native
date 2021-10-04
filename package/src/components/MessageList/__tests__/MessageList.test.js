@@ -161,7 +161,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByTestId, queryAllByTestId } = render(
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
@@ -183,7 +183,7 @@ describe('MessageList', () => {
 
     await waitFor(() => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
-      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('message-deleted')).toBeTruthy();
       expect(getByTestId('only-visible-to-you')).toBeTruthy();
     });
   });
