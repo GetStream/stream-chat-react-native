@@ -288,7 +288,7 @@ export type MessagesContextValue<
    */
 
   /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
-  deletedMessagesVisibilityType?: 'both' | 'none' | 'receiver' | 'sender';
+  deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
 
   deleteMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   disableTypingIndicator?: boolean;

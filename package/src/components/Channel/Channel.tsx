@@ -416,7 +416,7 @@ const ChannelWithContext = <
     compressImageQuality,
     copyMessage,
     DateHeader = DateHeaderDefault,
-    deletedMessagesVisibilityType = 'both',
+    deletedMessagesVisibilityType = 'always',
     deleteMessage,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,

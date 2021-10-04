@@ -105,7 +105,7 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(both)', async () => {
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(always)', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannel({
       members: [generateMember({ user: user1 })],
@@ -232,7 +232,7 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to none', async () => {
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to never', async () => {
     const user1 = generateUser();
     const user2 = generateUser({ id: 'testID' });
     const mockedChannel = generateChannel({
@@ -257,7 +257,7 @@ describe('MessageList', () => {
               <ImageGalleryProvider>
                 <Channel
                   channel={channel}
-                  deletedMessagesVisibilityType='none'
+                  deletedMessagesVisibilityType='never'
                   FlatList={MockedFlatList}
                 >
                   <MessageList />

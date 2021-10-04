@@ -24,7 +24,7 @@ import type {
 } from '../../../types/types';
 
 export type UseMessageListParams = {
-  deletedMessagesVisibilityType?: 'both' | 'none' | 'receiver' | 'sender';
+  deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
   inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
@@ -119,7 +119,7 @@ export const useMessageList = <
         return !isMessageTypeDeleted || msg.user?.id === client.userID;
       } else if (deletedMessagesVisibilityType === 'receiver') {
         return !isMessageTypeDeleted || msg.user?.id !== client.userID;
-      } else if (deletedMessagesVisibilityType === 'none') {
+      } else if (deletedMessagesVisibilityType === 'never') {
         return !isMessageTypeDeleted;
       } else {
         return msg;
