@@ -150,17 +150,23 @@ const areEqual = <
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
 
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 

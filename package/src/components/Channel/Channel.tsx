@@ -233,6 +233,7 @@ export type ChannelPropsWithContext<
       | 'CardHeader'
       | 'copyMessage'
       | 'DateHeader'
+      | 'deletedMessagesVisibilityType'
       | 'deleteMessage'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
@@ -430,6 +431,7 @@ const ChannelWithContext = <
     compressImageQuality,
     copyMessage,
     DateHeader = DateHeaderDefault,
+    deletedMessagesVisibilityType = 'always',
     deleteMessage,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
@@ -1728,6 +1730,7 @@ const ChannelWithContext = <
     channelId,
     copyMessage,
     DateHeader,
+    deletedMessagesVisibilityType,
     deleteMessage,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,

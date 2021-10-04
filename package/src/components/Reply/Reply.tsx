@@ -261,13 +261,18 @@ const areEqual = <
   const { quotedMessage: prevQuotedMessage } = prevProps;
   const { quotedMessage: nextQuotedMessage } = nextProps;
 
+  const isPrevQuotedMessageTypeDeleted =
+    typeof prevQuotedMessage !== 'boolean' && prevQuotedMessage?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted =
+    typeof nextQuotedMessage !== 'boolean' && nextQuotedMessage?.type === 'deleted';
+
   const quotedMessageEqual =
     !!prevQuotedMessage &&
     !!nextQuotedMessage &&
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
       ? prevQuotedMessage.id === nextQuotedMessage.id &&
-        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
+        isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted
       : !!prevQuotedMessage === !!nextQuotedMessage;
 
   if (!quotedMessageEqual) return false;
