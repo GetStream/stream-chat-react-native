@@ -127,19 +127,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -167,23 +169,25 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel
-                  channel={channel}
-                  deletedMessagesVisibilityType='sender'
-                  FlatList={MockedFlatList}
-                >
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='sender'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -211,23 +215,25 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel
-                  channel={channel}
-                  deletedMessagesVisibilityType='receiver'
-                  FlatList={MockedFlatList}
-                >
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='receiver'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -255,23 +261,25 @@ describe('MessageList', () => {
     await channel.query();
 
     const { queryAllByTestId, queryByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel
-                  channel={channel}
-                  deletedMessagesVisibilityType='never'
-                  FlatList={MockedFlatList}
-                >
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='never'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -298,19 +306,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
