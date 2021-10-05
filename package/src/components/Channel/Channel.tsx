@@ -160,7 +160,7 @@ const scrollToFirstUnreadThreshold = 4;
 const defaultThrottleInterval = 500;
 const defaultDebounceInterval = 500;
 const throttleOptions = {
-  leading: false,
+  leading: true,
   trailing: true,
 };
 const debounceOptions = {
