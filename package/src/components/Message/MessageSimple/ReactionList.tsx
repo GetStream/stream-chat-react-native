@@ -214,8 +214,6 @@ const ReactionListWithContext = <
     return null;
   }
 
-  console.log(targetedMessage);
-
   const alignmentLeft = alignment === 'left';
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
@@ -372,9 +370,9 @@ const areEqual = <
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
   if (!messageContentWidthEqual) return false;
 
-  const messageEqual = prevMessage.pinned === nextMessage.pinned;
+  const messagePinnedEqual = prevMessage.pinned === nextMessage.pinned;
 
-  if (!messageEqual) return false;
+  if (!messagePinnedEqual) return false;
 
   const reactionsEqual =
     prevReactions.length === nextReactions.length &&
