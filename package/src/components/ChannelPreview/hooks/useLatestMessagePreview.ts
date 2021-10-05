@@ -65,7 +65,8 @@ const getLatestMessageDisplayText = <
   t: (key: string) => string,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
-  if (message.deleted_at) return [{ bold: false, text: t('Message deleted') }];
+  const isMessageTypeDeleted = message.type === 'deleted';
+  if (isMessageTypeDeleted) return [{ bold: false, text: t('Message deleted') }];
   const currentUserId = client.userID;
   const messageOwnerId = message.user?.id;
   const members = Object.keys(channel.state.members);

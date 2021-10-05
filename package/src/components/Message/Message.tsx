@@ -294,8 +294,10 @@ const MessageWithContext = <
 >(
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const isMessageTypeDeleted = props.message.type === 'deleted';
+
   const {
-    animatedLongPress = Platform.OS === 'ios' && !props.message.deleted_at,
+    animatedLongPress = Platform.OS === 'ios' && !isMessageTypeDeleted,
     blockUser: blockUserProp,
     channel,
     client,
@@ -478,7 +480,7 @@ const MessageWithContext = <
    * clickable
    */
   const attachments =
-    !message.deleted_at && Array.isArray(message.attachments)
+    !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
             if (cur.type === 'file') {
@@ -516,7 +518,7 @@ const MessageWithContext = <
    * Check if any actions to prevent long press
    */
   const hasAttachmentActions =
-    !message.deleted_at &&
+    !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
     message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
 
@@ -579,7 +581,7 @@ const MessageWithContext = <
 
   const hasReactions =
     !!reactionsEnabled &&
-    !message.deleted_at &&
+    !isMessageTypeDeleted &&
     !!message.latest_reactions &&
     message.latest_reactions.length > 0;
 
@@ -1203,7 +1205,7 @@ const MessageWithContext = <
     [onDoubleTapMessage],
   );
 
-  return message.deleted_at || messageContentOrder.length ? (
+  return isMessageTypeDeleted || messageContentOrder.length ? (
     <TapGestureHandler
       enabled={animatedLongPress && !preventPress}
       maxDeltaX={8}
@@ -1300,8 +1302,11 @@ const areEqual = <
 
   if (goToMessageChangedAndMatters) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
       (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
@@ -1312,9 +1317,12 @@ const areEqual = <
 
   if (!messageEqual) return false;
 
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 
