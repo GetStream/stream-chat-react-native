@@ -8,14 +8,16 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { useTargetedMessage } from '../../Channel/hooks/useTargetedMessage';
 
 import {
   MessageContextValue,
   Reactions,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Unknown } from '../../../icons/Unknown';
@@ -116,15 +118,16 @@ export type ReactionListPropsWithContext<
   | 'preventPress'
   | 'reactions'
   | 'showMessageOverlay'
-> & {
-  messageContentWidth: number;
-  supportedReactions: ReactionData[];
-  fill?: string;
-  radius?: number; // not recommended to change this
-  reactionSize?: number;
-  stroke?: string;
-  strokeSize?: number; // not recommended to change this
-};
+> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'targetedMessage'> & {
+    messageContentWidth: number;
+    supportedReactions: ReactionData[];
+    fill?: string;
+    radius?: number; // not recommended to change this
+    reactionSize?: number;
+    stroke?: string;
+    strokeSize?: number; // not recommended to change this
+  };
 
 const ReactionListWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -153,6 +156,7 @@ const ReactionListWithContext = <
     stroke: propStroke,
     strokeSize: propStrokeSize,
     supportedReactions,
+    targetedMessage,
   } = props;
 
   const {
@@ -183,7 +187,6 @@ const ReactionListWithContext = <
   } = useTheme();
 
   const opacity = useSharedValue(0);
-  const { targetedMessage } = useTargetedMessage(message.id);
 
   const width = useWindowDimensions().width;
 
@@ -360,11 +363,13 @@ const areEqual = <
     message: prevMessage,
     messageContentWidth: prevMessageContentWidth,
     reactions: prevReactions,
+    targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
     message: nextMessage,
     messageContentWidth: nextMessageContentWidth,
     reactions: nextReactions,
+    targetedMessage: nextTargetedMessage,
   } = nextProps;
 
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
@@ -373,6 +378,10 @@ const areEqual = <
   const messagePinnedEqual = prevMessage.pinned === nextMessage.pinned;
 
   if (!messagePinnedEqual) return false;
+
+  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+
+  if (!targetedMessageEqual) return false;
 
   const reactionsEqual =
     prevReactions.length === nextReactions.length &&
@@ -426,7 +435,7 @@ export const ReactionList = <
     reactions,
     showMessageOverlay,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedReactionList
@@ -440,6 +449,7 @@ export const ReactionList = <
         reactions,
         showMessageOverlay,
         supportedReactions,
+        targetedMessage,
       }}
       {...props}
     />

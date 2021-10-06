@@ -1079,7 +1079,7 @@ const ChannelWithContext = <
         channel.state.addMessagesSorted(failedThreadMessages);
         setThreadMessages([...channel.state.threads[thread.id]]);
       }
-    } catch (err) {
+    } catch (err: Error) {
       setError(err);
       setLoading(false);
     }
@@ -1796,6 +1796,7 @@ const ChannelWithContext = <
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
+    targetedMessage,
     threadReply,
     TypingIndicator,
     TypingIndicatorContainer,

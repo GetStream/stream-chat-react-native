@@ -217,6 +217,7 @@ export type MessagePropsWithContext<
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
+    | 'targetedMessage'
     | 'threadRepliesEnabled'
     | 'threadReply'
     | 'updateMessage'
@@ -275,7 +276,6 @@ export type MessagePropsWithContext<
     onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
-    targetedMessage?: boolean;
   };
 
 /**
@@ -419,7 +419,7 @@ const MessageWithContext = <
   );
 
   useEffect(() => {
-    targetedOpacity.value = withTiming(targetedMessage ? 1 : 0, {
+    targetedOpacity.value = withTiming(targetedMessage === message.id ? 1 : 0, {
       duration: 1000,
     });
   }, [targetedMessage]);
@@ -1239,7 +1239,7 @@ const MessageWithContext = <
                 ]}
               />
               <MessageProvider value={messageContext}>
-                <MessageSimple />
+                <MessageSimple targetedMessage={targetedMessage} />
               </MessageProvider>
             </Animated.View>
           </View>

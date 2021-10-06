@@ -48,6 +48,7 @@ export type MessageSimplePropsWithContext<
     | 'MessageContent'
     | 'MessagePinnedHeader'
     | 'ReactionList'
+    | 'targetedMessage'
   >;
 
 const MessageSimpleWithContext = <
@@ -72,6 +73,7 @@ const MessageSimpleWithContext = <
     MessageContent,
     MessagePinnedHeader,
     ReactionList,
+    targetedMessage,
   } = props;
 
   const {
@@ -110,7 +112,12 @@ const MessageSimpleWithContext = <
       >
         {alignment === 'left' && <MessageAvatar />}
         <MessageContent setMessageContentWidth={setMessageContentWidth} />
-        {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
+        {showReactions && (
+          <ReactionList
+            messageContentWidth={messageContentWidth}
+            targetedMessage={targetedMessage}
+          />
+        )}
       </View>
     </>
   );
@@ -133,12 +140,14 @@ const areEqual = <
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     message: prevMessage,
+    targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
     channel: nextChannel,
     groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     message: nextMessage,
+    targetedMessage: nextTargetedMessage,
   } = nextProps;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
@@ -195,6 +204,9 @@ const areEqual = <
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
+
+  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+  if (!targetedMessageEqual) return false;
 
   return true;
 };

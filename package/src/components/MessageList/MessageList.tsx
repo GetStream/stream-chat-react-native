@@ -591,7 +591,7 @@ const MessageListWithContext = <
               onThreadSelect={onThreadSelect}
               showUnreadUnderlay={showUnreadUnderlay}
               style={styles.messagePadding}
-              targetedMessage={targetedMessage === message.id}
+              targetedMessage={targetedMessage}
               threadList={threadList}
             />
           </View>
@@ -619,7 +619,7 @@ const MessageListWithContext = <
             onThreadSelect={onThreadSelect}
             showUnreadUnderlay={showUnreadUnderlay}
             style={styles.messagePadding}
-            targetedMessage={targetedMessage === message.id}
+            targetedMessage={targetedMessage}
             threadList={threadList}
           />
         </View>
