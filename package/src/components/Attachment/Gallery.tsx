@@ -44,7 +44,7 @@ const GalleryImage: React.FC<
 > = (props) => {
   const { channelId, height, messageId, uri, ...rest } = props;
 
-  const [error, setError] = useState<unknown>(false);
+  const [error, setError] = useState(false);
 
   return (
     <CachedAttachmentImage
@@ -54,7 +54,7 @@ const GalleryImage: React.FC<
         channelId,
         messageId,
       }}
-      onError={(error) => setError(error)}
+      onError={() => setError(true)}
       source={{
         uri: uri.includes('&h=%2A')
           ? error

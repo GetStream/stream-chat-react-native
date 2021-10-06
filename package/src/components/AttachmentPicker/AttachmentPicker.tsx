@@ -195,7 +195,7 @@ export const AttachmentPicker = React.forwardRef(
 
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [endCursor, setEndCursor] = useState<string>();
-    const [photoError, setPhotoError] = useState<unknown>(false);
+    const [photoError, setPhotoError] = useState(false);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
@@ -224,7 +224,7 @@ export const AttachmentPicker = React.forwardRef(
           setHasNextPage(results.hasNextPage || false);
         } catch (error) {
           console.log(error);
-          setPhotoError(error);
+          setPhotoError(true);
         }
         setLoadingPhotos(false);
       }
