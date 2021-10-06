@@ -428,7 +428,7 @@ export type MessagesContextValue<
         deleteMessage: MessageAction | null;
         dismissOverlay: () => void;
         editMessage: MessageAction | null;
-        error: boolean;
+        error: unknown;
         flagMessage: MessageAction | null;
         isMyMessage: boolean;
         isThreadMessage: boolean;

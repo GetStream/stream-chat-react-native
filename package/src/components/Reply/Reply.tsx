@@ -102,7 +102,7 @@ const ReplyWithContext = <
     t,
   } = props;
 
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<unknown>(false);
 
   const {
     theme: {

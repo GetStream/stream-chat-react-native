@@ -48,7 +48,7 @@ export const messageActions = <
   copyMessage: MessageAction | null;
   deleteMessage: MessageAction | null;
   editMessage: MessageAction | null;
-  error: boolean;
+  error: unknown;
   flagMessage: MessageAction | null;
   isMyMessage: boolean;
   isThreadMessage: boolean;

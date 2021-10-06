@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  ImageErrorEventData,
-  ImageProps,
-  NativeSyntheticEvent,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ImageProps, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
@@ -53,7 +44,7 @@ const GalleryImage: React.FC<
 > = (props) => {
   const { channelId, height, messageId, uri, ...rest } = props;
 
-  const [error, setError] = useState<NativeSyntheticEvent<ImageErrorEventData>>(false);
+  const [error, setError] = useState<unknown>(false);
 
   return (
     <CachedAttachmentImage
