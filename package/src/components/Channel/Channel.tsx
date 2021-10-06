@@ -582,7 +582,7 @@ const ChannelWithContext = <
   } = useTheme();
 
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<unknown>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
@@ -827,7 +827,7 @@ const ChannelWithContext = <
       setHasMore(true);
       copyChannelState();
     } catch (err) {
-      setError(true);
+      setError(err);
       setLoading(false);
       setLastRead(new Date());
     }
@@ -977,7 +977,7 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Thread loading request failed with error', err);
-      setError(true);
+      setError(err);
       setThreadLoadingMore(false);
       throw err;
     }
@@ -1080,7 +1080,7 @@ const ChannelWithContext = <
         setThreadMessages([...channel.state.threads[thread.id]]);
       }
     } catch (err) {
-      setError(true);
+      setError(err);
       setLoading(false);
     }
 
@@ -1447,7 +1447,7 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      setError(true);
+      setError(err);
       setLoadingMore(false);
       throw err;
     }
@@ -1482,7 +1482,7 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      setError(true);
+      setError(err);
       setLoadingMoreRecent(false);
       throw err;
     }
@@ -1621,7 +1621,7 @@ const ChannelWithContext = <
         }
       } catch (err) {
         console.warn('Message pagination request failed with error', err);
-        setError(true);
+        setError(err);
         setThreadLoadingMore(false);
         throw err;
       }

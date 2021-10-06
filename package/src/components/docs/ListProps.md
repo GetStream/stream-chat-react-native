@@ -1,6 +1,6 @@
 All props available in the [ChannelList](#channellist) component are passed along to the List component. Additionally, the following props are provided to the List component:
 
-- `error` {boolean} Error in channels query, if any
+- `error` {unknown} Error in channels query, if any
 - `channels` {array} List of channel objects
 - `forceUpdate` {number} Incremental number change to force update the FlatList
 - `hasNextPage` {boolean} Whether or not the FlatList has another page to render
