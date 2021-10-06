@@ -1239,7 +1239,7 @@ const MessageWithContext = <
                 ]}
               />
               <MessageProvider value={messageContext}>
-                <MessageSimple targetedMessage={targetedMessage} />
+                <MessageSimple />
               </MessageProvider>
             </Animated.View>
           </View>
