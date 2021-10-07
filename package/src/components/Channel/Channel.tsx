@@ -582,7 +582,7 @@ const ChannelWithContext = <
   } = useTheme();
 
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
-  const [error, setError] = useState<Error | bolean>(false);
+  const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
@@ -827,7 +827,11 @@ const ChannelWithContext = <
       setHasMore(true);
       copyChannelState();
     } catch (err) {
-      setError(err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
       setLoading(false);
       setLastRead(new Date());
     }
@@ -977,7 +981,11 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Thread loading request failed with error', err);
-      setError(err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
       setThreadLoadingMore(false);
       throw err;
     }
@@ -1080,7 +1088,11 @@ const ChannelWithContext = <
         setThreadMessages([...channel.state.threads[thread.id]]);
       }
     } catch (err) {
-      setError(err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
       setLoading(false);
     }
 
@@ -1447,7 +1459,11 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      setError(err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
       setLoadingMore(false);
       throw err;
     }
@@ -1482,7 +1498,11 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      setError(err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
       setLoadingMoreRecent(false);
       throw err;
     }
@@ -1621,7 +1641,11 @@ const ChannelWithContext = <
         }
       } catch (err) {
         console.warn('Message pagination request failed with error', err);
-        setError(err);
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
         setThreadLoadingMore(false);
         throw err;
       }
