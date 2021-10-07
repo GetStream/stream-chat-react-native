@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -61,6 +61,7 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
   const {
     theme: {
       colors: { black, border },
+      overlay: { messageActions },
     },
   } = useTheme();
 
@@ -92,10 +93,13 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
           styles.row,
           index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
           animatedStyle,
+          messageActions.actionContainer,
         ]}
       >
-        {icon}
-        <Text style={[styles.titleStyle, { color: black }, titleStyle]}>{title}</Text>
+        <View style={messageActions.icon}>{icon}</View>
+        <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>
+          {title}
+        </Text>
       </Animated.View>
     </TapGestureHandler>
   );
