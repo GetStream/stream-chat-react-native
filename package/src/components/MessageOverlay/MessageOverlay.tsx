@@ -167,6 +167,7 @@ const MessageOverlayWithContext = <
         replyContainer,
       },
     },
+    overlay: { container: containerStyle, padding: overlayPadding },
   } = wrapMessageInTheme ? modifiedTheme : theme;
 
   const messageHeight = useSharedValue(0);
@@ -311,7 +312,7 @@ const MessageOverlayWithContext = <
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
             pointerEvents={visible ? 'auto' : 'none'}
-            style={StyleSheet.absoluteFillObject}
+            style={[StyleSheet.absoluteFillObject, containerStyle]}
           >
             <PanGestureHandler
               enabled={overlay === 'message'}
@@ -346,6 +347,7 @@ const MessageOverlayWithContext = <
                             style={[
                               styles.center,
                               styles.overlayPadding,
+                              { padding: overlayPadding },
                               alignment === 'left' ? styles.alignStart : styles.alignEnd,
                             ]}
                           >
