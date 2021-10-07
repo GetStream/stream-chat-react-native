@@ -209,6 +209,20 @@ android {
 }
 ```
 
+## External Link not opening
+
+### Android
+
+Opening an external link doesn't work without permissions on `targetSdkVersion` >= 30. So, the following permission must be included in the `AndroidManifest.xml` file.
+
+```xml
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+```
+
+:::caution
+**Note:** Make sure you are aware of [upcoming policies](https://support.google.com/googleplay/android-developer/answer/10158779) that this change will be subjected to.
+:::
+
 ## GIF and WebP not displaying
 
 ### Android
