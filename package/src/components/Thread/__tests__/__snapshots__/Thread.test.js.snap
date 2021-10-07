@@ -65,7 +65,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "onGestureHandlerEvent": [Function],
                         "onGestureHandlerStateChange": [Function],
                       },
-                      "reattachNeeded": false,
+                      "reattachNeeded": true,
                       "worklet": [Function],
                     },
                   }
@@ -353,7 +353,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "onGestureHandlerEvent": [Function],
                         "onGestureHandlerStateChange": [Function],
                       },
-                      "reattachNeeded": false,
+                      "reattachNeeded": true,
                       "worklet": [Function],
                     },
                   }
@@ -641,7 +641,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "onGestureHandlerEvent": [Function],
                         "onGestureHandlerStateChange": [Function],
                       },
-                      "reattachNeeded": false,
+                      "reattachNeeded": true,
                       "worklet": [Function],
                     },
                   }
