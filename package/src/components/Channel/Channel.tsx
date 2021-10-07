@@ -582,7 +582,7 @@ const ChannelWithContext = <
   } = useTheme();
 
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
-  const [error, setError] = useState<unknown>(false);
+  const [error, setError] = useState<Error | bolean>(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] =
     useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();

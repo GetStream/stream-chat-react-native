@@ -67,7 +67,7 @@ export type ChannelsContextValue<
   /**
    * Error in channels query, if any
    */
-  error: unknown;
+  error: boolean | Error;
   /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
