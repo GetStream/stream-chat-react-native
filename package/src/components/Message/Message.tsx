@@ -217,7 +217,6 @@ export type MessagePropsWithContext<
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
-    | 'targetedMessage'
     | 'threadRepliesEnabled'
     | 'threadReply'
     | 'updateMessage'
@@ -276,6 +275,7 @@ export type MessagePropsWithContext<
     onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
+    targetedMessage?: string;
   };
 
 /**

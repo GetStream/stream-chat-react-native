@@ -1079,7 +1079,7 @@ const ChannelWithContext = <
         channel.state.addMessagesSorted(failedThreadMessages);
         setThreadMessages([...channel.state.threads[thread.id]]);
       }
-    } catch (err: Error) {
+    } catch (err) {
       setError(err);
       setLoading(false);
     }
