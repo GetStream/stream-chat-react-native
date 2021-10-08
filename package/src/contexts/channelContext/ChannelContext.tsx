@@ -44,7 +44,7 @@ export type ChannelContextValue<
    * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
    */
   enforceUniqueReaction: boolean;
-  error: boolean;
+  error: boolean | Error;
   /**
    * When set to false, it will disable giphy command on MessageInput component.
    */
