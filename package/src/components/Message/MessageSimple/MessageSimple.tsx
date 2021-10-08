@@ -48,7 +48,6 @@ export type MessageSimplePropsWithContext<
     | 'MessageContent'
     | 'MessagePinnedHeader'
     | 'ReactionList'
-    | 'targetedMessage'
   >;
 
 const MessageSimpleWithContext = <
@@ -73,7 +72,6 @@ const MessageSimpleWithContext = <
     MessageContent,
     MessagePinnedHeader,
     ReactionList,
-    targetedMessage,
   } = props;
 
   const {

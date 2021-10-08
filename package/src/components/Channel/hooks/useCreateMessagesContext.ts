@@ -221,6 +221,7 @@ export const useCreateMessagesContext = <
       markdownRulesLength,
       messageContentOrderValue,
       supportedReactionsLength,
+      targetedMessage,
     ],
   );
 
