@@ -72,7 +72,6 @@ import Retry from '../common-content/core-components/channel/props/retry.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
-import TargetedMessage from '../common-content/core-components/channel/props/targeted_message.mdx';
 import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx';
 import ThreadReply from '../common-content/core-components/channel/props/thread_reply.mdx';
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
@@ -284,7 +283,12 @@ Enables quoted-reply state on given message.
 
 ### targetedMessage
 
-<TargetedMessage />
+Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
+
+| Type |
+| - |
+| string |
+
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#threadrepliesenabled)_ props</div> threadRepliesEnabled {#threadrepliesenabled}
 
