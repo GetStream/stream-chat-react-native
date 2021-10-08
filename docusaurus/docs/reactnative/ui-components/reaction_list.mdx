@@ -11,6 +11,7 @@ import Reactions from '../common-content/contexts/message-context/reactions.mdx'
 import ShowMessageOverlay from '../common-content/contexts/message-context/show_message_overlay.mdx';
 
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
+import TargetedMessage from '../common-content/core-components/channel/props/targeted_message.mdx';
 
 `ReactionList` component is used to display the reactions added to a message right on top of it.
 
@@ -95,3 +96,7 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 ### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
+
+### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#targetedmessage)</div> targetedMessage {#targetedmessage}
+
+<TargetedMessage />
