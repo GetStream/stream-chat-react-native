@@ -48,7 +48,7 @@ describe('Avatar', () => {
     });
   });
 
-  it('should render an avatar with a random image and no size', async () => {
+  it('should render an avatar with a random image and default size', async () => {
     const { queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' />
@@ -56,13 +56,15 @@ describe('Avatar', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image').props.source).toMatchObject({
-        uri: 'https://getstream.io/random_png/?name=T U&size=undefined',
+      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
+        borderRadius: 16,
+        height: 32,
+        width: 32,
       });
     });
   });
 
-  it('should render an avatar with a random image and custom size', async () => {
+  it('should render an avatar with placeholder and custom size', async () => {
     const { queryByTestId } = render(
       <ThemeProvider>
         <Avatar name='Test User' size={20} />
@@ -70,8 +72,10 @@ describe('Avatar', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-image').props.source).toMatchObject({
-        uri: 'https://getstream.io/random_png/?name=T U&size=20',
+      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
+        borderRadius: 16,
+        height: 32,
+        width: 32,
       });
     });
   });

@@ -4,6 +4,7 @@ title: ReactionList
 ---
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
 import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
 import OnPress from '../common-content/contexts/message-context/on_press.mdx';
 import Reactions from '../common-content/contexts/message-context/reactions.mdx';
@@ -56,6 +57,11 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 
 <OnLongPress />
 
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
+
+<MessageProp />
+
+
 ### <div class="description">overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)</div> onPress {#onpress}
 
 <OnPress />
@@ -89,3 +95,11 @@ Background color for reaction list container when [`alignment`](#alignment) is `
 ### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
+
+### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#targetedmessage)</div> targetedMessage {#targetedmessage}
+
+Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
+
+| Type |
+| - |
+| string |

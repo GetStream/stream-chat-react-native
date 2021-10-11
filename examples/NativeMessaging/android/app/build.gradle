@@ -79,6 +79,9 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
+    entryFile: "index.js",
+    bundleAssetName: "index.android.bundle",
+    bundleInRelease: true
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -129,6 +132,7 @@ android {
         applicationId "com.nativemessaging"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        multiDexEnabled true
         vectorDrawables.useSupportLibrary true
         versionCode 1
         versionName "1.0"

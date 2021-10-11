@@ -196,7 +196,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                 },
               ]}
             >
-              <Avatar image={item.image} name={item.name} size={40} />
+              <Avatar id={item?.id} image={item.image} name={item.name} size={40} />
               <View style={styles.searchResultUserDetails}>
                 <Text
                   style={[

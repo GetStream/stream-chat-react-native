@@ -8,8 +8,11 @@ import {
   ChannelPreviewMessengerProps,
   Delete,
   MenuPointHorizontal,
+  StreamCache,
   useChatContext,
   useTheme,
+  useToastContext,
+  useTranslationContext,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -64,6 +67,9 @@ export const ChannelPreview: React.FC<
 > = (props) => {
   const { channel } = props;
 
+  const toast = useToastContext();
+  const { t } = useTranslationContext();
+
   const { setOverlay } = useAppOverlayContext();
 
   const { setData: setDataBottomSheet } = useBottomSheetOverlayContext();
@@ -109,18 +115,22 @@ export const ChannelPreview: React.FC<
           </RectButton>
           <RectButton
             onPress={() => {
-              setDataBottomSheet({
-                confirmText: 'DELETE',
-                onConfirm: () => {
-                  channel.delete();
-                  setOverlay('none');
-                },
-                subtext: `Are you sure you want to delete this ${
-                  otherMembers.length === 1 ? 'conversation' : 'group'
-                }?`,
-                title: `Delete ${otherMembers.length === 1 ? 'Conversation' : 'Group'}`,
-              });
-              setOverlay('confirmation');
+              if (!StreamCache.getInstance().currentNetworkState) {
+                toast.show(t('Something went wrong'), 2000);
+              } else {
+                setDataBottomSheet({
+                  confirmText: 'DELETE',
+                  onConfirm: () => {
+                    channel.delete();
+                    setOverlay('none');
+                  },
+                  subtext: `Are you sure you want to delete this ${
+                    otherMembers.length === 1 ? 'conversation' : 'group'
+                  }?`,
+                  title: `Delete ${otherMembers.length === 1 ? 'Conversation' : 'Group'}`,
+                });
+                setOverlay('confirmation');
+              }
             }}
             style={[styles.rightSwipeableButton]}
           >

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+import { ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 import merge from 'lodash/merge';
 
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
@@ -101,7 +102,7 @@ const ReplyWithContext = <
     t,
   } = props;
 
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<boolean | Error>(false);
 
   const {
     theme: {
@@ -174,7 +175,11 @@ const ReplyWithContext = <
               <FileAttachmentIcon mimeType={lastAttachment.mime_type} size={attachmentSize} />
             </View>
           ) : hasImage ? (
-            <Image
+            <CachedAttachmentImage
+              cacheConfig={{
+                channelId: quotedMessage.cid,
+                messageId: quotedMessage.id,
+              }}
               onError={() => setError(true)}
               source={{
                 uri:
@@ -256,13 +261,18 @@ const areEqual = <
   const { quotedMessage: prevQuotedMessage } = prevProps;
   const { quotedMessage: nextQuotedMessage } = nextProps;
 
+  const isPrevQuotedMessageTypeDeleted =
+    typeof prevQuotedMessage !== 'boolean' && prevQuotedMessage?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted =
+    typeof nextQuotedMessage !== 'boolean' && nextQuotedMessage?.type === 'deleted';
+
   const quotedMessageEqual =
     !!prevQuotedMessage &&
     !!nextQuotedMessage &&
     typeof prevQuotedMessage !== 'boolean' &&
     typeof nextQuotedMessage !== 'boolean'
       ? prevQuotedMessage.id === nextQuotedMessage.id &&
-        prevQuotedMessage.deleted_at === nextQuotedMessage.deleted_at
+        isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted
       : !!prevQuotedMessage === !!nextQuotedMessage;
 
   if (!quotedMessageEqual) return false;

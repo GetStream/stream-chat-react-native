@@ -8,6 +8,8 @@ import { MessageContent } from '../../MessageSimple/MessageContent';
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
 
+import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
+
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../../mock-builders/generator/channel';
@@ -38,11 +40,13 @@ describe('MessageContent', () => {
 
     renderMessage = (options) =>
       render(
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <Message groupStyles={['bottom']} {...options} />
-          </Channel>
-        </Chat>,
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <Message groupStyles={['bottom']} {...options} />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>,
       );
   });
 
@@ -90,12 +94,12 @@ describe('MessageContent', () => {
     });
   });
 
-  it('renders a message deleted message when `message.deleted_at` exists', async () => {
+  it('renders a message deleted message when `message.type` is `deleted`', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId } = renderMessage({
-      message: { ...message, deleted_at: true },
+      message: { ...message, type: 'deleted' },
     });
 
     await waitFor(() => {
@@ -111,11 +115,13 @@ describe('MessageContent', () => {
     const ContextMessageHeader = (props) => <View {...props} testID='message-header' />;
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel} MessageHeader={ContextMessageHeader}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} MessageHeader={ContextMessageHeader}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -131,11 +137,13 @@ describe('MessageContent', () => {
     const ContextMessageFooter = (props) => <View {...props} testID='message-footer' />;
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel} MessageFooter={ContextMessageFooter}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} MessageFooter={ContextMessageFooter}>
+            <Message groupStyles={['bottom']} message={message} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -227,11 +235,13 @@ describe('MessageContent', () => {
     };
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
-          <Message groupStyles={['bottom']} message={message} reactionsEnabled />
-        </Channel>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
+            <Message groupStyles={['bottom']} message={message} reactionsEnabled />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {

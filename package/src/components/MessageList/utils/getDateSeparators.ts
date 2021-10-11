@@ -49,9 +49,10 @@ export const getDateSeparators = <
     return dateSeparators;
   }
 
-  const messagesWithoutDeleted = messages.filter(
-    (message) => !message.deleted_at || userId === message.user?.id,
-  );
+  const messagesWithoutDeleted = messages.filter((message) => {
+    const isMessageTypeDeleted = message.type === 'deleted';
+    return !isMessageTypeDeleted || userId === message.user?.id;
+  });
 
   for (let i = 0; i < messagesWithoutDeleted.length; i++) {
     const previousMessage = messagesWithoutDeleted[i - 1];

@@ -153,6 +153,7 @@ type MessageListPropsWithContext<
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'deletedMessagesVisibilityType'
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
@@ -204,6 +205,7 @@ type MessageListPropsWithContext<
     HeaderComponent?: React.ComponentType;
     /** Whether or not the FlatList is inverted. Defaults to true */
     inverted?: boolean;
+    isListActive?: boolean;
     /** Turn off grouping of messages by user */
     noGroupByUser?: boolean;
     onListScroll?: ScrollViewProps['onScroll'];
@@ -260,6 +262,7 @@ const MessageListWithContext = <
     client,
     closePicker,
     DateHeader,
+    deletedMessagesVisibilityType,
     disabled,
     disableTypingIndicator,
     EmptyStateIndicator,
@@ -271,6 +274,7 @@ const MessageListWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
+    isListActive = false,
     legacyImageViewerSwipeBehaviour,
     loadChannelAtMessage,
     loading,
@@ -318,6 +322,7 @@ const MessageListWithContext = <
   );
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+    deletedMessagesVisibilityType,
     inverted,
     noGroupByUser,
     threadList,
@@ -396,9 +401,11 @@ const MessageListWithContext = <
         item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
       };
 
+      const isMessageTypeDeleted = lastItem.item.type === 'deleted';
+
       if (
         lastItem?.item?.created_at &&
-        !lastItem.item.deleted_at &&
+        !isMessageTypeDeleted &&
         typeof lastItem.item.created_at !== 'string' &&
         lastItem.item.created_at.toDateString() !== stickyHeaderDateRef.current?.toDateString()
       ) {
@@ -561,7 +568,9 @@ const MessageListWithContext = <
     if (message.type === 'system') {
       return (
         <>
-          <MessageSystem message={message} style={styles.messagePadding} />
+          <View testID={`message-list-item-${index}`}>
+            <MessageSystem message={message} style={styles.messagePadding} />
+          </View>
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
@@ -571,19 +580,21 @@ const MessageListWithContext = <
     return wrapMessageInTheme ? (
       <>
         <ThemeProvider mergedStyle={modifiedTheme}>
-          <Message
-            goToMessage={goToMessage}
-            groupStyles={
-              isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
-            }
-            lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
-            message={message}
-            onThreadSelect={onThreadSelect}
-            showUnreadUnderlay={showUnreadUnderlay}
-            style={styles.messagePadding}
-            targetedMessage={targetedMessage === message.id}
-            threadList={threadList}
-          />
+          <View testID={`message-list-item-${index}`}>
+            <Message
+              goToMessage={goToMessage}
+              groupStyles={
+                isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
+              }
+              isTargetedMessage={targetedMessage === message.id}
+              lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
+              message={message}
+              onThreadSelect={onThreadSelect}
+              showUnreadUnderlay={showUnreadUnderlay}
+              style={styles.messagePadding}
+              threadList={threadList}
+            />
+          </View>
         </ThemeProvider>
         {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
           <InlineDateSeparator date={message.dateSeparator} />
@@ -593,21 +604,25 @@ const MessageListWithContext = <
       </>
     ) : (
       <>
-        <Message
-          goToMessage={goToMessage}
-          groupStyles={
-            isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
-          }
-          lastReceivedId={
-            lastReceivedId === message.id || message.quoted_message_id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          showUnreadUnderlay={showUnreadUnderlay}
-          style={styles.messagePadding}
-          targetedMessage={targetedMessage === message.id}
-          threadList={threadList}
-        />
+        <View testID={`message-list-item-${index}`}>
+          <Message
+            goToMessage={goToMessage}
+            groupStyles={
+              isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
+            }
+            isTargetedMessage={targetedMessage === message.id}
+            lastReceivedId={
+              lastReceivedId === message.id || message.quoted_message_id
+                ? lastReceivedId
+                : undefined
+            }
+            message={message}
+            onThreadSelect={onThreadSelect}
+            showUnreadUnderlay={showUnreadUnderlay}
+            style={styles.messagePadding}
+            threadList={threadList}
+          />
+        </View>
         {isMessageWithStylesReadByAndDateSeparator(message) && message.dateSeparator && (
           <InlineDateSeparator date={message.dateSeparator} />
         )}
@@ -811,7 +826,8 @@ const MessageListWithContext = <
   const messagesWithImages =
     legacyImageViewerSwipeBehaviour &&
     messageList.filter((message) => {
-      if (!message.deleted_at && message.attachments) {
+      const isMessageTypeDeleted = message.type === 'deleted';
+      if (!isMessageTypeDeleted && message.attachments) {
         return message.attachments.some(
           (attachment) =>
             attachment.type === 'image' &&
@@ -843,11 +859,16 @@ const MessageListWithContext = <
   const threadExists = !!thread;
 
   useEffect(() => {
-    if (legacyImageViewerSwipeBehaviour && ((threadList && thread) || (!threadList && !thread))) {
+    if (
+      legacyImageViewerSwipeBehaviour &&
+      isListActive &&
+      ((threadList && thread) || (!threadList && !thread))
+    ) {
       setImages(messagesWithImages as MessageType<At, Ch, Co, Ev, Me, Re, Us>[]);
     }
   }, [
     imageString,
+    isListActive,
     legacyImageViewerSwipeBehaviour,
     numberOfMessagesWithImages,
     threadExists,
@@ -898,12 +919,16 @@ const MessageListWithContext = <
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: white_snow }, container]}>
+    <View
+      style={[styles.container, { backgroundColor: white_snow }, container]}
+      testID='message-flat-list-wrapper'
+    >
       <FlatList
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
+        initialNumToRender={20}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
@@ -983,6 +1008,7 @@ export const MessageList = <
     enableMessageGroupingByUser,
     error,
     hideStickyDateHeader,
+    isChannelActive,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -999,6 +1025,7 @@ export const MessageList = <
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     DateHeader,
+    deletedMessagesVisibilityType,
     disableTypingIndicator,
     FlatList,
     initialScrollToFirstUnreadMessage,
@@ -1024,6 +1051,7 @@ export const MessageList = <
         client,
         closePicker,
         DateHeader,
+        deletedMessagesVisibilityType,
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
@@ -1034,6 +1062,7 @@ export const MessageList = <
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
+        isListActive: isChannelActive,
         legacyImageViewerSwipeBehaviour,
         loadChannelAtMessage,
         loading,

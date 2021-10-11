@@ -1348,22 +1348,10 @@ metro-react-native-babel-preset@0.66.0:
     "@babel/template" "^7.0.0"
     react-refresh "^0.4.0"
 
-mime-db@1.47.0:
-  version "1.47.0"
-  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.47.0.tgz#8cb313e59965d3c05cfbf898915a267af46a335c"
-  integrity sha512-QBmA/G2y+IfeS4oktet3qRZ+P5kPhCKRXxXnQEudYqUaEioAU1/Lq2us3D/t1Jfo4hE9REQPrbB7K5sOczJVIw==
-
 mime-db@1.48.0:
   version "1.48.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.48.0.tgz#e35b31045dd7eada3aaad537ed88a33afbef2d1d"
   integrity sha512-FM3QwxV+TnZYQ2aRqhlKBMHxk10lTbMt3bBkMAp54ddrNeVSfcQYOOKuGuy3Ddrm38I04If834fOUSq1yzslJQ==
-
-mime-types@2.1.30:
-  version "2.1.30"
-  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.30.tgz#6e7be8b4c479825f85ed6326695db73f9305d62d"
-  integrity sha512-crmjA4bLtR8m9qLpHvgxSChT+XoSlZi8J4n/aIdn3z92e/U47Z0V/yl+Wh9W046GgFVAmoNR/fmdbZYcSSIUeg==
-  dependencies:
-    mime-db "1.47.0"
 
 mime-types@^2.1.12:
   version "2.1.31"
@@ -1623,10 +1611,10 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-stream-chat-react-native-core@3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.8.0.tgz#1928df5cef797c31fe37bb0c5849f36006fb5869"
-  integrity sha512-JUlfl0zgy8coFDv8727NnBfcLMGYV2pFRYGt5RfiFlPKlbUhDCjJQvHda/J23UM8UxYqvJ2VSd0O8+tVeVCeKg==
+stream-chat-react-native-core@3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.8.3.tgz#439b3195ac140c85d0be9016a310ecaabc04a288"
+  integrity sha512-Oe8Wr9U9DJchfTTFoRT96oJWZMumZOltZLc6aksxGQrmwWQ/H8zV41gG9iDiPdTlqQ8pmtlLiv7ASmHxhC/I1A==
   dependencies:
     "@babel/runtime" "7.13.10"
     "@gorhom/bottom-sheet" "3.6.4"
@@ -1636,7 +1624,6 @@ stream-chat-react-native-core@3.8.0:
     i18next "20.2.4"
     lodash-es "4.17.21"
     metro-react-native-babel-preset "0.66.0"
-    mime-types "2.1.30"
     path "0.12.7"
     react-art "^17.0.2"
     react-native-markdown-package "1.8.1"

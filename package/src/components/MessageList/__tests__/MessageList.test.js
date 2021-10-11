@@ -8,6 +8,7 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -48,13 +49,15 @@ describe('MessageList', () => {
     channel.initialized = true;
 
     const { getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     const newMessage = generateMessage({ user: user2 });
@@ -83,25 +86,246 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('message-system')).toBeTruthy();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(always)', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to sender', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='sender'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(queryByTestId('message-deleted')).toBeTruthy();
+      expect(getByTestId('only-visible-to-you')).toBeTruthy();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to receiver', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ type: 'deleted', user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='receiver'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to never', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ type: 'deleted', user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { queryAllByTestId, queryByTestId } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel
+                    channel={channel}
+                    deletedMessagesVisibilityType='never'
+                    FlatList={MockedFlatList}
+                  >
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(queryByTestId('message-deleted')).toBeNull();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId, queryAllByTestId } = render(
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
 
@@ -118,19 +342,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: true }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel} FlatList={MockedFlatList}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
@@ -155,13 +381,15 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -182,19 +410,21 @@ describe('MessageList', () => {
     await channel.query();
 
     const { getByTestId, getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: false }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ChatContext.Consumer>
+            {(context) => (
+              <ChatProvider value={{ ...context, isOnline: false }}>
+                <ImageGalleryProvider>
+                  <Channel channel={channel}>
+                    <MessageList />
+                  </Channel>
+                </ImageGalleryProvider>
+              </ChatProvider>
+            )}
+          </ChatContext.Consumer>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -214,6 +444,11 @@ describe('MessageList', () => {
         generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
         generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
         generateStaticMessage('Message3', { user: user2 }, '2020-05-06T14:50:00.000Z'),
+        generateStaticMessage(
+          'Message4',
+          { pinned: true, user: user1 },
+          '2020-05-06T14:50:00.000Z',
+        ),
       ],
     });
 
@@ -223,17 +458,19 @@ describe('MessageList', () => {
     await channel.query();
 
     const { queryAllByTestId, toJSON } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <ImageGalleryProvider>
+            <Channel channel={channel} FlatList={MockedFlatList}>
+              <MessageList />
+            </Channel>
+          </ImageGalleryProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
-      expect(queryAllByTestId('date-separator')).toHaveLength(2);
+      expect(queryAllByTestId('date-separator')).toHaveLength(3);
       expect(toJSON()).toMatchSnapshot();
     });
   });

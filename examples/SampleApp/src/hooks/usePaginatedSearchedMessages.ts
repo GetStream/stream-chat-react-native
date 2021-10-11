@@ -12,8 +12,8 @@ import type {
   LocalReactionType,
   LocalUserType,
 } from '../types';
+import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
-export const MESSAGE_SEARCH_LIMIT = 10;
 export const usePaginatedSearchedMessages = (
   messageFilters:
     | string
@@ -28,6 +28,7 @@ export const usePaginatedSearchedMessages = (
 ) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
   const [messages, setMessages] =
     useState<
       MessageResponse<
@@ -87,7 +88,7 @@ export const usePaginatedSearchedMessages = (
         },
         messageFilters,
         {
-          limit: MESSAGE_SEARCH_LIMIT,
+          limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
         },
       );
@@ -116,13 +117,13 @@ export const usePaginatedSearchedMessages = (
         });
       }
 
-      if (newMessages.length < MESSAGE_SEARCH_LIMIT) {
+      if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;
       }
 
       offset.current = offset.current + messagesLength;
-    } catch (e) {
-      // do nothing;
+    } catch (error) {
+      setError(error);
     }
 
     done();
@@ -154,6 +155,7 @@ export const usePaginatedSearchedMessages = (
   };
 
   return {
+    error,
     loading,
     loadMore,
     messages,

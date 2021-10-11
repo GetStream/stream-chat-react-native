@@ -11,23 +11,38 @@ on:
 jobs:
   test:
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Installation & Build Package
-        # installation already takes care of calling prepare which calls build
-        # for the sdk package
-        run: yarn --frozen-lockfile && yarn bootstrap-ci
+
+      - name: Install node_modules
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn --frozen-lockfile && yarn bootstrap-ci
+
       - name: Install Pods
         run: cd ./examples/SampleApp && npx pod-install
       - name: Install Detox Dependencies
         run: |
           brew tap wix/brew
           brew install applesimutils
+          xcrun simctl list
+
       - name: Build
         run: yarn detox-sample-ios:build
+
       - name: Test
-        run: yarn detox-sample-ios:test
+        id: detoxRun
+        run: FORCE_IOS_OFFLINE=true yarn detox-sample-ios:test --record-logs failing --record-videos failing
+
+      - uses: actions/upload-artifact@v2
+        if: failure() && steps.detoxRun.outcome == 'failure'
+        with:
+          name: detox-artifacts
+          path: ./artifacts

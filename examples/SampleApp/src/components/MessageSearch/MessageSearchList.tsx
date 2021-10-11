@@ -69,8 +69,8 @@ export type MessageSearchListProps = {
         LocalUserType
       >[]
     | undefined;
-  refreshing: boolean;
-  refreshList: () => void;
+  refreshing?: boolean;
+  refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
@@ -152,7 +152,14 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               style={[styles.itemContainer, { borderBottomColor: border }]}
               testID='channel-preview-button'
             >
-              <Avatar image={item.user?.image} name={item.user?.name} size={40} />
+              <Avatar
+                channelId={item.channel?.id}
+                id={item.user?.id}
+                image={item.user?.image}
+                name={item.user?.name}
+                online={item?.user?.online}
+                size={40}
+              />
               <View style={styles.flex}>
                 <View style={styles.row}>
                   <Text numberOfLines={1} style={[styles.titleContainer, { color: black }]}>

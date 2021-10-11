@@ -28,6 +28,13 @@ export * from './AutoCompleteInput/SuggestionsList';
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
 
+export * from './CachedImages/CachedAnimatedGalleryImage';
+export * from './CachedImages/CachedAttachmentImage';
+export * from './CachedImages/CachedAvatar';
+export * from './CachedImages/CachedImageBackground';
+export * from './CachedImages/useCachedAttachment';
+export * from './CachedImages/useCachedAvatar';
+
 export * from './Channel/Channel';
 export * from './Channel/hooks/useCreateChannelContext';
 export * from './Channel/hooks/useCreateInputMessageInputContext';
@@ -96,6 +103,7 @@ export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
 export * from './Message/MessageSimple/MessageFooter';
+export * from './Message/MessageSimple/MessagePinnedHeader';
 export * from './Message/MessageSimple/MessageReplies';
 export * from './Message/MessageSimple/MessageRepliesAvatars';
 export * from './Message/MessageSimple/MessageSimple';
@@ -138,6 +146,7 @@ export * from './MessageList/utils/getReadStates';
 
 export * from './MessageOverlay/MessageActions';
 export * from './MessageOverlay/MessageOverlay';
+export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
 
