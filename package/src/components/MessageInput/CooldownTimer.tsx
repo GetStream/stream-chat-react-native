@@ -76,8 +76,6 @@ export const useCountdown = (endsAt: Date) => {
   const counter = useRef<number>();
 
   const update = () => {
-    const now = dayjs();
-
     setSeconds((previous) => {
       const next = previous - 1;
 
@@ -88,7 +86,6 @@ export const useCountdown = (endsAt: Date) => {
       }
       return next;
     });
-
   };
 
   /**
@@ -96,10 +93,9 @@ export const useCountdown = (endsAt: Date) => {
    * amount of seconds for the counter to start at.
    **/
   useEffect(() => {
-    const secondsUntilEndsAt = Math.ceil(dayjs(endsAt).diff(dayjs(), 'seconds', true))
-    setSeconds(secondsUntilEndsAt)
-  }, [endsAt])
-
+    const secondsUntilEndsAt = Math.ceil(dayjs(endsAt).diff(dayjs(), 'seconds', true));
+    setSeconds(secondsUntilEndsAt);
+  }, [endsAt]);
 
   useEffect(() => {
     const timerId = setInterval(() => {

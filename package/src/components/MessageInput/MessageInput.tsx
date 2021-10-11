@@ -470,8 +470,6 @@ const MessageInputWithContext = <
                 if (quotedMessage) {
                   clearQuotedMessageState();
                 }
-                if (inputBoxRef.current) {
-                }
               }}
               testID='close-button'
             >
@@ -766,11 +764,7 @@ export const MessageInput = <
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    disabled = false,
-    members,
-    watchers,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
     additionalTextInputProps,
