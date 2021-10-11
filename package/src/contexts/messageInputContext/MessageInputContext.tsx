@@ -54,6 +54,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { CooldownTimerProps, useCooldown } from '../../components/MessageInput/CooldownTimer';
 
 const MIME_TYPE_OCTET_STREAM = 'application/octet-stream';
 
@@ -103,6 +104,8 @@ export type LocalMessageInputContext<
     };
   };
   closeAttachmentPicker: () => void;
+  /** The time at which the active cooldown will end */
+  cooldownEndsAt: Date;
   /**
    * An array of file objects which are set for upload. It has the following structure:
    *
@@ -243,6 +246,14 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component to display the remaining cooldown a user will have to wait before
+   * being allowed to send another message. This component is displayed in place of the
+   * send button for the MessageInput component.
+   *
+   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/CooldownTimer.tsx)
+   */
+  CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
@@ -438,7 +449,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { CooldownTimer, editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
   const {
     fileUploads,
     imageUploads,
@@ -453,6 +464,8 @@ export const MessageInputProvider = <
     showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(editing, initialValue);
+  const { endsAt: cooldownEndsAt, start: startCooldown } =
+    useCooldown<At, Ch, Co, Ev, Me, Re, Us>();
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -614,8 +627,10 @@ export const MessageInputProvider = <
     }
     sending.current = true;
 
+    startCooldown();
+
     const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-    await setText('');
+    setText('');
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }
@@ -741,6 +756,7 @@ export const MessageInputProvider = <
         },
       ] as StreamMessage<At, Me, Us>['attachments'];
 
+      startCooldown();
       try {
         value.sendMessage({
           attachments,
@@ -1016,6 +1032,8 @@ export const MessageInputProvider = <
     asyncIds,
     asyncUploads,
     closeAttachmentPicker,
+    cooldownEndsAt,
+    CooldownTimer,
     fileUploads,
     giphyActive,
     imageUploads,
