@@ -231,6 +231,7 @@ export type MessagePropsWithContext<
      */
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
+    isTargetedMessage?: boolean;
     /**
      * Array of allowed actions or null on message, this can also be a function returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
@@ -249,6 +250,7 @@ export type MessagePropsWithContext<
     onLongPress?: (
       payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
+
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
@@ -263,7 +265,6 @@ export type MessagePropsWithContext<
     onPress?: (
       payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
-
     onPressIn?: (
       payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
     ) => void;
@@ -275,7 +276,6 @@ export type MessagePropsWithContext<
     onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
-    targetedMessage?: string;
   };
 
 /**
@@ -366,7 +366,7 @@ const MessageWithContext = <
     style,
     supportedReactions,
     t,
-    targetedMessage,
+    isTargetedMessage,
     threadList = false,
     threadRepliesEnabled,
     threadReply: threadReplyProp,
@@ -419,10 +419,10 @@ const MessageWithContext = <
   );
 
   useEffect(() => {
-    targetedOpacity.value = withTiming(targetedMessage === message.id ? 1 : 0, {
+    targetedOpacity.value = withTiming(isTargetedMessage ? 1 : 0, {
       duration: 1000,
     });
-  }, [targetedMessage]);
+  }, [isTargetedMessage]);
 
   const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
@@ -1263,23 +1263,23 @@ const areEqual = <
 ) => {
   const {
     goToMessage: prevGoToMessage,
+    isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
     message: prevMessage,
     mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
-    targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
     goToMessage: nextGoToMessage,
+    isTargetedMessage: nextIsTargetedMessage,
     lastReceivedId: nextLastReceivedId,
     members: nextMembers,
     message: nextMessage,
     mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
-    targetedMessage: nextTargetedMessage,
   } = nextProps;
 
   const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
@@ -1365,7 +1365,7 @@ const areEqual = <
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
 
-  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+  const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
 
   return true;

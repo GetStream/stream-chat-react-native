@@ -586,12 +586,12 @@ const MessageListWithContext = <
               groupStyles={
                 isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
               }
+              isTargetedMessage={targetedMessage === message.id}
               lastReceivedId={lastReceivedId === message.id ? lastReceivedId : undefined}
               message={message}
               onThreadSelect={onThreadSelect}
               showUnreadUnderlay={showUnreadUnderlay}
               style={styles.messagePadding}
-              targetedMessage={targetedMessage}
               threadList={threadList}
             />
           </View>
@@ -610,6 +610,7 @@ const MessageListWithContext = <
             groupStyles={
               isMessageWithStylesReadByAndDateSeparator(message) ? message.groupStyles : []
             }
+            isTargetedMessage={targetedMessage === message.id}
             lastReceivedId={
               lastReceivedId === message.id || message.quoted_message_id
                 ? lastReceivedId
@@ -619,7 +620,6 @@ const MessageListWithContext = <
             onThreadSelect={onThreadSelect}
             showUnreadUnderlay={showUnreadUnderlay}
             style={styles.messagePadding}
-            targetedMessage={targetedMessage}
             threadList={threadList}
           />
         </View>
