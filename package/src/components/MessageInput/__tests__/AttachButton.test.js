@@ -58,8 +58,6 @@ describe('AttachButton', () => {
   });
 
   it('should render a cooldown timer while slow mode is active', async () => {
-    const handleOnPress = jest.fn();
-
     const { getByTestId, queryByTestId, toJSON } = render(
       <ThemeProvider>
         <SendButton />

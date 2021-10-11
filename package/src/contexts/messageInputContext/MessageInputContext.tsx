@@ -449,7 +449,8 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { CooldownTimer, editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { CooldownTimer, editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } =
+    value;
   const {
     fileUploads,
     imageUploads,
@@ -621,6 +622,8 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  // TODO: Figure out why this is async, as it doesn't await any promise.
+  // eslint-disable-next-line require-await
   const sendMessage = async () => {
     if (sending.current) {
       return;

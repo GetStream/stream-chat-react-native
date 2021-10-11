@@ -1701,8 +1701,8 @@ const ChannelWithContext = <
     channelId,
     clearEditingState,
     clearQuotedMessageState,
-    compressImageQuality,
     CommandsButton,
+    compressImageQuality,
     CooldownTimer,
     doDocUploadRequest,
     doImageUploadRequest,
@@ -1881,7 +1881,9 @@ const ChannelWithContext = <
             <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
               <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
                 <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us> value={inputMessageInputContext}>
+                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                    value={inputMessageInputContext}
+                  >
                     <View style={{ height: '100%' }}>{children}</View>
                   </MessageInputProvider>
                 </SuggestionsProvider>
