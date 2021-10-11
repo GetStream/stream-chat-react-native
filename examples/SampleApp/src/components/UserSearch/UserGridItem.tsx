@@ -57,6 +57,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   return (
     <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <Avatar
+        id={user.id}
         image={user.image}
         online={user.online}
         presenceIndicator={presenceIndicator}

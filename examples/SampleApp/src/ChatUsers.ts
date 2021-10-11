@@ -2,6 +2,12 @@ import { UserResponse } from 'stream-chat';
 import { LocalUserType } from './types';
 
 export const USER_TOKENS: Record<string, string> = {
+  e2etest1:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDEifQ.XlQOw8nl7fFzHoBkEiTcYGkNo5r7EBYA40LABGOk4hc',
+  e2etest2:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDIifQ.2ZsHCMJ7i0vZvRJ5yoT-bm8OD_KAzBgJ-kB6bHGZ4FI',
+  e2etest3:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTJldGVzdDMifQ.RWHY-MYkpP8FTJkfgrxUlCQhwap6eB7DTsp_HsZ1oIw',
   neil: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibmVpbCJ9.ty2YhwFaVEYkq1iUfY8s1G0Um3MpiVYpWK-b5kMky0w',
   qatest1:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicWF0ZXN0MSJ9.5Nnj6MsauhjP7_D8jW9WbRovLv5uaxn8LPZZ-HB3mh4',
@@ -31,6 +37,7 @@ export const USERS: Record<string, UserResponse<LocalUserType>> = {
     image: `https://randomuser.me/api/portraits/thumb/men/11.jpg`,
     name: 'QA Test 2',
   },
+
   thierry: {
     id: 'thierry',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U02RM6X6D-g28a1278a98e-512',
@@ -50,5 +57,22 @@ export const USERS: Record<string, UserResponse<LocalUserType>> = {
     id: 'vishal',
     image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
     name: 'Vishal Narkhede',
+  },
+  // e2e test users should be last ones in the list
+  // eslint-disable-next-line sort-keys
+  e2etest1: {
+    id: 'e2etest1',
+    image: `https://randomuser.me/api/portraits/thumb/women/10.jpg`,
+    name: 'E2E Test 1',
+  },
+  e2etest2: {
+    id: 'e2etest2',
+    image: `https://randomuser.me/api/portraits/thumb/women/11.jpg`,
+    name: 'E2E Test 2',
+  },
+  e2etest3: {
+    id: 'e2etest3',
+    image: `https://randomuser.me/api/portraits/thumb/women/12.jpg`,
+    name: 'E2E Test 3',
   },
 };

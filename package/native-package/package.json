@@ -14,7 +14,6 @@
     "stream-chat-react-native-core": "3.8.3"
   },
   "peerDependencies": {
-    "@react-native-community/blur": ">=3.6.0",
     "@react-native-community/cameraroll": ">=4.0.1",
     "@react-native-community/netinfo": ">=2.0.7",
     "react-native": ">=0.60.0",

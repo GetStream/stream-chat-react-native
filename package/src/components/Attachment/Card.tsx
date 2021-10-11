@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Image,
   ImageStyle,
   Linking,
   StyleProp,
@@ -11,6 +10,8 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+
+import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
 import {
   MessageContextValue,
@@ -105,6 +106,8 @@ export type CardPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
+    channelId: string | undefined;
+    messageId: string | undefined;
     styles?: Partial<{
       authorName: StyleProp<TextStyle>;
       authorNameContainer: StyleProp<ViewStyle>;
@@ -136,7 +139,9 @@ const CardWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
+    channelId,
     image_url,
+    messageId,
     og_scrape_url,
     onLongPress,
     onPress,
@@ -208,7 +213,11 @@ const CardWithContext = <
       {CardCover && <CardCover {...props} />}
       {uri && !CardCover && (
         <View>
-          <Image
+          <CachedAttachmentImage
+            cacheConfig={{
+              channelId,
+              messageId,
+            }}
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
             style={[styles.cardCover, cover, stylesProp.cardCover]}
@@ -318,7 +327,7 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn, preventPress } =
+  const { message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -330,6 +339,8 @@ export const Card = <
         CardCover,
         CardFooter,
         CardHeader,
+        channelId: message.cid,
+        messageId: message.id,
         onLongPress,
         onPress,
         onPressIn,

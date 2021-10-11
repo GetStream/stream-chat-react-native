@@ -31,263 +31,293 @@ exports[`Thread should match thread snapshot 1`] = `
           Object {},
         ]
       }
+      testID="message-flat-list-wrapper"
     >
       <View
         ListFooterComponent={null}
       >
         <View>
           <View
-            animatedStyle={
-              Object {
-                "value": Object {},
-              }
-            }
-            collapsable={false}
-            forwardedRef={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            testID="message-wrapper"
+            testID="message-list-item-0"
           >
             <View
               animatedStyle={
                 Object {
-                  "value": Object {
-                    "transform": Array [
-                      Object {
-                        "scale": 1,
-                      },
-                    ],
-                  },
+                  "value": Object {},
                 }
               }
               collapsable={false}
               forwardedRef={[Function]}
               onGestureHandlerEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
-              style={
-                Object {
-                  "backgroundColor": undefined,
-                  "paddingHorizontal": 8,
-                  "transform": Array [
-                    Object {
-                      "scale": 1,
-                    },
-                  ],
-                }
-              }
+              testID="message-wrapper"
             >
               <View
-                animatedStyle={
+                collapsable={false}
+                onGestureHandlerEvent={
                   Object {
-                    "value": Object {
-                      "opacity": 0,
+                    "current": WorkletEventHandler {
+                      "eventNames": Array [
+                        "onGestureHandlerStateChange",
+                        "onGestureHandlerEvent",
+                      ],
+                      "listeners": Object {
+                        "onGestureHandlerEvent": [Function],
+                        "onGestureHandlerStateChange": [Function],
+                      },
+                      "reattachNeeded": true,
+                      "worklet": [Function],
                     },
                   }
                 }
-                collapsable={false}
-                style={
-                  Object {
-                    "backgroundColor": "#FBF4DD",
-                    "bottom": 0,
-                    "left": 0,
-                    "opacity": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              />
-              <View
+                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    Object {
-                      "alignItems": "flex-end",
-                      "flexDirection": "row",
-                    },
-                    Object {
-                      "justifyContent": "flex-start",
-                      "marginBottom": 8,
-                      "marginTop": 0,
-                    },
-                    Object {},
+                    undefined,
                   ]
                 }
-                testID="message-simple-wrapper"
               >
                 <View
-                  style={
-                    Array [
-                      Object {
-                        "marginRight": 8,
+                  animatedStyle={
+                    Object {
+                      "value": Object {
+                        "transform": Array [
+                          Object {
+                            "scale": 1,
+                          },
+                        ],
                       },
-                      Object {},
-                    ]
+                    }
                   }
-                  testID="message-avatar"
-                >
-                  <View>
-                    <View
-                      style={
-                        Array [
-                          Object {
-                            "alignItems": "center",
-                            "justifyContent": "center",
-                            "overflow": "hidden",
-                          },
-                          Object {
-                            "borderRadius": 16,
-                            "height": 32,
-                            "width": 32,
-                          },
-                          Object {},
-                          undefined,
-                        ]
-                      }
-                    >
-                      <Image
-                        accessibilityLabel="avatar-image"
-                        onError={[Function]}
-                        source={
-                          Object {
-                            "uri": "https://i.imgur.com/SLx06PP.png",
-                          }
-                        }
-                        style={
-                          Array [
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            undefined,
-                          ]
-                        }
-                        testID="avatar-image"
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View
-                  accessible={true}
-                  focusable={true}
-                  onClick={[Function]}
-                  onResponderGrant={[Function]}
-                  onResponderMove={[Function]}
-                  onResponderRelease={[Function]}
-                  onResponderTerminate={[Function]}
-                  onResponderTerminationRequest={[Function]}
-                  onStartShouldSetResponder={[Function]}
+                  collapsable={false}
                   style={
                     Object {
-                      "alignItems": "flex-start",
-                      "opacity": 1,
-                      "paddingTop": 2,
+                      "backgroundColor": undefined,
+                      "paddingHorizontal": 8,
+                      "transform": Array [
+                        Object {
+                          "scale": 1,
+                        },
+                      ],
                     }
                   }
                 >
                   <View
-                    onLayout={[Function]}
-                    style={Object {}}
+                    animatedStyle={
+                      Object {
+                        "value": Object {
+                          "opacity": 0,
+                        },
+                      }
+                    }
+                    collapsable={false}
+                    style={
+                      Object {
+                        "backgroundColor": "#FBF4DD",
+                        "bottom": 0,
+                        "left": 0,
+                        "opacity": 0,
+                        "position": "absolute",
+                        "right": 0,
+                        "top": 0,
+                      }
+                    }
+                  />
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "alignItems": "flex-end",
+                          "flexDirection": "row",
+                        },
+                        Object {
+                          "justifyContent": "flex-start",
+                          "marginBottom": 8,
+                          "marginTop": 0,
+                        },
+                        Object {},
+                      ]
+                    }
+                    testID="message-simple-wrapper"
                   >
                     <View
                       style={
                         Array [
                           Object {
-                            "borderTopLeftRadius": 16,
-                            "borderTopRightRadius": 16,
-                            "borderWidth": 1,
-                            "overflow": "hidden",
+                            "marginRight": 8,
                           },
-                          Object {
-                            "backgroundColor": "transparent",
-                            "borderBottomLeftRadius": 0,
-                            "borderBottomRightRadius": 16,
-                            "borderColor": "#ECEBEB",
-                          },
-                          Object {},
                           Object {},
                         ]
                       }
-                      testID="message-content-wrapper"
+                      testID="message-avatar"
+                    >
+                      <View>
+                        <View
+                          style={
+                            Array [
+                              Object {
+                                "alignItems": "center",
+                                "justifyContent": "center",
+                                "overflow": "hidden",
+                              },
+                              Object {
+                                "borderRadius": 16,
+                                "height": 32,
+                                "width": 32,
+                              },
+                              Object {},
+                              undefined,
+                            ]
+                          }
+                        >
+                          <Image
+                            accessibilityLabel="avatar-image"
+                            id="GrantyBoi2"
+                            initials="G"
+                            onError={[Function]}
+                            source={
+                              Object {
+                                "uri": "https://i.imgur.com/SLx06PP.png",
+                              }
+                            }
+                            style={
+                              Array [
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                undefined,
+                              ]
+                            }
+                            testID="avatar-image"
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "alignItems": "flex-start",
+                          "opacity": 1,
+                          "paddingTop": 2,
+                        }
+                      }
                     >
                       <View
-                        style={
-                          Array [
-                            Object {
-                              "maxWidth": 250,
-                              "paddingHorizontal": 16,
-                            },
-                            Object {},
-                            undefined,
-                          ]
-                        }
-                        testID="message-text-container"
+                        onLayout={[Function]}
+                        style={Object {}}
                       >
                         <View
                           style={
                             Array [
                               Object {
-                                "alignSelf": "stretch",
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                                "borderWidth": 1,
+                                "overflow": "hidden",
                               },
-                              undefined,
+                              Object {
+                                "backgroundColor": "#FFFFFF",
+                                "borderBottomLeftRadius": 0,
+                                "borderBottomRightRadius": 16,
+                                "borderColor": "#ECEBEB",
+                              },
+                              Object {},
+                              Object {},
+                            ]
+                          }
+                          testID="message-content-wrapper"
+                        >
+                          <View
+                            style={
+                              Array [
+                                Object {
+                                  "maxWidth": 250,
+                                  "paddingHorizontal": 16,
+                                },
+                                Object {},
+                                undefined,
+                              ]
+                            }
+                            testID="message-text-container"
+                          >
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignSelf": "stretch",
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  Object {
+                                    "alignItems": "flex-start",
+                                    "flexDirection": "row",
+                                    "flexWrap": "wrap",
+                                    "justifyContent": "flex-start",
+                                    "marginBottom": 8,
+                                    "marginTop": 8,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#000000",
+                                    }
+                                  }
+                                >
+                                  Message6
+                                </Text>
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View
+                        style={
+                          Object {
+                            "flexDirection": "row",
+                            "marginTop": 4,
+                          }
+                        }
+                        testID="message-status-time"
+                      >
+                        <Text
+                          style={
+                            Array [
+                              Object {
+                                "color": "#7A7A7A",
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "fontSize": 12,
+                              },
                             ]
                           }
                         >
-                          <Text
-                            style={
-                              Object {
-                                "alignItems": "flex-start",
-                                "flexDirection": "row",
-                                "flexWrap": "wrap",
-                                "justifyContent": "flex-start",
-                                "marginBottom": 8,
-                                "marginTop": 8,
-                              }
-                            }
-                          >
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000000",
-                                }
-                              }
-                            >
-                              Message6
-                            </Text>
-                          </Text>
-                        </View>
+                          2:50 PM
+                        </Text>
                       </View>
                     </View>
-                  </View>
-                  <View
-                    style={
-                      Object {
-                        "flexDirection": "row",
-                        "marginTop": 4,
-                      }
-                    }
-                    testID="message-status-time"
-                  >
-                    <Text
-                      style={
-                        Array [
-                          Object {
-                            "color": "#7A7A7A",
-                            "textAlign": "left",
-                          },
-                          Object {
-                            "fontSize": 12,
-                          },
-                        ]
-                      }
-                    >
-                      2:50 PM
-                    </Text>
                   </View>
                 </View>
               </View>
@@ -296,257 +326,286 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
         <View>
           <View
-            animatedStyle={
-              Object {
-                "value": Object {},
-              }
-            }
-            collapsable={false}
-            forwardedRef={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            testID="message-wrapper"
+            testID="message-list-item-1"
           >
             <View
               animatedStyle={
                 Object {
-                  "value": Object {
-                    "transform": Array [
-                      Object {
-                        "scale": 1,
-                      },
-                    ],
-                  },
+                  "value": Object {},
                 }
               }
               collapsable={false}
               forwardedRef={[Function]}
               onGestureHandlerEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
-              style={
-                Object {
-                  "backgroundColor": undefined,
-                  "paddingHorizontal": 8,
-                  "transform": Array [
-                    Object {
-                      "scale": 1,
-                    },
-                  ],
-                }
-              }
+              testID="message-wrapper"
             >
               <View
-                animatedStyle={
+                collapsable={false}
+                onGestureHandlerEvent={
                   Object {
-                    "value": Object {
-                      "opacity": 0,
+                    "current": WorkletEventHandler {
+                      "eventNames": Array [
+                        "onGestureHandlerStateChange",
+                        "onGestureHandlerEvent",
+                      ],
+                      "listeners": Object {
+                        "onGestureHandlerEvent": [Function],
+                        "onGestureHandlerStateChange": [Function],
+                      },
+                      "reattachNeeded": true,
+                      "worklet": [Function],
                     },
                   }
                 }
-                collapsable={false}
-                style={
-                  Object {
-                    "backgroundColor": "#FBF4DD",
-                    "bottom": 0,
-                    "left": 0,
-                    "opacity": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              />
-              <View
+                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    Object {
-                      "alignItems": "flex-end",
-                      "flexDirection": "row",
-                    },
-                    Object {
-                      "justifyContent": "flex-start",
-                      "marginBottom": 8,
-                      "marginTop": 0,
-                    },
-                    Object {},
+                    undefined,
                   ]
                 }
-                testID="message-simple-wrapper"
               >
                 <View
-                  style={
-                    Array [
-                      Object {
-                        "marginRight": 8,
+                  animatedStyle={
+                    Object {
+                      "value": Object {
+                        "transform": Array [
+                          Object {
+                            "scale": 1,
+                          },
+                        ],
                       },
-                      Object {},
-                    ]
+                    }
                   }
-                  testID="message-avatar"
-                >
-                  <View>
-                    <View
-                      style={
-                        Array [
-                          Object {
-                            "alignItems": "center",
-                            "justifyContent": "center",
-                            "overflow": "hidden",
-                          },
-                          Object {
-                            "borderRadius": 16,
-                            "height": 32,
-                            "width": 32,
-                          },
-                          Object {},
-                          undefined,
-                        ]
-                      }
-                    >
-                      <Image
-                        accessibilityLabel="avatar-image"
-                        onError={[Function]}
-                        source={
-                          Object {
-                            "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
-                          }
-                        }
-                        style={
-                          Array [
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            undefined,
-                          ]
-                        }
-                        testID="avatar-image"
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View
-                  accessible={true}
-                  focusable={true}
-                  onClick={[Function]}
-                  onResponderGrant={[Function]}
-                  onResponderMove={[Function]}
-                  onResponderRelease={[Function]}
-                  onResponderTerminate={[Function]}
-                  onResponderTerminationRequest={[Function]}
-                  onStartShouldSetResponder={[Function]}
+                  collapsable={false}
                   style={
                     Object {
-                      "alignItems": "flex-start",
-                      "opacity": 1,
-                      "paddingTop": 2,
+                      "backgroundColor": undefined,
+                      "paddingHorizontal": 8,
+                      "transform": Array [
+                        Object {
+                          "scale": 1,
+                        },
+                      ],
                     }
                   }
                 >
                   <View
-                    onLayout={[Function]}
-                    style={Object {}}
+                    animatedStyle={
+                      Object {
+                        "value": Object {
+                          "opacity": 0,
+                        },
+                      }
+                    }
+                    collapsable={false}
+                    style={
+                      Object {
+                        "backgroundColor": "#FBF4DD",
+                        "bottom": 0,
+                        "left": 0,
+                        "opacity": 0,
+                        "position": "absolute",
+                        "right": 0,
+                        "top": 0,
+                      }
+                    }
+                  />
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "alignItems": "flex-end",
+                          "flexDirection": "row",
+                        },
+                        Object {
+                          "justifyContent": "flex-start",
+                          "marginBottom": 8,
+                          "marginTop": 0,
+                        },
+                        Object {},
+                      ]
+                    }
+                    testID="message-simple-wrapper"
                   >
                     <View
                       style={
                         Array [
                           Object {
-                            "borderTopLeftRadius": 16,
-                            "borderTopRightRadius": 16,
-                            "borderWidth": 1,
-                            "overflow": "hidden",
+                            "marginRight": 8,
                           },
-                          Object {
-                            "backgroundColor": "transparent",
-                            "borderBottomLeftRadius": 0,
-                            "borderBottomRightRadius": 16,
-                            "borderColor": "#ECEBEB",
-                          },
-                          Object {},
                           Object {},
                         ]
                       }
-                      testID="message-content-wrapper"
+                      testID="message-avatar"
+                    >
+                      <View>
+                        <View
+                          style={
+                            Array [
+                              Object {
+                                "alignItems": "center",
+                                "justifyContent": "center",
+                                "overflow": "hidden",
+                              },
+                              Object {
+                                "borderRadius": 16,
+                                "height": 32,
+                                "width": 32,
+                              },
+                              Object {},
+                              undefined,
+                            ]
+                          }
+                        >
+                          <Image
+                            accessibilityLabel="avatar-image"
+                            id="NeiliBoi3"
+                            initials="N"
+                            onError={[Function]}
+                            source={
+                              Object {
+                                "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
+                              }
+                            }
+                            style={
+                              Array [
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                undefined,
+                              ]
+                            }
+                            testID="avatar-image"
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "alignItems": "flex-start",
+                          "opacity": 1,
+                          "paddingTop": 2,
+                        }
+                      }
                     >
                       <View
-                        style={
-                          Array [
-                            Object {
-                              "maxWidth": 250,
-                              "paddingHorizontal": 16,
-                            },
-                            Object {},
-                            undefined,
-                          ]
-                        }
-                        testID="message-text-container"
+                        onLayout={[Function]}
+                        style={Object {}}
                       >
                         <View
                           style={
                             Array [
                               Object {
-                                "alignSelf": "stretch",
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                                "borderWidth": 1,
+                                "overflow": "hidden",
                               },
-                              undefined,
+                              Object {
+                                "backgroundColor": "#FFFFFF",
+                                "borderBottomLeftRadius": 0,
+                                "borderBottomRightRadius": 16,
+                                "borderColor": "#ECEBEB",
+                              },
+                              Object {},
+                              Object {},
+                            ]
+                          }
+                          testID="message-content-wrapper"
+                        >
+                          <View
+                            style={
+                              Array [
+                                Object {
+                                  "maxWidth": 250,
+                                  "paddingHorizontal": 16,
+                                },
+                                Object {},
+                                undefined,
+                              ]
+                            }
+                            testID="message-text-container"
+                          >
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignSelf": "stretch",
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  Object {
+                                    "alignItems": "flex-start",
+                                    "flexDirection": "row",
+                                    "flexWrap": "wrap",
+                                    "justifyContent": "flex-start",
+                                    "marginBottom": 8,
+                                    "marginTop": 8,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#000000",
+                                    }
+                                  }
+                                >
+                                  Message5
+                                </Text>
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View
+                        style={
+                          Object {
+                            "flexDirection": "row",
+                            "marginTop": 4,
+                          }
+                        }
+                        testID="message-status-time"
+                      >
+                        <Text
+                          style={
+                            Array [
+                              Object {
+                                "color": "#7A7A7A",
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "fontSize": 12,
+                              },
                             ]
                           }
                         >
-                          <Text
-                            style={
-                              Object {
-                                "alignItems": "flex-start",
-                                "flexDirection": "row",
-                                "flexWrap": "wrap",
-                                "justifyContent": "flex-start",
-                                "marginBottom": 8,
-                                "marginTop": 8,
-                              }
-                            }
-                          >
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000000",
-                                }
-                              }
-                            >
-                              Message5
-                            </Text>
-                          </Text>
-                        </View>
+                          2:50 PM
+                        </Text>
                       </View>
                     </View>
-                  </View>
-                  <View
-                    style={
-                      Object {
-                        "flexDirection": "row",
-                        "marginTop": 4,
-                      }
-                    }
-                    testID="message-status-time"
-                  >
-                    <Text
-                      style={
-                        Array [
-                          Object {
-                            "color": "#7A7A7A",
-                            "textAlign": "left",
-                          },
-                          Object {
-                            "fontSize": 12,
-                          },
-                        ]
-                      }
-                    >
-                      2:50 PM
-                    </Text>
                   </View>
                 </View>
               </View>
@@ -555,257 +614,286 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
         <View>
           <View
-            animatedStyle={
-              Object {
-                "value": Object {},
-              }
-            }
-            collapsable={false}
-            forwardedRef={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            testID="message-wrapper"
+            testID="message-list-item-2"
           >
             <View
               animatedStyle={
                 Object {
-                  "value": Object {
-                    "transform": Array [
-                      Object {
-                        "scale": 1,
-                      },
-                    ],
-                  },
+                  "value": Object {},
                 }
               }
               collapsable={false}
               forwardedRef={[Function]}
               onGestureHandlerEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
-              style={
-                Object {
-                  "backgroundColor": undefined,
-                  "paddingHorizontal": 8,
-                  "transform": Array [
-                    Object {
-                      "scale": 1,
-                    },
-                  ],
-                }
-              }
+              testID="message-wrapper"
             >
               <View
-                animatedStyle={
+                collapsable={false}
+                onGestureHandlerEvent={
                   Object {
-                    "value": Object {
-                      "opacity": 0,
+                    "current": WorkletEventHandler {
+                      "eventNames": Array [
+                        "onGestureHandlerStateChange",
+                        "onGestureHandlerEvent",
+                      ],
+                      "listeners": Object {
+                        "onGestureHandlerEvent": [Function],
+                        "onGestureHandlerStateChange": [Function],
+                      },
+                      "reattachNeeded": true,
+                      "worklet": [Function],
                     },
                   }
                 }
-                collapsable={false}
-                style={
-                  Object {
-                    "backgroundColor": "#FBF4DD",
-                    "bottom": 0,
-                    "left": 0,
-                    "opacity": 0,
-                    "position": "absolute",
-                    "right": 0,
-                    "top": 0,
-                  }
-                }
-              />
-              <View
+                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    Object {
-                      "alignItems": "flex-end",
-                      "flexDirection": "row",
-                    },
-                    Object {
-                      "justifyContent": "flex-start",
-                      "marginBottom": 8,
-                      "marginTop": 0,
-                    },
-                    Object {},
+                    undefined,
                   ]
                 }
-                testID="message-simple-wrapper"
               >
                 <View
-                  style={
-                    Array [
-                      Object {
-                        "marginRight": 8,
+                  animatedStyle={
+                    Object {
+                      "value": Object {
+                        "transform": Array [
+                          Object {
+                            "scale": 1,
+                          },
+                        ],
                       },
-                      Object {},
-                    ]
+                    }
                   }
-                  testID="message-avatar"
-                >
-                  <View>
-                    <View
-                      style={
-                        Array [
-                          Object {
-                            "alignItems": "center",
-                            "justifyContent": "center",
-                            "overflow": "hidden",
-                          },
-                          Object {
-                            "borderRadius": 16,
-                            "height": 32,
-                            "width": 32,
-                          },
-                          Object {},
-                          undefined,
-                        ]
-                      }
-                    >
-                      <Image
-                        accessibilityLabel="avatar-image"
-                        onError={[Function]}
-                        source={
-                          Object {
-                            "uri": "https://i.imgur.com/SLx06PP.png",
-                          }
-                        }
-                        style={
-                          Array [
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            Object {
-                              "borderRadius": 16,
-                              "height": 32,
-                              "width": 32,
-                            },
-                            undefined,
-                          ]
-                        }
-                        testID="avatar-image"
-                      />
-                    </View>
-                  </View>
-                </View>
-                <View
-                  accessible={true}
-                  focusable={true}
-                  onClick={[Function]}
-                  onResponderGrant={[Function]}
-                  onResponderMove={[Function]}
-                  onResponderRelease={[Function]}
-                  onResponderTerminate={[Function]}
-                  onResponderTerminationRequest={[Function]}
-                  onStartShouldSetResponder={[Function]}
+                  collapsable={false}
                   style={
                     Object {
-                      "alignItems": "flex-start",
-                      "opacity": 1,
-                      "paddingTop": 2,
+                      "backgroundColor": undefined,
+                      "paddingHorizontal": 8,
+                      "transform": Array [
+                        Object {
+                          "scale": 1,
+                        },
+                      ],
                     }
                   }
                 >
                   <View
-                    onLayout={[Function]}
-                    style={Object {}}
+                    animatedStyle={
+                      Object {
+                        "value": Object {
+                          "opacity": 0,
+                        },
+                      }
+                    }
+                    collapsable={false}
+                    style={
+                      Object {
+                        "backgroundColor": "#FBF4DD",
+                        "bottom": 0,
+                        "left": 0,
+                        "opacity": 0,
+                        "position": "absolute",
+                        "right": 0,
+                        "top": 0,
+                      }
+                    }
+                  />
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "alignItems": "flex-end",
+                          "flexDirection": "row",
+                        },
+                        Object {
+                          "justifyContent": "flex-start",
+                          "marginBottom": 8,
+                          "marginTop": 0,
+                        },
+                        Object {},
+                      ]
+                    }
+                    testID="message-simple-wrapper"
                   >
                     <View
                       style={
                         Array [
                           Object {
-                            "borderTopLeftRadius": 16,
-                            "borderTopRightRadius": 16,
-                            "borderWidth": 1,
-                            "overflow": "hidden",
+                            "marginRight": 8,
                           },
-                          Object {
-                            "backgroundColor": "transparent",
-                            "borderBottomLeftRadius": 0,
-                            "borderBottomRightRadius": 16,
-                            "borderColor": "#ECEBEB",
-                          },
-                          Object {},
                           Object {},
                         ]
                       }
-                      testID="message-content-wrapper"
+                      testID="message-avatar"
+                    >
+                      <View>
+                        <View
+                          style={
+                            Array [
+                              Object {
+                                "alignItems": "center",
+                                "justifyContent": "center",
+                                "overflow": "hidden",
+                              },
+                              Object {
+                                "borderRadius": 16,
+                                "height": 32,
+                                "width": 32,
+                              },
+                              Object {},
+                              undefined,
+                            ]
+                          }
+                        >
+                          <Image
+                            accessibilityLabel="avatar-image"
+                            id="GrantyBoi2"
+                            initials="G"
+                            onError={[Function]}
+                            source={
+                              Object {
+                                "uri": "https://i.imgur.com/SLx06PP.png",
+                              }
+                            }
+                            style={
+                              Array [
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                Object {
+                                  "borderRadius": 16,
+                                  "height": 32,
+                                  "width": 32,
+                                },
+                                undefined,
+                              ]
+                            }
+                            testID="avatar-image"
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View
+                      accessible={true}
+                      focusable={true}
+                      onClick={[Function]}
+                      onResponderGrant={[Function]}
+                      onResponderMove={[Function]}
+                      onResponderRelease={[Function]}
+                      onResponderTerminate={[Function]}
+                      onResponderTerminationRequest={[Function]}
+                      onStartShouldSetResponder={[Function]}
+                      style={
+                        Object {
+                          "alignItems": "flex-start",
+                          "opacity": 1,
+                          "paddingTop": 2,
+                        }
+                      }
                     >
                       <View
-                        style={
-                          Array [
-                            Object {
-                              "maxWidth": 250,
-                              "paddingHorizontal": 16,
-                            },
-                            Object {},
-                            undefined,
-                          ]
-                        }
-                        testID="message-text-container"
+                        onLayout={[Function]}
+                        style={Object {}}
                       >
                         <View
                           style={
                             Array [
                               Object {
-                                "alignSelf": "stretch",
+                                "borderTopLeftRadius": 16,
+                                "borderTopRightRadius": 16,
+                                "borderWidth": 1,
+                                "overflow": "hidden",
                               },
-                              undefined,
+                              Object {
+                                "backgroundColor": "#FFFFFF",
+                                "borderBottomLeftRadius": 0,
+                                "borderBottomRightRadius": 16,
+                                "borderColor": "#ECEBEB",
+                              },
+                              Object {},
+                              Object {},
+                            ]
+                          }
+                          testID="message-content-wrapper"
+                        >
+                          <View
+                            style={
+                              Array [
+                                Object {
+                                  "maxWidth": 250,
+                                  "paddingHorizontal": 16,
+                                },
+                                Object {},
+                                undefined,
+                              ]
+                            }
+                            testID="message-text-container"
+                          >
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignSelf": "stretch",
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <Text
+                                style={
+                                  Object {
+                                    "alignItems": "flex-start",
+                                    "flexDirection": "row",
+                                    "flexWrap": "wrap",
+                                    "justifyContent": "flex-start",
+                                    "marginBottom": 8,
+                                    "marginTop": 8,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#000000",
+                                    }
+                                  }
+                                >
+                                  Message4
+                                </Text>
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View
+                        style={
+                          Object {
+                            "flexDirection": "row",
+                            "marginTop": 4,
+                          }
+                        }
+                        testID="message-status-time"
+                      >
+                        <Text
+                          style={
+                            Array [
+                              Object {
+                                "color": "#7A7A7A",
+                                "textAlign": "left",
+                              },
+                              Object {
+                                "fontSize": 12,
+                              },
                             ]
                           }
                         >
-                          <Text
-                            style={
-                              Object {
-                                "alignItems": "flex-start",
-                                "flexDirection": "row",
-                                "flexWrap": "wrap",
-                                "justifyContent": "flex-start",
-                                "marginBottom": 8,
-                                "marginTop": 8,
-                              }
-                            }
-                          >
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000000",
-                                }
-                              }
-                            >
-                              Message4
-                            </Text>
-                          </Text>
-                        </View>
+                          2:50 PM
+                        </Text>
                       </View>
                     </View>
-                  </View>
-                  <View
-                    style={
-                      Object {
-                        "flexDirection": "row",
-                        "marginTop": 4,
-                      }
-                    }
-                    testID="message-status-time"
-                  >
-                    <Text
-                      style={
-                        Array [
-                          Object {
-                            "color": "#7A7A7A",
-                            "textAlign": "left",
-                          },
-                          Object {
-                            "fontSize": 12,
-                          },
-                        ]
-                      }
-                    >
-                      2:50 PM
-                    </Text>
                   </View>
                 </View>
               </View>
@@ -824,7 +912,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   "paddingHorizontal": 8,
                 },
                 Object {
-                  "backgroundColor": "#00000099",
+                  "backgroundColor": "#000000CC",
                 },
                 Object {},
               ]
@@ -1254,6 +1342,7 @@ exports[`Thread should match thread snapshot 1`] = `
             Object {},
           ]
         }
+        testID="show-thread-message-in-channel-button"
       >
         <View
           accessible={true}

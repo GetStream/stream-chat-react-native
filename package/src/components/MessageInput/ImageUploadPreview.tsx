@@ -83,7 +83,7 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay_dark, white },
+      colors: { overlay, white },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
@@ -122,7 +122,7 @@ const ImageUploadPreviewWithContext = <
         onPress={() => {
           removeImage(item.id);
         }}
-        style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
+        style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
         testID='remove-image-upload-preview'
       >
         <Close pathFill={white} />

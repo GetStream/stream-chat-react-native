@@ -22,6 +22,7 @@ import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
@@ -67,30 +68,32 @@ describe('Thread', () => {
     let openThread;
 
     const { getAllByText, getByText, queryByText, rerender } = render(
-      <Chat client={chatClient}>
-        <TranslationProvider value={{ ...translators, t }}>
-          <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
-            <ImageGalleryProvider>
-              <Channel
-                channel={channel}
-                client={chatClient}
-                FlatList={MockedFlatList}
-                thread={thread}
-              >
-                <ThreadContext.Consumer>
-                  {(c) => {
-                    openThread = c.openThread;
-                    return <Thread />;
-                  }}
-                </ThreadContext.Consumer>
-              </Channel>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </TranslationProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <TranslationProvider value={{ ...translators, t }}>
+            <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
+              <ImageGalleryProvider>
+                <Channel
+                  channel={channel}
+                  client={chatClient}
+                  FlatList={MockedFlatList}
+                  thread={thread}
+                  threadList
+                >
+                  <ThreadContext.Consumer>
+                    {(c) => {
+                      openThread = c.openThread;
+                      return <Thread />;
+                    }}
+                  </ThreadContext.Consumer>
+                </Channel>
+              </ImageGalleryProvider>
+            </AttachmentPickerProvider>
+          </TranslationProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
-    expect(t).toHaveBeenCalledWith('Loading messages...');
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Also send to channel');
       expect(getByText('Also send to channel')).toBeTruthy();
@@ -104,27 +107,30 @@ describe('Thread', () => {
     act(() => openThread(thread2));
 
     rerender(
-      <Chat client={chatClient}>
-        <TranslationProvider value={{ ...translators, t }}>
-          <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
-            <ImageGalleryProvider>
-              <Channel
-                channel={channel}
-                client={chatClient}
-                FlatList={MockedFlatList}
-                thread={thread2}
-              >
-                <ThreadContext.Consumer>
-                  {(c) => {
-                    openThread = c.openThread;
-                    return <Thread />;
-                  }}
-                </ThreadContext.Consumer>
-              </Channel>
-            </ImageGalleryProvider>
-          </AttachmentPickerProvider>
-        </TranslationProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <TranslationProvider value={{ ...translators, t }}>
+            <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
+              <ImageGalleryProvider>
+                <Channel
+                  channel={channel}
+                  client={chatClient}
+                  FlatList={MockedFlatList}
+                  thread={thread2}
+                  threadList
+                >
+                  <ThreadContext.Consumer>
+                    {(c) => {
+                      openThread = c.openThread;
+                      return <Thread />;
+                    }}
+                  </ThreadContext.Consumer>
+                </Channel>
+              </ImageGalleryProvider>
+            </AttachmentPickerProvider>
+          </TranslationProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {
@@ -170,25 +176,28 @@ describe('Thread', () => {
     let setLastRead;
 
     const { getByText, toJSON } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
-          <ImageGalleryProvider>
-            <Channel
-              channel={channel}
-              client={chatClient}
-              FlatList={MockedFlatList}
-              thread={thread}
-            >
-              <ChannelContext.Consumer>
-                {(c) => {
-                  setLastRead = c.setLastRead;
-                  return <Thread />;
-                }}
-              </ChannelContext.Consumer>
-            </Channel>
-          </ImageGalleryProvider>
-        </AttachmentPickerProvider>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
+            <ImageGalleryProvider>
+              <Channel
+                channel={channel}
+                client={chatClient}
+                FlatList={MockedFlatList}
+                thread={thread}
+                threadList
+              >
+                <ChannelContext.Consumer>
+                  {(c) => {
+                    setLastRead = c.setLastRead;
+                    return <Thread />;
+                  }}
+                </ChannelContext.Consumer>
+              </Channel>
+            </ImageGalleryProvider>
+          </AttachmentPickerProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {

@@ -24,10 +24,13 @@ import {
   Avatar,
   CircleClose,
   MessageIcon,
+  StreamCache,
   useChatContext,
   User,
   UserMinus,
   useTheme,
+  useToastContext,
+  useTranslationContext,
   vh,
 } from 'stream-chat-react-native';
 
@@ -114,6 +117,9 @@ export type UserInfoOverlayProps = {
 
 export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
+
+  const toast = useToastContext();
+  const { t } = useTranslationContext();
 
   const { overlay, setOverlay } = useAppOverlayContext();
   const { client } = useChatContext<
@@ -294,6 +300,8 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                         </Text>
                         <View style={styles.userItemContainer}>
                           <Avatar
+                            channelId={channel.id}
+                            id={member.user?.id}
                             image={member.user?.image}
                             name={member.user?.name || member.user?.id}
                             online={member.user?.online}
@@ -304,28 +312,32 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                       </View>
                       <TapGestureHandler
                         onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            if (!client.user?.id) return;
+                          if (!StreamCache.getInstance().currentNetworkState) {
+                            toast.show(t('Something went wrong'), 2000);
+                          } else {
+                            if (state === State.END) {
+                              if (!client.user?.id) return;
 
-                            const members = [client.user.id, member.user?.id || ''];
+                              const members = [client.user.id, member.user?.id || ''];
 
-                            // Check if the channel already exists.
-                            const channels = await client.queryChannels({
-                              distinct: true,
-                              members,
-                            });
-
-                            const newChannel =
-                              channels.length === 1
-                                ? channels[0]
-                                : client.channel('messaging', {
-                                    members,
-                                  });
-                            setOverlay('none');
-                            if (navigation) {
-                              navigation.navigate('OneOnOneChannelDetailScreen', {
-                                channel: newChannel,
+                              // Check if the channel already exists.
+                              const channels = await client.queryChannels({
+                                distinct: true,
+                                members,
                               });
+
+                              const newChannel =
+                                channels.length === 1
+                                  ? channels[0]
+                                  : client.channel('messaging', {
+                                      members,
+                                    });
+                              setOverlay('none');
+                              if (navigation) {
+                                navigation.navigate('OneOnOneChannelDetailScreen', {
+                                  channel: newChannel,
+                                });
+                              }
                             }
                           }
                         }}
@@ -346,30 +358,34 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                       </TapGestureHandler>
                       <TapGestureHandler
                         onHandlerStateChange={async ({ nativeEvent: { state } }) => {
-                          if (state === State.END) {
-                            if (!client.user?.id) return;
+                          if (!StreamCache.getInstance().currentNetworkState) {
+                            toast.show(t('Something went wrong'), 2000);
+                          } else {
+                            if (state === State.END) {
+                              if (!client.user?.id) return;
 
-                            const members = [client.user.id, member.user?.id || ''];
+                              const members = [client.user.id, member.user?.id || ''];
 
-                            // Check if the channel already exists.
-                            const channels = await client.queryChannels({
-                              distinct: true,
-                              members,
-                            });
-
-                            const newChannel =
-                              channels.length === 1
-                                ? channels[0]
-                                : client.channel('messaging', {
-                                    members,
-                                  });
-
-                            setOverlay('none');
-                            if (navigation) {
-                              navigation.navigate('ChannelScreen', {
-                                channel: newChannel,
-                                channelId: newChannel.id,
+                              // Check if the channel already exists.
+                              const channels = await client.queryChannels({
+                                distinct: true,
+                                members,
                               });
+
+                              const newChannel =
+                                channels.length === 1
+                                  ? channels[0]
+                                  : client.channel('messaging', {
+                                      members,
+                                    });
+
+                              setOverlay('none');
+                              if (navigation) {
+                                navigation.navigate('ChannelScreen', {
+                                  channel: newChannel,
+                                  channelId: newChannel.id,
+                                });
+                              }
                             }
                           }
                         }}
@@ -391,21 +407,25 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                       {modifyingPermissions ? (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {
-                            if (state === State.END) {
-                              setData({
-                                confirmText: 'REMOVE',
-                                onConfirm: () => {
-                                  if (member.user?.id) {
-                                    channel.removeMembers([member.user.id]);
-                                  }
-                                  setOverlay('none');
-                                },
-                                subtext: `Are you sure you want to remove User from ${
-                                  channel?.data?.name || 'group'
-                                }?`,
-                                title: 'Remove User',
-                              });
-                              setOverlay('confirmation');
+                            if (!StreamCache.getInstance().currentNetworkState) {
+                              toast.show(t('Something went wrong'), 2000);
+                            } else {
+                              if (state === State.END) {
+                                setData({
+                                  confirmText: 'REMOVE',
+                                  onConfirm: () => {
+                                    if (member.user?.id) {
+                                      channel.removeMembers([member.user.id]);
+                                    }
+                                    setOverlay('none');
+                                  },
+                                  subtext: `Are you sure you want to remove User from ${
+                                    channel?.data?.name || 'group'
+                                  }?`,
+                                  title: 'Remove User',
+                                });
+                                setOverlay('confirmation');
+                              }
                             }
                           }}
                         >

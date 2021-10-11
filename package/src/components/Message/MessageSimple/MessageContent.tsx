@@ -165,7 +165,7 @@ const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent },
+      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -213,7 +213,9 @@ const MessageContentWithContext = <
 
   const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
 
-  if (message.deleted_at) {
+  const isMessageTypeDeleted = message.type === 'deleted';
+
+  if (isMessageTypeDeleted) {
     return (
       <MessageDeleted
         formattedDate={getDateText(formatDate)}
@@ -234,7 +236,7 @@ const MessageContentWithContext = <
           : grey_gainsboro
         : blue_alice
       : alignment === 'left' || error
-      ? transparent
+      ? white
       : grey_gainsboro;
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
@@ -283,7 +285,7 @@ const MessageContentWithContext = <
         <MessageHeader
           alignment={alignment}
           formattedDate={getDateText(formatDate)}
-          isDeleted={!!message.deleted_at}
+          isDeleted={!!isMessageTypeDeleted}
           lastGroupMessage={lastGroupMessage}
           members={members}
           message={message}
@@ -377,7 +379,7 @@ const MessageContentWithContext = <
       {threadRepliesEnabled && (
         <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
       )}
-      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!message.deleted_at} />
+      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
     </TouchableOpacity>
   );
 };
@@ -448,18 +450,25 @@ const areEqual = <
     prevGroupStyles?.[0] === nextGroupStyles?.[0];
   if (!groupStylesEqual) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 

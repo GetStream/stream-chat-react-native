@@ -87,7 +87,7 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
     }
 
     return (
-      <View style={[styles.container, container]}>
+      <View style={[styles.container, container]} testID='show-thread-message-in-channel-button'>
         <TouchableOpacity
           onPress={() => setSendThreadMessageInChannel((prevSendInChannel) => !prevSendInChannel)}
         >
