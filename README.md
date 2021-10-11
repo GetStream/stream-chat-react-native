@@ -31,17 +31,6 @@
 - [Keep in mind](#-keep-in-mind)
 - [Contributing](#-contributing)
 
-## 🔐 React Native Compatibility
-
-To use this library you need to ensure you match up with the correct version of React Native you are using.
-
-| `stream-chat-react-native` | `react-native-reanimated` | `react-native` | `stream-chat` |
-|----------------------------|---------------------------|----------------|---------------|
-| `4.0.0`                    | `>= 2.3.0-beta.2`         | `>= 0.66`      | ``>= ~3.13.1` |
-| `3.8.3`                    | `>= 2.2.1`                | `>= 0.65`      | `>= ~3.13.1`  |
-| `3.6.0`                    | `>= 2.2.0`                | `>= 0.64.1`    | `>= 3.9.0`    |
-| `3.2.0`                    | `>= 13.1.1`               | `>= 0.60`      | `>= 3.5.1`    |
-
 ## 📖 React Native Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0). It teaches you how to use this SDK and also shows how to make frequently required changes.
