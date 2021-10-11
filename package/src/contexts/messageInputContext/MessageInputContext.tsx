@@ -449,8 +449,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { CooldownTimer, editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } =
-    value;
+  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
   const {
     fileUploads,
     imageUploads,
@@ -1036,7 +1035,6 @@ export const MessageInputProvider = <
     asyncUploads,
     closeAttachmentPicker,
     cooldownEndsAt,
-    CooldownTimer,
     fileUploads,
     giphyActive,
     imageUploads,

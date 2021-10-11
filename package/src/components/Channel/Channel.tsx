@@ -82,7 +82,6 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import {
   InputConfig,
   InputMessageInputContextValue,
-  MessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
@@ -214,7 +213,6 @@ export type ChannelPropsWithContext<
   > &
   Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
-  Pick<MessageInputContextValue, 'CooldownTimer'> &
   Partial<
     Pick<
       PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,

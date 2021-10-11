@@ -98,11 +98,11 @@ export const useCountdown = (endsAt: Date) => {
   }, [endsAt]);
 
   useEffect(() => {
-    const timerId = setInterval(() => {
+    const intervalId = setInterval(() => {
       update();
     }, SECOND_IN_MS);
 
-    counter.current = timerId;
+    counter.current = intervalId as unknown as number;
 
     return () => {
       clearInterval(counter.current);
