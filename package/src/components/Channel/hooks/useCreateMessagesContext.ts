@@ -103,6 +103,7 @@ export const useCreateMessagesContext = <
   setEditingState,
   setQuotedMessageState,
   supportedReactions,
+  targetedMessage,
   threadRepliesEnabled,
   threadReply,
   TypingIndicator,
@@ -203,6 +204,7 @@ export const useCreateMessagesContext = <
       setEditingState,
       setQuotedMessageState,
       supportedReactions,
+      targetedMessage,
       threadRepliesEnabled,
       threadReply,
       TypingIndicator,
@@ -219,6 +221,7 @@ export const useCreateMessagesContext = <
       markdownRulesLength,
       messageContentOrderValue,
       supportedReactionsLength,
+      targetedMessage,
     ],
   );
 

@@ -1820,6 +1820,7 @@ const ChannelWithContext = <
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
+    targetedMessage,
     threadReply,
     TypingIndicator,
     TypingIndicatorContainer,

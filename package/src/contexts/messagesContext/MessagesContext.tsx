@@ -593,6 +593,8 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => (reactionType: string) => Promise<void>;
+
+  targetedMessage?: string;
   /**
    * Full override of the thread reply button in the Message Actions
    *

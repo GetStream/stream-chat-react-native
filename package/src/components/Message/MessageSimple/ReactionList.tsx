@@ -14,7 +14,10 @@ import {
   Reactions,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Unknown } from '../../../icons/Unknown';
@@ -108,21 +111,23 @@ export type ReactionListPropsWithContext<
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
+  | 'message'
   | 'onLongPress'
   | 'onPress'
   | 'onPressIn'
   | 'preventPress'
   | 'reactions'
   | 'showMessageOverlay'
-> & {
-  messageContentWidth: number;
-  supportedReactions: ReactionData[];
-  fill?: string;
-  radius?: number; // not recommended to change this
-  reactionSize?: number;
-  stroke?: string;
-  strokeSize?: number; // not recommended to change this
-};
+> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'targetedMessage'> & {
+    messageContentWidth: number;
+    supportedReactions: ReactionData[];
+    fill?: string;
+    radius?: number; // not recommended to change this
+    reactionSize?: number;
+    stroke?: string;
+    strokeSize?: number; // not recommended to change this
+  };
 
 const ReactionListWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -138,6 +143,7 @@ const ReactionListWithContext = <
   const {
     alignment,
     fill: propFill,
+    message,
     messageContentWidth,
     onLongPress,
     onPress,
@@ -150,11 +156,20 @@ const ReactionListWithContext = <
     stroke: propStroke,
     strokeSize: propStrokeSize,
     supportedReactions,
+    targetedMessage,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, targetedMessageBackground, white },
+      colors: {
+        accent_blue,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        targetedMessageBackground,
+        white,
+        white_snow,
+      },
       messageSimple: {
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
@@ -206,7 +221,8 @@ const ReactionListWithContext = <
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
-  const stroke = propStroke || targetedMessageBackground;
+  const highlighted = message.pinned || targetedMessage === message.id;
+  const stroke = propStroke || (highlighted ? targetedMessageBackground : white_snow);
   const strokeSize = propStrokeSize || themeStrokeSize;
 
   const x1 = alignmentLeft
@@ -343,11 +359,29 @@ const areEqual = <
   prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messageContentWidth: prevMessageContentWidth, reactions: prevReactions } = prevProps;
-  const { messageContentWidth: nextMessageContentWidth, reactions: nextReactions } = nextProps;
+  const {
+    message: prevMessage,
+    messageContentWidth: prevMessageContentWidth,
+    reactions: prevReactions,
+    targetedMessage: prevTargetedMessage,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    messageContentWidth: nextMessageContentWidth,
+    reactions: nextReactions,
+    targetedMessage: nextTargetedMessage,
+  } = nextProps;
 
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
   if (!messageContentWidthEqual) return false;
+
+  const messagePinnedEqual = prevMessage.pinned === nextMessage.pinned;
+
+  if (!messagePinnedEqual) return false;
+
+  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+
+  if (!targetedMessageEqual) return false;
 
   const reactionsEqual =
     prevReactions.length === nextReactions.length &&
@@ -393,6 +427,7 @@ export const ReactionList = <
 ) => {
   const {
     alignment,
+    message,
     onLongPress,
     onPress,
     onPressIn,
@@ -400,12 +435,13 @@ export const ReactionList = <
     reactions,
     showMessageOverlay,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedReactionList
       {...{
         alignment,
+        message,
         onLongPress,
         onPress,
         onPressIn,
@@ -413,6 +449,7 @@ export const ReactionList = <
         reactions,
         showMessageOverlay,
         supportedReactions,
+        targetedMessage,
       }}
       {...props}
     />
