@@ -53,6 +53,7 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
@@ -81,6 +82,7 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import {
   InputConfig,
   InputMessageInputContextValue,
+  MessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
@@ -212,6 +214,7 @@ export type ChannelPropsWithContext<
   > &
   Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
+  Pick<MessageInputContextValue, 'CooldownTimer'> &
   Partial<
     Pick<
       PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -429,6 +432,7 @@ const ChannelWithContext = <
     closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
+    CooldownTimer = CooldownTimerDefault,
     copyMessage,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
@@ -1688,7 +1692,7 @@ const ChannelWithContext = <
     watchers,
   });
 
-  const messageInputContext = useCreateInputMessageInputContext({
+  const inputMessageInputContext = useCreateInputMessageInputContext({
     ...inputConfig,
     additionalTextInputProps,
     AttachButton,
@@ -1697,8 +1701,9 @@ const ChannelWithContext = <
     channelId,
     clearEditingState,
     clearQuotedMessageState,
-    CommandsButton,
     compressImageQuality,
+    CommandsButton,
+    CooldownTimer,
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
@@ -1876,7 +1881,7 @@ const ChannelWithContext = <
             <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
               <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
                 <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageInputContext}>
+                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us> value={inputMessageInputContext}>
                     <View style={{ height: '100%' }}>{children}</View>
                   </MessageInputProvider>
                 </SuggestionsProvider>
