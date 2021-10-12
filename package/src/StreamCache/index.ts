@@ -38,6 +38,7 @@ import {
   STREAM_CHAT_SDK_VERSION,
 } from './constants';
 
+// { [index: filter_sort_string]: { [index: channelId]: position_in_list } }
 export type ChannelsOrder = { [index: string]: { [index: string]: number } };
 type STREAM_CHAT_CHANNEL_DATA_KEY = `${typeof STREAM_CHAT_CHANNEL_DATA}_${string}`;
 export type CacheKeys =
@@ -102,12 +103,20 @@ function extractChannelMessagesMap<
   Us extends UnknownType = DefaultUserType,
 >(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null) {
   const oldChannelsMessagesMap =
+    // for each channel...
     (channelsData || []).reduce((curr, next) => {
       if (next.id) {
+        // create a map where key is channel id
         curr[next.id] = {};
+        // iterate through messages of that channel
         next.state.messages.forEach((message) => {
+          // create an entry in that map, inside of channels key to store that message
+          // this is how we extract all the messages that are currently available
+          // in a specific array of channels
           curr[next.id as string][message.id] = true;
         });
+
+        // Then we do the same for threads
         Object.values(next.state.threads).forEach((thread) =>
           thread.forEach((threadMessage) => {
             curr[next.id as string][threadMessage.id] = true;
@@ -201,6 +210,7 @@ export class StreamCache<
     return !!StreamCache.instance && StreamCache.cacheMedia;
   }
 
+  // We normalize channels data to avoid overflowing the row in storage
   private setNormalizedChannelsData(
     channelsData: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us>[],
   ) {
@@ -285,8 +295,11 @@ export class StreamCache<
       | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
   >(channels: C) {
     const channelsOrder = {} as { [index: string]: C };
+    // currentChannelsOrderKey = filter_and_sort_string
+    // we may have two channel lists with different filter/sort
     Object.keys(this.cachedChannelsOrder).forEach((currentChannelsOrderKey) => {
       const currentChannelsOrder = this.cachedChannelsOrder?.[currentChannelsOrderKey];
+      // {[index: channelId]: position of the channel}
       const channelsIndicesMap = (
         channels as ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
       ).reduce((curr, next, index) => {
@@ -297,19 +310,35 @@ export class StreamCache<
 
       if (currentChannelsOrder) {
         channels.sort((a, b) => {
+          // return value > 0, sort b before a
+          // return value < 0, sort a before b
+
+          // if they both have undefined ids, sort a before b
           if (a.id === undefined && b.id === undefined) return -1;
+          // if only a has undefined id, sort b before a
           if (a.id === undefined) return 1;
+          // if only b has undefined id, sort a before b
           if (b.id === undefined) return -1;
 
+          // If both a and b have no previous cached position on currentChannelsOrder,
+          // we use the original position from channelsIndicesMap, which is based on the
+          // original client channel list
           if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
             return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
 
+          // If only a has no previous cached position, sort b before a
           if (currentChannelsOrder[a.id] === undefined) return 1;
+          // If only b has no previous cached position, sort a before b
           if (currentChannelsOrder[b.id] === undefined) return -1;
 
+          // Finally, calculate position based on cached channels order by substracting indices
           return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
         });
       }
+
+      // Finally we set the ordered channels for that specific filter_and_sort_string key
+      // This is a forEach so if you have multiple channel lists, it will do the same thing
+      // for each list
       channelsOrder[currentChannelsOrderKey] = (
         channels as ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
       ).filter((c) => c.id && currentChannelsOrder[c.id] !== undefined) as C;
@@ -355,16 +384,22 @@ export class StreamCache<
     const oldChannelsMessagesMap = extractChannelMessagesMap(oldChannelsData);
     const newChannelsMessagesMap = extractChannelMessagesMap(newChannelsData);
 
+    // After having the maps containing each channel and each message/thread available
+    // in it with truthy values, we get the difference between those two channels
+    // in order to identify which channels/messages got removed.
+    // This is how we remove cached media based on when the channel/message is cached.
+
     const removedChannels: string[] = [];
     const removedMessages: { channelId: string; messageId: string }[] = [];
 
-    // Extract array of paths for removed channels and messages
+    // Extract array of ids for removed channels
     Object.keys(oldChannelsMessagesMap).forEach((oldChannelId) => {
       if (!newChannelsMessagesMap[oldChannelId]) {
         removedChannels.push(oldChannelId);
         return;
       }
 
+      // Extract array of ids for removed messages in that channel
       Object.keys(oldChannelsMessagesMap[oldChannelId]).forEach((oldMessageId) => {
         if (!newChannelsMessagesMap[oldChannelId][oldMessageId]) {
           removedMessages.push({ channelId: oldChannelId, messageId: oldMessageId });
@@ -372,6 +407,7 @@ export class StreamCache<
       });
     });
 
+    // Use extracted channel ids array for removing Media Cache
     await Promise.all(
       removedChannels.map((channelId) =>
         Promise.all([
@@ -381,6 +417,7 @@ export class StreamCache<
       ),
     );
 
+    // Use extracted message ids array for removing Media Cache
     await Promise.all(
       removedMessages.map(({ channelId, messageId }) =>
         StreamMediaCache.removeMessageAttachments(channelId, messageId),
@@ -389,6 +426,8 @@ export class StreamCache<
   }
 
   public async syncCacheAndImages() {
+    // When cache is synced, we need to remove images in which their channel/message
+    // is no longer cached
     const oldChannelsData = await this.getNormalizedChannelsData();
     await this.syncCache();
     const newChannelsData = await this.getNormalizedChannelsData();
@@ -419,6 +458,7 @@ export class StreamCache<
       await this.rehydrate(clientData);
       // If users want to manually control the socket connection when offline, just send this parameter as false
       if (openConnection) {
+        // Awaiting this may take some time specially when user is offline cause it retries 3 times
         this.client.openConnection();
       }
     }
@@ -437,6 +477,8 @@ export class StreamCache<
     filters: ChannelFilters<Ch, Co, Us>,
     sort: ChannelSort<Ch>,
   ) {
+    // We keep track of the channels order on every change so it can be used when
+    // in offline mode
     this.cachedChannelsOrder[this.getChannelsOrderKey(filters, sort)] = channels.reduce(
       (acc, next, index) => {
         if (next.id) {
@@ -449,6 +491,7 @@ export class StreamCache<
   }
 
   public async clear() {
+    // We need to get the channelsIds before we execute this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_DATA).
     const channelsIds = (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA)) || [];
     const removeAllChannelsItemsPromise = Promise.all(
       channelsIds.map((channelId) =>
