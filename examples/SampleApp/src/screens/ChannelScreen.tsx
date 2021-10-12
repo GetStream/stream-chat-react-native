@@ -175,6 +175,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageId={messageId}
+        NetworkDownIndicator={() => null}
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />

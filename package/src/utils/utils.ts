@@ -153,8 +153,12 @@ const queryMembers = async <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
-  limit = defaultAutoCompleteSuggestionsLimit,
+  options: {
+    limit?: number;
+  } = {},
 ): Promise<void> => {
+  const { limit = defaultAutoCompleteSuggestionsLimit } = options;
+
   if (typeof query === 'string') {
     const response = (await (channel as unknown as Channel).queryMembers(
       {
@@ -534,6 +538,15 @@ export const ACITriggerSettings = <
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
+
+export const getUrlWithoutParams = (url?: string) => {
+  if (!url) return url;
+
+  const indexOfQuestion = url.indexOf('?');
+  if (indexOfQuestion === -1) return url;
+
+  return url.substring(0, url.indexOf('?'));
+};
 
 export const vw = (percentageWidth: number, rounded = false) => {
   const value = Dimensions.get('window').width * (percentageWidth / 100);

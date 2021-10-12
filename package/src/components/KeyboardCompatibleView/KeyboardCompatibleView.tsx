@@ -11,6 +11,7 @@ import {
   LayoutAnimation,
   LayoutChangeEvent,
   LayoutRectangle,
+  NativeEventSubscription,
   Platform,
   ScreenRect,
   StatusBar,
@@ -42,6 +43,7 @@ export class KeyboardCompatibleView extends React.Component<
   _frame: LayoutRectangle | null = null;
   _keyboardEvent: KeyboardEvent | null = null;
   _subscriptions: EmitterSubscription[] = [];
+  _appStateSubscription: NativeEventSubscription | null = null;
   viewRef: React.RefObject<View>;
   _initialFrameHeight = 0;
   constructor(props: KeyboardAvoidingViewProps) {
@@ -178,12 +180,17 @@ export class KeyboardCompatibleView extends React.Component<
   };
 
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
+    this._appStateSubscription = AppState.addEventListener('change', this._handleAppStateChange);
     this.setKeyboardListeners();
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
+    // Following if-else condition to avoid deprecated warning coming RN 0.65
+    if (this._appStateSubscription?.remove) {
+      this._appStateSubscription?.remove();
+    } else {
+      AppState.removeEventListener('change', this._handleAppStateChange);
+    }
     this.unsetKeyboardListeners();
   }
 

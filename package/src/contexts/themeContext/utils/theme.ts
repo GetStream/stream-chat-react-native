@@ -110,6 +110,9 @@ export type Theme = {
     container: ViewStyle;
     errorText: TextStyle;
   };
+  channelListLoadingIndicator: {
+    container: ViewStyle;
+  };
   channelListMessenger: {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
@@ -530,6 +533,9 @@ export const defaultTheme: Theme = {
   channelListHeaderErrorIndicator: {
     container: {},
     errorText: {},
+  },
+  channelListLoadingIndicator: {
+    container: {},
   },
   channelListMessenger: {
     flatList: {},

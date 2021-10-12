@@ -53,6 +53,9 @@ export const getGroupStyles = <
     noGroupByUser,
     userId,
   } = params;
+
+  if (noGroupByUser) return {};
+
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
   const messagesFilteredForNonUser = messages.filter(
@@ -126,14 +129,6 @@ export const getGroupStyles = <
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('middle');
       }
-    }
-
-    /**
-     * If noGroupByUser set add the key for single
-     */
-    if (noGroupByUser) {
-      groupStyles.splice(0, groupStyles.length);
-      groupStyles.push('single');
     }
 
     if (message.id) {

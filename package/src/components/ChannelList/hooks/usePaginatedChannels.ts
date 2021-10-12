@@ -57,7 +57,6 @@ export const usePaginatedChannels = <
   const lastRefresh = useRef(Date.now());
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
@@ -73,7 +72,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : offset,
+      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : channels.length,
       ...options,
     };
 
@@ -89,7 +88,6 @@ export const usePaginatedChannels = <
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setOffset(newChannels.length);
       setError(false);
     } catch (err) {
       await wait(2000);

@@ -131,6 +131,7 @@ type MessageListPropsWithContext<
     | 'channel'
     | 'disabled'
     | 'EmptyStateIndicator'
+    | 'hideStickyDateHeader'
     | 'loadChannelAtMessage'
     | 'loading'
     | 'LoadingIndicator'
@@ -158,6 +159,7 @@ type MessageListPropsWithContext<
     | 'initialScrollToFirstUnreadMessage'
     | 'InlineDateSeparator'
     | 'InlineUnreadIndicator'
+    | 'legacyImageViewerSwipeBehaviour'
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
@@ -264,10 +266,12 @@ const MessageListWithContext = <
     FlatList,
     FooterComponent = LoadingMoreIndicator,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
+    hideStickyDateHeader,
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
     inverted = true,
+    legacyImageViewerSwipeBehaviour,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -410,7 +414,7 @@ const MessageListWithContext = <
    */
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
-      if (viewableItems) {
+      if (viewableItems && !hideStickyDateHeader) {
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
       setInitialScrollIfNeeded();
@@ -427,7 +431,26 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (!loading && channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
+    /**
+     * 1. !initialScrollToFirstUnreadMessage && channel.countUnread() > 0
+     *
+     *    In this case MessageList won't scroll to first unread message when opened, so we can mark
+     *    the channel as read right after opening.
+     *
+     * 2. initialScrollToFirstUnreadMessage && channel.countUnread() <= scrollToFirstUnreadThreshold
+     *
+     *    In this case MessageList will be opened to first unread message.
+     *    But if there are not enough (scrollToFirstUnreadThreshold) unread messages, then MessageList
+     *    won't need to scroll up. So we can safely mark the channel as read right after opening.
+     */
+    const shouldMarkReadOnFirstLoad =
+      !loading &&
+      channel &&
+      ((!initialScrollToFirstUnreadMessage && channel.countUnread() > 0) ||
+        (initialScrollToFirstUnreadMessage &&
+          channel.countUnread() <= scrollToFirstUnreadThreshold));
+
+    if (shouldMarkReadOnFirstLoad) {
       markRead();
     }
   }, [loading]);
@@ -785,44 +808,58 @@ const MessageListWithContext = <
     [messageListLengthAfterUpdate],
   );
 
-  const messagesWithImages = messageList.filter((message) => {
-    if (!message.deleted_at && message.attachments) {
-      return message.attachments.some(
-        (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
-      );
-    }
-    return false;
-  });
+  const messagesWithImages =
+    legacyImageViewerSwipeBehaviour &&
+    messageList.filter((message) => {
+      if (!message.deleted_at && message.attachments) {
+        return message.attachments.some(
+          (attachment) =>
+            attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            (attachment.image_url || attachment.thumb_url),
+        );
+      }
+      return false;
+    });
 
   /**
    * This is for the useEffect to run again in the case that a message
    * gets edited with more or the same number of images
    */
-  const imageString = messagesWithImages
-    .map((message) =>
-      message.attachments
-        ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
-        .join(),
-    )
-    .join();
+  const imageString =
+    legacyImageViewerSwipeBehaviour &&
+    messagesWithImages &&
+    messagesWithImages
+      .map((message) =>
+        message.attachments
+          ?.map((attachment) => attachment.image_url || attachment.thumb_url || '')
+          .join(),
+      )
+      .join();
 
-  const numberOfMessagesWithImages = messagesWithImages.length;
+  const numberOfMessagesWithImages =
+    legacyImageViewerSwipeBehaviour && messagesWithImages && messagesWithImages.length;
   const threadExists = !!thread;
+
   useEffect(() => {
-    if ((threadList && thread) || (!threadList && !thread)) {
-      setImages(messagesWithImages);
+    if (legacyImageViewerSwipeBehaviour && ((threadList && thread) || (!threadList && !thread))) {
+      setImages(messagesWithImages as MessageType<At, Ch, Co, Ev, Me, Re, Us>[]);
     }
-  }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
+  }, [
+    imageString,
+    legacyImageViewerSwipeBehaviour,
+    numberOfMessagesWithImages,
+    threadExists,
+    threadList,
+  ]);
 
   const stickyHeaderFormatDate =
     stickyHeaderDate?.getFullYear() === new Date().getFullYear() ? 'MMM D' : 'MMM D, YYYY';
-  const tStickyHeaderDate = stickyHeaderDate ? tDateTimeParser(stickyHeaderDate) : null;
+  const tStickyHeaderDate =
+    stickyHeaderDate && !hideStickyDateHeader ? tDateTimeParser(stickyHeaderDate) : null;
   const stickyHeaderDateToRender =
-    tStickyHeaderDate === null
+    tStickyHeaderDate === null || hideStickyDateHeader
       ? null
       : isDayOrMoment(tStickyHeaderDate)
       ? tStickyHeaderDate.format(stickyHeaderFormatDate)
@@ -943,7 +980,9 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    enableMessageGroupingByUser,
     error,
+    hideStickyDateHeader,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -965,6 +1004,7 @@ export const MessageList = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    legacyImageViewerSwipeBehaviour,
     Message,
     MessageSystem,
     myMessageTheme,
@@ -987,11 +1027,14 @@ export const MessageList = <
         disabled,
         disableTypingIndicator,
         EmptyStateIndicator,
+        enableMessageGroupingByUser,
         error,
         FlatList,
+        hideStickyDateHeader,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
         InlineUnreadIndicator,
+        legacyImageViewerSwipeBehaviour,
         loadChannelAtMessage,
         loading,
         LoadingIndicator,
@@ -1021,6 +1064,7 @@ export const MessageList = <
         TypingIndicatorContainer,
       }}
       {...props}
+      noGroupByUser={!enableMessageGroupingByUser || props.noGroupByUser}
     />
   );
 };

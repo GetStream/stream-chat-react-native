@@ -26,8 +26,9 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { makeImageCompatibleUrl } from '../../utils/utils';
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -51,7 +52,6 @@ const GalleryImage: React.FC<
 
   return (
     <Image
-      key={uri}
       {...rest}
       onError={() => setError(true)}
       source={{
@@ -69,7 +69,8 @@ const GalleryImage: React.FC<
 const MemoizedGalleryImage = React.memo(
   GalleryImage,
   (prevProps, nextProps) =>
-    prevProps.height === nextProps.height && prevProps.uri === nextProps.uri,
+    prevProps.height === nextProps.height &&
+    getUrlWithoutParams(prevProps.uri) === getUrlWithoutParams(nextProps.uri),
 ) as typeof GalleryImage;
 
 const styles = StyleSheet.create({
@@ -98,7 +99,7 @@ export type GalleryPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<ImageGalleryContextValue, 'setImage'> &
+> = Pick<ImageGalleryContextValue, 'setImage' | 'setImages'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'alignment'
@@ -110,9 +111,26 @@ export type GalleryPropsWithContext<
     | 'preventPress'
     | 'threadList'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
+  > &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+    /**
+     * `message` prop has been introduced here as part of `legacyImageViewerSwipeBehaviour` prop.
+     * https://github.com/GetStream/stream-chat-react-native/commit/d5eac6193047916f140efe8e396a671675c9a63f
+     * messageId and messageText may seem redundant now, but to avoid breaking change as part
+     * of minor release, we are keeping those props.
+     *
+     * Also `message` type should ideally be imported from MessageContextValue and not be explicitely mentioned
+     * here, but due to some circular dependencies within the SDK, it causes "exccesive deep nesting" issue with
+     * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
+     *
+     * TODO[major]: remove messageId and messageText
+     * TODO: Fix circular dependencies of imports
+     */
     hasThreadReplies?: boolean;
+    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     messageId?: string;
     messageText?: string;
   };
@@ -134,14 +152,17 @@ const GalleryWithContext = <
     groupStyles,
     hasThreadReplies,
     images,
+    legacyImageViewerSwipeBehaviour,
+    message,
     messageId,
-    messageText,
+    messageText: messageTextProp,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
     setBlurType,
     setImage,
+    setImages,
     setOverlay,
     threadList,
   } = props;
@@ -192,6 +213,7 @@ const GalleryWithContext = <
   }, [] as { height: number | string; url: string }[][]);
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
+  const messageText = messageTextProp || message?.text;
 
   return (
     <View
@@ -217,16 +239,26 @@ const GalleryWithContext = <
         >
           {column.map(({ height, url }, rowIndex) => {
             const defaultOnPress = () => {
-              setImage({ messageId, url });
-              setBlurType(blurType);
-              setOverlay('gallery');
+              // Added if-else to keep the logic readable, instead of DRY.
+              // if - legacyImageViewerSwipeBehaviour is disabled
+              // else - legacyImageViewerSwipeBehaviour is enabled
+              if (!legacyImageViewerSwipeBehaviour && message) {
+                setImages([message]);
+                setImage({ messageId: messageId || message.id, url });
+                setBlurType(blurType);
+                setOverlay('gallery');
+              } else if (legacyImageViewerSwipeBehaviour) {
+                setImage({ messageId: messageId || message?.id, url });
+                setBlurType(blurType);
+                setOverlay('gallery');
+              }
             };
 
             return (
               <TouchableOpacity
                 activeOpacity={0.8}
                 disabled={preventPress}
-                key={`gallery-item-${url}/${rowIndex}/${images.length}`}
+                key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
                 onLongPress={(event) => {
                   if (onLongPress) {
                     onLongPress({
@@ -361,8 +393,8 @@ const areEqual = <
     prevImages.length === nextImages.length &&
     prevImages.every(
       (image, index) =>
-        image.image_url === nextImages[index].image_url &&
-        image.thumb_url === nextImages[index].thumb_url,
+        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
     );
   if (!imagesEqual) return false;
 
@@ -413,7 +445,7 @@ export const Gallery = <
     threadList: propThreadList,
   } = props;
 
-  const { setImage: contextSetImage } = useImageGalleryContext();
+  const { setImage: contextSetImage, setImages } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -425,8 +457,10 @@ export const Gallery = <
     preventPress: contextPreventPress,
     threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { additionalTouchableProps: contextAdditionalTouchableProps } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+    legacyImageViewerSwipeBehaviour,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setBlurType: contextSetBlurType, setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
@@ -454,6 +488,8 @@ export const Gallery = <
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         images,
+        legacyImageViewerSwipeBehaviour,
+        message,
         messageId: messageId || message?.id,
         messageText: messageText || message?.text,
         onLongPress,
@@ -462,6 +498,7 @@ export const Gallery = <
         preventPress,
         setBlurType,
         setImage,
+        setImages,
         setOverlay,
         threadList,
       }}
