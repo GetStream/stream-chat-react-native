@@ -4,7 +4,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AttachButton } from '../AttachButton';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { SendButton } from '../SendButton';
 
 describe('AttachButton', () => {
   it('should render an enabled AttachButton', async () => {
@@ -49,25 +48,6 @@ describe('AttachButton', () => {
     fireEvent.press(getByTestId('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(0));
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
-  });
-
-  it('should render a cooldown timer while slow mode is active', async () => {
-    const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <SendButton />
-      </ThemeProvider>,
-    );
-    await waitFor(() => {
-      expect(queryByTestId('send-button')).toBeTruthy();
-    });
-
-    fireEvent.press(getByTestId('send-button'));
 
     const snapshot = toJSON();
 
