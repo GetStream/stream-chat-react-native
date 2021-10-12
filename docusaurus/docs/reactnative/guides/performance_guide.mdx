@@ -1,10 +1,10 @@
 ---
-id: performance-boost
+id: performance-guide
 sidebar_position: 5
-title: Performance Boost
+title: Performance Guide
 ---
 
-import channelSettings from '../assets/guides/performance-boost/channel_settings.jpeg'
+import channelSettings from '../assets/guides/performance-guide/channel_settings.jpeg'
 
 React Native Chat SDK provides feature-rich components which cater to all types of chat messaging applications.
 Some of the features or components may come with a performance cost you will want to avoid for high
@@ -29,7 +29,7 @@ The [Channel](../core-components/channel.mdx) component updates its internal rea
   
  By default, these state updates are throttled to once per 500 ms. For high-traffic applications, you may want to adjust the throttling interval to a higher number. You can configure throttle interval via the following props on the Channel component:	 
    
- - The `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.	 
+ - The `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.
   
  - The `stateUpdateThrottleInterval` prop adjusts the throttling interval for state updates for all the other updates to a channel except new message.	 
   
