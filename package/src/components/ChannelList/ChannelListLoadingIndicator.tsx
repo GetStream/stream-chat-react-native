@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 export const ChannelListLoadingIndicator: React.FC = () => {
   const {
     theme: {
+      channelListLoadingIndicator: { container },
       colors: { white_snow },
     },
   } = useTheme();
@@ -20,7 +21,7 @@ export const ChannelListLoadingIndicator: React.FC = () => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: white_snow }]}
+      style={[styles.container, { backgroundColor: white_snow }, container]}
       testID='channel-list-loading-indicator'
     >
       {Array.from(Array(numberOfSkeletons)).map((_, index) => (
