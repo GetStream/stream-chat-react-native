@@ -51,7 +51,7 @@ export const ChannelPreviewMessage: React.FC<ChannelPreviewMessageProps> = ({
         preview.text ? (
           <Text
             key={`${preview.text}_${index}`}
-            style={[{ color: grey }, preview.bold ? styles.bold : {}]}
+            style={[{ color: grey }, preview.bold ? styles.bold : {}, message]}
           >
             {preview.text}
           </Text>

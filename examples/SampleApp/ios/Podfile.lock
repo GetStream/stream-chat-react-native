@@ -10,21 +10,21 @@ PODS:
     - React-Core (= 0.65.1)
     - React-jsi (= 0.65.1)
     - ReactCommon/turbomodule/core (= 0.65.1)
-  - Firebase/Analytics (8.7.0):
+  - Firebase/Analytics (8.8.0):
     - Firebase/Core
-  - Firebase/AppDistribution (8.7.0):
+  - Firebase/AppDistribution (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseAppDistribution (~> 8.7.0-beta)
-  - Firebase/Core (8.7.0):
+    - FirebaseAppDistribution (~> 8.8.0-beta)
+  - Firebase/Core (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 8.7.0)
-  - Firebase/CoreOnly (8.7.0):
-    - FirebaseCore (= 8.7.0)
-  - Firebase/Crashlytics (8.7.0):
+    - FirebaseAnalytics (~> 8.8.0)
+  - Firebase/CoreOnly (8.8.0):
+    - FirebaseCore (= 8.8.0)
+  - Firebase/Crashlytics (8.8.0):
     - Firebase/CoreOnly
-    - FirebaseCrashlytics (~> 8.7.0)
-  - FirebaseAnalytics (8.7.0):
-    - FirebaseAnalytics/AdIdSupport (= 8.7.0)
+    - FirebaseCrashlytics (~> 8.8.0)
+  - FirebaseAnalytics (8.8.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.8.0)
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
@@ -32,38 +32,38 @@ PODS:
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (8.7.0):
+  - FirebaseAnalytics/AdIdSupport (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
-    - GoogleAppMeasurement (= 8.7.0)
+    - GoogleAppMeasurement (= 8.8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAppDistribution (8.7.0-beta):
+  - FirebaseAppDistribution (8.8.0-beta):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
-  - FirebaseCore (8.7.0):
+  - FirebaseCore (8.8.0):
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
-  - FirebaseCoreDiagnostics (8.7.0):
+  - FirebaseCoreDiagnostics (8.8.0):
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseCrashlytics (8.7.0):
+  - FirebaseCrashlytics (8.8.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/Environment (~> 7.4)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseInstallations (8.7.0):
+  - FirebaseInstallations (8.8.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
@@ -130,14 +130,21 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
-  - GoogleAppMeasurement (8.7.0):
-    - GoogleAppMeasurement/AdIdSupport (= 8.7.0)
+  - GoogleAppMeasurement (8.8.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (8.7.0):
+  - GoogleAppMeasurement/AdIdSupport (8.8.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/MethodSwizzler (~> 7.4)
+    - GoogleUtilities/Network (~> 7.4)
+    - "GoogleUtilities/NSData+zlib (~> 7.4)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (8.8.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
@@ -722,13 +729,13 @@ SPEC CHECKSUMS:
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: 33c82491102f20ecddb6c6a2c273696ace3191e0
   FBReactNativeSpec: df8f81d2a7541ee6755a047b398a5cb5a72acd0e
-  Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
-  FirebaseAnalytics: 52768800c2add1d84b751420cb4caaf8195f2c41
-  FirebaseAppDistribution: e1c746f591c659e18494352b2773688822d72dd3
-  FirebaseCore: f4804c1d3f4bbbefc88904d15653038f2c99ddf7
-  FirebaseCoreDiagnostics: b63732f581a1c6a453ec7241f9ab60b3a5bd3450
-  FirebaseCrashlytics: 6fac03d1eef054833b71c929c93ab95c12989728
-  FirebaseInstallations: ede6fb72bb6337914e5888b399271259d0c4910c
+  Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
+  FirebaseAnalytics: 5506ea8b867d8423485a84b4cd612d279f7b0b8a
+  FirebaseAppDistribution: fa46fb0898b0f31e0fe428b32059e2baed653d21
+  FirebaseCore: 98b29e3828f0a53651c363937a7f7d92a19f1ba2
+  FirebaseCoreDiagnostics: fe77f42da6329d6d83d21fd9d621a6b704413bfc
+  FirebaseCrashlytics: 3660c045c8e45cc4276110562a0ef44cf43c8157
+  FirebaseInstallations: 2563cb18a723ef9c6ef18318a49519b75dce613c
   Flipper: b1fddf9a17c32097b2b4c806ad158b2f36bb2692
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 57ffbe81ef95306cc9e69c4aa3aeeeeb58a6a28c
@@ -740,7 +747,7 @@ SPEC CHECKSUMS:
   FlipperKit: aec2d931adeee48a07bab1ea8bcc8a6bb87dfce4
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 5337263514dd6f09803962437687240c5dc39aa4
-  GoogleAppMeasurement: 2be61ce546ad074dbe4dd545f222ac6033bb1d9e
+  GoogleAppMeasurement: 5ba1164e3c844ba84272555e916d0a6d3d977e91
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
   hermes-engine: 7dcd1dbd908e6353bd7e4a4add72dba7bf76bf84

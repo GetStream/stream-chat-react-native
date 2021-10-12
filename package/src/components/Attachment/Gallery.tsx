@@ -48,7 +48,6 @@ const GalleryImage: React.FC<
 
   return (
     <CachedAttachmentImage
-      key={uri}
       {...rest}
       cacheConfig={{
         channelId,
@@ -70,7 +69,8 @@ const GalleryImage: React.FC<
 const MemoizedGalleryImage = React.memo(
   GalleryImage,
   (prevProps, nextProps) =>
-    prevProps.height === nextProps.height && prevProps.uri === nextProps.uri,
+    prevProps.height === nextProps.height &&
+    getUrlWithoutParams(prevProps.uri) === getUrlWithoutParams(nextProps.uri),
 ) as typeof GalleryImage;
 
 const styles = StyleSheet.create({
@@ -256,7 +256,7 @@ const GalleryWithContext = <
               <TouchableOpacity
                 activeOpacity={0.8}
                 disabled={preventPress}
-                key={`gallery-item-${url}/${rowIndex}/${images.length}`}
+                key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
                 onLongPress={(event) => {
                   if (onLongPress) {
                     onLongPress({
