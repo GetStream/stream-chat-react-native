@@ -41,6 +41,10 @@
     "detox-sample-android:build": "detox build --configuration android.sample.release",
     "detox-sample-ios:build": "detox build --configuration ios.sample.release",
     "detox-sample-android:test": "PLATFORM=android detox test --configuration android.sample.release e2e/entries/SampleApp.e2e.js",
-    "detox-sample-ios:test": "PLATFORM=ios detox test --configuration ios.sample.release e2e/entries/SampleApp.e2e.js"
+    "detox-sample-ios:test": "PLATFORM=ios detox test --configuration ios.sample.release e2e/entries/SampleApp.e2e.js",
+    "detox-sample-android:build_debug": "detox build --configuration android.sample.debug",
+    "detox-sample-ios:build_debug": "detox build --configuration ios.sample.debug",
+    "detox-sample-android:test_debug": "PLATFORM=android detox test --configuration android.sample.debug e2e/entries/SampleApp.e2e.js",
+    "detox-sample-ios:test_debug": "PLATFORM=ios detox test --configuration ios.sample.debug e2e/entries/SampleApp.e2e.js"
   }
 }
