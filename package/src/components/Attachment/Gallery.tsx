@@ -20,7 +20,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { makeImageCompatibleUrl } from '../../utils/utils';
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
@@ -393,8 +393,8 @@ const areEqual = <
     prevImages.length === nextImages.length &&
     prevImages.every(
       (image, index) =>
-        image.image_url === nextImages[index].image_url &&
-        image.thumb_url === nextImages[index].thumb_url,
+        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
     );
   if (!imagesEqual) return false;
 

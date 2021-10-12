@@ -1,5 +1,5 @@
 {
-  "name": "NativeMessaging",
+  "name": "nativemessaging",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -18,14 +18,14 @@
     "@react-navigation/stack": "5.14.5",
     "@stream-io/flat-list-mvcp": "0.10.1",
     "react": "17.0.2",
-    "react-native": "0.64.1",
+    "react-native": "0.65.1",
     "react-native-document-picker": "5.0.4",
     "react-native-fs": "2.18.0",
     "react-native-gesture-handler": "1.10.3",
     "react-native-haptic-feedback": "1.11.0",
     "react-native-image-crop-picker": "0.36.2",
     "react-native-image-resizer": "1.4.4",
-    "react-native-reanimated": "2.1.0",
+    "react-native-reanimated": "2.2.2",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "3.2.0",
     "react-native-share": "6.0.1",
@@ -42,6 +42,7 @@
     "jest": "26.6.3",
     "metro-react-native-babel-preset": "0.66.0",
     "patch-package": "^6.4.7",
+    "react-native-codegen": "^0.0.7",
     "react-test-renderer": "17.0.2"
   },
   "jest": {
