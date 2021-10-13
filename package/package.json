@@ -22,7 +22,7 @@
     "README.md"
   ],
   "scripts": {
-    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
+    "analyze": "build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations && yarn run --silent lint-fix-translations",
     "lint-fix-translations": "prettier --check 'src/i18n/*.json' --write 'src/i18n/*.json' .eslintrc.json ../.prettierrc .babelrc",
     "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
@@ -32,7 +32,7 @@
     "eslint": "eslint '**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
     "lint": "prettier --ignore-path ../.prettierignore --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && yarn run validate-translations",
     "lint-fix": "prettier --ignore-path ../.prettierignore --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0",
-    "prepare": "yarn run build",
+    "prepare": "build",
     "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify",
     "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
@@ -40,8 +40,8 @@
     "validate-translations": "node bin/validate-translations.js",
     "get-version": "echo $npm_package_version",
     "version": "bash ./bin/before-tag.sh",
-    "bootstrap": "yarn install",
-    "bootstrap-ci": "yarn install --frozen-lockfile",
+    "bootstrap": "run install",
+    "bootstrap-ci": "install --frozen-lockfile",
     "extract-changelog": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/extract-changelog.js",
     "release": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/prod",
     "release-next": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/next",

@@ -7,9 +7,9 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git"
   },
   "scripts": {
-    "android": "npx react-native run-android",
-    "ios": "npx react-native run-ios",
-    "start": "npx react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
