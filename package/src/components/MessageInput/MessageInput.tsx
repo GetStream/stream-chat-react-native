@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useCountdown } from './hooks/useCountdown';
+
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
@@ -120,6 +122,8 @@ type MessageInputPropsWithContext<
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'asyncUploads'
+    | 'cooldownEndsAt'
+    | 'CooldownTimer'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
@@ -174,6 +178,8 @@ const MessageInputWithContext = <
     clearQuotedMessageState,
     closeAttachmentPicker,
     componentType,
+    cooldownEndsAt,
+    CooldownTimer,
     disabled,
     editing,
     FileUploadPreview,
@@ -250,6 +256,8 @@ const MessageInputWithContext = <
     setMaxNumberOfFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
+
+  const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   /**
    * Mounting and un-mounting logic are un-related in following useEffect.
@@ -462,9 +470,6 @@ const MessageInputWithContext = <
                 if (quotedMessage) {
                   clearQuotedMessageState();
                 }
-                if (inputBoxRef.current) {
-                  inputBoxRef.current.blur();
-                }
               }}
               testID='close-button'
             >
@@ -554,7 +559,11 @@ const MessageInputWithContext = <
                 </View>
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                <SendButton disabled={disabled || sending.current || !isValidMessage()} />
+                {cooldownRemainingSeconds ? (
+                  <CooldownTimer seconds={cooldownRemainingSeconds} />
+                ) : (
+                  <SendButton disabled={disabled || sending.current || !isValidMessage()} />
+                )}
               </View>
             </>
           )}
@@ -764,6 +773,8 @@ export const MessageInput = <
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
+    cooldownEndsAt,
+    CooldownTimer,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -808,6 +819,8 @@ export const MessageInput = <
         clearQuotedMessageState,
         closeAttachmentPicker,
         componentType,
+        cooldownEndsAt,
+        CooldownTimer,
         disabled,
         editing,
         FileUploadPreview,
