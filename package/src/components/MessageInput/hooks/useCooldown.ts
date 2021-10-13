@@ -27,7 +27,7 @@ export const useCooldown = <
   Me extends DefaultMessageType = DefaultMessageType,
   Re extends DefaultReactionType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
-  >() => {
+>() => {
   const [endsAt, setEndsAt] = useState<Date>(new Date());
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
