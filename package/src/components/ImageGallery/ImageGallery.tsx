@@ -48,6 +48,8 @@ import {
   ImageGridHandle,
 } from './components/ImageGridHandle';
 
+import { extractPathname } from '../CachedImages/utils';
+import StreamMediaCache from '../../StreamMediaCache';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -160,7 +162,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { overlay, setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   /**
@@ -348,6 +350,7 @@ export const ImageGallery = <
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
+      channelId: cur.cid,
       created_at: cur.created_at,
       id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
       messageId: cur.id,
@@ -397,11 +400,27 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    if (photos[index.value]?.uri) {
-      Image.getSize(photos[index.value].uri, (width, height) => {
-        const imageHeight = Math.floor(height * (screenWidth / width));
-        setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
-      });
+    const photo = photos[index.value];
+    if (photo?.uri) {
+      const { channelId = '', messageId = '', uri: url = '' } = photo;
+      const filePathname = extractPathname(url) || '';
+      StreamMediaCache.checkIfLocalAttachment(channelId, messageId, filePathname).then(
+        (existsOnCache) => {
+          Image.getSize(
+            existsOnCache
+              ? `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
+                  channelId,
+                  messageId,
+                  filePathname,
+                )}`
+              : url,
+            (width, height) => {
+              const imageHeight = Math.floor(height * (screenWidth / width));
+              setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+            },
+          );
+        },
+      );
     }
   }, [uriForCurrentImage]);
 
@@ -646,7 +665,6 @@ export const ImageGallery = <
               () => {
                 showScreen.value = 0;
                 runOnJS(setOverlay)('none');
-                runOnJS(setBlurType)(undefined);
               },
             );
             scale.value = withTiming(0.6, {
@@ -1199,6 +1217,7 @@ const styles = StyleSheet.create({
 export type Photo<Us extends UnknownType = DefaultUserType> = {
   id: string;
   uri: string;
+  channelId?: string;
   created_at?: string | Date;
   messageId?: string;
   user?: UserResponse<Us> | null;

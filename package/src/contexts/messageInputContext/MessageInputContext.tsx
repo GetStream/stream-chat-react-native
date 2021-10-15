@@ -21,6 +21,7 @@ import { useChatContext } from '../chatContext/ChatContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { getDisplayName } from '../utils/getDisplayName';
+import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 
 import {
   ACITriggerSettings,
@@ -36,6 +37,7 @@ import type { TextInput, TextInputProps } from 'react-native';
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
@@ -103,6 +105,8 @@ export type LocalMessageInputContext<
     };
   };
   closeAttachmentPicker: () => void;
+  /** The time at which the active cooldown will end */
+  cooldownEndsAt: Date;
   /**
    * An array of file objects which are set for upload. It has the following structure:
    *
@@ -243,6 +247,14 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component to display the remaining cooldown a user will have to wait before
+   * being allowed to send another message. This component is displayed in place of the
+   * send button for the MessageInput component.
+   *
+   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/CooldownTimer.tsx)
+   */
+  CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
@@ -453,6 +465,8 @@ export const MessageInputProvider = <
     showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(editing, initialValue);
+  const { endsAt: cooldownEndsAt, start: startCooldown } =
+    useCooldown<At, Ch, Co, Ev, Me, Re, Us>();
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -608,14 +622,18 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  // TODO: Figure out why this is async, as it doesn't await any promise.
+  // eslint-disable-next-line require-await
   const sendMessage = async () => {
     if (sending.current) {
       return;
     }
     sending.current = true;
 
+    startCooldown();
+
     const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-    await setText('');
+    setText('');
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }
@@ -741,6 +759,7 @@ export const MessageInputProvider = <
         },
       ] as StreamMessage<At, Me, Us>['attachments'];
 
+      startCooldown();
       try {
         value.sendMessage({
           attachments,
@@ -809,7 +828,7 @@ export const MessageInputProvider = <
     }
     const { file, id } = newFile;
 
-    await setFileUploads((prevFileUploads) =>
+    setFileUploads((prevFileUploads) =>
       prevFileUploads.map((fileUpload) => {
         if (fileUpload.id === id) {
           return {
@@ -1016,6 +1035,7 @@ export const MessageInputProvider = <
     asyncIds,
     asyncUploads,
     closeAttachmentPicker,
+    cooldownEndsAt,
     fileUploads,
     giphyActive,
     imageUploads,

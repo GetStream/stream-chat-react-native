@@ -1,7 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
@@ -12,10 +11,6 @@ import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
-  // eslint-disable-next-line react/display-name
-  BlurView: ({ blurAmount = 100, blurType = 'dark', style }) => (
-    <ExpoBlurView intensity={blurAmount} style={style} tint={blurType} />
-  ),
   compressImage: async ({ compressImageQuality = 1, uri }) => {
     const { uri: compressedUri } = await ImageManipulator.manipulateAsync(uri, [], {
       compress: Math.min(Math.max(0, compressImageQuality), 1),

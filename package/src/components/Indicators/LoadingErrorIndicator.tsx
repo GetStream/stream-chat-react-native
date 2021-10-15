@@ -48,7 +48,7 @@ const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
 };
 
 export type LoadingErrorProps = {
-  error?: boolean;
+  error?: boolean | Error;
   listType?: 'channel' | 'message' | 'default';
   loadNextPage?: () => Promise<void>;
   retry?: () => void;

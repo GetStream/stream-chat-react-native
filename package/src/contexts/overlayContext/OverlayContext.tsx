@@ -23,13 +23,10 @@ import type {
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 
-export type BlurType = 'light' | 'dark' | undefined;
-
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
-  setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
   translucentStatusBar?: boolean;

@@ -43,7 +43,11 @@ export type MessageSimplePropsWithContext<
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'enableMessageGroupingByUser' | 'MessageAvatar' | 'MessageContent' | 'ReactionList'
+    | 'enableMessageGroupingByUser'
+    | 'MessageAvatar'
+    | 'MessageContent'
+    | 'MessagePinnedHeader'
+    | 'ReactionList'
   >;
 
 const MessageSimpleWithContext = <
@@ -66,6 +70,7 @@ const MessageSimpleWithContext = <
     message,
     MessageAvatar,
     MessageContent,
+    MessagePinnedHeader,
     ReactionList,
   } = props;
 
@@ -85,26 +90,29 @@ const MessageSimpleWithContext = <
   const showReactions = hasReactions && ReactionList;
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
-          marginBottom: hasMarginBottom
-            ? isVeryLastMessage && enableMessageGroupingByUser
-              ? 30
-              : 8
-            : 0,
-          marginTop: showReactions ? 2 : 0,
-        },
-        container,
-      ]}
-      testID='message-simple-wrapper'
-    >
-      {alignment === 'left' && <MessageAvatar />}
-      <MessageContent setMessageContentWidth={setMessageContentWidth} />
-      {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
-    </View>
+    <>
+      {message.pinned && <MessagePinnedHeader />}
+      <View
+        style={[
+          styles.container,
+          {
+            justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+            marginBottom: hasMarginBottom
+              ? isVeryLastMessage && enableMessageGroupingByUser
+                ? 30
+                : 8
+              : 0,
+            marginTop: showReactions ? 2 : 0,
+          },
+          container,
+        ]}
+        testID='message-simple-wrapper'
+      >
+        {alignment === 'left' && <MessageAvatar />}
+        <MessageContent setMessageContentWidth={setMessageContentWidth} />
+        {showReactions && <ReactionList messageContentWidth={messageContentWidth} />}
+      </View>
+    </>
   );
 };
 
@@ -142,16 +150,23 @@ const areEqual = <
   const groupStylesEqual = JSON.stringify(prevGroupStyles) === JSON.stringify(nextGroupStyles);
   if (!groupStylesEqual) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
+
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
 
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 
@@ -216,8 +231,13 @@ export const MessageSimple = <
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { enableMessageGroupingByUser, MessageAvatar, MessageContent, ReactionList } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    enableMessageGroupingByUser,
+    MessageAvatar,
+    MessageContent,
+    MessagePinnedHeader,
+    ReactionList,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedMessageSimple<At, Ch, Co, Ev, Me, Re, Us>
@@ -230,6 +250,7 @@ export const MessageSimple = <
         message,
         MessageAvatar,
         MessageContent,
+        MessagePinnedHeader,
         ReactionList,
       }}
       {...props}

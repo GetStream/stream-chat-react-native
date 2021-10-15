@@ -14,10 +14,12 @@ import CardFooter from '../common-content/core-components/channel/props/card_foo
 import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
 import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
 import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
+import DeletedMessagesVisibilityType from '../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
 import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
 import DisableTypingIndicator from '../common-content/core-components/channel/props/disable_typing_indicator.mdx';
 import DismissKeyboardOnMessageTouch from '../common-content/core-components/channel/props/dismiss_keyboard_on_message_touch.mdx';
 import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
+import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
 import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
 import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
@@ -40,6 +42,7 @@ import HandleThreadReply from '../common-content/core-components/channel/props/h
 import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
 import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx'
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
@@ -103,6 +106,10 @@ Id of current channel.
 
 <CopyMessage />
 
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#deletedmessagesvisibiltytype)_ props</div> deletedMessagesVisibiltyType {#deletedmessagesvisibiltytype}
+
+<DeletedMessagesVisibilityType />
+
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#deletemessage)_ props</div> deleteMessage {#deletemessage}
 
 <DeleteMessage />
@@ -118,6 +125,10 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#editmessage)_ props</div> editMessage {#editmessage}
 
 <EditMessage />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#enablemessagegroupingbyuser)_ props</div> enableMessageGroupingByUser {#enablemessagegroupingbyuser}
+
+<EnableMessageGroupingByUser />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#flagmessage)_ props</div> flagMessage {#flagmessage}
 
@@ -174,6 +185,10 @@ Id of current channel.
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#initialscrolltofirstunreadmessage)_ props</div> initialScrollToFirstUnreadMessage {#initialscrolltofirstunreadmessage}
 
 <InitialScrollToFirstUnreadMessage />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#legacyimageviewerswipebehaviour)_ props</div> legacyImageViewerSwipeBehaviour {#legacyimageviewerswipebehaviour}
+
+<legacyImageViewerSwipeBehaviour />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#markdownrules)_ props</div> markdownRules {#markdownrules}
 
@@ -275,6 +290,15 @@ Enables quoted-reply state on given message.
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#supportedreactions)_ props</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
+
+### targetedMessage
+
+Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
+
+| Type |
+| - |
+| string |
+
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#threadrepliesenabled)_ props</div> threadRepliesEnabled {#threadrepliesenabled}
 

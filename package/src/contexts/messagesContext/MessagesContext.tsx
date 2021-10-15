@@ -29,6 +29,7 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
+import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
@@ -59,6 +60,7 @@ import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
   mutesEnabled?: boolean;
+  pinMessageEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   reactionsEnabled?: boolean;
   threadRepliesEnabled?: boolean;
@@ -95,9 +97,12 @@ export type MessagesContextValue<
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
+
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
+
   enableMessageGroupingByUser: boolean;
+
   /**
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)
@@ -124,6 +129,7 @@ export type MessagesContextValue<
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
+
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
@@ -162,9 +168,14 @@ export type MessagesContextValue<
   MessageFooter: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
   MessageList: React.ComponentType<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
+   * Custom message pinned component
+   */
+  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)
    */
+
   MessageReplies: React.ComponentType<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI Component for MessageRepliesAvatars
@@ -255,6 +266,7 @@ export type MessagesContextValue<
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
   blockUser?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
@@ -281,6 +293,10 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
+
+  /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
+  deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
+
   deleteMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   disableTypingIndicator?: boolean;
   /**
@@ -288,6 +304,7 @@ export type MessagesContextValue<
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    */
+
   editMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Full override of the flag message button in the Message Actions
@@ -316,6 +333,8 @@ export type MessagesContextValue<
   handleFlag?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
   handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  /** Handler to access when a pin/unpin user action is invoked*/
+  handlePinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /** Handler to access when a quoted reply action is invoked */
   handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to process a reaction */
@@ -396,6 +415,7 @@ export type MessagesContextValue<
         message,
         messageReactions,
         muteUser,
+        pinMessageEnabled,
         quotedRepliesEnabled,
         quotedReply,
         retry,
@@ -408,7 +428,7 @@ export type MessagesContextValue<
         deleteMessage: MessageAction | null;
         dismissOverlay: () => void;
         editMessage: MessageAction | null;
-        error: boolean;
+        error: boolean | Error;
         flagMessage: MessageAction | null;
         isMyMessage: boolean;
         isThreadMessage: boolean;
@@ -418,6 +438,7 @@ export type MessagesContextValue<
         quotedReply: MessageAction | null;
         retry: MessageAction | null;
         threadReply: MessageAction | null;
+        pinMessageEnabled?: boolean;
         quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
       }) => (MessageAction | null)[] | undefined);
@@ -547,6 +568,12 @@ export type MessagesContextValue<
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /**
+   * Full override of the pin message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
+  pinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+  /**
    * Full override of the quoted reply button in the Message Actions
    *
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
@@ -566,6 +593,8 @@ export type MessagesContextValue<
   selectReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => (reactionType: string) => Promise<void>;
+
+  targetedMessage?: string;
   /**
    * Full override of the thread reply button in the Message Actions
    *

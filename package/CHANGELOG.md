@@ -1,5 +1,28 @@
 # Change Log
 
+## [3.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.3...v3.9.0) (2021-10-12)
+
+
+### Features
+
+* added 'stateUpdateThrottleInterval' prop on Channel component ([ce471fc](https://github.com/GetStream/stream-chat-react-native/commit/ce471fcf14fcedbb307fdc7fb9d3adbc6c7fab19))
+* added a support for prop 'newMessageStateUpdateThrottleInterval' ([04b0b83](https://github.com/GetStream/stream-chat-react-native/commit/04b0b83ac5e6876f054400c8eed7dac121c47f2d))
+* added support for 'enableMessageGroupingByUser' prop ([e704519](https://github.com/GetStream/stream-chat-react-native/commit/e704519c8755ac65908f83864f0bf7ca2cbba123))
+* added support for 'hideStickyDateHeader' prop ([969575e](https://github.com/GetStream/stream-chat-react-native/commit/969575e00e78775648890d7b1daffb8d5592eb45))
+* added support for prop 'legacyImageViewerSwipeBehaviour' ([95d15e0](https://github.com/GetStream/stream-chat-react-native/commit/95d15e08f9d6f43f1d9e314fc200d60e1ce04413))
+
+
+### Bug Fixes
+
+* avoid unnecessary gallery image re-rendering upon message update ([198c437](https://github.com/GetStream/stream-chat-react-native/commit/198c437dafd1d531f7c9cd537bfaebaa46406f52))
+* fixed AppState subscription logic to support RN 0.65 ([8a1ec82](https://github.com/GetStream/stream-chat-react-native/commit/8a1ec82b306542d931056932defaea779af61c57))
+* fixed markRead() logic when Channel is mounted ([53e495e](https://github.com/GetStream/stream-chat-react-native/commit/53e495e9fd1d7d2a1becd5fc65b2e100632f9fd4))
+* fixed offset-limit logic for channel list pagination ([cd77227](https://github.com/GetStream/stream-chat-react-native/commit/cd77227fb321d67617c00f86d78e972f00418fc9))
+* fixed UX of removing of failed attachment ([ef91d30](https://github.com/GetStream/stream-chat-react-native/commit/ef91d3065e67758aea6030658e8e465c129577cc))
+* fixing deprecated warning around AppState for RN 0.65 compatibility ([08679d5](https://github.com/GetStream/stream-chat-react-native/commit/08679d593064c80a252adb86c1376dbc2edb2dc8))
+* issue with autocomplete suggestions for channel with more than 100 members ([f91b4be](https://github.com/GetStream/stream-chat-react-native/commit/f91b4befbf359c8ce07feae6c0b18848784d62b7))
+* **Channel:** Copy channel state on leading edge of throttling ([56a47d4](https://github.com/GetStream/stream-chat-react-native/commit/56a47d4f3fa5e67ef84f9ed5d000edc595e03145))
+
 ### [3.8.3](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.2...v3.8.3) (2021-09-16)
 
 

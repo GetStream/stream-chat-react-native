@@ -160,13 +160,16 @@ const areEqual = <
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
 
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
   if (!messageEqual) return false;
 
   const formattedDateEqual = prevFormattedDate === nextFormattedDate;

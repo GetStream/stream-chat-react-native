@@ -84,7 +84,7 @@ const ThreadFooterComponentWithContext = <
   const replyCount = thread.reply_count;
 
   return (
-    <View style={styles.threadHeaderContainer}>
+    <View style={styles.threadHeaderContainer} testID='thread-footer-component'>
       <View style={styles.messagePadding}>
         <Message groupStyles={['single']} message={thread} preventPress threadList />
       </View>
@@ -145,6 +145,18 @@ const areEqual = <
     prevThread?.text === nextThread?.text &&
     prevThread?.reply_count === nextThread?.reply_count;
   if (!threadEqual) return false;
+
+  const latestReactionsEqual =
+    prevThread &&
+    nextThread &&
+    Array.isArray(prevThread.latest_reactions) &&
+    Array.isArray(nextThread.latest_reactions)
+      ? prevThread.latest_reactions.length === nextThread.latest_reactions.length &&
+        prevThread.latest_reactions.every(
+          ({ type }, index) => type === nextThread.latest_reactions?.[index].type,
+        )
+      : prevThread?.latest_reactions === nextThread?.latest_reactions;
+  if (!latestReactionsEqual) return false;
 
   return true;
 };

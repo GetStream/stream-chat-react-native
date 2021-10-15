@@ -15,6 +15,7 @@ import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorSc
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
+import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
@@ -218,6 +219,11 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ChannelFilesScreen}
         name='ChannelFilesScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ChannelPinnedMessagesScreen}
+        name='ChannelPinnedMessagesScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen

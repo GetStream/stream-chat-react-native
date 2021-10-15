@@ -6,6 +6,7 @@ title: ChannelContext
 import Channel from '../common-content/core-components/channel/props/channel.mdx';
 import EnforceUniqueReaction from '../common-content/core-components/channel/props/enforce_unique_reaction.mdx';
 import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
+import HideStickyDateHeader from '../common-content/core-components/channel/props/hide_sticky_date_header.mdx';
 import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
 import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
 import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx';
@@ -63,7 +64,7 @@ True if any api call to `channel.query()` during first load or pagination fails.
 
 | Type |
 | - |
-| boolean |
+| Error object \| boolean |
 
 ### giphyEnabled
 
@@ -76,6 +77,10 @@ True if giphy command is enabled on [channel type](https://getstream.io/chat/doc
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hidedateseparators)_ props</div> hideDateSeparators {#hidedateseparators}
 
 <HideDateSeparators />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hidestickydateheader)_ props</div> hideStickyDateHeader {#hidestickydateheader}
+
+<HideStickyDateHeader />
 
 ### isAdmin
 
