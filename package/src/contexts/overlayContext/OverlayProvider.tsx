@@ -100,7 +100,7 @@ export const OverlayProvider = <
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
-    MessageActions,
+    MessageActionList,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -226,7 +226,7 @@ export const OverlayProvider = <
                   />
                 </Animated.View>
                 <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  MessageActions={MessageActions}
+                  MessageActionList={MessageActionList}
                   overlayOpacity={overlayOpacity}
                   OverlayReactionList={OverlayReactionList}
                   OverlayReactions={OverlayReactions}

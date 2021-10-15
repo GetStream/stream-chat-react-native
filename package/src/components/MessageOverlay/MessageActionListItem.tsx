@@ -1,0 +1,106 @@
+import React from 'react';
+import { StyleSheet, Text, View, StyleProp, TextStyle } from 'react-native';
+import { TapGestureHandler } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
+import { vw } from '../../utils/utils';
+
+const styles = StyleSheet.create({
+  bottomBorder: {
+    borderBottomWidth: 1,
+  },
+  container: {
+    borderRadius: 16,
+    marginTop: 8,
+    maxWidth: 275,
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    minWidth: vw(65),
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  titleStyle: {
+    paddingLeft: 20,
+  },
+});
+
+export type ActionType =
+  | 'blockUser'
+  | 'copyMessage'
+  | 'deleteMessage'
+  | 'editMessage'
+  | 'flagMessage'
+  | 'muteUser'
+  | 'pinMessage'
+  | 'selectReaction'
+  | 'reply'
+  | 'retry'
+  | 'threadReply'
+  | 'unpinMessage';
+
+export type MessageActionListItem = {
+  action: () => void;
+  actionType: ActionType;
+  title: string;
+  icon?: React.ReactElement;
+  titleStyle?: StyleProp<TextStyle>;
+};
+
+export type MessageActionListItemPropsWithContext = MessageActionListItem & {
+  index: number;
+  length: number;
+};
+
+const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithContext) => {
+  const { action, icon, index, length, title, titleStyle } = props;
+
+  const {
+    theme: {
+      colors: { black, border },
+      overlay: { messageActions },
+    },
+  } = useTheme();
+
+  const { onTap, animatedStyle } = useMessageActionAnimation({ action });
+
+  return (
+    <TapGestureHandler onHandlerStateChange={onTap}>
+      <Animated.View
+        style={[
+          styles.row,
+          index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
+          animatedStyle,
+          messageActions.actionContainer,
+        ]}
+      >
+        <View style={messageActions.icon}>{icon}</View>
+        <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>
+          {title}
+        </Text>
+      </Animated.View>
+    </TapGestureHandler>
+  );
+};
+
+const messageActionIsEqual = (
+  prevProps: MessageActionListItemProps,
+  nextProps: MessageActionListItemProps,
+) => prevProps.length === nextProps.length;
+
+export const MemoizedMessageActionListItem = React.memo(
+  MessageActionListItemWithContext,
+  messageActionIsEqual,
+) as typeof MessageActionListItemWithContext;
+
+export type MessageActionListItemProps = MessageActionListItemPropsWithContext;
+
+/**
+ * MessageActionList - A high level component which implements all the logic required for MessageActions
+ */
+export const MessageActionListItem = (props: MessageActionListItemProps) => {
+  return <MemoizedMessageActionListItem {...props} />;
+};

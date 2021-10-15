@@ -24,7 +24,7 @@ import {
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { MessageActions as DefaultMessageActions } from '../MessageOverlay/MessageActions';
+import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 
 import {
@@ -95,7 +95,7 @@ export type MessageOverlayPropsWithContext<
   Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'MessageActions' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
+  'MessageActionList' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
@@ -123,7 +123,7 @@ const MessageOverlayWithContext = <
     images,
     message,
     messageActions,
-    MessageActions = DefaultMessageActions,
+    MessageActionList = DefaultMessageActionList,
     messageContext,
     messageReactionTitle,
     messagesContext,
@@ -500,7 +500,7 @@ const MessageOverlayWithContext = <
                                 )}
                               </View>
                             </Animated.View>
-                            {messageActions && <MessageActions showScreen={showScreen} />}
+                            {messageActions && <MessageActionList showScreen={showScreen} />}
                             {!!messageReactionTitle &&
                             message.latest_reactions &&
                             message.latest_reactions.length > 0 ? (
@@ -609,12 +609,12 @@ export const MessageOverlay = <
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { data, MessageActions, OverlayReactionList, OverlayReactions, reset } =
+  const { data, MessageActionList, OverlayReactionList, OverlayReactions, reset } =
     useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {
-    MessageActions: props.MessageActions || MessageActions,
+    MessageActionList: props.MessageActionList || MessageActionList,
     OverlayReactionList:
       props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,

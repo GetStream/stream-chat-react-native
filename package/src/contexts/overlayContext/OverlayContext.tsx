@@ -62,7 +62,7 @@ export type OverlayProviderProps<
   Partial<
     Pick<
       MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'MessageActions' | 'OverlayReactionList' | 'OverlayReactions'
+      'MessageActionList' | 'MessageActionListItem' | 'OverlayReactionList' | 'OverlayReactions'
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> & {
