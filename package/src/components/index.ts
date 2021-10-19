@@ -151,6 +151,7 @@ export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
+export * from './MessageOverlay/hooks/useMessageActionAnimation';
 
 export * from './Reply/Reply';
 

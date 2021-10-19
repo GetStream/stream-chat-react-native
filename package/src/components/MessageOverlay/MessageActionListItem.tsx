@@ -99,7 +99,7 @@ export const MemoizedMessageActionListItem = React.memo(
 export type MessageActionListItemProps = MessageActionListItemPropsWithContext;
 
 /**
- * MessageActionList - A high level component which implements all the logic required for MessageActions
+ * MessageActionListItem - A high level component which implements all the logic required for MessageAction's list item
  */
 export const MessageActionListItem = (props: MessageActionListItemProps) => {
   return <MemoizedMessageActionListItem {...props} />;

@@ -95,7 +95,11 @@ export type MessageOverlayPropsWithContext<
   Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'MessageActionList' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
+  | 'MessageActionList'
+  | 'MessageActionListItem'
+  | 'OverlayReactionList'
+  | 'OverlayReactions'
+  | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
@@ -124,6 +128,7 @@ const MessageOverlayWithContext = <
     message,
     messageActions,
     MessageActionList = DefaultMessageActionList,
+    MessageActionListItem,
     messageContext,
     messageReactionTitle,
     messagesContext,
@@ -500,7 +505,12 @@ const MessageOverlayWithContext = <
                                 )}
                               </View>
                             </Animated.View>
-                            {messageActions && <MessageActionList showScreen={showScreen} />}
+                            {messageActions && (
+                              <MessageActionList
+                                showScreen={showScreen}
+                                MessageActionListItem={MessageActionListItem}
+                              />
+                            )}
                             {!!messageReactionTitle &&
                             message.latest_reactions &&
                             message.latest_reactions.length > 0 ? (
@@ -611,12 +621,19 @@ export const MessageOverlay = <
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { data, MessageActionList, OverlayReactionList, OverlayReactions, reset } =
-    useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    data,
+    MessageActionList,
+    MessageActionListItem,
+    OverlayReactionList,
+    OverlayReactions,
+    reset,
+  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {
     MessageActionList: props.MessageActionList || MessageActionList,
+    MessageActionListItem: props.MessageActionListItem || MessageActionListItem,
     OverlayReactionList:
       props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,

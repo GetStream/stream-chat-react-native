@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -7,12 +7,16 @@ import {
   ChannelAvatar,
   MessageInput,
   MessageList,
+  MessageActionListItem,
+  OverlayProvider,
   ThreadContextValue,
   useAttachmentPickerContext,
   useChannelPreviewDisplayName,
   useChatContext,
+  useMessageActionAnimation,
   useTheme,
   useTypingString,
+  useOverlayContext,
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -33,6 +37,7 @@ import type {
   StackNavigatorParamList,
 } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import { TapGestureHandler } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
@@ -168,36 +173,65 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   return (
     <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
-      <Channel
-        channel={channel}
-        disableTypingIndicator
-        enforceUniqueReaction
-        initialScrollToFirstUnreadMessage
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-        messageId={messageId}
-        NetworkDownIndicator={() => null}
-        thread={selectedThread}
+      <OverlayProvider
+        MessageActionList={() => {
+          const { setOverlay } = useOverlayContext();
+          return (
+            <Pressable
+              style={{ marginVertical: 20, backgroundColor: 'white' }}
+              onPress={() => {
+                setOverlay('none');
+                console.log('hey i am clicked');
+              }}
+            >
+              <Text>Hey there</Text>
+            </Pressable>
+          );
+        }}
+        // MessageActionListItem={({ title, ...rest }) => {
+        //   const { onTap, animatedStyle } = useMessageActionAnimation({ action: rest.action });
+        //   if (title === 'Pin to Conversation') {
+        //     return (
+        //       <Pressable style={{ marginVertical: 20 }} onPress={onTap}>
+        //         <Text>{title}</Text>
+        //       </Pressable>
+        //     );
+        //   } else {
+        //     return <MessageActionListItem title={title} {...rest} />;
+        //   }
+        // }}
       >
-        <ChannelHeader channel={channel} />
-        <MessageList<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalReactionType,
-          LocalUserType
+        <Channel
+          channel={channel}
+          disableTypingIndicator
+          enforceUniqueReaction
+          initialScrollToFirstUnreadMessage
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+          messageId={messageId}
+          NetworkDownIndicator={() => null}
+          thread={selectedThread}
         >
-          onThreadSelect={(thread) => {
-            setSelectedThread(thread);
-            navigation.navigate('ThreadScreen', {
-              channel,
-              thread,
-            });
-          }}
-        />
-        <MessageInput />
-      </Channel>
+          <ChannelHeader channel={channel} />
+          <MessageList<
+            LocalAttachmentType,
+            LocalChannelType,
+            LocalCommandType,
+            LocalEventType,
+            LocalMessageType,
+            LocalReactionType,
+            LocalUserType
+          >
+            onThreadSelect={(thread) => {
+              setSelectedThread(thread);
+              navigation.navigate('ThreadScreen', {
+                channel,
+                thread,
+              });
+            }}
+          />
+          <MessageInput />
+        </Channel>
+      </OverlayProvider>
     </View>
   );
 };
