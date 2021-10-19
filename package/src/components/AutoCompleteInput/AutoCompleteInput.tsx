@@ -292,7 +292,7 @@ const AutoCompleteInputWithContext = <
       /**
        * It's important to escape the trigger char for chars like [, (,...
        */
-      new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
+      new RegExp(`\\${trigger}[^\\${trigger}${'\\s'}]*$`),
     );
 
     const newCaretPosition = computeCaretPosition(newTokenString, startOfTokenPosition);
