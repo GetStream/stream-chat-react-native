@@ -335,7 +335,7 @@ const AutoCompleteInputWithContext = <
   };
 
   const handleMentions = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
-    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
+    const lastToken = tokenMatch?.[tokenMatch.length - 1];
     const handleMentionsTrigger =
       (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
       null;
