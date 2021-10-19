@@ -288,12 +288,7 @@ const AutoCompleteInputWithContext = <
 
     const textToModify = text.slice(0, selectionEnd.current);
 
-    const startOfTokenPosition = textToModify.search(
-      /**
-       * It's important to escape the trigger char for chars like [, (,...
-       */
-      new RegExp(`\\${trigger}[^\\${trigger}${'\\s'}]*$`),
-    );
+    const startOfTokenPosition = textToModify.lastIndexOf(trigger, selectionEnd.current);
 
     const newCaretPosition = computeCaretPosition(newTokenString, startOfTokenPosition);
 
