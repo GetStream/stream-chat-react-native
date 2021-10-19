@@ -1,11 +1,18 @@
 import React from 'react';
-import { LogBox, Platform, useColorScheme } from 'react-native';
+import { LogBox, Platform, useColorScheme, Text, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
-
+import {
+  Chat,
+  OverlayProvider,
+  ThemeProvider,
+  useOverlayContext,
+  MessageActionListItem,
+  useMessageActionAnimation,
+} from 'stream-chat-react-native';
+import { TapGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -41,6 +48,7 @@ import type {
   StackNavigatorParamList,
   UserSelectorParamList,
 } from './src/types';
+import Animated from 'react-native-reanimated';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -126,6 +134,34 @@ const DrawerNavigatorWrapper: React.FC<{
     >
       bottomInset={bottom}
       value={{ style: streamChatTheme }}
+      // MessageActionList={() => {
+      //   const { setOverlay } = useOverlayContext();
+      //   return (
+      //     <TouchableOpacity
+      //       style={{ marginVertical: 20, backgroundColor: 'white' }}
+      //       onPress={() => {
+      //         setOverlay('none');
+      //         console.log('hey i am clicked');
+      //       }}
+      //     >
+      //       <Text>Hey there</Text>
+      //     </TouchableOpacity>
+      //   );
+      // }}
+      MessageActionListItem={({ actionType, ...rest }) => {
+        const { onTap, animatedStyle } = useMessageActionAnimation({ action: rest.action });
+        if (actionType === 'pinMessage') {
+          return (
+            <TapGestureHandler onHandlerStateChange={onTap}>
+              <Animated.View>
+                <Text>{actionType}</Text>
+              </Animated.View>
+            </TapGestureHandler>
+          );
+        } else {
+          return <MessageActionListItem {...rest} />;
+        }
+      }}
     >
       <Chat<
         LocalAttachmentType,

@@ -42,17 +42,17 @@ export type ActionType =
   | 'threadReply'
   | 'unpinMessage';
 
-export type MessageActionListItem = {
+export type MessageActionListItemMainProps = {
   action: () => void;
   actionType: ActionType;
-  title: string;
   icon?: React.ReactElement;
-  titleStyle?: StyleProp<TextStyle>;
+  title: string;
 };
 
-export type MessageActionListItemPropsWithContext = MessageActionListItem & {
+export type MessageActionListItemPropsWithContext = MessageActionListItemMainProps & {
   index: number;
   length: number;
+  titleStyle?: StyleProp<TextStyle>;
 };
 
 const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithContext) => {

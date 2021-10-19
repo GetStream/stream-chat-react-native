@@ -1,6 +1,9 @@
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
-import type { MessageAction } from '../../../contexts/messageOverlayContext/MessageOverlayContext';
+import type {
+  MessageActionListItemProps,
+  MessageActionListItemMainProps,
+} from '../../MessageOverlay/MessageActionListItem';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -43,33 +46,33 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: {
-  blockUser: MessageAction | null;
+  blockUser: MessageActionListItemProps | null;
   canModifyMessage: boolean;
-  copyMessage: MessageAction | null;
-  deleteMessage: MessageAction | null;
-  editMessage: MessageAction | null;
+  copyMessage: MessageActionListItemProps | null;
+  deleteMessage: MessageActionListItemProps | null;
+  editMessage: MessageActionListItemProps | null;
   error: boolean | Error;
-  flagMessage: MessageAction | null;
+  flagMessage: MessageActionListItemProps | null;
   isMyMessage: boolean;
   isThreadMessage: boolean;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
-  muteUser: MessageAction | null;
-  pinMessage: MessageAction | null;
-  quotedReply: MessageAction | null;
-  retry: MessageAction | null;
-  threadReply: MessageAction | null;
-  unpinMessage: MessageAction | null;
+  muteUser: MessageActionListItemProps | null;
+  pinMessage: MessageActionListItemProps | null;
+  quotedReply: MessageActionListItemProps | null;
+  retry: MessageActionListItemProps | null;
+  threadReply: MessageActionListItemMainProps | null;
+  unpinMessage: MessageActionListItemProps | null;
   mutesEnabled?: boolean;
   pinMessageEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
-}): Array<MessageAction | null> | undefined => {
+}): Array<MessageActionListItemProps | null> | undefined => {
   if (messageReactions) {
     return undefined;
   }
 
-  const actions: Array<MessageAction | null> = [];
+  const actions: Array<MessageActionListItemProps | null> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);
