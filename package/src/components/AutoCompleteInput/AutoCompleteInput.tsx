@@ -401,7 +401,7 @@ const AutoCompleteInputWithContext = <
     } else if (giphyEnabled && !(await handleCommand(text))) {
       const mentionTokenMatch = text
         .slice(0, selectionEnd.current)
-        .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
+        .match(/(?!^|\W)?@[^\s@]*\s?[^\s@]*$/g);
       if (mentionTokenMatch) {
         handleMentions({ tokenMatch: mentionTokenMatch });
       } else {
