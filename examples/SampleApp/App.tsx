@@ -1,11 +1,19 @@
 import React from 'react';
-import { LogBox, Platform, useColorScheme } from 'react-native';
+import { Alert, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
-
+import {
+  Chat,
+  MessageActionListItem,
+  MessageActionListProps,
+  OverlayProvider,
+  ThemeProvider,
+  useMessageActionAnimation,
+  useOverlayContext,
+} from 'stream-chat-react-native';
+import { TapGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -41,6 +49,7 @@ import type {
   StackNavigatorParamList,
   UserSelectorParamList,
 } from './src/types';
+import Animated from 'react-native-reanimated';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -100,6 +109,68 @@ const DrawerNavigator: React.FC = () => {
   );
 };
 
+const MessageActionListItemComponent = ({ action, actionType, ...rest }: MessageActionListItem) => {
+  const { onTap } = useMessageActionAnimation({ action: action });
+  if (actionType === 'pinMessage') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else if (actionType === 'muteUser') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else {
+    return <MessageActionListItem action={action} actionType={actionType} {...rest} />;
+  }
+};
+
+const MessageActionListComponent: React.ComponentType<
+  MessageActionListProps<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >
+> = () => {
+  const { setOverlay } = useOverlayContext();
+  const messageActions = [
+    {
+      action: function () {
+        Alert.alert('Edit Message action called.');
+        setOverlay('none');
+      },
+      actionType: 'editMessage',
+      title: 'Edit messagee',
+    },
+    {
+      action: function () {
+        Alert.alert('Delete message action');
+        setOverlay('none');
+      },
+      actionType: 'deleteMessage',
+      title: 'Delete Message',
+    },
+  ];
+  return (
+    <View style={{ backgroundColor: 'white' }}>
+      {messageActions.map(({ actionType, ...rest }) => (
+        <MessageActionListItem actionType={actionType} key={actionType} {...rest} />
+      ))}
+    </View>
+  );
+};
+
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat<
     LocalAttachmentType,
@@ -125,6 +196,8 @@ const DrawerNavigatorWrapper: React.FC<{
       LocalUserType
     >
       bottomInset={bottom}
+      MessageActionList={MessageActionListComponent}
+      // MessageActionListItem={MessageActionListItemComponent}
       value={{ style: streamChatTheme }}
     >
       <Chat<

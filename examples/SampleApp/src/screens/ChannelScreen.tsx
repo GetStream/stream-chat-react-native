@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -33,6 +33,7 @@ import type {
   StackNavigatorParamList,
 } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import { TapGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },

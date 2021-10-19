@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, StyleProp, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
 import { vw } from '../../utils/utils';
+import type { MessageActionListProps } from './MessageActionList';
 
 const styles = StyleSheet.create({
   bottomBorder: {
@@ -39,10 +40,11 @@ export type ActionType =
   | 'selectReaction'
   | 'reply'
   | 'retry'
+  | 'quotedReply'
   | 'threadReply'
   | 'unpinMessage';
 
-export type MessageActionListItem = {
+export type MessageActionType = {
   action: () => void;
   actionType: ActionType;
   title: string;
@@ -50,12 +52,25 @@ export type MessageActionListItem = {
   titleStyle?: StyleProp<TextStyle>;
 };
 
-export type MessageActionListItemPropsWithContext = MessageActionListItem & {
-  index: number;
-  length: number;
-};
+export type MessageActionListItemProps = MessageActionType &
+  Pick<
+    MessageActionListProps,
+    | 'canModifyMessage'
+    | 'error'
+    | 'isMyMessage'
+    | 'isThreadMessage'
+    | 'message'
+    | 'messageReactions'
+    | 'mutesEnabled'
+    | 'pinMessageEnabled'
+    | 'quotedRepliesEnabled'
+    | 'threadRepliesEnabled'
+  > & {
+    index: number;
+    length: number;
+  };
 
-const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithContext) => {
+const MessageActionListItemWithContext = (props: MessageActionListItemProps) => {
   const { action, icon, index, length, title, titleStyle } = props;
 
   const {
@@ -65,7 +80,7 @@ const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithC
     },
   } = useTheme();
 
-  const { onTap, animatedStyle } = useMessageActionAnimation({ action });
+  const { animatedStyle, onTap } = useMessageActionAnimation({ action });
 
   return (
     <TapGestureHandler onHandlerStateChange={onTap}>
@@ -96,11 +111,9 @@ export const MemoizedMessageActionListItem = React.memo(
   messageActionIsEqual,
 ) as typeof MessageActionListItemWithContext;
 
-export type MessageActionListItemProps = MessageActionListItemPropsWithContext;
-
 /**
- * MessageActionList - A high level component which implements all the logic required for MessageActions
+ * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
  */
-export const MessageActionListItem = (props: MessageActionListItemProps) => {
-  return <MemoizedMessageActionListItem {...props} />;
-};
+export const MessageActionListItem = (props: MessageActionListItemProps) => (
+  <MemoizedMessageActionListItem {...props} />
+);

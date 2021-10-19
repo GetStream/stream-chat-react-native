@@ -227,22 +227,17 @@ export type ChannelPropsWithContext<
       | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
-      | 'blockUser'
       | 'Card'
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
-      | 'copyMessage'
       | 'DateHeader'
       | 'deletedMessagesVisibilityType'
-      | 'deleteMessage'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
-      | 'editMessage'
       | 'FileAttachment'
       | 'FileAttachmentIcon'
       | 'FileAttachmentGroup'
-      | 'flagMessage'
       | 'FlatList'
       | 'forceAlignMessages'
       | 'formatDate'
@@ -279,22 +274,17 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
-      | 'muteUser'
       | 'myMessageTheme'
       | 'onDoubleTapMessage'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
       | 'OverlayReactionList'
-      | 'pinMessage'
-      | 'quotedReply'
       | 'ReactionList'
       | 'Reply'
-      | 'retry'
       | 'ScrollToBottomButton'
       | 'selectReaction'
       | 'supportedReactions'
-      | 'threadReply'
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
@@ -419,7 +409,6 @@ const ChannelWithContext = <
     AttachmentActions = AttachmentActionsDefault,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
-    blockUser,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -431,10 +420,8 @@ const ChannelWithContext = <
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
-    copyMessage,
     DateHeader = DateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
-    deleteMessage,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
@@ -444,7 +431,6 @@ const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enableMessageGroupingByUser = true,
     enforceUniqueReaction = false,
@@ -452,7 +438,6 @@ const ChannelWithContext = <
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileAttachmentIcon = FileIconDefault,
     FileUploadPreview = FileUploadPreviewDefault,
-    flagMessage,
     FlatList = FlatListDefault,
     forceAlignMessages,
     formatDate,
@@ -519,7 +504,6 @@ const ChannelWithContext = <
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
     mutesEnabled: mutesEnabledProp,
-    muteUser,
     myMessageTheme,
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
@@ -531,16 +515,13 @@ const ChannelWithContext = <
     onPressMessage,
     openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
-    pinMessage,
     pinMessageEnabled: pinMessageEnabledProp,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
-    quotedReply,
     ReactionList = ReactionListDefault,
     reactionsEnabled: reactionsEnabledProp,
     read,
     readEventsEnabled: readEventsEnabledProp,
     Reply = ReplyDefault,
-    retry,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
@@ -563,7 +544,6 @@ const ChannelWithContext = <
     threadList,
     threadMessages,
     threadRepliesEnabled: threadRepliesEnabledProp,
-    threadReply,
     typing,
     typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
@@ -1749,24 +1729,19 @@ const ChannelWithContext = <
     animatedLongPress,
     Attachment,
     AttachmentActions,
-    blockUser,
     Card,
     CardCover,
     CardFooter,
     CardHeader,
     channelId,
-    copyMessage,
     DateHeader,
     deletedMessagesVisibilityType,
-    deleteMessage,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
-    editMessage: editMessageProp,
     enableMessageGroupingByUser,
     FileAttachment,
     FileAttachmentGroup,
     FileAttachmentIcon,
-    flagMessage,
     FlatList,
     forceAlignMessages,
     formatDate,
@@ -1804,19 +1779,15 @@ const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
-    muteUser,
     myMessageTheme,
     onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
     OverlayReactionList,
-    pinMessage,
-    quotedReply,
     ReactionList,
     removeMessage,
     Reply,
-    retry,
     retrySendMessage,
     ScrollToBottomButton,
     selectReaction,
@@ -1824,7 +1795,6 @@ const ChannelWithContext = <
     setQuotedMessageState,
     supportedReactions,
     targetedMessage,
-    threadReply,
     TypingIndicator,
     TypingIndicatorContainer,
     updateMessage,
