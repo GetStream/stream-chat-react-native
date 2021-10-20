@@ -1,14 +1,14 @@
 ## 🎯 Goal
 
-_Describe why we are making this change_
+<!-- Describe why we are making this change -->
 
 ## 🛠 Implementation details
 
-_Provide a description of the implementation_
+<!-- Provide a description of the implementation -->
 
 ## 🎨 UI Changes
 
-_ Add relevant screenshots_
+<!-- Add relevant screenshots -->
 
 <details>
     <summary>iOS</summary>
@@ -28,7 +28,7 @@ _ Add relevant screenshots_
 </details>
 ## 🧪 Testing
 
-_Explain how this change can be tested (or why it can't be tested)_
+<!-- Explain how this change can be tested (or why it can't be tested) -->
 
 ## ☑️ Checklist
 
