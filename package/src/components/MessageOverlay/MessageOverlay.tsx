@@ -507,8 +507,8 @@ const MessageOverlayWithContext = <
                             </Animated.View>
                             {messageActions && (
                               <MessageActionList
-                                showScreen={showScreen}
                                 MessageActionListItem={MessageActionListItem}
+                                showScreen={showScreen}
                               />
                             )}
                             {!!messageReactionTitle &&

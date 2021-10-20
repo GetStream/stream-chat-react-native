@@ -1,16 +1,17 @@
 import React from 'react';
-import { LogBox, Platform, useColorScheme, Text, View } from 'react-native';
+import { LogBox, Platform, Text, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Chat,
+  MessageActionListItem,
+  MessageActionListProps,
   OverlayProvider,
   ThemeProvider,
-  useOverlayContext,
-  MessageActionListItem,
   useMessageActionAnimation,
+  useOverlayContext,
 } from 'stream-chat-react-native';
 import { TapGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 import { AppContext } from './src/context/AppContext';
@@ -108,6 +109,55 @@ const DrawerNavigator: React.FC = () => {
   );
 };
 
+const MessageActionListItemComponent = ({ actionType, ...rest }: MessageActionListItem) => {
+  const { onTap } = useMessageActionAnimation({ action: rest.action });
+  if (actionType === 'pinMessage') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else if (actionType === 'muteUser') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else {
+    return <MessageActionListItem {...rest} />;
+  }
+};
+
+const MessageActionListComponent: React.ComponentType<
+  MessageActionListProps<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >
+> = () => {
+  const { setOverlay } = useOverlayContext();
+  return (
+    <TouchableOpacity
+      disallowInterruption={true}
+      onPress={() => {
+        setOverlay('none');
+        console.log('hey i am clicked');
+      }}
+      style={{ backgroundColor: 'white', marginVertical: 20 }}
+    >
+      <Text>Hey there</Text>
+    </TouchableOpacity>
+  );
+};
+
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat<
     LocalAttachmentType,
@@ -133,35 +183,9 @@ const DrawerNavigatorWrapper: React.FC<{
       LocalUserType
     >
       bottomInset={bottom}
+      // MessageActionList={MessageActionListComponent}
+      MessageActionListItem={MessageActionListItemComponent}
       value={{ style: streamChatTheme }}
-      // MessageActionList={() => {
-      //   const { setOverlay } = useOverlayContext();
-      //   return (
-      //     <TouchableOpacity
-      //       style={{ marginVertical: 20, backgroundColor: 'white' }}
-      //       onPress={() => {
-      //         setOverlay('none');
-      //         console.log('hey i am clicked');
-      //       }}
-      //     >
-      //       <Text>Hey there</Text>
-      //     </TouchableOpacity>
-      //   );
-      // }}
-      MessageActionListItem={({ actionType, ...rest }) => {
-        const { onTap, animatedStyle } = useMessageActionAnimation({ action: rest.action });
-        if (actionType === 'pinMessage') {
-          return (
-            <TapGestureHandler onHandlerStateChange={onTap}>
-              <Animated.View>
-                <Text>{actionType}</Text>
-              </Animated.View>
-            </TapGestureHandler>
-          );
-        } else {
-          return <MessageActionListItem {...rest} />;
-        }
-      }}
     >
       <Chat<
         LocalAttachmentType,

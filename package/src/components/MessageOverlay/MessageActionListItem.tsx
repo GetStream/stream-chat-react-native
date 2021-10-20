@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StyleProp, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -39,20 +39,21 @@ export type ActionType =
   | 'selectReaction'
   | 'reply'
   | 'retry'
+  | 'quotedReply'
   | 'threadReply'
   | 'unpinMessage';
 
 export type MessageActionListItemMainProps = {
   action: () => void;
   actionType: ActionType;
-  icon?: React.ReactElement;
   title: string;
+  icon?: React.ReactElement;
+  titleStyle?: StyleProp<TextStyle>;
 };
 
 export type MessageActionListItemPropsWithContext = MessageActionListItemMainProps & {
   index: number;
   length: number;
-  titleStyle?: StyleProp<TextStyle>;
 };
 
 const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithContext) => {
@@ -65,7 +66,7 @@ const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithC
     },
   } = useTheme();
 
-  const { onTap, animatedStyle } = useMessageActionAnimation({ action });
+  const { animatedStyle, onTap } = useMessageActionAnimation({ action });
 
   return (
     <TapGestureHandler onHandlerStateChange={onTap}>
@@ -101,6 +102,6 @@ export type MessageActionListItemProps = MessageActionListItemPropsWithContext;
 /**
  * MessageActionListItem - A high level component which implements all the logic required for MessageAction's list item
  */
-export const MessageActionListItem = (props: MessageActionListItemProps) => {
-  return <MemoizedMessageActionListItem {...props} />;
-};
+export const MessageActionListItem = (props: MessageActionListItemProps) => (
+  <MemoizedMessageActionListItem {...props} />
+);

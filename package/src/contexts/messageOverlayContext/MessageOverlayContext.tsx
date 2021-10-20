@@ -60,13 +60,13 @@ export type MessageOverlayContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = {
-  MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
    * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
   MessageActionList: React.ComponentType<MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
   /**
    * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *

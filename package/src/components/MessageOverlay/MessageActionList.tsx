@@ -113,14 +113,12 @@ const MessageActionListWithContext = <
       }}
       style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
     >
-      {messageActions?.map((messageAction, index) => {
-        return (
-          <MessageActionListItem
-            key={messageAction.title}
-            {...{ ...messageAction, index, length: messageActions.length }}
-          />
-        );
-      })}
+      {messageActions?.map((messageAction, index) => (
+        <MessageActionListItem
+          key={messageAction.title}
+          {...{ ...messageAction, index, length: messageActions.length }}
+        />
+      ))}
     </Animated.View>
   );
 };

@@ -7,7 +7,7 @@ import type { TouchableOpacityProps } from 'react-native';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
-import type { MessageActionListItemProps } from '../../components/MessageOverlay/MessageActionListItem';
+import type { MessageActionListItemMainProps } from '../../components/MessageOverlay/MessageActionListItem';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -311,7 +311,7 @@ export type MessagesContextValue<
   handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
   handlePinMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionListItemProps)
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionListItemMainProps)
     | null;
   /** Handler to access when a quoted reply action is invoked */
   handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
@@ -378,7 +378,7 @@ export type MessagesContextValue<
    * @overrideType Function | Array<Objects>
    */
   messageActions?:
-    | (MessageActionListItemProps | null)[]
+    | (MessageActionListItemMainProps | null)[]
     | (({
         blockUser,
         canModifyMessage,
@@ -400,26 +400,26 @@ export type MessagesContextValue<
         threadRepliesEnabled,
         threadReply,
       }: {
-        blockUser: MessageActionListItemProps | null;
+        blockUser: MessageActionListItemMainProps | null;
         canModifyMessage: boolean;
-        copyMessage: MessageActionListItemProps | null;
-        deleteMessage: MessageActionListItemProps | null;
+        copyMessage: MessageActionListItemMainProps | null;
+        deleteMessage: MessageActionListItemMainProps | null;
         dismissOverlay: () => void;
-        editMessage: MessageActionListItemProps | null;
+        editMessage: MessageActionListItemMainProps | null;
         error: boolean | Error;
-        flagMessage: MessageActionListItemProps | null;
+        flagMessage: MessageActionListItemMainProps | null;
         isMyMessage: boolean;
         isThreadMessage: boolean;
         message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
         messageReactions: boolean;
-        muteUser: MessageActionListItemProps | null;
-        quotedReply: MessageActionListItemProps | null;
-        retry: MessageActionListItemProps | null;
-        threadReply: MessageActionListItemProps | null;
+        muteUser: MessageActionListItemMainProps | null;
+        quotedReply: MessageActionListItemMainProps | null;
+        retry: MessageActionListItemMainProps | null;
+        threadReply: MessageActionListItemMainProps | null;
         pinMessageEnabled?: boolean;
         quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
-      }) => (MessageActionListItemProps | null)[] | undefined);
+      }) => (MessageActionListItemMainProps | null)[] | undefined);
   /**
    * Custom message header component
    */

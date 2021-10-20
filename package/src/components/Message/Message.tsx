@@ -51,8 +51,8 @@ import {
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import type {
-  MessageActionListItemProps,
   MessageActionListItemMainProps,
+  MessageActionListItemProps,
 } from '../MessageOverlay/MessageActionListItem';
 import {
   MessagesContextValue,
@@ -674,7 +674,7 @@ const MessageWithContext = <
   ) => {
     await dismissKeyboard();
 
-    const blockUser = {
+    const blockUser: MessageActionListItemMainProps = {
       action: () => async () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -694,7 +694,7 @@ const MessageWithContext = <
       title: message.user?.banned ? t('Unblock User') : t('Block User'),
     };
 
-    const copyMessage = {
+    const copyMessage: MessageActionListItemMainProps = {
       // using depreciated Clipboard from react-native until expo supports the community version or their own
       action: () => {
         if (!StreamCache.getInstance().currentNetworkState) {
@@ -712,7 +712,7 @@ const MessageWithContext = <
       title: t('Copy Message'),
     };
 
-    const deleteMessage = {
+    const deleteMessage: MessageActionListItemMainProps = {
       action: () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -748,7 +748,7 @@ const MessageWithContext = <
       titleStyle: { color: accent_red },
     };
 
-    const editMessage = {
+    const editMessage: MessageActionListItemMainProps = {
       action: () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -765,7 +765,7 @@ const MessageWithContext = <
       title: t('Edit Message'),
     };
 
-    const pinMessage = {
+    const pinMessage: MessageActionListItemMainProps = {
       action: () => {
         setOverlay('none');
         if (handlePinMessage) {
@@ -778,7 +778,7 @@ const MessageWithContext = <
       title: t('Pin to Conversation'),
     };
 
-    const unpinMessage = {
+    const unpinMessage: MessageActionListItemMainProps = {
       action: () => {
         setOverlay('none');
         if (handlePinMessage) {
@@ -791,7 +791,7 @@ const MessageWithContext = <
       title: t('Unpin from Conversation'),
     };
 
-    const flagMessage = {
+    const flagMessage: MessageActionListItemMainProps = {
       action: () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -864,7 +864,7 @@ const MessageWithContext = <
           }
       : undefined;
 
-    const muteUser = {
+    const muteUser: MessageActionListItemMainProps = {
       action: async () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -884,7 +884,7 @@ const MessageWithContext = <
       title: isMuted ? t('Unmute User') : t('Mute User'),
     };
 
-    const quotedReply = {
+    const quotedReply: MessageActionListItemMainProps = {
       action: () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);
@@ -901,7 +901,7 @@ const MessageWithContext = <
       title: t('Reply'),
     };
 
-    const retry = {
+    const retry: MessageActionListItemMainProps = {
       action: async () => {
         if (!StreamCache.getInstance().currentNetworkState) {
           toast.show(t('Something went wrong'), 2000);

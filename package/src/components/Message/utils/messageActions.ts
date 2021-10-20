@@ -1,9 +1,6 @@
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
-import type {
-  MessageActionListItemProps,
-  MessageActionListItemMainProps,
-} from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionListItemMainProps } from '../../MessageOverlay/MessageActionListItem';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -46,33 +43,33 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: {
-  blockUser: MessageActionListItemProps | null;
+  blockUser: MessageActionListItemMainProps | null;
   canModifyMessage: boolean;
-  copyMessage: MessageActionListItemProps | null;
-  deleteMessage: MessageActionListItemProps | null;
-  editMessage: MessageActionListItemProps | null;
+  copyMessage: MessageActionListItemMainProps | null;
+  deleteMessage: MessageActionListItemMainProps | null;
+  editMessage: MessageActionListItemMainProps | null;
   error: boolean | Error;
-  flagMessage: MessageActionListItemProps | null;
+  flagMessage: MessageActionListItemMainProps | null;
   isMyMessage: boolean;
   isThreadMessage: boolean;
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
-  muteUser: MessageActionListItemProps | null;
-  pinMessage: MessageActionListItemProps | null;
-  quotedReply: MessageActionListItemProps | null;
-  retry: MessageActionListItemProps | null;
+  muteUser: MessageActionListItemMainProps | null;
+  pinMessage: MessageActionListItemMainProps | null;
+  quotedReply: MessageActionListItemMainProps | null;
+  retry: MessageActionListItemMainProps | null;
   threadReply: MessageActionListItemMainProps | null;
-  unpinMessage: MessageActionListItemProps | null;
+  unpinMessage: MessageActionListItemMainProps | null;
   mutesEnabled?: boolean;
   pinMessageEnabled?: boolean;
   quotedRepliesEnabled?: boolean;
   threadRepliesEnabled?: boolean;
-}): Array<MessageActionListItemProps | null> | undefined => {
+}): Array<MessageActionListItemMainProps | null> | undefined => {
   if (messageReactions) {
     return undefined;
   }
 
-  const actions: Array<MessageActionListItemProps | null> = [];
+  const actions: Array<MessageActionListItemMainProps | null> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);
