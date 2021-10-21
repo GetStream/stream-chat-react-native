@@ -145,13 +145,13 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './MessageList/utils/getReadStates';
 
+export * from './MessageOverlay/hooks/useMessageActionAnimation';
 export * from './MessageOverlay/MessageActionList';
 export * from './MessageOverlay/MessageActionListItem';
 export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
-export * from './MessageOverlay/hooks/useMessageActionAnimation';
 
 export * from './Reply/Reply';
 

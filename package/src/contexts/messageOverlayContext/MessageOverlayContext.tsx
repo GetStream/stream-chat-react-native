@@ -9,7 +9,10 @@ import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
-import type { MessageActionListItemProps } from '../../components/MessageOverlay/MessageActionListItem';
+import type {
+  MessageActionListItemProps,
+  MessageActionType,
+} from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type {
@@ -40,7 +43,7 @@ export type MessageOverlayData<
   handleReaction?: (reactionType: string) => Promise<void>;
   images?: Attachment<At>[];
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  messageActions?: MessageActionListItemProps[];
+  messageActions?: MessageActionType[];
   messageContext?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactionTitle?: string;
   messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
@@ -63,7 +66,7 @@ export type MessageOverlayContextValue<
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
-   * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
   MessageActionList: React.ComponentType<MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   MessageActionListItem: React.ComponentType<MessageActionListItemProps>;

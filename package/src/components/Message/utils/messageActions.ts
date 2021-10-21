@@ -1,6 +1,4 @@
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
-import type { MessageActionListItemMainProps } from '../../MessageOverlay/MessageActionListItem';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,6 +9,22 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+
+export type MessageActionsProps = {
+  blockUser: MessageActionType | null;
+  copyMessage: MessageActionType | null;
+  deleteMessage: MessageActionType | null;
+  editMessage: MessageActionType | null;
+  flagMessage: MessageActionType | null;
+  muteUser: MessageActionType | null;
+  pinMessage: MessageActionType | null;
+  quotedReply: MessageActionType | null;
+  retry: MessageActionType | null;
+  threadReply: MessageActionType | null;
+  unpinMessage: MessageActionType | null;
+};
 
 export const messageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -43,33 +57,21 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: {
-  blockUser: MessageActionListItemMainProps | null;
   canModifyMessage: boolean;
-  copyMessage: MessageActionListItemMainProps | null;
-  deleteMessage: MessageActionListItemMainProps | null;
-  editMessage: MessageActionListItemMainProps | null;
   error: boolean | Error;
-  flagMessage: MessageActionListItemMainProps | null;
-  isMyMessage: boolean;
   isThreadMessage: boolean;
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
-  muteUser: MessageActionListItemMainProps | null;
-  pinMessage: MessageActionListItemMainProps | null;
-  quotedReply: MessageActionListItemMainProps | null;
-  retry: MessageActionListItemMainProps | null;
-  threadReply: MessageActionListItemMainProps | null;
-  unpinMessage: MessageActionListItemMainProps | null;
-  mutesEnabled?: boolean;
-  pinMessageEnabled?: boolean;
-  quotedRepliesEnabled?: boolean;
-  threadRepliesEnabled?: boolean;
-}): Array<MessageActionListItemMainProps | null> | undefined => {
+} & MessageActionsProps &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'isMyMessage'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
+  >): Array<MessageActionType | null> | undefined => {
   if (messageReactions) {
     return undefined;
   }
 
-  const actions: Array<MessageActionListItemMainProps | null> = [];
+  const actions: Array<MessageActionType | null> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);

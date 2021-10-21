@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogBox, Platform, Text, useColorScheme } from 'react-native';
+import { Alert, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -109,8 +109,8 @@ const DrawerNavigator: React.FC = () => {
   );
 };
 
-const MessageActionListItemComponent = ({ actionType, ...rest }: MessageActionListItem) => {
-  const { onTap } = useMessageActionAnimation({ action: rest.action });
+const MessageActionListItemComponent = ({ action, actionType, ...rest }: MessageActionListItem) => {
+  const { onTap } = useMessageActionAnimation({ action: action });
   if (actionType === 'pinMessage') {
     return (
       <TapGestureHandler onHandlerStateChange={onTap}>
@@ -128,7 +128,7 @@ const MessageActionListItemComponent = ({ actionType, ...rest }: MessageActionLi
       </TapGestureHandler>
     );
   } else {
-    return <MessageActionListItem {...rest} />;
+    return <MessageActionListItem action={action} actionType={actionType} {...rest} />;
   }
 };
 
@@ -144,17 +144,30 @@ const MessageActionListComponent: React.ComponentType<
   >
 > = () => {
   const { setOverlay } = useOverlayContext();
-  return (
-    <TouchableOpacity
-      disallowInterruption={true}
-      onPress={() => {
+  const messageActions = [
+    {
+      action: function () {
+        Alert.alert('Edit Message action called.');
         setOverlay('none');
-        console.log('hey i am clicked');
-      }}
-      style={{ backgroundColor: 'white', marginVertical: 20 }}
-    >
-      <Text>Hey there</Text>
-    </TouchableOpacity>
+      },
+      actionType: 'editMessage',
+      title: 'Edit messagee',
+    },
+    {
+      action: function () {
+        Alert.alert('Delete message action');
+        setOverlay('none');
+      },
+      actionType: 'deleteMessage',
+      title: 'Delete Message',
+    },
+  ];
+  return (
+    <View style={{ backgroundColor: 'white' }}>
+      {messageActions.map(({ actionType, ...rest }) => (
+        <MessageActionListItem actionType={actionType} key={actionType} {...rest} />
+      ))}
+    </View>
   );
 };
 
@@ -183,8 +196,8 @@ const DrawerNavigatorWrapper: React.FC<{
       LocalUserType
     >
       bottomInset={bottom}
-      // MessageActionList={MessageActionListComponent}
-      MessageActionListItem={MessageActionListItemComponent}
+      MessageActionList={MessageActionListComponent}
+      // MessageActionListItem={MessageActionListItemComponent}
       value={{ style: streamChatTheme }}
     >
       <Chat<

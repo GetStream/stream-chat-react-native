@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
 import { vw } from '../../utils/utils';
+import type { MessageActionListProps } from './MessageActionList';
 
 const styles = StyleSheet.create({
   bottomBorder: {
@@ -43,7 +44,7 @@ export type ActionType =
   | 'threadReply'
   | 'unpinMessage';
 
-export type MessageActionListItemMainProps = {
+export type MessageActionType = {
   action: () => void;
   actionType: ActionType;
   title: string;
@@ -51,12 +52,25 @@ export type MessageActionListItemMainProps = {
   titleStyle?: StyleProp<TextStyle>;
 };
 
-export type MessageActionListItemPropsWithContext = MessageActionListItemMainProps & {
-  index: number;
-  length: number;
-};
+export type MessageActionListItemProps = MessageActionType &
+  Pick<
+    MessageActionListProps,
+    | 'canModifyMessage'
+    | 'error'
+    | 'isMyMessage'
+    | 'isThreadMessage'
+    | 'message'
+    | 'messageReactions'
+    | 'mutesEnabled'
+    | 'pinMessageEnabled'
+    | 'quotedRepliesEnabled'
+    | 'threadRepliesEnabled'
+  > & {
+    index: number;
+    length: number;
+  };
 
-const MessageActionListItemWithContext = (props: MessageActionListItemPropsWithContext) => {
+const MessageActionListItemWithContext = (props: MessageActionListItemProps) => {
   const { action, icon, index, length, title, titleStyle } = props;
 
   const {
@@ -97,10 +111,8 @@ export const MemoizedMessageActionListItem = React.memo(
   messageActionIsEqual,
 ) as typeof MessageActionListItemWithContext;
 
-export type MessageActionListItemProps = MessageActionListItemPropsWithContext;
-
 /**
- * MessageActionListItem - A high level component which implements all the logic required for MessageAction's list item
+ * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
  */
 export const MessageActionListItem = (props: MessageActionListItemProps) => (
   <MemoizedMessageActionListItem {...props} />

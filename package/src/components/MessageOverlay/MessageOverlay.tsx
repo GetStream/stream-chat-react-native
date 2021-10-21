@@ -25,6 +25,8 @@ import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReac
 
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
+import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 
 import {
@@ -102,8 +104,18 @@ export type MessageOverlayPropsWithContext<
   | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
-  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
+  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'isMyMessage'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
+  > & {
+    canModifyMessage: boolean;
+    error: boolean | Error;
+    isThreadMessage: boolean;
+    messageReactions: boolean;
     overlayOpacity: Animated.SharedValue<number>;
+    showScreen: Animated.SharedValue<number>;
     visible?: boolean;
   };
 
@@ -142,7 +154,29 @@ const MessageOverlayWithContext = <
     setOverlay,
     threadList,
     visible,
+    isMyMessage,
+    messageReactions,
+    mutesEnabled,
+    quotedRepliesEnabled,
+    pinMessageEnabled,
+    threadRepliesEnabled,
+    canModifyMessage,
+    error,
+    isThreadMessage,
   } = props;
+
+  const messageActionProps = {
+    canModifyMessage,
+    error,
+    isMyMessage,
+    isThreadMessage,
+    message,
+    messageReactions,
+    mutesEnabled,
+    pinMessageEnabled,
+    quotedRepliesEnabled,
+    threadRepliesEnabled,
+  };
 
   const { theme } = useTheme();
 
@@ -509,6 +543,7 @@ const MessageOverlayWithContext = <
                               <MessageActionList
                                 MessageActionListItem={MessageActionListItem}
                                 showScreen={showScreen}
+                                {...messageActionProps}
                               />
                             )}
                             {!!messageReactionTitle &&
@@ -605,7 +640,20 @@ export type MessageOverlayProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 > = Partial<Omit<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>> &
-  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>;
+  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
+  Pick<
+    MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'showScreen'
+    | 'isMyMessage'
+    | 'canModifyMessage'
+    | 'quotedRepliesEnabled'
+    | 'mutesEnabled'
+    | 'pinMessageEnabled'
+    | 'threadRepliesEnabled'
+    | 'error'
+    | 'isThreadMessage'
+    | 'messageReactions'
+  >;
 
 /**
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
