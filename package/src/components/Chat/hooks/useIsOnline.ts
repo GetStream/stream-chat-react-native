@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
+import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
@@ -35,10 +36,9 @@ export const useIsOnline = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   closeConnectionOnBackground = true,
 ) => {
-  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<NetInfoSubscription>();
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
-
+  const isMounted = useIsMountedRef();
   const clientExits = !!client;
 
   const onBackground = useCallback(() => {
@@ -83,35 +83,34 @@ export const useIsOnline = <
       }
     };
 
-    const setConnectionListener = () => {
+    let unsubscribeNetInfo: NetInfoSubscription;
+    const setNetInfoListener = () => {
       NetInfo.fetch().then((netInfoState) => {
         notifyChatClient(netInfoState);
       });
-      setUnsubscribeNetInfo(
-        NetInfo.addEventListener((netInfoState) => {
-          notifyChatClient(netInfoState);
-        }),
-      );
+      unsubscribeNetInfo = NetInfo.addEventListener((netInfoState) => {
+        notifyChatClient(netInfoState);
+      });
     };
 
     const setInitialOnlineState = async () => {
       const status = await NetInfo.fetch();
-      setIsOnline(status);
+
+      if (isMounted.current) setIsOnline(status);
     };
 
     setInitialOnlineState();
+    const chatListeners: Array<ReturnType<StreamChat['on']>> = [];
+
     if (client) {
-      client.on('connection.changed', handleChangedEvent);
-      client.on('connection.recovered', handleRecoveredEvent);
-      setConnectionListener();
+      chatListeners.push(client.on('connection.changed', handleChangedEvent));
+      chatListeners.push(client.on('connection.recovered', handleRecoveredEvent));
+      setNetInfoListener();
     }
 
     return () => {
-      client.off('connection.changed', handleChangedEvent);
-      client.off('connection.recovered', handleRecoveredEvent);
-      if (unsubscribeNetInfo) {
-        unsubscribeNetInfo();
-      }
+      chatListeners.forEach((listener) => listener.unsubscribe?.());
+      unsubscribeNetInfo?.();
     };
   }, [clientExits]);
 
