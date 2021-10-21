@@ -22,11 +22,12 @@ By default we render the following actions (as shown in screenshots)
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, handler) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, actionType) for rendering the action button.
 
 ```tsx
 type MessageAction = {
   action: () => void;
+  actionType: enum('blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage')
   title: string;
   icon?: React.ReactElement;
   titleStyle?: StyleProp<TextStyle>;

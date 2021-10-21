@@ -23,7 +23,6 @@ import AnimatedLongPress from '../common-content/core-components/channel/props/a
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
 import Attachment from '../common-content/core-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
-import BlockUser from '../common-content/core-components/channel/props/block_user.mdx';
 import Card from '../common-content/core-components/channel/props/card.mdx';
 import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
 import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
@@ -31,21 +30,17 @@ import CardHeader from '../common-content/core-components/channel/props/card_hea
 import CloseSuggestions from '../common-content/core-components/channel/props/close_suggestions.mdx';
 import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx';
 import CompressImageQuality from '../common-content/core-components/channel/props/compress_image_quality.mdx';
-import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
 import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
 import DeletedMessagesVisibilityType from '../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
-import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
 import DisableTypingIndicator from '../common-content/core-components/channel/props/disable_typing_indicator.mdx';
 import DismissKeyboardOnMessageTouch from '../common-content/core-components/channel/props/dismiss_keyboard_on_message_touch.mdx';
 import DoDocUploadRequest from '../common-content/core-components/channel/props/do_doc_upload_request.mdx'
 import DoImageUploadRequest from '../common-content/core-components/channel/props/do_image_upload_request.mdx'
-import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
 import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
 import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
 import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
 import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx'
-import FlagMessage from '../common-content/core-components/channel/props/flag_message.mdx';
 import FlatList from '../common-content/core-components/channel/props/flat_list.mdx';
 import ForceAlignMessages from '../common-content/core-components/channel/props/force_align_messages.mdx';
 import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
@@ -97,7 +92,6 @@ import MessageSystem from '../common-content/core-components/channel/props/messa
 import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx';
 import MutesEnabled from '../common-content/core-components/channel/props/mutes_enabled.mdx';
-import MuteUser from '../common-content/core-components/channel/props/mute_user.mdx';
 import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
 import NewMessageStateUpdateThrottleInterval from '../common-content/core-components/channel/props/new_message_state_update_throttle_interval.mdx'
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx'
@@ -107,15 +101,12 @@ import OnLongPressMessage from '../common-content/core-components/channel/props/
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
-import PinMessage from '../common-content/core-components/channel/props/pin_message.mdx';
 import PinMessageEnabled from '../common-content/core-components/channel/props/pin_message_enabled.mdx';
 import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
-import QuotedReply from '../common-content/core-components/channel/props/quoted_reply.mdx';
 import ReactionsEnabled from '../common-content/core-components/channel/props/reactions_enabled.mdx'
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
 import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx'
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
-import Retry from '../common-content/core-components/channel/props/retry.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx'
@@ -125,7 +116,6 @@ import SupportedReactions from '../common-content/core-components/channel/props/
 import Thread from '../common-content/core-components/channel/props/thread.mdx'
 import ThreadList from '../common-content/core-components/channel/props/thread_list.mdx';
 import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx'
-import ThreadReply from '../common-content/core-components/channel/props/thread_reply.mdx';
 import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx'
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
@@ -285,10 +275,6 @@ This is often the header height.
 
 <AutoCompleteTriggerSettings />
 
-### blockUser
-
-<BlockUser />
-
 ### closeSuggestions
 
 <CloseSuggestions />
@@ -297,17 +283,9 @@ This is often the header height.
 
 <CompressImageQuality />
 
-### copyMessage
-
-<CopyMessage />
-
 ### deletedMessagesVisibiltyType
 
 <DeletedMessagesVisibilityType />
-
-### deleteMessage
-
-<DeleteMessage />
 
 ### disableIfFrozenChannel
 
@@ -433,10 +411,6 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 | channelId | string |
 | messageObject | object |
 
-### editMessage
-
-<EditMessage />
-
 ### enableMessageGroupingByUser
 
 <EnableMessageGroupingByUser />
@@ -444,10 +418,6 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 ### enforceUniqueReaction
 
 <EnforceUniqueReaction />
-
-### flagMessage
-
-<FlagMessage />
 
 ### forceAlignMessages
 
@@ -618,10 +588,6 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <MutesEnabled />
 
-### muteUser
-
-<MuteUser />
-
 ### myMessageTheme
 
 <MyMessageTheme />
@@ -656,10 +622,6 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <!-- ### openSuggestions -->
 
-### pinMessage
-
-<PinMessage />
-
 ### pinMessageEnabled
 
 <PinMessageEnabled />
@@ -668,10 +630,6 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <QuotedRepliesEnabled />
 
-### quotedReply
-
-<QuotedReply />
-
 ### reactionsEnabled
 
 <ReactionsEnabled />
@@ -679,10 +637,6 @@ Provide a custom array of messages to render in `MessageList`. -->
 ### readEventsEnabled
 
 <ReadEventsEnabled />
-
-### retry
-
-<Retry />
 
 ### selectReaction
 
@@ -727,10 +681,6 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 ### threadList
 
 <ThreadList />
-
-### threadReply
-
-<ThreadReply />
 
 ### threadRepliesEnabled
 
@@ -880,7 +830,7 @@ Component to render full screen error indicator, when channel fails to load.
 
 <MessageHeader />
 
-## MessagePinnedHeader
+### MessagePinnedHeader
 
 <MessagePinnedHeader />
 
