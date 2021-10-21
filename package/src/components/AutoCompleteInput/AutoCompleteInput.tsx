@@ -288,12 +288,7 @@ const AutoCompleteInputWithContext = <
 
     const textToModify = text.slice(0, selectionEnd.current);
 
-    const startOfTokenPosition = textToModify.search(
-      /**
-       * It's important to escape the trigger char for chars like [, (,...
-       */
-      new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
-    );
+    const startOfTokenPosition = textToModify.lastIndexOf(trigger, selectionEnd.current);
 
     const newCaretPosition = computeCaretPosition(newTokenString, startOfTokenPosition);
 
@@ -335,7 +330,7 @@ const AutoCompleteInputWithContext = <
   };
 
   const handleMentions = ({ tokenMatch }: { tokenMatch: RegExpMatchArray | null }) => {
-    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
+    const lastToken = tokenMatch?.[tokenMatch.length - 1];
     const handleMentionsTrigger =
       (lastToken && Object.keys(triggerSettings).find((trigger) => trigger === lastToken[0])) ||
       null;
@@ -401,7 +396,7 @@ const AutoCompleteInputWithContext = <
     } else if (giphyEnabled && !(await handleCommand(text))) {
       const mentionTokenMatch = text
         .slice(0, selectionEnd.current)
-        .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
+        .match(/(?!^|\W)?@[^\s@]*\s?[^\s@]*$/g);
       if (mentionTokenMatch) {
         handleMentions({ tokenMatch: mentionTokenMatch });
       } else {
