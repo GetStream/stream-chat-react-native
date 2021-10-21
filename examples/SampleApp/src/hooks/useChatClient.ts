@@ -15,8 +15,6 @@ import type {
   LoginConfig,
 } from '../types';
 
-const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
-
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<
     LocalAttachmentType,
@@ -41,7 +39,6 @@ export const useChatClient = () => {
     >(config.apiKey, {
       timeout: 6000,
     });
-    const randomSeed = getRandomInt(1, 50);
     const user = {
       id: config.userId,
       image: config.userImage,

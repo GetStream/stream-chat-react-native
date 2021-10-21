@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { useChatContext, useTheme } from 'stream-chat-react-native';
 
