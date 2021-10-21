@@ -14,13 +14,13 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
-
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import type {
   LocalAttachmentType,
@@ -33,7 +33,6 @@ import type {
   StackNavigatorParamList,
 } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
-import { TapGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },

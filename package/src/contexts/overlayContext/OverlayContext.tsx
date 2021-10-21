@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import type Animated from 'react-native-reanimated';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -6,6 +7,8 @@ import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
+import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 
@@ -22,6 +25,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
@@ -62,12 +66,23 @@ export type OverlayProviderProps<
       'MessageActionList' | 'MessageActionListItem' | 'OverlayReactionList' | 'OverlayReactions'
     >
   > &
-  Pick<OverlayContextValue, 'translucentStatusBar'> & {
+  Pick<OverlayContextValue, 'translucentStatusBar'> &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'isMyMessage'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
+  > & {
+    canModifyMessage: boolean;
+    error: boolean | Error;
+    isThreadMessage: boolean;
+    messageReactions: boolean;
+    overlayOpacity: Animated.SharedValue<number>;
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];
+    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;
