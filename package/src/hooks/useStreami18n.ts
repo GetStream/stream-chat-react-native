@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
+import { useIsMountedRef } from './useIsMountedRef';
 import { Streami18n } from '../utils/Streami18n';
+
+import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 
 export const useStreami18n = ({
   i18nInstance,
@@ -11,7 +13,7 @@ export const useStreami18n = ({
   i18nInstance?: Streami18n;
 }) => {
   const [loadingTranslators, setLoadingTranslators] = useState(true);
-
+  const isMounted = useIsMountedRef();
   const i18nInstanceExists = !!i18nInstance;
   useEffect(() => {
     let streami18n: Streami18n;
@@ -26,7 +28,7 @@ export const useStreami18n = ({
       setTranslators((prevTranslator) => ({ ...prevTranslator, t })),
     );
     streami18n.getTranslators().then((translator) => {
-      if (translator) setTranslators(translator);
+      if (translator && isMounted.current) setTranslators(translator);
     });
 
     setLoadingTranslators(false);
