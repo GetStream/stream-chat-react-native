@@ -8,11 +8,11 @@ import type { Alignment, MessageContextValue } from '../messageContext/MessageCo
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type {
   MessageActionListItemProps,
   MessageActionType,
 } from '../../components/MessageOverlay/MessageActionListItem';
+import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type {

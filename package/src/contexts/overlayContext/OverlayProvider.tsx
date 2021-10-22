@@ -89,28 +89,21 @@ export const OverlayProvider = <
     attachmentSelectionBarHeight,
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
-    canModifyMessage,
     children,
     closePicker = (ref) => {
       if (ref.current) {
         ref.current.close();
       }
     },
-    error,
     FileSelectorIcon = DefaultFileSelectorIcon,
     i18nInstance,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
-    isMyMessage,
-    isThreadMessage,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
     MessageActionList,
     MessageActionListItem,
-    message,
-    messageReactions,
-    mutesEnabled,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -121,28 +114,12 @@ export const OverlayProvider = <
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
     },
-    pinMessageEnabled,
-    quotedRepliesEnabled,
-    threadRepliesEnabled,
     topInset,
     translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
     value,
   } = props;
-
-  const messageActionListProps = {
-    canModifyMessage,
-    error,
-    isMyMessage,
-    isThreadMessage,
-    message,
-    messageReactions,
-    mutesEnabled,
-    pinMessageEnabled,
-    quotedRepliesEnabled,
-    threadRepliesEnabled,
-  };
 
   const attachmentPickerProps = {
     AttachmentPickerBottomSheetHandle,
@@ -249,7 +226,6 @@ export const OverlayProvider = <
                     <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                   </Animated.View>
                   <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                    {...messageActionListProps}
                     MessageActionList={MessageActionList}
                     MessageActionListItem={MessageActionListItem}
                     overlayOpacity={overlayOpacity}

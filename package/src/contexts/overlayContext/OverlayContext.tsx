@@ -7,7 +7,6 @@ import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
-import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -67,22 +66,22 @@ export type OverlayProviderProps<
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'isMyMessage'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
   > & {
-    canModifyMessage: boolean;
-    error: boolean | Error;
-    isThreadMessage: boolean;
-    messageReactions: boolean;
     overlayOpacity: Animated.SharedValue<number>;
+    canModifyMessage?: boolean;
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    error?: boolean | Error;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];
+    isMyMessage?: boolean;
+    isThreadMessage?: boolean;
     message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    messageReactions?: boolean;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;
