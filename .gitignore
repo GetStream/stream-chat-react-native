@@ -1,2 +1,3 @@
 node_modules
 NEXT_RELEASE_CHANGELOG.md
+*.log
