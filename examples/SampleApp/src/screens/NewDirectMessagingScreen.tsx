@@ -161,7 +161,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
-  // As we dont use the first state variable we can simple not have it here and just separate with a comma within the array. Fix for no-usused-vars
+  // As we don't use the state value, we can omit it here and separate it with a comma within the array.
   const [, setMessageInputText] = useState('');
 
   // When selectedUsers are changed, initiate a channel with those users as members,
