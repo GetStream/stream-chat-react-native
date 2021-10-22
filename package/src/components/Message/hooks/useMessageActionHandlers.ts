@@ -4,6 +4,7 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+import type { Reactions } from '../../../contexts/messageContext/MessageContext';
 
 import type {
   DefaultAttachmentType,
@@ -15,11 +16,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-
-export type Reactions = {
-  own: boolean;
-  type: string;
-}[];
 
 export const useMessageActionHandlers = <
   At extends UnknownType = DefaultAttachmentType,
