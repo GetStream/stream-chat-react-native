@@ -1,6 +1,4 @@
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
-import type { MessageAction } from '../../../contexts/messageOverlayContext/MessageOverlayContext';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,6 +9,22 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+
+export type MessageActionsProps = {
+  blockUser: MessageActionType;
+  copyMessage: MessageActionType;
+  deleteMessage: MessageActionType;
+  editMessage: MessageActionType;
+  flagMessage: MessageActionType;
+  muteUser: MessageActionType;
+  pinMessage: MessageActionType;
+  quotedReply: MessageActionType;
+  retry: MessageActionType;
+  threadReply: MessageActionType;
+  unpinMessage: MessageActionType;
+};
 
 export const messageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -43,33 +57,21 @@ export const messageActions = <
   threadReply,
   unpinMessage,
 }: {
-  blockUser: MessageAction | null;
   canModifyMessage: boolean;
-  copyMessage: MessageAction | null;
-  deleteMessage: MessageAction | null;
-  editMessage: MessageAction | null;
   error: boolean | Error;
-  flagMessage: MessageAction | null;
-  isMyMessage: boolean;
   isThreadMessage: boolean;
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions: boolean;
-  muteUser: MessageAction | null;
-  pinMessage: MessageAction | null;
-  quotedReply: MessageAction | null;
-  retry: MessageAction | null;
-  threadReply: MessageAction | null;
-  unpinMessage: MessageAction | null;
-  mutesEnabled?: boolean;
-  pinMessageEnabled?: boolean;
-  quotedRepliesEnabled?: boolean;
-  threadRepliesEnabled?: boolean;
-}): Array<MessageAction | null> | undefined => {
+} & MessageActionsProps &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'isMyMessage'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
+  >): Array<MessageActionType | null> | undefined => {
   if (messageReactions) {
     return undefined;
   }
 
-  const actions: Array<MessageAction | null> = [];
+  const actions: Array<MessageActionType | null> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);

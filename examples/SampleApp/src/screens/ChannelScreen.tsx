@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import type { Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Channel,
   ChannelAvatar,
@@ -14,13 +13,14 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
-
-import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
-import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
-
+import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AppContext } from '../context/AppContext';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 import type {
   LocalAttachmentType,

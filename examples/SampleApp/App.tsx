@@ -1,11 +1,10 @@
 import React from 'react';
-import { LogBox, Platform, useColorScheme } from 'react-native';
+import { Alert, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
-
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';

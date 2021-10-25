@@ -451,6 +451,12 @@ export type Theme = {
     targetedMessageUnderlay: ViewStyle;
   };
   overlay: {
+    container: ViewStyle;
+    messageActions: {
+      actionContainer: ViewStyle;
+      icon: ViewStyle;
+      title: TextStyle;
+    };
     padding: number;
     reactions: {
       avatarContainer: ViewStyle;
@@ -929,6 +935,12 @@ export const defaultTheme: Theme = {
     targetedMessageUnderlay: {},
   },
   overlay: {
+    container: {},
+    messageActions: {
+      actionContainer: {},
+      icon: {},
+      title: {},
+    },
     padding: 8,
     reactions: {
       avatarContainer: {},

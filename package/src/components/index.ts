@@ -98,6 +98,8 @@ export * from './Indicators/LoadingIndicator';
 export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 
 export * from './Message/hooks/useCreateMessageContext';
+export * from './Message/hooks/useMessageActions';
+export * from './Message/hooks/useMessageActionHandlers';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
@@ -145,7 +147,9 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './MessageList/utils/getReadStates';
 
-export * from './MessageOverlay/MessageActions';
+export * from './MessageOverlay/hooks/useMessageActionAnimation';
+export * from './MessageOverlay/MessageActionList';
+export * from './MessageOverlay/MessageActionListItem';
 export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';

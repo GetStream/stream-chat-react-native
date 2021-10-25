@@ -2,14 +2,17 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { MessageActionsProps } from '../../components/MessageOverlay/MessageActions';
+import type {
+  MessageActionListItemProps,
+  MessageActionType,
+} from '../../components/MessageOverlay/MessageActionListItem';
+import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type {
@@ -23,13 +26,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-
-export type MessageAction = {
-  action: () => void;
-  title: string;
-  icon?: React.ReactElement;
-  titleStyle?: StyleProp<TextStyle>;
-};
 
 export type MessageOverlayData<
   At extends UnknownType = DefaultAttachmentType,
@@ -47,7 +43,7 @@ export type MessageOverlayData<
   handleReaction?: (reactionType: string) => Promise<void>;
   images?: Attachment<At>[];
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  messageActions?: MessageAction[];
+  messageActions?: MessageActionType[];
   messageContext?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactionTitle?: string;
   messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
@@ -70,9 +66,10 @@ export type MessageOverlayContextValue<
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
-   * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
-  MessageActions: React.ComponentType<MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageActionList: React.ComponentType<MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageActionListItem: React.ComponentType<MessageActionListItemProps>;
   /**
    * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *

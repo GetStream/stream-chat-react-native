@@ -1,20 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, ViewStyle } from 'react-native';
-import { TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
-import Animated, {
-  interpolate,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { StyleSheet, ViewStyle } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import {
-  MessageAction as MessageActionType,
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import type { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
 import { vw } from '../../utils/utils';
 
 import type {
@@ -50,66 +44,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageActionProps = MessageActionType & {
-  index: number;
-  length: number;
-};
-
-const MessageAction: React.FC<MessageActionProps> = (props) => {
-  const { action, icon, index, length, title, titleStyle } = props;
-
-  const {
-    theme: {
-      colors: { black, border },
-    },
-  } = useTheme();
-
-  const opacity = useSharedValue(1);
-
-  const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
-    {
-      onEnd: () => {
-        runOnJS(action)();
-      },
-      onFinish: () => {
-        opacity.value = 1;
-      },
-      onStart: () => {
-        opacity.value = 0.2;
-      },
-    },
-    [action],
-  );
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
-    opacity: opacity.value,
-  }));
-
-  return (
-    <TapGestureHandler onHandlerStateChange={onTap}>
-      <Animated.View
-        style={[
-          styles.row,
-          index !== length - 1 ? { ...styles.bottomBorder, borderBottomColor: border } : {},
-          animatedStyle,
-        ]}
-      >
-        {icon}
-        <Text style={[styles.titleStyle, { color: black }, titleStyle]}>{title}</Text>
-      </Animated.View>
-    </TapGestureHandler>
-  );
-};
-
-const messageActionIsEqual = (prevProps: MessageActionProps, nextProps: MessageActionProps) =>
-  prevProps.length === nextProps.length;
-
-const MemoizedMessageAction = React.memo(
-  MessageAction,
-  messageActionIsEqual,
-) as typeof MessageAction;
-
-export type MessageActionsPropsWithContext<
+export type MessageActionListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -117,10 +52,25 @@ export type MessageActionsPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
-  showScreen: Animated.SharedValue<number>;
-};
-const MessageActionsWithContext = <
+> = Pick<
+  OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'MessageActionListItem'
+  | 'canModifyMessage'
+  | 'error'
+  | 'isMyMessage'
+  | 'isThreadMessage'
+  | 'message'
+  | 'messageReactions'
+  | 'mutesEnabled'
+  | 'quotedRepliesEnabled'
+  | 'pinMessageEnabled'
+  | 'threadRepliesEnabled'
+> &
+  Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
+    showScreen: Animated.SharedValue<number>;
+  };
+
+const MessageActionListWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -129,9 +79,37 @@ const MessageActionsWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, messageActions, showScreen } = props;
+  const {
+    alignment,
+    messageActions,
+    showScreen,
+    MessageActionListItem = DefaultMessageActionListItem,
+    isMyMessage,
+    message,
+    messageReactions,
+    mutesEnabled,
+    quotedRepliesEnabled,
+    pinMessageEnabled,
+    threadRepliesEnabled,
+    canModifyMessage,
+    error,
+    isThreadMessage,
+  } = props;
+
+  const messageActionProps = {
+    canModifyMessage,
+    error,
+    isMyMessage,
+    isThreadMessage,
+    message,
+    messageReactions,
+    mutesEnabled,
+    pinMessageEnabled,
+    quotedRepliesEnabled,
+    threadRepliesEnabled,
+  };
 
   const {
     theme: {
@@ -172,8 +150,9 @@ const MessageActionsWithContext = <
       style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
     >
       {messageActions?.map((messageAction, index) => (
-        <MemoizedMessageAction
+        <MessageActionListItem
           key={messageAction.title}
+          {...messageActionProps}
           {...{ ...messageAction, index, length: messageActions.length }}
         />
       ))}
@@ -190,8 +169,8 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  prevProps: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment: prevAlignment, messageActions: prevMessageActions } = prevProps;
   const { alignment: nextAlignment, messageActions: nextMessageActions } = nextProps;
@@ -205,12 +184,12 @@ const areEqual = <
   return true;
 };
 
-const MemoizedMessageActions = React.memo(
-  MessageActionsWithContext,
+const MemoizedMessageActionList = React.memo(
+  MessageActionListWithContext,
   areEqual,
-) as typeof MessageActionsWithContext;
+) as typeof MessageActionListWithContext;
 
-export type MessageActionsProps<
+export type MessageActionListProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -218,13 +197,26 @@ export type MessageActionsProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>> &
-  Pick<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>;
+> = Partial<Omit<MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>> &
+  Pick<
+    MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'showScreen'
+    | 'message'
+    | 'isMyMessage'
+    | 'canModifyMessage'
+    | 'quotedRepliesEnabled'
+    | 'mutesEnabled'
+    | 'pinMessageEnabled'
+    | 'threadRepliesEnabled'
+    | 'error'
+    | 'isThreadMessage'
+    | 'messageReactions'
+  >;
 
 /**
- * MessageActions - A high level component which implements all the logic required for MessageActions
+ * MessageActionList - A high level component which implements all the logic required for MessageActions
  */
-export const MessageActions = <
+export const MessageActionList = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -233,11 +225,11 @@ export const MessageActions = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  props: MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { alignment, messageActions } = data || {};
 
-  return <MemoizedMessageActions {...{ alignment, messageActions }} {...props} />;
+  return <MemoizedMessageActionList {...{ alignment, messageActions }} {...props} />;
 };

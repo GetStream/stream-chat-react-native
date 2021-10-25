@@ -7,7 +7,7 @@ import type { TouchableOpacityProps } from 'react-native';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
-import type { MessageAction } from '../messageOverlayContext/MessageOverlayContext';
+import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -260,12 +260,6 @@ export type MessagesContextValue<
    * When false, pop-out animation will be disabled for message bubble, onLongPress
    */
   animatedLongPress?: boolean;
-  /**
-   * Full override of the block user button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  blockUser?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
 
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
@@ -282,12 +276,7 @@ export type MessagesContextValue<
    * Accepts the same props as Card component.
    */
   CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
-   * Full override of the copy message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  copyMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+
   /**
    * Full override of the delete message button in the Message Actions
    *
@@ -297,21 +286,8 @@ export type MessagesContextValue<
   /** Control if the deleted message is visible to both the send and reciever, either of them or none  */
   deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';
 
-  deleteMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   disableTypingIndicator?: boolean;
-  /**
-   * Full override of the edit message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
 
-  editMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
-  /**
-   * Full override of the flag message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  flagMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
   /**
    * Whether messages should be aligned to right or left part of screen.
    * By default, messages will be received messages will be aligned to left and
@@ -334,7 +310,9 @@ export type MessagesContextValue<
   /** Handler to access when a mute user action is invoked */
   handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
-  handlePinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+  handlePinMessage?:
+    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType)
+    | null;
   /** Handler to access when a quoted reply action is invoked */
   handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
   /** Handler to process a reaction */
@@ -400,7 +378,7 @@ export type MessagesContextValue<
    * @overrideType Function | Array<Objects>
    */
   messageActions?:
-    | (MessageAction | null)[]
+    | (MessageActionType | null)[]
     | (({
         blockUser,
         canModifyMessage,
@@ -422,38 +400,33 @@ export type MessagesContextValue<
         threadRepliesEnabled,
         threadReply,
       }: {
-        blockUser: MessageAction | null;
+        blockUser: MessageActionType;
         canModifyMessage: boolean;
-        copyMessage: MessageAction | null;
-        deleteMessage: MessageAction | null;
+        copyMessage: MessageActionType;
+        deleteMessage: MessageActionType;
         dismissOverlay: () => void;
-        editMessage: MessageAction | null;
+        editMessage: MessageActionType;
         error: boolean | Error;
-        flagMessage: MessageAction | null;
+        flagMessage: MessageActionType;
         isMyMessage: boolean;
         isThreadMessage: boolean;
         message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
         messageReactions: boolean;
-        muteUser: MessageAction | null;
-        quotedReply: MessageAction | null;
-        retry: MessageAction | null;
-        threadReply: MessageAction | null;
+        muteUser: MessageActionType;
+        quotedReply: MessageActionType;
+        retry: MessageActionType;
+        threadReply: MessageActionType;
         pinMessageEnabled?: boolean;
         quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
-      }) => (MessageAction | null)[] | undefined);
+      }) => MessageActionType[] | undefined);
   /**
    * Custom message header component
    */
   MessageHeader?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
-   * Full override of the mute user button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   * */
-  muteUser?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+
   /**
    * Theme provided only to messages that are the current users
    */
@@ -567,24 +540,7 @@ export type MessagesContextValue<
    * ```
    */
   onPressMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  /**
-   * Full override of the pin message button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  pinMessage?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
-  /**
-   * Full override of the quoted reply button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   */
-  quotedReply?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
-  /**
-   * Full override of the resend button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   * */
-  retry?: ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction) | null;
+
   /**
    * Full override of the reaction function on Message and Message Overlay
    *
@@ -595,12 +551,6 @@ export type MessagesContextValue<
   ) => (reactionType: string) => Promise<void>;
 
   targetedMessage?: string;
-  /**
-   * Full override of the thread reply button in the Message Actions
-   *
-   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
-   * */
-  threadReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

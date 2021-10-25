@@ -24,7 +24,7 @@ import {
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { MessageActions as DefaultMessageActions } from '../MessageOverlay/MessageActions';
+import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 
 import {
@@ -35,6 +35,7 @@ import {
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import {
   OverlayContextValue,
+  OverlayProviderProps,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -95,11 +96,29 @@ export type MessageOverlayPropsWithContext<
   Us extends DefaultUserType = DefaultUserType,
 > = Pick<
   MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'MessageActions' | 'OverlayReactionList' | 'OverlayReactions' | 'reset'
+  | 'MessageActionList'
+  | 'MessageActionListItem'
+  | 'OverlayReactionList'
+  | 'OverlayReactions'
+  | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
-  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
-    overlayOpacity: Animated.SharedValue<number>;
+  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
+  Pick<
+    OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'canModifyMessage'
+    | 'error'
+    | 'isMyMessage'
+    | 'isThreadMessage'
+    | 'message'
+    | 'messageReactions'
+    | 'mutesEnabled'
+    | 'overlayOpacity'
+    | 'quotedRepliesEnabled'
+    | 'pinMessageEnabled'
+    | 'threadRepliesEnabled'
+  > & {
+    showScreen?: Animated.SharedValue<number>;
     visible?: boolean;
   };
 
@@ -123,7 +142,8 @@ const MessageOverlayWithContext = <
     images,
     message,
     messageActions,
-    MessageActions = DefaultMessageActions,
+    MessageActionList = DefaultMessageActionList,
+    MessageActionListItem,
     messageContext,
     messageReactionTitle,
     messagesContext,
@@ -137,7 +157,29 @@ const MessageOverlayWithContext = <
     setOverlay,
     threadList,
     visible,
+    isMyMessage,
+    messageReactions,
+    mutesEnabled,
+    quotedRepliesEnabled,
+    pinMessageEnabled,
+    threadRepliesEnabled,
+    canModifyMessage,
+    error,
+    isThreadMessage,
   } = props;
+
+  const messageActionProps = {
+    canModifyMessage,
+    error,
+    isMyMessage,
+    isThreadMessage,
+    message,
+    messageReactions,
+    mutesEnabled,
+    pinMessageEnabled,
+    quotedRepliesEnabled,
+    threadRepliesEnabled,
+  };
 
   const { theme } = useTheme();
 
@@ -167,6 +209,7 @@ const MessageOverlayWithContext = <
         replyContainer,
       },
     },
+    overlay: { container: containerStyle, padding: overlayPadding },
   } = wrapMessageInTheme ? modifiedTheme : theme;
 
   const messageHeight = useSharedValue(0);
@@ -311,7 +354,7 @@ const MessageOverlayWithContext = <
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
             pointerEvents={visible ? 'auto' : 'none'}
-            style={StyleSheet.absoluteFillObject}
+            style={[StyleSheet.absoluteFillObject, containerStyle]}
           >
             <PanGestureHandler
               enabled={overlay === 'message'}
@@ -346,6 +389,7 @@ const MessageOverlayWithContext = <
                             style={[
                               styles.center,
                               styles.overlayPadding,
+                              { padding: overlayPadding },
                               alignment === 'left' ? styles.alignStart : styles.alignEnd,
                             ]}
                           >
@@ -498,7 +542,13 @@ const MessageOverlayWithContext = <
                                 )}
                               </View>
                             </Animated.View>
-                            {messageActions && <MessageActions showScreen={showScreen} />}
+                            {messageActions && (
+                              <MessageActionList
+                                MessageActionListItem={MessageActionListItem}
+                                showScreen={showScreen}
+                                {...messageActionProps}
+                              />
+                            )}
                             {!!messageReactionTitle &&
                             message.latest_reactions &&
                             message.latest_reactions.length > 0 ? (
@@ -593,7 +643,19 @@ export type MessageOverlayProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 > = Partial<Omit<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>> &
-  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>;
+  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
+  Pick<
+    MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'isMyMessage'
+    | 'canModifyMessage'
+    | 'quotedRepliesEnabled'
+    | 'mutesEnabled'
+    | 'pinMessageEnabled'
+    | 'threadRepliesEnabled'
+    | 'error'
+    | 'isThreadMessage'
+    | 'messageReactions'
+  >;
 
 /**
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
@@ -609,12 +671,19 @@ export const MessageOverlay = <
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { data, MessageActions, OverlayReactionList, OverlayReactions, reset } =
-    useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    data,
+    MessageActionList,
+    MessageActionListItem,
+    OverlayReactionList,
+    OverlayReactions,
+    reset,
+  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {
-    MessageActions: props.MessageActions || MessageActions,
+    MessageActionList: props.MessageActionList || MessageActionList,
+    MessageActionListItem: props.MessageActionListItem || MessageActionListItem,
     OverlayReactionList:
       props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,
