@@ -25,8 +25,6 @@ import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReac
 
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
-import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
 
 import {
@@ -648,10 +646,6 @@ export type MessageOverlayProps<
   Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
   Pick<
     MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-<<<<<<< HEAD
-    | 'showScreen'
-=======
->>>>>>> 273c6861c79d728fd787610cfc8295c63430330b
     | 'isMyMessage'
     | 'canModifyMessage'
     | 'quotedRepliesEnabled'
