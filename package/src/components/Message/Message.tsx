@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  Alert,
-  Clipboard,
   GestureResponderEvent,
   Image,
   Keyboard,
@@ -25,7 +23,6 @@ import Animated, {
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
-import { removeReservedFields } from './utils/removeReservedFields';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -50,10 +47,7 @@ import {
   MessageOverlayContextValue,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import type {
-  MessageActionListItemProps,
-  MessageActionType,
-} from '../MessageOverlay/MessageActionListItem';
+import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -63,31 +57,16 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useToastContext } from '../../contexts/toastContext/ToastContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import {
-  Copy,
-  CurveLineLeftUp,
-  Delete,
-  Edit,
-  MessageFlag,
-  Mute,
-  Pin,
-  SendUp,
-  ThreadReply,
-  Unpin,
-  UserDelete,
-} from '../../icons';
 import { triggerHaptic } from '../../native';
-import { StreamCache } from '../../StreamCache';
 import { emojiRegex } from '../../utils/utils';
 
-import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -99,6 +78,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { useMessageActions } from './hooks/useMessageActions';
+import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 
 const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
   if (url.includes('&h=%2A')) {
@@ -147,6 +128,7 @@ export type MessageTouchableHandlerPayload<
 export type MessageActionHandlers = {
   deleteMessage: () => Promise<void>;
   editMessage: () => void;
+  pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
   showMessageOverlay: () => void;
@@ -356,11 +338,9 @@ const MessageWithContext = <
     updateMessage,
   } = props;
 
-  const toast = useToastContext();
-
   const {
     theme: {
-      colors: { accent_blue, accent_red, bg_gradient_start, grey, targetedMessageBackground },
+      colors: { bg_gradient_start, targetedMessageBackground },
       messageSimple: {
         gallery: { halfSize, size },
         targetedMessageUnderlay,
@@ -588,354 +568,75 @@ const MessageWithContext = <
       }, [] as Reactions)
     : [];
 
-  const handleToggleReaction = async (reactionType: string) => {
-    const messageId = message.id;
-    const ownReaction = !!reactions.find(
-      (reaction) => reaction.own && reaction.type === reactionType,
-    );
+  const {
+    handleDeleteMessage,
+    handleEditMessage,
+    handleQuotedReplyMessage,
+    handleResendMessage,
+    handleToggleBanUser,
+    handleToggleMuteUser,
+    handleTogglePinMessage,
+    handleToggleReaction,
+  } = useMessageActionHandlers({
+    channel,
+    client,
+    enforceUniqueReaction,
+    message,
+    reactionsEnabled,
+    retrySendMessage,
+    setEditingState,
+    setQuotedMessageState,
+    supportedReactions,
+    updateMessage,
+  });
 
-    // Change reaction in local state, make API call in background, revert to old message if fails
-    try {
-      if (channel && messageId) {
-        if (ownReaction) {
-          await channel.deleteReaction(messageId, reactionType);
-        } else {
-          await channel.sendReaction(
-            messageId,
-            {
-              type: reactionType,
-            } as Reaction<Re, Us>,
-            { enforce_unique: enforceUniqueReaction },
-          );
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleResendMessage = () =>
-    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-
-  const handleQuotedReplyMessage = () => {
-    setQuotedMessageState(message);
-  };
-
-  const isMuted = (client.mutedUsers || []).some(
-    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
-  );
-
-  const handleToggleMuteUser = async () => {
-    if (!message.user?.id) {
-      return;
-    }
-
-    if (isMuted) {
-      await client.unmuteUser(message.user.id);
-    } else {
-      await client.muteUser(message.user.id);
-    }
-  };
-
-  const handleDeleteMessage = async () => {
-    const data = await client.deleteMessage(message.id);
-    updateMessage(data.message);
-  };
-
-  const handleEditMessage = () => {
-    setEditingState(message);
-  };
-
-  const handleTogglePinMessage = async () => {
-    const MessagePinnedHeaderStatus = message.pinned;
-    if (!MessagePinnedHeaderStatus) {
-      await client.pinMessage(message, null);
-    } else {
-      await client.unpinMessage(message);
-    }
-  };
-
-  const handleToggleBanUser = async () => {
-    const messageUser = message.user;
-    if (!messageUser) {
-      return;
-    }
-
-    if (messageUser.banned) {
-      await client.unbanUser(messageUser.id);
-    } else {
-      await client.banUser(messageUser.id);
-    }
-  };
+  const {
+    blockUser,
+    copyMessage,
+    deleteMessage,
+    editMessage,
+    flagMessage,
+    handleReaction,
+    muteUser,
+    pinMessage,
+    quotedReply,
+    retry,
+    threadReply,
+    unpinMessage,
+  } = useMessageActions({
+    channel,
+    client,
+    enforceUniqueReaction,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handlePinMessage,
+    handleQuotedReply,
+    handleReaction: handleReactionProp,
+    handleRetry,
+    handleThreadReply,
+    message,
+    onThreadSelect,
+    openThread,
+    reactionsEnabled,
+    retrySendMessage,
+    selectReaction,
+    setEditingState,
+    setOverlay,
+    setQuotedMessageState,
+    supportedReactions,
+    t,
+    updateMessage,
+  });
 
   const showMessageOverlay = async (
     messageReactions = false,
     error = message.type === 'error' || message.status === 'failed',
   ) => {
     await dismissKeyboard();
-
-    const blockUser: MessageActionType = {
-      action: () => async () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (message.user?.id) {
-            if (handleBlock) {
-              handleBlock(message);
-            }
-
-            await handleToggleBanUser();
-          }
-        }
-      },
-      actionType: 'blockUser',
-      icon: <UserDelete pathFill={grey} />,
-      title: message.user?.banned ? t('Unblock User') : t('Block User'),
-    };
-
-    const copyMessage: MessageActionType = {
-      // using depreciated Clipboard from react-native until expo supports the community version or their own
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (handleCopy) {
-            handleCopy(message);
-          }
-          Clipboard.setString(message.text || '');
-        }
-      },
-      actionType: 'copyMessage',
-      icon: <Copy pathFill={grey} />,
-      title: t('Copy Message'),
-    };
-
-    const deleteMessage: MessageActionType = {
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('alert');
-          if (message.id) {
-            Alert.alert(
-              t('Delete Message'),
-              t('Are you sure you want to permanently delete this message?'),
-              [
-                { onPress: () => setOverlay('none'), text: t('Cancel') },
-                {
-                  onPress: async () => {
-                    setOverlay('none');
-                    if (handleDelete) {
-                      handleDelete(message);
-                    }
-
-                    await handleDeleteMessage();
-                  },
-                  style: 'destructive',
-                  text: t('Delete'),
-                },
-              ],
-              { cancelable: false },
-            );
-          }
-        }
-      },
-      actionType: 'deleteMessage',
-      icon: <Delete pathFill={accent_red} />,
-      title: t('Delete Message'),
-      titleStyle: { color: accent_red },
-    };
-
-    const editMessage: MessageActionType = {
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (handleEdit) {
-            handleEdit(message);
-          }
-          handleEditMessage();
-        }
-      },
-      actionType: 'editMessage',
-      icon: <Edit pathFill={grey} />,
-      title: t('Edit Message'),
-    };
-
-    const pinMessage: MessageActionType = {
-      action: () => {
-        setOverlay('none');
-        if (handlePinMessage) {
-          handlePinMessage(message);
-        }
-        handleTogglePinMessage();
-      },
-      actionType: 'pinMessage',
-      icon: <Pin height={23} pathFill={grey} width={24} />,
-      title: t('Pin to Conversation'),
-    };
-
-    const unpinMessage: MessageActionType = {
-      action: () => {
-        setOverlay('none');
-        if (handlePinMessage) {
-          handlePinMessage(message);
-        }
-        handleTogglePinMessage();
-      },
-      actionType: 'unpinMessage',
-      icon: <Unpin pathFill={grey} />,
-      title: t('Unpin from Conversation'),
-    };
-
-    const flagMessage: MessageActionType = {
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('alert');
-          if (message.id) {
-            Alert.alert(
-              t('Flag Message'),
-              t(
-                'Do you want to send a copy of this message to a moderator for further investigation?',
-              ),
-              [
-                { onPress: () => setOverlay('none'), text: t('Cancel') },
-                {
-                  onPress: async () => {
-                    try {
-                      if (handleFlag) {
-                        handleFlag(message);
-                      }
-                      await client.flagMessage(message.id);
-                      Alert.alert(
-                        t('Message flagged'),
-                        t('The message has been reported to a moderator.'),
-                        [
-                          {
-                            onPress: () => setOverlay('none'),
-                            text: t('Dismiss'),
-                          },
-                        ],
-                      );
-                    } catch (err) {
-                      Alert.alert(
-                        t('Something went wrong'),
-                        t("The operation couldn't be completed."),
-                        [
-                          {
-                            onPress: () => setOverlay('none'),
-                            text: t('Dismiss'),
-                          },
-                        ],
-                      );
-                    }
-                  },
-                  text: t('Flag'),
-                },
-              ],
-              { cancelable: false },
-            );
-          }
-        }
-      },
-      actionType: 'flagMessage',
-      icon: <MessageFlag pathFill={grey} />,
-      title: t('Flag Message'),
-    };
-
-    const handleReaction = !error
-      ? selectReaction
-        ? selectReaction(message)
-        : async (reactionType: string) => {
-            if (!StreamCache.getInstance().currentNetworkState) {
-              toast.show(t('Something went wrong'), 2000);
-            } else {
-              if (handleReactionProp) {
-                handleReactionProp(message, reactionType);
-              }
-
-              await handleToggleReaction(reactionType);
-            }
-          }
-      : undefined;
-
-    const muteUser: MessageActionType = {
-      action: async () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (message.user?.id) {
-            if (handleMute) {
-              handleMute(message);
-            }
-
-            await handleToggleMuteUser();
-          }
-        }
-      },
-      actionType: 'muteUser',
-      icon: <Mute pathFill={grey} />,
-      title: isMuted ? t('Unmute User') : t('Mute User'),
-    };
-
-    const quotedReply: MessageActionType = {
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (handleQuotedReply) {
-            handleQuotedReply(message);
-          }
-          handleQuotedReplyMessage();
-        }
-      },
-      actionType: 'quotedReply',
-      icon: <CurveLineLeftUp pathFill={grey} />,
-      title: t('Reply'),
-    };
-
-    const retry: MessageActionType = {
-      action: async () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          const messageWithoutReservedFields = removeReservedFields(message);
-          if (handleRetry) {
-            handleRetry(messageWithoutReservedFields);
-          }
-
-          await handleResendMessage();
-        }
-      },
-      actionType: 'retry',
-      icon: <SendUp pathFill={accent_blue} />,
-      title: t('Resend'),
-    };
-
-    const threadReply: MessageActionType = {
-      action: () => {
-        if (!StreamCache.getInstance().currentNetworkState) {
-          toast.show(t('Something went wrong'), 2000);
-        } else {
-          setOverlay('none');
-          if (handleThreadReply) {
-            handleThreadReply(message);
-          }
-          onOpenThread();
-        }
-      },
-      actionType: 'threadReply',
-      icon: <ThreadReply pathFill={grey} />,
-      title: t('Thread Reply'),
-    };
 
     const isThreadMessage = threadList || !!message.parent_id;
 
@@ -994,6 +695,7 @@ const MessageWithContext = <
   const actionHandlers: MessageActionHandlers = {
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
+    pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
     showMessageOverlay,

@@ -10,7 +10,10 @@ import type { MessageActionListItemProps } from '../MessageActionListItem';
 
 export const useMessageActionAnimation = ({
   action,
-}: Pick<MessageActionListItemProps, 'action'>) => {
+  activeOpacity = 0.2,
+}: Pick<MessageActionListItemProps, 'action'> & {
+  activeOpacity?: number;
+}) => {
   const opacity = useSharedValue(1);
 
   const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
@@ -22,7 +25,7 @@ export const useMessageActionAnimation = ({
         opacity.value = 1;
       },
       onStart: () => {
-        opacity.value = 0.2;
+        opacity.value = activeOpacity;
       },
     },
     [action],

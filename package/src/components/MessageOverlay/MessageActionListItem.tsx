@@ -5,7 +5,7 @@ import Animated from 'react-native-reanimated';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
 import { vw } from '../../utils/utils';
-import type { MessageActionListProps } from './MessageActionList';
+import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
 const styles = StyleSheet.create({
   bottomBorder: {
@@ -54,7 +54,7 @@ export type MessageActionType = {
 
 export type MessageActionListItemProps = MessageActionType &
   Pick<
-    MessageActionListProps,
+    MessageOverlayPropsWithContext,
     | 'canModifyMessage'
     | 'error'
     | 'isMyMessage'
@@ -62,8 +62,8 @@ export type MessageActionListItemProps = MessageActionType &
     | 'message'
     | 'messageReactions'
     | 'mutesEnabled'
-    | 'pinMessageEnabled'
     | 'quotedRepliesEnabled'
+    | 'pinMessageEnabled'
     | 'threadRepliesEnabled'
   > & {
     index: number;

@@ -13,17 +13,17 @@ import type { MessageContextValue } from '../../../contexts/messageContext/Messa
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
 export type MessageActionsProps = {
-  blockUser: MessageActionType | null;
-  copyMessage: MessageActionType | null;
-  deleteMessage: MessageActionType | null;
-  editMessage: MessageActionType | null;
-  flagMessage: MessageActionType | null;
-  muteUser: MessageActionType | null;
-  pinMessage: MessageActionType | null;
-  quotedReply: MessageActionType | null;
-  retry: MessageActionType | null;
-  threadReply: MessageActionType | null;
-  unpinMessage: MessageActionType | null;
+  blockUser: MessageActionType;
+  copyMessage: MessageActionType;
+  deleteMessage: MessageActionType;
+  editMessage: MessageActionType;
+  flagMessage: MessageActionType;
+  muteUser: MessageActionType;
+  pinMessage: MessageActionType;
+  quotedReply: MessageActionType;
+  retry: MessageActionType;
+  threadReply: MessageActionType;
+  unpinMessage: MessageActionType;
 };
 
 export const messageActions = <

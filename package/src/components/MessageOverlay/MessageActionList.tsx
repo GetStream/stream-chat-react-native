@@ -6,10 +6,9 @@ import {
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import type { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
-import type { MessageContextValue } from '../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import { vw } from '../../utils/utils';
 
 import type {
@@ -22,7 +21,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { MessageType, OverlayProviderProps } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({
   bottomBorder: {
@@ -54,19 +52,22 @@ export type MessageActionListPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>, 'MessageActionListItem'> &
-  Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'isMyMessage'> &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
-  > & {
-    canModifyMessage: boolean;
-    error: boolean | Error;
-    isThreadMessage: boolean;
-    messageReactions: boolean;
+> = Pick<
+  OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'MessageActionListItem'
+  | 'canModifyMessage'
+  | 'error'
+  | 'isMyMessage'
+  | 'isThreadMessage'
+  | 'message'
+  | 'messageReactions'
+  | 'mutesEnabled'
+  | 'quotedRepliesEnabled'
+  | 'pinMessageEnabled'
+  | 'threadRepliesEnabled'
+> &
+  Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
     showScreen: Animated.SharedValue<number>;
-    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   };
 
 const MessageActionListWithContext = <

@@ -37,6 +37,7 @@ import {
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import {
   OverlayContextValue,
+  OverlayProviderProps,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -105,17 +106,21 @@ export type MessageOverlayPropsWithContext<
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'isMyMessage'> &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
+    OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'canModifyMessage'
+    | 'error'
+    | 'isMyMessage'
+    | 'isThreadMessage'
+    | 'message'
+    | 'messageReactions'
+    | 'mutesEnabled'
+    | 'overlayOpacity'
+    | 'quotedRepliesEnabled'
+    | 'pinMessageEnabled'
+    | 'threadRepliesEnabled'
   > & {
-    canModifyMessage: boolean;
-    error: boolean | Error;
-    isThreadMessage: boolean;
-    messageReactions: boolean;
-    overlayOpacity: Animated.SharedValue<number>;
-    showScreen: Animated.SharedValue<number>;
+    showScreen?: Animated.SharedValue<number>;
     visible?: boolean;
   };
 
@@ -643,7 +648,10 @@ export type MessageOverlayProps<
   Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
   Pick<
     MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+<<<<<<< HEAD
     | 'showScreen'
+=======
+>>>>>>> 273c6861c79d728fd787610cfc8295c63430330b
     | 'isMyMessage'
     | 'canModifyMessage'
     | 'quotedRepliesEnabled'
