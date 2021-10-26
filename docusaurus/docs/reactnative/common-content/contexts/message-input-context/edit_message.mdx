@@ -1,6 +1,4 @@
-Override of the *Edit Message* [`MessageAction`](/reactnative/object-types/message-action) shown when a user long presses a message.
-The `editMessage` function receives as a parameter the relevant message and must return a `MessageAction`.
-Please refer to [the guide on customizing message actions](../../../guides/message_actions_customization.mdx) for details.
+Handles the edit message event on the message input by taking the new message as an input and updating the messge for the client.
 
 | Type |
 | - |
@@ -9,3 +7,4 @@ Please refer to [the guide on customizing message actions](../../../guides/messa
 | Parameter | Description |
 | - | - |
 | message	| message the action is called on |
+| userId | The channel ID |
