@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.9.0...v3.9.1) (2021-10-22)
+
+
+### Bug Fixes
+
+* fixed react warnings - Can not perform a React state update on an unmounted component [CRNS-444] ([6240948](https://github.com/GetStream/stream-chat-react-native/commit/6240948d731ea8a6d98c3aa9c8896344392d1a40))
+
 ## [3.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.8.3...v3.9.0) (2021-10-12)
 
 

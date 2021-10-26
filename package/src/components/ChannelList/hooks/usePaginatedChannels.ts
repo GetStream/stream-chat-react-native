@@ -5,6 +5,7 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { StreamCache } from '../../../StreamCache';
+import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
@@ -67,6 +68,7 @@ export const usePaginatedChannels = <
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const isMounted = useIsMountedRef();
 
   useEffect(() => {
     if (cacheInstance) {
@@ -75,7 +77,8 @@ export const usePaginatedChannels = <
   }, [channels]);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
-    if (!client || loadingChannels || loadingNextPage || refreshing) return;
+    if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
+
     querying.current = true;
     setError(false);
 
@@ -98,6 +101,8 @@ export const usePaginatedChannels = <
         skipInitialization: activeChannels.current,
       });
 
+      if (!isMounted.current) return;
+
       channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
       const newChannels =
@@ -117,6 +122,8 @@ export const usePaginatedChannels = <
     } catch (err) {
       querying.current = false;
       await wait(2000);
+
+      if (!isMounted.current) return;
 
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)

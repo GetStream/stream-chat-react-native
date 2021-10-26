@@ -400,26 +400,26 @@ export type MessagesContextValue<
         threadRepliesEnabled,
         threadReply,
       }: {
-        blockUser: MessageActionType | null;
+        blockUser: MessageActionType;
         canModifyMessage: boolean;
-        copyMessage: MessageActionType | null;
-        deleteMessage: MessageActionType | null;
+        copyMessage: MessageActionType;
+        deleteMessage: MessageActionType;
         dismissOverlay: () => void;
-        editMessage: MessageActionType | null;
+        editMessage: MessageActionType;
         error: boolean | Error;
-        flagMessage: MessageActionType | null;
+        flagMessage: MessageActionType;
         isMyMessage: boolean;
         isThreadMessage: boolean;
         message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
         messageReactions: boolean;
-        muteUser: MessageActionType | null;
-        quotedReply: MessageActionType | null;
-        retry: MessageActionType | null;
-        threadReply: MessageActionType | null;
+        muteUser: MessageActionType;
+        quotedReply: MessageActionType;
+        retry: MessageActionType;
+        threadReply: MessageActionType;
         pinMessageEnabled?: boolean;
         quotedRepliesEnabled?: boolean;
         threadRepliesEnabled?: boolean;
-      }) => (MessageActionType | null)[] | undefined);
+      }) => MessageActionType[] | undefined);
   /**
    * Custom message header component
    */
