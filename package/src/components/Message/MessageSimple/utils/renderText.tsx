@@ -81,6 +81,7 @@ export type RenderTextParams<
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   messageOverlay?: boolean;
+  messageTextNumberOfLines?: number;
   onLink?: (url: string) => Promise<void>;
   onlyEmojis?: boolean;
 };
@@ -102,6 +103,7 @@ export const renderText = <
     markdownStyles,
     message,
     messageOverlay,
+    messageTextNumberOfLines,
     onLink: onLinkParams,
     onLongPress: onLongPressParam,
     onlyEmojis,
@@ -130,6 +132,7 @@ export const renderText = <
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
+
   const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
     ...markdownStyles,
@@ -198,6 +201,20 @@ export const renderText = <
     return link;
   };
 
+  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => {
+    const paragraph = React.createElement(
+      Text,
+      {
+        key: state.key,
+        numberOfLines: messageTextNumberOfLines,
+        style: styles.paragraph,
+      },
+      output(node.content, state),
+    );
+
+    return paragraph;
+  };
+
   const mentionedUsers = Array.isArray(mentioned_users)
     ? mentioned_users.reduce((acc, cur) => {
         const userName = cur.name || cur.id || '';
@@ -244,6 +261,8 @@ export const renderText = <
 
   const customRules = {
     link: { react },
+    // to deal with the long text  message in the message overlay text
+    paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
     ...(mentionedUsers

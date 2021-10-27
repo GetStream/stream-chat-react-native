@@ -57,6 +57,7 @@ export type MessageTextContainerPropsWithContext<
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'markdownRules' | 'MessageText'> & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
+    messageTextNumberOfLines?: number;
     styles?: Partial<{
       textContainer: StyleProp<ViewStyle>;
     }>;
@@ -81,6 +82,7 @@ const MessageTextContainerWithContext = <
     message,
     messageOverlay,
     MessageText,
+    messageTextNumberOfLines,
     onLongPress,
     onlyEmojis,
     onPress,
@@ -121,6 +123,7 @@ const MessageTextContainerWithContext = <
           },
           message,
           messageOverlay,
+          messageTextNumberOfLines,
           onLongPress,
           onlyEmojis,
           onPress,
@@ -192,6 +195,7 @@ export const MessageTextContainer = <
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { markdownRules, MessageText } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { messageTextNumberOfLines } = props;
 
   return (
     <MemoizedMessageTextContainer
@@ -199,6 +203,7 @@ export const MessageTextContainer = <
         markdownRules,
         message,
         MessageText,
+        messageTextNumberOfLines,
         onLongPress,
         onlyEmojis,
         onPress,
