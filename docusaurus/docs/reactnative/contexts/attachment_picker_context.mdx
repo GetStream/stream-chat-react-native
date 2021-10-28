@@ -15,7 +15,7 @@ import ImageSelectorIcon from '../common-content/core-components/overlay-provide
 
 ## Basic Usage
 
-`AttachmentPickerContext` can be consumed by any of the child  component of `OverlayProvider` component as following:
+`AttachmentPickerContext` can be consumed by any of the child component of `OverlayProvider` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -46,8 +46,8 @@ const { openPicker, closePicker } = useAttachmentPickerContext();
 
 `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
 
-| Type | Default |
-| - | - |
+| Type   | Default                                                              |
+| ------ | -------------------------------------------------------------------- |
 | number | [`bottomInset`](../core-components/overlay_provider.mdx#bottominset) |
 
 ### <div class="label description">_forwarded from [OverlayProvider](../core-components/overlay_provider.mdx#cameraselectoricon)_ props</div> CameraSelectorIcon {#cameraselectoricon}
@@ -58,8 +58,8 @@ const { openPicker, closePicker } = useAttachmentPickerContext();
 
 Function to close the attachment picker bottom sheet.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### <div class="label description">_forwarded from [OverlayProvider](../core-components/overlay_provider.mdx#fileselectoricon)_ props</div> FileSelectorIcon {#fileselectoricon}
@@ -82,8 +82,8 @@ Maximum number of files (images + documents) which can be uploaded.
 
 Function to open the attachment picker bottom sheet.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### selectedImages
@@ -100,8 +100,8 @@ Array<{
 }>
 ```
 
-| Type |
-| - |
+| Type  |
+| ----- |
 | array |
 
 ### selectedPicker
@@ -112,8 +112,8 @@ Array<{
 
 Setter function for [`bottomInset`](#bottominset)
 
-| Type |
-| - |
+| Type                            |
+| ------------------------------- |
 | `(bottomInset: number) => void` |
 
 <!-- ### setMaxNumberOfFiles -->
@@ -122,30 +122,30 @@ Setter function for [`bottomInset`](#bottominset)
 
 Setter function for [`selectedImages`](#selectedimages)
 
-| Type |
-| - |
+| Type                       |
+| -------------------------- |
 | `(selectedImages) => void` |
 
 ### setSelectedPicker
 
 Setter function for [`selectedPicker`](#selectedpicker)
 
-| Type |
-| - |
+| Type               |
+| ------------------ | ------------------- |
 | `(picker: 'images' | undefined) => void` |
 
 ### setTopInset
 
 Setter function for [`topInset`](#topinset)
 
-| Type |
-| - |
+| Type                         |
+| ---------------------------- |
 | `(topInset: number) => void` |
 
 ### topInset
 
 `topInset` is used to determine how high the scrollable bottom-sheet can go when opened.
 
-| Type | Default |
-| - | - |
+| Type   | Default                                                        |
+| ------ | -------------------------------------------------------------- |
 | number | [`topInset`](../core-components/overlay_provider.mdx#topInset) |

@@ -33,7 +33,7 @@ Set any additional props on underlying [FlatList](https://reactnative.dev/docs/f
 ```jsx
 const flatListProps = { bounces: true };
 
-<MessageList additionalFlatListProps={flatListProps} />
+<MessageList additionalFlatListProps={flatListProps} />;
 ```
 
 :::caution
@@ -42,25 +42,25 @@ Don't use `additionalFlatListProps` to access the FlatList ref, use [`setFlatLis
 
 :::
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### inverted
 
 Sets the `inverted` prop on underlying [FlatList](https://reactnative.dev/docs/flatlist#inverted)
 
-| Type | Default |
-| - | - |
-| boolean | true |
+| Type    | Default |
+| ------- | ------- |
+| boolean | true    |
 
 ### noGroupByUser
 
 When true, consecutive messages from same user won't be grouped together. Avatar for user of message is only shown for last message of the group.
 
-| Type | Default |
-| - | - |
-| boolean | false |
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
 ### onListScroll
 
@@ -80,8 +80,8 @@ The event has the following shape (all values are numbers):
 }
 ```
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### onThreadSelect
@@ -89,8 +89,8 @@ The event has the following shape (all values are numbers):
 Function which gets called when user presses on `"Thread Reply"` action from message actions or `MessageReplies` component which displays the number of thread replies on the message.
 You should put navigation logic to switch to Thread Screen within this function.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### setFlatListRef
@@ -102,11 +102,11 @@ Use this callback function to gain access to the underlying FlatList ref.
 ```jsx
 const flRef = useRef();
 
-<MessageList setFlatListRef={(ref) => flRef.current = ref} />
+<MessageList setFlatListRef={ref => (flRef.current = ref)} />;
 ```
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 <!-- ### threadList
@@ -122,8 +122,8 @@ Boolean whether or not the Messages in the MessageList are part of a Thread.
 Component to render footer for MessageList component. Since we use inverted FlatList, this component will be rendered at top of the list.
 In absence of this prop, an inline loading indicator will be rendered when channel is loading more results.
 
-| Type | Default |
-| - | - |
+| Type      | Default                                                                                                                                                           |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | component | [InlineLoadingMoreIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/InlineLoadingMoreIndicator.tsx) |
 
 ### HeaderComponent
@@ -131,7 +131,6 @@ In absence of this prop, an inline loading indicator will be rendered when chann
 Component to render header for MessageList component. Since we use inverted FlatList, this component will be rendered at bottom of the list.
 In absence of this prop, an inline loading indicator will be rendered when channel is loading more results.
 
-| Type | Default |
-| - | - |
+| Type      | Default                                                                                                                                                                       |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | component | [InlineLoadingMoreRecentIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/InlineLoadingMoreRecentIndicator.tsx) |
-

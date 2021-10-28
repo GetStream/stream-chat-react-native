@@ -4,7 +4,7 @@ sidebar_position: 4
 title: Customize ChannelList
 ---
 
-import loadMoreButton from '../assets/guides/channel-list-customization/load_more_button.png'
+import loadMoreButton from '../assets/guides/channel-list-customization/load_more_button.png';
 
 Let's look at how to make some customizations to [`ChannelList`](../core-components/channel_list.mdx).
 
@@ -16,17 +16,17 @@ It's important to note that [`filters`](../core-components/channel_list.mdx#filt
 
 The event type the `ChannelList` reacts to and its corresponding behavior can be overridden using the appropriate prop.
 
-| [Event Type](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) | Default Behavior | Prop to override |
-| - | - | - |
-| `channel.deleted` | Remove channel from the list | [onChannelDeleted](../core-components/channel_list.mdx#onchanneldeleted) |
-| `channel.hidden` | Remove channel from the list | [onChannelHidden](../core-components/channel_list.mdx#onchannelhidden) |
-| `channel.truncated` | Updates the channel | [onChannelTruncated](../core-components/channel_list.mdx#onchanneltruncated) |
-| `channel.updated` | Updates the channel | [onChannelUpdated](../core-components/channel_list.mdx#onchannelupdated) |
-| `channel.visible` | Adds the channel to the list | [onChannelVisible](../core-components/channel_list.mdx#onchannelvisible) |
-| `message.new` | Moves the channel to top of the list | [lockChannelOrder](../core-components/channel_list.mdx#lockchannelorder) |
-| `notification.added_to_channel` | Adds the new channel to the top of the list and starts watching it | [onAddedToChannel](../core-components/channel_list.mdx#onaddedtochannel) |
-| `notification.message_new` | Adds the new channel to the top of the list and starts watching it | [onMessageNew](../core-components/channel_list.mdx#onmessagenew) |
-| `notification.removed_from_channel` | Removes the channel from the list | [onRemovedFromChannel](../core-components/channel_list.mdx#onremovedfromchannel) |
+| [Event Type](https://getstream.io/chat/docs/javascript/event_object/?language=javascript) | Default Behavior                                                   | Prop to override                                                                 |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `channel.deleted`                                                                         | Remove channel from the list                                       | [onChannelDeleted](../core-components/channel_list.mdx#onchanneldeleted)         |
+| `channel.hidden`                                                                          | Remove channel from the list                                       | [onChannelHidden](../core-components/channel_list.mdx#onchannelhidden)           |
+| `channel.truncated`                                                                       | Updates the channel                                                | [onChannelTruncated](../core-components/channel_list.mdx#onchanneltruncated)     |
+| `channel.updated`                                                                         | Updates the channel                                                | [onChannelUpdated](../core-components/channel_list.mdx#onchannelupdated)         |
+| `channel.visible`                                                                         | Adds the channel to the list                                       | [onChannelVisible](../core-components/channel_list.mdx#onchannelvisible)         |
+| `message.new`                                                                             | Moves the channel to top of the list                               | [lockChannelOrder](../core-components/channel_list.mdx#lockchannelorder)         |
+| `notification.added_to_channel`                                                           | Adds the new channel to the top of the list and starts watching it | [onAddedToChannel](../core-components/channel_list.mdx#onaddedtochannel)         |
+| `notification.message_new`                                                                | Adds the new channel to the top of the list and starts watching it | [onMessageNew](../core-components/channel_list.mdx#onmessagenew)                 |
+| `notification.removed_from_channel`                                                       | Removes the channel from the list                                  | [onRemovedFromChannel](../core-components/channel_list.mdx#onremovedfromchannel) |
 
 Let's take an example of ChannelList component for [frozen channels](https://getstream.io/chat/docs/javascript/freezing_channels/).
 
@@ -51,8 +51,8 @@ These parameters can be used to create a function that achieves the desired cust
 ```tsx {6-19,23}
 const filters = {
   members: { $in: ['vishal'] },
-  frozen: true
-}
+  frozen: true,
+};
 
 const customOnMessageNew = async (setChannels, event) => {
   const eventChannel = event.channel;
@@ -69,10 +69,7 @@ const customOnMessageNew = async (setChannels, event) => {
   }
 };
 
-<ChannelList
-  filters={filters}
-  onMessageNew={customOnMessageNew}
-/>
+<ChannelList filters={filters} onMessageNew={customOnMessageNew} />;
 ```
 
 Similarly, events other than notification.message_new can be handled as per application requirement.
@@ -110,10 +107,10 @@ const FooterLoadMoreButton = () => {
   return <Button title={'Load More'} onPress={loadNextPage} />;
 };
 
-<ChannelList 
+<ChannelList
   additionalFlatListProps={{
     ListFooterComponent: FooterLoadMoreButton,
-    onEndReached: () => null
+    onEndReached: () => null,
   }}
-/>
+/>;
 ```

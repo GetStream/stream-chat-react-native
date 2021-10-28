@@ -3,6 +3,7 @@ id: overlay-provider
 sidebar_position: 1
 title: OverlayProvider
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -43,17 +44,18 @@ For detailed implementation instructions of the `OverlayProvider` with navigatio
 :::
 
 ```tsx {7,11}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const App = () =>
+export const App = () => (
   <OverlayProvider>
     <Chat client={client}>
       <ChannelList />
     </Chat>
-  </OverlayProvider>;
+  </OverlayProvider>
+);
 ```
 
 ## Context Providers
@@ -61,14 +63,14 @@ export const App = () =>
 `OverlayProvider` contains providers for the `AttachmentPickerContext`, `ImageGalleryContext`, `MessageOverlayContext`, `OverlayContext`, `ThemeContext`, and `TranslationContext`.
 These can be accessed using the corresponding hooks.
 
-| Context | Hook |
-| - | - |
+| Context                   | Hook                         |
+| ------------------------- | ---------------------------- |
 | `AttachmentPickerContext` | `useAttachmentPickerContext` |
-| `ImageGalleryContext` | `useImageGalleryContext` |
-| `MessageOverlayContext` | `useMessageOverlayContext` |
-| `OverlayContext` | `useOverlayContext` |
-| `ThemeContext` | `useTheme` |
-| `TranslationContext` | `useTranslationContext` |
+| `ImageGalleryContext`     | `useImageGalleryContext`     |
+| `MessageOverlayContext`   | `useMessageOverlayContext`   |
+| `OverlayContext`          | `useOverlayContext`          |
+| `ThemeContext`            | `useTheme`                   |
+| `TranslationContext`      | `useTranslationContext`      |
 
 ## UI Customizations
 
@@ -133,6 +135,7 @@ The `OverlayProvider` can be used with no props provided but there are a plethor
 <AttachmentSelectionBarHeight />
 
 ### bottomInset
+
 Height of items located below the `MessageInput` when present.
 This inset determines the underlying shift to the `MessageList` when it is opened.
 
@@ -142,9 +145,9 @@ This can also be set via the `setBottomInset` function provided by the `useAttac
 
 :::
 
-| Type | Default |
-| - | - |
-| number | 0 |
+| Type   | Default |
+| ------ | ------- |
+| number | 0       |
 
 ### i18nInstance
 
@@ -181,13 +184,13 @@ This is often set to the header height.
 
 :::tip
 
-This can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. 
+This can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook.
 
 :::
 
-| Type | Default |
-| - | - |
-| number | 0 |
+| Type   | Default |
+| ------ | ------- |
+| number | 0       |
 
 ### value
 

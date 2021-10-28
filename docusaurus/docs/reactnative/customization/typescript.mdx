@@ -4,8 +4,8 @@ sidebar_position: 4
 title: TypeScript
 ---
 
-import explicitTypes from '../assets/customization/typescript/explicit_types.png'
-import inference from '../assets/customization/typescript/inference.png'
+import explicitTypes from '../assets/customization/typescript/explicit_types.png';
+import inference from '../assets/customization/typescript/inference.png';
 
 `stream-chat-react-native` as well as the client library `stream-chat-js` are written in TypeScript and therefore provide full TypeScript types and support.
 
@@ -72,10 +72,10 @@ To set `ChannelType` and `MessageType` for `AttachmentType`, `CommandType`, and 
 ```tsx
 const client = StreamChat.getInstance<
   DefaultAttachmentType,
-  { image?: string, nickName?: string },
+  { image?: string; nickName?: string },
   DefaultCommandType,
   DefaultEventType,
-  { isAdminMessage?: boolean },
+  { isAdminMessage?: boolean }
 >('YOUR_API_KEY');
 ```
 
@@ -94,7 +94,7 @@ Core to understanding this usage is [how generics can be applied to JSX elements
 In many cases the use of a single prop such as `client` or `channel` allows TypeScript to infer the generics on an element.
 In this case `LocalAttachmentType` is inferred from `channel` and passed to the props type for a custom Attachment component.
 
-<img src={inference} alt="TypeScript Inference" />
+<img src={inference} alt='TypeScript Inference' />
 
 Not all components use or are always provided a prop that can provide inference though.
 In these cases the generics must be applied to the component directly.
@@ -103,18 +103,20 @@ In these cases the generics must be applied to the component directly.
 ```tsx
 <MessageList<
   DefaultAttachmentType,
-  { image?: string, nickName?: string },
+  { image?: string; nickName?: string },
   DefaultCommandType,
   DefaultEventType,
-  { isAdminMessage?: boolean },
+  { isAdminMessage?: boolean }
 >
-  onThreadSelect={(thread) => {/** Set thread and navigate to thread screen */}}
+  onThreadSelect={thread => {
+    /** Set thread and navigate to thread screen */
+  }}
 />
 ```
 
 This passes the generics through appropriately to custom components and other props, in this case the custom `Message` component would receive the generics.
 
-<img src={explicitTypes} alt="Explicit Types" />
+<img src={explicitTypes} alt='Explicit Types' />
 
 ## Hooks
 
@@ -124,11 +126,11 @@ Hooks, including those to access contexts, also require generics to be applied t
 ```tsx
 const { channel } = useChannelContext<
   DefaultAttachmentType,
-  { image?: string, nickName?: string },
+  { image?: string; nickName?: string },
   DefaultCommandType,
   DefaultEventType,
-  { isAdminMessage?: boolean },
-  >();
+  { isAdminMessage?: boolean }
+>();
 ```
 
 ## Partial inference
@@ -145,8 +147,9 @@ The `withChannelContext` HOC accepts the generics similarly to the `useChannelCo
 withChannelContext<
   MyComponentProps,
   DefaultAttachmentType,
-  { image?: string, nickName?: string },
+  { image?: string; nickName?: string },
   DefaultCommandType,
   DefaultEventType,
-  { isAdminMessage?: boolean },
+  { isAdminMessage?: boolean }
 >(MyComponent);
+```

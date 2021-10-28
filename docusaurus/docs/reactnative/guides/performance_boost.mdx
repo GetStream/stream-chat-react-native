@@ -4,7 +4,7 @@ sidebar_position: 5
 title: Performance Boost
 ---
 
-import channelSettings from '../assets/guides/performance-boost/channel_settings.jpeg'
+import channelSettings from '../assets/guides/performance-boost/channel_settings.jpeg';
 
 React Native Chat SDK provides feature-rich components which cater to all types of chat messaging applications.
 Some of the features or components may come with a performance cost you will want to avoid for high
@@ -25,27 +25,25 @@ It's also important to note that increasing the number of enabled events for a c
 
 ## State update throttling
 
-The [Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from the websocket.	 
-  
- By default, these state updates are throttled to once per 500 ms. For high-traffic applications, you may want to adjust the throttling interval to a higher number. You can configure throttle interval via the following props on the Channel component:	 
-   
- - The `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.	 
-  
- - The `stateUpdateThrottleInterval` prop adjusts the throttling interval for state updates for all the other updates to a channel except new message.	 
-  
+The [Channel](../core-components/channel.mdx) component updates its internal react state based on chat related events received from the websocket.
+
+By default, these state updates are throttled to once per 500 ms. For high-traffic applications, you may want to adjust the throttling interval to a higher number. You can configure throttle interval via the following props on the Channel component:
+
+- The `newMessageStateUpdateThrottleInterval` prop adjusts the throttling interval for state updates when new messages arrive in chat.
+
+- The `stateUpdateThrottleInterval` prop adjusts the throttling interval for state updates for all the other updates to a channel except new message.
+
 We recommend the following configuration, but you can adjust it to fit the requirements of your application.
 
 ```tsx
-<Channel
-  newMessageStateUpdateThrottleInterval={2000}
-  stateUpdateThrottleInterval={800}
-/>
+<Channel newMessageStateUpdateThrottleInterval={2000} stateUpdateThrottleInterval={800} />
 ```
 
 :::note
+
 - These props are available in version >= v3.9.0
 - Changes to `stateUpdateThrottleInterval` will result in delays in adding a reaction to a message. Therefore, you should avoid setting the value too high.
-:::
+  :::
 
 ## Heavy UI features
 
@@ -71,20 +69,17 @@ You can enable this alternate UX by setting the prop `legacyImageViewerSwipeBeha
 ### Sticky Date Header and Inline Date Separator
 
 By default, the MessageList component renders a sticky date header at the top of the list, and date separators between messages from different dates.
-Computation and insertion of these dates can be heavy for a message list when there are a lot of messages in the channel since it involves iterating through the entire list. 
+Computation and insertion of these dates can be heavy for a message list when there are a lot of messages in the channel since it involves iterating through the entire list.
 
 For livestream applications, we would recommend disabling these features using the following two props on a Channel component:
 
 ```tsx
-<Channel
-  hideDateSeparators={true}
-  hideStickyDateHeader={true}
-/>
+<Channel hideDateSeparators={true} hideStickyDateHeader={true} />
 ```
 
 ### Message grouping
 
-Messages from the same user are grouped by default in the MessageList component. Creating these groups involves iterating through the entire list of messages and thus can be heavy if the length of the message list is too long. 
+Messages from the same user are grouped by default in the MessageList component. Creating these groups involves iterating through the entire list of messages and thus can be heavy if the length of the message list is too long.
 
 You can disable this feature by setting the `enableMessageGroupingByUser` prop to false on a Channel component.
 

@@ -1,8 +1,11 @@
 <!-- TODO: Change to new docs -->
+
 Members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
 
 :::caution
+
 <!-- TODO: Change to new docs -->
+
 `client.queryChannels()` or `channel.watch()` returns only upto 100 members of channel. So if you expect total number of members to be > 100, its better to use [`client.queryMembers()`](https://getstream.io/chat/docs/javascript/query_members/?language=javascript&q=members) api endpoint separately to get the list of members.
 :::
 
@@ -25,6 +28,6 @@ Record<
 >
 ```
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |

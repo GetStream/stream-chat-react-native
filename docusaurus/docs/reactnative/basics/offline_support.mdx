@@ -12,7 +12,7 @@ token or token provider function. `cacheMedia` param is not required and default
 
 Please have in mind that we don't encrypt the data or block the access to the folder where images are stored.
 Once the set/get functions are provided to the `StreamCache` singleton, you should implement the data encryption in there when needed.
-Also, we store the cached media in the `DocumentDirectoryPath`, which other apps dont have access by default but this 
+Also, we store the cached media in the `DocumentDirectoryPath`, which other apps dont have access by default but this
 can be changed on application level, so please make sure you're not allowing other apps to access your `DocumentDirectoryPath`.
 
 :::
@@ -22,7 +22,6 @@ can be changed on application level, so please make sure you're not allowing oth
 First, create the `cacheInterface` object.
 
 ```ts
-
 import AsyncStorage from '@react-native-community/async-storage';
 import { CacheKeys, CacheValues } from 'stream-chat-react-native';
 
@@ -39,27 +38,25 @@ import type {
 } from '../types';
 
 const cacheInterface: CacheInterface<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > = {
-      getItem: (key) => AsyncStore.getItem(key, null),
-      removeItem: (key) => AsyncStore.removeItem(key),
-      setItem: (key, value) => AsyncStore.setItem(key, value),
-    };
-
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+> = {
+  getItem: key => AsyncStore.getItem(key, null),
+  removeItem: key => AsyncStore.removeItem(key),
+  setItem: (key, value) => AsyncStore.setItem(key, value),
+};
 ```
 
 ### Cache interface with synchronous storage providers
 
-Once we need to support both synchronous and asynchronous storage providers, you need to wrap the return values of your cache 
+Once we need to support both synchronous and asynchronous storage providers, you need to wrap the return values of your cache
 interface into promises.
 
 ```ts
-
 import { MMKV } from 'react-native-mmkv';
 import { CacheKeys, CacheValues } from 'stream-chat-react-native';
 
@@ -76,42 +73,41 @@ import type {
 } from '../types';
 
 const cacheInterface: CacheInterface<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > = {
-    getItem: (key) => {
-        const value = MMKV.getString(key)
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalUserType
+> = {
+  getItem: key => {
+    const value = MMKV.getString(key);
 
-        if (!value) {
-            return Promise.resolve(null);
-        }
+    if (!value) {
+      return Promise.resolve(null);
+    }
 
-        return Promise.resolve(JSON.parse(value) as CacheValues[Key]);
-    },
-    removeItem: (key) => {
-        return Promise.resolve(MMKV.delete(key));
-    },
-    setItem: (key, value) => {
-        return Promise.resolve(MMKV.set(key, JSON.stringify(value)));
-    },
+    return Promise.resolve(JSON.parse(value) as CacheValues[Key]);
+  },
+  removeItem: key => {
+    return Promise.resolve(MMKV.delete(key));
+  },
+  setItem: (key, value) => {
+    return Promise.resolve(MMKV.set(key, JSON.stringify(value)));
+  },
 };
-
 ```
 
 ## Initializing the client with cached data
 
 Now, you need to initialize the cache. Please have in mind that you still need to handle authentication by yourself by passing a token or
-a token provider function as third parameter. 
+a token provider function as third parameter.
 
 :::info
 
 If you use tokens without expiration date, just store/retrieve the token from your storage provider and send it to StreamCache.
 
-If you use tokens with expiration date, have a look at our client documentation on 
+If you use tokens with expiration date, have a look at our client documentation on
 [how to refresh expired tokens](https://getstream.io/chat/docs/react-native/tokens_and_authentication/?language=javascript&q=authen#how-to-refresh-expired-tokens)
 
 :::
@@ -164,7 +160,7 @@ function App() {
 
 ## Clearing cache
 
-If you want to clear the cache, you can just call `StreamCache.getInstance().clear()` or `StreamMediaCache.clear()` in case 
+If you want to clear the cache, you can just call `StreamCache.getInstance().clear()` or `StreamMediaCache.clear()` in case
 you only want to clear cached media. StreamCache's clear method already takes care of clearing the StreamMediaCache.
 
 ## Custom components & offline support
@@ -186,23 +182,17 @@ Not a component, but if you're using your own hook to fetch the `channel list` i
 update the stored channels order everytime it changes.
 
 ```ts
+const cacheInstance = StreamCache.hasInstance() ? StreamCache.getInstance() : null;
 
-    const cacheInstance = StreamCache.hasInstance()
-    ? StreamCache.getInstance()
-    : null;
+// If cache is instantiated, get ordered channels from it. Otherwise use empty array.
+const [channels, setChannels] = useState(() => (cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : []));
 
-    // If cache is instantiated, get ordered channels from it. Otherwise use empty array.
-    const [channels, setChannels] = useState(() =>
-        cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
-    );
-
-    // If cache is instantiated, update channels cached order everytime channels array changes.
-    useEffect(() => {
-        if (cacheInstance) {
-        cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
-        }
-  }, [channels]);
-
+// If cache is instantiated, update channels cached order everytime channels array changes.
+useEffect(() => {
+  if (cacheInstance) {
+    cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
+  }
+}, [channels]);
 ```
 
 Also, its a good idea to call `cacheInstance.syncCacheAndImages()` every time you refresh your channel list
@@ -223,14 +213,14 @@ component with our `CachedImageBackground`.
 
 ## StreamCache
 
-A singleton used to manipulate Stream's cache in the application. It supports any cache storage provider and uses 
+A singleton used to manipulate Stream's cache in the application. It supports any cache storage provider and uses
 some methods from StreamMediaCache in order to keep the media cache up-to-date with the data cache.
 
 ### getInstance
 
 This method gets the existent instance of StreamCache. If it doesnt exists, the method will initialize the
-instance. Note that if you're initializing the instance, you need to provide the `client`, `cacheInterface` 
-and `tokenOrProvider` parameters as explained in previous sections. 
+instance. Note that if you're initializing the instance, you need to provide the `client`, `cacheInterface`
+and `tokenOrProvider` parameters as explained in previous sections.
 
 ### hasInstance
 
@@ -259,7 +249,7 @@ Initializes the client with data from cache.
 
 ### getOrderedChannels
 
-Get the list of cached channels ordered with the last saved channels order. This is based on 
+Get the list of cached channels ordered with the last saved channels order. This is based on
 `filter` and `sort` parameters.
 
 ### syncChannelsCachedOrder

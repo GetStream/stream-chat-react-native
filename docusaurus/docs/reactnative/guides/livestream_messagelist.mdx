@@ -8,17 +8,26 @@ There are two common scenarios in livestream applications.
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/LivestreamExample1.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/LivestreamExample2.png'/></td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/LivestreamExample1.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/LivestreamExample2.png' />
+    </td>
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'><strong>Faded chat with video as background</strong></td>
-    <td align='center'><strong>Split screen between video and chat</strong></td>
+    <td align='center'>
+      <strong>Faded chat with video as background</strong>
+    </td>
+    <td align='center'>
+      <strong>Split screen between video and chat</strong>
+    </td>
   </tr>
 </table>
 
 Here is how you can implement these two use cases:
+
 ## Faded chat with video as background
 
 ```jsx
@@ -49,17 +58,16 @@ const theme = {
 // When you render your chat screen
 <SafeAreaView style={{ flex: 1 }}>
   {/* For the sake of example, we are using image as background, you can replace it with your Video component. */}
-  <Image source={{
-    uri: 'https://i.pinimg.com/474x/59/a2/aa/59a2aae82b34bace9dc4d4df90457a3b.jpg'
-  }} style={{ height: '100%', width: '100%' }} />
+  <Image
+    source={{
+      uri: 'https://i.pinimg.com/474x/59/a2/aa/59a2aae82b34bace9dc4d4df90457a3b.jpg',
+    }}
+    style={{ height: '100%', width: '100%' }}
+  />
 
   <View style={[{ position: 'absolute' }, StyleSheet.absoluteFillObject]}>
     <Chat client={chatClient} style={theme}>
-      <Channel
-        channel={channel}
-        keyboardVerticalOffset={headerHeight}
-        thread={thread}
-      >
+      <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
         <View style={{ flex: 1 }} />
         <View style={{ flex: 2 }}>
           <MaskedView
@@ -74,7 +82,8 @@ const theme = {
                 end={{ x: 0, y: 1 }}
                 locations={[0, 0.5]}
               />
-            }>
+            }
+          >
             <MessageList />
           </MaskedView>
         </View>
@@ -82,8 +91,9 @@ const theme = {
       </Channel>
     </Chat>
   </View>
-</SafeAreaView>
+</SafeAreaView>;
 ```
+
 ## Split screen between video and chat
 
 ```jsx
