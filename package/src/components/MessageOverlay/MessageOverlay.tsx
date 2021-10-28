@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
 
 const screenHeight = vh(100);
 const halfScreenHeight = vh(50);
+const DefaultMessageTextNumberOfLines = 5;
 
 export type MessageOverlayPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -146,7 +147,7 @@ const MessageOverlayWithContext = <
     MessageActionListItem,
     messageContext,
     messageReactionTitle,
-    messageTextNumberOfLines = 5,
+    messageTextNumberOfLines = DefaultMessageTextNumberOfLines,
     messagesContext,
     onlyEmojis,
     otherAttachments,

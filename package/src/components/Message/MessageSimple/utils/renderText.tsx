@@ -261,7 +261,7 @@ export const renderText = <
 
   const customRules = {
     link: { react },
-    // to deal with the long text  message in the message overlay text
+    // Truncate long text content in the message overlay
     paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
