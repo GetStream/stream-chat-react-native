@@ -22,8 +22,8 @@ jobs:
           max_attempts: 3
           command: |
             yarn && yarn bootstrap-ci;
-            cd package/native-package
-            yarn;
+            cd packages/native-package
+            yarn install;
             cd ../../examples/SampleApp
             cd ios
             pod install
@@ -52,9 +52,9 @@ jobs:
           max_attempts: 3
           command: |
             yarn add global react-native-cli;
-            yarn && yarn bootstrap-ci;
-            cd package/native-package
-            yarn;
+            yarn install && yarn bootstrap-ci;
+            cd packages/native-package
+            yarn install;
       - name: Build
         run: |
           cd examples/SampleApp
