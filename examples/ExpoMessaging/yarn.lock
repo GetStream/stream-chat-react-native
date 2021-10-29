@@ -5437,6 +5437,13 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-easy-toast@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-easy-toast/-/react-native-easy-toast-2.0.0.tgz#059671ed23efd7fbe2855a1c3e4d21e6c4222a84"
+  integrity sha512-mLvHOy/slCJfgrLfOercIhVKslTF6D7NrJ7XLTRK3BCim7kNO1JdAgQ5+IF6bqdcUcFMIW/GwiauUbnSpynr8Q==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-gesture-handler@~1.10.2:
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.10.3.tgz#942bbf2963bbf49fa79593600ee9d7b5dab3cfc0"
@@ -6108,14 +6115,14 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-"stream-chat-expo@link:../../package/expo-package":
+"stream-chat-expo@link:../../packages/expo-package":
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.8.3.tgz#439b3195ac140c85d0be9016a310ecaabc04a288"
-  integrity sha512-Oe8Wr9U9DJchfTTFoRT96oJWZMumZOltZLc6aksxGQrmwWQ/H8zV41gG9iDiPdTlqQ8pmtlLiv7ASmHxhC/I1A==
+stream-chat-react-native-core@3.9.1:
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.9.1.tgz#600a6b0fbb18eaf31c0cf7410d9c8ea3f6b17b55"
+  integrity sha512-4luqSFypBL0NSbvF1ioYrVSaVV8uIj6OaK3HyMzACfYfefEBApdgOIoMAn1oOPq+1QBvbC8IKdteGV/+QQnvGw==
   dependencies:
     "@babel/runtime" "7.13.10"
     "@gorhom/bottom-sheet" "3.6.4"
@@ -6130,9 +6137,24 @@ stream-chat-react-native-core@3.8.3:
     react-native-markdown-package "1.8.1"
     stream-chat "~3.13.1"
 
-"stream-chat-react-native-core@link:../../package":
+"stream-chat-react-native-core@link:../../packages/core":
   version "0.0.0"
   uid ""
+
+stream-chat@4.0.0-offline-caching.2:
+  version "4.0.0-offline-caching.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-4.0.0-offline-caching.2.tgz#cb601fc9bde6a8f1f1aa32bad47bfca3d68f895f"
+  integrity sha512-caZKmiwNncvJqjYO6EixLlo6UslrgfLnIVgWGrsh8N409I1JEAWvaQaxapnSMxTcHqAaypcA+8RenfAKCXgDaQ==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
 
 stream-chat@~3.13.1:
   version "3.13.1"
