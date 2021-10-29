@@ -10,13 +10,13 @@ PACKAGE_TAG=$(sed 's/.*-\(.*\)\..*/\1/' <<< "$PACKAGE_VERSION")
 
 # If tag === version it means that its not a prerelease and shouuld set things to latest
 if [[ "${PACKAGE_TAG}" != "${PACKAGE_VERSION}" ]]; then
-    cd native-package
+    cd ../native-package
     npm publish --tag="$PACKAGE_TAG"
 
     cd ../expo-package
     npm publish --tag="$PACKAGE_TAG"
 else
-    cd native-package
+    cd ../native-package
     npm publish
 
     cd ../expo-package
