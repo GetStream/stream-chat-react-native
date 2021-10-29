@@ -22,7 +22,6 @@
     "README.md"
   ],
   "scripts": {
-    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations && yarn run --silent lint-fix-translations",
     "lint-fix-translations": "prettier --check 'src/i18n/*.json' --write 'src/i18n/*.json' .eslintrc.json .babelrc",
     "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json .babelrc",
