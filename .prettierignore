@@ -5,6 +5,6 @@
 **/vendor/
 *.md
 *.mdx
-package/src/components/docs/
-package/lib/
+packages/core/src/components/docs/
+packages/core/lib/
 docusaurus/

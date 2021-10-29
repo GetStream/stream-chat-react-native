@@ -1,5 +1,5 @@
 {
-  "packages": ["package", "examples/SampleApp"],
+  "packages": ["packages/core", "examples/SampleApp"],
   "version": "independent",
   "command": {
     "run": {
