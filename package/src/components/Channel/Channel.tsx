@@ -1807,7 +1807,7 @@ const ChannelWithContext = <
     typing,
   });
 
-  // TODO: replace the null view with appropriate message. Currently this is waiting a decision.
+  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
   if (deleted) return null;
 
   if (!channel || (error && messages.length === 0)) {
