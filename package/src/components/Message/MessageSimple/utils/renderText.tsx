@@ -262,7 +262,7 @@ export const renderText = <
     <Markdown
       key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}-${
         messageOverlay ? JSON.stringify(markdownStyles) : undefined
-      }`}
+      }-${JSON.stringify(colors)}`}
       onLink={onLink}
       rules={{
         ...customRules,
