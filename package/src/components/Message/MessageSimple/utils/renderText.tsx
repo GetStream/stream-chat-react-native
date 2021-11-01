@@ -186,34 +186,26 @@ export const renderText = <
     };
 
     state.withinLink = true;
-    const link = React.createElement(
-      Text,
-      {
-        key: state.key,
-        onLongPress,
-        onPress,
-        style: styles.autolink,
-        suppressHighlighting: true,
-      },
-      output(node.content, state),
+    const link = (
+      <Text
+        key={state.key}
+        onLongPress={onLongPress}
+        onPress={onPress}
+        style={styles.autolink}
+        suppressHighlighting={true}
+      >
+        {output(node.content, state)}
+      </Text>
     );
     state.withinLink = false;
     return link;
   };
 
-  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => {
-    const paragraph = React.createElement(
-      Text,
-      {
-        key: state.key,
-        numberOfLines: messageTextNumberOfLines,
-        style: styles.paragraph,
-      },
-      output(node.content, state),
-    );
-
-    return paragraph;
-  };
+  const paragraphText: ReactNodeOutput = (node, output, { ...state }) => (
+    <Text key={state.key} numberOfLines={messageTextNumberOfLines} style={styles.paragraph}>
+      {output(node.content, state)}
+    </Text>
+  );
 
   const mentionedUsers = Array.isArray(mentioned_users)
     ? mentioned_users.reduce((acc, cur) => {
@@ -247,15 +239,10 @@ export const renderText = <
       }
     };
 
-    return React.createElement(
-      Text,
-      {
-        key: state.key,
-        onLongPress,
-        onPress,
-        style: styles.mentions,
-      },
-      Array.isArray(node.content) ? node.content[0]?.content || '' : output(node.content, state),
+    return (
+      <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
+        {Array.isArray(node.content) ? node.content[0]?.content || '' : output(node.content, state)}
+      </Text>
     );
   };
 
