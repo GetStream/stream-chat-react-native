@@ -792,7 +792,7 @@ const ChannelWithContext = <
       clientSubscriptions.push(client.on('connection.changed', connectionChangedHandler));
       clientSubscriptions.push(
         client.on('channel.deleted', (event) => {
-          if (event.channel_id === channelId) {
+          if (event.cid === channel.cid) {
             setDeleted(true);
           }
         }),
@@ -1172,11 +1172,11 @@ const ChannelWithContext = <
   // won't result in error in such a case.
   const getChannelConfigSafely = () => {
     try {
-      const config = channel?.getConfig();
-      return config;
+      return channel?.getConfig();
     } catch (_) {
       // do nothing
     }
+
     return;
   };
 
