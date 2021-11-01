@@ -295,7 +295,7 @@ export const useMessageActions = <
                         },
                       ],
                     );
-                  } catch (err) {
+                  } catch (_) {
                     Alert.alert(
                       t('Cannot Flag Message'),
                       t(
