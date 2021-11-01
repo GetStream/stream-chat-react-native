@@ -1,13 +1,11 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
   Group,
   MessageInput,
   MessageList,
-  SendButton,
-  SendButtonProps,
   User,
   UserAdd,
   useTheme,
@@ -163,7 +161,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
-  const [messageInputText, setMessageInputText] = useState('');
+  // As we don't use the state value, we can omit it here and separate it with a comma within the array.
+  const [, setMessageInputText] = useState('');
 
   // When selectedUsers are changed, initiate a channel with those users as members,
   // and set it as a channel on current screen.
