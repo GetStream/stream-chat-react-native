@@ -77,7 +77,9 @@ describe('Channel', () => {
       ...channel,
       cid: null,
       off: () => {},
-      on: () => {},
+      on: () => ({
+        unsubscribe: () => null,
+      }),
       watch: () => {},
     };
     const { getByTestId } = renderComponent({ channel: nullChannel });
