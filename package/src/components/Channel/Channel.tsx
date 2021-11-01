@@ -1174,10 +1174,8 @@ const ChannelWithContext = <
     try {
       return channel?.getConfig();
     } catch (_) {
-      // do nothing
+      return null;
     }
-
-    return;
   };
 
   /**
