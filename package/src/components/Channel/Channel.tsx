@@ -544,7 +544,7 @@ const ChannelWithContext = <
       colors: { black },
     },
   } = useTheme();
-
+  const [deleted, setDeleted] = useState(false);
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
   const [error, setError] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -670,7 +670,7 @@ const ChannelWithContext = <
   const markRead: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['markRead'] = useRef(
     throttle(
       () => {
-        if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
+        if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
           return;
         }
 
@@ -778,18 +778,33 @@ const ChannelWithContext = <
   };
 
   useEffect(() => {
-    /**
-     * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
-     * listen to client.connection.recovered and all channel events
-     */
-    client.on('connection.recovered', connectionRecoveredHandler);
-    client.on('connection.changed', connectionChangedHandler);
-    channel?.on(handleEvent);
+    const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
+    const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
+
+    const subscribe = () => {
+      if (!channel) return;
+
+      /**
+       * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
+       * listen to client.connection.recovered and all channel events
+       */
+      clientSubscriptions.push(client.on('connection.recovered', connectionRecoveredHandler));
+      clientSubscriptions.push(client.on('connection.changed', connectionChangedHandler));
+      clientSubscriptions.push(
+        client.on('channel.deleted', (event) => {
+          if (event.cid === channel.cid) {
+            setDeleted(true);
+          }
+        }),
+      );
+      channelSubscriptions.push(channel.on(handleEvent));
+    };
+
+    subscribe();
 
     return () => {
-      client.off('connection.recovered', connectionRecoveredHandler);
-      client.off('connection.changed', connectionChangedHandler);
-      channel?.off(handleEvent);
+      clientSubscriptions.forEach((s) => s.unsubscribe());
+      channelSubscriptions.forEach((s) => s.unsubscribe());
     };
   }, [channelId, connectionRecoveredHandler, handleEvent]);
 
@@ -1152,13 +1167,23 @@ const ChannelWithContext = <
     }
   };
 
+  // In case the channel is disconnected which may happen when channel is deleted,
+  // underlying js client throws an error. Following function ensures that Channel component
+  // won't result in error in such a case.
+  const getChannelConfigSafely = () => {
+    try {
+      return channel?.getConfig();
+    } catch (_) {
+      return null;
+    }
+  };
+
   /**
    * Channel configs for use in disabling local functionality.
    * Nullish coalescing is used to give first priority to props to override
    * the server settings. Then priority to server settings to override defaults.
    */
-  const clientChannelConfig =
-    typeof channel?.getConfig === 'function' ? channel.getConfig() : undefined;
+  const clientChannelConfig = getChannelConfigSafely();
 
   const messagesConfig: MessagesConfig = {
     /**
@@ -1597,7 +1622,7 @@ const ChannelWithContext = <
     error,
     giphyEnabled:
       giphyEnabled ??
-      !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
+      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
     isAdmin,
@@ -1779,6 +1804,9 @@ const ChannelWithContext = <
   const typingContext = useCreateTypingContext({
     typing,
   });
+
+  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
+  if (deleted) return null;
 
   if (!channel || (error && messages.length === 0)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;

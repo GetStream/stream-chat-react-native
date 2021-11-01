@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
 import { Channel } from '../Channel';
@@ -14,8 +14,10 @@ import {
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
+
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -65,6 +67,7 @@ describe('Channel', () => {
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
+    channel.cid = mockedChannel.channel.cid;
   });
 
   afterEach(() => {
@@ -77,7 +80,9 @@ describe('Channel', () => {
       ...channel,
       cid: null,
       off: () => {},
-      on: () => {},
+      on: () => ({
+        unsubscribe: () => null,
+      }),
       watch: () => {},
     };
     const { getByTestId } = renderComponent({ channel: nullChannel });
@@ -191,6 +196,17 @@ describe('Channel', () => {
     );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
+  });
+
+  it('should render null if channel gets deleted', async () => {
+    const { getByTestId, queryByTestId } = renderComponent({
+      channel,
+      children: <View testID='children' />,
+    });
+
+    await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+    act(() => dispatchChannelDeletedEvent(chatClient, channel));
+    expect(queryByTestId('children')).toBeNull();
   });
 
   describe('ChannelContext', () => {
