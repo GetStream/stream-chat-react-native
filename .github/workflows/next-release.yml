@@ -30,7 +30,7 @@ jobs:
       - name: Installation && Build SDK
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn lerna-workspaces run lint
+        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --write '**/*.mdx
       - name: Publish Next Release
         run: GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
         env:
