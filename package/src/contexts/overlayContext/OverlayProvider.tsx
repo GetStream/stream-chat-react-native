@@ -104,6 +104,7 @@ export const OverlayProvider = <
     ImageSelectorIcon = DefaultImageSelectorIcon,
     MessageActionList,
     MessageActionListItem,
+    messageTextNumberOfLines,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -228,6 +229,7 @@ export const OverlayProvider = <
                   <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
                     MessageActionList={MessageActionList}
                     MessageActionListItem={MessageActionListItem}
+                    messageTextNumberOfLines={messageTextNumberOfLines}
                     overlayOpacity={overlayOpacity}
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}

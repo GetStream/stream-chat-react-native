@@ -82,6 +82,7 @@ export type OverlayProviderProps<
     isThreadMessage?: boolean;
     message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
     messageReactions?: boolean;
+    messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;

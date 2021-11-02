@@ -291,18 +291,20 @@ export const useMessageActions = <
                       [
                         {
                           onPress: () => setOverlay('none'),
-                          text: t('Dismiss'),
+                          text: t('Ok'),
                         },
                       ],
                     );
-                  } catch (err) {
+                  } catch (_) {
                     Alert.alert(
-                      t('Something went wrong'),
-                      t("The operation couldn't be completed."),
+                      t('Cannot Flag Message'),
+                      t(
+                        'Flag action failed either due to a network issue or the message is already flagged',
+                      ),
                       [
                         {
                           onPress: () => setOverlay('none'),
-                          text: t('Dismiss'),
+                          text: t('Ok'),
                         },
                       ],
                     );
