@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
+import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -42,9 +42,7 @@ import type {
 } from './src/types';
 
 LogBox.ignoreAllLogs(true);
-LogBox.ignoreLogs([
- 'Non-serializable values were found in the navigation state',
-]);
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
 
 const Drawer = createDrawerNavigator();
