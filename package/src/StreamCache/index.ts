@@ -220,7 +220,7 @@ export class StreamCache<
       this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, channelsDataIds),
       Promise.all(
         filteredChannelsData.map((channelData) =>
-          this.cacheInterface.setItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelData.id}`, channelData),
+          this.cacheInterface.setItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelData.id}` as CacheKeys, channelData),
         ),
       ),
     ] as const;
@@ -234,7 +234,7 @@ export class StreamCache<
     return Promise.all(
       channelsDataIds.map(
         (channelId) =>
-          this.cacheInterface.getItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`) as Promise<
+          this.cacheInterface.getItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}` as CacheKeys) as Promise<
             ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>
           >,
       ),
@@ -309,7 +309,7 @@ export class StreamCache<
       }, {} as { [index: string]: number });
 
       if (currentChannelsOrder) {
-        channels.sort((a, b) => {
+        channels.sort((a: { id: string | number | undefined; }, b: { id: string | number | undefined; }) => {
           // return value > 0, sort b before a
           // return value < 0, sort a before b
 
@@ -495,7 +495,7 @@ export class StreamCache<
     const channelsIds = (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA)) || [];
     const removeAllChannelsItemsPromise = Promise.all(
       channelsIds.map((channelId) =>
-        this.cacheInterface.removeItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}`),
+        this.cacheInterface.removeItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}` as CacheKeys),
       ),
     );
 
