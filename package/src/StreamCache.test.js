@@ -425,7 +425,7 @@ describe('StreamCache instance', () => {
     });
   });
 
-  it('should not break if a wrong cache key is used while rehydrating', async () => {
+  it('should clear cache if a wrong cache key is used while rehydrating', async () => {
     const mockedCacheGet = (key) => Promise.resolve(cachedData[key]);
 
     const cacheInstance = StreamCache.getInstance(
