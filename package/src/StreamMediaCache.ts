@@ -31,7 +31,7 @@ async function saveAvatar(cid: string, fileId: string, filePathname: string) {
 
 async function removeChannelAvatars(cid: string) {
   try {
-    return RNFS.unlink(getStreamChannelAvatarsDir(cid));
+    return await RNFS.unlink(getStreamChannelAvatarsDir(cid));
   } catch (e) {
     return console.log('Skipping already deleted channel cached avatars...');
   }
@@ -69,7 +69,7 @@ async function saveAttachment(cid: string, mid: string, fileId: string, filePath
 
 async function removeChannelAttachments(cid: string) {
   try {
-    return RNFS.unlink(getStreamChannelAttachmentsDir(cid));
+    return await RNFS.unlink(getStreamChannelAttachmentsDir(cid));
   } catch (e) {
     return console.log('Skipping already deleted channel cached images...');
   }
@@ -77,7 +77,7 @@ async function removeChannelAttachments(cid: string) {
 
 async function removeMessageAttachments(cid: string, mid: string) {
   try {
-    return RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid));
+    return await RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid));
   } catch (e) {
     return console.log('Skipping already deleted cached image...');
   }
@@ -85,7 +85,7 @@ async function removeMessageAttachments(cid: string, mid: string) {
 
 async function clear() {
   try {
-    return RNFS.unlink(getStreamRootDir());
+    return await RNFS.unlink(getStreamRootDir());
   } catch (e) {
     return console.log('Skipping already cleared media cache');
   }

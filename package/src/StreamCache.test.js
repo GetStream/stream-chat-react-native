@@ -445,7 +445,6 @@ describe('StreamCache instance', () => {
     await cacheInstance.rehydrate({ bogusKey: { bogusValueOne: 1, bogusValueTwo: 'two' } });
 
     expect(cacheInstance.clear).toHaveBeenCalled();
-
   });
 
   it('should set orderedChannels based on cachedChannelsOrder', async () => {

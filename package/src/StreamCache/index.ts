@@ -52,12 +52,12 @@ type CacheValuesDefault<
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType,
-  > = {
-    STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
-    STREAM_CHAT_CLIENT_DATA: ClientStateAndData<Ch, Co, Us>;
-    STREAM_CHAT_CLIENT_VERSION: string;
-    STREAM_CHAT_SDK_VERSION: string;
-  };
+> = {
+  STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
+  STREAM_CHAT_CLIENT_DATA: ClientStateAndData<Ch, Co, Us>;
+  STREAM_CHAT_CLIENT_VERSION: string;
+  STREAM_CHAT_SDK_VERSION: string;
+};
 
 type CacheValues<
   At extends UnknownType = DefaultAttachmentType,
@@ -66,14 +66,14 @@ type CacheValues<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-  > = {
-    get: CacheValuesDefault<Ch, Co, Us> & {
-      STREAM_CHAT_CHANNELS_DATA: string[];
-    } & { [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
-    set: CacheValuesDefault<Ch, Co, Us> & {
-      STREAM_CHAT_CHANNELS_DATA: string[];
-    } & { [index: string]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
-  };
+> = {
+  get: CacheValuesDefault<Ch, Co, Us> & {
+    STREAM_CHAT_CHANNELS_DATA: string[];
+  } & { [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
+  set: CacheValuesDefault<Ch, Co, Us> & {
+    STREAM_CHAT_CHANNELS_DATA: string[];
+  } & { [index: string]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
+};
 
 export type CacheInterface<
   At extends UnknownType = DefaultAttachmentType,
@@ -82,16 +82,16 @@ export type CacheInterface<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-  > = {
-    getItem: <Key extends CacheKey>(
-      key: Key,
-    ) => Promise<CacheValues<At, Ch, Co, Me, Re, Us>['get'][Key] | null>;
-    removeItem: <Key extends CacheKey>(key: Key) => Promise<void>;
-    setItem: <Key extends CacheKey>(
-      key: Key,
-      value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
-    ) => Promise<void>;
-  };
+> = {
+  getItem: <Key extends CacheKey>(
+    key: Key,
+  ) => Promise<CacheValues<At, Ch, Co, Me, Re, Us>['get'][Key] | null>;
+  removeItem: <Key extends CacheKey>(key: Key) => Promise<void>;
+  setItem: <Key extends CacheKey>(
+    key: Key,
+    value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
+  ) => Promise<void>;
+};
 
 function extractChannelMessagesMap<
   At extends UnknownType = DefaultAttachmentType,
@@ -100,7 +100,9 @@ function extractChannelMessagesMap<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-  >(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null): { [cid: string]: { [mid: string]: true; }; } {
+>(
+  channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null,
+): { [cid: string]: { [mid: string]: true } } {
   const oldChannelsMessagesMap =
     // for each channel...
     (channelsData || []).reduce((curr, next) => {
@@ -140,7 +142,7 @@ export class StreamCache<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-  > {
+> {
   public currentNetworkState: boolean | null;
   private static instance: StreamCache;
   private static cacheMedia: boolean;
@@ -183,11 +185,11 @@ export class StreamCache<
     Me extends UnknownType = DefaultMessageType,
     Re extends UnknownType = DefaultReactionType,
     Us extends UnknownType = DefaultUserType,
-    >(
-      client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-      cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
-      tokenOrProvider?: TokenOrProvider,
-      cacheMedia = true,
+  >(
+    client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+    cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
+    tokenOrProvider?: TokenOrProvider,
+    cacheMedia = true,
   ): StreamCache<At, Ch, Co, Ev, Me, Re, Us> {
     if (!StreamCache.instance) {
       if (!(client && cacheInterface)) {
@@ -223,13 +225,18 @@ export class StreamCache<
       this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, channelsDataIds),
       Promise.all(
         filteredChannelsData.map((channelData) =>
-          this.cacheInterface.setItem(`STREAM_CHAT_CHANNEL_DATA_${channelData.id}` as CacheKey, channelData),
+          this.cacheInterface.setItem(
+            `STREAM_CHAT_CHANNEL_DATA_${channelData.id}` as CacheKey,
+            channelData,
+          ),
         ),
       ),
     ] as const;
   }
 
-  private async getNormalizedChannelsData(): Promise<ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]> {
+  private async getNormalizedChannelsData(): Promise<
+    ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]
+  > {
     const channelsDataIds = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
     if (!channelsDataIds) return [];
@@ -237,9 +244,9 @@ export class StreamCache<
     return Promise.all(
       channelsDataIds.map(
         (channelId) =>
-          this.cacheInterface.getItem(`STREAM_CHAT_CHANNEL_DATA_${channelId}` as CacheKey) as Promise<
-            ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>
-          >,
+          this.cacheInterface.getItem(
+            `STREAM_CHAT_CHANNEL_DATA_${channelId}` as CacheKey,
+          ) as Promise<ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>>,
       ),
     );
   }
@@ -294,13 +301,13 @@ export class StreamCache<
 
   private orderChannelsBasedOnCachedOrder<
     C extends
-    | Channel<At, Ch, Co, Ev, Me, Re, Us>[]
-    | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
-    >(channels: C): ChannelSortOrder<C> {
+      | Channel<At, Ch, Co, Ev, Me, Re, Us>[]
+      | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
+  >(channels: C): ChannelSortOrder<C> {
     const channelsOrder = {} as ChannelSortOrder<C>;
 
-     // Get current active channels
-      // get order from cache
+    // Get current active channels
+    // get order from cache
 
     // currentChannelsOrderKey = filter_and_sort_string
     // we may have two channel lists with different filter/sort
@@ -316,31 +323,36 @@ export class StreamCache<
       }, {} as { [index: string]: number });
 
       if (currentChannelsOrder) {
-        channels.sort((a: { id: string | number | undefined; }, b: { id: string | number | undefined; }) => {
-          // return value > 0, sort b before a
-          // return value < 0, sort a before b
+        channels.sort(
+          (a: { id: string | number | undefined }, b: { id: string | number | undefined }) => {
+            // return value > 0, sort b before a
+            // return value < 0, sort a before b
 
-          // if they both have undefined ids, sort a before b
-          if (a.id === undefined && b.id === undefined) return -1;
-          // if only a has undefined id, sort b before a
-          if (a.id === undefined) return 1;
-          // if only b has undefined id, sort a before b
-          if (b.id === undefined) return -1;
+            // if they both have undefined ids, sort a before b
+            if (a.id === undefined && b.id === undefined) return -1;
+            // if only a has undefined id, sort b before a
+            if (a.id === undefined) return 1;
+            // if only b has undefined id, sort a before b
+            if (b.id === undefined) return -1;
 
-          // If both a and b have no previous cached position on currentChannelsOrder,
-          // we use the original position from channelsIndicesMap, which is based on the
-          // original client channel list
-          if (currentChannelsOrder[a.id] === undefined && currentChannelsOrder[b.id] === undefined)
-            return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
+            // If both a and b have no previous cached position on currentChannelsOrder,
+            // we use the original position from channelsIndicesMap, which is based on the
+            // original client channel list
+            if (
+              currentChannelsOrder[a.id] === undefined &&
+              currentChannelsOrder[b.id] === undefined
+            )
+              return channelsIndicesMap[a.id] - channelsIndicesMap[b.id];
 
-          // If only a has no previous cached position, sort b before a
-          if (currentChannelsOrder[a.id] === undefined) return 1;
-          // If only b has no previous cached position, sort a before b
-          if (currentChannelsOrder[b.id] === undefined) return -1;
+            // If only a has no previous cached position, sort b before a
+            if (currentChannelsOrder[a.id] === undefined) return 1;
+            // If only b has no previous cached position, sort a before b
+            if (currentChannelsOrder[b.id] === undefined) return -1;
 
-          // Finally, calculate position based on cached channels order by substracting indices
-          return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
-        });
+            // Finally, calculate position based on cached channels order by substracting indices
+            return currentChannelsOrder[a.id] - currentChannelsOrder[b.id];
+          },
+        );
       }
 
       // Finally we set the ordered channels for that specific filter_and_sort_string key
@@ -459,8 +471,8 @@ export class StreamCache<
         );
       }
     } catch (error) {
-      console.warn(`Error while rehydrating cache: ${error}`)
-      console.warn(`Clearning cache.`)
+      console.warn(`Error while rehydrating cache: ${error}`);
+      console.warn(`Clearning cache.`);
       this.clear();
     }
   }
@@ -478,21 +490,39 @@ export class StreamCache<
         }
       }
     } catch (error) {
-      console.warn(`Error while initializing cache: ${error}`)
+      console.warn(`Error while initializing cache: ${error}`);
     }
   }
 
-  private getChannelsOrderKey({ filters, sort }: { filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; }): string {
+  private getChannelsOrderKey({
+    filters,
+    sort,
+  }: {
+    filters: ChannelFilters<Ch, Co, Us>;
+    sort: ChannelSort<Ch>;
+  }): string {
     return `${JSON.stringify(filters)}_${JSON.stringify(sort)}`;
   }
 
-  public getOrderedChannels({ filters, sort }: { filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; }): Channel<At, Ch, Co, Ev, Me, Re, Us>[] {
+  public getOrderedChannels({
+    filters,
+    sort,
+  }: {
+    filters: ChannelFilters<Ch, Co, Us>;
+    sort: ChannelSort<Ch>;
+  }): Channel<At, Ch, Co, Ev, Me, Re, Us>[] {
     return this.orderedChannels[this.getChannelsOrderKey({ filters, sort })] || [];
   }
 
-  public syncChannelsCachedOrder(
-{ channels, filters, sort }: { channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]; filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; },
-  ): void {
+  public syncChannelsCachedOrder({
+    channels,
+    filters,
+    sort,
+  }: {
+    channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
+    filters: ChannelFilters<Ch, Co, Us>;
+    sort: ChannelSort<Ch>;
+  }): void {
     // We keep track of the channels order on every change so it can be used when
     // in offline mode
     this.cachedChannelsOrder[this.getChannelsOrderKey({ filters, sort })] = channels.reduce(
