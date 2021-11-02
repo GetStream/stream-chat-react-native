@@ -38,7 +38,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 import { useMessageActionHandlers } from './useMessageActionHandlers';
-import { useNetworkState } from 'src/hooks/useNetworkState';
+import { useNetworkState } from '../../../hooks/useNetworkState';
 
 export const useMessageActions = <
   At extends UnknownType = DefaultAttachmentType,

@@ -128,7 +128,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { useNetworkState } from 'src/hooks/useNetworkState';
+import { useNetworkState } from '../../hooks/useNetworkState';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
