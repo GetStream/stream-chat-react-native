@@ -294,18 +294,18 @@ describe('StreamCache instance', () => {
       'token',
     );
 
-    cacheInstance.offlineConnect = jest.fn();
+    cacheInstance.reinitializeAuthState = jest.fn();
     cacheInstance.rehydrate = jest.fn();
 
     triggerNetworkListener();
 
     await cacheInstance.initialize();
 
-    expect(cacheInstance.offlineConnect).not.toHaveBeenCalled();
+    expect(cacheInstance.reinitializeAuthState).not.toHaveBeenCalled();
     expect(cacheInstance.rehydrate).not.toHaveBeenCalled();
   });
 
-  it('should call offlineConnect with cached data when initializing', async () => {
+  it('should call reinitializeAuthState with cached data when initializing', async () => {
     const minimumData = {
       channels: [],
       client: {
@@ -323,7 +323,7 @@ describe('StreamCache instance', () => {
       'dummy_token',
     );
 
-    cacheInstance.offlineConnect = jest.fn();
+    cacheInstance.reinitializeAuthState = jest.fn();
     cacheInstance.rehydrate = jest.fn();
     chatClient.openConnection = jest.fn();
 
@@ -331,7 +331,7 @@ describe('StreamCache instance', () => {
 
     await cacheInstance.initialize();
 
-    expect(cacheInstance.offlineConnect).toHaveBeenCalledWith(minimumData);
+    expect(cacheInstance.reinitializeAuthState).toHaveBeenCalledWith(minimumData);
     expect(cacheInstance.rehydrate).toHaveBeenCalledWith(minimumData);
     expect(chatClient.openConnection).toHaveBeenCalled();
   });
@@ -354,7 +354,7 @@ describe('StreamCache instance', () => {
       'dummy_token',
     );
 
-    cacheInstance.offlineConnect = jest.fn();
+    cacheInstance.reinitializeAuthState = jest.fn();
     cacheInstance.rehydrate = jest.fn();
     chatClient.openConnection = jest.fn();
 
@@ -362,19 +362,19 @@ describe('StreamCache instance', () => {
 
     await cacheInstance.initialize({ openConnection: false });
 
-    expect(cacheInstance.offlineConnect).toHaveBeenCalledWith(minimumData);
+    expect(cacheInstance.reinitializeAuthState).toHaveBeenCalledWith(minimumData);
     expect(cacheInstance.rehydrate).toHaveBeenCalledWith(minimumData);
     expect(chatClient.openConnection).not.toHaveBeenCalled();
   });
 
-  it('should call client reInitializeAuthState when offlineConnect is called', () => {
+  it('should call client reInitializeAuthState when reinitializeAuthState is called', () => {
     const cacheInstance = StreamCache.getInstance(chatClient, cacheInterface, 'dummy_token');
 
     triggerNetworkListener({ isOnline: false });
 
     chatClient.reInitializeAuthState = jest.fn();
 
-    cacheInstance.offlineConnect({
+    cacheInstance.reinitializeAuthState({
       state: { userChannelReferences: {}, users: {} },
       token: 'dummy_token',
       user: { id: 'Neil', mutes: [], name: 'Neil' },
@@ -423,6 +423,29 @@ describe('StreamCache instance', () => {
         chatClient.activeChannels['messaging:3e1fe535-a893-4b42-bef8-72dafd265c76'],
       ],
     });
+  });
+
+  it('should not break if a wrong cache key is used while rehydrating', async () => {
+    const mockedCacheGet = (key) => Promise.resolve(cachedData[key]);
+
+    const cacheInstance = StreamCache.getInstance(
+      chatClient,
+      { ...cacheInterface, getItem: mockedCacheGet },
+      'dummy_token',
+    );
+
+    triggerNetworkListener({ isOnline: false });
+
+    chatClient.reInitializeWithState = jest.fn(chatClient.reInitializeWithState);
+    cacheInstance.orderChannelsBasedOnCachedOrder = jest.fn(
+      cacheInstance.orderChannelsBasedOnCachedOrder,
+    );
+
+    cacheInstance.clear = jest.fn();
+    await cacheInstance.rehydrate({ bogusKey: { bogusValueOne: 1, bogusValueTwo: 'two' } });
+
+    expect(cacheInstance.clear).toHaveBeenCalled();
+
   });
 
   it('should set orderedChannels based on cachedChannelsOrder', async () => {

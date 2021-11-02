@@ -30,7 +30,6 @@ import type {
 import {
   CURRENT_CLIENT_VERSION,
   CURRENT_SDK_VERSION,
-  STREAM_CHAT_CHANNEL_DATA,
   STREAM_CHAT_CHANNELS_DATA,
   STREAM_CHAT_CHANNELS_ORDER,
   STREAM_CHAT_CLIENT_DATA,
@@ -40,8 +39,8 @@ import {
 
 // { [index: filter_sort_string]: { [index: channelId]: position_in_list } }
 export type ChannelsOrder = { [index: string]: { [index: string]: number } };
-type STREAM_CHAT_CHANNEL_DATA_KEY = `${typeof STREAM_CHAT_CHANNEL_DATA}_${string}`;
-export type CacheKeys =
+type STREAM_CHAT_CHANNEL_DATA_KEY = `STREAM_CHAT_CHANNEL_DATA_${string}`;
+export type CacheKey =
   | typeof STREAM_CHAT_CLIENT_DATA
   | STREAM_CHAT_CHANNEL_DATA_KEY
   | typeof STREAM_CHAT_CHANNELS_DATA
@@ -53,12 +52,12 @@ type CacheValuesDefault<
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType,
-> = {
-  STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
-  STREAM_CHAT_CLIENT_DATA: ClientStateAndData<Ch, Co, Us>;
-  STREAM_CHAT_CLIENT_VERSION: string;
-  STREAM_CHAT_SDK_VERSION: string;
-};
+  > = {
+    STREAM_CHAT_CHANNELS_ORDER: ChannelsOrder;
+    STREAM_CHAT_CLIENT_DATA: ClientStateAndData<Ch, Co, Us>;
+    STREAM_CHAT_CLIENT_VERSION: string;
+    STREAM_CHAT_SDK_VERSION: string;
+  };
 
 type CacheValues<
   At extends UnknownType = DefaultAttachmentType,
@@ -67,14 +66,14 @@ type CacheValues<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = {
-  get: CacheValuesDefault<Ch, Co, Us> & {
-    STREAM_CHAT_CHANNELS_DATA: string[];
-  } & { [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
-  set: CacheValuesDefault<Ch, Co, Us> & {
-    STREAM_CHAT_CHANNELS_DATA: string[];
-  } & { [index: string]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
-};
+  > = {
+    get: CacheValuesDefault<Ch, Co, Us> & {
+      STREAM_CHAT_CHANNELS_DATA: string[];
+    } & { [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
+    set: CacheValuesDefault<Ch, Co, Us> & {
+      STREAM_CHAT_CHANNELS_DATA: string[];
+    } & { [index: string]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
+  };
 
 export type CacheInterface<
   At extends UnknownType = DefaultAttachmentType,
@@ -83,16 +82,16 @@ export type CacheInterface<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = {
-  getItem: <Key extends CacheKeys>(
-    key: Key,
-  ) => Promise<CacheValues<At, Ch, Co, Me, Re, Us>['get'][Key] | null>;
-  removeItem: <Key extends CacheKeys>(key: Key) => Promise<void>;
-  setItem: <Key extends CacheKeys>(
-    key: Key,
-    value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
-  ) => Promise<void>;
-};
+  > = {
+    getItem: <Key extends CacheKey>(
+      key: Key,
+    ) => Promise<CacheValues<At, Ch, Co, Me, Re, Us>['get'][Key] | null>;
+    removeItem: <Key extends CacheKey>(key: Key) => Promise<void>;
+    setItem: <Key extends CacheKey>(
+      key: Key,
+      value: CacheValues<At, Ch, Co, Me, Re, Us>['set'][Key] | null,
+    ) => Promise<void>;
+  };
 
 function extractChannelMessagesMap<
   At extends UnknownType = DefaultAttachmentType,
@@ -101,7 +100,7 @@ function extractChannelMessagesMap<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null) {
+  >(channelsData: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[] | null): { [cid: string]: { [mid: string]: true; }; } {
   const oldChannelsMessagesMap =
     // for each channel...
     (channelsData || []).reduce((curr, next) => {
@@ -129,6 +128,10 @@ function extractChannelMessagesMap<
   return oldChannelsMessagesMap;
 }
 
+type ChannelSortOrder<C> = {
+  [index: string]: C;
+};
+
 export class StreamCache<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -137,7 +140,7 @@ export class StreamCache<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> {
+  > {
   public currentNetworkState: boolean | null;
   private static instance: StreamCache;
   private static cacheMedia: boolean;
@@ -180,11 +183,11 @@ export class StreamCache<
     Me extends UnknownType = DefaultMessageType,
     Re extends UnknownType = DefaultReactionType,
     Us extends UnknownType = DefaultUserType,
-  >(
-    client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-    cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
-    tokenOrProvider?: TokenOrProvider,
-    cacheMedia = true,
+    >(
+      client?: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+      cacheInterface?: CacheInterface<At, Ch, Co, Me, Re, Us>,
+      tokenOrProvider?: TokenOrProvider,
+      cacheMedia = true,
   ): StreamCache<At, Ch, Co, Ev, Me, Re, Us> {
     if (!StreamCache.instance) {
       if (!(client && cacheInterface)) {
@@ -202,11 +205,11 @@ export class StreamCache<
     return StreamCache.instance as unknown as StreamCache<At, Ch, Co, Ev, Me, Re, Us>;
   }
 
-  public static hasInstance() {
+  public static hasInstance(): boolean {
     return !!StreamCache.instance;
   }
 
-  public static shouldCacheMedia() {
+  public static shouldCacheMedia(): boolean {
     return !!StreamCache.instance && StreamCache.cacheMedia;
   }
 
@@ -220,13 +223,13 @@ export class StreamCache<
       this.cacheInterface.setItem(STREAM_CHAT_CHANNELS_DATA, channelsDataIds),
       Promise.all(
         filteredChannelsData.map((channelData) =>
-          this.cacheInterface.setItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelData.id}` as CacheKeys, channelData),
+          this.cacheInterface.setItem(`STREAM_CHAT_CHANNEL_DATA_${channelData.id}` as CacheKey, channelData),
         ),
       ),
     ] as const;
   }
 
-  private async getNormalizedChannelsData() {
+  private async getNormalizedChannelsData(): Promise<ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[]> {
     const channelsDataIds = await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA);
 
     if (!channelsDataIds) return [];
@@ -234,7 +237,7 @@ export class StreamCache<
     return Promise.all(
       channelsDataIds.map(
         (channelId) =>
-          this.cacheInterface.getItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}` as CacheKeys) as Promise<
+          this.cacheInterface.getItem(`STREAM_CHAT_CHANNEL_DATA_${channelId}` as CacheKey) as Promise<
             ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>
           >,
       ),
@@ -280,7 +283,7 @@ export class StreamCache<
     });
   }
 
-  private offlineConnect(clientData: ClientStateAndData<Ch, Co, Us>) {
+  private reinitializeAuthState(clientData: ClientStateAndData<Ch, Co, Us>): Promise<void> {
     const user = {
       id: clientData.user?.id,
       name: clientData.user?.name,
@@ -291,10 +294,14 @@ export class StreamCache<
 
   private orderChannelsBasedOnCachedOrder<
     C extends
-      | Channel<At, Ch, Co, Ev, Me, Re, Us>[]
-      | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
-  >(channels: C) {
-    const channelsOrder = {} as { [index: string]: C };
+    | Channel<At, Ch, Co, Ev, Me, Re, Us>[]
+    | ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us>[],
+    >(channels: C): ChannelSortOrder<C> {
+    const channelsOrder = {} as ChannelSortOrder<C>;
+
+     // Get current active channels
+      // get order from cache
+
     // currentChannelsOrderKey = filter_and_sort_string
     // we may have two channel lists with different filter/sort
     Object.keys(this.cachedChannelsOrder).forEach((currentChannelsOrderKey) => {
@@ -425,61 +432,70 @@ export class StreamCache<
     );
   }
 
-  public async syncCacheAndImages() {
+  public async syncCacheAndImages(): Promise<void> {
     // When cache is synced, we need to remove images in which their channel/message
     // is no longer cached
     const oldChannelsData = await this.getNormalizedChannelsData();
-    await this.syncCache();
-    const newChannelsData = await this.getNormalizedChannelsData();
-
     if (!oldChannelsData) return;
+
+    await this.syncCache();
+
+    const newChannelsData = await this.getNormalizedChannelsData();
 
     await this.removeOlderImages(oldChannelsData, newChannelsData || []);
   }
 
-  private async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>) {
-    const channelsData = await this.getNormalizedChannelsData();
+  private async rehydrate(clientData: ClientStateAndData<Ch, Co, Us>): Promise<void> {
+    try {
+      const channelsData = await this.getNormalizedChannelsData();
 
-    this.cachedChannelsOrder =
-      (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER)) || {};
+      this.cachedChannelsOrder =
+        (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_ORDER)) || {};
 
-    if (clientData && channelsData) {
-      this.client.reInitializeWithState(clientData, channelsData || []);
-      this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
-        Object.values(this.client.activeChannels),
-      );
-    }
-  }
-
-  public async initialize({ openConnection = true } = {}) {
-    const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
-    if (clientData) {
-      await this.offlineConnect(clientData);
-      await this.rehydrate(clientData);
-      // If users want to manually control the socket connection when offline, just send this parameter as false
-      if (openConnection) {
-        // Awaiting this may take some time specially when user is offline cause it retries 3 times
-        this.client.openConnection();
+      if (clientData && channelsData) {
+        this.client.reInitializeWithState(clientData, channelsData || []);
+        this.orderedChannels = this.orderChannelsBasedOnCachedOrder(
+          Object.values(this.client.activeChannels),
+        );
       }
+    } catch (error) {
+      console.warn(`Error while rehydrating cache: ${error}`)
+      console.warn(`Clearning cache.`)
+      this.clear();
     }
   }
 
-  private getChannelsOrderKey(filters: ChannelFilters<Ch, Co, Us>, sort: ChannelSort<Ch>) {
+  public async initialize({ openConnection = true } = {}): Promise<void> {
+    try {
+      const clientData = await this.cacheInterface.getItem(STREAM_CHAT_CLIENT_DATA);
+      if (clientData) {
+        await this.reinitializeAuthState(clientData);
+        await this.rehydrate(clientData);
+        // If users want to manually control the socket connection when offline, just send this parameter as false
+        if (openConnection) {
+          // Awaiting this may take some time specially when user is offline cause it retries 3 times
+          this.client.openConnection();
+        }
+      }
+    } catch (error) {
+      console.warn(`Error while initializing cache: ${error}`)
+    }
+  }
+
+  private getChannelsOrderKey({ filters, sort }: { filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; }): string {
     return `${JSON.stringify(filters)}_${JSON.stringify(sort)}`;
   }
 
-  public getOrderedChannels(filters: ChannelFilters<Ch, Co, Us>, sort: ChannelSort<Ch>) {
-    return this.orderedChannels[this.getChannelsOrderKey(filters, sort)] || [];
+  public getOrderedChannels({ filters, sort }: { filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; }): Channel<At, Ch, Co, Ev, Me, Re, Us>[] {
+    return this.orderedChannels[this.getChannelsOrderKey({ filters, sort })] || [];
   }
 
   public syncChannelsCachedOrder(
-    channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[],
-    filters: ChannelFilters<Ch, Co, Us>,
-    sort: ChannelSort<Ch>,
-  ) {
+{ channels, filters, sort }: { channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[]; filters: ChannelFilters<Ch, Co, Us>; sort: ChannelSort<Ch>; },
+  ): void {
     // We keep track of the channels order on every change so it can be used when
     // in offline mode
-    this.cachedChannelsOrder[this.getChannelsOrderKey(filters, sort)] = channels.reduce(
+    this.cachedChannelsOrder[this.getChannelsOrderKey({ filters, sort })] = channels.reduce(
       (acc, next, index) => {
         if (next.id) {
           acc[next.id] = index;
@@ -490,12 +506,12 @@ export class StreamCache<
     );
   }
 
-  public async clear() {
+  public async clear(): Promise<void> {
     // We need to get the channelsIds before we execute this.cacheInterface.removeItem(STREAM_CHAT_CHANNELS_DATA).
     const channelsIds = (await this.cacheInterface.getItem(STREAM_CHAT_CHANNELS_DATA)) || [];
     const removeAllChannelsItemsPromise = Promise.all(
       channelsIds.map((channelId) =>
-        this.cacheInterface.removeItem(`${STREAM_CHAT_CHANNEL_DATA}_${channelId}` as CacheKeys),
+        this.cacheInterface.removeItem(`STREAM_CHAT_CHANNEL_DATA_${channelId}` as CacheKey),
       ),
     );
 
