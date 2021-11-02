@@ -57,7 +57,7 @@ export const usePaginatedChannels = <
     : null;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
-    cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
+    cacheInstance ? cacheInstance.getOrderedChannels({ filters, sort }) : [],
   );
   const activeChannels = useActiveChannelsRefContext();
 
@@ -72,7 +72,7 @@ export const usePaginatedChannels = <
 
   useEffect(() => {
     if (cacheInstance) {
-      cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
+      cacheInstance.syncChannelsCachedOrder({ channels, filters, sort });
     }
   }, [channels]);
 
