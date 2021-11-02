@@ -70,10 +70,10 @@ type CacheValues<
 > = {
   get: CacheValuesDefault<Ch, Co, Us> & {
     STREAM_CHAT_CHANNELS_DATA: string[];
-  } & { [index: STREAM_CHAT_CHANNEL_DATA_KEY]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
+  } & { [index: string]: ChannelStateAndDataInput<At, Ch, Co, Me, Re, Us> };
   set: CacheValuesDefault<Ch, Co, Us> & {
     STREAM_CHAT_CHANNELS_DATA: string[];
-  } & { [index: STREAM_CHAT_CHANNEL_DATA_KEY]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
+  } & { [index: string]: ChannelStateAndDataOutput<At, Ch, Co, Me, Re, Us> };
 };
 
 export type CacheInterface<
