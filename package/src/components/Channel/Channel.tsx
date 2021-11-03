@@ -1333,7 +1333,7 @@ const ChannelWithContext = <
 
     try {
       if (!isConnected) {
-        console.log(t('Something went wrong'));
+        console.log(`Could not send message: Network is disconnected.`);
         toast.show(t('Something went wrong'), 2000);
         throw new Error('No network connection');
       }
