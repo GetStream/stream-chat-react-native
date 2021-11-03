@@ -31,7 +31,7 @@ jobs:
       - name: Installation && Build SDK
         run: yarn bootstrap-ci
       - name: Lint
-        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --write '**/*.mdx
+        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx
       - name: Publish Release
         run: yarn release
         env:
