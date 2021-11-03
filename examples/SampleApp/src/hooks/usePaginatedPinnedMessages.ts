@@ -83,8 +83,8 @@ export const usePaginatedPinnedMessages = (
       if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;
       }
-    } catch (error) {
-      setError(error);
+    } catch (queryError) {
+      setError(queryError);
     }
     queryInProgress.current = false;
     setLoading(false);

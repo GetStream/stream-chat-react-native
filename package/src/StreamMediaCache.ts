@@ -29,10 +29,12 @@ async function saveAvatar(cid: string, fileId: string, filePathname: string) {
   }).promise;
 }
 
-function removeChannelAvatars(cid: string) {
-  return RNFS.unlink(getStreamChannelAvatarsDir(cid)).catch(() =>
-    console.log('Skipping already deleted channel cached avatars...'),
-  );
+async function removeChannelAvatars(cid: string) {
+  try {
+    return await RNFS.unlink(getStreamChannelAvatarsDir(cid));
+  } catch (e) {
+    return console.log('Skipping already deleted channel cached avatars...');
+  }
 }
 
 /* 
@@ -65,22 +67,28 @@ async function saveAttachment(cid: string, mid: string, fileId: string, filePath
   }).promise;
 }
 
-function removeChannelAttachments(cid: string) {
-  return RNFS.unlink(getStreamChannelAttachmentsDir(cid)).catch(() =>
-    console.log('Skipping already deleted channel cached images...'),
-  );
+async function removeChannelAttachments(cid: string) {
+  try {
+    return await RNFS.unlink(getStreamChannelAttachmentsDir(cid));
+  } catch (e) {
+    return console.log('Skipping already deleted channel cached images...');
+  }
 }
 
-function removeMessageAttachments(cid: string, mid: string) {
-  return RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid)).catch(() =>
-    console.log('Skipping already deleted cached image...'),
-  );
+async function removeMessageAttachments(cid: string, mid: string) {
+  try {
+    return await RNFS.unlink(getStreamChannelMessageAttachmentsDir(cid, mid));
+  } catch (e) {
+    return console.log('Skipping already deleted cached image...');
+  }
 }
 
-function clear() {
-  return RNFS.unlink(getStreamRootDir()).catch(() =>
-    console.log('Skipping already cleared media cache'),
-  );
+async function clear() {
+  try {
+    return await RNFS.unlink(getStreamRootDir());
+  } catch (e) {
+    return console.log('Skipping already cleared media cache');
+  }
 }
 
 export default {

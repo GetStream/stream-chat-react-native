@@ -122,8 +122,8 @@ export const usePaginatedSearchedMessages = (
       }
 
       offset.current = offset.current + messagesLength;
-    } catch (error) {
-      setError(error);
+    } catch (queryError) {
+      setError(queryError);
     }
 
     done();
