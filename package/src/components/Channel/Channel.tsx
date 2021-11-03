@@ -113,7 +113,6 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
-import { StreamCache } from '../../StreamCache';
 import { generateRandomId, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
@@ -129,6 +128,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { useNetworkState } from '../../hooks/useNetworkState';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -583,6 +583,8 @@ const ChannelWithContext = <
   const [syncingChannel, setSyncingChannel] = useState(false);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
+
+  const { isConnected } = useNetworkState();
 
   const toast = useToastContext();
 
@@ -1330,8 +1332,8 @@ const ChannelWithContext = <
     } as StreamMessage<At, Me, Us>;
 
     try {
-      if (!StreamCache.getInstance().currentNetworkState) {
-        console.log(t('Something went wrong'));
+      if (!isConnected) {
+        console.log(`Could not send message: Network is disconnected.`);
         toast.show(t('Something went wrong'), 2000);
         throw new Error('No network connection');
       }

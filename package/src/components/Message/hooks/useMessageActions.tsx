@@ -1,7 +1,6 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
 
-import { StreamCache } from '../../../StreamCache';
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
@@ -39,6 +38,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 import { useMessageActionHandlers } from './useMessageActionHandlers';
+import { useNetworkState } from '../../../hooks/useNetworkState';
 
 export const useMessageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -132,6 +132,8 @@ export const useMessageActions = <
     updateMessage,
   });
 
+  const { isConnected } = useNetworkState();
+
   const error = message.type === 'error' || message.status === 'failed';
 
   const onOpenThread = () => {
@@ -149,7 +151,7 @@ export const useMessageActions = <
 
   const blockUser: MessageActionType = {
     action: () => async () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -170,7 +172,7 @@ export const useMessageActions = <
   const copyMessage: MessageActionType = {
     // using depreciated Clipboard from react-native until expo supports the community version or their own
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -187,7 +189,7 @@ export const useMessageActions = <
 
   const deleteMessage: MessageActionType = {
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('alert');
@@ -223,7 +225,7 @@ export const useMessageActions = <
 
   const editMessage: MessageActionType = {
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -266,7 +268,7 @@ export const useMessageActions = <
 
   const flagMessage: MessageActionType = {
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('alert');
@@ -327,7 +329,7 @@ export const useMessageActions = <
     ? selectReaction
       ? selectReaction(message)
       : async (reactionType: string) => {
-          if (!StreamCache.getInstance().currentNetworkState) {
+          if (!isConnected) {
             toast.show(t('Something went wrong'), 2000);
           } else {
             if (handleReactionProp) {
@@ -341,7 +343,7 @@ export const useMessageActions = <
 
   const muteUser: MessageActionType = {
     action: async () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -361,7 +363,7 @@ export const useMessageActions = <
 
   const quotedReply: MessageActionType = {
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -378,7 +380,7 @@ export const useMessageActions = <
 
   const retry: MessageActionType = {
     action: async () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
@@ -397,7 +399,7 @@ export const useMessageActions = <
 
   const threadReply: MessageActionType = {
     action: () => {
-      if (!StreamCache.getInstance().currentNetworkState) {
+      if (!isConnected) {
         toast.show(t('Something went wrong'), 2000);
       } else {
         setOverlay('none');
