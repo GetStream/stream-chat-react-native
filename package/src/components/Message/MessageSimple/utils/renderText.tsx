@@ -259,11 +259,9 @@ export const renderText = <
 
           const isTopLevelText = ['text', 'paragraph', 'strong'].includes(item[0].type) && withinList == false
 
-          numberIndex++;
-
           return (
             <View key={i} style={styles.listRow}>
-              <Text style={styles.listItemNumber}>{node.ordered ? `${numberIndex}. ` : `\u2022`}</Text>
+              <Text style={styles.listItemNumber}>{node.ordered ? `${numberIndex++}. ` : `\u2022`}</Text>
               <Text style={[styles.listItemText, isTopLevelText && {marginBottom: 0}]}>{content}</Text>
             </View>
           );
