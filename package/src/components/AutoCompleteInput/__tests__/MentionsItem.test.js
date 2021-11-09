@@ -32,11 +32,6 @@ describe('MentionsItem', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
-        borderRadius: 16,
-        height: 32,
-        width: 32,
-      });
       expect(queryByTestId('mentions-item-name')).toBeTruthy();
       expect(getByTestId('mentions-item-name')).toHaveTextContent('Test User');
     });

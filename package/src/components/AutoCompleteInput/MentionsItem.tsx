@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '../Avatar/Avatar';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { AtMentions } from '../../icons/AtMentions';
 
@@ -44,10 +43,9 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   item: SuggestionUser<Us>;
 };
 
-const MentionsItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
-  channelId,
+export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   item: { id, image, name, online },
-}: MentionsItemProps<Us> & { channelId: string | undefined }) => {
+}: MentionsItemProps<Us>) => {
   const {
     theme: {
       colors: { accent_blue, black, grey },
@@ -61,14 +59,7 @@ const MentionsItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
 
   return (
     <View style={[styles.container, container]}>
-      <Avatar
-        channelId={channelId}
-        id={id}
-        image={image}
-        name={name}
-        online={online}
-        size={avatarSize}
-      />
+      <Avatar image={image} name={name} online={online} size={avatarSize} />
       <View style={[styles.column, column]}>
         <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
           {name || id}
@@ -78,14 +69,6 @@ const MentionsItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
       <AtMentions pathFill={accent_blue} />
     </View>
   );
-};
-
-export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>(
-  props: MentionsItemProps<Us>,
-) => {
-  const { channel } = useChannelContext();
-
-  return <MentionsItemWithContext {...props} channelId={channel?.id} />;
 };
 
 MentionsItem.displayName = 'MentionsItem{messageInput{suggestions{mention}}}';

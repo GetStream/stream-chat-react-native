@@ -172,8 +172,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="GrantyBoi2"
-                            initials="G"
                             onError={[Function]}
                             source={
                               Object {
@@ -460,8 +458,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="NeiliBoi3"
-                            initials="N"
                             onError={[Function]}
                             source={
                               Object {
@@ -748,8 +744,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="GrantyBoi2"
-                            initials="G"
                             onError={[Function]}
                             source={
                               Object {

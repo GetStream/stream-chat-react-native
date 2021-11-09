@@ -106,6 +106,7 @@ export const MessageOverlayProvider = <
   const [data, setData] = useState(value?.data);
 
   const reset = () => {
+    // TODO: Add the isMounted check here.
     setData(value?.data);
   };
 

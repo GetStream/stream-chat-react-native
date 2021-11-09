@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { ImageProps, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
+import {
+  Image,
+  ImageProps,
+  PixelRatio,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   ImageGalleryContextValue,
@@ -36,23 +42,17 @@ import type {
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {
-    channelId: string | undefined;
     height: number | string;
-    messageId: string | undefined;
     uri: string;
   }
 > = (props) => {
-  const { channelId, height, messageId, uri, ...rest } = props;
+  const { height, uri, ...rest } = props;
 
   const [error, setError] = useState(false);
 
   return (
-    <CachedAttachmentImage
+    <Image
       {...rest}
-      cacheConfig={{
-        channelId,
-        messageId,
-      }}
       onError={() => setError(true)}
       source={{
         uri: uri.includes('&h=%2A')
@@ -150,7 +150,6 @@ const GalleryWithContext = <
   const {
     additionalTouchableProps,
     alignment,
-    channelId,
     groupStyles,
     hasThreadReplies,
     images,
@@ -294,9 +293,7 @@ const GalleryWithContext = <
                 {...additionalTouchableProps}
               >
                 <MemoizedGalleryImage
-                  channelId={channelId}
                   height={height}
-                  messageId={messageId}
                   resizeMode='cover'
                   style={[
                     styles.flex,

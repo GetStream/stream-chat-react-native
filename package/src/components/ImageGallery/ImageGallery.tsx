@@ -48,8 +48,6 @@ import {
   ImageGridHandle,
 } from './components/ImageGridHandle';
 
-import { extractPathname } from '../CachedImages/utils';
-import StreamMediaCache from '../../StreamMediaCache';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -400,27 +398,11 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    const photo = photos[index.value];
-    if (photo?.uri) {
-      const { channelId = '', messageId = '', uri: url = '' } = photo;
-      const filePathname = extractPathname(url) || '';
-      StreamMediaCache.checkIfLocalAttachment(channelId, messageId, filePathname).then(
-        (existsOnCache) => {
-          Image.getSize(
-            existsOnCache
-              ? `file://${StreamMediaCache.getStreamChannelMessageAttachmentDir(
-                  channelId,
-                  messageId,
-                  filePathname,
-                )}`
-              : url,
-            (width, height) => {
-              const imageHeight = Math.floor(height * (screenWidth / width));
-              setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
-            },
-          );
-        },
-      );
+    if (photos[index.value]?.uri) {
+      Image.getSize(photos[index.value].uri, (width, height) => {
+        const imageHeight = Math.floor(height * (screenWidth / width));
+        setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+      });
     }
   }, [uriForCurrentImage]);
 

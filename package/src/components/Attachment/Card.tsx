@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Image,
   ImageStyle,
   Linking,
   StyleProp,
@@ -10,8 +11,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-
-import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
 
 import {
   MessageContextValue,
@@ -139,9 +138,7 @@ const CardWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
-    channelId,
     image_url,
-    messageId,
     og_scrape_url,
     onLongPress,
     onPress,
@@ -213,11 +210,7 @@ const CardWithContext = <
       {CardCover && <CardCover {...props} />}
       {uri && !CardCover && (
         <View>
-          <CachedAttachmentImage
-            cacheConfig={{
-              channelId,
-              messageId,
-            }}
+          <Image
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
             style={[styles.cardCover, cover, stylesProp.cardCover]}

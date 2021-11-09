@@ -1,8 +1,6 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
-
-import { CachedImageBackground } from '../../CachedImages/CachedImageBackground';
 
 import { Avatar } from '../../Avatar/Avatar';
 
@@ -79,8 +77,7 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
 
   return (
     <TouchableOpacity onPress={selectAndClose}>
-      <CachedImageBackground
-        cacheConfig={{ channelId: item.channelId, messageId: item.messageId }}
+      <ImageBackground
         source={{ uri }}
         style={[styles.image, { height: size, width: size }, gridImage]}
       >
@@ -88,19 +85,17 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
           ? avatarComponent({ item: restItem })
           : !!user?.image && (
               <Avatar
-                channelId={item.channelId}
                 containerStyle={[
                   styles.avatarImageWrapper,
                   { backgroundColor: white },
                   gridAvatarWrapper,
                 ]}
-                id={item.channelId}
                 image={user.image}
                 imageStyle={gridAvatar}
                 size={22}
               />
             )}
-      </CachedImageBackground>
+      </ImageBackground>
     </TouchableOpacity>
   );
 };
