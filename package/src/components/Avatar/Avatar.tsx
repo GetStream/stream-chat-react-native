@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { ImageStyle, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  PixelRatio,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
-
-import { CachedAvatar } from '../CachedImages/CachedAvatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+const randomImageBaseUrl = 'https://getstream.io/random_png/';
+const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
 const streamCDN = 'stream-io-cdn.com';
 
 const styles = StyleSheet.create({
@@ -28,11 +36,9 @@ const getInitials = (fullName: string) =>
     .split(' ')
     .slice(0, 2)
     .map((name) => name.charAt(0))
-    .join('');
+    .join(' ');
 
 export type AvatarProps = {
-  channelId: string | undefined;
-  id: string | undefined;
   /** size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -52,9 +58,7 @@ export type AvatarProps = {
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
-    channelId,
     containerStyle,
-    id,
     image: imageProp,
     imageStyle,
     name,
@@ -87,18 +91,18 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
           containerStyle,
         ]}
       >
-        <CachedAvatar
+        <Image
           accessibilityLabel={testID || 'avatar-image'}
-          channelId={channelId}
-          id={id}
-          initials={name ? getInitials(name) : ''}
           onError={() => setImageError(true)}
           source={{
             uri:
-              imageError || !imageProp
+              imageError ||
+              !imageProp ||
+              imageProp.includes(randomImageBaseUrl) ||
+              imageProp.includes(randomSvgBaseUrl)
                 ? imageProp?.includes(streamCDN)
                   ? imageProp
-                  : undefined
+                  : `${randomImageBaseUrl}${name ? `?name=${getInitials(name)}&size=${size}` : ''}`
                 : imageProp.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`),
           }}
           style={[

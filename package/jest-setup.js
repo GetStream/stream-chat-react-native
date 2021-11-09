@@ -41,20 +41,6 @@ require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 
-jest.mock('react-native-fs', () => ({
-  CachesDirectoryPath: jest.fn(),
-  DocumentDirectoryPath: jest.fn(),
-  downloadFile: jest.fn(),
-  exists: jest.fn(),
-  ExternalDirectoryPath: jest.fn(),
-  ExternalStorageDirectoryPath: jest.fn(),
-  LibraryDirectoryPath: jest.fn(),
-  mkdir: jest.fn(),
-  PicturesDirectoryPath: jest.fn(),
-  TemporaryDirectoryPath: jest.fn(),
-  unlink: jest.fn(),
-}));
-
 jest.mock('@gorhom/bottom-sheet', () => {
   const react = require('react-native');
   return {

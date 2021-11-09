@@ -545,7 +545,6 @@ const MessageOverlayWithContext = <
                           message.latest_reactions.length > 0 ? (
                             <OverlayReactions
                               alignment={alignment}
-                              channelId={message.cid}
                               reactions={message.latest_reactions.map((reaction) => ({
                                 alignment:
                                   clientId && clientId === reaction.user?.id ? 'right' : 'left',
