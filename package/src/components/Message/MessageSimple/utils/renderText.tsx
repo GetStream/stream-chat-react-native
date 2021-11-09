@@ -247,36 +247,46 @@ export const renderText = <
   };
 
   const listLevels = {
-    'top': 'top',
-    'sub': 'sub',
-  }
+    sub: 'sub',
+    top: 'top',
+  };
 
-  const customListAtLevel = (level: keyof typeof listLevels): ReactNodeOutput => (node, output, {...state}) => {
-        var numberIndex = node.start;
-        var items = node.items.map((item: Array<SingleASTNode>, i: number) => {
-          const withinList = item.length > 1 && item[1].type === 'list';
-          var content = output(item, { ...state, withinList });
+  const customListAtLevel =
+    (level: keyof typeof listLevels): ReactNodeOutput =>
+    (node, output, { ...state }) => {
+      const items = node.items.map((item: Array<SingleASTNode>, index: number) => {
+        const withinList = item.length > 1 && item[1].type === 'list';
+        const content = output(item, { ...state, withinList });
 
-          const isTopLevelText = ['text', 'paragraph', 'strong'].includes(item[0].type) && withinList == false
+        const isTopLevelText =
+          ['text', 'paragraph', 'strong'].includes(item[0].type) && withinList === false;
 
-          return (
-            <View key={i} style={styles.listRow}>
-              <Text style={styles.listItemNumber}>{node.ordered ? `${numberIndex++}. ` : `\u2022`}</Text>
-              <Text style={[styles.listItemText, isTopLevelText && {marginBottom: 0}]}>{content}</Text>
-            </View>
-          );
-        });
+        return (
+          <View key={index} style={styles.listRow}>
+            <Text style={styles.listItemNumber}>
+              {node.ordered ? `${node.start + index}. ` : `\u2022`}
+            </Text>
+            <Text style={[styles.listItemText, isTopLevelText && { marginBottom: 0 }]}>
+              {content}
+            </Text>
+          </View>
+        );
+      });
 
-    const isSublist = level === 'sub';
-    return (<View key={state.key} style={[isSublist ? styles.list : styles.sublist]}>{items}</View>);
-  }
+      const isSublist = level === 'sub';
+      return (
+        <View key={state.key} style={[isSublist ? styles.list : styles.sublist]}>
+          {items}
+        </View>
+      );
+    };
 
   const customRules = {
     link: { react },
     list: { react: customListAtLevel('top') },
-    sublist: { react: customListAtLevel('sub') },
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
+    sublist: { react: customListAtLevel('sub') },
     ...(mentionedUsers
       ? {
           mentions: {
