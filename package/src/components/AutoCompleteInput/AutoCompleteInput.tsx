@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 import throttle from 'lodash/throttle';
 
-import { CommandsHeader } from './CommandsHeader';
-import { EmojisHeader } from './EmojisHeader';
-
 import {
   ChannelContextValue,
   useChannelContext,
@@ -86,10 +83,7 @@ type AutoCompleteInputPropsWithContext<
     | 'text'
     | 'triggerSettings'
   > &
-  Pick<
-    SuggestionsContextValue<Co, Us>,
-    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
-  > &
+  Pick<SuggestionsContextValue<Us>, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
   Pick<TranslationContextValue, 't'>;
 
 export type AutoCompleteInputProps<
@@ -161,15 +155,8 @@ const AutoCompleteInputWithContext = <
     const triggerSetting = triggerSettings[trigger];
     if (triggerSetting) {
       isTrackingStarted.current = true;
-      const { component: Component } = triggerSetting;
-      openSuggestions(
-        typeof Component === 'string' ? Component : <Component />,
-        trigger === ':' ? (
-          <EmojisHeader title='' />
-        ) : trigger === '/' ? (
-          <CommandsHeader />
-        ) : undefined,
-      );
+      const { type } = triggerSetting;
+      openSuggestions(type);
     }
   };
 
@@ -196,6 +183,7 @@ const AutoCompleteInputWithContext = <
               updateSuggestionsContext({
                 data,
                 onSelect: (item) => onSelectSuggestion({ item, trigger }),
+                query,
               });
             }
           },
@@ -220,6 +208,7 @@ const AutoCompleteInputWithContext = <
             updateSuggestionsContext({
               data,
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
+              query,
             });
           },
           {
@@ -235,13 +224,11 @@ const AutoCompleteInputWithContext = <
             return;
           }
 
-          updateSuggestionsContext(
-            {
-              data,
-              onSelect: (item) => onSelectSuggestion({ item, trigger }),
-            },
-            <EmojisHeader title={query} />,
-          );
+          updateSuggestionsContext({
+            data,
+            onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            query,
+          });
         });
       }
     }
@@ -255,13 +242,7 @@ const AutoCompleteInputWithContext = <
     selectionEnd.current = end;
   };
 
-  const onSelectSuggestion = ({
-    item,
-    trigger,
-  }: {
-    item: Suggestion<Co, Us>;
-    trigger: Trigger;
-  }) => {
+  const onSelectSuggestion = ({ item, trigger }: { item: Suggestion<Us>; trigger: Trigger }) => {
     if (!trigger || !triggerSettings[trigger]) {
       return;
     }
@@ -517,7 +498,7 @@ export const AutoCompleteInput = <
     text,
     triggerSettings,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Co, Us>();
+  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Us>();
   const { t } = useTranslationContext();
 
   return (

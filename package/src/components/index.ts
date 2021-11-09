@@ -18,12 +18,9 @@ export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
 export * from './AttachmentPicker/components/ImageSelectorIcon';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
-export * from './AutoCompleteInput/CommandsHeader';
-export * from './AutoCompleteInput/CommandsItem';
-export * from './AutoCompleteInput/EmojisHeader';
-export * from './AutoCompleteInput/EmojisItem';
-export * from './AutoCompleteInput/MentionsItem';
-export * from './AutoCompleteInput/SuggestionsList';
+export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
+export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
+export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';

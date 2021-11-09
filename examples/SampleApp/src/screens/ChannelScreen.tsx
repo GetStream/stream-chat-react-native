@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
+  AutoCompleteSuggestionHeader,
+  AutoCompleteSuggestionItem,
   Channel,
   ChannelAvatar,
   MessageInput,
@@ -13,7 +15,7 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -169,6 +171,46 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   return (
     <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
       <Channel
+        AutoCompleteSuggestionHeader={({ type, value }) => {
+          if (type === 'Command') {
+            return <Text>Hey</Text>;
+          } else {
+            return <AutoCompleteSuggestionHeader type={type} value={value} />;
+          }
+        }}
+        AutoCompleteSuggestionItem={({ itemProps, type }) => (
+          <AutoCompleteSuggestionItem itemProps={itemProps} type={type} />
+        )}
+        // AutoCompleteSuggestionList={({ suggestions: { query, data }, type }) => {
+        //   if (type === 'Command') {
+        //     return (
+        //       <View>
+        //         <AutoCompleteSuggestionHeader type={type} />
+        //         {data.map((item) => (
+        //           <AutoCompleteSuggestionItem itemProps={item} type={type} />
+        //         ))}
+        //       </View>
+        //     );
+        //   } else if (type === 'Emoji') {
+        //     return (
+        //       <View>
+        //         <AutoCompleteSuggestionHeader type={type} value={query} />
+        //         {data.map((item) => (
+        //           <AutoCompleteSuggestionItem itemProps={item} type={type} />
+        //         ))}
+        //       </View>
+        //     );
+        //   } else {
+        //     return (
+        //       <View>
+        //         <AutoCompleteSuggestionHeader type={type} value={query} />
+        //         {data.map((item) => (
+        //           <AutoCompleteSuggestionItem itemProps={item} type={type} />
+        //         ))}
+        //       </View>
+        //     );
+        //   }
+        // }}
         channel={channel}
         disableTypingIndicator
         enforceUniqueReaction

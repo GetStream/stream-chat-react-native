@@ -71,6 +71,9 @@ import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/Typing
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
+import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
+import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
+import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 
 import {
   ChannelConfig,
@@ -211,7 +214,7 @@ export type ChannelPropsWithContext<
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
     >
   > &
-  Partial<SuggestionsContextValue<Co, Us>> &
+  Partial<SuggestionsContextValue<Us>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
@@ -407,6 +410,9 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
+    AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
+    AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     Card = CardDefault,
@@ -1801,7 +1807,10 @@ const ChannelWithContext = <
     UrlPreview,
   });
 
-  const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
+  const suggestionsContext: Partial<SuggestionsContextValue<Us>> = {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
     closeSuggestions,
     openSuggestions,
     updateSuggestions,
@@ -1848,7 +1857,7 @@ const ChannelWithContext = <
           <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageListContext}>
             <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
               <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                <SuggestionsProvider<Us> value={suggestionsContext}>
                   <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
                     value={inputMessageInputContext}
                   >

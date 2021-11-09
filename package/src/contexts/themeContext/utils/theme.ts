@@ -260,10 +260,6 @@ export type Theme = {
         iconContainer: ViewStyle;
         title: TextStyle;
       };
-      commandsHeader: {
-        container: ViewStyle;
-        title: TextStyle;
-      };
       container: ViewStyle & {
         maxHeight: number;
       };
@@ -271,7 +267,7 @@ export type Theme = {
         container: ViewStyle;
         text: TextStyle;
       };
-      emojisHeader: {
+      header: {
         container: ViewStyle;
         title: TextStyle;
       };
@@ -706,10 +702,6 @@ export const defaultTheme: Theme = {
         iconContainer: {},
         title: {},
       },
-      commandsHeader: {
-        container: {},
-        title: {},
-      },
       container: {
         maxHeight: vh(25),
       },
@@ -717,7 +709,7 @@ export const defaultTheme: Theme = {
         container: {},
         text: {},
       },
-      emojisHeader: {
+      header: {
         container: {},
         title: {},
       },

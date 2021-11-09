@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, LogBox, Platform, Text, useColorScheme, View } from 'react-native';
+import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';

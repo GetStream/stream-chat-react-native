@@ -5,7 +5,6 @@ import { useCountdown } from './hooks/useCountdown';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
@@ -153,7 +152,14 @@ type MessageInputPropsWithContext<
     | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply' | 'quotedRepliesEnabled'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'componentType' | 'suggestions' | 'suggestionsTitle'> &
+  Pick<
+    SuggestionsContextValue<Us>,
+    | 'AutoCompleteSuggestionHeader'
+    | 'AutoCompleteSuggestionItem'
+    | 'AutoCompleteSuggestionList'
+    | 'componentType'
+    | 'suggestions'
+  > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
@@ -174,6 +180,7 @@ const MessageInputWithContext = <
     additionalTextInputProps,
     asyncIds,
     asyncUploads,
+    AutoCompleteSuggestionList,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
@@ -207,7 +214,6 @@ const MessageInputWithContext = <
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    suggestionsTitle,
     t,
     thread,
     threadList,
@@ -578,11 +584,19 @@ const MessageInputWithContext = <
             suggestionsListContainer,
           ]}
         >
-          <SuggestionsList<Co, Us>
+          <AutoCompleteSuggestionList
             active={!!suggestions}
-            componentType={componentType}
+            headerProps={{
+              type:
+                componentType === 'Command'
+                  ? 'Command'
+                  : componentType === 'Emoji'
+                  ? 'Emoji'
+                  : 'Mention',
+              value: suggestions.query,
+            }}
             suggestions={suggestions}
-            suggestionsTitle={suggestionsTitle}
+            type={componentType}
           />
         </View>
       ) : null}
@@ -632,7 +646,6 @@ const areEqual = <
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
-    suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
@@ -651,7 +664,6 @@ const areEqual = <
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
-    suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
@@ -713,9 +725,6 @@ const areEqual = <
         prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
       : !!prevSuggestions === !!nextSuggestions;
   if (!suggestionsEqual) return false;
-
-  const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
-  if (!suggestionsTitleEqual) return false;
 
   const threadEqual =
     prevThread?.id === nextThread?.id &&
@@ -803,7 +812,13 @@ export const MessageInput = <
 
   const { quotedRepliesEnabled, Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { componentType, suggestions, suggestionsTitle } = useSuggestionsContext<Co, Us>();
+  const {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
+    componentType,
+    suggestions,
+  } = useSuggestionsContext<Us>();
 
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -815,6 +830,9 @@ export const MessageInput = <
         additionalTextInputProps,
         asyncIds,
         asyncUploads,
+        AutoCompleteSuggestionHeader,
+        AutoCompleteSuggestionItem,
+        AutoCompleteSuggestionList,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
@@ -849,7 +867,6 @@ export const MessageInput = <
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
-        suggestionsTitle,
         t,
         thread,
         uploadNewImage,
