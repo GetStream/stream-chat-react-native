@@ -251,6 +251,13 @@ export const renderText = <
     top: 'top',
   };
 
+  /**
+   * For lists and sublists, the default behavior of the markdown library we use is
+   * to always renumber any list, so all ordered lists start from 1.
+   *
+   * This custom rule overrides this behavior both for top level lists and sublists,
+   * in order to start the numbering from the number of the first list item provided.
+   * */
   const customListAtLevel =
     (level: keyof typeof listLevels): ReactNodeOutput =>
     (node, output, { ...state }) => {
