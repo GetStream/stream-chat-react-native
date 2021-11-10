@@ -1,7 +1,7 @@
 # Fully featured messaging application
 
 <p align="center">
-  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
+  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
 </p>
 
 ## How to run the app

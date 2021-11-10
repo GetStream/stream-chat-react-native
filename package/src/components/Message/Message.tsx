@@ -231,7 +231,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/Message.tsx)
      *
      * By default, we show the overlay with all the message actions on long press.
      *
@@ -245,7 +245,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/Message.tsx)
      *
      * By default, we will dismiss the keyboard on press.
      *

@@ -24,7 +24,7 @@ export const PathlineRenderer: React.FunctionComponent<JssInjectedProps> = ({
 }) => (
   <div className={classes.pathline}>
     <Link
-      href={'https://github.com/GetStream/stream-chat-react-native/blob/master/' + children}
+      href={'https://github.com/GetStream/stream-chat-react-native/blob/main/' + children}
       rel='noopener'
       target='blank'
     >

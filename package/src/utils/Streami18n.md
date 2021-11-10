@@ -175,7 +175,7 @@ Stream provides following list of in-built translations:
 
   1. Create a json file in your project with whatever name you prefer. Best practice would be to name it after
      the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
-  2. Copy the content of file https://github.com/GetStream/stream-chat-react/blob/master/src/i18n/en.json
+  2. Copy the content of file https://github.com/GetStream/stream-chat-react/blob/main/src/i18n/en.json
   3. Change the values of the keys as translation of key.
   4. Use it in chat client:
 

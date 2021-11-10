@@ -77,22 +77,22 @@ export type MessagesContextValue<
 > = MessagesConfig & {
   /**
    * UI component for Attachment.
-   * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
+   * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/Attachment.tsx)
    */
   Attachment: React.ComponentType<AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx)
+   * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/AttachmentActions.tsx)
    */
   AttachmentActions: React.ComponentType<AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx)
+   * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/Card.tsx)
    */
   Card: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for DateHeader
-   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)
+   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
   /** Should keyboard be dismissed when messaged is touched */
@@ -100,28 +100,28 @@ export type MessagesContextValue<
   enableMessageGroupingByUser: boolean;
   /**
    * UI component to display File type attachment.
-   * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)
+   * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/FileAttachment.tsx)
    */
   FileAttachment: React.ComponentType<FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx)
+   * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/FileAttachmentGroup.tsx)
    */
   FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/FileIcon.tsx
    */
   FileAttachmentIcon: React.ComponentType<FileIconProps>;
   FlatList: typeof FlatList;
   /**
    * UI component to display image attachments
-   * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx)
+   * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/Gallery.tsx)
    */
   Gallery: React.ComponentType<GalleryProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for Giphy
-   * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
+   * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
@@ -130,30 +130,30 @@ export type MessagesContextValue<
   initialScrollToFirstUnreadMessage: boolean;
   /**
    * UI component for Message Date Separator Component
-   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/InlineDateSeparator.tsx)
+   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageList/InlineDateSeparator.tsx)
    */
   InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
    * UI component for InlineUnreadIndicator
-   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
+   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
   Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageAvatar
-   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx)
+   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
   MessageAvatar: React.ComponentType<MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageContent
-   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx)
+   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/MessageSimple/MessageContent.tsx)
    */
   MessageContent: React.ComponentType<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
-   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageDeleted.tsx)
+   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageSimple/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
@@ -163,24 +163,24 @@ export type MessagesContextValue<
   MessageList: React.ComponentType<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageReplies
-   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)
+   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageSimple/MessageReplies.tsx)
    */
   MessageReplies: React.ComponentType<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI Component for MessageRepliesAvatars
-   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageRepliesAvatars.tsx)
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageSimple/MessageRepliesAvatars.tsx)
    */
   MessageRepliesAvatars: React.ComponentType<
     MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
    * UI component for MessageSimple
-   * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSimple.tsx)
+   * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
   MessageSimple: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for MessageStatus (delivered/read)
-   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageStatus.tsx)
+   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Message/MessageSimple/MessageStatus.tsx)
    */
   MessageStatus: React.ComponentType<MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
@@ -194,7 +194,7 @@ export type MessagesContextValue<
   OverlayReactionList: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for ReactionList
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx)
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Reaction/ReactionList.tsx)
    */
   ReactionList: React.ComponentType<ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
   removeMessage: (message: { id: string; parent_id?: string }) => void;
@@ -235,7 +235,7 @@ export type MessagesContextValue<
   ) => void;
   /**
    * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/Attachment/Card.tsx
    */
   UrlPreview: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**

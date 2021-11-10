@@ -247,7 +247,7 @@ export type InputMessageInputContextValue<
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
    * Custom UI component for FileUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageInput/FileUploadPreview.tsx
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** When false, CommandsButton will be hidden */
@@ -258,7 +258,7 @@ export type InputMessageInputContextValue<
   hasImagePicker: boolean;
   /**
    * Custom UI component for ImageUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageInput/ImageUploadPreview.tsx
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Limit on allowed number of files to attach at a time. */
@@ -291,7 +291,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/UploadProgressIndicator.tsx)
+   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
@@ -351,7 +351,7 @@ export type InputMessageInputContextValue<
   initialValue?: string;
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> &
@@ -361,7 +361,7 @@ export type InputMessageInputContextValue<
   >;
   /**
    * Custom UI component to override buttons on left side of input box
-   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/InputButtons.tsx),
+   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/main/src/components/MessageInput/InputButtons.tsx),
    * which contain following components/buttons:
    *
    *  - AttachButton

@@ -7,7 +7,7 @@ configPromise.then((config) => {
 
   const newConfig = {
     ...config,
-    branches: ['master'],
+    branches: ['main'],
   };
 
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
