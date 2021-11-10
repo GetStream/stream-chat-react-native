@@ -222,7 +222,6 @@ export type ChannelPropsWithContext<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       | 'additionalTouchableProps'
-      | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
       | 'Card'
@@ -273,7 +272,6 @@ export type ChannelPropsWithContext<
       | 'MessageSystem'
       | 'MessageText'
       | 'myMessageTheme'
-      | 'onDoubleTapMessage'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
@@ -401,7 +399,6 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
-    animatedLongPress,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
@@ -507,7 +504,6 @@ const ChannelWithContext = <
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
-    onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -1741,7 +1737,6 @@ const ChannelWithContext = <
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
-    animatedLongPress,
     Attachment,
     AttachmentActions,
     Card,
@@ -1795,7 +1790,6 @@ const ChannelWithContext = <
     MessageSystem,
     MessageText,
     myMessageTheme,
-    onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
