@@ -39,6 +39,9 @@ const defaultMarkdownStyles: MarkdownStyle = {
     marginBottom: 8,
     marginTop: 8,
   },
+  listItemNumber: {
+    fontWeight: 'bold',
+  },
   listItemText: {
     flex: 0,
   },
