@@ -48,6 +48,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   },
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
@@ -352,6 +353,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   undefined,
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
@@ -621,6 +623,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   },
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
@@ -925,6 +928,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   undefined,
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
@@ -1192,6 +1196,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   undefined,
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
@@ -1421,6 +1426,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   undefined,
                 ]
               }
+              testID="message-wrapper"
             >
               <View
                 style={
