@@ -45,7 +45,7 @@ export const useCountdown = (endsAt: Date) => {
     return () => {
       clearInterval(counter.current);
     };
-  }, []);
+  });
 
   return { seconds };
 };
