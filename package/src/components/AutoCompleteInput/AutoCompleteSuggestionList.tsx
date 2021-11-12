@@ -57,7 +57,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
 
   const renderItem = ({ index, item }: { index: number; item: Suggestion<Us> }) => {
     switch (triggerType) {
-      case 'Mention':
+      case 'mention':
         if (isSuggestionUser(item)) {
           return (
             <SuggestionsItem
@@ -79,7 +79,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
           );
         }
         return null;
-      case 'Command':
+      case 'command':
         if (isSuggestionCommand(item)) {
           return (
             <SuggestionsItem
@@ -95,7 +95,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
           );
         }
         return null;
-      case 'Emoji':
+      case 'emoji':
         if (isSuggestionEmoji(item)) {
           return (
             <SuggestionsItem

@@ -587,12 +587,7 @@ const MessageInputWithContext = <
           <AutoCompleteSuggestionList
             active={!!suggestions}
             headerProps={{
-              type:
-                componentType === 'Command'
-                  ? 'Command'
-                  : componentType === 'Emoji'
-                  ? 'Emoji'
-                  : 'Mention',
+              type: componentType,
               value: suggestions.query,
             }}
             suggestions={suggestions}

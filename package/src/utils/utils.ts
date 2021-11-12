@@ -403,7 +403,7 @@ export const ACITriggerSettings = <
       key: `${entity.name}`,
       text: `/${entity.name}`,
     }),
-    type: 'Command',
+    type: 'command',
   },
   ':': {
     dataProvider: (query, _, onReady) => {
@@ -447,7 +447,7 @@ export const ACITriggerSettings = <
       key: entity.name,
       text: entity.unicode,
     }),
-    type: 'Emoji',
+    type: 'emoji',
   },
   '@': {
     callback: (item) => {
@@ -530,7 +530,7 @@ export const ACITriggerSettings = <
       key: entity.id,
       text: `@${entity.name || entity.id}`,
     }),
-    type: 'Mention',
+    type: 'mention',
   },
 });
 

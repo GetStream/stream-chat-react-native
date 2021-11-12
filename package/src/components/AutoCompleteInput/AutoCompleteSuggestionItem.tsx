@@ -75,7 +75,7 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
     },
   } = useTheme();
 
-  if (type === 'Mention') {
+  if (type === 'mention') {
     const { id, image, name, online } = itemProps as SuggestionUser<Us>;
     return (
       <View style={[styles.container, mentionContainer]}>
@@ -88,7 +88,7 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
         <AtMentions pathFill={accent_blue} />
       </View>
     );
-  } else if (type === 'Emoji') {
+  } else if (type === 'emoji') {
     const { name, unicode } = itemProps as EmojiItemType;
     return (
       <View style={[styles.container, emojiContainer]}>
@@ -100,7 +100,7 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
         </Text>
       </View>
     );
-  } else if (type === 'Command') {
+  } else if (type === 'command') {
     const { args, name } = itemProps as CommandItemType;
     return (
       <View style={[styles.container, commandContainer]}>

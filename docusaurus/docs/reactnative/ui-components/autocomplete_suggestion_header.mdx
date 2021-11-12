@@ -1,0 +1,34 @@
+---
+id: autocomplete-suggestion-header
+title: AutoCompleteSuggestionHeader
+---
+
+Component to render and customize the header in the auto suggestion list.
+
+## Basic Usage
+
+You can customize the `AutoCompleteSuggestionHeader` component and provide it back to the SDK via the [`AutoCompleteSuggestionHeader`](../core-components/channel.mdx#AutoCompleteSuggestionHeader) prop on `Channel` if desired.
+
+For more details about its usage refer [`Customizing autocomplete suggestions`](../guides/auto_complete_suggestion_list_customizations.mdx).
+
+```tsx
+import { Channel, AutoCompleteSuggestionHeader } from 'stream-chat-react-native';
+
+const AutoCompleteSuggestionHeaderComponent = () => <AutoCompleteSuggestionHeader />
+
+<Channel AutoCompleteSuggestionHeader={AutoCompleteSuggestionHeaderComponent} />
+```
+
+## Props
+
+### type
+
+| type |
+| - |
+| string |
+
+### value
+
+| type |
+| - |
+| string |

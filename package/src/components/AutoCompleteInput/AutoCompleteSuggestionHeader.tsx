@@ -39,7 +39,7 @@ const AutoCompleteSuggestionHeaderWithContext = (
     },
   } = useTheme();
 
-  if (type === 'Command') {
+  if (type === 'command') {
     return (
       <View style={[styles.container, container]}>
         <Lightning pathFill={accent_blue} />
@@ -48,7 +48,7 @@ const AutoCompleteSuggestionHeaderWithContext = (
         </Text>
       </View>
     );
-  } else if (type === 'Emoji') {
+  } else if (type === 'emoji') {
     return (
       <View style={[styles.container, container]}>
         <Smile pathFill={accent_blue} />
@@ -57,7 +57,7 @@ const AutoCompleteSuggestionHeaderWithContext = (
         </Text>
       </View>
     );
-  } else if (type === 'Mention') {
+  } else if (type === 'mention') {
     return null;
   } else return null;
 };

@@ -1,0 +1,164 @@
+---
+id: customize-autocomplete-suggestion-list
+sidebar_position: 11
+title: Customize autocomplete suggestion list
+---
+
+AutoComplete suggestion list and its components can be customized using the props which are introduced in the Channel component.
+The following props are useful for customizing the components:
+
+- AutoCompleteSuggestionHeader
+- AutoCompleteSuggestionItem
+- AutoCompleteSuggestionList
+
+The Header and the Item components are exposed used within the list component in the Flatlist. 
+
+The above props allow customizing the different parts of the list as header, list item and the entire list at once. 
+
+The available suggestion trigger types are:
+- `command`
+- `emoji`
+- `mention`
+
+The customized version can be rendered conditionally for the appropriate cases and the default implementation can be rendered otherwise.
+
+### Customizing Header component
+
+The Header is the component which is rendered at the top of the autocomplete suggestion list. It can be customized using the prop `AutoCompleteSuggestionHeader`.
+
+The props for the component are:
+
+- `type`: The trigger type of the suggestion list.
+- `value`: The custom value to be displayed in the header component.
+
+An example for the same would be as follows:
+
+```jsx
+import { AutoCompleteSuggestionHeader } from 'stream-chat-react-native';
+import { Text } from 'react-native';
+
+<Channel
+    AutoCompleteSuggestionHeader={({ type, value }) => {
+        if (type === 'command') {
+            return <Text>Command Header Component</Text>;
+        } else if(type === 'emoji') {
+            return <Text>Emoji Header Component</Text>;
+        }
+        else {
+            return <AutoCompleteSuggestionHeader type={type} value={value} />;
+        }
+    }}>
+    {/*The underlying components*/}
+</Channel>
+```
+
+Note: The default `AutoCompleteSuggestionHeader` must be returned if you don't want any change for a particular trigger type.
+
+### Customizing Item Component
+
+The List Item component can be customized in the similar way as the Header is customized above. To customize it we use the `AutoCompleteSuggestionItem` prop in the Channel component.
+
+The props for the component are as follows:
+
+- `type`: The trigger type of the suggestion list
+- `itemProps`: They are different for the different trigger types. The `command` type accepts `name` and `args`. The `emoji` type accepts `name` and `unicode` and the `mention` type is of `SuggestionUser<Us>`.
+
+```jsx
+import { Avatar, AutoCompleteSuggestionItem } from 'stream-chat-react-native';
+import { Text, View } from 'react-native';
+
+<Channel
+    AutoCompleteSuggestionItem={({ itemProps, type }) => {
+        if (type === 'command') {
+            return (
+                <View>
+                    <Text>{itemProps.name}</Text>
+                    <Text>{itemProps.args}</Text>
+                </View>
+            );
+        } else if(type === 'mention') {
+            const { id, image, name, online } = itemProps as SuggestionUser<Us>;
+            return (
+                <View>
+                    <Avatar image={image} name={name} online={online} size={avatarSize} />
+                    <Text>{itemProps.name}</Text>
+                </View>
+            )
+        } else {
+            return <AutoCompleteSuggestionItem itemProps={itemProps} type={type} />;
+        }
+    }}>
+    {/*The underlying components*/}
+</Channel>
+```
+
+Note: The default `AutoCompleteSuggestionItem` must be returned if you don't want any change for a particular trigger type.
+
+### Customizing the AutoComplete suggestion list
+
+The list can also be entirely customized with its own header, item and other definitions. This can be done using the prop `AutoCompleteSuggestionList` in the Channel component.
+
+The props available to the component are:
+- `active`: Checks the list is active or not.
+- `headerProps`: The props for the header of the list. This can take `type` and `value` as explained above in the header section.
+- `suggestions`: The suggestions array which contains the data for the list to be displayed in the list items.
+- `type`: The trigger type of the suggestion list.
+
+An example to demonstrate the same is as follows. The different ways of usage is also explained:
+
+```jsx
+import { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } from 'stream-chat-react-native';
+import { FlatList, Text, View } from 'react-native';
+
+<Channel
+    AutoCompleteSuggestionList={({
+        headerProps: { value },
+        suggestions: { query, data, onSelect },
+        type,
+    }) => {
+        if (type === 'command') {
+            return (
+                <View>
+                    <View>
+                        <Text>Command suggestions for {value}</Text>
+                    </View>
+                    {data.map((item) => (
+                        <AutoCompleteSuggestionItem itemProps={item} type={type} />
+                    ))}
+                </View>
+            );
+        } else if (type === 'emoji') {
+            return (
+                <FlatList
+                    data={data}
+                    keyboardShouldPersistTaps='always'
+                    ListHeaderComponent={<AutoCompleteSuggestionHeader type={type} value={value} />}
+                    renderItem={({ index, item }) => {
+                        return (
+                            <TouchableOpacity
+                                onPress={() => {
+                                onSelect(item);
+                                }}
+                            >
+                                <Text>{item.name}</Text>
+                            </TouchableOpacity>
+                        );
+                    }}
+                />
+            );
+        } else {
+            return (
+                <View>
+                    <AutoCompleteSuggestionHeader type={type} value={query} />
+                    {data.map((item) => (
+                        <AutoCompleteSuggestionItem itemProps={item} type={type} />
+                    ))}
+                </View>
+            );
+        }
+    }}>
+    {/*The underlying components*/}
+</Channel>
+```
+
+Note: The default `AutoCompleteSuggestionList` must be returned if you don't want any change for a particular trigger type.

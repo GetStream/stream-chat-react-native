@@ -1,0 +1,34 @@
+---
+id: autocomplete-suggestion-item
+title: AutoCompleteSuggestionItem
+---
+
+Component to render and customize the list item in the auto suggestion list.
+
+## Basic Usage
+
+You can customize the `AutoCompleteSuggestionItem` component and provide it back to the SDK via the [`AutoCompleteSuggestionItem`](../core-components/channel.mdx#AutoCompleteSuggestionItem) prop on `Channel` if desired.
+
+For more details about its usage refer [`Customizing autocomplete suggestions`](../guides/auto_complete_suggestion_list_customizations.mdx).
+
+```tsx
+import { Channel, AutoCompleteSuggestionItem } from 'stream-chat-react-native';
+
+const AutoCompleteSuggestionItemComponent = () => <AutoCompleteSuggestionItem />
+
+<Channel AutoCompleteSuggestionItem={AutoCompleteSuggestionItemComponent} />
+```
+
+## Props
+
+### itemProps
+
+| type |
+| - |
+| CommandItemProps(name, type) \| EmojiItemProps(name, unicode) \| SuggestionUser |
+
+### type
+
+| type |
+| - |
+| string |
