@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 export type CooldownTimerProps = {
   seconds: number;
@@ -13,6 +14,16 @@ export type CooldownTimerProps = {
  **/
 export const CooldownTimer = (props: CooldownTimerProps) => {
   const { seconds } = props;
+  const {
+    theme: {
+      colors: { black },
+      messageInput: { cooldownTimer },
+    },
+  } = useTheme();
 
-  return <Text testID='cooldown-seconds'>{seconds}</Text>;
+  return (
+    <Text style={[{ color: black }, cooldownTimer]} testID='cooldown-seconds'>
+      {seconds}
+    </Text>
+  );
 };
