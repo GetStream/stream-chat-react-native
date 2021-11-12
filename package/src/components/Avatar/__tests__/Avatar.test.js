@@ -47,36 +47,4 @@ describe('Avatar', () => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
     });
   });
-
-  it('should render an avatar with a random image and default size', async () => {
-    const { queryByTestId } = render(
-      <ThemeProvider>
-        <Avatar name='Test User' />
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
-        borderRadius: 16,
-        height: 32,
-        width: 32,
-      });
-    });
-  });
-
-  it('should render an avatar with placeholder and custom size', async () => {
-    const { queryByTestId } = render(
-      <ThemeProvider>
-        <Avatar name='Test User' size={20} />
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('avatar-placeholder').props.style[0]).toMatchObject({
-        borderRadius: 16,
-        height: 32,
-        width: 32,
-      });
-    });
-  });
 });

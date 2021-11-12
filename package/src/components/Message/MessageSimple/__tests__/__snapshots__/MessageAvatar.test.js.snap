@@ -33,8 +33,6 @@ exports[`MessageAvatar should render message avatar 1`] = `
     >
       <Image
         accessibilityLabel="avatar-image"
-        id="DannyBoi1"
-        initials="D"
         onError={[Function]}
         source={
           Object {

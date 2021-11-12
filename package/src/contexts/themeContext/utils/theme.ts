@@ -1,7 +1,7 @@
 import { vh } from '../../../utils/utils';
 
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { CircleProps, StopProps } from 'react-native-svg';
+import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -124,6 +124,7 @@ export type Theme = {
     gradientStart: StopProps;
     gradientStop: StopProps;
     height: number;
+    maskFillColor?: Color;
   };
   channelPreview: {
     checkAllIcon: IconProps;

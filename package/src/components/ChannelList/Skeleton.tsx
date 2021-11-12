@@ -41,6 +41,7 @@ export const Skeleton: React.FC = () => {
         gradientStart,
         gradientStop,
         height = 64,
+        maskFillColor,
       },
       colors: { border, grey_gainsboro, white_snow },
     },
@@ -138,7 +139,7 @@ export const Skeleton: React.FC = () => {
         </Svg>
       </Animated.View>
       <Svg height={height} width={width}>
-        <Path d={d.value} fill={white_snow} />
+        <Path d={d.value} fill={maskFillColor || white_snow} />
       </Svg>
     </View>
   );

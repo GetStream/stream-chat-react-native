@@ -4,7 +4,6 @@ import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { StreamCache } from '../../../StreamCache';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
 import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
@@ -52,13 +51,8 @@ export const usePaginatedChannels = <
   options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
-  const cacheInstance = StreamCache.hasInstance()
-    ? StreamCache.getInstance<At, Ch, Co, Ev, Me, Re, Us>()
-    : null;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>(() =>
-    cacheInstance ? cacheInstance.getOrderedChannels(filters, sort) : [],
-  );
+  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<boolean | Error>(false);
@@ -69,12 +63,6 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useIsMountedRef();
-
-  useEffect(() => {
-    if (cacheInstance) {
-      cacheInstance.syncChannelsCachedOrder(channels, filters, sort);
-    }
-  }, [channels]);
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
@@ -114,11 +102,6 @@ export const usePaginatedChannels = <
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setError(false);
       querying.current = false;
-      // Once client.queryChannels remove old data from the client cache, we just synchronize the cache and images in order to
-      // remove older cached images
-      if (cacheInstance) {
-        cacheInstance?.syncCacheAndImages();
-      }
     } catch (err) {
       querying.current = false;
       await wait(2000);

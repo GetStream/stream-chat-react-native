@@ -2,8 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { CachedAnimatedGalleryImage } from '../../CachedImages/CachedAnimatedGalleryImage';
-
 import { vw } from '../../../utils/utils';
 
 import type { ImageStyle, StyleProp } from 'react-native';
@@ -15,7 +13,7 @@ const oneEight = 1 / 8;
 type Props = {
   index: number;
   offsetScale: Animated.SharedValue<number>;
-  photo: { uri: string; channelId?: string; messageId?: string };
+  photo: { uri: string };
   previous: boolean;
   scale: Animated.SharedValue<number>;
   screenHeight: number;
@@ -85,8 +83,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
     }
 
     return (
-      <CachedAnimatedGalleryImage
-        cacheConfig={{ channelId: photo.channelId, messageId: photo.messageId }}
+      <Animated.Image
         resizeMode={'contain'}
         source={{ uri: photo.uri }}
         style={[

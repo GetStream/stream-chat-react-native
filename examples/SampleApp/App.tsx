@@ -42,6 +42,7 @@ import type {
 } from './src/types';
 
 LogBox.ignoreAllLogs(true);
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
 
 const Drawer = createDrawerNavigator();
