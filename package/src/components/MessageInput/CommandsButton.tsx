@@ -35,7 +35,7 @@ type CommandsButtonPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'suggestions'> & {
+  Pick<SuggestionsContextValue<Us>, 'suggestions'> & {
     /** Function that opens commands selector */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   };
@@ -133,7 +133,7 @@ export const CommandsButton = <
   props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { suggestions } = useSuggestionsContext<Co, Us>();
+  const { suggestions } = useSuggestionsContext<Us>();
 
   return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };

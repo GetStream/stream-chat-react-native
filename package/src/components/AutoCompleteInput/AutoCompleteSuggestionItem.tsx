@@ -5,7 +5,6 @@ import { Avatar } from '../Avatar/Avatar';
 import { AtMentions } from '../../icons/AtMentions';
 import type { DefaultUserType } from '../../types/types';
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 
 export type CommandItemType = {
@@ -22,7 +21,6 @@ export type AutoCompleteSuggestionItemPropsWithContext<
   Us extends DefaultUserType = DefaultUserType,
 > = {
   itemProps: CommandItemType | EmojiItemType | SuggestionUser<Us>;
-  channelId?: string;
   type?: string;
 };
 
@@ -61,7 +59,6 @@ const styles = StyleSheet.create({
 });
 
 const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
-  channelId,
   itemProps,
   type,
 }: AutoCompleteSuggestionItemPropsWithContext<Us>) => {
@@ -82,14 +79,7 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
     const { id, image, name, online } = itemProps as SuggestionUser<Us>;
     return (
       <View style={[styles.container, mentionContainer]}>
-        <Avatar
-          channelId={channelId}
-          id={id}
-          image={image}
-          name={name}
-          online={online}
-          size={avatarSize}
-        />
+        <Avatar image={image} name={name} online={online} size={avatarSize} />
         <View style={[styles.column, column]}>
           <Text style={[styles.name, { color: black }, nameStyle]} testID='mentions-item-name'>
             {name || id}
@@ -151,11 +141,7 @@ export type AutoCompleteSuggestionItemProps<Us extends DefaultUserType = Default
 
 export const AutoCompleteSuggestionItem = <Us extends DefaultUserType = DefaultUserType>(
   props: AutoCompleteSuggestionItemProps<Us>,
-) => {
-  const { channel } = useChannelContext();
-
-  return <MemoizedAutoCompleteSuggestionItem {...props} channelId={channel?.id} />;
-};
+) => <MemoizedAutoCompleteSuggestionItem {...props} />;
 
 AutoCompleteSuggestionItem.displayName =
   'AutoCompleteSuggestionItem{messageInput{suggestions{Item}}}';
