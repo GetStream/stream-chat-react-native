@@ -1,51 +1,47 @@
-import dayjs from 'dayjs';
-import { useEffect, useRef, useState } from 'react';
-
-const SECOND_IN_MS = 1000;
+import { useEffect, useState } from 'react';
+import { ONE_SECOND_IN_MS, secondsUntil } from '../../../utils/date';
 
 /**
  * Start a countdown to a set date, in seconds.
  * The date passed in as an argument to useCountdown
  * will be rounded up to the nearest second.
  **/
-export const useCountdown = (endsAt: Date) => {
-  const [seconds, setSeconds] = useState<number>(0);
-
-  const counter = useRef<number>();
-
-  const update = () => {
-    setSeconds((previous: number) => {
-      const next = previous - 1;
-
-      if (next < 1) {
-        /* Don't trigger an unnecessary rerender when done */
-        clearInterval(counter.current);
-        return 0;
-      }
-      return next;
-    });
-  };
+export const useCountdown = (end: Date) => {
+  const [seconds, setSeconds] = useState(0);
 
   /**
-   * When a new value is passed with `endsAt`, calculate the
-   * amount of seconds for the counter to start at.
+   * When a new `end` is set for the countdown, start the counter if
+   * the `end` is in the future.
    **/
   useEffect(() => {
-    const secondsUntilEndsAt = Math.ceil(dayjs(endsAt).diff(dayjs(), 'seconds', true));
-    setSeconds(secondsUntilEndsAt);
-  }, [endsAt]);
+    let intervalId: NodeJS.Timer;
 
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      update();
-    }, SECOND_IN_MS);
+    const startCountdown = (seconds: number) => {
+      setSeconds(seconds);
+      intervalId = setInterval(() => {
+        setSeconds((previous: number) => {
+          const next = previous - 1;
+          if (next < 1) {
+            /* Don't trigger an unnecessary rerender when done */
+            clearInterval(intervalId);
+            return 0;
+          }
+          return next;
+        });
+      }, ONE_SECOND_IN_MS);
+    };
 
-    counter.current = timerId as unknown as number;
+    const secondsUntilEnd = secondsUntil(end);
+    if (secondsUntilEnd > 0) {
+      startCountdown(secondsUntilEnd);
+    }
 
     return () => {
-      clearInterval(counter.current);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
-  });
+  }, [end]);
 
   return { seconds };
 };

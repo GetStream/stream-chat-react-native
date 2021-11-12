@@ -1,8 +1,7 @@
-import dayjs from 'dayjs';
 import { useState } from 'react';
+import { BuiltinRoles, ChannelResponse, Role } from 'stream-chat';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import { BuiltinRoles, ChannelResponse, Role } from 'stream-chat';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -12,6 +11,7 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
+import { ONE_SECOND_IN_MS } from '../../../utils/date';
 
 type Roles = Array<Role>;
 
@@ -28,12 +28,12 @@ export const useCooldown = <
   Re extends DefaultReactionType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 >() => {
-  const [endsAt, setEndsAt] = useState<Date>(new Date());
+  const [endsAt, setEndsAt] = useState(new Date());
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { cooldown } = (channel?.data || {}) as ChannelResponse<Ch, Co, Us>;
-  const interval = (cooldown as number) ?? 0;
+  const interval: number = cooldown ?? 0;
 
   /**
    * We get the roles a user has globally set on the Client, and the role
@@ -51,10 +51,8 @@ export const useCooldown = <
   const enabled = interval > 0 && !disabledFor([userClientRole, userChannelRole]);
 
   const start = () => {
-    const now = dayjs();
-
     if (enabled) {
-      setEndsAt(now.add(interval, 'seconds').toDate());
+      setEndsAt(new Date(Date.now() + interval * ONE_SECOND_IN_MS));
     }
   };
 
