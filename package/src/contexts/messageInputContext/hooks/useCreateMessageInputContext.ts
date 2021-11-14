@@ -106,7 +106,6 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
-  uploadsEnabled,
 }: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>) => {
   const editingExists = !!editing;
@@ -203,7 +202,6 @@ export const useCreateMessageInputContext = <
       uploadNewFile,
       uploadNewImage,
       UploadProgressIndicator,
-      uploadsEnabled,
     }),
     [
       cooldownEndsAt,
@@ -219,7 +217,6 @@ export const useCreateMessageInputContext = <
       showMoreOptions,
       text,
       threadId,
-      uploadsEnabled,
     ],
   );
 

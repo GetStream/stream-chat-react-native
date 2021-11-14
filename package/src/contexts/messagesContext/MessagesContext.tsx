@@ -36,6 +36,7 @@ import type { MessageStatusProps } from '../../components/Message/MessageSimple/
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
+import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
@@ -58,14 +59,6 @@ import type {
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
-export type MessagesConfig = {
-  mutesEnabled?: boolean;
-  pinMessageEnabled?: boolean;
-  quotedRepliesEnabled?: boolean;
-  reactionsEnabled?: boolean;
-  threadRepliesEnabled?: boolean;
-};
-
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
 export type MessagesContextValue<
@@ -76,7 +69,7 @@ export type MessagesContextValue<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = MessagesConfig & {
+> = {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
@@ -372,49 +365,7 @@ export type MessagesContextValue<
    *
    * @overrideType Function | Array<Objects>
    */
-  messageActions?:
-    | (MessageActionType | null)[]
-    | (({
-        blockUser,
-        canModifyMessage,
-        copyMessage,
-        deleteMessage,
-        dismissOverlay,
-        editMessage,
-        error,
-        flagMessage,
-        isMyMessage,
-        isThreadMessage,
-        message,
-        messageReactions,
-        muteUser,
-        pinMessageEnabled,
-        quotedRepliesEnabled,
-        quotedReply,
-        retry,
-        threadRepliesEnabled,
-        threadReply,
-      }: {
-        blockUser: MessageActionType;
-        canModifyMessage: boolean;
-        copyMessage: MessageActionType;
-        deleteMessage: MessageActionType;
-        dismissOverlay: () => void;
-        editMessage: MessageActionType;
-        error: boolean | Error;
-        flagMessage: MessageActionType;
-        isMyMessage: boolean;
-        isThreadMessage: boolean;
-        message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-        messageReactions: boolean;
-        muteUser: MessageActionType;
-        quotedReply: MessageActionType;
-        retry: MessageActionType;
-        threadReply: MessageActionType;
-        pinMessageEnabled?: boolean;
-        quotedRepliesEnabled?: boolean;
-        threadRepliesEnabled?: boolean;
-      }) => MessageActionType[] | undefined);
+  messageActions?: (param: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType[];
   /**
    * Custom message header component
    */

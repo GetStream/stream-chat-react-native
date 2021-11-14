@@ -1,4 +1,6 @@
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -9,22 +11,43 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
-export type MessageActionsProps = {
+export type MessageActionsParams<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+> = {
   blockUser: MessageActionType;
   copyMessage: MessageActionType;
   deleteMessage: MessageActionType;
+  dismissOverlay: () => void;
   editMessage: MessageActionType;
+  error: boolean | Error;
   flagMessage: MessageActionType;
+  isThreadMessage: boolean;
+  messageReactions: boolean;
   muteUser: MessageActionType;
+  ownCapabilities: OwnCapabilitiesContextValue;
   pinMessage: MessageActionType;
   quotedReply: MessageActionType;
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-};
+} & Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'isMyMessage'>;
+
+export type MessageActionsProp<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType,
+> = (param: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType[];
 
 export const messageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -36,7 +59,6 @@ export const messageActions = <
   Us extends UnknownType = DefaultUserType,
 >({
   blockUser,
-  canModifyMessage,
   copyMessage,
   deleteMessage,
   editMessage,
@@ -46,27 +68,13 @@ export const messageActions = <
   isThreadMessage,
   message,
   messageReactions,
-  mutesEnabled,
-  muteUser,
+  ownCapabilities,
   pinMessage,
-  pinMessageEnabled,
-  quotedRepliesEnabled,
   quotedReply,
   retry,
-  threadRepliesEnabled,
   threadReply,
   unpinMessage,
-}: {
-  canModifyMessage: boolean;
-  error: boolean | Error;
-  isThreadMessage: boolean;
-  messageReactions: boolean;
-} & MessageActionsProps &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'isMyMessage'> &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
-  >): Array<MessageActionType | null> | undefined => {
+}: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => {
   if (messageReactions) {
     return undefined;
   }
@@ -77,15 +85,18 @@ export const messageActions = <
     actions.push(retry);
   }
 
-  if (quotedRepliesEnabled && !isThreadMessage && !error) {
+  if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
     actions.push(quotedReply);
   }
 
-  if (threadRepliesEnabled && !isThreadMessage && !error) {
+  if (ownCapabilities.sendReply && !isThreadMessage && !error) {
     actions.push(threadReply);
   }
 
-  if (canModifyMessage) {
+  if (
+    (isMyMessage && ownCapabilities.updateOwnMessage) ||
+    (!isMyMessage && ownCapabilities.updateAnyMessage)
+  ) {
     actions.push(editMessage);
   }
 
@@ -93,27 +104,26 @@ export const messageActions = <
     actions.push(copyMessage);
   }
 
-  if (!isMyMessage) {
+  if (!isMyMessage && ownCapabilities.flagMessage) {
     actions.push(flagMessage);
   }
 
-  if (pinMessageEnabled && !message.pinned) {
+  if (ownCapabilities.pinMessage && !message.pinned) {
     actions.push(pinMessage);
   }
 
-  if (pinMessageEnabled && message.pinned) {
+  if (ownCapabilities.pinMessage && message.pinned) {
     actions.push(unpinMessage);
   }
 
-  if (mutesEnabled && !isMyMessage) {
-    actions.push(muteUser);
-  }
-
-  if (!isMyMessage && canModifyMessage) {
+  if (!isMyMessage && ownCapabilities.banChannelMembers) {
     actions.push(blockUser);
   }
 
-  if (canModifyMessage) {
+  if (
+    (isMyMessage && ownCapabilities.deleteOwnMessage) ||
+    (!isMyMessage && ownCapabilities.deleteAnyMessage)
+  ) {
     actions.push(deleteMessage);
   }
 

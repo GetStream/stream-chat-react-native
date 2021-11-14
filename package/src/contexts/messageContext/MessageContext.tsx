@@ -40,10 +40,6 @@ export type MessageContextValue<
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
-  /**
-   * Function that returns a boolean indicating whether or not the user can edit/delete the message.
-   */
-  canModifyMessage: boolean;
   /** The files attached to a message */
   files: Attachment<At>[];
   /**
@@ -115,10 +111,7 @@ export type MessageContextValue<
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-} & Pick<
-  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'channel' | 'disabled' | 'members' | 'readEventsEnabled'
->;
+} & Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'disabled' | 'members'>;
 
 export const MessageContext = React.createContext({} as MessageContextValue);
 

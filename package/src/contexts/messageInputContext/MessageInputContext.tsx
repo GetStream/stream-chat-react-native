@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 import uniq from 'lodash/uniq';
 import {
   Attachment,
@@ -29,9 +29,13 @@ import {
   FileState,
   generateRandomId,
   TriggerSettings,
+  urlRegex,
 } from '../../utils/utils';
 
 import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
+
+import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useTranslationContext } from '../translationContext/TranslationContext';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -78,11 +82,6 @@ export type ImageUpload = {
   id: string;
   state: string;
   url?: string;
-};
-
-export type InputConfig = {
-  maxMessageLength?: number;
-  uploadsEnabled?: boolean;
 };
 
 export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
@@ -387,6 +386,7 @@ export type InputMessageInputContextValue<
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  maxMessageLength?: number;
   mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
   mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
@@ -394,6 +394,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
+  SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
    *
@@ -402,7 +403,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   setInputRef?: (ref: TextInput | null) => void;
-} & InputConfig;
+};
 
 export type MessageInputContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -434,10 +435,11 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-
+  const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 
@@ -628,6 +630,13 @@ export const MessageInputProvider = <
     if (sending.current) {
       return;
     }
+
+    if (!channelCapabities.sendLinks && !!text.match(urlRegex)) {
+      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+
+      return;
+    }
+
     sending.current = true;
 
     startCooldown();

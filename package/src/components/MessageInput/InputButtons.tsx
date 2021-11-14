@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -55,7 +56,6 @@ export type InputButtonsWithContextProps<
   | 'showMoreOptions'
   | 'text'
   | 'toggleAttachmentPicker'
-  | 'uploadsEnabled'
 >;
 
 export const InputButtonsWithContext = <
@@ -82,7 +82,6 @@ export const InputButtonsWithContext = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-    uploadsEnabled,
   } = props;
 
   const {
@@ -90,6 +89,8 @@ export const InputButtonsWithContext = <
       messageInput: { attachButtonContainer, commandsButtonContainer },
     },
   } = useTheme();
+
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   if (giphyActive) {
     return null;
@@ -99,7 +100,7 @@ export const InputButtonsWithContext = <
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
-      {(hasImagePicker || hasFilePicker) && uploadsEnabled !== false && (
+      {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
@@ -134,7 +135,6 @@ const areEqual = <
     selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
     text: prevText,
-    uploadsEnabled: prevUploadsEnabled,
   } = prevProps;
 
   const {
@@ -145,7 +145,6 @@ const areEqual = <
     selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
     text: nextText,
-    uploadsEnabled: nextUploadsEnabled,
   } = nextProps;
 
   if (prevHasImagePicker !== nextHasImagePicker) {
@@ -160,9 +159,6 @@ const areEqual = <
     return false;
   }
 
-  if (prevUploadsEnabled !== nextUploadsEnabled) {
-    return false;
-  }
   if (prevSelectedPicker !== nextSelectedPicker) {
     return false;
   }
@@ -212,7 +208,6 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-    uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -231,7 +226,6 @@ export const InputButtons = <
         showMoreOptions,
         text,
         toggleAttachmentPicker,
-        uploadsEnabled,
       }}
       {...props}
     />

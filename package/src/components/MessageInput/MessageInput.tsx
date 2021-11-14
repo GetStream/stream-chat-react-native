@@ -8,6 +8,7 @@ import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -152,7 +153,7 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply' | 'quotedRepliesEnabled'> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<SuggestionsContextValue<Co, Us>, 'componentType' | 'suggestions' | 'suggestionsTitle'> &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -196,7 +197,6 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
-    quotedRepliesEnabled,
     removeImage,
     Reply,
     resetInput,
@@ -498,10 +498,7 @@ const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {((typeof editing !== 'boolean' &&
-                  quotedRepliesEnabled &&
-                  editing?.quoted_message) ||
-                  quotedMessage) && (
+                {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
                   </View>
@@ -764,6 +761,8 @@ export const MessageInput = <
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const ownCapabilities = useOwnCapabilitiesContext();
+
   const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
@@ -794,6 +793,7 @@ export const MessageInput = <
     SendButton,
     sending,
     sendMessageAsync,
+    SendMessageDisallowedIndicator,
     setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
@@ -801,13 +801,17 @@ export const MessageInput = <
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { quotedRepliesEnabled, Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { componentType, suggestions, suggestionsTitle } = useSuggestionsContext<Co, Us>();
 
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { t } = useTranslationContext();
+
+  if (!ownCapabilities.sendMessage) {
+    return SendMessageDisallowedIndicator && <SendMessageDisallowedIndicator />;
+  }
 
   return (
     <MemoizedMessageInput
@@ -837,7 +841,6 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
-        quotedRepliesEnabled,
         removeImage,
         Reply,
         resetInput,

@@ -247,6 +247,10 @@ export type Theme = {
     replyContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
+    sendMessageDisallowedIndicator: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -694,6 +698,10 @@ export const defaultTheme: Theme = {
     replyContainer: {},
     sendButton: {},
     sendButtonContainer: {},
+    sendMessageDisallowedIndicator: {
+      container: {},
+      text: {},
+    },
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},

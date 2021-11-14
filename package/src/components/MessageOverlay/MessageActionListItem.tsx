@@ -55,16 +55,7 @@ export type MessageActionType = {
 export type MessageActionListItemProps = MessageActionType &
   Pick<
     MessageOverlayPropsWithContext,
-    | 'canModifyMessage'
-    | 'error'
-    | 'isMyMessage'
-    | 'isThreadMessage'
-    | 'message'
-    | 'messageReactions'
-    | 'mutesEnabled'
-    | 'quotedRepliesEnabled'
-    | 'pinMessageEnabled'
-    | 'threadRepliesEnabled'
+    'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageReactions'
   > & {
     index: number;
     length: number;

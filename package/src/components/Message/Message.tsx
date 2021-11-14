@@ -17,6 +17,7 @@ import {
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -135,13 +136,7 @@ export type MessagePropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'channel'
-  | 'disabled'
-  | 'enforceUniqueReaction'
-  | 'isAdmin'
-  | 'isModerator'
-  | 'members'
-  | 'readEventsEnabled'
+  'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
@@ -165,21 +160,16 @@ export type MessagePropsWithContext<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
-    | 'mutesEnabled'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
-    | 'pinMessageEnabled'
-    | 'quotedRepliesEnabled'
-    | 'reactionsEnabled'
     | 'removeMessage'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
-    | 'threadRepliesEnabled'
     | 'updateMessage'
   > &
   Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
@@ -279,8 +269,6 @@ const MessageWithContext = <
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
-    isAdmin,
-    isModerator,
     lastReceivedId,
     members,
     message,
@@ -288,7 +276,6 @@ const MessageWithContext = <
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
-    mutesEnabled,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
@@ -298,11 +285,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
-    pinMessageEnabled,
     preventPress,
-    quotedRepliesEnabled,
-    reactionsEnabled,
-    readEventsEnabled,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -318,7 +301,6 @@ const MessageWithContext = <
     t,
     isTargetedMessage,
     threadList = false,
-    threadRepliesEnabled,
     updateMessage,
   } = props;
 
@@ -335,8 +317,6 @@ const MessageWithContext = <
   const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
   const isMyMessage = client && message && client.userID === message.user?.id;
-
-  const canModifyMessage = isMyMessage || isModerator || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -485,10 +465,7 @@ const MessageWithContext = <
   };
 
   const hasReactions =
-    !!reactionsEnabled &&
-    !isMessageTypeDeleted &&
-    !!message.latest_reactions &&
-    message.latest_reactions.length > 0;
+    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
 
   const clientId = client.userID;
 
@@ -510,6 +487,8 @@ const MessageWithContext = <
       }, [] as Reactions)
     : [];
 
+  const ownCapabilities = useOwnCapabilitiesContext();
+
   const {
     handleDeleteMessage,
     handleEditMessage,
@@ -524,7 +503,6 @@ const MessageWithContext = <
     client,
     enforceUniqueReaction,
     message,
-    reactionsEnabled,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -563,7 +541,6 @@ const MessageWithContext = <
     message,
     onThreadSelect,
     openThread,
-    reactionsEnabled,
     retrySendMessage,
     selectReaction,
     setEditingState,
@@ -589,7 +566,6 @@ const MessageWithContext = <
         ? messageActionsProp
         : messageActionsProp({
             blockUser,
-            canModifyMessage,
             copyMessage,
             deleteMessage,
             dismissOverlay,
@@ -600,14 +576,11 @@ const MessageWithContext = <
             isThreadMessage,
             message,
             messageReactions,
-            mutesEnabled,
             muteUser,
+            ownCapabilities,
             pinMessage,
-            pinMessageEnabled,
-            quotedRepliesEnabled,
             quotedReply,
             retry,
-            threadRepliesEnabled,
             threadReply,
             unpinMessage,
           });
@@ -617,7 +590,7 @@ const MessageWithContext = <
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
-      handleReaction: reactionsEnabled ? handleReaction : undefined,
+      handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
@@ -627,6 +600,7 @@ const MessageWithContext = <
       onlyEmojis,
       otherAttachments: attachments.other,
       OverlayReactionList,
+      ownCapabilities,
       supportedReactions,
       threadList,
     });
@@ -676,7 +650,6 @@ const MessageWithContext = <
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
-    canModifyMessage,
     channel,
     disabled,
     files: attachments.files,
@@ -746,7 +719,6 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
-    readEventsEnabled,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
@@ -936,15 +908,8 @@ export const Message = <
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    channel,
-    disabled,
-    enforceUniqueReaction,
-    isAdmin,
-    isModerator,
-    members,
-    readEventsEnabled,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { channel, disabled, enforceUniqueReaction, members } =
+    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -962,13 +927,10 @@ export const Message = <
         disabled,
         dismissKeyboard,
         enforceUniqueReaction,
-        isAdmin,
-        isModerator,
         members,
         messagesContext,
         mutedUsers,
         openThread,
-        readEventsEnabled,
         setData,
         setOverlay,
         t,

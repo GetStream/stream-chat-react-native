@@ -66,7 +66,6 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
-  reactionsEnabled,
   retrySendMessage,
   selectReaction,
   setEditingState,
@@ -88,7 +87,6 @@ export const useMessageActions = <
   | 'handleRetry'
   | 'handleReaction'
   | 'handleThreadReply'
-  | 'reactionsEnabled'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -124,7 +122,6 @@ export const useMessageActions = <
     client,
     enforceUniqueReaction,
     message,
-    reactionsEnabled,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
