@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.0...v3.10.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* render attachment type video in FileAttachment view [CRNS-480] ([1649ee3](https://github.com/GetStream/stream-chat-react-native/commit/1649ee3bee43b3062ed1998d7683025429aad5a9))
+
 ## [3.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.9.2...v3.10.0) (2021-11-11)
 
 
