@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -38,7 +39,6 @@ import type {
   UnknownType,
 } from '../../../types/types';
 import { useMessageActionHandlers } from './useMessageActionHandlers';
-import { useNetworkState } from '../../../hooks/useNetworkState';
 
 export const useMessageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -132,7 +132,7 @@ export const useMessageActions = <
     updateMessage,
   });
 
-  const { isConnected } = useNetworkState();
+      const { isConnected } = useNetInfo();
 
   const error = message.type === 'error' || message.status === 'failed';
 
