@@ -5,28 +5,34 @@ import {
   isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
-  SuggestionComponentType,
-  Suggestions,
-  useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
-import type { DefaultUserType } from '../../types/types';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
 import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
-import type { SuggestionsContextValue } from '../../contexts/suggestionsContext/SuggestionsContext';
+import {
+  SuggestionsContextValue,
+  useSuggestionsContext,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-type AutoCompleteSuggestionListComponentProps<Us extends DefaultUserType = DefaultUserType> = {
+type AutoCompleteSuggestionListComponentProps<
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+> = Pick<SuggestionsContextValue, 'queryText' | 'triggerType'> & {
   active: boolean;
-  headerProps: AutoCompleteSuggestionHeaderProps;
-  suggestions: Suggestions<Us>;
-  type: SuggestionComponentType;
+  data: Suggestion<Co, Us>[];
+  onSelect: (item: Suggestion<Co, Us>) => void;
 };
 
 export type AutoCompleteSuggestionListPropsWithContext<
-  Us extends DefaultUserType = DefaultUserType,
-> = AutoCompleteSuggestionListComponentProps<Us> &
-  Pick<SuggestionsContextValue, 'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'>;
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+> = Pick<
+  SuggestionsContextValue<Co, Us>,
+  'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'
+> &
+  AutoCompleteSuggestionListComponentProps<Co, Us>;
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
   const { children, ...touchableOpacityProps } = props;
@@ -35,15 +41,20 @@ const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
 
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
-export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType = DefaultUserType>(
-  props: AutoCompleteSuggestionListPropsWithContext<Us>,
+export const AutoCompleteSuggestionListWithContext = <
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+>(
+  props: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
 ) => {
   const {
+    active,
     AutoCompleteSuggestionHeader,
     AutoCompleteSuggestionItem,
-    headerProps: { type, value },
-    suggestions: { data, onSelect },
-    type: triggerType,
+    data,
+    onSelect,
+    queryText,
+    triggerType,
   } = props;
 
   const {
@@ -51,11 +62,12 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
       messageInput: {
         container: { maxHeight },
         suggestions: { item: itemStyle },
+        suggestionsListContainer: { flatlist },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: Suggestion<Us> }) => {
+  const renderItem = ({ index, item }: { index: number; item: Suggestion<Co, Us> }) => {
     switch (triggerType) {
       case 'mention':
         if (isSuggestionUser(item)) {
@@ -73,7 +85,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
               ]}
             >
               {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} type={type} />
+                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
               )}
             </SuggestionsItem>
           );
@@ -89,7 +101,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
               style={[itemStyle]}
             >
               {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} type={type} />
+                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
               )}
             </SuggestionsItem>
           );
@@ -105,7 +117,7 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
               style={[itemStyle]}
             >
               {AutoCompleteSuggestionItem && (
-                <AutoCompleteSuggestionItem itemProps={item} type={type} />
+                <AutoCompleteSuggestionItem itemProps={item} triggerType={triggerType} />
               )}
             </SuggestionsItem>
           );
@@ -116,6 +128,8 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
     }
   };
 
+  if (!active || data.length === 0) return null;
+
   return (
     <FlatList
       data={data}
@@ -125,42 +139,40 @@ export const AutoCompleteSuggestionListWithContext = <Us extends DefaultUserType
       }
       ListHeaderComponent={
         AutoCompleteSuggestionHeader ? (
-          <AutoCompleteSuggestionHeader type={type} value={value} />
+          <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
         ) : null
       }
       renderItem={renderItem}
-      style={{
-        maxHeight,
-      }}
+      style={[flatlist, { maxHeight }]}
     />
   );
 };
 
-const areEqual = <Us extends DefaultUserType = DefaultUserType>(
-  prevProps: AutoCompleteSuggestionListPropsWithContext<Us>,
-  nextProps: AutoCompleteSuggestionListPropsWithContext<Us>,
+const areEqual = <Co extends string = DefaultCommandType, Us extends UnknownType = DefaultUserType>(
+  prevProps: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
+  nextProps: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
 ) => {
   const {
     active: prevActive,
-    headerProps: prevHeaderProps,
-    suggestions: prevSuggestions,
-    type: prevType,
+    data: prevData,
+    queryText: prevQueryText,
+    triggerType: prevType,
   } = prevProps;
   const {
     active: nextActive,
-    headerProps: nextHeaderProps,
-    suggestions: nextSuggestions,
-    type: nextType,
+    data: nextData,
+    queryText: nextQueryText,
+    triggerType: nextType,
   } = nextProps;
 
   const activeEqual = prevActive === nextActive;
   if (!activeEqual) return false;
 
-  const headerPropsEqual = prevHeaderProps === nextHeaderProps;
-  if (!headerPropsEqual) return false;
+  const queryTextEqual = prevQueryText === nextQueryText;
+  if (!queryTextEqual) return false;
 
-  const suggestionsEqual = prevSuggestions === nextSuggestions;
-  if (!suggestionsEqual) return false;
+  const dataEqual = prevData === nextData;
+  if (!dataEqual) return false;
 
   const typeEqual = prevType === nextType;
   if (!typeEqual) return false;
@@ -173,22 +185,25 @@ const MemoizedAutoCompleteSuggestionList = React.memo(
   areEqual,
 ) as typeof AutoCompleteSuggestionListWithContext;
 
-export type AutoCompleteSuggestionListProps<Us extends DefaultUserType = DefaultUserType> =
-  AutoCompleteSuggestionListComponentProps<Us> & {
-    AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-    AutoCompleteSuggestionItem?: React.ComponentType<AutoCompleteSuggestionItemProps<Us>>;
-  };
+export type AutoCompleteSuggestionListProps<
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+> = AutoCompleteSuggestionListComponentProps<Co, Us> & {
+  AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
+  AutoCompleteSuggestionItem?: React.ComponentType<AutoCompleteSuggestionItemProps<Co, Us>>;
+};
 
-export const AutoCompleteSuggestionList = <Us extends DefaultUserType = DefaultUserType>(
-  props: AutoCompleteSuggestionListProps<Us>,
+export const AutoCompleteSuggestionList = <
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType,
+>(
+  props: AutoCompleteSuggestionListProps<Co, Us>,
 ) => {
-  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useSuggestionsContext<Us>();
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
+    useSuggestionsContext<Co, Us>();
   return (
     <MemoizedAutoCompleteSuggestionList
-      {...{
-        AutoCompleteSuggestionHeader,
-        AutoCompleteSuggestionItem,
-      }}
+      {...{ AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem }}
       {...props}
     />
   );

@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import type { CommandItemType } from './AutoCompleteSuggestionItem';
+import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultCommandType } from '../../types/types';
 
 const styles = StyleSheet.create({
   iconContainer: {
@@ -16,7 +17,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AutoCompleteSuggestionCommandIcon = ({ name }: { name: CommandItemType['name'] }) => {
+export const AutoCompleteSuggestionCommandIcon = <Co extends string = DefaultCommandType>({
+  name,
+}: {
+  name: SuggestionCommand<Co>['name'];
+}) => {
   const {
     theme: {
       colors: { accent_blue, white },

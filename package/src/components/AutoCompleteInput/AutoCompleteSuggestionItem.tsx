@@ -3,25 +3,21 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Avatar } from '../Avatar/Avatar';
 import { AtMentions } from '../../icons/AtMentions';
-import type { DefaultUserType } from '../../types/types';
-import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import type {
+  Suggestion,
+  SuggestionCommand,
+  SuggestionsContextValue,
+  SuggestionUser,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
-
-export type CommandItemType = {
-  args?: string;
-  name?: string;
-};
-
-export type EmojiItemType = {
-  name: string;
-  unicode: string;
-};
+import type { Emoji } from '../../emoji-data/compiled';
 
 export type AutoCompleteSuggestionItemPropsWithContext<
+  Co extends string = DefaultCommandType,
   Us extends DefaultUserType = DefaultUserType,
-> = {
-  itemProps: CommandItemType | EmojiItemType | SuggestionUser<Us>;
-  type?: string;
+> = Pick<SuggestionsContextValue, 'triggerType'> & {
+  itemProps: Suggestion<Co, Us>;
 };
 
 const styles = StyleSheet.create({
@@ -58,10 +54,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = DefaultUserType>({
+const AutoCompleteSuggestionItemWithContext = <
+  Co extends string = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType,
+>({
   itemProps,
-  type,
-}: AutoCompleteSuggestionItemPropsWithContext<Us>) => {
+  triggerType,
+}: AutoCompleteSuggestionItemPropsWithContext<Co, Us>) => {
   const {
     theme: {
       colors: { accent_blue, black, grey },
@@ -75,7 +74,7 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
     },
   } = useTheme();
 
-  if (type === 'mention') {
+  if (triggerType === 'mention') {
     const { id, image, name, online } = itemProps as SuggestionUser<Us>;
     return (
       <View style={[styles.container, mentionContainer]}>
@@ -88,8 +87,8 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
         <AtMentions pathFill={accent_blue} />
       </View>
     );
-  } else if (type === 'emoji') {
-    const { name, unicode } = itemProps as EmojiItemType;
+  } else if (triggerType === 'emoji') {
+    const { name, unicode } = itemProps as Emoji;
     return (
       <View style={[styles.container, emojiContainer]}>
         <Text style={[styles.text, { color: black }, text]} testID='emojis-item-unicode'>
@@ -100,8 +99,8 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
         </Text>
       </View>
     );
-  } else if (type === 'command') {
-    const { args, name } = itemProps as CommandItemType;
+  } else if (triggerType === 'command') {
+    const { args, name } = itemProps as SuggestionCommand<Co>;
     return (
       <View style={[styles.container, commandContainer]}>
         <AutoCompleteSuggestionCommandIcon name={name} />
@@ -118,12 +117,15 @@ const AutoCompleteSuggestionItemWithContext = <Us extends DefaultUserType = Defa
   }
 };
 
-const areEqual = <Us extends DefaultUserType = DefaultUserType>(
-  prevProps: AutoCompleteSuggestionItemPropsWithContext<Us>,
-  nextProps: AutoCompleteSuggestionItemPropsWithContext<Us>,
+const areEqual = <
+  Co extends string = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType,
+>(
+  prevProps: AutoCompleteSuggestionItemPropsWithContext<Co, Us>,
+  nextProps: AutoCompleteSuggestionItemPropsWithContext<Co, Us>,
 ) => {
-  const { itemProps: prevItemProps, type: prevType } = prevProps;
-  const { itemProps: nextItemProps, type: nextType } = nextProps;
+  const { itemProps: prevItemProps, triggerType: prevType } = prevProps;
+  const { itemProps: nextItemProps, triggerType: nextType } = nextProps;
   const itemPropsEqual = prevItemProps === nextItemProps;
   if (!itemPropsEqual) return false;
   const typeEqual = prevType === nextType;
@@ -136,11 +138,16 @@ const MemoizedAutoCompleteSuggestionItem = React.memo(
   areEqual,
 ) as typeof AutoCompleteSuggestionItemWithContext;
 
-export type AutoCompleteSuggestionItemProps<Us extends DefaultUserType = DefaultUserType> =
-  AutoCompleteSuggestionItemPropsWithContext<Us>;
+export type AutoCompleteSuggestionItemProps<
+  Co extends string = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType,
+> = AutoCompleteSuggestionItemPropsWithContext<Co, Us>;
 
-export const AutoCompleteSuggestionItem = <Us extends DefaultUserType = DefaultUserType>(
-  props: AutoCompleteSuggestionItemProps<Us>,
+export const AutoCompleteSuggestionItem = <
+  Co extends string = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType,
+>(
+  props: AutoCompleteSuggestionItemProps<Co, Us>,
 ) => <MemoizedAutoCompleteSuggestionItem {...props} />;
 
 AutoCompleteSuggestionItem.displayName =

@@ -153,12 +153,12 @@ type MessageInputPropsWithContext<
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply' | 'quotedRepliesEnabled'> &
   Pick<
-    SuggestionsContextValue<Us>,
+    SuggestionsContextValue<Co, Us>,
     | 'AutoCompleteSuggestionHeader'
     | 'AutoCompleteSuggestionItem'
     | 'AutoCompleteSuggestionList'
-    | 'componentType'
     | 'suggestions'
+    | 'triggerType'
   > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
@@ -184,7 +184,6 @@ const MessageInputWithContext = <
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
-    componentType,
     cooldownEndsAt,
     CooldownTimer,
     disabled,
@@ -217,6 +216,7 @@ const MessageInputWithContext = <
     t,
     thread,
     threadList,
+    triggerType,
     uploadNewImage,
     watchers,
   } = props;
@@ -248,7 +248,7 @@ const MessageInputWithContext = <
         optionsContainer,
         replyContainer,
         sendButtonContainer,
-        suggestionsListContainer,
+        suggestionsListContainer: { container: suggestionListContainer },
       },
     },
   } = useTheme();
@@ -576,22 +576,22 @@ const MessageInputWithContext = <
         </View>
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
-      {componentType && suggestions ? (
+      {console.log(triggerType)}
+
+      {triggerType && suggestions ? (
         <View
           style={[
+            suggestionListContainer,
             styles.suggestionsListContainer,
             { backgroundColor: white, bottom: height },
-            suggestionsListContainer,
           ]}
         >
           <AutoCompleteSuggestionList
             active={!!suggestions}
-            headerProps={{
-              type: componentType,
-              value: suggestions.query,
-            }}
-            suggestions={suggestions}
-            type={componentType}
+            data={suggestions.data}
+            onSelect={suggestions.onSelect}
+            queryText={suggestions.queryText}
+            triggerType={triggerType}
           />
         </View>
       ) : null}
@@ -811,9 +811,9 @@ export const MessageInput = <
     AutoCompleteSuggestionHeader,
     AutoCompleteSuggestionItem,
     AutoCompleteSuggestionList,
-    componentType,
     suggestions,
-  } = useSuggestionsContext<Us>();
+    triggerType,
+  } = useSuggestionsContext<Co, Us>();
 
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -831,7 +831,6 @@ export const MessageInput = <
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
-        componentType,
         cooldownEndsAt,
         CooldownTimer,
         disabled,
@@ -864,6 +863,7 @@ export const MessageInput = <
         suggestions,
         t,
         thread,
+        triggerType,
         uploadNewImage,
         watchers,
       }}

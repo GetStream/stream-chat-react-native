@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 import throttle from 'lodash/throttle';
 
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import type { Emoji } from '../../emoji-data/compiled';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -27,9 +28,6 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 
-import type { TextInputProps } from 'react-native';
-
-import type { Emoji } from '../../emoji-data/compiled';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -83,7 +81,10 @@ type AutoCompleteInputPropsWithContext<
     | 'text'
     | 'triggerSettings'
   > &
-  Pick<SuggestionsContextValue<Us>, 'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
+  > &
   Pick<TranslationContextValue, 't'>;
 
 export type AutoCompleteInputProps<
@@ -183,7 +184,7 @@ const AutoCompleteInputWithContext = <
               updateSuggestionsContext({
                 data,
                 onSelect: (item) => onSelectSuggestion({ item, trigger }),
-                query,
+                queryText: query,
               });
             }
           },
@@ -208,7 +209,7 @@ const AutoCompleteInputWithContext = <
             updateSuggestionsContext({
               data,
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
-              query,
+              queryText: query,
             });
           },
           {
@@ -227,7 +228,7 @@ const AutoCompleteInputWithContext = <
           updateSuggestionsContext({
             data,
             onSelect: (item) => onSelectSuggestion({ item, trigger }),
-            query,
+            queryText: query,
           });
         });
       }
@@ -242,7 +243,13 @@ const AutoCompleteInputWithContext = <
     selectionEnd.current = end;
   };
 
-  const onSelectSuggestion = ({ item, trigger }: { item: Suggestion<Us>; trigger: Trigger }) => {
+  const onSelectSuggestion = ({
+    item,
+    trigger,
+  }: {
+    item: Suggestion<Co, Us>;
+    trigger: Trigger;
+  }) => {
     if (!trigger || !triggerSettings[trigger]) {
       return;
     }
@@ -498,7 +505,7 @@ export const AutoCompleteInput = <
     text,
     triggerSettings,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Us>();
+  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Co, Us>();
   const { t } = useTranslationContext();
 
   return (

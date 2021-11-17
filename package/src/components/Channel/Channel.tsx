@@ -212,7 +212,12 @@ export type ChannelPropsWithContext<
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
     >
   > &
-  Partial<SuggestionsContextValue<Us>> &
+  Partial<
+    Pick<
+      SuggestionsContextValue<Co, Us>,
+      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
+    >
+  > &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
@@ -420,7 +425,6 @@ const ChannelWithContext = <
     channel,
     children,
     client,
-    closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
@@ -517,7 +521,6 @@ const ChannelWithContext = <
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     pinMessageEnabled: pinMessageEnabledProp,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
@@ -552,7 +555,6 @@ const ChannelWithContext = <
     typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
-    updateSuggestions,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     uploadsEnabled: uploadsEnabledProp,
     UrlPreview = CardDefault,
@@ -1822,13 +1824,10 @@ const ChannelWithContext = <
     UrlPreview,
   });
 
-  const suggestionsContext: Partial<SuggestionsContextValue<Us>> = {
+  const suggestionsContext = {
     AutoCompleteSuggestionHeader,
     AutoCompleteSuggestionItem,
     AutoCompleteSuggestionList,
-    closeSuggestions,
-    openSuggestions,
-    updateSuggestions,
   };
 
   const threadContext = useCreateThreadContext({
@@ -1875,7 +1874,7 @@ const ChannelWithContext = <
           <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageListContext}>
             <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
               <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-                <SuggestionsProvider<Us> value={suggestionsContext}>
+                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
                   <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
                     value={inputMessageInputContext}
                   >

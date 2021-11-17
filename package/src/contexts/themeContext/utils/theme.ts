@@ -281,7 +281,10 @@ export type Theme = {
         tag: TextStyle;
       };
     };
-    suggestionsListContainer: ViewStyle;
+    suggestionsListContainer: {
+      container: ViewStyle;
+      flatlist: ViewStyle;
+    };
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
@@ -723,7 +726,10 @@ export const defaultTheme: Theme = {
         tag: {},
       },
     },
-    suggestionsListContainer: {},
+    suggestionsListContainer: {
+      container: {},
+      flatlist: {},
+    },
     uploadProgressIndicator: {
       container: {},
       overlay: {},

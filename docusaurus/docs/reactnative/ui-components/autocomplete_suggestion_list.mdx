@@ -3,6 +3,9 @@ id: autocomplete-suggestion-list
 title: AutoCompleteSuggestionList
 ---
 
+import QueryText from '../common-content/contexts/suggestions-context/query_text.mdx'
+import TriggerType from '../common-content/contexts/suggestions-context/trigger_type.mdx'
+
 Component to render and customize the auto suggestion list.
 
 ## Basic Usage
@@ -27,20 +30,22 @@ const AutoCompleteSuggestionListComponent = () => <AutoCompleteSuggestionList />
 | - |
 | boolean |
 
-### headerProps
+### data
 
 | type |
 | - |
-| Object(type, value) | 
+| Array(Suggestion) |
 
-### suggestions
-
-| type |
-| - |
-| Array |
-
-### type
+### onSelect 
 
 | type |
 | - |
-| string |
+| `(item: Suggstion) => void` |
+
+### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#querytext)_</div> queryText {#queryText}
+
+<QueryText />
+
+### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#triggertype)_</div> triggerType {#triggerType}
+
+<TriggerType />

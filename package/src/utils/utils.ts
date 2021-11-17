@@ -9,6 +9,7 @@ import type {
   Channel,
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
+  CommandResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -16,6 +17,7 @@ import type {
 import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
 import type {
   SuggestionCommand,
+  SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import type { IconProps } from '../icons/utils/base';
@@ -29,7 +31,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../types/types';
-import type { CommandItemType } from '../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 
 export type ReactionData = {
   Icon: React.FC<IconProps>;
@@ -244,19 +245,19 @@ export type TriggerSettings<
 > = {
   '/'?: {
     dataProvider: (
-      query: CommandItemType['name'],
+      query: CommandResponse<Co>['name'],
       text: string,
-      onReady?: (data: CommandItemType[], q: CommandItemType['name']) => void,
+      onReady?: (data: CommandResponse<Co>[], q: CommandResponse<Co>['name']) => void,
       options?: {
         limit?: number;
       },
     ) => SuggestionCommand<Co>[];
-    output: (entity: CommandItemType) => {
+    output: (entity: CommandResponse<Co>) => {
       caretPosition: string;
       key: string;
       text: string;
     };
-    type: string;
+    type: SuggestionComponentType;
   };
   ':'?: {
     dataProvider: (
@@ -269,7 +270,7 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
-    type: string;
+    type: SuggestionComponentType;
   };
   '@'?: {
     callback: (item: SuggestionUser<Us>) => void;
@@ -288,7 +289,7 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
-    type: string;
+    type: SuggestionComponentType;
   };
 };
 
