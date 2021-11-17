@@ -257,11 +257,6 @@ export type MessagesContextValue<
    */
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
   /**
-   * When false, pop-out animation will be disabled for message bubble, onLongPress
-   */
-  animatedLongPress?: boolean;
-
-  /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
@@ -431,32 +426,6 @@ export type MessagesContextValue<
    * Theme provided only to messages that are the current users
    */
   myMessageTheme?: DeepPartial<Theme>;
-  /**
-   * Add double tap handler for message.
-   *
-   * ```
-   * <Channel
-   *  onDoubleTapMessage={({
-   *    actionHandlers: {
-   *        deleteMessage, // () => Promise<void>;
-   *        editMessage, // () => void;
-   *        quotedReply, // () => void;
-   *        resendMessage, // () => Promise<void>;
-   *        showMessageOverlay, // () => void;
-   *        toggleBanUser, // () => Promise<void>;
-   *        toggleMuteUser, // () => Promise<void>;
-   *        toggleReaction, // (reactionType: string) => Promise<void>;
-   *    },
-   *    message // message object on which longPress occured
-   *  }) => {
-   *    // Your custom action
-   *  }}
-   * />
-   * ```
-   */
-  onDoubleTapMessage?: (
-    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
   /**
    * Override default handler for onLongPress on message. You have access to payload of that handler as param:
    *
