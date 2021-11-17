@@ -6112,10 +6112,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.8.3.tgz#439b3195ac140c85d0be9016a310ecaabc04a288"
-  integrity sha512-Oe8Wr9U9DJchfTTFoRT96oJWZMumZOltZLc6aksxGQrmwWQ/H8zV41gG9iDiPdTlqQ8pmtlLiv7ASmHxhC/I1A==
+stream-chat-react-native-core@3.9.2:
+  version "3.9.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-3.9.2.tgz#ae1177a65e7e745cddf875aca79538cc703b1b28"
+  integrity sha512-Okg3dDeOgW5Qa7TnBPAYLtVMqhyGmVnMOZiGLS5tTc5X/JqLAEmL6uErZwqzmC5DO0g503B9aGOUeWFp/AFAJw==
   dependencies:
     "@babel/runtime" "7.13.10"
     "@gorhom/bottom-sheet" "3.6.4"
@@ -6133,6 +6133,21 @@ stream-chat-react-native-core@3.8.3:
 "stream-chat-react-native-core@link:../../package":
   version "0.0.0"
   uid ""
+
+stream-chat@^4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-4.4.3.tgz#611b9fe21109e558d1611f08cd04be3f52f6b9c9"
+  integrity sha512-f6/W7EMvul4LkBxCVvF7mwmQ7TVW4hB+v6dTWvPP7CJMGkSAahf6lbAyDYkKZFwtMXxr5L7cvXtG9NHaNU/3AA==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
 
 stream-chat@~3.13.1:
   version "3.13.1"
