@@ -1,13 +1,7 @@
 import React, { useContext } from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import {
-  StreamCache,
-  useChatContext,
-  useTheme,
-  useToastContext,
-  useTranslationContext,
-} from 'stream-chat-react-native';
+import { useChatContext, useTheme } from 'stream-chat-react-native';
 
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
@@ -41,9 +35,6 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
     },
   } = useTheme();
 
-  const toast = useToastContext();
-  const { t } = useTranslationContext();
-
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useContext(AppContext);
   const { isOnline } = useChatContext();
@@ -63,11 +54,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
       RightContent={() => (
         <RoundButton
           onPress={() => {
-            if (!StreamCache.getInstance().currentNetworkState) {
-              toast.show(t('Something went wrong'), 2000);
-            } else {
-              navigation.navigate('NewDirectMessagingScreen');
-            }
+            navigation.navigate('NewDirectMessagingScreen');
           }}
         >
           <NewDirectMessageIcon active color={accent_blue} height={25} width={25} />
