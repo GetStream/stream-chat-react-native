@@ -132,7 +132,7 @@ export const useMessageActions = <
     updateMessage,
   });
 
-      const { isConnected } = useNetInfo();
+  const { isConnected } = useNetInfo();
 
   const error = message.type === 'error' || message.status === 'failed';
 
