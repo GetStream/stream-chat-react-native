@@ -12,7 +12,6 @@ import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentP
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
-import { ToastProvider } from '../toastContext/ToastContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -210,46 +209,42 @@ export const OverlayProvider = <
   if (loadingTranslators) return null;
 
   return (
-    <ToastProvider>
-      <TranslationProvider value={translators}>
-        <OverlayContext.Provider value={overlayContext}>
-          <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-            <AttachmentPickerProvider value={attachmentPickerContext}>
-              <ImageGalleryProvider>
-                <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>
-                  {children}
-                </ChannelsStateProvider>
-                <ThemeProvider style={overlayContext.style}>
-                  <Animated.View
-                    pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                    style={[StyleSheet.absoluteFill, overlayStyle]}
-                  >
-                    <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
-                  </Animated.View>
-                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                    MessageActionList={MessageActionList}
-                    MessageActionListItem={MessageActionListItem}
-                    messageTextNumberOfLines={messageTextNumberOfLines}
-                    overlayOpacity={overlayOpacity}
-                    OverlayReactionList={OverlayReactionList}
-                    OverlayReactions={OverlayReactions}
-                    visible={overlay === 'message'}
-                  />
-                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                    imageGalleryCustomComponents={imageGalleryCustomComponents}
-                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                    numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                    overlayOpacity={overlayOpacity}
-                    visible={overlay === 'gallery'}
-                  />
-                  <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
-                </ThemeProvider>
-              </ImageGalleryProvider>
-            </AttachmentPickerProvider>
-          </MessageOverlayProvider>
-        </OverlayContext.Provider>
-      </TranslationProvider>
-    </ToastProvider>
+    <TranslationProvider value={translators}>
+      <OverlayContext.Provider value={overlayContext}>
+        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+          <AttachmentPickerProvider value={attachmentPickerContext}>
+            <ImageGalleryProvider>
+              <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>{children}</ChannelsStateProvider>
+              <ThemeProvider style={overlayContext.style}>
+                <Animated.View
+                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                  style={[StyleSheet.absoluteFill, overlayStyle]}
+                >
+                  <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
+                </Animated.View>
+                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  MessageActionList={MessageActionList}
+                  MessageActionListItem={MessageActionListItem}
+                  messageTextNumberOfLines={messageTextNumberOfLines}
+                  overlayOpacity={overlayOpacity}
+                  OverlayReactionList={OverlayReactionList}
+                  OverlayReactions={OverlayReactions}
+                  visible={overlay === 'message'}
+                />
+                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                  overlayOpacity={overlayOpacity}
+                  visible={overlay === 'gallery'}
+                />
+                <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
+              </ThemeProvider>
+            </ImageGalleryProvider>
+          </AttachmentPickerProvider>
+        </MessageOverlayProvider>
+      </OverlayContext.Provider>
+    </TranslationProvider>
   );
 };

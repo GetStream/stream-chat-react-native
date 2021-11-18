@@ -1,15 +1,7 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
-import {
-  ChannelList,
-  CircleClose,
-  Search,
-  StreamCache,
-  useTheme,
-  useToastContext,
-  useTranslationContext,
-} from 'stream-chat-react-native';
+import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
 import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
@@ -82,9 +74,6 @@ export const ChannelListScreen: React.FC = () => {
       colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
     },
   } = useTheme();
-
-  const toast = useToastContext();
-  const { t } = useTranslationContext();
 
   const searchInputRef = useRef<TextInput | null>(null);
   const scrollRef = useRef<FlatList<
@@ -176,11 +165,7 @@ export const ChannelListScreen: React.FC = () => {
               }
             }}
             onSubmitEditing={({ nativeEvent: { text } }) => {
-              if (!StreamCache.getInstance().currentNetworkState) {
-                toast.show(t('Something went wrong'), 2000);
-              } else {
-                setSearchQuery(text);
-              }
+              setSearchQuery(text);
             }}
             placeholder='Search'
             placeholderTextColor={grey}
