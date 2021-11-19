@@ -1,14 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { MessageList } from '../MessageList';
 
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-
-import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -16,20 +12,11 @@ import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
-import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
-import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-
-function MockedFlatList(props) {
-  if (!props.data.length && props.ListEmptyComponent) return props.ListEmptyComponent();
-
-  const items = props.data.map((item, index) => {
-    const key = props.keyExtractor(item, index);
-    return <View key={key}>{props.renderItem({ index, item })}</View>;
-  });
-  return <View testID={props.testID}>{items}</View>;
-}
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { registerNativeHandlers } from '../../../native';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -45,23 +32,20 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-    channel.initialized = true;
+    await channel.watch();
 
     const { getByText, queryAllByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ImageGalleryProvider>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <MessageList />
-            </Channel>
-          </ImageGalleryProvider>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     const newMessage = generateMessage({ user: user2 });
-    dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
+    act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
 
     await waitFor(() => {
       expect(queryAllByTestId('message-notification')).toHaveLength(0);
@@ -83,29 +67,21 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel channel={channel} FlatList={MockedFlatList}>
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
+    // debug()
     await waitFor(() => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
-      expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('message-system')).toBeTruthy();
     });
   });
@@ -124,24 +100,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel channel={channel} FlatList={MockedFlatList}>
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -166,28 +134,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel
-                    channel={channel}
-                    deletedMessagesVisibilityType='sender'
-                    FlatList={MockedFlatList}
-                  >
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel} deletedMessagesVisibilityType='sender'>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -212,28 +168,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId, queryByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel
-                    channel={channel}
-                    deletedMessagesVisibilityType='receiver'
-                    FlatList={MockedFlatList}
-                  >
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel} deletedMessagesVisibilityType='receiver'>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -258,28 +202,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { queryAllByTestId, queryByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel
-                    channel={channel}
-                    deletedMessagesVisibilityType='never'
-                    FlatList={MockedFlatList}
-                  >
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel} deletedMessagesVisibilityType='never'>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -303,24 +235,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel channel={channel} FlatList={MockedFlatList}>
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -339,27 +263,21 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: true }}>
-                <ImageGalleryProvider>
-                  <Channel channel={channel} FlatList={MockedFlatList}>
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
-    dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
+    act(() => {
+      dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
@@ -378,18 +296,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ImageGalleryProvider>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <MessageList />
-            </Channel>
-          </ImageGalleryProvider>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -398,6 +314,16 @@ describe('MessageList', () => {
   });
 
   it('should render the is offline error', async () => {
+    registerNativeHandlers({
+      NetInfo: {
+        addEventListener: () => () => null,
+        fetch: () =>
+          new Promise((resolve) => {
+            resolve(false);
+          }),
+      },
+    });
+
     const user1 = generateUser();
     const mockedChannel = generateChannel({
       members: [generateMember({ user: user1 })],
@@ -407,24 +333,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, getByText, queryAllByTestId } = render(
-      <ChannelsStateProvider>
+      <OverlayProvider>
         <Chat client={chatClient}>
-          <ChatContext.Consumer>
-            {(context) => (
-              <ChatProvider value={{ ...context, isOnline: false }}>
-                <ImageGalleryProvider>
-                  <Channel channel={channel}>
-                    <MessageList />
-                  </Channel>
-                </ImageGalleryProvider>
-              </ChatProvider>
-            )}
-          </ChatContext.Consumer>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
         </Chat>
-      </ChannelsStateProvider>,
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -433,45 +351,15 @@ describe('MessageList', () => {
       expect(getByTestId('error-notification')).toBeTruthy();
       expect(getByText('Reconnecting...')).toBeTruthy();
     });
-  });
 
-  it('should render the message list and match snapshot', async () => {
-    const user1 = generateStaticUser(1);
-    const user2 = generateStaticUser(2);
-    const mockedChannel = generateChannel({
-      members: [generateMember({ user: user1 }), generateMember({ user: user1 })],
-      messages: [
-        generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
-        generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
-        generateStaticMessage('Message3', { user: user2 }, '2020-05-06T14:50:00.000Z'),
-        generateStaticMessage(
-          'Message4',
-          { pinned: true, user: user1 },
-          '2020-05-06T14:50:00.000Z',
-        ),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    const { queryAllByTestId, toJSON } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <ImageGalleryProvider>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <MessageList />
-            </Channel>
-          </ImageGalleryProvider>
-        </Chat>
-      </ChannelsStateProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryAllByTestId('date-separator')).toHaveLength(3);
-      expect(toJSON()).toMatchSnapshot();
+    registerNativeHandlers({
+      NetInfo: {
+        addEventListener: () => () => null,
+        fetch: () =>
+          new Promise((resolve) => {
+            resolve(true);
+          }),
+      },
     });
   });
 });

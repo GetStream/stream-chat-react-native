@@ -62,7 +62,7 @@ export type MessageActionListItemProps = MessageActionType &
   };
 
 const MessageActionListItemWithContext = (props: MessageActionListItemProps) => {
-  const { action, icon, index, length, title, titleStyle } = props;
+  const { action, actionType, icon, index, length, title, titleStyle } = props;
 
   const {
     theme: {
@@ -82,6 +82,7 @@ const MessageActionListItemWithContext = (props: MessageActionListItemProps) => 
           animatedStyle,
           messageActions.actionContainer,
         ]}
+        testID={`${actionType}-list-item`}
       >
         <View style={messageActions.icon}>{icon}</View>
         <Text style={[styles.titleStyle, messageActions.title, { color: black }, titleStyle]}>

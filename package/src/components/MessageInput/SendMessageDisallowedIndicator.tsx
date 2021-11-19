@@ -37,6 +37,7 @@ export const SendMessageDisallowedIndicator = () => {
         },
         container,
       ]}
+      testID='send-message-disallowed-indicator'
     >
       <Text style={[styles.text, { color: grey_dark }, text]}>
         {t("You can't send messages in this channel")}
