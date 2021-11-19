@@ -1320,7 +1320,6 @@ const ChannelWithContext = <
       } else if (channel) {
         messageResponse = await channel.sendMessage(messageData);
       }
-
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
         if (retrying) {

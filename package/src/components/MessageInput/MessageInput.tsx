@@ -809,8 +809,8 @@ export const MessageInput = <
 
   const { t } = useTranslationContext();
 
-  if (!ownCapabilities.sendMessage) {
-    return SendMessageDisallowedIndicator && <SendMessageDisallowedIndicator />;
+  if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
+    return <SendMessageDisallowedIndicator />;
   }
 
   return (
