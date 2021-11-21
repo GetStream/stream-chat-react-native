@@ -22,7 +22,6 @@ import {
   AttachmentPickerContextValue,
   useAttachmentPickerContext,
 } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -320,7 +319,6 @@ const MessageListWithContext = <
     [myMessageTheme, theme],
   );
 
-  const { typingEvents: typingEventsAllowed } = useOwnCapabilitiesContext();
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     deletedMessagesVisibilityType,
     inverted,
@@ -961,7 +959,7 @@ const MessageListWithContext = <
                 <DateHeader dateString={stickyHeaderDateToRender} />
               ) : null)}
           </View>
-          {!disableTypingIndicator && TypingIndicator && typingEventsAllowed && (
+          {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>
               <TypingIndicator />
             </TypingIndicatorContainer>
