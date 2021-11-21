@@ -1,13 +1,5 @@
-import React, { useEffect } from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  Keyboard,
-  PixelRatio,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
+import React from 'react';
+import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
@@ -69,21 +61,6 @@ import type {
 import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 
-const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
-  if (url.includes('&h=%2A')) {
-    Image.prefetch(
-      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
-    )
-      .catch(() => Image.prefetch(url))
-      .catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
-  } else {
-    Image.prefetch(url).catch(() => {
-      // do nothing, not a big deal that prefetch failed
-    });
-  }
-};
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?:
@@ -325,10 +302,7 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: {
-        gallery: { halfSize, size },
-        targetedMessageUnderlay,
-      },
+      messageSimple: { targetedMessageUnderlay },
     },
   } = useTheme();
 
@@ -426,29 +400,6 @@ const MessageWithContext = <
     !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
     message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
-
-  // prefetch images for Gallery component rendering
-  const attachmentImageLength = attachments.images.length;
-  useEffect(() => {
-    if (attachmentImageLength) {
-      attachments.images.slice(0, 4).forEach((image, index) => {
-        const url = image.image_url || image.thumb_url;
-        if (url) {
-          if (attachmentImageLength <= 2) {
-            prefetchImage({ height: size || 200, url });
-          } else if (attachmentImageLength === 3) {
-            if (index === 0) {
-              prefetchImage({ height: size || 200, url });
-            } else {
-              prefetchImage({ height: halfSize || 100, url });
-            }
-          } else {
-            prefetchImage({ height: halfSize || 100, url });
-          }
-        }
-      });
-    }
-  }, [attachmentImageLength]);
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
