@@ -8,8 +8,6 @@ import EnforceUniqueReaction from '../common-content/core-components/channel/pro
 import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
 import HideStickyDateHeader from '../common-content/core-components/channel/props/hide_sticky_date_header.mdx';
 import MaxTimeBetweenGroupedMessages from '../common-content/core-components/channel/props/max_time_between_grouped_messages.mdx';
-import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
-import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx';
 import EmptyStateIndicator from '../common-content/core-components/channel/props/empty_state_indicator.mdx';
 import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
 import NetworkDownIndicator from '../common-content/core-components/channel/props/network_down_indicator.mdx';
@@ -191,10 +189,6 @@ Record<
 | - |
 | object |
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#readeventsenabled)_ props</div> readEventsEnabled {#readeventsenabled}
-
-<ReadEventsEnabled />
-
 ### reloadChannel
 
 Function to reload a channel at most recent message. Promise returned by this function will be resolved, when the channel has finished reloading.
@@ -230,10 +224,6 @@ Id of message, which is highlighted currently. This value gets set when you load
 | Type |
 | - |
 | string |
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#typingeventsenabled)_ props</div> typingEventsEnabled {#typingeventsenabled}
-
-<TypingEventsEnabled />
 
 ### watchers
 
