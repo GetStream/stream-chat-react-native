@@ -133,6 +133,7 @@ const MessageActionListWithContext = <
         height.value = layout.height;
       }}
       style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
+      testID='message-action-list'
     >
       {messageActions?.map((messageAction, index) => (
         <MessageActionListItem

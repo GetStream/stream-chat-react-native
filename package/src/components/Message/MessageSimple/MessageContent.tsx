@@ -265,6 +265,7 @@ const MessageContentWithContext = <
           });
         }
       }}
+      testID='message-content'
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.

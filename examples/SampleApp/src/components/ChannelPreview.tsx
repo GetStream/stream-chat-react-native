@@ -10,7 +10,6 @@ import {
   MenuPointHorizontal,
   useChatContext,
   useTheme,
-  useTranslationContext,
 } from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
@@ -64,8 +63,6 @@ export const ChannelPreview: React.FC<
   >
 > = (props) => {
   const { channel } = props;
-
-  const { t } = useTranslationContext();
 
   const { setOverlay } = useAppOverlayContext();
 
