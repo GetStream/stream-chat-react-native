@@ -52,7 +52,7 @@ When a user presses on a channel in the list you can provide navigation logic vi
 `ChannelList` should be rendered inside of the `OverlayProvider` and `Chat` so it is provided the appropriate contexts to function internally.
 
 ```tsx {5-7,12-17}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -78,8 +78,8 @@ export const App = () =>
 `ChannelList` contains the provider for the `ChannelsContext`.
 This can be accessed using the corresponding hook.
 
-| Context | Hook |
-| - | - |
+| Context           | Hook                 |
+| ----------------- | -------------------- |
 | `ChannelsContext` | `useChannelsContext` |
 
 ## UI Customizations
@@ -90,10 +90,13 @@ The UI can be tailored to your design by replacing any number of components with
 Customizing the title can be done easily by providing a custom component to the appropriate prop.
 
 ```tsx
-const CustomPreviewTitle = ({ channel }) =>
-  <Text>{channel.data.customProperty} - {channel.data.name}</Text>;
+const CustomPreviewTitle = ({ channel }) => (
+  <Text>
+    {channel.data.customProperty} - {channel.data.name}
+  </Text>
+);
 
-<ChannelList PreviewTitle={CustomPreviewTitle} />
+<ChannelList PreviewTitle={CustomPreviewTitle} />;
 ```
 
 <Tabs

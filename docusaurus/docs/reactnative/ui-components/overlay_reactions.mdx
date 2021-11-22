@@ -22,25 +22,24 @@ This is the default component provided to the prop [`OverlayReactions`](../core-
 List of existing reactions which can be extracted from a message.
 
 ```tsx
-const reactions = message.latest_reactions.map((reaction) => ({
-  alignment:
-    clientId && clientId === reaction.user?.id ? 'right' : 'left',
+const reactions = message.latest_reactions.map(reaction => ({
+  alignment: clientId && clientId === reaction.user?.id ? 'right' : 'left',
   image: reaction?.user?.image,
   name: reaction?.user?.name || reaction.user_id || '',
   type: reaction.type,
-}))
+}));
 ```
 
-| Type |
-| - |
+| Type  |
+| ----- |
 | array |
 
 ### <div class="label required">required</div> **showScreen** {#showscreen}
 
 `Shared` value from React Native Reanimated's [`useSharedValue`](https://docs.swmansion.com/react-native-reanimated/docs/api/useSharedValue/) hook.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### <div class="description">overrides the value from [MessagesContext](../contexts/messages_context.mdx#supportedreactions)</div> supportedReactions {#supportedreactions}
@@ -51,8 +50,6 @@ const reactions = message.latest_reactions.map((reaction) => ({
 
 Title for the component.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
-
-

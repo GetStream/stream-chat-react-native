@@ -342,7 +342,7 @@ const MessageWithContext = <
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
-            if (cur.type === 'file') {
+            if (cur.type === 'file' || cur.type === 'video') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {

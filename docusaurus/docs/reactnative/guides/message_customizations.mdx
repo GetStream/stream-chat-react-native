@@ -19,16 +19,9 @@ This is a higher order component, that wraps the UI component (MessageSimple) fo
 :::
 
 ```tsx
-<OverlayProvider
-  bottomInset={bottom}
-  i18nInstance={streami18n}
->
+<OverlayProvider bottomInset={bottom} i18nInstance={streami18n}>
   <Chat client={chatClient} i18nInstance={streami18n}>
-    <Channel
-      channel={channel}
-      keyboardVerticalOffset={headerHeight}
-      Message={CustomMessageComponent}
-    >
+    <Channel channel={channel} keyboardVerticalOffset={headerHeight} Message={CustomMessageComponent}>
       <View style={{ flex: 1 }}>
         <MessageList />
         <MessageInput />
@@ -59,27 +52,19 @@ const CustomMessageUIComponent = () => {
   const { handleDeleteMessage, handleResendMessage, message, reactions } = useMessageContext();
 
   /** Custom implementation */
-}
+};
 
-<OverlayProvider
-  bottomInset={bottom}
-  i18nInstance={streami18n}
->
+<OverlayProvider bottomInset={bottom} i18nInstance={streami18n}>
   <Chat client={chatClient} i18nInstance={streami18n}>
-    <Channel
-      channel={channel}
-      keyboardVerticalOffset={headerHeight}
-      MessageSimple={CustomMessageUIComponent}
-    >
+    <Channel channel={channel} keyboardVerticalOffset={headerHeight} MessageSimple={CustomMessageUIComponent}>
       <View style={{ flex: 1 }}>
         <MessageList />
         <MessageInput />
       </View>
     </Channel>
   </Chat>
-</OverlayProvider>
+</OverlayProvider>;
 ```
-
 
 If you want to customize only a specific part of `MessageSimple` component, you can add your own custom UI components, by providing following props on Channel component:
 
@@ -122,16 +107,14 @@ const themeStyle = {
           color: 'pink',
         },
         inlineCode: {
-          fontSize: 10
-        }
+          fontSize: 10,
+        },
       },
     },
   },
 };
 
-<Chat style={themeStyle}>
-  ...
-</Chat>
+<Chat style={themeStyle}>...</Chat>;
 ```
 
 Following markdown keys are available for styling:
@@ -184,12 +167,11 @@ export type MarkdownStyle = Partial<{
 }>;
 ```
 
-## Message bubble with full width 
+## Message bubble with full width
 
 Because of richness of default message bubble (reactions, attachments, etc), we didn't want to add support this feature OOTB for the simplicity of maintainance. This is something that needs to themed on app level. Here is how you can implement full width message:
 
 ```jsx
-
 import { vw } from 'stream-chat-react-native';
 
 const maxWidth = vw(100) - 72;
@@ -229,9 +211,7 @@ const themeStyle = {
   },
 };
 
-<Chat style={themeStyle}>
-  ...
-</Chat>
+<Chat style={themeStyle}>...</Chat>;
 ```
 
 ## Message bubble without border
@@ -241,26 +221,24 @@ Simple style customization using theme object, does the trick:
 ```jsx
 const themeStyle = {
   messageSimple: {
-      content: {
-        container: {
-          borderWidth: 0,
-        },
-        containerInner: {
-          borderWidth: 0,
-        },
-        deletedContainerInner: {
-          borderWidth: 0,
-        },
-        textContainer: {
-          borderWidth: 0,
-        },
-      }
-  }
+    content: {
+      container: {
+        borderWidth: 0,
+      },
+      containerInner: {
+        borderWidth: 0,
+      },
+      deletedContainerInner: {
+        borderWidth: 0,
+      },
+      textContainer: {
+        borderWidth: 0,
+      },
+    },
+  },
 };
 
-<Chat style={themeStyle}>
-  ...
-</Chat>
+<Chat style={themeStyle}>...</Chat>;
 ```
 
 ## Message with custom reactions
@@ -295,7 +273,7 @@ export const reactionData: ReactionData[] = [
 To create your own reaction you need both a `type` and `Icon`. The `Icon` is a component with `IconProps` it is suggested you take advantage of [`react-native-svg`](https://github.com/react-native-svg/react-native-svg) for scaling purposes. It is suggested you look at the default icons for examples of how to create your own that is able to properly use the theme and sizing that are provided via props. Using exported type from `stream-chat-react-native` a custom reaction can be created and added.
 
 ```tsx
-export const StreamReaction: React.FC<IconProps> = (props) => (
+export const StreamReaction: React.FC<IconProps> = props => (
   <RootSvg height={21} width={42} {...props} viewBox='0 0 42 21'>
     <RootPath
       d='M26.1491984,6.42806971 L38.9522984,5.52046971 C39.7973984,5.46056971 40.3294984,6.41296971 39.8353984,7.10116971 L30.8790984,19.5763697 C30.6912984,19.8379697 30.3888984,19.9931697 30.0667984,19.9931697 L9.98229842,19.9931697 C9.66069842,19.9931697 9.35869842,19.8384697 9.17069842,19.5773697 L0.190598415,7.10216971 C-0.304701585,6.41406971 0.227398415,5.46036971 1.07319842,5.52046971 L13.8372984,6.42816971 L19.2889984,0.333269706 C19.6884984,-0.113330294 20.3884984,-0.110730294 20.7846984,0.338969706 L26.1491984,6.42806971 Z M28.8303984,18.0152734 L20.5212984,14.9099734 L20.5212984,18.0152734 L28.8303984,18.0152734 Z M19.5212984,18.0152734 L19.5212984,14.9099734 L11.2121984,18.0152734 L19.5212984,18.0152734 Z M18.5624984,14.1681697 L10.0729984,17.3371697 L3.82739842,8.65556971 L18.5624984,14.1681697 Z M21.4627984,14.1681697 L29.9522984,17.3371697 L36.1978984,8.65556971 L21.4627984,14.1681697 Z M19.5292984,13.4435697 L19.5292984,2.99476971 L12.5878984,10.8305697 L19.5292984,13.4435697 Z M20.5212984,13.4435697 L20.5212984,2.99606971 L27.4627984,10.8305697 L20.5212984,13.4435697 Z M10.5522984,10.1082697 L12.1493984,8.31366971 L4.34669842,7.75446971 L10.5522984,10.1082697 Z M29.4148984,10.1082697 L27.8178984,8.31366971 L35.6205984,7.75446971 L29.4148984,10.1082697 Z'
@@ -311,9 +289,15 @@ Both the resulting reaction picker and reaction result can then utilize this add
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/StandardReactions.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/ModifiedReactions.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/ModifiedReaction.png'/></td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/StandardReactions.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/ModifiedReactions.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/ModifiedReaction.png' />
+    </td>
   </tr>
   <tr></tr>
   <tr>
@@ -329,10 +313,11 @@ Double tap handler can be easily attached to a message component using `react-na
 Please check the following example for implementation.
 
 :::caution
+
 - v3 of React Native Chat SDK used to support a prop `onDoubleTapMessage`, but it has been dropped
-since v4 of SDK for performance reasons.
+  since v4 of SDK for performance reasons.
 - Gesture handlers and animations inside a dynamic list may result in increased memory consumption.
-:::
+  :::
 
 ```tsx
 const CustomMessage = (props: MessageSimpleProps) => {
@@ -371,7 +356,6 @@ const CustomMessage = (props: MessageSimpleProps) => {
   MessageSimple={CustomMessage}
 >
 ```
-
 
 ## Slack style messages all on the left side
 
@@ -422,9 +406,15 @@ If you wanted to move the information about the sender to the top of the message
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/StandardFooter.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/NoFooter.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/HeaderAdded.png'/></td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/StandardFooter.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/NoFooter.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/HeaderAdded.png' />
+    </td>
   </tr>
   <tr></tr>
   <tr>
@@ -438,27 +428,19 @@ If you wanted to move the information about the sender to the top of the message
 
 To add swipe controls to your messages it is suggested that you create a custom `Message` component to replace the default one. An easy solution is to wrap the standard exported message component from `stream-chat-react-native` in a `Swipeable` from `react-native-gesture-handler/Swipeable`. You can then use the functions provided by `Swipeable` to fine tune to functionality to your liking.
 
-You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipeable messages to ensure you only can swipe appropriate messages, **i.e.**  you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
+You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipeable messages to ensure you only can swipe appropriate messages, **i.e.** you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
 
 ```tsx
 const SwipeableMessage = (
-  props: MessageProps<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ResponseType,
-    UserType
-  >,
+  props: MessageProps<AttachmentType, ChannelType, CommandType, EventType, MessageType, ResponseType, UserType>,
 ) => {
   return (
     <Swipeable
       onSwipeableLeftOpen={reply(props.message)}
-      onSwipeableRightOpen={delete(props.message)}
+      onSwipeableRightOpen={delete props.message}
       overshootLeft={false}
       overshootRight={false}
-      renderLeftActions={(progress) => (
+      renderLeftActions={progress => (
         <Animated.View
           style={{
             backgroundColor: 'blue',
@@ -474,7 +456,7 @@ const SwipeableMessage = (
           }}
         />
       )}
-      renderRightActions={(progress) => (
+      renderRightActions={progress => (
         <Animated.View
           style={{
             justifyContent: 'center',
@@ -496,9 +478,15 @@ const SwipeableMessage = (
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingOpacity.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingOpen.png'/></td>
-    <td align='center' width="33%"><img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingTranslateX.png'/></td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingOpacity.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingOpen.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/cookbook/SwipingTranslateX.png' />
+    </td>
   </tr>
   <tr></tr>
   <tr>

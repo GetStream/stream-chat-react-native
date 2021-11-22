@@ -4,10 +4,10 @@ sidebar_position: 2
 title: Custom Components
 ---
 
-import dateHeader from '../assets/customization/custom-components/date_header.png'
-import nameDateHeader from '../assets/customization/custom-components/name_date_header.png'
-import newDateHeader from '../assets/customization/custom-components/new_date_header.png'
-import noDateHeader from '../assets/customization/custom-components/no_date_header.png'
+import dateHeader from '../assets/customization/custom-components/date_header.png';
+import nameDateHeader from '../assets/customization/custom-components/name_date_header.png';
+import newDateHeader from '../assets/customization/custom-components/new_date_header.png';
+import noDateHeader from '../assets/customization/custom-components/no_date_header.png';
 
 The core of Stream Chat for React Native is it's ability to be customized to your needs.
 Many developers find that simply altering [the theme](./theming.mdx) is enough to achieve their desired results.
@@ -63,15 +63,39 @@ const MyNewComponent = ({ dateString }) => <Text>{`Hello World: ${dateString}`}<
 ```
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-<div style={{ position: 'relative' }}>
-<div style={{ left: '110px', top: '65px', position: 'absolute', height: '30px', width: '60px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
-<img src={dateHeader} alt="DateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
-<img src={noDateHeader} alt="NoDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-<div style={{ position: 'relative' }}>
-<div style={{ left: '90px', top: '65px', position: 'absolute', height: '20px', width: '100px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
-<img src={newDateHeader} alt="NewDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
+  <div style={{ position: 'relative' }}>
+    <div
+      style={{
+        left: '110px',
+        top: '65px',
+        position: 'absolute',
+        height: '30px',
+        width: '60px',
+        borderColor: '#fa383e',
+        borderWidth: '4px',
+        borderRadius: '15px',
+        borderStyle: 'solid',
+      }}
+    ></div>
+    <img src={dateHeader} alt='DateHeader' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  </div>
+  <img src={noDateHeader} alt='NoDateHeader' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  <div style={{ position: 'relative' }}>
+    <div
+      style={{
+        left: '90px',
+        top: '65px',
+        position: 'absolute',
+        height: '20px',
+        width: '100px',
+        borderColor: '#fa383e',
+        borderWidth: '4px',
+        borderRadius: '15px',
+        borderStyle: 'solid',
+      }}
+    ></div>
+    <img src={newDateHeader} alt='NewDateHeader' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  </div>
 </div>
 
 ## Using contexts
@@ -99,10 +123,22 @@ const MySenderComponent = () => {
 ```
 
 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-<div style={{ position: 'relative' }}>
-<div style={{ left: '90px', top: '65px', position: 'absolute', height: '20px', width: '100px', borderColor: '#fa383e', borderWidth: '4px', borderRadius: '15px', borderStyle: 'solid' }}></div>
-<img src={nameDateHeader} alt="NameDateHeader" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
+  <div style={{ position: 'relative' }}>
+    <div
+      style={{
+        left: '90px',
+        top: '65px',
+        position: 'absolute',
+        height: '20px',
+        width: '100px',
+        borderColor: '#fa383e',
+        borderWidth: '4px',
+        borderRadius: '15px',
+        borderStyle: 'solid',
+      }}
+    ></div>
+    <img src={nameDateHeader} alt='NameDateHeader' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+  </div>
 </div>
 
 This allows you as a developer to not only customize the look and feel of every part of the UI, but also decide what information is shown where based on your own design.
@@ -173,7 +209,7 @@ It also gives insight into what data the out of the box component is using, and 
 
 It is import to consider equality when writing `areEqual` checks.
 Trying to compare two functions, objects, or arrays during a re-render cycle, unless they are themselves memoized or in another way referentially stable, will fail a shallow comparison.
-For this reason in the out of the box components it is often considered *when* the component should re-render, and the equality checks are created based on that logic.
+For this reason in the out of the box components it is often considered _when_ the component should re-render, and the equality checks are created based on that logic.
 
 In the out of the box `MessageFooter`, `message` from the `MessageContext` is used, but `message` is an object and not referentially stable.
 Checking to see if `prevMessage === nextMessage` will return false whenever the `MessageContext` updates.
