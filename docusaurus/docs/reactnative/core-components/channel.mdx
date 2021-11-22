@@ -92,7 +92,6 @@ import MessageStatus from '../common-content/core-components/channel/props/messa
 import MessageSystem from '../common-content/core-components/channel/props/message_system.mdx';
 import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx';
-import MutesEnabled from '../common-content/core-components/channel/props/mutes_enabled.mdx';
 import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
 import NewMessageStateUpdateThrottleInterval from '../common-content/core-components/channel/props/new_message_state_update_throttle_interval.mdx'
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx'
@@ -101,25 +100,20 @@ import OnLongPressMessage from '../common-content/core-components/channel/props/
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
-import PinMessageEnabled from '../common-content/core-components/channel/props/pin_message_enabled.mdx';
-import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
-import ReactionsEnabled from '../common-content/core-components/channel/props/reactions_enabled.mdx'
+import OverrideOwnCapabilities from '../common-content/core-components/channel/props/override_own_capabilities.mdx';
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
-import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx'
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx'
+import SendMessageDisallowedIndicator from '../common-content/core-components/channel/props/send_message_disallowed_indicator.mdx'
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx'
 import StateUpdateThrottleInterval from '../common-content/core-components/channel/props/state_update_throttle_interval.mdx'
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
 import Thread from '../common-content/core-components/channel/props/thread.mdx'
 import ThreadList from '../common-content/core-components/channel/props/thread_list.mdx';
-import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx'
-import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx'
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
-import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
 
 The `Channel` component is the main entry point for many Stream Chat customizations and contains the majority of the content providers and a significant amount of the logic utilized by Stream Chat for React Native.
@@ -588,10 +582,6 @@ Load the channel at a specified message instead of the most recent message.
 
 Provide a custom array of messages to render in `MessageList`. -->
 
-### mutesEnabled
-
-<MutesEnabled />
-
 ### myMessageTheme
 
 <MyMessageTheme />
@@ -620,23 +610,11 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <OnPressInMessage />
 
+### overrideOwnCapabilities
+
+<OverrideOwnCapabilities />
+
 <!-- ### openSuggestions -->
-
-### pinMessageEnabled
-
-<PinMessageEnabled />
-
-### quotedRepliesEnabled
-
-<QuotedRepliesEnabled />
-
-### reactionsEnabled
-
-<ReactionsEnabled />
-
-### readEventsEnabled
-
-<ReadEventsEnabled />
 
 ### selectReaction
 
@@ -681,18 +659,6 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 ### threadList
 
 <ThreadList />
-
-### threadRepliesEnabled
-
-<ThreadRepliesEnabled />
-
-### typingEventsEnabled
-
-<TypingEventsEnabled />
-
-### uploadsEnabled
-
-<UploadsEnabled />
 
 <!-- ### updateSuggestions -->
 
@@ -887,6 +853,10 @@ Component to render full screen error indicator, when channel fails to load.
 ### SendButton
 
 <SendButton />
+
+### SendMessageDisallowedIndicator
+
+<SendMessageDisallowedIndicator />
 
 ### ShowThreadMessageInChannelButton
 
