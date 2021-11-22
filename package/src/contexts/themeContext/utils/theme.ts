@@ -1,7 +1,7 @@
 import { vh } from '../../../utils/utils';
 
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import type { CircleProps, StopProps } from 'react-native-svg';
+import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -124,6 +124,7 @@ export type Theme = {
     gradientStart: StopProps;
     gradientStop: StopProps;
     height: number;
+    maskFillColor?: Color;
   };
   channelPreview: {
     checkAllIcon: IconProps;
@@ -218,6 +219,7 @@ export type Theme = {
     commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
+    cooldownTimer: TextStyle;
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
@@ -260,10 +262,6 @@ export type Theme = {
         iconContainer: ViewStyle;
         title: TextStyle;
       };
-      commandsHeader: {
-        container: ViewStyle;
-        title: TextStyle;
-      };
       container: ViewStyle & {
         maxHeight: number;
       };
@@ -271,7 +269,7 @@ export type Theme = {
         container: ViewStyle;
         text: TextStyle;
       };
-      emojisHeader: {
+      header: {
         container: ViewStyle;
         title: TextStyle;
       };
@@ -284,7 +282,10 @@ export type Theme = {
         tag: TextStyle;
       };
     };
-    suggestionsListContainer: ViewStyle;
+    suggestionsListContainer: {
+      container: ViewStyle;
+      flatlist: ViewStyle;
+    };
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
@@ -664,6 +665,7 @@ export const defaultTheme: Theme = {
     commandsButtonContainer: {},
     composerContainer: {},
     container: {},
+    cooldownTimer: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
@@ -706,10 +708,6 @@ export const defaultTheme: Theme = {
         iconContainer: {},
         title: {},
       },
-      commandsHeader: {
-        container: {},
-        title: {},
-      },
       container: {
         maxHeight: vh(25),
       },
@@ -717,7 +715,7 @@ export const defaultTheme: Theme = {
         container: {},
         text: {},
       },
-      emojisHeader: {
+      header: {
         container: {},
         title: {},
       },
@@ -730,7 +728,10 @@ export const defaultTheme: Theme = {
         tag: {},
       },
     },
-    suggestionsListContainer: {},
+    suggestionsListContainer: {
+      container: {},
+      flatlist: {},
+    },
     uploadProgressIndicator: {
       container: {},
       overlay: {},

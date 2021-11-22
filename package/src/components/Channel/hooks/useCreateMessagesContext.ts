@@ -22,7 +22,6 @@ export const useCreateMessagesContext = <
   Us extends UnknownType = DefaultUserType,
 >({
   additionalTouchableProps,
-  animatedLongPress,
   Attachment,
   AttachmentActions,
   Card,
@@ -77,7 +76,6 @@ export const useCreateMessagesContext = <
   MessageText,
   mutesEnabled,
   myMessageTheme,
-  onDoubleTapMessage,
   onLongPressMessage,
   onPressInMessage,
   onPressMessage,
@@ -114,7 +112,6 @@ export const useCreateMessagesContext = <
   const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalTouchableProps,
-      animatedLongPress,
       Attachment,
       AttachmentActions,
       Card,
@@ -168,7 +165,6 @@ export const useCreateMessagesContext = <
       MessageText,
       mutesEnabled,
       myMessageTheme,
-      onDoubleTapMessage,
       onLongPressMessage,
       onPressInMessage,
       onPressMessage,

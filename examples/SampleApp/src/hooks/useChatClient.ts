@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
-import { CacheInterface, StreamCache } from 'stream-chat-react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
@@ -41,34 +40,13 @@ export const useChatClient = () => {
       timeout: 6000,
     });
 
-    const cacheInterface: CacheInterface<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > = {
-      getItem: (key) => AsyncStore.getItem(key, null),
-      removeItem: (key) => AsyncStore.removeItem(key),
-      setItem: (key, value) => AsyncStore.setItem(key, value),
+    const user = {
+      id: config.userId,
+      image: config.userImage,
+      name: config.userName,
     };
 
-    const cacheInstance = StreamCache.getInstance(client, cacheInterface, config.userToken);
-    if (await cacheInstance.hasCachedData()) {
-      console.info('Found cached data. Initializing cache...');
-      await cacheInstance.initialize();
-    } else {
-      console.info('No cache data found. Skipping cache initialization...');
-
-      const user = {
-        id: config.userId,
-        image: config.userImage,
-        name: config.userName,
-      };
-
-      await client.connectUser(user, config.userToken);
-    }
+    await client.connectUser(user, config.userToken);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     setChatClient(client);
@@ -105,11 +83,7 @@ export const useChatClient = () => {
   const logout = async () => {
     setChatClient(null);
     chatClient?.disconnectUser();
-
-    if (StreamCache.hasInstance()) {
-      await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
-      await StreamCache.getInstance().clear();
-    }
+    await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
 
   useEffect(() => {

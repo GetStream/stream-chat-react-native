@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { CachedAvatar } from '../CachedImages/CachedAvatar';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+const randomImageBaseUrl = 'https://getstream.io/random_png/';
+const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
 const streamCDN = 'stream-io-cdn.com';
 
 const styles = StyleSheet.create({
@@ -19,11 +19,9 @@ const getInitials = (fullName: string) =>
     .split(' ')
     .slice(0, 2)
     .map((name) => name.charAt(0))
-    .join('');
+    .join(' ');
 
 export type GroupAvatarProps = {
-  channelId: string | undefined;
-  ids: string[];
   /** total size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -38,7 +36,7 @@ export type GroupAvatarProps = {
  * GroupAvatar - A round group of avatar images with fallbacks to users' initials
  */
 export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
-  const { channelId, containerStyle, ids, images, names, size, testID } = props;
+  const { containerStyle, images, names, size, testID } = props;
   const {
     theme: {
       groupAvatar: { container, image },
@@ -61,8 +59,16 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
    */
   const imagesOrNames = images || names || [];
   const avatarImages = imagesOrNames.slice(0, 4).reduce((returnArray, currentImage, index) => {
-    const url = currentImage.startsWith('http') ? currentImage : null;
-    if (imagesOrNames.length <= 2 && url) {
+    const url = currentImage.startsWith('http')
+      ? currentImage
+      : `${randomImageBaseUrl}${
+          names
+            ? `?name=${getInitials(names[index])}&size=${
+                imagesOrNames.length <= 2 ? size : size / 2
+              }`
+            : ''
+        }`;
+    if (imagesOrNames.length <= 2) {
       Image.prefetch(
         imageError
           ? url
@@ -79,13 +85,12 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
         ...(returnArray[0] || []),
         {
           height: imagesOrNames.length === 1 ? size : size / 2,
-          id: ids[index],
           name: names ? names[index] : '',
           url,
           width: size,
         },
       ];
-    } else if (url) {
+    } else {
       Image.prefetch(
         imageError
           ? url
@@ -98,7 +103,6 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
           ...(returnArray[0] || []),
           {
             height: size / 2,
-            id: ids[index],
             name: names ? names[index] : '',
             url,
             width: size / 2,
@@ -109,7 +113,6 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
           ...(returnArray[1] || []),
           {
             height: size / 2,
-            id: ids[index],
             name: names ? names[index] : '',
             url,
             width: imagesOrNames.length === 3 ? size : size / 2,
@@ -118,7 +121,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
       }
     }
     return returnArray;
-  }, [] as { height: number; id: string; name: string; url: string; width: number }[][]);
+  }, [] as { height: number; name: string; url: string; width: number }[][]);
 
   return (
     <View
@@ -140,20 +143,20 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
             },
           ]}
         >
-          {column.map(({ height, id, name, url, width }, rowIndex) => (
-            <CachedAvatar
+          {column.map(({ height, name, url, width }, rowIndex) => (
+            <Image
               accessibilityLabel={testID || 'avatar-image'}
-              channelId={channelId}
-              id={id}
-              initials={name ? getInitials(name) : ''}
               key={`avatar-${url}-${rowIndex}`}
               onError={() => setImageError(true)}
               source={{
-                uri: imageError
-                  ? url.includes(streamCDN)
-                    ? url
-                    : undefined
-                  : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`),
+                uri:
+                  imageError || url.includes(randomSvgBaseUrl)
+                    ? url.includes(streamCDN)
+                      ? url
+                      : `${randomImageBaseUrl}${
+                          name ? `?name=${getInitials(name)}&size=${height}` : ''
+                        }`
+                    : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`),
               }}
               style={[
                 image,

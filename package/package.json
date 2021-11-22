@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "3.9.1",
+  "version": "3.9.2",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -79,9 +79,8 @@
     "metro-react-native-babel-preset": "0.66.0",
     "path": "0.12.7",
     "react-art": "^17.0.2",
-    "react-native-easy-toast": "^2.0.0",
     "react-native-markdown-package": "1.8.1",
-    "stream-chat": "4.0.0-offline-caching.2"
+    "stream-chat": "^4.4.3"
   },
   "peerDependencies": {
     "react": "*",

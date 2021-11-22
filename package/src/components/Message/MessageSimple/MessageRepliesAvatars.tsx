@@ -91,7 +91,6 @@ export const MessageRepliesAvatars = <
           }
         >
           <Avatar
-            channelId={message.cid}
             containerStyle={[
               i === 1 && {
                 borderColor: white_snow,
@@ -99,7 +98,6 @@ export const MessageRepliesAvatars = <
               },
               avatar,
             ]}
-            id={user.id}
             image={user.image}
             name={user.name}
             size={avatarSize ? avatarSize : i === 1 ? 18 : 16}

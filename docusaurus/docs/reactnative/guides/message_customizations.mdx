@@ -309,65 +309,51 @@ Both the resulting reaction picker and reaction result can then utilize this add
 
 ## Instagram style double-tap reaction
 
-`stream-chat-react-native` uses a combination of `react-native-gesture-handler` and standard `react-native` touchables to provide animations to the UI. Because of this there are conditions in which multiple interactions are taking place at once.
+Double tap handler can be easily attached to a message component using `react-native-gesture-handler`.
+Please check the following example for implementation.
 
-**e.g.** If you press on a message it begins to depress and after a long hold will present the context menu for the message. But release sooner and if you are pressing on an image, the image viewer will appear.
+:::caution
 
-Therefore to allow for something like double-tap reactions three props are required, `onPressInMessage`, `onLongPressMessage`, and `onDoubleTapMessage`. The first is used to prevent the `onPress` of inner `react-native` touchable components from firing while waiting for the double press to be evaluated by `react-native-gesture-handler`. Using a timeout the original `onPress` can be called if a second press has not ocurred in the expected time for the double tap to fire.
-
-To prevent this event from firing when a long press occurs `onLongPressMessage` should be set to a function that cancels the timeout.
-
-The `onDoubleTapMessage` prop can then be used to add a reaction as it is a function that is provided the message for which it is double tapped. This uses `react-native-gesture-handler` to track double taps. For convenience, as this is a common design pattern, the function is also is passed the `handleReactionDoubleTap` function. If defined (this is `undefined` when there is an error message or the `status` of the message is `failed`), this function can be passed a `string` of the reaction `type` to add or remove a reaction.
-
-To complete the Instagram feel, setting the `OverlayReactionList` component to an empty component and limiting the `supportedReactions` as shown allows only 1 type of reaction and limits the UI to double-tap only to add or remove it.
+- v3 of React Native Chat SDK used to support a prop `onDoubleTapMessage`, but it has been dropped
+  since v4 of SDK for performance reasons.
+- Gesture handlers and animations inside a dynamic list may result in increased memory consumption.
+  :::
 
 ```tsx
-const lastTap = React.useRef<number | null>(null);
-const timeOut = React.useRef<NodeJS.Timeout | null>(null);
+const CustomMessage = (props: MessageSimpleProps) => {
+  const doubleTapRef = useRef(null);
+  const { message, handleToggleReaction } = useMessageContext();
 
-const handleDoubleTap = ({
-  defaultHandler,
-}) => {
-  const now = Date.now();
-  console.log(now, lastTap.current)
-  if (lastTap.current && now - lastTap.current < 510) {
-    if (timeOut.current) {
-      clearTimeout(timeOut.current);
-    }
-  } else {
-    lastTap.current = now;
-    timeOut.current = setTimeout(() => {
-      if (defaultHandler) {
-        defaultHandler();
-      }
-    }, 510);
-  }
-};
+  const _onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
+    {
+      onActive: () => {
+        console.log('double tapped')
+        runOnJS(handleToggleReaction)('love')
+      },
+    },
+    [message],
+  );
 
-const onDoubleTapMessage = ({
-  actionHandlers
-}) => {
-  actionHandlers?.toggleReaction('love')
-};
-
-const onLongPressMessage = ({
-  defaultHandler,
-}) => {
-  console.log('onLongPress')
-  if (timeOut.current) {
-    clearTimeout(timeOut.current);
-    defaultHandler()
-  }
-};
+  return (
+    <TapGestureHandler
+      waitFor={doubleTapRef}>
+      <Animated.View>
+        <TapGestureHandler
+          ref={doubleTapRef}
+          numberOfTaps={2}
+          onHandlerStateChange={_onDoubleTap}>
+          <Animated.View>
+            <MessageSimple {...props} />
+          </Animated.View>
+        </TapGestureHandler>
+      </Animated.View>
+    </TapGestureHandler>
+  );
+}
 
 <Channel
   channel={channel}
-  keyboardVerticalOffset={headerHeight}
-  onDoubleTapMessage={onDoubleTapMessage}
-  onPressInMessage={handleDoubleTap}
-  onLongPressMessage={onLongPressMessage}
-  OverlayReactionList={() => null}
-  thread={thread}
+  MessageSimple={CustomMessage}
 >
 ```
 
