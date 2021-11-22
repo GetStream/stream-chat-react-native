@@ -11,11 +11,12 @@ The following props are useful for customizing the components:
 - AutoCompleteSuggestionItem
 - AutoCompleteSuggestionList
 
-The Header and the Item components are exposed used within the list component in the Flatlist. 
+The Header and the Item components are exposed used within the list component in the Flatlist.
 
-The above props allow customizing the different parts of the list as header, list item and the entire list at once. 
+The above props allow customizing the different parts of the list as header, list item and the entire list at once.
 
 The available suggestion trigger types are:
+
 - `command`
 - `emoji`
 - `mention`
@@ -38,17 +39,18 @@ import { AutoCompleteSuggestionHeader } from 'stream-chat-react-native';
 import { Text } from 'react-native';
 
 <Channel
-    AutoCompleteSuggestionHeader={({ queryText, triggerType }) => {
-        if (triggerType === 'command') {
-            return <Text>Command Header Component</Text>;
-        } else if (triggerType === 'emoji') {
-            return <Text>Emoji Header Component</Text>;
-        } else {
-            return <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />;
-        }
-    }}>
-    {/* The underlying components */}
-</Channel>
+  AutoCompleteSuggestionHeader={({ queryText, triggerType }) => {
+    if (triggerType === 'command') {
+      return <Text>Command Header Component</Text>;
+    } else if (triggerType === 'emoji') {
+      return <Text>Emoji Header Component</Text>;
+    } else {
+      return <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />;
+    }
+  }}
+>
+  {/* The underlying components */}
+</Channel>;
 ```
 
 Note: The default `AutoCompleteSuggestionHeader` must be returned if you don't want any change for a particular trigger type.
@@ -67,28 +69,29 @@ import { Avatar, AutoCompleteSuggestionItem } from 'stream-chat-react-native';
 import { Text, View } from 'react-native';
 
 <Channel
-    AutoCompleteSuggestionItem={({ itemProps, triggerType }) => {
-        if (triggerType === 'command') {
-            return (
-                <View>
-                    <Text>{itemProps.name}</Text>
-                    <Text>{itemProps.args}</Text>
-                </View>
-            );
-        } else if (triggerType === 'mention') {
-            const { id, image, name, online } = itemProps;
-            return (
-                <View>
-                    <Avatar image={image} name={name} online={online} size={30} />
-                    <Text>{itemProps.name}</Text>
-                </View>
-            );
-        } else {
-            return <AutoCompleteSuggestionItem itemProps={itemProps} triggerType={triggerType} />;
-        }
-    }}>
-    {/*The underlying components*/}
-</Channel>
+  AutoCompleteSuggestionItem={({ itemProps, triggerType }) => {
+    if (triggerType === 'command') {
+      return (
+        <View>
+          <Text>{itemProps.name}</Text>
+          <Text>{itemProps.args}</Text>
+        </View>
+      );
+    } else if (triggerType === 'mention') {
+      const { id, image, name, online } = itemProps;
+      return (
+        <View>
+          <Avatar image={image} name={name} online={online} size={30} />
+          <Text>{itemProps.name}</Text>
+        </View>
+      );
+    } else {
+      return <AutoCompleteSuggestionItem itemProps={itemProps} triggerType={triggerType} />;
+    }
+  }}
+>
+  {/*The underlying components*/}
+</Channel>;
 ```
 
 Note: The default `AutoCompleteSuggestionItem` must be returned if you don't want any change for a particular trigger type.
@@ -98,6 +101,7 @@ Note: The default `AutoCompleteSuggestionItem` must be returned if you don't wan
 The list can also be entirely customized with its own header, item and other definitions. This can be done using the prop `AutoCompleteSuggestionList` in the Channel component.
 
 The props available to the component are:
+
 - `active`: Checks the list is active or not.
 - `data`: The array of the suggestions which will be displayed on the list.
 - `onSelect`: The function which is triggered when the item is selected.
@@ -111,58 +115,49 @@ import { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } from 'stream
 import { FlatList, Text, View } from 'react-native';
 
 <Channel
-    AutoCompleteSuggestionList={({ data, onSelect, queryText, triggerType }) => {
-        if (triggerType === 'command') {
-            return (
-                <View>
-                    <View>
-                        <Text>Command suggestions for {queryText}</Text>
-                    </View>
-                    {data.map((item) => (
-                            <AutoCompleteSuggestionItem
-                                itemProps={item}
-                                key={item.name}
-                                triggerType={triggerType}
-                            />
-                    ))}
-                </View>
-            );
-        } else if (triggerType === 'emoji') {
-            return (
-                <FlatList
-                    data={data}
-                    keyboardShouldPersistTaps='always'
-                    ListHeaderComponent={
-                        <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
-                    }
-                    renderItem={({ index, item }) => (
-                        <TouchableOpacity
-                            onPress={() => {
-                                onSelect(item);
-                            }}
-                        >
-                            <Text>{item.unicode}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
-            );
-        } else {
-            return (
-                <View>
-                    <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
-                    {data.map((item) => (
-                        <AutoCompleteSuggestionItem
-                            itemProps={item}
-                            key={item.name}
-                            triggerType={triggerType}
-                        />
-                    ))}
-                </View>
-            );
-        }
-    }}>
-    {/*The underlying components*/}
-</Channel>
+  AutoCompleteSuggestionList={({ data, onSelect, queryText, triggerType }) => {
+    if (triggerType === 'command') {
+      return (
+        <View>
+          <View>
+            <Text>Command suggestions for {queryText}</Text>
+          </View>
+          {data.map(item => (
+            <AutoCompleteSuggestionItem itemProps={item} key={item.name} triggerType={triggerType} />
+          ))}
+        </View>
+      );
+    } else if (triggerType === 'emoji') {
+      return (
+        <FlatList
+          data={data}
+          keyboardShouldPersistTaps='always'
+          ListHeaderComponent={<AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />}
+          renderItem={({ index, item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                onSelect(item);
+              }}
+            >
+              <Text>{item.unicode}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      );
+    } else {
+      return (
+        <View>
+          <AutoCompleteSuggestionHeader queryText={queryText} triggerType={triggerType} />
+          {data.map(item => (
+            <AutoCompleteSuggestionItem itemProps={item} key={item.name} triggerType={triggerType} />
+          ))}
+        </View>
+      );
+    }
+  }}
+>
+  {/*The underlying components*/}
+</Channel>;
 ```
 
 Note: The default `AutoCompleteSuggestionList` must be returned if you don't want any change for a particular trigger type.

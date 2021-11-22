@@ -313,10 +313,11 @@ Double tap handler can be easily attached to a message component using `react-na
 Please check the following example for implementation.
 
 :::caution
+
 - v3 of React Native Chat SDK used to support a prop `onDoubleTapMessage`, but it has been dropped
-since v4 of SDK for performance reasons.
+  since v4 of SDK for performance reasons.
 - Gesture handlers and animations inside a dynamic list may result in increased memory consumption.
-:::
+  :::
 
 ```tsx
 const CustomMessage = (props: MessageSimpleProps) => {
@@ -355,7 +356,6 @@ const CustomMessage = (props: MessageSimpleProps) => {
   MessageSimple={CustomMessage}
 >
 ```
-
 
 ## Slack style messages all on the left side
 
