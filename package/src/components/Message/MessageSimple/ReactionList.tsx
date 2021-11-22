@@ -1,12 +1,6 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View, ViewStyle } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+
 import Svg, { Circle } from 'react-native-svg';
 
 import {
@@ -67,36 +61,10 @@ const Icon: React.FC<
   const ReactionIcon =
     supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
-  const scale = useSharedValue(0);
-
-  const showReaction = () => {
-    'worklet';
-    scale.value = withSequence(
-      withDelay(250, withTiming(0.5, { duration: 100 })),
-      withTiming(1.5, { duration: 400 }),
-      withTiming(1, { duration: 500 }),
-    );
-  };
-
-  useEffect(() => {
-    showReaction();
-  }, []);
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
-    <Animated.View style={animatedStyle}>
+    <View>
       <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />
-    </Animated.View>
+    </View>
   );
 };
 
@@ -186,8 +154,6 @@ const ReactionListWithContext = <
     },
   } = useTheme();
 
-  const opacity = useSharedValue(0);
-
   const width = useWindowDimensions().width;
 
   const supportedReactionTypes = supportedReactions.map(
@@ -195,22 +161,6 @@ const ReactionListWithContext = <
   );
   const hasSupportedReactions = reactions.some((reaction) =>
     supportedReactionTypes.includes(reaction.type),
-  );
-
-  const showReactions = (show: boolean) => {
-    'worklet';
-    opacity.value = show ? withDelay(250, withTiming(1, { duration: 500 })) : 0;
-  };
-
-  useEffect(() => {
-    showReactions(hasSupportedReactions && messageContentWidth !== 0);
-  }, [hasSupportedReactions, messageContentWidth]);
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: opacity.value,
-    }),
-    [],
   );
 
   if (!hasSupportedReactions || messageContentWidth === 0) {
@@ -287,7 +237,7 @@ const ReactionListWithContext = <
       testID='reaction-list'
     >
       {reactions.length ? (
-        <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
+        <View style={[StyleSheet.absoluteFill]}>
           <Svg>
             <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
             <Circle cx={x2} cy={y2} fill={stroke} r={radius * 2 + strokeSize * 3} />
@@ -341,7 +291,7 @@ const ReactionListWithContext = <
               />
             ))}
           </View>
-        </Animated.View>
+        </View>
       ) : null}
     </TouchableOpacity>
   );

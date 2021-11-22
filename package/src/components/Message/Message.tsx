@@ -1,25 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  Keyboard,
-  PixelRatio,
-  Platform,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
@@ -81,21 +61,6 @@ import type {
 import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 
-const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
-  if (url.includes('&h=%2A')) {
-    Image.prefetch(
-      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
-    )
-      .catch(() => Image.prefetch(url))
-      .catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
-  } else {
-    Image.prefetch(url).catch(() => {
-      // do nothing, not a big deal that prefetch failed
-    });
-  }
-};
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?:
@@ -161,7 +126,6 @@ export type MessagePropsWithContext<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'animatedLongPress'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBlock'
@@ -179,7 +143,6 @@ export type MessagePropsWithContext<
     | 'messageContentOrder'
     | 'MessageSimple'
     | 'mutesEnabled'
-    | 'onDoubleTapMessage'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
@@ -272,7 +235,6 @@ const MessageWithContext = <
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
-    animatedLongPress = Platform.OS === 'ios' && !isMessageTypeDeleted,
     channel,
     client,
     disabled,
@@ -304,7 +266,6 @@ const MessageWithContext = <
     messagesContext,
     MessageSimple,
     mutesEnabled,
-    onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
@@ -341,51 +302,9 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: {
-        gallery: { halfSize, size },
-        targetedMessageUnderlay,
-      },
+      messageSimple: { targetedMessageUnderlay },
     },
   } = useTheme();
-
-  const doubleTapRef = useRef<TapGestureHandler>(null);
-  const pressActive = useSharedValue(false);
-  const scale = useSharedValue(1);
-
-  /**
-   * This is a cleanup effect to prevent the onLongPress
-   * handler from being called if the component has dismounted.
-   */
-  useEffect(
-    () => () => {
-      pressActive.value = false;
-      cancelAnimation(scale);
-    },
-    [],
-  );
-  const scaleStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    }),
-    [],
-  );
-  const targetedOpacity = useSharedValue(0);
-  const targetedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: targetedOpacity.value,
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    targetedOpacity.value = withTiming(isTargetedMessage ? 1 : 0, {
-      duration: 1000,
-    });
-  }, [isTargetedMessage]);
 
   const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
@@ -410,9 +329,6 @@ const MessageWithContext = <
   const onPressQuotedMessage = (quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (!goToMessage) return;
 
-    pressActive.value = false;
-    cancelAnimation(scale);
-    scale.value = withTiming(1, { duration: 100 });
     goToMessage(quotedMessage.id);
   };
 
@@ -484,29 +400,6 @@ const MessageWithContext = <
     !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
     message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
-
-  // prefetch images for Gallery component rendering
-  const attachmentImageLength = attachments.images.length;
-  useEffect(() => {
-    if (attachmentImageLength) {
-      attachments.images.slice(0, 4).forEach((image, index) => {
-        const url = image.image_url || image.thumb_url;
-        if (url) {
-          if (attachmentImageLength <= 2) {
-            prefetchImage({ height: size || 200, url });
-          } else if (attachmentImageLength === 3) {
-            if (index === 0) {
-              prefetchImage({ height: size || 200, url });
-            } else {
-              prefetchImage({ height: halfSize || 100, url });
-            }
-          } else {
-            prefetchImage({ height: halfSize || 100, url });
-          }
-        }
-      });
-    }
-  }, [attachmentImageLength]);
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
@@ -725,14 +618,11 @@ const MessageWithContext = <
             event: payload?.event,
           })
       : enableLongPress
-      ? () => showMessageOverlay(false)
+      ? () => {
+          triggerHaptic('impactMedium');
+          showMessageOverlay(false);
+        }
       : () => null;
-
-  const onDoubleTapMessage = () => {
-    if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp({ actionHandlers, message });
-    }
-  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
@@ -759,7 +649,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
-    onLongPress: !animatedLongPress ? onLongPressMessage : () => null,
+    onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
@@ -814,91 +704,35 @@ const MessageWithContext = <
     threadList,
   });
 
-  const onLongPressTouchable = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onFinish: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-      },
-      onStart: () => {
-        pressActive.value = true;
-        cancelAnimation(scale);
-        /**
-         * React native longPress active occurs on 370ms,
-         * to hijack this we must make sure the timing is
-         * longer, otherwise onPress will fire instead
-         */
-        scale.value = withSequence(
-          withTiming(1, { duration: 100 }),
-          withTiming(0.98, { duration: 400 }, () => {
-            if (pressActive.value) {
-              runOnJS(onLongPressMessage)();
-              runOnJS(triggerHaptic)('impactMedium');
-            }
-          }),
-          withTiming(1.02, { duration: 100 }),
-          withTiming(1.0, { duration: 300 }),
-        );
-      },
-    },
-    [onLongPressMessage],
-  );
+  if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
 
-  const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onActive: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-        runOnJS(onDoubleTapMessage)();
-      },
-    },
-    [onDoubleTapMessage],
-  );
-
-  return isMessageTypeDeleted || messageContentOrder.length ? (
-    <TapGestureHandler
-      enabled={animatedLongPress && !preventPress}
-      maxDeltaX={8}
-      maxDurationMs={3000}
-      onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
-      waitFor={doubleTapRef}
+  return (
+    <View
+      style={[message.pinned && { backgroundColor: targetedMessageBackground }]}
+      testID='message-wrapper'
     >
-      <Animated.View testID='message-wrapper'>
-        <TapGestureHandler
-          enabled={!preventPress}
-          numberOfTaps={2}
-          onGestureEvent={onDoubleTap}
-          ref={doubleTapRef}
+      <View
+        style={[
+          style,
+          {
+            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+          },
+        ]}
+      >
+        <View
+          style={[
+            isTargetedMessage
+              ? { backgroundColor: targetedMessageBackground, ...targetedMessageUnderlay }
+              : {},
+          ]}
         >
-          <View style={[message.pinned && { backgroundColor: targetedMessageBackground }]}>
-            <Animated.View
-              style={[
-                style,
-                {
-                  backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-                },
-                scaleStyle,
-              ]}
-            >
-              <Animated.View
-                style={[
-                  StyleSheet.absoluteFillObject,
-                  targetedMessageUnderlay,
-                  { backgroundColor: targetedMessageBackground },
-                  targetedStyle,
-                ]}
-              />
-              <MessageProvider value={messageContext}>
-                <MessageSimple />
-              </MessageProvider>
-            </Animated.View>
-          </View>
-        </TapGestureHandler>
-      </Animated.View>
-    </TapGestureHandler>
-  ) : null;
+          <MessageProvider value={messageContext}>
+            <MessageSimple />
+          </MessageProvider>
+        </View>
+      </View>
+    </View>
+  );
 };
 
 const areEqual = <

@@ -28,7 +28,7 @@ export const usePaginatedSearchedMessages = (
 ) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | boolean>(false);
   const [messages, setMessages] =
     useState<
       MessageResponse<
@@ -122,8 +122,12 @@ export const usePaginatedSearchedMessages = (
       }
 
       offset.current = offset.current + messagesLength;
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
     }
 
     done();

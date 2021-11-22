@@ -71,6 +71,9 @@ import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/Typing
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
+import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
+import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
+import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 
 import {
   ChannelConfig,
@@ -98,7 +101,6 @@ import {
   SuggestionsProvider,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useToastContext } from '../../contexts/toastContext/ToastContext';
 import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
 import {
   TranslationContextValue,
@@ -113,7 +115,6 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
-import { StreamCache } from '../../StreamCache';
 import { generateRandomId, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
@@ -211,7 +212,12 @@ export type ChannelPropsWithContext<
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
     >
   > &
-  Partial<SuggestionsContextValue<Co, Us>> &
+  Partial<
+    Pick<
+      SuggestionsContextValue<Co, Us>,
+      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
+    >
+  > &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
@@ -224,7 +230,6 @@ export type ChannelPropsWithContext<
     Pick<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       | 'additionalTouchableProps'
-      | 'animatedLongPress'
       | 'Attachment'
       | 'AttachmentActions'
       | 'Card'
@@ -275,7 +280,6 @@ export type ChannelPropsWithContext<
       | 'MessageSystem'
       | 'MessageText'
       | 'myMessageTheme'
-      | 'onDoubleTapMessage'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
@@ -403,10 +407,12 @@ const ChannelWithContext = <
     additionalTextInputProps,
     additionalTouchableProps,
     allowThreadMessagesInChannel = true,
-    animatedLongPress,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
+    AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
+    AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     Card = CardDefault,
@@ -416,7 +422,6 @@ const ChannelWithContext = <
     channel,
     children,
     client,
-    closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
@@ -471,8 +476,7 @@ const ChannelWithContext = <
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
-    // TODO[major]: switch to false.
-    legacyImageViewerSwipeBehaviour = true,
+    legacyImageViewerSwipeBehaviour = false,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
@@ -509,11 +513,9 @@ const ChannelWithContext = <
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
-    onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
-    openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     pinMessageEnabled: pinMessageEnabledProp,
     quotedRepliesEnabled: quotedRepliesEnabledProp,
@@ -548,7 +550,6 @@ const ChannelWithContext = <
     typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
-    updateSuggestions,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     uploadsEnabled: uploadsEnabledProp,
     UrlPreview = CardDefault,
@@ -562,7 +563,7 @@ const ChannelWithContext = <
       colors: { black },
     },
   } = useTheme();
-
+  const [deleted, setDeleted] = useState(false);
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
@@ -583,8 +584,6 @@ const ChannelWithContext = <
   const [syncingChannel, setSyncingChannel] = useState(false);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
-
-  const toast = useToastContext();
 
   const channelId = channel?.id || '';
   useEffect(() => {
@@ -673,7 +672,7 @@ const ChannelWithContext = <
   const markRead: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['markRead'] = useRef(
     throttle(
       () => {
-        if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
+        if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
           return;
         }
 
@@ -783,18 +782,33 @@ const ChannelWithContext = <
   };
 
   useEffect(() => {
-    /**
-     * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
-     * listen to client.connection.recovered and all channel events
-     */
-    client.on('connection.recovered', connectionRecoveredHandler);
-    client.on('connection.changed', connectionChangedHandler);
-    channel?.on(handleEvent);
+    const channelSubscriptions: Array<ReturnType<ChannelType['on']>> = [];
+    const clientSubscriptions: Array<ReturnType<StreamChat['on']>> = [];
+
+    const subscribe = () => {
+      if (!channel) return;
+
+      /**
+       * The more complex sync logic around internet connectivity (NetInfo) is part of Chat.tsx
+       * listen to client.connection.recovered and all channel events
+       */
+      clientSubscriptions.push(client.on('connection.recovered', connectionRecoveredHandler));
+      clientSubscriptions.push(client.on('connection.changed', connectionChangedHandler));
+      clientSubscriptions.push(
+        client.on('channel.deleted', (event) => {
+          if (event.cid === channel.cid) {
+            setDeleted(true);
+          }
+        }),
+      );
+      channelSubscriptions.push(channel.on(handleEvent));
+    };
+
+    subscribe();
 
     return () => {
-      client.off('connection.recovered', connectionRecoveredHandler);
-      client.off('connection.changed', connectionChangedHandler);
-      channel?.off(handleEvent);
+      clientSubscriptions.forEach((s) => s.unsubscribe());
+      channelSubscriptions.forEach((s) => s.unsubscribe());
     };
   }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
 
@@ -1179,13 +1193,23 @@ const ChannelWithContext = <
     }
   };
 
+  // In case the channel is disconnected which may happen when channel is deleted,
+  // underlying js client throws an error. Following function ensures that Channel component
+  // won't result in error in such a case.
+  const getChannelConfigSafely = () => {
+    try {
+      return channel?.getConfig();
+    } catch (_) {
+      return null;
+    }
+  };
+
   /**
    * Channel configs for use in disabling local functionality.
    * Nullish coalescing is used to give first priority to props to override
    * the server settings. Then priority to server settings to override defaults.
    */
-  const clientChannelConfig =
-    typeof channel?.getConfig === 'function' ? channel.getConfig() : undefined;
+  const clientChannelConfig = getChannelConfigSafely();
 
   const messagesConfig: MessagesConfig = {
     /**
@@ -1330,12 +1354,6 @@ const ChannelWithContext = <
     } as StreamMessage<At, Me, Us>;
 
     try {
-      if (!StreamCache.getInstance().currentNetworkState) {
-        console.log(t('Something went wrong'));
-        toast.show(t('Something went wrong'), 2000);
-        throw new Error('No network connection');
-      }
-
       let messageResponse = {} as SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>;
 
       if (doSendMessageRequest) {
@@ -1643,7 +1661,7 @@ const ChannelWithContext = <
     error,
     giphyEnabled:
       giphyEnabled ??
-      !!(channel?.getConfig?.()?.commands || [])?.some((command) => command.name === 'giphy'),
+      !!(clientChannelConfig?.commands || [])?.some((command) => command.name === 'giphy'),
     hideDateSeparators,
     hideStickyDateHeader,
     isAdmin,
@@ -1726,7 +1744,6 @@ const ChannelWithContext = <
   const messagesContext = useCreateMessagesContext({
     ...messagesConfig,
     additionalTouchableProps,
-    animatedLongPress,
     Attachment,
     AttachmentActions,
     Card,
@@ -1780,7 +1797,6 @@ const ChannelWithContext = <
     MessageSystem,
     MessageText,
     myMessageTheme,
-    onDoubleTapMessage,
     onLongPressMessage,
     onPressInMessage,
     onPressMessage,
@@ -1801,10 +1817,10 @@ const ChannelWithContext = <
     UrlPreview,
   });
 
-  const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
-    closeSuggestions,
-    openSuggestions,
-    updateSuggestions,
+  const suggestionsContext = {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
   };
 
   const threadContext = useCreateThreadContext({
@@ -1823,6 +1839,9 @@ const ChannelWithContext = <
   const typingContext = useCreateTypingContext({
     typing,
   });
+
+  // TODO: replace the null view with appropriate message. Currently this is waiting a design decision.
+  if (deleted) return null;
 
   if (!channel || (error && messages.length === 0)) {
     return <LoadingErrorIndicator error={error} listType='message' retry={reloadChannel} />;

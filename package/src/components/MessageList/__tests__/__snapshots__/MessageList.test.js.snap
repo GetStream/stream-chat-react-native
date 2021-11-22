@@ -41,90 +41,34 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-0"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  Object {
+                    "backgroundColor": "#FBF4DD",
+                  },
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": true,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
                     Object {
-                      "backgroundColor": "#FBF4DD",
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
                     },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -249,8 +193,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="GrantyBoi2"
-                            initials="G"
                             onError={[Function]}
                             source={
                               Object {
@@ -406,88 +348,32 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-1"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  undefined,
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": true,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    undefined,
+                    Object {
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
+                    },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -537,8 +423,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="ViriBoi2"
-                            initials="V"
                             onError={[Function]}
                             source={
                               Object {
@@ -732,90 +616,34 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-2"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  Object {
+                    "backgroundColor": "#FBF4DD",
+                  },
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": false,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
                     Object {
-                      "backgroundColor": "#FBF4DD",
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
                     },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -940,8 +768,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="GrantyBoi2"
-                            initials="G"
                             onError={[Function]}
                             source={
                               Object {
@@ -1097,88 +923,32 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-3"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  undefined,
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": false,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    undefined,
+                    Object {
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
+                    },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -1228,8 +998,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="ViriBoi2"
-                            initials="V"
                             onError={[Function]}
                             source={
                               Object {
@@ -1423,88 +1191,32 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-4"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  undefined,
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": true,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    undefined,
+                    Object {
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
+                    },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -1554,8 +1266,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="ViriBoi2"
-                            initials="V"
                             onError={[Function]}
                             source={
                               Object {
@@ -1711,88 +1421,32 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             testID="message-list-item-5"
           >
             <View
-              animatedStyle={
-                Object {
-                  "value": Object {},
-                }
+              style={
+                Array [
+                  undefined,
+                ]
               }
-              collapsable={false}
-              forwardedRef={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
               testID="message-wrapper"
             >
               <View
-                collapsable={false}
-                onGestureHandlerEvent={
-                  Object {
-                    "current": WorkletEventHandler {
-                      "eventNames": Array [
-                        "onGestureHandlerStateChange",
-                        "onGestureHandlerEvent",
-                      ],
-                      "listeners": Object {
-                        "onGestureHandlerEvent": [Function],
-                        "onGestureHandlerStateChange": [Function],
-                      },
-                      "reattachNeeded": true,
-                      "worklet": [Function],
-                    },
-                  }
-                }
-                onGestureHandlerStateChange={[Function]}
                 style={
                   Array [
-                    undefined,
+                    Object {
+                      "paddingHorizontal": 8,
+                    },
+                    Object {
+                      "backgroundColor": undefined,
+                    },
                   ]
                 }
               >
                 <View
-                  animatedStyle={
-                    Object {
-                      "value": Object {
-                        "transform": Array [
-                          Object {
-                            "scale": 1,
-                          },
-                        ],
-                      },
-                    }
-                  }
-                  collapsable={false}
                   style={
-                    Object {
-                      "backgroundColor": undefined,
-                      "paddingHorizontal": 8,
-                      "transform": Array [
-                        Object {
-                          "scale": 1,
-                        },
-                      ],
-                    }
+                    Array [
+                      Object {},
+                    ]
                   }
                 >
-                  <View
-                    animatedStyle={
-                      Object {
-                        "value": Object {
-                          "opacity": 0,
-                        },
-                      }
-                    }
-                    collapsable={false}
-                    style={
-                      Object {
-                        "backgroundColor": "#FBF4DD",
-                        "bottom": 0,
-                        "left": 0,
-                        "opacity": 0,
-                        "position": "absolute",
-                        "right": 0,
-                        "top": 0,
-                      }
-                    }
-                  />
                   <View
                     style={
                       Array [
@@ -1842,8 +1496,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         >
                           <Image
                             accessibilityLabel="avatar-image"
-                            id="GrantyBoi2"
-                            initials="G"
                             onError={[Function]}
                             source={
                               Object {

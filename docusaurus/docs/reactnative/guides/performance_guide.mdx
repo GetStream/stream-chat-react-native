@@ -86,3 +86,17 @@ You can disable this feature by setting the `enableMessageGroupingByUser` prop t
 ```tsx
 <Channel enableMessageGroupingByUser={false} />
 ```
+
+Please be aware that this might damage the performance of application because of rendering too many message avatar images on UI.
+So it's recommended to only use this prop in case you don't render message avatars on UI, as shown below:
+
+
+```tsx
+<Channel MessageAvatar={() => null} />
+```
+
+### Animations and gesture handlers in MessageList
+
+Animations (using reanimated hooks) or gesture handlers such as PanGestureHandler or TapGestureHandler on dynamic list items (such as MessageList),
+have known to a cause memory leak. So we would recommend not to add any animations or gesture handlers as part of custom
+message component to avoid any performance issue.
