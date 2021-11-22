@@ -7,9 +7,6 @@ import { FileUploadPreview } from '../FileUploadPreview';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { FileState } from '../../../utils/utils';
 
@@ -20,6 +17,7 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 function MockedFlatList(props) {
   const items = props.data.map((item, index) => {
@@ -32,9 +30,9 @@ function MockedFlatList(props) {
 describe('FileUploadPreview', () => {
   it('should render FileUploadPreview with all uploading files', async () => {
     const fileUploads = [
-      generateFileUploadPreview({ state: FileState.UPLOADING }),
-      generateFileUploadPreview({ state: FileState.UPLOADING }),
-      generateFileUploadPreview({ state: FileState.UPLOADING }),
+      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
+      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADING }),
+      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOADING }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
@@ -52,19 +50,17 @@ describe('FileUploadPreview', () => {
     await channel.query();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -84,22 +80,20 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads.map((file, index) => ({
-                  ...file,
-                  id: `${index}`,
-                }))}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads.map((file, index) => ({
+                ...file,
+                id: `${index}`,
+              }))}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -111,9 +105,9 @@ describe('FileUploadPreview', () => {
 
   it('should render FileUploadPreview with all uploaded files', async () => {
     const fileUploads = [
-      generateFileUploadPreview({ state: FileState.UPLOADED }),
-      generateFileUploadPreview({ state: FileState.UPLOADED }),
-      generateFileUploadPreview({ state: FileState.UPLOADED }),
+      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADED }),
+      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADED }),
+      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOADED }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
@@ -131,19 +125,17 @@ describe('FileUploadPreview', () => {
     await channel.query();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -165,22 +157,20 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads.map((file, index) => ({
-                  ...file,
-                  id: `${index}`,
-                }))}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads.map((file, index) => ({
+                ...file,
+                id: `${index}`,
+              }))}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -192,9 +182,9 @@ describe('FileUploadPreview', () => {
 
   it('should render FileUploadPreview with all failed files', async () => {
     const fileUploads = [
-      generateFileUploadPreview({ state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ state: FileState.UPLOAD_FAILED }),
-      generateFileUploadPreview({ state: FileState.UPLOAD_FAILED }),
+      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOAD_FAILED }),
+      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOAD_FAILED }),
+      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOAD_FAILED }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
@@ -212,19 +202,17 @@ describe('FileUploadPreview', () => {
     await channel.query();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -251,22 +239,20 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads.map((file, index) => ({
-                  ...file,
-                  id: `${index}`,
-                }))}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads.map((file, index) => ({
+                ...file,
+                id: `${index}`,
+              }))}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -278,9 +264,9 @@ describe('FileUploadPreview', () => {
 
   it('should render FileUploadPreview with 1 uploading, 1 uploaded, and 1 failed file', async () => {
     const fileUploads = [
-      generateFileUploadPreview({ state: FileState.UPLOADING }),
-      generateFileUploadPreview({ state: FileState.UPLOADED }),
-      generateFileUploadPreview({ state: FileState.UPLOAD_FAILED }),
+      generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
+      generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADED }),
+      generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOAD_FAILED }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
@@ -298,19 +284,17 @@ describe('FileUploadPreview', () => {
     await channel.query();
 
     const { queryAllByTestId, rerender, toJSON } = render(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
@@ -324,22 +308,20 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <ChannelsStateProvider>
-        <ThemeProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel} FlatList={MockedFlatList}>
-              <FileUploadPreview
-                fileUploads={fileUploads.map((file, index) => ({
-                  ...file,
-                  id: `${index}`,
-                }))}
-                removeFile={removeFile}
-                uploadFile={uploadFile}
-              />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads.map((file, index) => ({
+                ...file,
+                id: `${index}`,
+              }))}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();

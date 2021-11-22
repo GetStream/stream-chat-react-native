@@ -108,7 +108,7 @@ export const OverlayProvider = <
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
-      if (ref.current) {
+      if (ref.current?.snapTo) {
         ref.current.snapTo(0);
       } else {
         console.warn('bottom and top insets must be set for the image picker to work correctly');
@@ -167,7 +167,7 @@ export const OverlayProvider = <
 
   useEffect(() => {
     if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
+      bottomSheetRef.current.close?.();
     }
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
@@ -222,15 +222,17 @@ export const OverlayProvider = <
                 >
                   <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                 </Animated.View>
-                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  MessageActionList={MessageActionList}
-                  MessageActionListItem={MessageActionListItem}
-                  messageTextNumberOfLines={messageTextNumberOfLines}
-                  overlayOpacity={overlayOpacity}
-                  OverlayReactionList={OverlayReactionList}
-                  OverlayReactions={OverlayReactions}
-                  visible={overlay === 'message'}
-                />
+                {overlay === 'message' && (
+                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                    MessageActionList={MessageActionList}
+                    MessageActionListItem={MessageActionListItem}
+                    messageTextNumberOfLines={messageTextNumberOfLines}
+                    overlayOpacity={overlayOpacity}
+                    OverlayReactionList={OverlayReactionList}
+                    OverlayReactions={OverlayReactions}
+                    visible={overlay === 'message'}
+                  />
+                )}
                 <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
                   imageGalleryCustomComponents={imageGalleryCustomComponents}
                   imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}

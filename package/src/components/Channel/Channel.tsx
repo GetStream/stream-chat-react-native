@@ -59,6 +59,7 @@ import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput
 import { InputButtons as InputButtonsDefault } from '../MessageInput/InputButtons';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault } from '../MessageInput/SendMessageDisallowedIndicator';
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
@@ -75,20 +76,14 @@ import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from 
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 
-import {
-  ChannelConfig,
-  ChannelContextValue,
-  ChannelProvider,
-} from '../../contexts/channelContext/ChannelContext';
+import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
-  InputConfig,
   InputMessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
-  MessagesConfig,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -130,6 +125,11 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
+import {
+  OwnCapabilitiesContextValue,
+  OwnCapabilitiesProvider,
+} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -189,22 +189,22 @@ export type ChannelPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<
-  Pick<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'channel'
-    | 'EmptyStateIndicator'
-    | 'enableMessageGroupingByUser'
-    | 'enforceUniqueReaction'
-    | 'giphyEnabled'
-    | 'hideStickyDateHeader'
-    | 'hideDateSeparators'
-    | 'LoadingIndicator'
-    | 'maxTimeBetweenGroupedMessages'
-    | 'NetworkDownIndicator'
-    | 'StickyHeader'
-  >
-> &
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
+  Partial<
+    Pick<
+      ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      | 'EmptyStateIndicator'
+      | 'enableMessageGroupingByUser'
+      | 'enforceUniqueReaction'
+      | 'giphyEnabled'
+      | 'hideStickyDateHeader'
+      | 'hideDateSeparators'
+      | 'LoadingIndicator'
+      | 'maxTimeBetweenGroupedMessages'
+      | 'NetworkDownIndicator'
+      | 'StickyHeader'
+    >
+  > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Partial<
     Omit<
@@ -375,20 +375,13 @@ export type ChannelPropsWithContext<
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
     maxMessageLength?: number;
     messageId?: string;
-    mutesEnabled?: boolean;
     newMessageStateUpdateThrottleInterval?: number;
-    pinMessageEnabled?: boolean;
-    quotedRepliesEnabled?: boolean;
-    reactionsEnabled?: boolean;
-    readEventsEnabled?: boolean;
+    overrideOwnCapabilities?: OwnCapabilitiesContextValue;
     stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
      */
     threadList?: boolean;
-    threadRepliesEnabled?: boolean;
-    typingEventsEnabled?: boolean;
-    uploadsEnabled?: boolean;
   };
 
 const ChannelWithContext = <
@@ -507,26 +500,23 @@ const ChannelWithContext = <
     MessageSystem = MessageSystemDefault,
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
-    mutesEnabled: mutesEnabledProp,
     myMessageTheme,
     newMessageStateUpdateThrottleInterval = defaultThrottleInterval,
     NetworkDownIndicator = NetworkDownIndicatorDefault,
     numberOfLines = 5,
     onChangeText,
     onLongPressMessage,
+    overrideOwnCapabilities,
     onPressInMessage,
     onPressMessage,
     OverlayReactionList = OverlayReactionListDefault,
-    pinMessageEnabled: pinMessageEnabledProp,
-    quotedRepliesEnabled: quotedRepliesEnabledProp,
     ReactionList = ReactionListDefault,
-    reactionsEnabled: reactionsEnabledProp,
     read,
-    readEventsEnabled: readEventsEnabledProp,
     Reply = ReplyDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
+    SendMessageDisallowedIndicator = SendMessageDisallowedIndicatorDefault,
     sendImageAsync = false,
     setInputRef,
     setMembers,
@@ -545,13 +535,10 @@ const ChannelWithContext = <
     thread: threadProps,
     threadList,
     threadMessages,
-    threadRepliesEnabled: threadRepliesEnabledProp,
     typing,
-    typingEventsEnabled: typingEventsEnabledProp,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
-    uploadsEnabled: uploadsEnabledProp,
     UrlPreview = CardDefault,
     watcherCount,
     watchers,
@@ -589,7 +576,6 @@ const ChannelWithContext = <
   useEffect(() => {
     const initChannel = () => {
       if (!channel || !shouldSyncChannel) return;
-
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
        * since we use read state on channel to decide what offset to load channel at.
@@ -1211,25 +1197,6 @@ const ChannelWithContext = <
    */
   const clientChannelConfig = getChannelConfigSafely();
 
-  const messagesConfig: MessagesConfig = {
-    /**
-     * Replace with backend flag once its ready
-     */
-    mutesEnabled: mutesEnabledProp ?? clientChannelConfig?.mutes ?? true,
-    pinMessageEnabled: pinMessageEnabledProp ?? true,
-    quotedRepliesEnabled: quotedRepliesEnabledProp ?? true,
-    reactionsEnabled: reactionsEnabledProp ?? clientChannelConfig?.reactions ?? true,
-    threadRepliesEnabled: threadRepliesEnabledProp ?? clientChannelConfig?.replies ?? true,
-  };
-  const channelConfig: ChannelConfig = {
-    readEventsEnabled: readEventsEnabledProp ?? clientChannelConfig?.read_events ?? true,
-    typingEventsEnabled: typingEventsEnabledProp ?? clientChannelConfig?.typing_events ?? true,
-  };
-  const inputConfig: InputConfig = {
-    maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
-    uploadsEnabled: uploadsEnabledProp ?? clientChannelConfig?.uploads ?? true,
-  };
-
   /**
    * MESSAGE METHODS
    */
@@ -1361,7 +1328,6 @@ const ChannelWithContext = <
       } else if (channel) {
         messageResponse = await channel.sendMessage(messageData);
       }
-
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
         if (retrying) {
@@ -1651,8 +1617,12 @@ const ChannelWithContext = <
       }
     };
 
+  const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
+    channel,
+    overrideCapabilities: overrideOwnCapabilities,
+  });
+
   const channelContext = useCreateChannelContext({
-    ...channelConfig,
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
@@ -1689,7 +1659,6 @@ const ChannelWithContext = <
   });
 
   const inputMessageInputContext = useCreateInputMessageInputContext({
-    ...inputConfig,
     additionalTextInputProps,
     AttachButton,
     autoCompleteSuggestionsLimit,
@@ -1712,6 +1681,7 @@ const ChannelWithContext = <
     initialValue,
     Input,
     InputButtons,
+    maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
     mentionAllAppUsersQuery,
@@ -1722,6 +1692,7 @@ const ChannelWithContext = <
     SendButton,
     sendImageAsync,
     sendMessage,
+    SendMessageDisallowedIndicator,
     setInputRef,
     setQuotedMessageState,
     ShowThreadMessageInChannelButton,
@@ -1742,7 +1713,6 @@ const ChannelWithContext = <
   });
 
   const messagesContext = useCreateMessagesContext({
-    ...messagesConfig,
     additionalTouchableProps,
     Attachment,
     AttachmentActions,
@@ -1863,21 +1833,23 @@ const ChannelWithContext = <
       {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
-        <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
-          <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageListContext}>
-            <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-              <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-                <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                  <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                    value={inputMessageInputContext}
-                  >
-                    <View style={{ height: '100%' }}>{children}</View>
-                  </MessageInputProvider>
-                </SuggestionsProvider>
-              </ThreadProvider>
-            </MessagesProvider>
-          </PaginatedMessageListProvider>
-        </TypingProvider>
+        <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
+          <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
+            <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageListContext}>
+              <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
+                <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
+                  <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+                    <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                      value={inputMessageInputContext}
+                    >
+                      <View style={{ height: '100%' }}>{children}</View>
+                    </MessageInputProvider>
+                  </SuggestionsProvider>
+                </ThreadProvider>
+              </MessagesProvider>
+            </PaginatedMessageListProvider>
+          </TypingProvider>
+        </OwnCapabilitiesProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
   );
@@ -1891,7 +1863,8 @@ export type ChannelProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<Omit<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>> &
+  Pick<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
 
 /**
  *

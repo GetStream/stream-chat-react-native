@@ -4,6 +4,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { Attachment } from 'stream-chat';
 
+import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 
@@ -50,6 +51,7 @@ export type MessageOverlayData<
   onlyEmojis?: boolean;
   otherAttachments?: Attachment<At>[];
   OverlayReactionList?: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
 };
