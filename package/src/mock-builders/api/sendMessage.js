@@ -1,5 +1,5 @@
 import { mockedApiResponse } from './utils';
-
+import { generateMessage } from '../generator/message';
 /**
  * Returns the api response for sendMessage api.
  *
@@ -7,8 +7,9 @@ import { mockedApiResponse } from './utils';
  *
  * @param {*} message
  */
-export const sendMessageApi = (message = {}) => {
+export const sendMessageApi = (message = generateMessage()) => {
   const result = {
+    duration: 0.01,
     message,
   };
 

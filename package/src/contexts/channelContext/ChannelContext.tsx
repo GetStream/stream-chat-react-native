@@ -17,11 +17,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-export type ChannelConfig = {
-  readEventsEnabled?: boolean;
-  typingEventsEnabled?: boolean;
-};
-
 export type ChannelContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -31,6 +26,29 @@ export type ChannelContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 > = {
+  /**
+   * Instance of channel object from stream-chat package.
+   *
+   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
+   *
+   * ```
+   * import { StreamChat, Channel } from 'stream-chat';
+   * import { Chat, Channel} from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key');
+   * await client.connectUser('user_id', 'user_token');
+   * const channel = client.channel('messaging', 'channel_id');
+   * await channel.watch();
+   *
+   * <Chat client={client}>
+   *  <Channel channel={channel}>
+   *  </Channel>
+   * </Chat>
+   * ```
+   *
+   * @overrideType Channel
+   */
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
@@ -141,29 +159,6 @@ export type ChannelContextValue<
    * ```
    */
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
-  /**
-   * Instance of channel object from stream-chat package.
-   *
-   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
-   *
-   * ```
-   * import { StreamChat, Channel } from 'stream-chat';
-   * import { Chat, Channel} from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key');
-   * await client.connectUser('user_id', 'user_token');
-   * const channel = client.channel('messaging', 'channel_id');
-   * await channel.watch();
-   *
-   * <Chat client={client}>
-   *  <Channel channel={channel}>
-   *  </Channel>
-   * </Chat>
-   * ```
-   *
-   * @overrideType Channel
-   */
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
@@ -186,7 +181,7 @@ export type ChannelContextValue<
   targetedMessage?: string;
   threadList?: boolean;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
-} & ChannelConfig;
+};
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 

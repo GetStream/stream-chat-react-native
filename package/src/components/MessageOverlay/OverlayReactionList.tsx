@@ -372,7 +372,7 @@ const OverlayReactionListWithContext = <
   const numberOfReactions = supportedReactions.length;
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View style={StyleSheet.absoluteFill} testID='overlay-reaction-list'>
       <Animated.View
         onLayout={({ nativeEvent: { layout } }) => {
           reactionBubbleWidth.value = layout.width;

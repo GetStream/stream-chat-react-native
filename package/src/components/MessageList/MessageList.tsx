@@ -142,7 +142,6 @@ type MessageListPropsWithContext<
     | 'setTargetedMessage'
     | 'StickyHeader'
     | 'targetedMessage'
-    | 'typingEventsEnabled'
   > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
@@ -304,7 +303,6 @@ const MessageListWithContext = <
     tDateTimeParser,
     thread,
     threadList = false,
-    typingEventsEnabled,
     TypingIndicator,
     TypingIndicatorContainer,
   } = props;
@@ -961,7 +959,7 @@ const MessageListWithContext = <
                 <DateHeader dateString={stickyHeaderDateToRender} />
               ) : null)}
           </View>
-          {!disableTypingIndicator && TypingIndicator && typingEventsEnabled !== false && (
+          {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>
               <TypingIndicator />
             </TypingIndicatorContainer>
@@ -1018,7 +1016,6 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    typingEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -1087,7 +1084,6 @@ export const MessageList = <
         targetedMessage,
         tDateTimeParser,
         thread,
-        typingEventsEnabled,
         TypingIndicator,
         TypingIndicatorContainer,
       }}

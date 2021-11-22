@@ -29,12 +29,11 @@ import MoreOptionsButton from '../common-content/core-components/channel/props/m
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
+import SendMessageDisallowedIndicator from '../common-content/core-components/channel/props/send_message_disallowed_indicator.mdx';
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
 import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
-import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx';
-
 import AppendText from '../common-content/contexts/message-input-context/append_text.mdx'
 import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx'
 import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx'
@@ -195,10 +194,6 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 <!-- ### setInputRef -->
 
 <!-- ### setQuotedMessageState -->
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#uploadsenabled)_ props</div> uploadsEnabled {#uploadsenabled}
-
-<UploadsEnabled />
 
 ### appendText
 
@@ -394,9 +389,13 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <MoreOptionsButton />
 
-### SendButton
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendbutton)_ props</div> SendButton {#sendbutton}
 
 <SendButton />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendmessagedisallowedindicator)_ props</div> SendMessageDisallowedIndicator {#sendmessagedisallowedindicator}
+
+<SendMessageDisallowedIndicator />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#showthreadmessageinchannelbutton)_ props</div> ShowThreadMessageInChannelButton {#showthreadmessageinchannelbutton}
 

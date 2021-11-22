@@ -30,7 +30,6 @@ export const useMessageActionHandlers = <
   client,
   enforceUniqueReaction,
   message,
-  reactionsEnabled,
   retrySendMessage,
   setEditingState,
   setQuotedMessageState,
@@ -38,7 +37,6 @@ export const useMessageActionHandlers = <
   updateMessage,
 }: Pick<
   MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'reactionsEnabled'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -106,10 +104,7 @@ export const useMessageActionHandlers = <
   const isMessageTypeDeleted = message.type === 'deleted';
 
   const hasReactions =
-    !!reactionsEnabled &&
-    !isMessageTypeDeleted &&
-    !!message.latest_reactions &&
-    message.latest_reactions.length > 0;
+    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
 
   const reactions = hasReactions
     ? supportedReactions.reduce((acc, cur) => {

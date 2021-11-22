@@ -106,9 +106,7 @@ export type MessageContentPropsWithContext<
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
-    | 'quotedRepliesEnabled'
     | 'Reply'
-    | 'threadRepliesEnabled'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -154,13 +152,11 @@ const MessageContentWithContext = <
     onPressIn,
     otherAttachments,
     preventPress,
-    quotedRepliesEnabled,
     Reply,
     setMessageContentWidth,
     showMessageStatus,
     tDateTimeParser,
     threadList,
-    threadRepliesEnabled,
   } = props;
 
   const {
@@ -269,6 +265,7 @@ const MessageContentWithContext = <
           });
         }
       }}
+      testID='message-content'
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -295,7 +292,7 @@ const MessageContentWithContext = <
         />
       )}
       <View onLayout={onLayout} style={wrapper}>
-        {hasThreadReplies && !threadList && threadRepliesEnabled && !noBorder && (
+        {hasThreadReplies && !threadList && !noBorder && (
           <View
             style={[
               styles.replyBorder,
@@ -335,8 +332,7 @@ const MessageContentWithContext = <
             switch (messageContentType) {
               case 'quoted_reply':
                 return (
-                  message.quoted_message &&
-                  quotedRepliesEnabled && (
+                  message.quoted_message && (
                     <View
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
@@ -376,9 +372,7 @@ const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {threadRepliesEnabled && (
-        <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      )}
+      <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
       <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
     </TouchableOpacity>
   );
@@ -575,9 +569,7 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    quotedRepliesEnabled,
     Reply,
-    threadRepliesEnabled,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
@@ -611,13 +603,11 @@ export const MessageContent = <
         onPressIn,
         otherAttachments,
         preventPress,
-        quotedRepliesEnabled,
         Reply,
         showMessageStatus,
         t,
         tDateTimeParser,
         threadList,
-        threadRepliesEnabled,
       }}
       {...props}
     />

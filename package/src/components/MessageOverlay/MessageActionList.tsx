@@ -55,16 +55,11 @@ export type MessageActionListPropsWithContext<
 > = Pick<
   OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
   | 'MessageActionListItem'
-  | 'canModifyMessage'
   | 'error'
   | 'isMyMessage'
   | 'isThreadMessage'
   | 'message'
   | 'messageReactions'
-  | 'mutesEnabled'
-  | 'quotedRepliesEnabled'
-  | 'pinMessageEnabled'
-  | 'threadRepliesEnabled'
 > &
   Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
     showScreen: Animated.SharedValue<number>;
@@ -89,26 +84,16 @@ const MessageActionListWithContext = <
     isMyMessage,
     message,
     messageReactions,
-    mutesEnabled,
-    quotedRepliesEnabled,
-    pinMessageEnabled,
-    threadRepliesEnabled,
-    canModifyMessage,
     error,
     isThreadMessage,
   } = props;
 
   const messageActionProps = {
-    canModifyMessage,
     error,
     isMyMessage,
     isThreadMessage,
     message,
     messageReactions,
-    mutesEnabled,
-    pinMessageEnabled,
-    quotedRepliesEnabled,
-    threadRepliesEnabled,
   };
 
   const {
@@ -148,6 +133,7 @@ const MessageActionListWithContext = <
         height.value = layout.height;
       }}
       style={[styles.container, { backgroundColor: white_snow }, showScreenStyle]}
+      testID='message-action-list'
     >
       {messageActions?.map((messageAction, index) => (
         <MessageActionListItem
@@ -200,17 +186,7 @@ export type MessageActionListProps<
 > = Partial<Omit<MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>> &
   Pick<
     MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'showScreen'
-    | 'message'
-    | 'isMyMessage'
-    | 'canModifyMessage'
-    | 'quotedRepliesEnabled'
-    | 'mutesEnabled'
-    | 'pinMessageEnabled'
-    | 'threadRepliesEnabled'
-    | 'error'
-    | 'isThreadMessage'
-    | 'messageReactions'
+    'showScreen' | 'message' | 'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
   >;
 
 /**

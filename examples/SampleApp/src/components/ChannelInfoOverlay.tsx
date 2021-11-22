@@ -27,7 +27,6 @@ import {
   User,
   UserMinus,
   useTheme,
-  useTranslationContext,
   vh,
   vw,
 } from 'stream-chat-react-native';
@@ -106,8 +105,6 @@ export type ChannelInfoOverlayProps = {
 
 export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
-
-  const { t } = useTranslationContext();
 
   const { overlay, setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
