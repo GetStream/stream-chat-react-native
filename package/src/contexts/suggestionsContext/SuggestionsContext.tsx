@@ -1,16 +1,14 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
-
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
-import type { Emoji } from '../../emoji-data/compiled';
+import { getDisplayName } from '../utils/getDisplayName';
+import type { AutoCompleteSuggestionHeaderProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionHeader';
+import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
+import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import type { Emoji } from '../../emoji-data/compiled';
 
-export type SuggestionComponentType<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = string | React.ReactElement<{ item: Suggestion<Co, Us> }>;
+export type SuggestionComponentType = 'command' | 'emoji' | 'mention';
 
 export const isSuggestionCommand = <
   Co extends string = DefaultCommandType,
@@ -36,10 +34,9 @@ export const isSuggestionUser = <
 export type Suggestion<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType,
-> = SuggestionCommand<Co> | SuggestionUser<Us> | Emoji;
+> = Emoji | SuggestionCommand<Co> | SuggestionUser<Us>;
 
 export type SuggestionCommand<Co extends string = DefaultCommandType> = CommandResponse<Co>;
-
 export type SuggestionUser<Us extends UnknownType = DefaultUserType> = UserResponse<Us>;
 
 export type Suggestions<
@@ -48,41 +45,35 @@ export type Suggestions<
 > = {
   data: Suggestion<Co, Us>[];
   onSelect: (item: Suggestion<Co, Us>) => void;
+  queryText?: string;
 };
 
 export type SuggestionsContextValue<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType,
 > = {
+  AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
+  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps<Co, Us>>;
+  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps<Co, Us>>;
   /** Override handler for closing suggestions (mentions, command autocomplete etc) */
   closeSuggestions: () => void;
   /**
    * Override handler for opening suggestions (mentions, command autocomplete etc)
    *
    * @param component {Component|element} UI Component for suggestion item.
-   * @param title {string} Title for suggestions box
-   *
    * @overrideType Function
    */
-  openSuggestions: (
-    component: SuggestionComponentType<Co, Us>,
-    title?: React.ReactElement,
-  ) => Promise<void>;
+  openSuggestions: (component: SuggestionComponentType) => Promise<void>;
+  suggestions: Suggestions<Co, Us>;
+  triggerType: SuggestionComponentType;
   /**
    * Override handler for updating suggestions (mentions, command autocomplete etc)
    *
    * @param newSuggestions {Component|element} UI Component for suggestion item.
-   * @param newSuggestionsTitle {string} Title for suggestions box
-   *
    * @overrideType Function
    */
-  updateSuggestions: (
-    newSuggestions: Suggestions<Co, Us>,
-    newSuggestionsTitle?: React.ReactElement,
-  ) => void;
-  componentType?: SuggestionComponentType<Co, Us>;
-  suggestions?: Suggestions<Co, Us>;
-  suggestionsTitle?: React.ReactElement;
+  updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
+  queryText?: string;
   suggestionsViewActive?: boolean;
 };
 
@@ -98,46 +89,34 @@ export const SuggestionsProvider = <
   children,
   value,
 }: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
-  const [componentType, setComponentType] = useState<SuggestionComponentType<Co, Us>>('');
+  const [triggerType, setTriggerType] = useState<SuggestionComponentType | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestions<Co, Us>>();
-  const [suggestionsTitle, setSuggestionsTitle] = useState<React.ReactElement>();
   const [suggestionsViewActive, setSuggestionsViewActive] = useState(false);
 
-  const openSuggestions = (
-    component: SuggestionComponentType<Co, Us>,
-    title?: React.ReactElement,
-  ) => {
-    setComponentType(component);
-    setSuggestionsTitle(title);
+  const openSuggestions = (component: SuggestionComponentType) => {
+    setTriggerType(component);
     setSuggestionsViewActive(true);
   };
 
-  const updateSuggestions = (
-    newSuggestions: Suggestions<Co, Us>,
-    newSuggestionsTitle?: React.ReactElement,
-  ) => {
+  const updateSuggestions = (newSuggestions: Suggestions<Co, Us>) => {
     setSuggestions(newSuggestions);
-    if (newSuggestionsTitle) {
-      setSuggestionsTitle(newSuggestionsTitle);
-    }
-    setSuggestionsViewActive(!!componentType);
+    setSuggestionsViewActive(!!triggerType);
   };
 
   const closeSuggestions = () => {
-    setComponentType('');
+    setTriggerType(null);
     setSuggestions(undefined);
-    setSuggestionsTitle(undefined);
     setSuggestionsViewActive(false);
   };
 
   const suggestionsContext = {
-    closeSuggestions: value?.closeSuggestions || closeSuggestions,
-    componentType,
-    openSuggestions: value?.openSuggestions || openSuggestions,
+    ...value,
+    closeSuggestions,
+    openSuggestions,
     suggestions,
-    suggestionsTitle,
     suggestionsViewActive,
-    updateSuggestions: value?.updateSuggestions || updateSuggestions,
+    triggerType,
+    updateSuggestions,
   };
 
   return (

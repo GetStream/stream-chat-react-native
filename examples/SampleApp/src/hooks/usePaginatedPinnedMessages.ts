@@ -31,7 +31,7 @@ export const usePaginatedPinnedMessages = (
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | boolean>(false);
   const [messages, setMessages] = useState<
     MessageResponse<
       LocalAttachmentType,
@@ -83,8 +83,12 @@ export const usePaginatedPinnedMessages = (
       if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;
       }
-    } catch (queryError) {
-      setError(queryError);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
     }
     queryInProgress.current = false;
     setLoading(false);
