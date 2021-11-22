@@ -1,5 +1,5 @@
 import React from 'react';
-import { GestureResponderEvent, Linking, Text } from 'react-native';
+import { GestureResponderEvent, Linking, Text, View } from 'react-native';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
 // @ts-expect-error
@@ -11,6 +11,7 @@ import {
   ParseFunction,
   parseInline,
   ReactNodeOutput,
+  SingleASTNode,
 } from 'simple-markdown';
 
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
@@ -38,8 +39,14 @@ const defaultMarkdownStyles: MarkdownStyle = {
     marginBottom: 8,
     marginTop: 8,
   },
+  listItemNumber: {
+    fontWeight: 'bold',
+  },
   listItemText: {
     flex: 0,
+  },
+  listRow: {
+    flexDirection: 'row',
   },
   mentions: {
     fontWeight: '700',
@@ -185,8 +192,7 @@ export const renderText = <
       }
     };
 
-    state.withinLink = true;
-    const link = (
+    return (
       <Text
         key={state.key}
         onLongPress={onLongPress}
@@ -194,11 +200,9 @@ export const renderText = <
         style={styles.autolink}
         suppressHighlighting={true}
       >
-        {output(node.content, state)}
+        {output(node.content, { ...state, withinLink: true })}
       </Text>
     );
-    state.withinLink = false;
-    return link;
   };
 
   const paragraphText: ReactNodeOutput = (node, output, { ...state }) => (
@@ -241,17 +245,59 @@ export const renderText = <
 
     return (
       <Text key={state.key} onLongPress={onLongPress} onPress={onPress} style={styles.mentions}>
-        {Array.isArray(node.content) ? node.content[0]?.content || '' : output(node.content, state)}
+        {Array.isArray(node.content) ? node.content[0].content || '' : output(node.content, state)}
       </Text>
     );
   };
 
+  const listLevels = {
+    sub: 'sub',
+    top: 'top',
+  };
+
+  /**
+   * For lists and sublists, the default behavior of the markdown library we use is
+   * to always renumber any list, so all ordered lists start from 1.
+   *
+   * This custom rule overrides this behavior both for top level lists and sublists,
+   * in order to start the numbering from the number of the first list item provided.
+   * */
+  const customListAtLevel =
+    (level: keyof typeof listLevels): ReactNodeOutput =>
+    (node, output, { ...state }) => {
+      const items = node.items.map((item: Array<SingleASTNode>, index: number) => {
+        const withinList = item.length > 1 && item[1].type === 'list';
+        const content = output(item, { ...state, withinList });
+
+        const isTopLevelText =
+          ['text', 'paragraph', 'strong'].includes(item[0].type) && withinList === false;
+
+        return (
+          <View key={index} style={styles.listRow}>
+            <Text style={styles.listItemNumber}>
+              {node.ordered ? `${node.start + index}. ` : `\u2022`}
+            </Text>
+            <Text style={[styles.listItemText, isTopLevelText && { marginBottom: 0 }]}>
+              {content}
+            </Text>
+          </View>
+        );
+      });
+
+      const isSublist = level === 'sub';
+      return (
+        <View key={state.key} style={[isSublist ? styles.list : styles.sublist]}>
+          {items}
+        </View>
+      );
+    };
+
   const customRules = {
     link: { react },
-    // Truncate long text content in the message overlay
-    paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
+    list: { react: customListAtLevel('top') },
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
+    sublist: { react: customListAtLevel('sub') },
     ...(mentionedUsers
       ? {
           mentions: {
