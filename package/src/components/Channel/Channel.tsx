@@ -72,6 +72,9 @@ import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/Typing
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
+import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
+import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
+import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 
 import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
@@ -209,7 +212,12 @@ export type ChannelPropsWithContext<
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
     >
   > &
-  Partial<SuggestionsContextValue<Co, Us>> &
+  Partial<
+    Pick<
+      SuggestionsContextValue<Co, Us>,
+      'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
+    >
+  > &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
@@ -395,6 +403,9 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
+    AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
+    AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     Card = CardDefault,
@@ -404,7 +415,6 @@ const ChannelWithContext = <
     channel,
     children,
     client,
-    closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
@@ -499,7 +509,6 @@ const ChannelWithContext = <
     overrideOwnCapabilities,
     onPressInMessage,
     onPressMessage,
-    openSuggestions,
     OverlayReactionList = OverlayReactionListDefault,
     ReactionList = ReactionListDefault,
     read,
@@ -529,7 +538,6 @@ const ChannelWithContext = <
     typing,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
-    updateSuggestions,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
     watcherCount,
@@ -1779,10 +1787,10 @@ const ChannelWithContext = <
     UrlPreview,
   });
 
-  const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
-    closeSuggestions,
-    openSuggestions,
-    updateSuggestions,
+  const suggestionsContext = {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
   };
 
   const threadContext = useCreateThreadContext({

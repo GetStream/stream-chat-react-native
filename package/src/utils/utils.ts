@@ -9,16 +9,15 @@ import type {
   Channel,
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
+  CommandResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
 
-import type { CommandsItemProps } from '../components/AutoCompleteInput/CommandsItem';
-import type { EmojisItemProps } from '../components/AutoCompleteInput/EmojisItem';
-import type { MentionsItemProps } from '../components/AutoCompleteInput/MentionsItem';
 import type { MentionAllAppUsersQuery } from '../contexts/messageInputContext/MessageInputContext';
 import type {
   SuggestionCommand,
+  SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import type { IconProps } from '../icons/utils/base';
@@ -245,23 +244,22 @@ export type TriggerSettings<
   Us extends UnknownType = DefaultUserType,
 > = {
   '/'?: {
-    component: string | React.ComponentType<Partial<CommandsItemProps<Co>>>;
     dataProvider: (
-      query: SuggestionCommand<Co>['name'],
+      query: CommandResponse<Co>['name'],
       text: string,
-      onReady?: (data: SuggestionCommand<Co>[], q: SuggestionCommand<Co>['name']) => void,
+      onReady?: (data: CommandResponse<Co>[], q: CommandResponse<Co>['name']) => void,
       options?: {
         limit?: number;
       },
     ) => SuggestionCommand<Co>[];
-    output: (entity: SuggestionCommand<Co>) => {
+    output: (entity: CommandResponse<Co>) => {
       caretPosition: string;
       key: string;
       text: string;
     };
+    type: SuggestionComponentType;
   };
   ':'?: {
-    component: string | React.ComponentType<Partial<EmojisItemProps>>;
     dataProvider: (
       query: Emoji['name'],
       _: string,
@@ -272,10 +270,10 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
+    type: SuggestionComponentType;
   };
   '@'?: {
     callback: (item: SuggestionUser<Us>) => void;
-    component: string | React.ComponentType<Partial<MentionsItemProps<Us>>>;
     dataProvider: (
       query: SuggestionUser<Us>['name'],
       _: string,
@@ -291,6 +289,7 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
+    type: SuggestionComponentType;
   };
 };
 
@@ -368,7 +367,6 @@ export const ACITriggerSettings = <
   onMentionSelectItem,
 }: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<Co, Us> => ({
   '/': {
-    component: 'CommandsItem',
     dataProvider: (query, text, onReady, options = {}) => {
       if (text.indexOf('/') !== 0) return [];
 
@@ -406,9 +404,9 @@ export const ACITriggerSettings = <
       key: `${entity.name}`,
       text: `/${entity.name}`,
     }),
+    type: 'command',
   },
   ':': {
-    component: 'EmojisItem',
     dataProvider: (query, _, onReady) => {
       if (!query) return [];
 
@@ -450,12 +448,12 @@ export const ACITriggerSettings = <
       key: entity.name,
       text: entity.unicode,
     }),
+    type: 'emoji',
   },
   '@': {
     callback: (item) => {
       onMentionSelectItem(item);
     },
-    component: 'MentionsItem',
     dataProvider: (
       query,
       _,
@@ -533,6 +531,7 @@ export const ACITriggerSettings = <
       key: entity.id,
       text: `@${entity.name || entity.id}`,
     }),
+    type: 'mention',
   },
 });
 

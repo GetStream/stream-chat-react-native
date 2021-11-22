@@ -5,7 +5,6 @@ import { useCountdown } from './hooks/useCountdown';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
@@ -154,7 +153,14 @@ type MessageInputPropsWithContext<
     | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'componentType' | 'suggestions' | 'suggestionsTitle'> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    | 'AutoCompleteSuggestionHeader'
+    | 'AutoCompleteSuggestionItem'
+    | 'AutoCompleteSuggestionList'
+    | 'suggestions'
+    | 'triggerType'
+  > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
@@ -175,10 +181,10 @@ const MessageInputWithContext = <
     additionalTextInputProps,
     asyncIds,
     asyncUploads,
+    AutoCompleteSuggestionList,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
-    componentType,
     cooldownEndsAt,
     CooldownTimer,
     disabled,
@@ -207,10 +213,10 @@ const MessageInputWithContext = <
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    suggestionsTitle,
     t,
     thread,
     threadList,
+    triggerType,
     uploadNewImage,
     watchers,
   } = props;
@@ -242,7 +248,7 @@ const MessageInputWithContext = <
         optionsContainer,
         replyContainer,
         sendButtonContainer,
-        suggestionsListContainer,
+        suggestionsListContainer: { container: suggestionListContainer },
       },
     },
   } = useTheme();
@@ -567,19 +573,22 @@ const MessageInputWithContext = <
         </View>
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
-      {componentType && suggestions ? (
+      {console.log(triggerType)}
+
+      {triggerType && suggestions ? (
         <View
           style={[
+            suggestionListContainer,
             styles.suggestionsListContainer,
             { backgroundColor: white, bottom: height },
-            suggestionsListContainer,
           ]}
         >
-          <SuggestionsList<Co, Us>
+          <AutoCompleteSuggestionList
             active={!!suggestions}
-            componentType={componentType}
-            suggestions={suggestions}
-            suggestionsTitle={suggestionsTitle}
+            data={suggestions.data}
+            onSelect={suggestions.onSelect}
+            queryText={suggestions.queryText}
+            triggerType={triggerType}
           />
         </View>
       ) : null}
@@ -629,7 +638,6 @@ const areEqual = <
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
-    suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
@@ -648,7 +656,6 @@ const areEqual = <
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
-    suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
@@ -710,9 +717,6 @@ const areEqual = <
         prevSuggestions.data.every(({ name }, index) => name === nextSuggestions.data[index].name)
       : !!prevSuggestions === !!nextSuggestions;
   if (!suggestionsEqual) return false;
-
-  const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
-  if (!suggestionsTitleEqual) return false;
 
   const threadEqual =
     prevThread?.id === nextThread?.id &&
@@ -803,7 +807,13 @@ export const MessageInput = <
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { componentType, suggestions, suggestionsTitle } = useSuggestionsContext<Co, Us>();
+  const {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
+    suggestions,
+    triggerType,
+  } = useSuggestionsContext<Co, Us>();
 
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -819,10 +829,12 @@ export const MessageInput = <
         additionalTextInputProps,
         asyncIds,
         asyncUploads,
+        AutoCompleteSuggestionHeader,
+        AutoCompleteSuggestionItem,
+        AutoCompleteSuggestionList,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
-        componentType,
         cooldownEndsAt,
         CooldownTimer,
         disabled,
@@ -852,9 +864,9 @@ export const MessageInput = <
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
-        suggestionsTitle,
         t,
         thread,
+        triggerType,
         uploadNewImage,
         watchers,
       }}
