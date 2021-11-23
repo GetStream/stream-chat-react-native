@@ -84,10 +84,10 @@ const AttachmentWithContext = <
     return <FileAttachment attachment={attachment} />;
   }
 
-  if (attachment.type === 'video' && attachment.asset_url && attachment.image_url) {
+  if (attachment.type === 'video' && attachment.asset_url) {
     return (
       // TODO: Put in video component
-      <Card {...attachment} />
+      <FileAttachment attachment={attachment} />
     );
   }
 

@@ -11,20 +11,51 @@
 <!-- Add relevant screenshots -->
 
 <details>
-    <summary>iOS</summary>
+<summary>iOS</summary>
 
-| Before | After |
-| --- | --- |
-| img | img |
+
+<table>
+    <thead>
+        <tr>
+            <td>Before</td>
+            <td>After</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <!--<img src="" /> -->
+            </td>
+            <td>
+                <!--<img src="" /> -->
+            </td>
+        </tr>
+    </tbody>
+</table>
 </details>
 
 
 <details>
-    <summary>Android</summary>
+<summary>Android</summary>
 
-| Before | After |
-| --- | --- |
-| img | img |
+<table>
+    <thead>
+        <tr>
+            <td>Before</td>
+            <td>After</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <!--<img src="" /> -->
+            </td>
+            <td>
+                <!--<img src="" /> -->
+            </td>
+        </tr>
+    </tbody>
+</table>
 </details>
 
 ## 🧪 Testing

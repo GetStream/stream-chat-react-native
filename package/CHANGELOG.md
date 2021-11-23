@@ -1,5 +1,27 @@
 # Change Log
 
+### [3.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.0...v3.10.1) (2021-11-15)
+
+
+### Bug Fixes
+
+* render attachment type video in FileAttachment view [CRNS-480] ([1649ee3](https://github.com/GetStream/stream-chat-react-native/commit/1649ee3bee43b3062ed1998d7683025429aad5a9))
+
+## [3.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v3.9.2...v3.10.0) (2021-11-11)
+
+
+### Features
+
+* added support for channelListSkeleton.maskFillColor theme property [CRNS-471] ([e20e6c7](https://github.com/GetStream/stream-chat-react-native/commit/e20e6c7d3bbc34e9e9ce8f5c912236005c1e9aed))
+
+### [3.9.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.9.1...v3.9.2) (2021-11-02)
+
+
+### Bug Fixes
+
+* handling the errors when channel which is open gets deleted [CRNS-468] ([2598091](https://github.com/GetStream/stream-chat-react-native/commit/25980911841c8dc213a0b799036eca6e3638d588))
+* update message text when theme changes [CRNS-467] ([17ad925](https://github.com/GetStream/stream-chat-react-native/commit/17ad92519e328b0453f1c1d760ed5b3883978c71))
+
 ### [3.9.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.9.0...v3.9.1) (2021-10-22)
 
 
