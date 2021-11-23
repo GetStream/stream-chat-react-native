@@ -142,7 +142,7 @@ export const useMessageActions = <
   );
 
   const blockUser: MessageActionType = {
-    action: () => async () => {
+    action: async () => {
       setOverlay('none');
       if (message.user?.id) {
         if (handleBlock) {
