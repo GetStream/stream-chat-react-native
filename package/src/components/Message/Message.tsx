@@ -672,7 +672,7 @@ const MessageWithContext = <
       : blockUserProp === null
       ? null
       : {
-          action: () => async () => {
+          action: async () => {
             setOverlay('none');
             if (message.user?.id) {
               if (handleBlock) {
