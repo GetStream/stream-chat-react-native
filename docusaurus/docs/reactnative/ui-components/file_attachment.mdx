@@ -14,6 +14,7 @@ Component to render file attachments within the [`MessageList`](./message_list.m
 You can customize this component and provide it back to the SDK via the [`FileAttachment`](../core-components/channel.mdx#fileattachment) prop on `Channel` if desired.
 
 Changing the size of the file attachment icon can be easily accomplished.
+
 ```tsx
 import { Channel, FileAttachment } from 'stream-chat-react-native';
 
@@ -26,16 +27,16 @@ import { Channel, FileAttachment } from 'stream-chat-react-native';
 
 Attachment object for `file` type attachment.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### attachmentSize
 
 Size of an attachment icon. This value gets passed to [`FileAttachmentIcon`](#fileattachmenticon) component.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | number |
 
 ### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}

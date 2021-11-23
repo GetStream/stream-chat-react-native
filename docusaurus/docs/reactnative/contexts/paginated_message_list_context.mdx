@@ -7,7 +7,7 @@ title: PaginatedMessageListContext
 
 ## Basic Usage
 
-`PaginatedMessageListContext` can be consumed by any of the child  component of `Channel` component as following:
+`PaginatedMessageListContext` can be consumed by any of the child component of `Channel` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -30,62 +30,62 @@ const { loadingMore, loadMoreRecent, messages } = usePaginatedMessageListContext
 
 False if `Channel` has loaded all the messages in history, via pagination. Channel component uses this value to decide if more messages should be queried from server when user reaches top of the `MessageList`.
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### loadingMore
 
 True if `Channel` is querying more messages in the past from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at top of the list.
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### loadingMoreRecent
 
 True if `Channel` is querying more recent messages from server, as part of pagination logic. `MessageList` component uses this value to display or hide inline loading indicator at bottom of the list.
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### loadMore
 
 Function to load more messages before the top message in list. This function gets called from `onScroll` handler of underlying `FlatList`, when scroll reaches top of the list and [`hasMore`](#hasmore) is true.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### loadMoreRecent
 
 Function to load more messages before the top message in list. This function gets called from `onScroll` handler of underlying `FlatList`, when scroll reaches top of the list and [`hasMoreRecent`](#hasmorerecent) is true.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### messages
 
 List of messages currently loading in channel.
 
-| Type |
-| - |
+| Type  |
+| ----- |
 | array |
 
 ### setLoadingMore
 
 Setter function for [`loadingMore`](#loadingmore)
 
-| Type |
-| - |
+| Type                    |
+| ----------------------- |
 | `(loadingMore) => void` |
 
 ### setLoadingMoreRecent
 
 Setter function for [`loadingMoreRecent`](#loadingmorerecent)
 
-| Type |
-| - |
+| Type                          |
+| ----------------------------- |
 | `(loadingMoreRecent) => void` |

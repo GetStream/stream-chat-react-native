@@ -72,8 +72,6 @@ describe('AutoCompleteInput', () => {
 
     await waitFor(() => {
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(props.closeSuggestions).toHaveBeenCalledTimes(0);
-      expect(props.openSuggestions).toHaveBeenCalledTimes(1);
     });
 
     rerender(getComponent({ ...props, text: '' }));
@@ -81,8 +79,6 @@ describe('AutoCompleteInput', () => {
 
     await waitFor(() => {
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(props.closeSuggestions).toHaveBeenCalledTimes(1);
-      expect(props.openSuggestions).toHaveBeenCalledTimes(1);
     });
   });
 

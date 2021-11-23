@@ -106,18 +106,13 @@ export type MessageOverlayPropsWithContext<
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
   Pick<
     OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'canModifyMessage'
     | 'error'
     | 'isMyMessage'
     | 'isThreadMessage'
     | 'message'
     | 'messageReactions'
     | 'messageTextNumberOfLines'
-    | 'mutesEnabled'
     | 'overlayOpacity'
-    | 'quotedRepliesEnabled'
-    | 'pinMessageEnabled'
-    | 'threadRepliesEnabled'
   > & {
     showScreen?: Animated.SharedValue<number>;
     visible?: boolean;
@@ -136,6 +131,7 @@ const MessageOverlayWithContext = <
 ) => {
   const {
     alignment,
+    ownCapabilities,
     clientId,
     files,
     groupStyles,
@@ -161,26 +157,16 @@ const MessageOverlayWithContext = <
     visible,
     isMyMessage,
     messageReactions,
-    mutesEnabled,
-    quotedRepliesEnabled,
-    pinMessageEnabled,
-    threadRepliesEnabled,
-    canModifyMessage,
     error,
     isThreadMessage,
   } = props;
 
   const messageActionProps = {
-    canModifyMessage,
     error,
     isMyMessage,
     isThreadMessage,
     message,
     messageReactions,
-    mutesEnabled,
-    pinMessageEnabled,
-    quotedRepliesEnabled,
-    threadRepliesEnabled,
   };
 
   const { theme } = useTheme();
@@ -384,7 +370,7 @@ const MessageOverlayWithContext = <
                             alignment === 'left' ? styles.alignStart : styles.alignEnd,
                           ]}
                         >
-                          {handleReaction ? (
+                          {handleReaction && ownCapabilities?.sendReaction ? (
                             <OverlayReactionList
                               messageLayout={messageLayout}
                               ownReactionTypes={
@@ -453,7 +439,6 @@ const MessageOverlayWithContext = <
                                   switch (messageContentType) {
                                     case 'quoted_reply':
                                       return (
-                                        messagesContext?.quotedRepliesEnabled &&
                                         message.quoted_message &&
                                         Reply && (
                                           <View
@@ -545,7 +530,6 @@ const MessageOverlayWithContext = <
                           message.latest_reactions.length > 0 ? (
                             <OverlayReactions
                               alignment={alignment}
-                              channelId={message.cid}
                               reactions={message.latest_reactions.map((reaction) => ({
                                 alignment:
                                   clientId && clientId === reaction.user?.id ? 'right' : 'left',
@@ -636,15 +620,7 @@ export type MessageOverlayProps<
   Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
   Pick<
     MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'isMyMessage'
-    | 'canModifyMessage'
-    | 'quotedRepliesEnabled'
-    | 'mutesEnabled'
-    | 'pinMessageEnabled'
-    | 'threadRepliesEnabled'
-    | 'error'
-    | 'isThreadMessage'
-    | 'messageReactions'
+    'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
   >;
 
 /**

@@ -85,10 +85,6 @@ export const useIsOnline = <
 
     let unsubscribeNetInfo: NetInfoSubscription;
     const setNetInfoListener = () => {
-      NetInfo.fetch().then((netInfoState) => {
-        notifyChatClient(netInfoState);
-      });
-
       unsubscribeNetInfo = NetInfo.addEventListener((netInfoState) => {
         if (netInfoState === false && !client.wsConnection?.isHealthy) {
           setConnectionRecovering(true);
@@ -100,8 +96,10 @@ export const useIsOnline = <
 
     const setInitialOnlineState = async () => {
       const status = await NetInfo.fetch();
-
-      if (isMounted.current) setIsOnline(status);
+      if (isMounted.current) {
+        setIsOnline(status);
+        notifyChatClient(status);
+      }
     };
 
     setInitialOnlineState();

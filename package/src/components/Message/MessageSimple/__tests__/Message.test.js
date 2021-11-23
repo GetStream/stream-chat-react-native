@@ -70,7 +70,6 @@ describe('Message', () => {
     const onLongPressMessage = jest.fn();
 
     const { getByTestId } = renderMessage({
-      animatedLongPress: false,
       message,
       onLongPressMessage,
     });

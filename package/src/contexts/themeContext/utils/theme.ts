@@ -219,6 +219,7 @@ export type Theme = {
     commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
+    cooldownTimer: TextStyle;
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
@@ -246,6 +247,10 @@ export type Theme = {
     replyContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
+    sendMessageDisallowedIndicator: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -261,10 +266,6 @@ export type Theme = {
         iconContainer: ViewStyle;
         title: TextStyle;
       };
-      commandsHeader: {
-        container: ViewStyle;
-        title: TextStyle;
-      };
       container: ViewStyle & {
         maxHeight: number;
       };
@@ -272,7 +273,7 @@ export type Theme = {
         container: ViewStyle;
         text: TextStyle;
       };
-      emojisHeader: {
+      header: {
         container: ViewStyle;
         title: TextStyle;
       };
@@ -285,7 +286,10 @@ export type Theme = {
         tag: TextStyle;
       };
     };
-    suggestionsListContainer: ViewStyle;
+    suggestionsListContainer: {
+      container: ViewStyle;
+      flatlist: ViewStyle;
+    };
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
@@ -665,6 +669,7 @@ export const defaultTheme: Theme = {
     commandsButtonContainer: {},
     composerContainer: {},
     container: {},
+    cooldownTimer: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
@@ -692,6 +697,10 @@ export const defaultTheme: Theme = {
     replyContainer: {},
     sendButton: {},
     sendButtonContainer: {},
+    sendMessageDisallowedIndicator: {
+      container: {},
+      text: {},
+    },
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},
@@ -707,10 +716,6 @@ export const defaultTheme: Theme = {
         iconContainer: {},
         title: {},
       },
-      commandsHeader: {
-        container: {},
-        title: {},
-      },
       container: {
         maxHeight: vh(25),
       },
@@ -718,7 +723,7 @@ export const defaultTheme: Theme = {
         container: {},
         text: {},
       },
-      emojisHeader: {
+      header: {
         container: {},
         title: {},
       },
@@ -731,7 +736,10 @@ export const defaultTheme: Theme = {
         tag: {},
       },
     },
-    suggestionsListContainer: {},
+    suggestionsListContainer: {
+      container: {},
+      flatlist: {},
+    },
     uploadProgressIndicator: {
       container: {},
       overlay: {},

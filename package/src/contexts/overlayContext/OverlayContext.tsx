@@ -7,12 +7,12 @@ import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
-import type { MessagesContextValue } from '../../contexts/messagesContext/MessagesContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -24,7 +24,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
@@ -65,13 +64,8 @@ export type OverlayProviderProps<
       'MessageActionList' | 'MessageActionListItem' | 'OverlayReactionList' | 'OverlayReactions'
     >
   > &
-  Pick<OverlayContextValue, 'translucentStatusBar'> &
-  Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'mutesEnabled' | 'quotedRepliesEnabled' | 'pinMessageEnabled' | 'threadRepliesEnabled'
-  > & {
+  Pick<OverlayContextValue, 'translucentStatusBar'> & {
     overlayOpacity: Animated.SharedValue<number>;
-    canModifyMessage?: boolean;
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     error?: boolean | Error;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */

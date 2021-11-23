@@ -12,12 +12,9 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Avatar,
-  StreamCache,
   useChannelPreviewDisplayName,
   useOverlayContext,
   useTheme,
-  useToastContext,
-  useTranslationContext,
 } from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
@@ -170,8 +167,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const toast = useToastContext();
-  const { t } = useTranslationContext();
   const { setOverlay: setAppOverlay } = useAppOverlayContext();
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
@@ -217,18 +212,14 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    * Opens confirmation sheet for leaving the group
    */
   const openLeaveGroupConfirmationSheet = () => {
-    if (!StreamCache.getInstance().currentNetworkState) {
-      toast.show(t('Something went wrong'), 2000);
-    } else {
-      if (chatClient?.user?.id) {
-        setBottomSheetOverlayData({
-          confirmText: 'LEAVE',
-          onConfirm: leaveGroup,
-          subtext: `Are you sure you want to leave the group ${groupName || ''}?`,
-          title: 'Leave group',
-        });
-        setAppOverlay('confirmation');
-      }
+    if (chatClient?.user?.id) {
+      setBottomSheetOverlayData({
+        confirmText: 'LEAVE',
+        onConfirm: leaveGroup,
+        subtext: `Are you sure you want to leave the group ${groupName || ''}?`,
+        title: 'Leave group',
+      });
+      setAppOverlay('confirmation');
     }
   };
 
@@ -236,15 +227,11 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    * Cancels the confirmation sheet.
    */
   const openAddMembersSheet = () => {
-    if (!StreamCache.getInstance().currentNetworkState) {
-      toast.show(t('Something went wrong'), 2000);
-    } else {
-      if (chatClient?.user?.id) {
-        setBottomSheetOverlayData({
-          channel,
-        });
-        setAppOverlay('addMembers');
-      }
+    if (chatClient?.user?.id) {
+      setBottomSheetOverlayData({
+        channel,
+      });
+      setAppOverlay('addMembers');
     }
   };
 
@@ -430,17 +417,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View>
               <Switch
                 onValueChange={async () => {
-                  if (!StreamCache.getInstance().currentNetworkState) {
-                    toast.show(t('Something went wrong'), 2000);
+                  if (muted) {
+                    await channel.unmute();
                   } else {
-                    if (muted) {
-                      await channel.unmute();
-                    } else {
-                      await channel.mute();
-                    }
-
-                    setMuted((previousState) => !previousState);
+                    await channel.mute();
                   }
+
+                  setMuted((previousState) => !previousState);
                 }}
                 trackColor={{
                   false: white_smoke,

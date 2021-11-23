@@ -3,8 +3,6 @@ id: message-context
 title: MessageContext
 ---
 
-import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx';
-
 import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
@@ -32,7 +30,7 @@ import ThreadList from '../common-content/contexts/message-context/thread_list.m
 
 ## Basic Usage
 
-`MessageContext` can be consumed by any of the child  component of `Message` component as following:
+`MessageContext` can be consumed by any of the child component of `Message` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -56,11 +54,11 @@ const { isMyMessage, message, files } = useMessageContext();
 This value gets set to true when following condition is true:
 
 ```tsx
-message.type === 'regular' && message.status === 'received'
+message.type === 'regular' && message.status === 'received';
 ```
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### alignment
@@ -72,12 +70,13 @@ message.type === 'regular' && message.status === 'received'
 True if one of the following condition is true:
 
 <!-- TODO: Change to new docs -->
+
 - message is sent by the current user (connected to chat)
 - current user has [`admin`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
 - current user has [`moderator`](https://getstream.io/chat/docs/javascript/channel_user_role/?language=javascript&q=role) role
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### disabled
@@ -100,56 +99,56 @@ True if one of the following condition is true:
 
 Callback function for "Delete Message" action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleEditMessage
 
 Callback function for "Edit Message" action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleQuotedReplyMessage
 
 Callback function for "Quoted Reply" action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleResendMessage
 
 Callback function for "Resend Message" (for failed message) action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleToggleBanUser
 
 Callback function for "Ban/Unban User" action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleToggleMuteUser
 
 Callback function for "Mute/Unmute User" action.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### handleToggleReaction
 
 Callback function for toggling reaction from reaction selector.
 
-| Type |
-| - |
+| Type                             |
+| -------------------------------- |
 | `(reactionType: string) => void` |
 
 ### hasReactions
@@ -172,8 +171,8 @@ Callback function for toggling reaction from reaction selector.
 
 Most recent message id in the message list.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### message
@@ -211,10 +210,6 @@ Most recent message id in the message list.
 ### reactions
 
 <Reactions />
-
-### readEventsEnabled
-
-<ReadEventsEnabled />
 
 ### showMessageOverlay
 

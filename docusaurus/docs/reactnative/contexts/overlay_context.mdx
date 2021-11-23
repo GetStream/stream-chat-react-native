@@ -10,7 +10,7 @@ import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.m
 
 ## Basic Usage
 
-`OverlayContext` can be consumed by any of the child  component of `OverlayProvider` component as following:
+`OverlayContext` can be consumed by any of the child component of `OverlayProvider` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -34,12 +34,12 @@ const { setBlurType, setOverlay } = useOverlayContext();
 Current active overlay. Overlay gets rendered in following cases
 
 - 'alert' - For delete message confirmation alert box
-- 'gallery' - When image viewer/gallery is opened 
+- 'gallery' - When image viewer/gallery is opened
 - 'message' - When message overlay is opened by long pressing a message
 - 'none' - Default value
 
-| Type |
-| - |
+| Type                                        |
+| ------------------------------------------- |
 | enum('alert', 'gallery', 'message', 'none') |
 
 ### setBlurType
@@ -53,4 +53,3 @@ Current active overlay. Overlay gets rendered in following cases
 <!-- ### style -->
 
 <!-- ### translucentStatusBar -->
-

@@ -11,6 +11,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient } from '../../../mock-builders/mock';
+import { setNetInfoFetchMock } from '../../../../jest-setup';
 
 const ChatContextConsumer = ({ fn }) => {
   fn(useChatContext());
@@ -38,6 +39,8 @@ describe('Chat', () => {
 
   it('listens and updates state on a connection changed event', async () => {
     let context;
+    const netInfoFetch = jest.fn();
+    setNetInfoFetchMock(netInfoFetch);
 
     render(
       <Chat client={chatClient}>
@@ -49,15 +52,16 @@ describe('Chat', () => {
       </Chat>,
     );
 
+    await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
+
     const { connectionRecovering } = context;
-
     act(() => dispatchConnectionChangedEvent(chatClient));
-
     await waitFor(() => {
       expect(context.connectionRecovering).toStrictEqual(!connectionRecovering);
       expect(context.isOnline).toBeFalsy();
     });
   });
+
   it('listens and updates state on a connection recovered event', async () => {
     let context;
 

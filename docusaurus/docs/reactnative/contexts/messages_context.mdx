@@ -4,7 +4,6 @@ title: MessagesContext
 ---
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
-import AnimatedLongPress from '../common-content/core-components/channel/props/animated_long_press.mdx';
 import Attachment from '../common-content/core-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
 import Card from '../common-content/core-components/channel/props/card.mdx';
@@ -37,7 +36,7 @@ import HandleThreadReply from '../common-content/core-components/channel/props/h
 import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
 import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
-import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx'
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
@@ -52,21 +51,16 @@ import MessageSimple from '../common-content/core-components/channel/props/messa
 import MessageStatus from '../common-content/core-components/channel/props/message_status.mdx';
 import MessageSystem from '../common-content/core-components/channel/props/message_system.mdx';
 import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
-import MutesEnabled from '../common-content/core-components/channel/props/mutes_enabled.mdx';
 import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
-import OnDoubleTapMessage from '../common-content/core-components/channel/props/on_double_tap_message.mdx';
 import OnLongPressMessage from '../common-content/core-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
-import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx';
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
-import ReactionsEnabled from '../common-content/core-components/channel/props/reactions_enabled.mdx';
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
-import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx';
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
@@ -77,16 +71,12 @@ import UrlPreview from '../common-content/core-components/channel/props/url_prev
 
 <AdditionalTouchableProps />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#animatedlongpress)_ props</div> animatedLongPress {#animatedlongpress}
-
-<AnimatedLongPress />
-
 ### channelId
 
 Id of current channel.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#deletedmessagesvisibiltytype)_ props</div> deletedMessagesVisibiltyType {#deletedmessagesvisibiltytype}
@@ -173,17 +163,9 @@ Id of current channel.
 
 <MessageContentOrder />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#mutesenabled)_ props</div> mutesEnabled {#mutesenabled}
-
-<MutesEnabled />
-
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#mymessagetheme)_ props</div> myMessageTheme {#mymessagetheme}
 
 <MyMessageTheme />
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#ondoubletapmessage)_ props</div> onDoubleTapMessage {#ondoubletapmessage}
-
-<OnDoubleTapMessage />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#onlongpressmessage)_ props</div> onLongPressMessage {#onlongpressmessage}
 
@@ -197,20 +179,12 @@ Id of current channel.
 
 <OnPressMessage />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#quotedrepliesenabled)_ props</div> quotedRepliesEnabled {#quotedrepliesenabled}
-
-<QuotedRepliesEnabled />
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#reactionsenabled)_ props</div> reactionsEnabled {#reactionsenabled}
-
-<ReactionsEnabled />
-
 ### removeMessage
 
 Function to remove message from local channel state. Please note that this function is only for updating the local state, it doesn't call the api for deleting message (`channel.deleteMessage`).
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#reply)_ props</div> Reply {#reply}
@@ -221,8 +195,8 @@ Function to remove message from local channel state. Please note that this funct
 
 Function to re-attempt sending failed message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#selectreaction)_ props</div> selectReaction {#selectreaction}
@@ -233,16 +207,16 @@ Function to re-attempt sending failed message.
 
 Enables editing state for given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### setQuotedMessageState
 
 Enables quoted-reply state on given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#supportedreactions)_ props</div> supportedReactions {#supportedreactions}
@@ -253,21 +227,16 @@ Enables quoted-reply state on given message.
 
 Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
-
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#threadrepliesenabled)_ props</div> threadRepliesEnabled {#threadrepliesenabled}
-
-<ThreadRepliesEnabled />
 
 ### updateMessage
 
 Upserts a given message in local channel state. Please note that this function doesn't call `channel.sendMessage`. Channel component uses this function for optimistic updates to message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#attachment)_ props</div> Attachment {#attachment}

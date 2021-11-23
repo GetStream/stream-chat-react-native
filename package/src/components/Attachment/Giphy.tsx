@@ -1,7 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import { CachedAttachmentImage } from '../CachedImages/CachedAttachmentImage';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
@@ -118,8 +116,6 @@ export type GiphyPropsWithContext<
 > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
     attachment: Attachment<At>;
-    channelId: string | undefined;
-    messageId: string | undefined;
   };
 
 const GiphyWithContext = <
@@ -136,9 +132,7 @@ const GiphyWithContext = <
   const {
     additionalTouchableProps,
     attachment,
-    channelId,
     handleAction,
-    messageId,
     onLongPress,
     onPress,
     onPressIn,
@@ -183,11 +177,7 @@ const GiphyWithContext = <
       ]}
     >
       <View style={styles.margin}>
-        <CachedAttachmentImage
-          cacheConfig={{
-            channelId,
-            messageId,
-          }}
+        <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphy]}
@@ -277,11 +267,7 @@ const GiphyWithContext = <
       {...additionalTouchableProps}
     >
       <View>
-        <CachedAttachmentImage
-          cacheConfig={{
-            channelId,
-            messageId,
-          }}
+        <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphy]}
@@ -366,7 +352,7 @@ export const Giphy = <
 >(
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction, message, onLongPress, onPress, onPressIn, preventPress } =
+  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -374,9 +360,7 @@ export const Giphy = <
     <MemoizedGiphy
       {...{
         additionalTouchableProps,
-        channelId: message.cid,
         handleAction,
-        messageId: message.id,
         onLongPress,
         onPress,
         onPressIn,

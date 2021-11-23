@@ -142,7 +142,6 @@ type MessageListPropsWithContext<
     | 'setTargetedMessage'
     | 'StickyHeader'
     | 'targetedMessage'
-    | 'typingEventsEnabled'
   > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
@@ -304,7 +303,6 @@ const MessageListWithContext = <
     tDateTimeParser,
     thread,
     threadList = false,
-    typingEventsEnabled,
     TypingIndicator,
     TypingIndicatorContainer,
   } = props;
@@ -928,7 +926,6 @@ const MessageListWithContext = <
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
-        initialNumToRender={20}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
@@ -962,7 +959,7 @@ const MessageListWithContext = <
                 <DateHeader dateString={stickyHeaderDateToRender} />
               ) : null)}
           </View>
-          {!disableTypingIndicator && TypingIndicator && typingEventsEnabled !== false && (
+          {!disableTypingIndicator && TypingIndicator && (
             <TypingIndicatorContainer>
               <TypingIndicator />
             </TypingIndicatorContainer>
@@ -1019,7 +1016,6 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-    typingEventsEnabled,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -1088,7 +1084,6 @@ export const MessageList = <
         targetedMessage,
         tDateTimeParser,
         thread,
-        typingEventsEnabled,
         TypingIndicator,
         TypingIndicatorContainer,
       }}

@@ -1,25 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  Keyboard,
-  PixelRatio,
-  Platform,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
@@ -29,6 +9,7 @@ import {
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -81,21 +62,6 @@ import type {
 import { useMessageActions } from './hooks/useMessageActions';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
 
-const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
-  if (url.includes('&h=%2A')) {
-    Image.prefetch(
-      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
-    )
-      .catch(() => Image.prefetch(url))
-      .catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
-  } else {
-    Image.prefetch(url).catch(() => {
-      // do nothing, not a big deal that prefetch failed
-    });
-  }
-};
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?:
@@ -147,13 +113,7 @@ export type MessagePropsWithContext<
   Us extends UnknownType = DefaultUserType,
 > = Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'channel'
-  | 'disabled'
-  | 'enforceUniqueReaction'
-  | 'isAdmin'
-  | 'isModerator'
-  | 'members'
-  | 'readEventsEnabled'
+  'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
@@ -161,7 +121,6 @@ export type MessagePropsWithContext<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'animatedLongPress'
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBlock'
@@ -178,22 +137,16 @@ export type MessagePropsWithContext<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
-    | 'mutesEnabled'
-    | 'onDoubleTapMessage'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
-    | 'pinMessageEnabled'
-    | 'quotedRepliesEnabled'
-    | 'reactionsEnabled'
     | 'removeMessage'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
-    | 'threadRepliesEnabled'
     | 'updateMessage'
   > &
   Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
@@ -272,7 +225,6 @@ const MessageWithContext = <
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
   const {
-    animatedLongPress = Platform.OS === 'ios' && !isMessageTypeDeleted,
     channel,
     client,
     disabled,
@@ -294,8 +246,6 @@ const MessageWithContext = <
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
-    isAdmin,
-    isModerator,
     lastReceivedId,
     members,
     message,
@@ -303,8 +253,6 @@ const MessageWithContext = <
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
-    mutesEnabled,
-    onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
@@ -314,11 +262,7 @@ const MessageWithContext = <
     onThreadSelect,
     openThread,
     OverlayReactionList,
-    pinMessageEnabled,
     preventPress,
-    quotedRepliesEnabled,
-    reactionsEnabled,
-    readEventsEnabled,
     removeMessage,
     retrySendMessage,
     selectReaction,
@@ -334,64 +278,19 @@ const MessageWithContext = <
     t,
     isTargetedMessage,
     threadList = false,
-    threadRepliesEnabled,
     updateMessage,
   } = props;
 
   const {
     theme: {
       colors: { bg_gradient_start, targetedMessageBackground },
-      messageSimple: {
-        gallery: { halfSize, size },
-        targetedMessageUnderlay,
-      },
+      messageSimple: { targetedMessageUnderlay },
     },
   } = useTheme();
-
-  const doubleTapRef = useRef<TapGestureHandler>(null);
-  const pressActive = useSharedValue(false);
-  const scale = useSharedValue(1);
-
-  /**
-   * This is a cleanup effect to prevent the onLongPress
-   * handler from being called if the component has dismounted.
-   */
-  useEffect(
-    () => () => {
-      pressActive.value = false;
-      cancelAnimation(scale);
-    },
-    [],
-  );
-  const scaleStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    }),
-    [],
-  );
-  const targetedOpacity = useSharedValue(0);
-  const targetedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: targetedOpacity.value,
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    targetedOpacity.value = withTiming(isTargetedMessage ? 1 : 0, {
-      duration: 1000,
-    });
-  }, [isTargetedMessage]);
 
   const actionsEnabled = message.type === 'regular' && message.status === 'received';
 
   const isMyMessage = client && message && client.userID === message.user?.id;
-
-  const canModifyMessage = isMyMessage || isModerator || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -410,9 +309,6 @@ const MessageWithContext = <
   const onPressQuotedMessage = (quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (!goToMessage) return;
 
-    pressActive.value = false;
-    cancelAnimation(scale);
-    scale.value = withTiming(1, { duration: 100 });
     goToMessage(quotedMessage.id);
   };
 
@@ -485,29 +381,6 @@ const MessageWithContext = <
     Array.isArray(message.attachments) &&
     message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
 
-  // prefetch images for Gallery component rendering
-  const attachmentImageLength = attachments.images.length;
-  useEffect(() => {
-    if (attachmentImageLength) {
-      attachments.images.slice(0, 4).forEach((image, index) => {
-        const url = image.image_url || image.thumb_url;
-        if (url) {
-          if (attachmentImageLength <= 2) {
-            prefetchImage({ height: size || 200, url });
-          } else if (attachmentImageLength === 3) {
-            if (index === 0) {
-              prefetchImage({ height: size || 200, url });
-            } else {
-              prefetchImage({ height: halfSize || 100, url });
-            }
-          } else {
-            prefetchImage({ height: halfSize || 100, url });
-          }
-        }
-      });
-    }
-  }, [attachmentImageLength]);
-
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
       return !!message.quoted_message;
@@ -543,10 +416,7 @@ const MessageWithContext = <
   };
 
   const hasReactions =
-    !!reactionsEnabled &&
-    !isMessageTypeDeleted &&
-    !!message.latest_reactions &&
-    message.latest_reactions.length > 0;
+    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
 
   const clientId = client.userID;
 
@@ -568,6 +438,8 @@ const MessageWithContext = <
       }, [] as Reactions)
     : [];
 
+  const ownCapabilities = useOwnCapabilitiesContext();
+
   const {
     handleDeleteMessage,
     handleEditMessage,
@@ -582,7 +454,6 @@ const MessageWithContext = <
     client,
     enforceUniqueReaction,
     message,
-    reactionsEnabled,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -621,7 +492,6 @@ const MessageWithContext = <
     message,
     onThreadSelect,
     openThread,
-    reactionsEnabled,
     retrySendMessage,
     selectReaction,
     setEditingState,
@@ -647,7 +517,6 @@ const MessageWithContext = <
         ? messageActionsProp
         : messageActionsProp({
             blockUser,
-            canModifyMessage,
             copyMessage,
             deleteMessage,
             dismissOverlay,
@@ -658,14 +527,11 @@ const MessageWithContext = <
             isThreadMessage,
             message,
             messageReactions,
-            mutesEnabled,
             muteUser,
+            ownCapabilities,
             pinMessage,
-            pinMessageEnabled,
-            quotedRepliesEnabled,
             quotedReply,
             retry,
-            threadRepliesEnabled,
             threadReply,
             unpinMessage,
           });
@@ -675,7 +541,7 @@ const MessageWithContext = <
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
-      handleReaction: reactionsEnabled ? handleReaction : undefined,
+      handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
       images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
@@ -685,6 +551,7 @@ const MessageWithContext = <
       onlyEmojis,
       otherAttachments: attachments.other,
       OverlayReactionList,
+      ownCapabilities,
       supportedReactions,
       threadList,
     });
@@ -725,19 +592,15 @@ const MessageWithContext = <
             event: payload?.event,
           })
       : enableLongPress
-      ? () => showMessageOverlay(false)
+      ? () => {
+          triggerHaptic('impactMedium');
+          showMessageOverlay(false);
+        }
       : () => null;
-
-  const onDoubleTapMessage = () => {
-    if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp({ actionHandlers, message });
-    }
-  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
-    canModifyMessage,
     channel,
     disabled,
     files: attachments.files,
@@ -759,7 +622,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
-    onLongPress: !animatedLongPress ? onLongPressMessage : () => null,
+    onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
@@ -807,98 +670,41 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
-    readEventsEnabled,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
   });
 
-  const onLongPressTouchable = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onFinish: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-      },
-      onStart: () => {
-        pressActive.value = true;
-        cancelAnimation(scale);
-        /**
-         * React native longPress active occurs on 370ms,
-         * to hijack this we must make sure the timing is
-         * longer, otherwise onPress will fire instead
-         */
-        scale.value = withSequence(
-          withTiming(1, { duration: 100 }),
-          withTiming(0.98, { duration: 400 }, () => {
-            if (pressActive.value) {
-              runOnJS(onLongPressMessage)();
-              runOnJS(triggerHaptic)('impactMedium');
-            }
-          }),
-          withTiming(1.02, { duration: 100 }),
-          withTiming(1.0, { duration: 300 }),
-        );
-      },
-    },
-    [onLongPressMessage],
-  );
+  if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
 
-  const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onActive: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-        runOnJS(onDoubleTapMessage)();
-      },
-    },
-    [onDoubleTapMessage],
-  );
-
-  return isMessageTypeDeleted || messageContentOrder.length ? (
-    <TapGestureHandler
-      enabled={animatedLongPress && !preventPress}
-      maxDeltaX={8}
-      maxDurationMs={3000}
-      onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
-      waitFor={doubleTapRef}
+  return (
+    <View
+      style={[message.pinned && { backgroundColor: targetedMessageBackground }]}
+      testID='message-wrapper'
     >
-      <Animated.View testID='message-wrapper'>
-        <TapGestureHandler
-          enabled={!preventPress}
-          numberOfTaps={2}
-          onGestureEvent={onDoubleTap}
-          ref={doubleTapRef}
+      <View
+        style={[
+          style,
+          {
+            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+          },
+        ]}
+      >
+        <View
+          style={[
+            isTargetedMessage
+              ? { backgroundColor: targetedMessageBackground, ...targetedMessageUnderlay }
+              : {},
+          ]}
         >
-          <View style={[message.pinned && { backgroundColor: targetedMessageBackground }]}>
-            <Animated.View
-              style={[
-                style,
-                {
-                  backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-                },
-                scaleStyle,
-              ]}
-            >
-              <Animated.View
-                style={[
-                  StyleSheet.absoluteFillObject,
-                  targetedMessageUnderlay,
-                  { backgroundColor: targetedMessageBackground },
-                  targetedStyle,
-                ]}
-              />
-              <MessageProvider value={messageContext}>
-                <MessageSimple />
-              </MessageProvider>
-            </Animated.View>
-          </View>
-        </TapGestureHandler>
-      </Animated.View>
-    </TapGestureHandler>
-  ) : null;
+          <MessageProvider value={messageContext}>
+            <MessageSimple />
+          </MessageProvider>
+        </View>
+      </View>
+    </View>
+  );
 };
 
 const areEqual = <
@@ -1053,15 +859,8 @@ export const Message = <
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    channel,
-    disabled,
-    enforceUniqueReaction,
-    isAdmin,
-    isModerator,
-    members,
-    readEventsEnabled,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { channel, disabled, enforceUniqueReaction, members } =
+    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -1079,13 +878,10 @@ export const Message = <
         disabled,
         dismissKeyboard,
         enforceUniqueReaction,
-        isAdmin,
-        isModerator,
         members,
         messagesContext,
         mutedUsers,
         openThread,
-        readEventsEnabled,
         setData,
         setOverlay,
         t,

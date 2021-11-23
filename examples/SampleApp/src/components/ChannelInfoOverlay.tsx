@@ -24,12 +24,9 @@ import {
   Avatar,
   CircleClose,
   Delete,
-  StreamCache,
   User,
   UserMinus,
   useTheme,
-  useToastContext,
-  useTranslationContext,
   vh,
   vw,
 } from 'stream-chat-react-native';
@@ -108,9 +105,6 @@ export type ChannelInfoOverlayProps = {
 
 export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
-
-  const toast = useToastContext();
-  const { t } = useTranslationContext();
 
   const { overlay, setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
@@ -318,8 +312,6 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                             item ? (
                               <View style={styles.userItemContainer}>
                                 <Avatar
-                                  channelID={channel.id}
-                                  id={item.id}
                                   image={item.image}
                                   name={item.name || item.id}
                                   online={item.online}
@@ -370,15 +362,11 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                       {otherMembers.length > 1 && (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {
-                            if (!StreamCache.getInstance().currentNetworkState) {
-                              toast.show(t('Something went wrong'), 2000);
-                            } else {
-                              if (state === State.END) {
-                                if (clientId) {
-                                  channel.removeMembers([clientId]);
-                                }
-                                setOverlay('none');
+                            if (state === State.END) {
+                              if (clientId) {
+                                channel.removeMembers([clientId]);
                               }
+                              setOverlay('none');
                             }
                           }}
                         >
@@ -392,25 +380,21 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
                       )}
                       <TapGestureHandler
                         onHandlerStateChange={({ nativeEvent: { state } }) => {
-                          if (!StreamCache.getInstance().currentNetworkState) {
-                            toast.show(t('Something went wrong'), 2000);
-                          } else {
-                            if (state === State.END) {
-                              setData({
-                                confirmText: 'DELETE',
-                                onConfirm: () => {
-                                  channel.delete();
-                                  setOverlay('none');
-                                },
-                                subtext: `Are you sure you want to delete this ${
-                                  otherMembers.length === 1 ? 'conversation' : 'group'
-                                }?`,
-                                title: `Delete ${
-                                  otherMembers.length === 1 ? 'Conversation' : 'Group'
-                                }`,
-                              });
-                              setOverlay('confirmation');
-                            }
+                          if (state === State.END) {
+                            setData({
+                              confirmText: 'DELETE',
+                              onConfirm: () => {
+                                channel.delete();
+                                setOverlay('none');
+                              },
+                              subtext: `Are you sure you want to delete this ${
+                                otherMembers.length === 1 ? 'conversation' : 'group'
+                              }?`,
+                              title: `Delete ${
+                                otherMembers.length === 1 ? 'Conversation' : 'Group'
+                              }`,
+                            });
+                            setOverlay('confirmation');
                           }
                         }}
                       >
