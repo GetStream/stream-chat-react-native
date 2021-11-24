@@ -288,9 +288,31 @@ const additionalTextInputProps = useMemo(() => {
 
 ## Customizing the slow mode CooldownTimer
 
+### Modifying styles through the theme
+
+The default CooldownTimer can have it's styles altered through the theme, using the following keys:
+
+```jsx
+    <ThemeProvider style={{
+      {/* ... your other styles */}
+      messageInput: {
+        cooldownTimer: {
+          container: {
+            {/* ViewStyle values */}
+          },
+          text: {
+            {/* TextStyle values */}
+          }
+        }
+      }
+    }}>
+```
+
+### Creating a custom CooldownTimer
+
 If a channel has slow mode enabled, the send button will be disabled when a user has sent a message, and a countdown will be displayed in its place. The built-in CooldownTimer component is styled to look like the disabled variant of the built-in send button, but you can replace the CooldownTimer to fit it to your needs.
 
-To do so, first create your custom CooldownTimer component, which `{ seconds: number }` as a prop, which is the current amount of seconds left until the cooldown finishes.
+To do so, first create your custom CooldownTimer component that accepts `{ seconds: number }` as a prop, which is the current amount of seconds left until the cooldown finishes.
 
 ```jsx
 import { CooldownTimerProps } from 'stream-chat-react-native';
@@ -307,7 +329,7 @@ const CustomCooldownTimer = ({ seconds }: CooldownTimerProps) => {
 You will then have to add your CustomCooldownTimer component as a prop to the Channel component in your application.
 
 ```jsx
-<Channel CooldownTimer={additionalTextInputProps}>...</Channel>
+<Channel CooldownTimer={CustomCooldownTimer}>...</Channel>
 ```
 
 ## Replacing AttachmentPicker With Native Image Picker
