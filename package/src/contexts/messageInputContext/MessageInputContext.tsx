@@ -38,6 +38,7 @@ import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabili
 import { useTranslationContext } from '../translationContext/TranslationContext';
 
 import type { TextInput, TextInputProps } from 'react-native';
+import { lookup } from 'mime-types';
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
@@ -60,8 +61,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-const MIME_TYPE_OCTET_STREAM = 'application/octet-stream';
 
 export type FileUpload = {
   file: {
@@ -692,6 +691,14 @@ export const MessageInputProvider = <
             image_url: file.url,
             type: 'image',
           } as Attachment<At>);
+        } else if (file.file.type?.startsWith('video/')) {
+          attachments.push({
+            asset_url: file.url,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'video',
+          } as Attachment<At>);
         } else {
           attachments.push({
             asset_url: file.url,
@@ -854,7 +861,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, MIME_TYPE_OCTET_STREAM);
+        response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
       console.warn(error);
@@ -933,12 +940,13 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-
+      const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+      const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM).then((res) => {
+          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -965,7 +973,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM);
+          response = await channel.sendImage(compressedUri, undefined, contentType);
         }
       }
 
@@ -1011,8 +1019,9 @@ export const MessageInputProvider = <
     uri?: string;
   }) => {
     const id = generateRandomId();
+    const mimeType = lookup(file.name);
     const newFile = {
-      file: { ...file, type: MIME_TYPE_OCTET_STREAM },
+      file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,
     };
