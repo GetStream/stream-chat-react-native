@@ -5,6 +5,8 @@ title: Upgrading from V3
 
 import pinMessageAction from '../assets/basics/upgrade-helper/pin_message_action.png';
 import pinnedMessage from '../assets/basics/upgrade-helper/pinned_message.png';
+import scrollViewWarning from '../assets/basics/upgrade-helper/scroll_view_warning.png';
+import slowMode from '../assets/basics/upgrade-helper/slow_mode.gif';
 
 ## Add a required `threadList` prop
 
@@ -23,7 +25,7 @@ Add a `threadList` prop on `Channel` component which wraps the Thread component 
 </Channel>
 ```
 
-## Update the `Channel` props
+## Updates on `Channel` props
 
 Some of the props have been dropped since v4 release.
 
@@ -35,7 +37,7 @@ Please check [Mute User Action](#mute-user-action) section for details.
 ### `handleMute`
 
 This prop was used to add non-interruptive function call when "Mute User" action on message gets called, and has been removed in v4.
-Please check (Mute User Action)[#mute-user-action] section for details.
+Please check [Mute User Action](#mute-user-action) section for details.
 
 ### `quotedRepliesEnabled`
 
@@ -183,6 +185,10 @@ Please check the [guide](../guides/message_actions_customization.mdx#how-to-disa
 This prop was used to remove "Thread Reply" action from message actions, and has been removed in v4.
 Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
 
+### `legacyImageViewerSwipeBehaviour`
+
+Default value for this prop has been switched to `false` for performance reason.
+
 ## Mute User Action
 
 In v4 "Mute User" action has been removed from the SDK, since its not exactly an action on message and is not
@@ -205,19 +211,28 @@ npx pod-install
 
 ### Slow Mode Feature
 
-- Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cooldown interval.
-  Slow mode is disabled by default and can be enabled/disabled via the Dashboard, using the Chat Explorer.
+Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cooldown interval.
+Slow mode is disabled by default and can be enabled/disabled via the Dashboard, using the Chat Explorer.
 
-  For more details, please check the documentation for slow mode - https://getstream.io/chat/docs/javascript/slow_mode/?language=javascript#channel-slow-mode
+For more details, please check the documentation for [slow mode](https://getstream.io/chat/docs/javascript/slow_mode/?language=javascript#channel-slow-mode)
 
-- When cooldown interval kicks in, `SendButton` (to send message) will be replaced with a countdown timer
-  This countdown timer can be customized using a prop on Channel component - `CooldownTimer`
+When cooldown interval kicks in, `SendButton` (to send message) will be replaced with a countdown timer
+This countdown timer can be customized using a prop on Channel component - [`CooldownTimer`](../core-components/channel.mdx#cooldowntimer)
 
-<!-- TODO: Add video recording of slow mode feature -->
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+  <img src={slowMode} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
 
 ### Pin Message Feature
 
 "Pin Message" action within overlay now allows you to pin a message to channel.
+
+Pinned messages allow users to highlight important messages, make announcements, or temporarily promote content.
+Pinning a message is, by default, restricted to certain user roles, but this is flexible.
+Each channel can have multiple pinned messages and these can be created or updated with or without an expiration.
+
+To read more about how to retrieve pinned messages or search pinned messages, please read the documentation on
+[Pinned Messages](https://getstream.io/chat/docs/javascript/pinned_messages/).
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
   <img src={pinMessageAction} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
@@ -228,6 +243,29 @@ npx pod-install
 
 Features and UI components have been configured to use the `own_capabilities` returned by backend, improving the consistency
 between SDK features and permissions/config/settings applied on application. To read more about these capabilities, please follow the documentation - https://getstream.io/chat/docs/javascript/channel_capabilities/
+
+You can override these capabilities on UI level by providing [`overrideOwnCapabilities`](../core-components/channel.mdx) prop on Channel component:
+
+```tsx
+<Channel
+  overrideOwnCapabilities={{
+    banChannelMembers: false, // hides "Block User" message action.
+    deleteAnyMessage: false, // hides "Delete Message" action for received message.
+    deleteOwnMessage: false, // hides "Delete Message" action for own message.
+    flagMessage: false, // hides "Flag Message" action.
+    pinMessage: false, // hides "Pin Message" action.
+    quoteMessage: false, // hides "Reply" action.
+    readEvents: false, // hides read receipts.
+    sendLinks: false, // disallows sending links with message.
+    sendMessage: false, // disallows sending a message.
+    sendReaction: false, // hides reaction selector in overlay.
+    sendReply: false, // hides "Thread Reply" message action.
+    sendTypingEvents: false, // disallows sending typing events
+    updateAnyMessage: false, // hides "Edit Message" action for received message.
+    updateOwnMessage: false, // hides "Edit Message" action for own message.
+    uploadFile: false, // hides attach button on message input.
+  }}
+```
 
 ### UI/UX Changes and Performance Improvements
 
@@ -240,14 +278,18 @@ between SDK features and permissions/config/settings applied on application. To 
   - Long press animation on message UI has been removed
   - `animatedLongPress` prop has been removed from `Channel` component.
 
+
 ### Improved Customizability
 
 #### Autocomplete suggestions
 
 Following two new props on `Channel` componenent allows customizing UI for autocomplete suggestions list:
 
-- `AutoCompleteSuggestionsList`
-- `AutoCompleteSuggestionsListItem`
+- `AutoCompleteSuggestionHeader`
+- `AutoCompleteSuggestionList`
+- `AutoCompleteSuggestionItem`
+
+For details please read the docs on 
 
 #### Message Actions
 
@@ -284,3 +326,23 @@ This prop has following 4 possible values:
 - `never`: The deleted messages will not be visible to anyone.
 - `sender`: The deleted messages in the channel will only be visible to sender.
 - `receiver`: The deleted messages in the channel will only be visible to receiver.
+
+### Fixes Issues
+
+#### Warning about Virtualized List wrapped inside ScrollView
+
+Following warning from v3 of SDK has been fixed now.
+
+<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+  <img src={scrollViewWarning} alt='Unthemed' width='100%' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+</div>
+
+This warning was a result of `ScrollView` wrapped around `FlatList` inside overlay. Purpose of the wrapping ScrollView was to make overlay scrollable in case
+message text content is too long. The UX and this warning has been fixed by removing the ScrollView and truncating the text content of message within overlay.
+You can customize the truncation length of message text by providing a prop [`maxTextNumberOfLines`](../core-components/overlay_provider.mdx#maxtextnumberoflines) (number) on `OverlayProvider`.
+
+```tsx
+<OverlayProvider maxTextNumberOfLines={300}>
+  {/** child components */}
+</OverlayProvider>
+```
