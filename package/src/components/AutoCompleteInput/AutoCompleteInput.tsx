@@ -85,7 +85,13 @@ type AutoCompleteInputPropsWithContext<
     SuggestionsContextValue<Co, Us>,
     'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
   > &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> & {
+    /**
+     * This is currently passed in from MessageInput to avoid rerenders
+     * that would happen if we put this in the MessageInputContext
+     */
+    cooldownActive?: boolean;
+  };
 
 export type AutoCompleteInputProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -112,6 +118,7 @@ const AutoCompleteInputWithContext = <
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
     closeSuggestions,
+    cooldownActive = false,
     giphyActive,
     giphyEnabled,
     maxMessageLength,
@@ -396,6 +403,12 @@ const AutoCompleteInputWithContext = <
     }
   };
 
+  const placeholderText = giphyActive
+    ? t('Search GIFs')
+    : cooldownActive
+    ? t('Slow mode ON')
+    : t('Send a message');
+
   const handleSuggestionsThrottled = throttle(handleSuggestions, 100, {
     leading: false,
   });
@@ -422,7 +435,7 @@ const AutoCompleteInputWithContext = <
         }
       }}
       onSelectionChange={handleSelectionChange}
-      placeholder={giphyActive ? t('Search GIFs') : t('Send a message')}
+      placeholder={placeholderText}
       placeholderTextColor={grey}
       ref={setInputBoxRef}
       style={[
@@ -458,8 +471,18 @@ const areEqual = <
   prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { giphyActive: prevGiphyActive, t: prevT, text: prevText } = prevProps;
-  const { giphyActive: nextGiphyActive, t: nextT, text: nextText } = nextProps;
+  const {
+    cooldownActive: prevCooldownActive,
+    giphyActive: prevGiphyActive,
+    t: prevT,
+    text: prevText,
+  } = prevProps;
+  const {
+    cooldownActive: nextCooldownActive,
+    giphyActive: nextGiphyActive,
+    t: nextT,
+    text: nextText,
+  } = nextProps;
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
   if (!giphyActiveEqual) return false;
@@ -469,6 +492,9 @@ const areEqual = <
 
   const textEqual = prevText === nextText;
   if (!textEqual) return false;
+
+  const cooldownActiveEqual = prevCooldownActive === nextCooldownActive;
+  if (!cooldownActiveEqual) return false;
 
   return true;
 };

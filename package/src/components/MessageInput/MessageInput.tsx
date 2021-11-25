@@ -546,6 +546,7 @@ const MessageInputWithContext = <
                   )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
                     additionalTextInputProps={additionalTextInputProps}
+                    cooldownActive={!!cooldownRemainingSeconds}
                   />
                   {giphyActive && (
                     <TouchableOpacity
