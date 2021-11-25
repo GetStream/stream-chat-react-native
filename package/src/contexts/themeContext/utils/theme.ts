@@ -219,7 +219,10 @@ export type Theme = {
     commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
-    cooldownTimer: TextStyle;
+    cooldownTimer: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
@@ -669,7 +672,10 @@ export const defaultTheme: Theme = {
     commandsButtonContainer: {},
     composerContainer: {},
     container: {},
-    cooldownTimer: {},
+    cooldownTimer: {
+      container: {},
+      text: {},
+    },
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
