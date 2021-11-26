@@ -1,0 +1,145 @@
+---
+id: video-attachment
+sidebar_position: 6
+title: Video Attachment
+---
+
+We would be building a custom video component in the application using some of the available open-source packages and using the `FileAttachment` customization prop which the `Channel` component allows us to use.
+
+Uploading a video attachment is possible using the file upload in the attachment picker. 
+
+To add the video attachment and view the file we follow these steps:
+
+## Installing the packages
+
+We use two packages for rendering the video and creating the thumbnail of the video. 
+For rendering the video in message list we recommend using the [react-native-video](https://www.npmjs.com/package/react-native-video) package.
+To create the thumbnail of the video attachement we recommend using [react-native-create-thumbnail](https://github.com/souvik-ghosh/react-native-create-thumbnail) package.
+
+Note: [react-native-video](https://www.npmjs.com/package/react-native-video) and [react-native-create-thumbnail](https://github.com/souvik-ghosh/react-native-create-thumbnail) is an external package. 
+
+After installing it do not forget to link the package to your project. Follow the guide in the documentation for Android and iOS installation for `react-native-video` - [here](https://github.com/react-native-video/react-native-video#installation) and for `react-native-create-thumbnail` - [here](https://github.com/souvik-ghosh/react-native-create-thumbnail#getting-started).
+
+After the package is installed, we can use the `Video` component it provides to render video. 
+
+## Creating a Video Card Thumbnail component
+
+To create a video thumbnail we have already installed the package `react-native-create-thumbnail`. This package takes in the attachement `asset_url` and returns the thumbnail image url after saving it to the local file directory. You can also cache the file so that it doesn't gets saved everytime the screen is loaded.
+
+In our tutorial, we render the thumbnail in the `ImageBackground` component. We have added a play button on the thumbnail and on clicking the button the video display screen opens up with the video rendered therein.
+
+The example is as follows:
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import { ImageBackground, StyleSheet, TouchableOpacity } from 'react-native';
+import { Attachment } from 'stream-chat';
+import { FileAttachment, useMessageContext } from 'stream-chat-react-native';
+import { createThumbnail } from 'react-native-create-thumbnail';
+import { Play } from '../icons/Play';
+
+const styles = StyleSheet.create({
+  backgroundVideo: {
+    height: 200,
+    width: 250,
+  },
+  image: {
+    borderBottomLeftRadius: 14,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
+  playButton: {
+    marginBottom: 'auto',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 'auto',
+    position: 'relative',
+  },
+});
+
+export const VideoCard = ({ attachment, onPress }) => {
+  const [thumbnail, setThumbnail] = useState(null);
+  const { onLongPress } = useMessageContext();
+
+  useEffect(() => {
+    createThumbnail({
+      cacheName: attachment.title,
+      format: 'png',
+      url: attachment.asset_url,
+    })
+      .then((response) => {
+        setThumbnail(response.path);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [attachment]);
+
+  const isVideo = attachment.type === 'video';
+
+  if (isVideo) {
+    return (
+      <TouchableOpacity
+        onLongPress={(event) => {
+          if (onLongPress) {
+            onLongPress({
+              emitter: 'gallery',
+              event,
+            });
+          }
+        }}
+        onPress={onPress}
+      >
+        <ImageBackground
+          imageStyle={styles.image}
+          source={{ uri: thumbnail }}
+          style={styles.backgroundVideo}
+        >
+          <Play fill={'#fff'} height={50} style={styles.playButton} width={50} />
+        </ImageBackground>
+      </TouchableOpacity>
+    );
+  } else {
+    return <FileAttachment attachment={attachment} />;
+  }
+};
+```
+
+The `onPress` prop is a handler that triggers the navigation to the VideoDisplay screen. 
+To cache the thumbnail in the local file system we should provide the name of the file using which it will be saved in the directory.
+
+## Rendering the video component
+
+We use the `react-native-video` package to render the video component. An example for the same is as follows:
+
+```tsx
+import React from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet } from 'react-native';
+import Video from 'react-native-video';
+
+const styles = StyleSheet.create({
+  backgroundVideo: {
+    height: '100%',
+    width: '100%',
+  },
+});
+
+export const VideoDisplayScreen = ({
+  route: {
+    params: { attachment },
+  },
+}) => (
+  <Video
+    controls={true}
+    key={attachment.asset_url}
+    paused={false}
+    resizeMode='none'
+    source={{ uri: attachment.asset_url }}
+    style={styles.backgroundVideo}
+  />
+);
+```
+
+Note: There are several features which can be customized in the Video component for which you can refer the documentation [here](https://github.com/react-native-video/react-native-video#configurable-props).
