@@ -63,13 +63,27 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useIsMountedRef();
+  const filtersRef = useRef<typeof filters | null>(null);
+  const sortRef = useRef<typeof filters | null>(null);
+  const activeRequestId = useRef<number>(0)
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
-    if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
+    if (!client || !isMounted.current) return;
 
+    const hasUpdatedData = () =>
+      JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
+      JSON.stringify(sortRef.current) !== JSON.stringify(sort)
+
+
+    if (!hasUpdatedData) {
+      if (loadingChannels || loadingNextPage || refreshing) return;
+    }
+
+    filtersRef.current = filters;
     querying.current = true;
     setError(false);
-
+    activeRequestId.current++;
+    const currentRequestId = activeRequestId.current;
     if (queryType === 'reload') {
       setLoadingChannels(true);
     } else if (queryType === 'refresh') {
@@ -85,9 +99,14 @@ export const usePaginatedChannels = <
     };
 
     try {
+
       const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
         skipInitialization: activeChannels.current,
       });
+
+      if (activeRequestId.current !== currentRequestId) {
+        return;
+      }
 
       if (!isMounted.current) return;
 
@@ -107,6 +126,10 @@ export const usePaginatedChannels = <
       await wait(2000);
 
       if (!isMounted.current) return;
+
+      if (activeRequestId.current !== currentRequestId) {
+        return;
+      }
 
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)
