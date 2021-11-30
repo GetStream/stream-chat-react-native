@@ -4,11 +4,11 @@ sidebar_position: 6
 title: Video Attachment
 ---
 
-We would be building a custom video component in the application using some of the available open-source packages and using the `FileAttachment` customization prop which the `Channel` component allows us to use.
+We will build a custom video component in the application using some of the available open-source packages and using the [`FileAttachment`](../../core-components/channel#fileattachment) customization prop which the `Channel` component allows us to use.
 
 Uploading a video attachment is possible using the file upload in the attachment picker.
 
-To add the video attachment and view the file we follow these steps:
+To add the video attachment and view the video we follow these steps:
 
 ## Installing the packages
 
@@ -16,17 +16,63 @@ We use two packages for rendering the video and creating the thumbnail of the vi
 For rendering the video in the message list we recommend using the [react-native-video](https://www.npmjs.com/package/react-native-video) package.
 To create the thumbnail of the video attachment we recommend using the [react-native-create-thumbnail](https://github.com/souvik-ghosh/react-native-create-thumbnail) package.
 
-Note: [react-native-video](https://www.npmjs.com/package/react-native-video) and [react-native-create-thumbnail](https://github.com/souvik-ghosh/react-native-create-thumbnail) are external package.
+:::note
 
-After installing it do not forget to link the package to your project. Follow the guide in the documentation for Android and iOS installation for `react-native-video` - [here](https://github.com/react-native-video/react-native-video#installation) and for `react-native-create-thumbnail` - [here](https://github.com/souvik-ghosh/react-native-create-thumbnail#getting-started).
+[react-native-video](https://www.npmjs.com/package/react-native-video) and [react-native-create-thumbnail](https://github.com/souvik-ghosh/react-native-create-thumbnail) are external packages.
+
+:::
+
+After installing it, if you encounter any problems, please refer the guide in the installation and troubleshooting guidelines for `react-native-video` - [here](https://github.com/react-native-video/react-native-video#installation) and for `react-native-create-thumbnail` - [here](https://github.com/souvik-ghosh/react-native-create-thumbnail#getting-started).
 
 After the package is installed, we can use the `Video` component it provides to render video.
 
+## Setting up the navigation
+
+We will have two screens `ChannelScreen` and the `VideoDisplayScreen`. The `ChannelScreen` will have the Channel component and the `FileAttachment` prop will take the `FileAttachmentPreview` component. The `VideoDisplayScreen` renders the video.
+
+We set up the stack navigation as:
+
+```jsx
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { ChannelScreen } from './src/screens/ChannelScreen';
+import { VideoDisplayScreen } from './src/screens/VideoDisplayScreen';
+
+const Stack = createStackNavigator();
+
+const ChannelModule = () => {
+  return (
+    <Stack.Navigator initialRouteName='ChatScreen'>
+      <Stack.Screen component={ChannelScreen} name='ChannelScreen' />
+      <Stack.Screen component={VideoDisplayScreen} name='VideoDisplayScreen' />
+    </Stack.Navigator>
+  );
+};
+```
+
+The `ChannelScreen` component uses the Channel component's prop `FileAttachment` as follows:
+
+```jsx
+<Channel
+  channel={channel}
+  FileAttachment={({ attachment }) => {
+    const onPressVideo = () => {
+      navigation.navigate('VideoDisplayScreen', {
+        attachment,
+      });
+    };
+    return <FileAttachmentPreview attachment={attachment} onPress={onPressVideo} />;
+  }}
+>
+  {/* Underlying components */}
+</Channel>
+```
+
 ## Creating a Video Card Thumbnail component
 
-To create a video thumbnail we have already installed the package `react-native-create-thumbnail`. This package takes in the attachment `asset_url` and returns the thumbnail image URL after saving it to the local file directory. You can also cache the file so that it doesn't gets saved every time the screen is loaded.
+To create a video thumbnail we have already installed the package `react-native-create-thumbnail`. This package takes in the attachment `asset_url` and returns the thumbnail image URL after saving it to the local file directory. You can also cache the file so that it doesn't get saved every time the screen is loaded.
 
-In our tutorial, we render the thumbnail in the `ImageBackground` component. We have added a `Play` button on the thumbnail and on clicking the button a screen opens up with the video rendered therein.
+In our tutorial, we render the thumbnail in the `ImageBackground` component. We have added a `Play` button on the thumbnail, and on clicking the button, a screen opens up with the video rendered therein.
 
 The example is as follows:
 
@@ -57,7 +103,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const VideoCard = ({ attachment, onPress }) => {
+export const FileAttachmentPreview = ({ attachment, onPress }) => {
   const [thumbnail, setThumbnail] = useState(null);
   const { onLongPress } = useMessageContext();
 
@@ -108,7 +154,7 @@ To cache the thumbnail in the local file system we should provide the name of th
 
 We use the `react-native-video` package to render the video component. An example for the same is as follows:
 
-```tsx
+```jsx
 import React from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -138,4 +184,24 @@ export const VideoDisplayScreen = ({
 );
 ```
 
-Note: There are several features that can be customized in the Video component for which you can refer to the documentation [here](https://github.com/react-native-video/react-native-video#configurable-props).
+:::note
+
+There are several features that can be customized in the Video component for which you can refer to the documentation [here](https://github.com/react-native-video/react-native-video#configurable-props).
+
+:::
+
+:::info
+There's a noticeable problem that when you upload a video from android and try to render it on an ios device, it doesn't render.
+
+Error:
+
+```
+[Error: Error Domain=AVFoundationErrorDomain Code=-11800 "The operation could not be completed" UserInfo={NSLocalizedFailureReason=An unknown error occurred (1718449215), NSLocalizedDescription=The operation could not be completed, NSUnderlyingError=0x600002c70450 {Error Domain=NSOSStatusErrorDomain Code=1718449215 "(null)" UserInfo={AVErrorFourCharCode='fmt?'}}}]
+```
+
+The following [issues](https://github.com/react-native-video/react-native-video/issues?q=is%3Aissue+Error+Domain%3DAVFoundationErrorDomain+is%3Aclosed) are the reference to the problem in the package `react-native-video`.
+
+This happens for `mp4` file format and works fine for `mov`.
+
+Note: Android records video in `mp4` while iOS records it in `mov` format.
+:::
