@@ -454,7 +454,7 @@ const areEqual = <
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage?.pinned === nextMessage?.pinned;
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 
