@@ -278,7 +278,6 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
   - Long press animation on message UI has been removed
   - `animatedLongPress` prop has been removed from `Channel` component.
 
-
 ### Improved Customizability
 
 #### Autocomplete suggestions
@@ -289,7 +288,7 @@ Following two new props on `Channel` componenent allows customizing UI for autoc
 - `AutoCompleteSuggestionList`
 - `AutoCompleteSuggestionItem`
 
-For details please read the docs on 
+For details please read the docs on
 
 #### Message Actions
 
@@ -342,7 +341,5 @@ message text content is too long. The UX and this warning has been fixed by remo
 You can customize the truncation length of message text by providing a prop [`maxTextNumberOfLines`](../core-components/overlay_provider.mdx#maxtextnumberoflines) (number) on `OverlayProvider`.
 
 ```tsx
-<OverlayProvider maxTextNumberOfLines={300}>
-  {/** child components */}
-</OverlayProvider>
+<OverlayProvider maxTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
 ```
