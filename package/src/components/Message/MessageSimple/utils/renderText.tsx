@@ -70,6 +70,19 @@ const parse: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
 
+const parseUrlsFromText = (text: string) => {
+  try {
+    return anchorme(text, {
+      list: true,
+    });
+  } catch (e) {
+    console.warn(`failure at parseUrlsFromText: ${e}`);
+    // In case of failures its not worth crashing the app,
+    // and instead simply to have un-parsed urls in message text.
+    return [];
+  }
+};
+
 export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams<
@@ -125,9 +138,7 @@ export const renderText = <
   if (!text) return null;
 
   let newText = text.trim();
-  const urls = anchorme(newText, {
-    list: true,
-  });
+  const urls = parseUrlsFromText(newText);
 
   for (const urlInfo of urls) {
     const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
