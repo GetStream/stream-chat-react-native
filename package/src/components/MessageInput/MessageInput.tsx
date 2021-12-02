@@ -574,7 +574,6 @@ const MessageInputWithContext = <
         </View>
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
-      {console.log(triggerType)}
 
       {triggerType && suggestions ? (
         <View

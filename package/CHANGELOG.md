@@ -1,5 +1,12 @@
 # Change Log
 
+### [3.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.1...v3.10.2) (2021-11-23)
+
+
+### Bug Fixes
+
+* 'Block User' message action ([9959955](https://github.com/GetStream/stream-chat-react-native/commit/9959955fd665b708172d27fc0bbeb4cee4d104eb))
+
 ### [3.10.1](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.0...v3.10.1) (2021-11-15)
 
 
