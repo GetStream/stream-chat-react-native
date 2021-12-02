@@ -1,0 +1,45 @@
+---
+id: giphy
+title: Giphy
+---
+
+import HandleAction from '../common-content/contexts/message-context/handle_action.mdx';
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+
+Component to render giphy attachments within the [`MessageList`](./message_list.mdx).
+
+This is the default component provided to the prop [`Giphy`](../core-components/channel.mdx#giphy) on the `Channel` component.
+
+## Props
+
+### <div class="label required">required</div> **attachment**
+
+Attachment object for `giphy` type attachment.
+
+| Type   |
+| ------ |
+| object |
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+
+<AdditionalTouchableProps />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#handleaction)_</div> handleAction {#handleaction}
+
+<HandleAction />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+
+<OnLongPress />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
+
+<OnPress />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
+
+<OnPressIn />

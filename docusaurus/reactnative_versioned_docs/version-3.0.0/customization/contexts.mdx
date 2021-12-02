@@ -1,0 +1,175 @@
+---
+id: contexts
+sidebar_position: 3
+title: Contexts
+---
+
+Stream Chat for React Native uses a number of contexts to distribute data, functions, and components throughout the SDK.
+You can make use of these contexts when creating custom components to construct reusable components that can replace those provided out of the box.
+
+## Providers
+
+The majority of the contexts within the SDK are established in the higher level components.
+`OverlayProvider`, `Chat`, and `Channel` all contain a number of context providers that can be accessed via hooks or Higher Order Components.
+
+- `Channel`
+
+  - [`ChannelContext`](../contexts/channel_context.mdx)
+  - [`KeyboardContext`](../contexts/keyboard_context.mdx)
+  - [`MessageInputContext`](../contexts/message_input_context.mdx)
+  - [`MessagesContext`](../contexts/messages_context.mdx)
+  - [`PaginatedMessageListContext`](../contexts/paginated_message_list_context.mdx)
+  - [`SuggestionsContext`](../contexts/suggestions_context.mdx)
+  - [`ThreadContext`](../contexts/thread_context.mdx)
+  - [`TypingContext`](../contexts/typing_context.mdx)
+
+- `Chat`
+
+  - [`ChatContext`](../contexts/chat_context.mdx)
+  - [`ThemeContext`](../contexts/theme_context.mdx)
+  - [`TranslationContext`](../contexts/translation_context.mdx)
+
+- `OverlayProvider`
+  - [`AttachmentPickerContext`](../contexts/attachment_picker_context.mdx)
+  - [`ImageGalleryContext`](../contexts/image_gallery_context.mdx)
+  - [`MessageOverlayContext`](../contexts/message_overlay_context.mdx)
+  - [`OverlayContext`](../contexts/overlay_context.mdx)
+  - [`ThemeContext`](../contexts/theme_context.mdx)
+  - [`TranslationContext`](../contexts/translation_context.mdx)
+
+These contexts are the source of the majority of the components, functions, and data used in the SDK.
+When creating a custom component this is where one should first look to draw data and sub-components from to create a custom component.
+Most components when rendered by the SDK receive few or no props, it is up to you as the developer to pull the appropriate data from these contexts that you need for your customizations.
+
+There are two other contexts available in the SDK, the `ChannelsContext` and the `MessageContext`.
+The `ChannelsContext` is provided by the `ChannelList` component.
+The `MessageContext` is provided within the `Message` component and wraps every `MessageSimple` component rendered with a context with information unique to that message.
+This allows you as a developer to create customizations to a sub-component of `Message` by accessing relevant data from a given message.
+
+## Hooks
+
+To access information from these contexts we suggest using the hooks that are provided by the library.
+
+| Context                       | Hook                             |
+| ----------------------------- | -------------------------------- |
+| `AttachmentPickerContext`     | `useAttachmentPickerContext`     |
+| `ChannelContext`              | `useChannelContext`              |
+| `ChannelsContext`             | `useChannelsContext`             |
+| `ChatContext`                 | `useChatContext`                 |
+| `ImageGalleryContext`         | `useImageGalleryContext`         |
+| `KeyboardContext`             | `useKeyboardContext`             |
+| `MessageInputContext`         | `useMessageInputContext`         |
+| `MessageOverlayContext`       | `useMessageOverlayContext`       |
+| `MessagesContext`             | `useMessagesContext`             |
+| `OverlayContext`              | `useOverlayContext`              |
+| `PaginatedMessageListContext` | `usePaginatedMessageListContext` |
+| `SuggestionsContext`          | `useSuggestionsContext`          |
+| `ThreadContext`               | `useThreadContext`               |
+| `ThemeContext`                | `useTheme`                       |
+| `TranslationContext`          | `useTranslationContext`          |
+| `TypingContext`               | `useTypingContext`               |
+
+:::note
+
+If you are using TypeScript you will need to [pass your custom data types](./typescript.mdx#hooks) to hooks you are taking advantage of.
+
+:::
+
+If needed Higher Order Components are also exported to pass contexts into class based components.
+
+## Utilization
+
+Most customizations to the UI are provided through the `Channel` component.
+To give some insight into how customizations work internally with contexts we will walk through the path a single custom component takes when it is provided as a prop to the `Channel` component.
+We will also look at how this structure can be utilized to build custom components that consume context.
+
+For this walk-through we will follow the path of the `MessageStatus` component that provides the sending and read status of a single message.
+We will consider to start that we want to remove this component completely, and thus we provide a function that returns `null` to the prop `MessageStatus` on `Channel`.
+
+```tsx
+<Channel MessageStatus={() => null}>
+```
+
+Internal to the `Channel` component our `MessageStatus` prop will override the default value for the prop, `MessageStatusDefault`, which is our out of the box `MessageStatus` component.
+
+```tsx
+const { ...MessageStatus } = props;
+```
+
+The `MessageStatus` prop is then passed into an internal hook called `useCreateMessagesContext`.
+
+```tsx
+const messagesContext = useCreateMessagesContext({
+  ...MessageStatus,
+});
+```
+
+The `useCreateMessagesContext` hook utilizes the [`useMemo`](https://reactjs.org/docs/hooks-reference.html#usememo) hook to return a memoized version of the value that will be provided to the `MessagesContext`.
+This value only will update under certain conditions to reduce unnecessary updating of the context, and therefore re-rendering of components using the context.
+For this reason changing a component provided to `Channel` on the fly will often not result in an immediate UI update.
+
+```tsx
+<MessagesProvider value={messagesContext}>
+```
+
+The custom `MessageStatus` component can now be accessed using the `useMessagesContext` hook.
+The default component for `MessageFooter` does just this, and then renders the `MessageStatus` component if desired.
+
+```tsx
+const { showMessageStatus } = useMessageContext();
+const { MessageStatus } = useMessagesContext();
+...
+return (
+  ...
+  {showMessageStatus && <MessageStatus />}
+);
+```
+
+In this scenario `<MessageStatus />` would always be null.
+But if you actually wanted to replace this component with a custom component you would likely want access to the same information the default component has, or perhaps more.
+To access this information we would once again reach for context, the default `MessageStatus` component utilizes the `useMessageContext`.
+
+```tsx
+const { message, readEventsEnabled, threadList } = useMessageContext();
+```
+
+A custom component can do the same.
+Because custom components will ultimately be rendered within the [providers](#providers) they can access contexts.
+A simple custom `MessageStatus` in this case could then just pull `message` from context and return the `readBy` key as text.
+
+```tsx
+const CustomMessageStatus = () => {
+  const { message } = useMessageContext();
+  return <Text>{message.readBy}</Text>;
+};
+...
+<Channel MessageStatus={CustomMessageStatus}>
+```
+
+Additionally custom components can access other components, custom or otherwise, from the same context they are stored in.
+`MessageFooter` renders `MessageStatus` in the default component, but `MessageFooter` itself is also stored in the `MessagesContext` along with `MessageStatus`, and is replaceable as well.
+It is therefore possible to utilize a mix of other custom and out of the box components within a custom component to create your desired UI.
+
+```tsx
+const CustomMessageFooter = () => {
+  const { MessageAvatar, MessageStatus } = useMessagesContext();
+  return (
+    <View>
+      <MessageAvatar />
+      <Text>Footer</Text>
+      <MessageStatus />
+    </View>
+  );
+};
+
+const CustomMessageStatus = () => {
+  const { message } = useMessageContext();
+  return <Text>{message.readBy}</Text>
+};
+...
+<Channel MessageFooter={CustomMessageFooter} MessageStatus={CustomMessageStatus}>
+```
+
+It is important to keep in mind when creating custom components that some may have internal functionality you may want to keep.
+Additionally many of our out of the box component utilize custom memoization equality functions to minimize re-renders.
+With this in mind we suggest looking at the source code for any component you wish to replace, and possibly using it as a jumping off point, to ensure you are not removing desired functionality or performance.
