@@ -1,0 +1,19 @@
+Sort object passed internally to the [client query function](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript) as a parameter.
+You can sort a query on [built-in](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript#query-parameters) and custom fields on a Channel.
+
+#### Example
+
+```tsx
+const sort = { last_message_at: -1 };
+```
+
+:::note
+
+For optimal performance you should pass a sort object with a static reference.
+You can use a sort object that is not created inline; or memoize an inline sort object before passing it to the `ChannelList` to achieve this.
+
+:::
+
+| Type   |
+| ------ |
+| object |

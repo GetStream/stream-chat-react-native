@@ -1,0 +1,52 @@
+---
+id: attachment
+title: Attachment
+---
+
+import Card from '../common-content/core-components/channel/props/card.mdx';
+import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
+import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
+import Gallery from '../common-content/core-components/channel/props/gallery.mdx';
+import Giphy from '../common-content/core-components/channel/props/giphy.mdx';
+import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
+
+Component to render the message attachments within the [`MessageList`](./message_list.mdx).
+
+This is the default component provided to the prop [`Attachment`](../core-components/channel.mdx#attachment) on the `Channel` component.
+It renders relevant component according to type of the attachment (e.g., card, giphy, file etc). Generally you wouldn't need to use this component for customization,
+you should instead use specific attachment type related prop such as [`Giphy`](../core-components/channel.mdx#giphy), [`Gallery`](../core-components/channel.mdx#gallery), [`UrlPreview`](../core-components/channel.mdx#urlpreview), [`FileAttachment`](../core-components/channel.mdx#fileattachment) etc.
+Please check our guide on [Attachment Customization](../guides/attachment_customizations.mdx) for details.
+
+## Props
+
+### <div class="label required">required</div> **attachment**
+
+Attachment object to render UI for. This is basically a value from `attachments` array on message object - `message.attachments[0]`.
+
+| Type   |
+| ------ |
+| object |
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#attachmentactions)_</div> AttachmentActions {#attachmentactions}
+
+<AttachmentActions />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#card)_</div> Card {#card}
+
+<Card />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#fileattachment)_</div> FileAttachment {#fileattachment}
+
+<FileAttachment />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#gallery)_</div> Gallery {#gallery}
+
+<Gallery />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#giphy)_</div> Giphy {#giphy}
+
+<Giphy />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#urlpreview)_</div> UrlPreview {#urlpreview}
+
+<UrlPreview />

@@ -1,0 +1,36 @@
+Object to override the capabilities of current user, which are affected by number of factors such as user permissions, channel type configurations and channel settings.
+These capabilities are used to enable or disable certain UI features within the SDK. To know more about capabilities, please take a look at following documentation:
+
+https://getstream.io/chat/docs/javascript/channel_capabilities/?language=javascript
+
+For example:
+
+```tsx
+<Channel
+  overrideOwnCapabilities={{
+    uploadFile: false,
+    sendLinks: false
+  }}
+```
+
+Available keys for the object:
+
+- `banChannelMembers` When false, "Block User" message action won't be available within overlay.
+- `deleteAnyMessage` When false, "Delete Message" action won't be available for received message within overlay.
+- `deleteOwnMessage` When false, "Delete Message" action won't be available for own message within overlay.
+- `flagMessage` When false, "Flag Message" message action won't be available within overlay.
+- `pinMessage` When false, "Pin Message" action won't be available within overlay.
+- `quoteMessage` When false, "Reply" message action won't be available within overlay.
+- `readEvents` When false, read recipts for message won't be rendered.
+- `sendLinks` When false, user will not be allowed to send urls in message.
+- `sendMessage` When false, message input component will render `SendMessageDisallowedIndicator` instead of input box.
+- `sendReaction` When false, reaction selector (`OverlayReactionList`) component won't be available within overlay.
+- `sendReply` When false, "Thread Reply" message action won't be available within overlay.
+- `sendTypingEvents` When false, typing events won't be sent from current user.
+- `updateAnyMessage` When false, "Edit Message" action won't be available for received messages within overlay.
+- `updateOwnMessage` When false, "Edit Message" action won't be available for own messages within overlay.
+- `uploadFile` When false, upload file button (`AttachButton`) won't be available within `MessageInput` component.
+
+| Type   |
+| ------ |
+| object |
