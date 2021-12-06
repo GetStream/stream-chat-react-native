@@ -10,8 +10,8 @@ configPromise.then((config) => {
       'master',
       {
         name: 'develop',
-        channel: 'next',
-        prerelease: 'next',
+        channel: 'beta',
+        prerelease: 'beta',
       },
     ],
   }).then((result) => {
@@ -26,7 +26,7 @@ configPromise.then((config) => {
           result,
         }))
         .then(({ tagExists, result }) => {
-          if (tagExists && result.lastRelease && result.lastRelease.gitTag.includes('-next')) {
+          if (tagExists && result.lastRelease && result.lastRelease.gitTag.includes('-beta')) {
             return execa('git', ['push', '--delete', 'origin', result.lastRelease.gitTag]);
           }
         })
