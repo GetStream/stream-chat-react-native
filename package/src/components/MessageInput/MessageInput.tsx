@@ -354,6 +354,7 @@ const MessageInputWithContext = <
 
   useEffect(() => {
     if (selectedFilesLength > fileUploadsLength) {
+      /** User selected a video in bottom sheet attachment picker */
       const filesToUpload = selectedFiles.filter((selectedFile) => {
         const uploadedFile = fileUploads.find(
           (fileUpload) =>
@@ -363,6 +364,7 @@ const MessageInputWithContext = <
       });
       filesToUpload.forEach((file) => uploadNewFile(file));
     } else if (selectedFilesLength < fileUploadsLength) {
+      /** User de-selected a video in bottom sheet attachment picker */
       const filesToRemove = fileUploads.filter(
         (fileUpload) =>
           !selectedFiles.find(
@@ -408,6 +410,7 @@ const MessageInputWithContext = <
 
   useEffect(() => {
     if (fileUploadsLength < selectedFilesLength) {
+      /** User removed some video from seleted files within ImageUploadPreview. */
       const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
         const uploadedFile = fileUploads.find(
           (fileUpload) =>
@@ -417,6 +420,11 @@ const MessageInputWithContext = <
       });
       setSelectedFiles(updatedSelectedFiles);
     } else if (fileUploadsLength > selectedFilesLength) {
+      /**
+       * User is editing some message which contains video attachments OR
+       * video attachment is added from custom image picker (other than the default bottomsheet image picker)
+       * using `uploadNewFile` function from `MessageInputContext`.
+       **/
       setSelectedFiles(
         fileUploads.map((fileUpload) => ({
           name: fileUpload.file.name,
