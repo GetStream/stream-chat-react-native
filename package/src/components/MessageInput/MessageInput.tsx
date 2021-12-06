@@ -149,7 +149,9 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'removeFile'
     | 'removeImage'
+    | 'uploadNewFile'
     | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
@@ -203,6 +205,7 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     Reply,
     resetInput,
@@ -217,6 +220,7 @@ const MessageInputWithContext = <
     thread,
     threadList,
     triggerType,
+    uploadNewFile,
     uploadNewImage,
     watchers,
   } = props;
@@ -257,9 +261,11 @@ const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
+    selectedFiles,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
+    setSelectedFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
 
@@ -279,8 +285,11 @@ const MessageInputWithContext = <
   }, []);
 
   const [hasResetImages, setHasResetImages] = useState(false);
+  const [hasResetFiles, setHasResetFiles] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
+  const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
   const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
 
   useEffect(() => {
@@ -292,10 +301,24 @@ const MessageInputWithContext = <
   }, []);
 
   useEffect(() => {
+    setSelectedFiles([]);
+    if (fileUploads.length) {
+      fileUploads.forEach((file) => removeFile(file.id));
+    }
+    return () => setSelectedFiles([]);
+  }, []);
+
+  useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
       setHasResetImages(true);
     }
   }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
+      setHasResetFiles(true);
+    }
+  }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput === false && imageUploads.length) {
@@ -330,6 +353,28 @@ const MessageInputWithContext = <
   }, [selectedImagesLength]);
 
   useEffect(() => {
+    if (selectedFilesLength > fileUploadsLength) {
+      const filesToUpload = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return !uploadedFile;
+      });
+      filesToUpload.forEach((file) => uploadNewFile(file));
+    } else if (selectedFilesLength < fileUploadsLength) {
+      const filesToRemove = fileUploads.filter(
+        (fileUpload) =>
+          !selectedFiles.find(
+            (selectedFile) =>
+              selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+          ),
+      );
+      filesToRemove.forEach((file) => removeFile(file.id));
+    }
+  }, [selectedFilesLength]);
+
+  useEffect(() => {
     if (imagesForInput) {
       if (imageUploadsLength < selectedImagesLength) {
         /** User removed some image from seleted images within ImageUploadPreview. */
@@ -360,6 +405,28 @@ const MessageInputWithContext = <
       }
     }
   }, [imageUploadsLength]);
+
+  useEffect(() => {
+    if (fileUploadsLength < selectedFilesLength) {
+      const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return uploadedFile;
+      });
+      setSelectedFiles(updatedSelectedFiles);
+    } else if (fileUploadsLength > selectedFilesLength) {
+      setSelectedFiles(
+        fileUploads.map((fileUpload) => ({
+          name: fileUpload.file.name,
+          size: fileUpload.file.size,
+          type: fileUpload.file.type,
+          uri: fileUpload.file.uri,
+        })),
+      );
+    }
+  }, [fileUploadsLength]);
 
   const editingExists = !!editing;
   useEffect(() => {
@@ -792,6 +859,7 @@ export const MessageInput = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     resetInput,
     SendButton,
@@ -802,6 +870,7 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -853,6 +922,7 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
+        removeFile,
         removeImage,
         Reply,
         resetInput,
@@ -867,6 +937,7 @@ export const MessageInput = <
         t,
         thread,
         triggerType,
+        uploadNewFile,
         uploadNewImage,
         watchers,
       }}

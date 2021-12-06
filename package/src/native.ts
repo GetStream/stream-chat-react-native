@@ -27,12 +27,22 @@ type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
 export type Asset = {
+  filename: string;
+  fileSize: string;
   height: number;
   source: 'camera' | 'picker';
   uri: string;
   width: number;
   id?: string;
 };
+
+export type File = {
+  name: string;
+  size?: number | string;
+  type?: string;
+  uri?: string;
+};
+
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;

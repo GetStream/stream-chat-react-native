@@ -14,13 +14,15 @@ import BottomSheet, {
   BottomSheetHandleProps,
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
+import { lookup } from 'mime-types';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Asset, getPhotos } from '../../native';
+import { Asset, File, getPhotos } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
+import { Video } from '../../icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +31,11 @@ const styles = StyleSheet.create({
   overlay: {
     alignItems: 'flex-end',
     flex: 1,
+  },
+  unionIcon: {
+    bottom: 5,
+    left: 5,
+    position: 'absolute',
   },
 });
 
@@ -39,6 +46,7 @@ type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
   onPress: () => void;
   selected: boolean;
+  type: 'image' | 'video';
   uri: string;
   numberOfAttachmentPickerImageColumns?: number;
 };
@@ -49,6 +57,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     numberOfAttachmentPickerImageColumns,
     onPress,
     selected,
+    type,
     uri,
   } = props;
   const {
@@ -78,10 +87,21 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
             <ImageOverlaySelectedComponent />
           </View>
         )}
+        {type === 'video' && <Video pathFill={'#fff'} style={styles.unionIcon} />}
       </ImageBackground>
     </TouchableOpacity>
   );
 };
+
+const fail = () => {
+  throw Error(
+    'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
+  );
+};
+
+type GetLocalAssetUri = (uriOrAssetId: string) => never;
+
+export const getLocalAssetUri: GetLocalAssetUri = fail;
 
 const renderImage = ({
   item,
@@ -91,6 +111,7 @@ const renderImage = ({
     ImageOverlaySelectedComponent: React.ComponentType;
     maxNumberOfFiles: number;
     selected: boolean;
+    setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
     setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
     numberOfAttachmentPickerImageColumns?: number;
   };
@@ -101,9 +122,22 @@ const renderImage = ({
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
     selected,
+    setSelectedFiles,
     setSelectedImages,
   } = item;
-  const onPress = () => {
+
+  const localUri = asset.id
+    ? getLocalAssetUri(asset.id)
+    : asset.uri?.match(/assets-library/)
+    ? getLocalAssetUri(asset.uri)
+    : asset.uri;
+  const uri = asset.filename || localUri || '';
+  const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+  const contentType = lookup(filename) || 'multipart/form-data';
+
+  const isImage = contentType.startsWith('image/');
+
+  const onPressImage = () => {
     if (selected) {
       setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
     } else {
@@ -116,12 +150,34 @@ const renderImage = ({
     }
   };
 
+  const onPressVideo = () => {
+    if (selected) {
+      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+    } else {
+      setSelectedFiles((files) => {
+        if (files.length >= maxNumberOfFiles) {
+          return files;
+        }
+        return [
+          ...files,
+          {
+            name: asset.filename,
+            size: asset.fileSize,
+            type: 'video/mp4',
+            uri: asset.uri,
+          },
+        ];
+      });
+    }
+  };
+
   return (
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={onPress}
+      onPress={isImage ? onPressImage : onPressVideo}
       selected={selected}
+      type={isImage ? 'image' : 'video'}
       uri={asset.uri}
     />
   );
@@ -186,8 +242,10 @@ export const AttachmentPicker = React.forwardRef(
     const {
       closePicker,
       maxNumberOfFiles,
+      selectedFiles,
       selectedImages,
       selectedPicker,
+      setSelectedFiles,
       setSelectedImages,
       setSelectedPicker,
       topInset,
@@ -289,7 +347,10 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      selected: selectedImages.some((image) => image.uri === asset.uri),
+      selected:
+        selectedImages.some((image) => image.uri === asset.uri) ||
+        selectedFiles.some((file) => file.uri === asset.uri),
+      setSelectedFiles,
       setSelectedImages,
     }));
 
