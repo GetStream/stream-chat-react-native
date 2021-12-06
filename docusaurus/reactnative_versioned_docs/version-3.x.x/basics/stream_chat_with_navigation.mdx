@@ -246,7 +246,7 @@ export const ThreadScreen = () => {
   const { setThread, thread } = useAppThread();
 
   return (
-    <Channel channel={channel} thread={thread} threadList>
+    <Channel channel={channel} thread={thread}>
       <Thread onThreadDismount={() => setThread(undefined)} />
     </Channel>
   );

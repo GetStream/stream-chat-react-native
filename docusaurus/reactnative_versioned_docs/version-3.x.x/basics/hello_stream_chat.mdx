@@ -414,7 +414,7 @@ export const App = () => {
     <OverlayProvider>
       <Chat client={client}>
         {channel ? (
-          <Channel channel={channel} keyboardVerticalOffset={0} thread={thread} threadList={!!thread}>
+          <Channel channel={channel} keyboardVerticalOffset={0} thread={thread}>
             {thread ? (
               <Thread />
             ) : (
@@ -528,7 +528,7 @@ export const App = () => {
       <View style={{ flex: 1 }}>
         <Chat client={client}>
           {channel ? (
-            <Channel channel={channel} keyboardVerticalOffset={60} thread={thread} threadList={!!thread}>
+            <Channel channel={channel} keyboardVerticalOffset={60} thread={thread}>
               {thread ? (
                 <Thread />
               ) : (
