@@ -22,17 +22,18 @@ import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../com
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
+import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
+import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
 import { useStreami18n } from '../../hooks/useStreami18n';
-import { BlurView } from '../../native';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 
-import { BlurType, OverlayContext, OverlayProviderProps } from './OverlayContext';
+import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -100,12 +101,14 @@ export const OverlayProvider = <
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
-    MessageActions,
+    MessageActionList,
+    MessageActionListItem,
+    messageTextNumberOfLines,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
-      if (ref.current) {
+      if (ref.current?.snapTo) {
         ref.current.snapTo(0);
       } else {
         console.warn('bottom and top insets must be set for the image picker to work correctly');
@@ -139,7 +142,6 @@ export const OverlayProvider = <
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
-  const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
@@ -151,7 +153,6 @@ export const OverlayProvider = <
   useEffect(() => {
     const backAction = () => {
       if (overlay !== 'none') {
-        setBlurType(undefined);
         setOverlay('none');
         return true;
       }
@@ -166,7 +167,7 @@ export const OverlayProvider = <
 
   useEffect(() => {
     if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
+      bottomSheetRef.current.close?.();
     }
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
@@ -200,7 +201,6 @@ export const OverlayProvider = <
 
   const overlayContext = {
     overlay,
-    setBlurType,
     setOverlay,
     style: value?.style,
     translucentStatusBar,
@@ -214,24 +214,25 @@ export const OverlayProvider = <
         <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              {children}
+              <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>{children}</ChannelsStateProvider>
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}
                   style={[StyleSheet.absoluteFill, overlayStyle]}
                 >
-                  <BlurView
-                    blurType={blurType}
-                    style={[StyleSheet.absoluteFill, { height, width }]}
-                  />
+                  <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                 </Animated.View>
-                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  MessageActions={MessageActions}
-                  overlayOpacity={overlayOpacity}
-                  OverlayReactionList={OverlayReactionList}
-                  OverlayReactions={OverlayReactions}
-                  visible={overlay === 'message'}
-                />
+                {overlay === 'message' && (
+                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                    MessageActionList={MessageActionList}
+                    MessageActionListItem={MessageActionListItem}
+                    messageTextNumberOfLines={messageTextNumberOfLines}
+                    overlayOpacity={overlayOpacity}
+                    OverlayReactionList={OverlayReactionList}
+                    OverlayReactions={OverlayReactions}
+                    visible={overlay === 'message'}
+                  />
+                )}
                 <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
                   imageGalleryCustomComponents={imageGalleryCustomComponents}
                   imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}

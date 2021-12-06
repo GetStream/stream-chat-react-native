@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { Alert, Keyboard } from 'react-native';
 import uniq from 'lodash/uniq';
 import {
   Attachment,
@@ -21,6 +21,7 @@ import { useChatContext } from '../chatContext/ChatContext';
 import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { getDisplayName } from '../utils/getDisplayName';
+import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 
 import {
   ACITriggerSettings,
@@ -28,14 +29,20 @@ import {
   FileState,
   generateRandomId,
   TriggerSettings,
+  urlRegex,
 } from '../../utils/utils';
 
 import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
 
+import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useTranslationContext } from '../translationContext/TranslationContext';
+
 import type { TextInput, TextInputProps } from 'react-native';
+import { lookup } from 'mime-types';
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
@@ -54,8 +61,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-const MIME_TYPE_OCTET_STREAM = 'application/octet-stream';
 
 export type FileUpload = {
   file: {
@@ -78,11 +83,6 @@ export type ImageUpload = {
   url?: string;
 };
 
-export type InputConfig = {
-  maxMessageLength?: number;
-  uploadsEnabled?: boolean;
-};
-
 export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
   filters?: UserFilters<Us>;
   options?: UserOptions;
@@ -103,6 +103,8 @@ export type LocalMessageInputContext<
     };
   };
   closeAttachmentPicker: () => void;
+  /** The time at which the active cooldown will end */
+  cooldownEndsAt: Date;
   /**
    * An array of file objects which are set for upload. It has the following structure:
    *
@@ -243,6 +245,14 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component to display the remaining cooldown a user will have to wait before
+   * being allowed to send another message. This component is displayed in place of the
+   * send button for the MessageInput component.
+   *
+   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/CooldownTimer.tsx)
+   */
+  CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
@@ -375,6 +385,7 @@ export type InputMessageInputContextValue<
    * - toggleAttachmentPicker
    */
   InputButtons?: React.ComponentType<InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  maxMessageLength?: number;
   mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
   mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
@@ -382,6 +393,7 @@ export type InputMessageInputContextValue<
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
   onChangeText?: (newText: string) => void;
+  SendMessageDisallowedIndicator?: React.ComponentType;
   /**
    * ref for input setter function
    *
@@ -390,7 +402,7 @@ export type InputMessageInputContextValue<
    * @overrideType Function
    */
   setInputRef?: (ref: TextInput | null) => void;
-} & InputConfig;
+};
 
 export type MessageInputContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -422,10 +434,11 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-
+  const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 
@@ -453,6 +466,8 @@ export const MessageInputProvider = <
     showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(editing, initialValue);
+  const { endsAt: cooldownEndsAt, start: startCooldown } =
+    useCooldown<At, Ch, Co, Ev, Me, Re, Us>();
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -502,7 +517,7 @@ export const MessageInputProvider = <
     }
     setText(newText);
 
-    if (newText && channel) {
+    if (newText && channel && channelCapabities.sendTypingEvents) {
       logChatPromiseExecution(channel.keystroke(thread?.id), 'start typing event');
     }
 
@@ -608,14 +623,25 @@ export const MessageInputProvider = <
     setText('');
   };
 
+  // TODO: Figure out why this is async, as it doesn't await any promise.
+  // eslint-disable-next-line require-await
   const sendMessage = async () => {
     if (sending.current) {
       return;
     }
+
+    if (!channelCapabities.sendLinks && !!text.match(urlRegex)) {
+      Alert.alert(t('Links are disabled'), t('Sending links is not allowed in this conversation'));
+
+      return;
+    }
+
     sending.current = true;
 
+    startCooldown();
+
     const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
-    await setText('');
+    setText('');
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
     }
@@ -664,6 +690,14 @@ export const MessageInputProvider = <
             fallback: file.file.name,
             image_url: file.url,
             type: 'image',
+          } as Attachment<At>);
+        } else if (file.file.type?.startsWith('video/')) {
+          attachments.push({
+            asset_url: file.url,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'video',
           } as Attachment<At>);
         } else {
           attachments.push({
@@ -741,6 +775,7 @@ export const MessageInputProvider = <
         },
       ] as StreamMessage<At, Me, Us>['attachments'];
 
+      startCooldown();
       try {
         value.sendMessage({
           attachments,
@@ -809,7 +844,7 @@ export const MessageInputProvider = <
     }
     const { file, id } = newFile;
 
-    await setFileUploads((prevFileUploads) =>
+    setFileUploads((prevFileUploads) =>
       prevFileUploads.map((fileUpload) => {
         if (fileUpload.id === id) {
           return {
@@ -826,7 +861,7 @@ export const MessageInputProvider = <
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
-        response = await channel.sendFile(file.uri, file.name, MIME_TYPE_OCTET_STREAM);
+        response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
       console.warn(error);
@@ -905,12 +940,13 @@ export const MessageInputProvider = <
             uri,
             width: file.width,
           }));
-
+      const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
+      const contentType = lookup(filename) || 'multipart/form-data';
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM).then((res) => {
+          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -937,7 +973,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, MIME_TYPE_OCTET_STREAM);
+          response = await channel.sendImage(compressedUri, undefined, contentType);
         }
       }
 
@@ -983,8 +1019,9 @@ export const MessageInputProvider = <
     uri?: string;
   }) => {
     const id = generateRandomId();
+    const mimeType = lookup(file.name);
     const newFile = {
-      file: { ...file, type: MIME_TYPE_OCTET_STREAM },
+      file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,
     };
@@ -1016,6 +1053,7 @@ export const MessageInputProvider = <
     asyncIds,
     asyncUploads,
     closeAttachmentPicker,
+    cooldownEndsAt,
     fileUploads,
     giphyActive,
     imageUploads,

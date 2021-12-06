@@ -1,13 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { MessageList } from '../MessageList';
 
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
-
-import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -15,20 +12,11 @@ import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
-import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
-import { generateStaticUser, generateUser } from '../../../mock-builders/generator/user';
+import { generateMessage } from '../../../mock-builders/generator/message';
+import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-
-function MockedFlatList(props) {
-  if (!props.data.length && props.ListEmptyComponent) return props.ListEmptyComponent();
-
-  const items = props.data.map((item, index) => {
-    const key = props.keyExtractor(item, index);
-    return <View key={key}>{props.renderItem({ index, item })}</View>;
-  });
-  return <View testID={props.testID}>{items}</View>;
-}
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { registerNativeHandlers } from '../../../native';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -44,21 +32,20 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-    channel.initialized = true;
+    await channel.watch();
 
     const { getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
             <MessageList />
           </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+        </Chat>
+      </OverlayProvider>,
     );
 
     const newMessage = generateMessage({ user: user2 });
-    dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
+    act(() => dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel));
 
     await waitFor(() => {
       expect(queryAllByTestId('message-notification')).toHaveLength(0);
@@ -80,28 +67,189 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    // debug()
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-system')).toBeTruthy();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(always)', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
       expect(queryAllByTestId('error-notification')).toHaveLength(0);
-      expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
-      expect(getByTestId('message-system')).toBeTruthy();
+      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to sender', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} deletedMessagesVisibilityType='sender'>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(queryByTestId('message-deleted')).toBeTruthy();
+      expect(getByTestId('only-visible-to-you')).toBeTruthy();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to receiver', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ type: 'deleted', user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByTestId, queryAllByTestId, queryByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} deletedMessagesVisibilityType='receiver'>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-deleted')).toBeTruthy();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to never', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser({ id: 'testID' });
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user2 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ type: 'deleted', user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { queryAllByTestId, queryByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} deletedMessagesVisibilityType='never'>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(queryByTestId('message-deleted')).toBeNull();
+      expect(queryByTestId('only-visible-to-you')).toBeNull();
+    });
+  });
+
+  it('should render deleted message in the list', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ type: 'deleted', user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByTestId, queryAllByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryAllByTestId('error-notification')).toHaveLength(0);
+      expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
 
@@ -115,25 +263,21 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: true }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} FlatList={MockedFlatList}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
-    dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
+    act(() => {
+      dispatchTypingEvent(chatClient, user1, mockedChannel.channel);
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
@@ -152,16 +296,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
             <MessageList />
           </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -170,6 +314,16 @@ describe('MessageList', () => {
   });
 
   it('should render the is offline error', async () => {
+    registerNativeHandlers({
+      NetInfo: {
+        addEventListener: () => () => null,
+        fetch: () =>
+          new Promise((resolve) => {
+            resolve(false);
+          }),
+      },
+    });
+
     const user1 = generateUser();
     const mockedChannel = generateChannel({
       members: [generateMember({ user: user1 })],
@@ -179,22 +333,16 @@ describe('MessageList', () => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
+    await channel.watch();
 
     const { getByTestId, getByText, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <ChatContext.Consumer>
-          {(context) => (
-            <ChatProvider value={{ ...context, isOnline: false }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel}>
-                  <MessageList />
-                </Channel>
-              </ImageGalleryProvider>
-            </ChatProvider>
-          )}
-        </ChatContext.Consumer>
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -203,38 +351,15 @@ describe('MessageList', () => {
       expect(getByTestId('error-notification')).toBeTruthy();
       expect(getByText('Reconnecting...')).toBeTruthy();
     });
-  });
 
-  it('should render the message list and match snapshot', async () => {
-    const user1 = generateStaticUser(1);
-    const user2 = generateStaticUser(2);
-    const mockedChannel = generateChannel({
-      members: [generateMember({ user: user1 }), generateMember({ user: user1 })],
-      messages: [
-        generateStaticMessage('Message1', { user: user1 }, '2020-05-05T14:48:00.000Z'),
-        generateStaticMessage('Message2', { user: user2 }, '2020-05-05T14:49:00.000Z'),
-        generateStaticMessage('Message3', { user: user2 }, '2020-05-06T14:50:00.000Z'),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.query();
-
-    const { queryAllByTestId, toJSON } = render(
-      <Chat client={chatClient}>
-        <ImageGalleryProvider>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <MessageList />
-          </Channel>
-        </ImageGalleryProvider>
-      </Chat>,
-    );
-
-    await waitFor(() => {
-      expect(queryAllByTestId('date-separator')).toHaveLength(2);
-      expect(toJSON()).toMatchSnapshot();
+    registerNativeHandlers({
+      NetInfo: {
+        addEventListener: () => () => null,
+        fetch: () =>
+          new Promise((resolve) => {
+            resolve(true);
+          }),
+      },
     });
   });
 });

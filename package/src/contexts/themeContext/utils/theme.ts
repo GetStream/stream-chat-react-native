@@ -17,12 +17,12 @@ export const Colors = {
   blue_alice: '#E9F2FF',
   border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
   grey: '#7A7A7A',
+  grey_dark: '#72767E',
   grey_gainsboro: '#DBDBDB',
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
-  overlay: '#00000033', // 33 = 20% opacity
-  overlay_dark: '#00000099', // 99 = 60% opacity
+  overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
   targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
   transparent: 'transparent',
@@ -164,7 +164,6 @@ export type Theme = {
     image: ImageStyle;
   };
   imageGallery: {
-    blurType: 'light' | 'dark';
     footer: {
       centerContainer: ViewStyle;
       container: ViewStyle;
@@ -220,6 +219,10 @@ export type Theme = {
     commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
     container: ViewStyle;
+    cooldownTimer: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
@@ -247,6 +250,10 @@ export type Theme = {
     replyContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
+    sendMessageDisallowedIndicator: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     showThreadMessageInChannelButton: {
       check: IconProps;
       checkBoxActive: ViewStyle;
@@ -262,10 +269,6 @@ export type Theme = {
         iconContainer: ViewStyle;
         title: TextStyle;
       };
-      commandsHeader: {
-        container: ViewStyle;
-        title: TextStyle;
-      };
       container: ViewStyle & {
         maxHeight: number;
       };
@@ -273,7 +276,7 @@ export type Theme = {
         container: ViewStyle;
         text: TextStyle;
       };
-      emojisHeader: {
+      header: {
         container: ViewStyle;
         title: TextStyle;
       };
@@ -286,7 +289,10 @@ export type Theme = {
         tag: TextStyle;
       };
     };
-    suggestionsListContainer: ViewStyle;
+    suggestionsListContainer: {
+      container: ViewStyle;
+      flatlist: ViewStyle;
+    };
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
@@ -418,6 +424,10 @@ export type Theme = {
       shuffleButton: ViewStyle;
       title: TextStyle;
     };
+    pinnedHeader: {
+      container: ViewStyle;
+      label: TextStyle;
+    };
     reactionList: {
       container: ViewStyle;
       middleIcon: ViewStyle;
@@ -449,6 +459,12 @@ export type Theme = {
     targetedMessageUnderlay: ViewStyle;
   };
   overlay: {
+    container: ViewStyle;
+    messageActions: {
+      actionContainer: ViewStyle;
+      icon: ViewStyle;
+      title: TextStyle;
+    };
     padding: number;
     reactions: {
       avatarContainer: ViewStyle;
@@ -602,7 +618,6 @@ export const defaultTheme: Theme = {
     image: {},
   },
   imageGallery: {
-    blurType: 'light',
     footer: {
       centerContainer: {},
       container: {},
@@ -657,6 +672,10 @@ export const defaultTheme: Theme = {
     commandsButtonContainer: {},
     composerContainer: {},
     container: {},
+    cooldownTimer: {
+      container: {},
+      text: {},
+    },
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
@@ -684,6 +703,10 @@ export const defaultTheme: Theme = {
     replyContainer: {},
     sendButton: {},
     sendButtonContainer: {},
+    sendMessageDisallowedIndicator: {
+      container: {},
+      text: {},
+    },
     showThreadMessageInChannelButton: {
       check: {},
       checkBoxActive: {},
@@ -699,10 +722,6 @@ export const defaultTheme: Theme = {
         iconContainer: {},
         title: {},
       },
-      commandsHeader: {
-        container: {},
-        title: {},
-      },
       container: {
         maxHeight: vh(25),
       },
@@ -710,7 +729,7 @@ export const defaultTheme: Theme = {
         container: {},
         text: {},
       },
-      emojisHeader: {
+      header: {
         container: {},
         title: {},
       },
@@ -723,7 +742,10 @@ export const defaultTheme: Theme = {
         tag: {},
       },
     },
-    suggestionsListContainer: {},
+    suggestionsListContainer: {
+      container: {},
+      flatlist: {},
+    },
     uploadProgressIndicator: {
       container: {},
       overlay: {},
@@ -885,6 +907,10 @@ export const defaultTheme: Theme = {
       shuffleButton: {},
       title: {},
     },
+    pinnedHeader: {
+      container: {},
+      label: {},
+    },
     reactionList: {
       container: {},
       middleIcon: {},
@@ -924,6 +950,12 @@ export const defaultTheme: Theme = {
     targetedMessageUnderlay: {},
   },
   overlay: {
+    container: {},
+    messageActions: {
+      actionContainer: {},
+      icon: {},
+      title: {},
+    },
     padding: 8,
     reactions: {
       avatarContainer: {},

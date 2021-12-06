@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import type Animated from 'react-native-reanimated';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -11,6 +12,7 @@ import type { Theme } from '../themeContext/utils/theme';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -23,13 +25,10 @@ import type {
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 
-export type BlurType = 'light' | 'dark' | undefined;
-
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
-  setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
   translucentStatusBar?: boolean;
@@ -62,15 +61,22 @@ export type OverlayProviderProps<
   Partial<
     Pick<
       MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'MessageActions' | 'OverlayReactionList' | 'OverlayReactions'
+      'MessageActionList' | 'MessageActionListItem' | 'OverlayReactionList' | 'OverlayReactions'
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> & {
+    overlayOpacity: Animated.SharedValue<number>;
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    error?: boolean | Error;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];
+    isMyMessage?: boolean;
+    isThreadMessage?: boolean;
+    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    messageReactions?: boolean;
+    messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;

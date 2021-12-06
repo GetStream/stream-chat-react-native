@@ -28,12 +28,14 @@ export const getChannelPreviewDisplayAvatar = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const currentUserId = client?.user?.id;
+  const channelId = channel?.id;
   const channelData = channel?.data;
   const channelName = channelData?.name;
   const channelImage = channelData?.image;
 
   if (channelImage) {
     return {
+      id: channelId,
       image: channelImage,
       name: channelName,
     };
@@ -43,16 +45,20 @@ export const getChannelPreviewDisplayAvatar = <
 
     if (otherMembers.length === 1) {
       return {
+        id: otherMembers[0].user?.id,
         image: otherMembers[0].user?.image,
         name: channelName || otherMembers[0].user?.name,
       };
     }
+
     return {
+      ids: otherMembers.slice(0, 4).map((member) => member.user?.id || ''),
       images: otherMembers.slice(0, 4).map((member) => member.user?.image || ''),
       names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
     };
   }
   return {
+    id: channelId,
     name: channelName,
   };
 };

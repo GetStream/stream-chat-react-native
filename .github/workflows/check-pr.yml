@@ -22,6 +22,6 @@ jobs:
         # for the sdk package
         run: yarn --frozen-lockfile && yarn bootstrap-ci
       - name: Lint
-        run: yarn lint
+        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
         run: yarn test:unit

@@ -11,7 +11,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@react-native-community/blur": "3.6.0",
     "@react-native-community/cameraroll": "4.0.4",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-community/netinfo": "6.0.0",

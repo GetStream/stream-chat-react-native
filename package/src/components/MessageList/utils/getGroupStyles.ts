@@ -58,9 +58,10 @@ export const getGroupStyles = <
 
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  const messagesFilteredForNonUser = messages.filter(
-    (message) => !message.deleted_at || userId === message.user?.id,
-  );
+  const messagesFilteredForNonUser = messages.filter((message) => {
+    const isMessageTypeDeleted = message.type === 'deleted';
+    return !isMessageTypeDeleted || userId === message.user?.id;
+  });
 
   for (let i = 0; i < messagesFilteredForNonUser.length; i++) {
     const previousMessage = messagesFilteredForNonUser[i - 1] as
@@ -72,6 +73,9 @@ export const getGroupStyles = <
       | undefined;
     const groupStyles: GroupType[] = [];
 
+    const isPrevMessageTypeDeleted = previousMessage?.type === 'deleted';
+    const isNextMessageTypeDeleted = nextMessage?.type === 'deleted';
+
     const userId = message?.user?.id || null;
 
     const isTopMessage =
@@ -79,7 +83,7 @@ export const getGroupStyles = <
       previousMessage.type === 'system' ||
       userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
-      !!previousMessage.deleted_at ||
+      !!isPrevMessageTypeDeleted ||
       (!hideDateSeparators && dateSeparators[message.id]) ||
       messageGroupStyles[previousMessage.id]?.includes('bottom');
 
@@ -88,7 +92,7 @@ export const getGroupStyles = <
       nextMessage.type === 'system' ||
       userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
-      !!nextMessage.deleted_at ||
+      !!isNextMessageTypeDeleted ||
       (!hideDateSeparators && dateSeparators[nextMessage.id]) ||
       (maxTimeBetweenGroupedMessages !== undefined &&
         nextMessage.created_at.getTime() - message.created_at.getTime() >
@@ -104,12 +108,14 @@ export const getGroupStyles = <
     /**
      * Add group styles key for bottom message
      */
+
+    const isMessageTypeDeleted = message.type === 'deleted';
     if (isBottomMessage) {
       /**
        * If the bottom message is also the top, or deleted, or an error,
        * add the key for single message instead of bottom
        */
-      if (isTopMessage || message.deleted_at || message.type === 'error') {
+      if (isTopMessage || isMessageTypeDeleted || message.type === 'error') {
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('single');
       } else {
@@ -122,7 +128,7 @@ export const getGroupStyles = <
      * deleted or an error add the key for single otherwise middle
      */
     if (!isTopMessage && !isBottomMessage) {
-      if (message.deleted_at || message.type === 'error') {
+      if (isMessageTypeDeleted || message.type === 'error') {
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('single');
       } else {

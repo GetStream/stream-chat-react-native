@@ -13,6 +13,8 @@ configPromise.then((config) => {
   if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
     const commitMessage = 'chore(release): ${nextRelease.version} [skip ci]';
 
+    // This oneliner takes care of commiting and pushing the package.json and
+    // changelog.md but only if there is a change on it.
     newConfig.plugins.push([
       '@semantic-release/exec',
       {

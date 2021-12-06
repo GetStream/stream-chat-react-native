@@ -26,7 +26,7 @@ export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = 
   } = useTheme();
 
   return (
-    <View style={styles.networkDownContainer}>
+    <View style={styles.networkDownContainer} testID='network-down-indicator'>
       <Spinner />
       <Text
         style={[

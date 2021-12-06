@@ -1,6 +1,5 @@
 import React from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { BlurView as RNBlurView } from '@react-native-community/blur';
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
@@ -13,10 +12,6 @@ import RNShare from 'react-native-share';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
-  // eslint-disable-next-line react/display-name
-  BlurView: ({ blurAmount = 10, blurType = 'dark', style }) => (
-    <RNBlurView blurAmount={blurAmount} blurType={blurType} style={style} />
-  ),
   compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
     try {
       const { uri: compressedUri } = await ImageResizer.createResizedImage(
@@ -95,8 +90,11 @@ registerNativeHandlers({
       let unsubscribe;
       // For NetInfo >= 3.x.x
       if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
-          listener(isConnected);
+        unsubscribe = NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
+          // Initialize with truthy value when internetReachable is still loading
+          // if it resolves to false, listener is triggered with false value and network
+          // status is updated
+          listener(isInternetReachable === null ? isConnected : isConnected && isInternetReachable);
         });
         return unsubscribe;
       } else {

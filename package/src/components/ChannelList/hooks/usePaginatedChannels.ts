@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
+import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
@@ -51,11 +52,13 @@ export const usePaginatedChannels = <
   sort = {},
 }: Parameters<Ch, Co, Us>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
-  const [error, setError] = useState(false);
+  const activeChannels = useActiveChannelsRefContext();
+
+  const [error, setError] = useState<boolean | Error>(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
+  const querying = useRef(false);
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,6 +66,9 @@ export const usePaginatedChannels = <
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
     if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
+
+    querying.current = true;
+    setError(false);
 
     if (queryType === 'reload') {
       setLoadingChannels(true);
@@ -79,7 +85,9 @@ export const usePaginatedChannels = <
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
+        skipInitialization: activeChannels.current,
+      });
 
       if (!isMounted.current) return;
 
@@ -93,12 +101,16 @@ export const usePaginatedChannels = <
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setError(false);
+      querying.current = false;
     } catch (err) {
+      querying.current = false;
       await wait(2000);
 
       if (!isMounted.current) return;
 
-      if (retryCount === 3) {
+      // querying.current check is needed in order to make sure the next query call doesnt flick an error
+      // state and then succeed (reconnect case)
+      if (retryCount === 3 && !querying.current) {
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);

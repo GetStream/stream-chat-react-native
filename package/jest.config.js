@@ -12,7 +12,7 @@ module.exports = {
     './node_modules/react-native-gesture-handler/jestSetup.js',
   ],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-  testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__'],
+  testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],
   transformIgnorePatterns: ['node_modules/!(react-native-reanimated)'],
   testRegex: [
     /**

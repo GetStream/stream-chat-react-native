@@ -160,7 +160,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { overlay, setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   /**
@@ -348,6 +348,7 @@ export const ImageGallery = <
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
+      channelId: cur.cid,
       created_at: cur.created_at,
       id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
       messageId: cur.id,
@@ -646,7 +647,6 @@ export const ImageGallery = <
               () => {
                 showScreen.value = 0;
                 runOnJS(setOverlay)('none');
-                runOnJS(setBlurType)(undefined);
               },
             );
             scale.value = withTiming(0.6, {
@@ -1199,6 +1199,7 @@ const styles = StyleSheet.create({
 export type Photo<Us extends UnknownType = DefaultUserType> = {
   id: string;
   uri: string;
+  channelId?: string;
   created_at?: string | Date;
   messageId?: string;
   user?: UserResponse<Us> | null;

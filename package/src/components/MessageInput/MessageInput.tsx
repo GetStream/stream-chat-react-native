@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { useCountdown } from './hooks/useCountdown';
+
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -120,6 +122,8 @@ type MessageInputPropsWithContext<
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'asyncUploads'
+    | 'cooldownEndsAt'
+    | 'CooldownTimer'
     | 'clearEditingState'
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
@@ -148,8 +152,15 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply' | 'quotedRepliesEnabled'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'componentType' | 'suggestions' | 'suggestionsTitle'> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    | 'AutoCompleteSuggestionHeader'
+    | 'AutoCompleteSuggestionItem'
+    | 'AutoCompleteSuggestionList'
+    | 'suggestions'
+    | 'triggerType'
+  > &
   Pick<ThreadContextValue, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
@@ -170,10 +181,12 @@ const MessageInputWithContext = <
     additionalTextInputProps,
     asyncIds,
     asyncUploads,
+    AutoCompleteSuggestionList,
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
-    componentType,
+    cooldownEndsAt,
+    CooldownTimer,
     disabled,
     editing,
     FileUploadPreview,
@@ -190,7 +203,6 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
-    quotedRepliesEnabled,
     removeImage,
     Reply,
     resetInput,
@@ -201,10 +213,10 @@ const MessageInputWithContext = <
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    suggestionsTitle,
     t,
     thread,
     threadList,
+    triggerType,
     uploadNewImage,
     watchers,
   } = props;
@@ -236,7 +248,7 @@ const MessageInputWithContext = <
         optionsContainer,
         replyContainer,
         sendButtonContainer,
-        suggestionsListContainer,
+        suggestionsListContainer: { container: suggestionListContainer },
       },
     },
   } = useTheme();
@@ -250,6 +262,8 @@ const MessageInputWithContext = <
     setMaxNumberOfFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
+
+  const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   /**
    * Mounting and un-mounting logic are un-related in following useEffect.
@@ -462,9 +476,6 @@ const MessageInputWithContext = <
                 if (quotedMessage) {
                   clearQuotedMessageState();
                 }
-                if (inputBoxRef.current) {
-                  inputBoxRef.current.blur();
-                }
               }}
               testID='close-button'
             >
@@ -493,10 +504,7 @@ const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {((typeof editing !== 'boolean' &&
-                  quotedRepliesEnabled &&
-                  editing?.quoted_message) ||
-                  quotedMessage) && (
+                {((typeof editing !== 'boolean' && editing?.quoted_message) || quotedMessage) && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
                   </View>
@@ -538,6 +546,7 @@ const MessageInputWithContext = <
                   )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
                     additionalTextInputProps={additionalTextInputProps}
+                    cooldownActive={!!cooldownRemainingSeconds}
                   />
                   {giphyActive && (
                     <TouchableOpacity
@@ -554,26 +563,32 @@ const MessageInputWithContext = <
                 </View>
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-                <SendButton disabled={disabled || sending.current || !isValidMessage()} />
+                {cooldownRemainingSeconds ? (
+                  <CooldownTimer seconds={cooldownRemainingSeconds} />
+                ) : (
+                  <SendButton disabled={disabled || sending.current || !isValidMessage()} />
+                )}
               </View>
             </>
           )}
         </View>
         <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
-      {componentType && suggestions ? (
+
+      {triggerType && suggestions ? (
         <View
           style={[
+            suggestionListContainer,
             styles.suggestionsListContainer,
             { backgroundColor: white, bottom: height },
-            suggestionsListContainer,
           ]}
         >
-          <SuggestionsList<Co, Us>
+          <AutoCompleteSuggestionList
             active={!!suggestions}
-            componentType={componentType}
-            suggestions={suggestions}
-            suggestionsTitle={suggestionsTitle}
+            data={suggestions.data}
+            onSelect={suggestions.onSelect}
+            queryText={suggestions.queryText}
+            triggerType={triggerType}
           />
         </View>
       ) : null}
@@ -623,7 +638,6 @@ const areEqual = <
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
-    suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
     thread: prevThread,
     threadList: prevThreadList,
@@ -642,7 +656,6 @@ const areEqual = <
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
-    suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
     thread: nextThread,
     threadList: nextThreadList,
@@ -705,9 +718,6 @@ const areEqual = <
       : !!prevSuggestions === !!nextSuggestions;
   if (!suggestionsEqual) return false;
 
-  const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
-  if (!suggestionsTitleEqual) return false;
-
   const threadEqual =
     prevThread?.id === nextThread?.id &&
     prevThread?.text === nextThread?.text &&
@@ -755,6 +765,8 @@ export const MessageInput = <
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const ownCapabilities = useOwnCapabilitiesContext();
+
   const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
@@ -764,6 +776,8 @@ export const MessageInput = <
     clearEditingState,
     clearQuotedMessageState,
     closeAttachmentPicker,
+    cooldownEndsAt,
+    CooldownTimer,
     editing,
     FileUploadPreview,
     fileUploads,
@@ -783,6 +797,7 @@ export const MessageInput = <
     SendButton,
     sending,
     sendMessageAsync,
+    SendMessageDisallowedIndicator,
     setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
@@ -790,13 +805,23 @@ export const MessageInput = <
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { quotedRepliesEnabled, Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { componentType, suggestions, suggestionsTitle } = useSuggestionsContext<Co, Us>();
+  const {
+    AutoCompleteSuggestionHeader,
+    AutoCompleteSuggestionItem,
+    AutoCompleteSuggestionList,
+    suggestions,
+    triggerType,
+  } = useSuggestionsContext<Co, Us>();
 
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { t } = useTranslationContext();
+
+  if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
+    return <SendMessageDisallowedIndicator />;
+  }
 
   return (
     <MemoizedMessageInput
@@ -804,10 +829,14 @@ export const MessageInput = <
         additionalTextInputProps,
         asyncIds,
         asyncUploads,
+        AutoCompleteSuggestionHeader,
+        AutoCompleteSuggestionItem,
+        AutoCompleteSuggestionList,
         clearEditingState,
         clearQuotedMessageState,
         closeAttachmentPicker,
-        componentType,
+        cooldownEndsAt,
+        CooldownTimer,
         disabled,
         editing,
         FileUploadPreview,
@@ -824,7 +853,6 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
-        quotedRepliesEnabled,
         removeImage,
         Reply,
         resetInput,
@@ -836,9 +864,9 @@ export const MessageInput = <
         showMoreOptions,
         ShowThreadMessageInChannelButton,
         suggestions,
-        suggestionsTitle,
         t,
         thread,
+        triggerType,
         uploadNewImage,
         watchers,
       }}

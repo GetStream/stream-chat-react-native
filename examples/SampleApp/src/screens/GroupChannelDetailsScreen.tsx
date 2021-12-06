@@ -48,6 +48,7 @@ import type {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
+import { Pin } from '../icons/Pin';
 
 const styles = StyleSheet.create({
   actionContainer: {
@@ -294,6 +295,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             >
               <View style={styles.memberRow}>
                 <Avatar
+                  channelId={channel.id}
+                  id={member.user?.id}
                   image={member.user?.image}
                   name={member.user?.name}
                   online={member.user?.online}
@@ -428,6 +431,36 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 }}
                 value={muted}
               />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelPinnedMessagesScreen', {
+                channel,
+              });
+            }}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <Pin fill={grey} />
+              <Text
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
+              >
+                Pinned Messages
+              </Text>
+            </View>
+            <View>
+              <GoForward height={24} width={24} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity

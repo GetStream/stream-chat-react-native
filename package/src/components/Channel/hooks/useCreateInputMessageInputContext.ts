@@ -30,6 +30,7 @@ export const useCreateInputMessageInputContext = <
   clearQuotedMessageState,
   CommandsButton,
   compressImageQuality,
+  CooldownTimer,
   doDocUploadRequest,
   doImageUploadRequest,
   editing,
@@ -53,11 +54,11 @@ export const useCreateInputMessageInputContext = <
   SendButton,
   sendImageAsync,
   sendMessage,
+  SendMessageDisallowedIndicator,
   setInputRef,
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
-  uploadsEnabled,
 }: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -82,6 +83,7 @@ export const useCreateInputMessageInputContext = <
         clearQuotedMessageState,
         CommandsButton,
         compressImageQuality,
+        CooldownTimer,
         doDocUploadRequest,
         doImageUploadRequest,
         editing,
@@ -105,11 +107,11 @@ export const useCreateInputMessageInputContext = <
         SendButton,
         sendImageAsync,
         sendMessage,
+        SendMessageDisallowedIndicator,
         setInputRef,
         setQuotedMessageState,
         ShowThreadMessageInChannelButton,
         UploadProgressIndicator,
-        uploadsEnabled,
       }),
       [
         compressImageQuality,
@@ -118,7 +120,6 @@ export const useCreateInputMessageInputContext = <
         initialValue,
         maxMessageLength,
         quotedMessageId,
-        uploadsEnabled,
       ],
     );
 

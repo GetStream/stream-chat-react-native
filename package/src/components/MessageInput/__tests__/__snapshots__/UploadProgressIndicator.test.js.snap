@@ -24,7 +24,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
           "width": "100%",
         },
         Object {
-          "backgroundColor": "#00000033",
+          "backgroundColor": "#000000CC",
         },
         Object {},
       ]
@@ -41,7 +41,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
           "width": "100%",
         },
         Object {
-          "backgroundColor": "#00000033",
+          "backgroundColor": "#000000CC",
         },
         Object {},
       ]
@@ -96,7 +96,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
           "width": "100%",
         },
         Object {
-          "backgroundColor": "#00000033",
+          "backgroundColor": "#000000CC",
         },
         Object {},
       ]
@@ -113,7 +113,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
           "width": "100%",
         },
         Object {
-          "backgroundColor": "#00000033",
+          "backgroundColor": "#000000CC",
         },
         Object {},
       ]

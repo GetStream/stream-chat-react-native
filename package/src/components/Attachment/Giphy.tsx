@@ -143,7 +143,7 @@ const GiphyWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, overlay_dark, white },
+      colors: { accent_blue, black, border, grey, overlay, white },
       messageSimple: {
         giphy: {
           cancel,
@@ -183,7 +183,7 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
+          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
@@ -273,7 +273,7 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay_dark }, giphyContainer]}>
+          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}

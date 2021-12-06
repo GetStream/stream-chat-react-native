@@ -100,9 +100,9 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
     },
   } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
-  const { setBlurType, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { setOverlay, translucentStatusBar } = useOverlayContext();
 
-  const parsedDate = tDateTimeParser(photo?.created_at);
+  const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
 
   /**
    * .calendar is required on moment types, but in reality it
@@ -114,7 +114,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
       ? parsedDate.calendar
         ? parsedDate.calendar()
         : parsedDate.fromNow()
-      : parsedDate;
+      : null;
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
@@ -132,7 +132,6 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
 
   const hideOverlay = () => {
     setOverlay('none');
-    setBlurType(undefined);
   };
 
   return (
@@ -160,7 +159,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
               <Text style={[styles.userName, { color: black }, usernameText]}>
                 {photo?.user?.name || t('Unknown User')}
               </Text>
-              <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>
+              {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}
             </View>
           )}
           {rightElement ? (

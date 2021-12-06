@@ -45,10 +45,7 @@ export type MessageStatusPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'readEventsEnabled' | 'threadList'
->;
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'threadList'>;
 
 const MessageStatusWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -61,11 +58,11 @@ const MessageStatusWithContext = <
 >(
   props: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, readEventsEnabled, threadList } = props;
+  const { message, threadList } = props;
 
   const {
     theme: {
-      colors: { accent_blue },
+      colors: { accent_blue, grey_dark },
       messageSimple: {
         status: { checkAllIcon, checkIcon, readByCount, statusContainer, timeIcon },
       },
@@ -80,11 +77,7 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (
-    isMessageWithStylesReadByAndDateSeparator(message) &&
-    !threadList &&
-    readEventsEnabled !== false
-  ) {
+  if (isMessageWithStylesReadByAndDateSeparator(message) && !threadList) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
@@ -98,7 +91,7 @@ const MessageStatusWithContext = <
         {typeof message.readBy === 'number' || message.readBy === true ? (
           <CheckAll pathFill={accent_blue} {...checkAllIcon} />
         ) : (
-          <Check {...checkIcon} />
+          <Check pathFill={grey_dark} {...checkIcon} />
         )}
       </View>
     );
@@ -107,7 +100,7 @@ const MessageStatusWithContext = <
   if (message.status === 'received' && message.type !== 'ephemeral' && !threadList) {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
-        <Check {...checkIcon} />
+        <Check pathFill={grey_dark} {...checkIcon} />
       </View>
     );
   }
@@ -127,22 +120,11 @@ const areEqual = <
   prevProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    message: prevMessage,
-    readEventsEnabled: prevReadEventsEnabled,
-    threadList: prevThreadList,
-  } = prevProps;
-  const {
-    message: nextMessage,
-    readEventsEnabled: nextReadEventsEnabled,
-    threadList: nextThreadList,
-  } = nextProps;
+  const { message: prevMessage, threadList: prevThreadList } = prevProps;
+  const { message: nextMessage, threadList: nextThreadList } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
-
-  const readEventsEnabledEqual = prevReadEventsEnabled === nextReadEventsEnabled;
-  if (!readEventsEnabledEqual) return false;
 
   const messageEqual =
     prevMessage.status === nextMessage.status &&
@@ -180,10 +162,9 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, readEventsEnabled, threadList } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { message, threadList } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return <MemoizedMessageStatus {...{ message, readEventsEnabled, threadList }} {...props} />;
+  return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

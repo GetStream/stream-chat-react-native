@@ -39,6 +39,7 @@ export const useChatClient = () => {
     >(config.apiKey, {
       timeout: 6000,
     });
+
     const user = {
       id: config.userId,
       image: config.userImage,
@@ -46,7 +47,6 @@ export const useChatClient = () => {
     };
 
     await client.connectUser(user, config.userToken);
-
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     setChatClient(client);
@@ -77,14 +77,13 @@ export const useChatClient = () => {
     } catch (e) {
       console.warn(e);
     }
-
     setIsConnecting(false);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setChatClient(null);
-    chatClient?.disconnect();
-    AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
+    chatClient?.disconnectUser();
+    await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
 
   useEffect(() => {

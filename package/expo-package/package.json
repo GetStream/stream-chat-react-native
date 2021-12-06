@@ -15,7 +15,6 @@
   "peerDependencies": {
     "@react-native-community/netinfo": "^6.0.0",
     "expo": "^41.0.1",
-    "expo-blur": "^9.0.3",
     "expo-document-picker": "^9.1.2",
     "expo-file-system": "^11.0.2",
     "expo-haptics": "^10.0.0",

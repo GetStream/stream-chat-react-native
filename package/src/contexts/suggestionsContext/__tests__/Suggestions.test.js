@@ -39,7 +39,6 @@ describe('SuggestionsProvider', () => {
     await waitFor(() => {
       expect(context).toBeInstanceOf(Object);
       expect(context.closeSuggestions).toBeInstanceOf(Function);
-      expect(typeof context.componentType).toBe('string');
       expect(context.openSuggestions).toBeInstanceOf(Function);
       expect(typeof context.suggestionsViewActive).toBe('boolean');
       expect(context.updateSuggestions).toBeInstanceOf(Function);

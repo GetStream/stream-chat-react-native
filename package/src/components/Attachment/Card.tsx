@@ -105,6 +105,8 @@ export type CardPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
+    channelId: string | undefined;
+    messageId: string | undefined;
     styles?: Partial<{
       authorName: StyleProp<TextStyle>;
       authorNameContainer: StyleProp<ViewStyle>;
@@ -318,7 +320,7 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { onLongPress, onPress, onPressIn, preventPress } =
+  const { message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
     useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -330,6 +332,8 @@ export const Card = <
         CardCover,
         CardFooter,
         CardHeader,
+        channelId: message.cid,
+        messageId: message.id,
         onLongPress,
         onPress,
         onPressIn,
