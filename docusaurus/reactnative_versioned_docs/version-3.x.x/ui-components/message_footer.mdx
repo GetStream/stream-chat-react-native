@@ -19,18 +19,17 @@ You can customize the `MessageFooter` component and provide it back to the SDK v
 Replacing the `formattedDate` function used by the `MessageFooter` throughout the SDK with your own is easily accomplished.
 
 ```tsx
-import {Channel, MessageFooter} from 'stream-chat-react-native';
+import { Channel, MessageFooter } from 'stream-chat-react-native';
 
-const getDateTimeStamp = (message) => `My new date is ${message.created_at}`;
+const getDateTimeStamp = message => `My new date is ${message.created_at}`;
 
 const CustomMessageFooter = ({ message }) => {
-  const dateFormatted = useMemo(() =>
-    getDateTimeStamp(message), [message.created_at]);
+  const dateFormatted = useMemo(() => getDateTimeStamp(message), [message.created_at]);
 
-  <MessageFooter formattedDate={dateFormatted} />
-}
+  <MessageFooter formattedDate={dateFormatted} />;
+};
 
-<Channel MessageFooter={CustomMessageFooter} />
+<Channel MessageFooter={CustomMessageFooter} />;
 ```
 
 ## Props
@@ -39,17 +38,17 @@ const CustomMessageFooter = ({ message }) => {
 
 Datetime stamp to be shown in footer for deleted message.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### <div class="label required">required</div> **isDeleted**
 
 Weather message is deleted or not. In case of deleted message, `'Only visible to you'` subtext will be rendered in this component.
 
-| Type | Default |
-| - | - |
-| boolean | false |
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
 
@@ -74,4 +73,3 @@ Weather message is deleted or not. In case of deleted message, `'Only visible to
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#showmessagestatus)_</div> showMessageStatus {#showmessagestatus}
 
 <ShowMessageStatus />
-

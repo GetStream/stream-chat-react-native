@@ -10,7 +10,7 @@ import messagePropChangeBefore from '../assets/guides/upgrade-helper-v2-to-v3/me
 import messagePropChangeAfter from '../assets/guides/upgrade-helper-v2-to-v3/message_prop_change_after.png';
 import attachmentPicker from '../assets/guides/upgrade-helper-v2-to-v3/attachment_picker.png';
 
-For version 3.x of the Stream Chat React Native SDK, we focused on improving the speed and performance of our UI components to create a fast and responsive chat experience for the end user. Some of the key changes we made include, changes to the architecture of the SDK to provide better performance and improved 
+For version 3.x of the Stream Chat React Native SDK, we focused on improving the speed and performance of our UI components to create a fast and responsive chat experience for the end user. Some of the key changes we made include, changes to the architecture of the SDK to provide better performance and improved
 
 - Prominent use [React Context](https://reactjs.org/docs/context.html) to make passing data through the application easier.
 - The addition of `OverlayProvider` a new component that wraps the application and lets users interact with messages through long-clicks.
@@ -19,7 +19,6 @@ For version 3.x of the Stream Chat React Native SDK, we focused on improving the
 - The addition of new community libraries to improve performance and add more features to the end user's experience.
 
 To make these improvements, we made major architectural changes to the SDK. Because of this, upgrading will require some additional work. This page will walk you through the steps involved in upgrading the React Native SDK for Stream Chat from version 2 to version 3.
-
 
 ### Before starting
 
@@ -51,7 +50,7 @@ expo install @react-native-community/netinfo expo-blur expo-document-picker expo
 
 #### Remove `react-native-get-random-values`
 
-v2 required that you have `react-native-get-random-values` and import it into your application in your root file; Version 3 no longer uses this. As long as you aren't using `react-native-get-random-values` for anything other than Stream Chat's peer dependency, you can safely remove it by removing it from your package.json: 
+v2 required that you have `react-native-get-random-values` and import it into your application in your root file; Version 3 no longer uses this. As long as you aren't using `react-native-get-random-values` for anything other than Stream Chat's peer dependency, you can safely remove it by removing it from your package.json:
 
 ```bash
 yarn remove react-native-get-random-values
@@ -101,10 +100,7 @@ should wrap your stack provider. Please read more details in our [Configuring Co
 ```tsx
 import { OverlayProvider } from 'stream-chat-react-native';
 
-export const Screen = () =>
-  <OverlayProvider>
-    {/** App components */}
-  </OverlayProvider>
+export const Screen = () => <OverlayProvider>{/** App components */}</OverlayProvider>;
 ```
 
 ### Theme changes
@@ -120,11 +116,11 @@ to customize message UI. But in v3, you need to provide `MessageSimple` prop on 
 
 <table>
   <tr>
-    <td align='center' width="33%">
-      <img src={messagePropChangeBefore}/>
+    <td align='center' width='33%'>
+      <img src={messagePropChangeBefore} />
     </td>
-    <td align='center' width="33%">
-      <img src={messagePropChangeAfter}/>
+    <td align='center' width='33%'>
+      <img src={messagePropChangeAfter} />
     </td>
   </tr>
   <tr></tr>
@@ -134,19 +130,18 @@ to customize message UI. But in v3, you need to provide `MessageSimple` prop on 
   </tr>
 </table>
 
-
 ### Moving from prop drilling to context
 
 As part of v3, we have tried to get rid of prop drilling pattern as much as possible. We are moving towards using [React's context](https://reactjs.org/docs/context.html)
 based architecture.
 
-Let's take an [example](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)#senders-name-at-bottom-of-the-message) from v2 documentation
+Let's take an [example](<https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)#senders-name-at-bottom-of-the-message>) from v2 documentation
 which shows how to render message sender's name at bottom of the message:
 
 To customize `MessageFooter`, you had to create a separate component to render a `MessageSimple` component and then provide `MessageFooter` as a prop to `MessageSimple`. This is what the prop drilling looked like in v2 of the SDK. This approach was rigid and made updating components a chore.
 
 In v3, we're using React contexts to simplify this process. Now, thanks to contexts, you can customize each of these deeply nested components
-by providing a relevant prop to one of the following 3 core components (depending on which component needs to be customized). React contexts will  will provide the prop to all of the child components in nested in the core components as global-like data.
+by providing a relevant prop to one of the following 3 core components (depending on which component needs to be customized). React contexts will will provide the prop to all of the child components in nested in the core components as global-like data.
 
 - [`OverlayProvider`](../core-components/overlay_provider.mdx#props)
 - [`Channel`](../core-components/channel.mdx#props)
@@ -164,49 +159,43 @@ Please check documentation of [contexts](../customization/contexts.mdx) for all 
 >
 <TabItem value='v2'>
 
-  ```tsx
-    import { Chat, Channel, MessageList, MessageSimple } from 'stream-chat-react-native';
+```tsx
+import { Chat, Channel, MessageList, MessageSimple } from 'stream-chat-react-native';
 
-    const MessageWithSenderNameAtBottom = props => {
-      return (
-        <MessageSimple
-          {...props}
-          MessageFooter={props => <Text>{props.message.user.name}</Text>}
-        />
-      );
-    };
+const MessageWithSenderNameAtBottom = props => {
+  return <MessageSimple {...props} MessageFooter={props => <Text>{props.message.user.name}</Text>} />;
+};
 
-    // In your rendering logic
-    <Chat client={client}>
-      <Channel channel={channel}>
-        <MessageList Message={MessageWithSenderNameAtBottom} />
-      </Channel>
-    </Chat>
-  ```
+// In your rendering logic
+<Chat client={client}>
+  <Channel channel={channel}>
+    <MessageList Message={MessageWithSenderNameAtBottom} />
+  </Channel>
+</Chat>;
+```
 
 </TabItem>
 <TabItem value='v3'>
 
-  ```tsx
-    import { Chat, Channel, MessageList, useMessageContext } from 'stream-chat-react-native';
+```tsx
+import { Chat, Channel, MessageList, useMessageContext } from 'stream-chat-react-native';
 
-    const FooterWithSenderName = () => {
-      const { message } = useMessageContext();
+const FooterWithSenderName = () => {
+  const { message } = useMessageContext();
 
-      return <Text>{props.message.user.name}</Text>;
-    };
+  return <Text>{props.message.user.name}</Text>;
+};
 
-    // In your rendering logic
-    <Chat client={client}>
-      <Channel channel={channel} MessageFooter={FooterWithSenderName}>
-        <MessageList />
-      </Channel>
-    </Chat>
-  ```
+// In your rendering logic
+<Chat client={client}>
+  <Channel channel={channel} MessageFooter={FooterWithSenderName}>
+    <MessageList />
+  </Channel>
+</Chat>;
+```
 
 </TabItem>
 </Tabs>
-
 
 Let's check a similar example for [`ChannelList`](../core-component/channel_list.mdx) component. To customize avatar component of channel, within `ChannelList`, you had to
 first customize `Preview` component which renders list item, and then provide avatar component on it. In v3, you can simply pass the `PreviewAvatar`
@@ -222,43 +211,40 @@ which provides access to all the necessary values and methods which `ChannelList
 >
 <TabItem value='v2'>
 
-  ```tsx
-    import { Chat, Channel, ChannelList, ChannelPreviewMessenger } from 'stream-chat-react-native';
+```tsx
+import { Chat, Channel, ChannelList, ChannelPreviewMessenger } from 'stream-chat-react-native';
 
-    const CustomAvatar = props => {/* custom component */};
-    const PreviewWithCustomAvatar = props => {
-      return (
-        <ChannelPreviewMessenger
-          {...props}
-          PreviewAvatar={CustomAvatar}
-        />
-      );
-    };
+const CustomAvatar = props => {
+  /* custom component */
+};
+const PreviewWithCustomAvatar = props => {
+  return <ChannelPreviewMessenger {...props} PreviewAvatar={CustomAvatar} />;
+};
 
-    // In your rendering logic
-    <Chat client={client}>
-      <ChannelList Preview={PreviewWithCustomAvatar} />
-    </Chat>
-  ```
+// In your rendering logic
+<Chat client={client}>
+  <ChannelList Preview={PreviewWithCustomAvatar} />
+</Chat>;
+```
 
 </TabItem>
 <TabItem value='v3'>
 
-  ```tsx
-    import { Chat, Channel, ChannelList, useChannelsContext } from 'stream-chat-react-native';
+```tsx
+  import { Chat, Channel, ChannelList, useChannelsContext } from 'stream-chat-react-native';
 
-    const CustomAvatar = props => {
-      const { refreshing, reloadList } = useChannelsContext();
-      const { channel } = props;
+  const CustomAvatar = props => {
+    const { refreshing, reloadList } = useChannelsContext();
+    const { channel } = props;
 
-      return (/* custom component */)
-    };
+    return (/* custom component */)
+  };
 
-    // In your rendering logic
-    <Chat client={client}>
-      <ChannelList PreviewAvatar={CustomAvatar} />
-    </Chat>
-  ```
+  // In your rendering logic
+  <Chat client={client}>
+    <ChannelList PreviewAvatar={CustomAvatar} />
+  </Chat>
+```
 
 </TabItem>
 </Tabs>
@@ -292,4 +278,3 @@ We've modified this UX in v3. In the new version, attachment picker gets rendere
 <img src={attachmentPicker} />
 
 Its possible to use actionsheet based attachment picker (similar to v2 implementation). Please check the docs on [implementation of native image picker](../guides/message_input_customization.mdx#replacing-attachmentpicker-with-native-image-picker)
-

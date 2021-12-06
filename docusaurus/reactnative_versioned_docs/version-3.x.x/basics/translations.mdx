@@ -40,18 +40,19 @@ Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
 Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
 
 ```tsx {5,8-9}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 const streami18n = new Streami18n();
 
-export const App = () =>
+export const App = () => (
   <OverlayProvider i18nInstance={streami18n}>
     <Chat client={client} i18nInstance={streami18n}>
       {/** App components */}
     </Chat>
-  </OverlayProvider>;
+  </OverlayProvider>
+);
 ```
 
 ### Setting language for components
@@ -90,9 +91,8 @@ const streami18n = new Streami18n();
 streami18n.registerTranslation('pl', {
   'Copy Message': 'Kopiuj wiadomość',
   'Delete Message': 'Usuń wiadomość',
-  '{{ firstUser }} and {{ secondUser }} are typing...':
-    '{{ firstUser }} i {{ secondUser }} piszą...',
-})
+  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} i {{ secondUser }} piszą...',
+});
 ```
 
 Please take a look at all the available texts [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/en.json).
@@ -105,8 +105,8 @@ You can also make line item changes to the strings for existing UI components. T
 const streami18n = new Streami18n();
 
 streami18n.registerTranslation('nl', {
-  "Delete Message": "Verwijder bericht"
-})
+  'Delete Message': 'Verwijder bericht',
+});
 ```
 
 ### Using device locale to set language
@@ -115,7 +115,7 @@ streami18n.registerTranslation('nl', {
 You can use this package to access user preferred locale, and use it to set language for chat components:
 
 ```tsx
-import * as RNLocalize from "react-native-localize";
+import * as RNLocalize from 'react-native-localize';
 const streami18n = new Streami18n();
 
 const userPreferredLocales = RNLocalize.getLocales();
@@ -188,7 +188,7 @@ const i18n = new Streami18n({
 Or by providing your own [Dayjs](https://day.js.org/docs/en/installation/installation) object:
 
 ```tsx
-import Dayjs from 'dayjs'
+import Dayjs from 'dayjs';
 
 import 'dayjs/locale/nl';
 import 'dayjs/locale/it';
@@ -196,9 +196,9 @@ import 'dayjs/locale/it';
 import 'dayjs/min/locales';
 
 const i18n = new Streami18n({
- language: 'nl',
- DateTimeParser: Dayjs
-})
+  language: 'nl',
+  DateTimeParser: Dayjs,
+});
 ```
 
 If you would like to stick with English language for date-times in Stream components, you can set `disableDateTimeTranslations` to true.
@@ -217,8 +217,8 @@ Used for translating dates and times into the desired local format.
 Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be used.
 Day.js is a dependency of the repo and used by default.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE            | DEFAULT |
+| --------------- | ------- |
 | Dayjs \| Moment | `Dayjs` |
 
 ### dayjsLocaleConfigForLanguage
@@ -226,24 +226,24 @@ Day.js is a dependency of the repo and used by default.
 You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
 To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
 
-| TYPE |
-| - |
+| TYPE   |
+| ------ |
 | object |
 
 ### debug
 
 Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE    | DEFAULT |
+| ------- | ------- |
 | boolean | `false` |
 
 ### disableDateTimeTranslations
 
 Use the default English language date-times instead of those dictated by the language set.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE    | DEFAULT |
+| ------- | ------- |
 | boolean | `false` |
 
 ### language
@@ -261,16 +261,16 @@ The following options are available:
 - Japanese (`ja`)
 - Korean (`ko`)
 
-| TYPE | DEFAULT |
-| - | - |
-| string | `en` |
+| TYPE   | DEFAULT |
+| ------ | ------- |
+| string | `en`    |
 
 ### logger
 
 Function to log warnings & errors from `Streami18n`.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE                     | DEFAULT        |
+| ------------------------ | -------------- |
 | `(msg?: string) => void` | `console.warn` |
 
 ### translationsForLanguage
@@ -282,14 +282,13 @@ const streami18n = new Streami18n({
   language: 'nl',
   translationsForLanguage: {
     'Nothing yet...': 'Nog Niet...',
-    '{{ firstUser }} and {{ secondUser }} are typing...':
-      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
   },
 });
 ```
 
-| TYPE |
-| - |
+| TYPE   |
+| ------ |
 | object |
 
 ## I18NextConfig
@@ -302,56 +301,56 @@ const streami18n = new Streami18n({
 Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
 This overrides the [`debug` key on options](#debug) if provided.
 
-| TYPE |
-| - |
+| TYPE    |
+| ------- |
 | boolean |
 
 ### fallbackLng
 
 Fallback language setting for for i18next.
 
-| TYPE |
-| - |
+| TYPE                                                                  |
+| --------------------------------------------------------------------- |
 | [`FallbackLng`](https://www.i18next.com/principles/fallback#fallback) |
 
 ### interpolation
 
 i18next interpolation setting for integrating dynamic values into translations.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE                                                                                 | DEFAULT                  |
+| ------------------------------------------------------------------------------------ | ------------------------ |
 | [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
 
 ### keySeparator
 
 Override character to separate keys.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE              | DEFAULT |
+| ----------------- | ------- |
 | string \| boolean | `false` |
 
 ### lng
 
 Override language to use.
 
-| TYPE |
-| - |
+| TYPE   |
+| ------ |
 | string |
 
 ### nsSeparator
 
 Override character to split namespace from key.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE              | DEFAULT |
+| ----------------- | ------- |
 | string \| boolean | `false` |
 
 ### parseMissingKeyHandler
 
 Function to handle keys missing translations for the selected language.
 
-| TYPE | DEFAULT |
-| - | - |
+| TYPE                      | DEFAULT        |
+| ------------------------- | -------------- |
 | `(key: string) => string` | `(key) => key` |
 
 ## Methods
@@ -396,23 +395,19 @@ The third parameter, which is optional, is a Day.js locale, which is structured 
 It is suggested you look at the [`enTranslations` json file](https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n) exported from `stream-chat-react-native` for a current list of used translation keys.
 
 ```ts
-streami18n.registerTranslation(
-  'mr',
-  {
-    'Nothing yet...': 'काहीही नाही  ...',
-    '{{ firstUser }} and {{ secondUser }} are typing...':
-      '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत',
-  }
-);
+streami18n.registerTranslation('mr', {
+  'Nothing yet...': 'काहीही नाही  ...',
+  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत',
+});
 ```
 
 #### Parameters
 
-| NAME | TYPE | REQUIRED |
-| - | - | - |
-| language | string | :heavy_check_mark: |
-| translation | object | :heavy_check_mark: |
-| customDayjsLocale | object | |
+| NAME              | TYPE   | REQUIRED           |
+| ----------------- | ------ | ------------------ |
+| language          | string | :heavy_check_mark: |
+| translation       | object | :heavy_check_mark: |
+| customDayjsLocale | object |                    |
 
 ### setLanguage
 
@@ -426,6 +421,6 @@ const t = await streami18n.setLanguage('nl');
 
 #### Parameters
 
-| NAME | TYPE | REQUIRED |
-| - | - | - |
+| NAME     | TYPE   | REQUIRED           |
+| -------- | ------ | ------------------ |
 | language | string | :heavy_check_mark: |

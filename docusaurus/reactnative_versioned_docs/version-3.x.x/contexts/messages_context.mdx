@@ -41,7 +41,7 @@ import HandleThreadReply from '../common-content/core-components/channel/props/h
 import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
 import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
-import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx'
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
@@ -97,8 +97,8 @@ import UrlPreview from '../common-content/core-components/channel/props/url_prev
 
 Id of current channel.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#copymessage)_ props</div> copyMessage {#copymessage}
@@ -237,13 +237,12 @@ Id of current channel.
 
 <ReactionsEnabled />
 
-
 ### removeMessage
 
 Function to remove message from local channel state. Please note that this function is only for updating the local state, it doesn't call the api for deleting message (`channel.deleteMessage`).
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#reply)_ props</div> Reply {#reply}
@@ -258,8 +257,8 @@ Function to remove message from local channel state. Please note that this funct
 
 Function to re-attempt sending failed message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#selectreaction)_ props</div> selectReaction {#selectreaction}
@@ -270,16 +269,16 @@ Function to re-attempt sending failed message.
 
 Enables editing state for given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### setQuotedMessageState
 
 Enables quoted-reply state on given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#supportedreactions)_ props</div> supportedReactions {#supportedreactions}
@@ -298,8 +297,8 @@ Enables quoted-reply state on given message.
 
 Upserts a given message in local channel state. Please note that this function doesn't call `channel.sendMessage`. Channel component uses this function for optimistic updates to message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#attachment)_ props</div> Attachment {#attachment}

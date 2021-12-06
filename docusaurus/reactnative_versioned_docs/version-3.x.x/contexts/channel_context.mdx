@@ -23,7 +23,7 @@ import Watchers from '../common-content/contexts/channel-context/watchers.mdx';
 
 ## Basic Usage
 
-`ChannelContext` can be consumed by any of the child  component of `Channel` component as following:
+`ChannelContext` can be consumed by any of the child component of `Channel` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -62,16 +62,16 @@ We don't recommend using `ChannelContext` at message level, since changes to its
 
 True if any api call to `channel.query()` during first load or pagination fails.
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### giphyEnabled
 
 True if giphy command is enabled on [channel type](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=command#edit-a-channel-type).
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#hidedateseparators)_ props</div> hideDateSeparators {#hidedateseparators}
@@ -88,10 +88,10 @@ True if current user (connected to chat client) has `admin` role on application 
 
 ```tsx
 const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role === 'admin';
-
 ```
-| Type |
-| - |
+
+| Type    |
+| ------- |
 | boolean |
 
 ### isModerator
@@ -99,11 +99,12 @@ const isAdmin = client?.user?.role === 'admin' || channel?.state.membership.role
 True if current user (connected to chat client) has `moderator` role on application level or channel level. Please read more about [User Roles](https://getstream.io/chat/docs/javascript/channel_user_role/) for details.
 
 ```tsx
-const isModerator = channel?.state.membership.role === 'channel_moderator' || channel?.state.membership.role === 'moderator';
+const isModerator =
+  channel?.state.membership.role === 'channel_moderator' || channel?.state.membership.role === 'moderator';
 ```
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### isOwner
@@ -114,17 +115,18 @@ True if current user (connected to chat client) has `owner` level permissions fo
 const isOwner = channel?.state.membership.role === 'owner';
 ```
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### lastRead
 
 <!-- TODO: Change to new docs -->
+
 Timestamp of when current user marked the channel as read - [`channel.markRead()`](https://getstream.io/chat/docs/javascript/unread/?language=javascript&q=markRead)
 
-| Type |
-| - |
+| Type                                                                                          |
+| --------------------------------------------------------------------------------------------- |
 | [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) |
 
 ### loadChannelAtMessage
@@ -135,20 +137,20 @@ Function to reload channel at particular message in history.
 loadChannelAtMessage({
   before: 10, // Number of messages to load before messageId
   after: 10, // Number of messages to load after messageId
-  messageId
-})
+  messageId,
+});
 ```
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### loading
 
 True if channel is loading messages during first load.
 
-| Type |
-| - |
+| Type    |
+| ------- |
 | boolean |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#loadingindicator)_ props</div> LoadingIndicator {#loadingindicator}
@@ -158,10 +160,11 @@ True if channel is loading messages during first load.
 ### markRead
 
 <!-- TODO: Change to new docs -->
+
 Function to mark current channel as read, for current user. This function internally makes a throttled call to `channel.markRead()`, if [read events](https://getstream.io/chat/docs/javascript/channel_features/?language=javascript&q=read%20event) are enabled
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#maxtimebetweengroupedmessages)_ props</div> maxTimeBetweenGroupedMessages {#maxtimebetweengroupedmessages}
@@ -175,6 +178,7 @@ Function to mark current channel as read, for current user. This function intern
 ### read
 
 <!-- TODO: Change to new docs -->
+
 Read statuses of members of current channel. This value is received from backend when you query a channel, either using [`client.queryChannels()`](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript&q=members) or [`channel.watch()`](https://getstream.io/chat/docs/javascript/watch_channel/?language=javascript&q=members) api call.
 
 ```tsx
@@ -187,8 +191,8 @@ Record<
 >;
 ```
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#readeventsenabled)_ props</div> readEventsEnabled {#readeventsenabled}
@@ -199,8 +203,8 @@ Record<
 
 Function to reload a channel at most recent message. Promise returned by this function will be resolved, when the channel has finished reloading.
 
-| Type |
-| - |
+| Type          |
+| ------------- |
 | () => Promise |
 
 ### scrollToFirstUnreadThreshold
@@ -211,24 +215,24 @@ Function to reload a channel at most recent message. Promise returned by this fu
 
 Setter function for react state [`lastRead`](#lastread) of Channel component.
 
-| Type |
-| - |
+| Type                   |
+| ---------------------- |
 | `(date: Date) => void` |
 
 ### setTargetedMessage
 
 Setter function for react state [`targetedMessage`](#targetedmessage) of Channel component
 
-| Type |
-| - |
+| Type                          |
+| ----------------------------- |
 | `(messageId: string) => void` |
 
 ### targetedMessage
 
 Id of message, which is highlighted currently. This value gets set when you load a channel at particular message in history, using [loadChannelAtMessage](#loadchannelatmessage).
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#typingeventsenabled)_ props</div> typingEventsEnabled {#typingeventsenabled}
@@ -243,8 +247,8 @@ Id of message, which is highlighted currently. This value gets set when you load
 
 Total number of users, currently watching a channel.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | number |
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#emptystateindicator)_ props</div> EmptyStateIndicator {#emptystateindicator}

@@ -24,7 +24,7 @@ import SetBlurType from '../common-content/contexts/overlay-context/set_blur_typ
 import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
-import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx'
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 
 Component to render image attachments within the [`MessageList`](./message_list.mdx).
 
@@ -56,8 +56,8 @@ import { Channel, Gallery } from 'stream-chat-react-native';
 
 Weather current message has any thread replies or not. This boolean is used for setting borderBottomLeftRadius for left aligned messages and borderBottomRightRadius for right aligned messages.
 
-| Type | Default |
-| - | - |
+| Type    | Default                 |
+| ------- | ----------------------- |
 | boolean | `!!message.reply_count` |
 
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#images)_</div> images {#images}
@@ -72,16 +72,16 @@ Weather current message has any thread replies or not. This boolean is used for 
 
 Id of the current message.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### messageText
 
 Text content of current message - `message.text`. This prop gets used for styling purpose of gallery.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
@@ -100,9 +100,9 @@ Text content of current message - `message.text`. This prop gets used for stylin
 
 If true, onPress handler will be disabled.
 
-| Type | Default |
-| - | - |
-| boolean | false |
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
 ### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setblurtype)_</div> setBlurType {#setblurtype}
 
@@ -119,4 +119,3 @@ If true, onPress handler will be disabled.
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
 
 <ThreadList />
-

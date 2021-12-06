@@ -4,7 +4,7 @@ sidebar_position: 2
 title: Chat
 ---
 
-import Client from '../common-content/core-components/chat/props/client.mdx'
+import Client from '../common-content/core-components/chat/props/client.mdx';
 import I18nInstance from '../common-content/core-components/overlay-provider/props/i18n_instance.mdx';
 
 `Chat` provides the [ChatContext](../contexts/chat_context.mdx), [TranslationContext](../contexts/translation_context.mdx), and [ThemeContext](../contexts/theme_context.mdx) to its child components.
@@ -17,17 +17,18 @@ The value `isOnline` provided by the [ChatContext](../contexts/chat_context.mdx#
 `Chat` should be rendered inside of the `OverlayProvider` and if you choose can be implemented at a high level of your application, similar to the `OverlayProvider`.
 
 ```tsx {8,10}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const App = () =>
+export const App = () => (
   <OverlayProvider>
     <Chat client={client}>
       <ChannelList />
     </Chat>
-  </OverlayProvider>;
+  </OverlayProvider>
+);
 ```
 
 ## Context Providers
@@ -35,10 +36,10 @@ export const App = () =>
 `Chat` contains providers for the `ChatContext`, `ThemeContext`, and `TranslationContext`.
 These can be accessed using the corresponding hooks.
 
-| Context | Hook |
-| - | - |
-| `ChatContext` | `useChatContext` |
-| `ThemeContext` | `useTheme` |
+| Context              | Hook                    |
+| -------------------- | ----------------------- |
+| `ChatContext`        | `useChatContext`        |
+| `ThemeContext`       | `useTheme`              |
 | `TranslationContext` | `useTranslationContext` |
 
 ## Props
@@ -53,9 +54,9 @@ When set to false the WebSocket connection won't disconnect when sending the app
 To receive push notifications it's necessary that user doesn't have an active WebSocket connection.
 By default the WebSocket connection is disconnected when the app goes to the background, and reconnects when app comes to the foreground.
 
-| Type | Default |
-| - | - |
-| boolean | true |
+| Type    | Default |
+| ------- | ------- |
+| boolean | true    |
 
 ### i18nInstance
 
@@ -74,7 +75,6 @@ Themes are not hoisted though, therefore a theme provided to `Chat` will not cha
 
 :::
 
-
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |

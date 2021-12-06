@@ -9,27 +9,30 @@ Easiest way to integrate push notifications in your Chat applications is using F
 ## Requirements
 
 <!-- TODO: Change to new docs for links -->
+
 - Only [members](https://getstream.io/chat/docs/javascript/channel_members/?language=javascript&q=addMember) of channel receive Push Notifications
-- We only send push notifications, when the user doesn't have any active websocket connection (which is established when you call `client.connectUser`).  
+- We only send push notifications, when the user doesn't have any active websocket connection (which is established when you call `client.connectUser`).
 - If you are using components from [React Native Chat SDK](https://github.com/GetStream/stream-chat-react-native), we automatically drop the websocket connection when app goes to background. To disable this behaviour, you can set prop closeConnectionOnBackground={false} on Chat component, in which case websocket will stay active for approximately 15-20 seconds when app goes to background.
 
 ## Firebase Setup
-  Follow the steps mentioned on Firebase documentation setup Firebase.
 
-  1. [Create a firebase project](https://firebase.google.com/docs/cloud-messaging/ios/client#create-firebase-project).
-  2. Register your [Android](https://firebase.google.com/docs/cloud-messaging/android/client#register_your_app_with_firebase) and [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client#register-app) app with Firebase app.
-  3. Download a Firebase configuration file for [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client) and [Android](https://firebase.google.com/docs/cloud-messaging/android/client#add_a_firebase_configuration_file).
-  4. Install React Native Firebase.
+Follow the steps mentioned on Firebase documentation setup Firebase.
 
-    ```sh
-    # Install & setup the app module
-    yarn add @react-native-firebase/app
+1. [Create a firebase project](https://firebase.google.com/docs/cloud-messaging/ios/client#create-firebase-project).
+2. Register your [Android](https://firebase.google.com/docs/cloud-messaging/android/client#register_your_app_with_firebase) and [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client#register-app) app with Firebase app.
+3. Download a Firebase configuration file for [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client) and [Android](https://firebase.google.com/docs/cloud-messaging/android/client#add_a_firebase_configuration_file).
+4. Install React Native Firebase.
 
-    # Install the messaging module
-    yarn add @react-native-firebase/messaging
-    ```
-  5. [Setup Android credentials](https://rnfirebase.io/#2-android-setup).
-  6. [Setup iOS credentials](https://rnfirebase.io/#3-ios-setup).
+   ```sh
+   # Install & setup the app module
+   yarn add @react-native-firebase/app
+
+   # Install the messaging module
+   yarn add @react-native-firebase/messaging
+   ```
+
+5. [Setup Android credentials](https://rnfirebase.io/#2-android-setup).
+6. [Setup iOS credentials](https://rnfirebase.io/#3-ios-setup).
 
 ## Integration with Stream
 
@@ -38,12 +41,12 @@ Easiest way to integrate push notifications in your Chat applications is using F
 1. From the Firebase Console, select the project your app belongs to.
 2. Click on the gear icon next to Project Overview and navigate to Project settings.
 
-  ![Firebase Project Settings](https://getstream.imgix.net/images/docs/chat_push/firebase_project_settings.png)
+![Firebase Project Settings](https://getstream.imgix.net/images/docs/chat_push/firebase_project_settings.png)
 
 3. Navigate to the Cloud Messaging tab
 4. Under Project Credentials, locate the Server key and copy it
 
-  ![](https://getstream.imgix.net/images/docs/chat_push/server_key.png)
+![](https://getstream.imgix.net/images/docs/chat_push/server_key.png)
 
 ### Upload Server Key on Stream
 
@@ -51,42 +54,44 @@ You can upload your server key either from dashboard OR using Stream Chat Server
 
 #### Upload FCM Server Key via Chat Dashboard
 
-  1. Go to the [Stream dashboard](https://dashboard.getstream.io/dashboard/v2/).
-  2. Select your app.
-  3. Go to Chat Overview page from top navigation.
+1. Go to the [Stream dashboard](https://dashboard.getstream.io/dashboard/v2/).
+2. Select your app.
+3. Go to Chat Overview page from top navigation.
 
-    ![](https://user-images.githubusercontent.com/11586388/115985969-7b82e300-a5ae-11eb-8b15-0b219b221876.png)
+   ![](https://user-images.githubusercontent.com/11586388/115985969-7b82e300-a5ae-11eb-8b15-0b219b221876.png)
 
-  4. Enable Firebase Push notifications toggle.
+4. Enable Firebase Push notifications toggle.
 
-    ![](https://user-images.githubusercontent.com/11586388/115986064-dae0f300-a5ae-11eb-9012-6205b2572607.png)
-    
-  5. You will see a modal when you enable Firebase toggle, where you can enter your FCM Server Key. Or you can click on Edit Settings button to edit/update previously configured FCM Server Key.
+   ![](https://user-images.githubusercontent.com/11586388/115986064-dae0f300-a5ae-11eb-9012-6205b2572607.png)
 
-  :::info
+5. You will see a modal when you enable Firebase toggle, where you can enter your FCM Server Key. Or you can click on Edit Settings button to edit/update previously configured FCM Server Key.
+
+:::info
+
   <!-- TODO: Change to new docs for links -->
-  Under the modal, you can also update the Firebase Notification Template. Please read more about template on [template docs](https://getstream.io/chat/docs/javascript/push_template/?language=javascript)
-  
-  :::
 
-  6. Save your push notification settings changes.
+Under the modal, you can also update the Firebase Notification Template. Please read more about template on [template docs](https://getstream.io/chat/docs/javascript/push_template/?language=javascript)
 
-    ![](https://getstream.imgix.net/images/docs/chat_push/dashboard_save_changes.png)
+:::
+
+6. Save your push notification settings changes.
+
+   ![](https://getstream.imgix.net/images/docs/chat_push/dashboard_save_changes.png)
 
 #### Upload FCM Server Key via Stream Chat Server side SDK
 
-  You can also upload the Server Key via API call using a backend SDK.
+You can also upload the Server Key via API call using a backend SDK.
 
-  ```js
-  const client = StreamChat.getInstance(API_KEY, API_SECRET);
-  await client.updateAppSettings({
-      firebase_config: {
-          server_key: 'server_key',
-          notification_template: `{"message":{"notification":{"title":"New messages","body":"You have {{ unread_count }} new message(s) from {{ sender.name }}"},"android":{"ttl":"86400s","notification":{"click_action":"OPEN_ACTIVITY_1"}}}}`,
-          data_template: `{"sender":"{{ sender.id }}","channel":{"type": "{{ channel.type }}","id":"{{ channel.id }}"},"message":"{{ message.id }}"}`
-      },
-  });
-  ```
+```js
+const client = StreamChat.getInstance(API_KEY, API_SECRET);
+await client.updateAppSettings({
+  firebase_config: {
+    server_key: 'server_key',
+    notification_template: `{"message":{"notification":{"title":"New messages","body":"You have {{ unread_count }} new message(s) from {{ sender.name }}"},"android":{"ttl":"86400s","notification":{"click_action":"OPEN_ACTIVITY_1"}}}}`,
+    data_template: `{"sender":"{{ sender.id }}","channel":{"type": "{{ channel.type }}","id":"{{ channel.id }}"},"message":"{{ message.id }}"}`,
+  },
+});
+```
 
 ### Registering a device with Stream
 
@@ -104,8 +109,7 @@ So `client.addDevice` call should be made after `client.connectUser` in code.
 const requestPermission = async () => {
   const authStatus = await messaging().requestPermission();
   const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -115,22 +119,20 @@ const requestPermission = async () => {
 const App = () => {
   const [isReady, setIsReady] = useState(false);
 
-    useEffect(() => {
+  useEffect(() => {
     let unsubscribeTokenRefreshListener;
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
       const token = await messaging().getToken();
       await client.addDevice(token, 'firebase');
 
-      unsubscribeTokenRefreshListener = messaging().onTokenRefresh(
-        async newToken => {
-          await client.addDevice(newToken, 'firebase');
-        },
-      );
+      unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
+        await client.addDevice(newToken, 'firebase');
+      });
     };
 
     const init = async () => {
-      await client.connectUser({id: USER_ID}, USER_TOKEN);
+      await client.connectUser({ id: USER_ID }, USER_TOKEN);
 
       await requestPermission();
       await registerPushToken();
@@ -188,6 +190,7 @@ You can access the notification data in both these functions. Make sure you have
 ![](https://user-images.githubusercontent.com/11586388/116590886-8cb95000-a91e-11eb-85a5-8ff4f5fb36b8.png)
 
 <!-- TODO: Change to new docs for links -->
+
 Please check [Push Template](https://getstream.io/chat/docs/javascript/push_template/?language=javascript) docs for more details on template.
 
 To handle both scenarios, the code can be executed during setup. For example, using [React Navigation](https://reactnavigation.org/) we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
@@ -210,10 +213,7 @@ function App() {
     // Please check the docs on push template:
     // https://getstream.io/chat/docs/javascript/push_template/?language=javascript
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage,
-      );
+      console.log('Notification caused app to open from background state:', remoteMessage);
       const channel = JSON.parse(remoteMessage.data.channel);
       const message = remoteMessage.data.message;
 
@@ -234,10 +234,7 @@ function App() {
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          console.log(
-            'Notification caused app to open from quite state:',
-            remoteMessage,
-          );
+          console.log('Notification caused app to open from quite state:', remoteMessage);
           const channel = JSON.parse(remoteMessage.data.channel);
           const message = remoteMessage.data.message;
 
@@ -256,9 +253,9 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="ChannelListScreen" component={SettingsScreen} />
-        <Stack.Screen name="ChannelScreen" component={SettingsScreen} />
+        <Stack.Screen name='Home' component={HomeScreen} />
+        <Stack.Screen name='ChannelListScreen' component={SettingsScreen} />
+        <Stack.Screen name='ChannelScreen' component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

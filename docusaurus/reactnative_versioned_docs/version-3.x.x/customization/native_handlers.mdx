@@ -7,7 +7,7 @@ title: Native Handlers
 Stream Chat for React Native uses a number of features that require packages that run native code.
 Stream Chat for React Native also supports [Expo](https://expo.io/), which has it's own set of native packages.
 To reconcile these differences Stream Chat for React Native is made up of two packages, `stream-chat-react-native-core`, and either `stream-chat-react-native` or `stream-chat-expo`.
-The non *core* packages call a function from the core package, `registerNativeHandlers`, this gives the core package access to different native functions that perform the same task, but are different between Expo and vanilla React Native.
+The non _core_ packages call a function from the core package, `registerNativeHandlers`, this gives the core package access to different native functions that perform the same task, but are different between Expo and vanilla React Native.
 
 ## Overriding Handlers
 
@@ -18,7 +18,7 @@ You should look at the [default implementation](https://github.com/GetStream/str
 to ensure any override conforms to the appropriate type definition provided by the SDK.
 
 :::note
-This should be done outside of the component lifecycle to prevent unnecessarily re-registering the same handler repeatedly. 
+This should be done outside of the component lifecycle to prevent unnecessarily re-registering the same handler repeatedly.
 :::
 
 ### Example: Override haptic feedback handler
@@ -51,7 +51,7 @@ registerNativeHandlers({
         {
           cameraType: 'back',
         },
-        (response) => {
+        response => {
           if (response.errorMessage) {
             resolve({ cancelled: true });
             return;
@@ -155,9 +155,9 @@ A function to save a file from a url to local storage.
 
 String identifying which package, `stream-chat-react-native` or `stream-chat-expo`, is being used.
 
-**React Native:** *stream-chat-react-native*
+**React Native:** _stream-chat-react-native_
 
-**Expo:** *stream-chat-expo*
+**Expo:** _stream-chat-expo_
 
 ### shareImage
 
@@ -174,7 +174,7 @@ A function that opens the OS specific camera and returns an image when one is ta
 **React Native:** [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
 
 **Expo:** [`expo-image-picker`](https://docs.expo.io/versions/latest/sdk/imagepicker/)
- 
+
 ### triggerHaptic
 
 A function to trigger haptic feedback given the type of haptic force desired.

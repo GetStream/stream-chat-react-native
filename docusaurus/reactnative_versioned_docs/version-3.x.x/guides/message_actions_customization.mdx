@@ -12,13 +12,21 @@ By default we render the following actions (as shown in screenshots)
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src={messageActions}/></td>
-    <td align='center' width="33%"><img src={myMessageActions}/></td>
+    <td align='center' width='33%'>
+      <img src={messageActions} />
+    </td>
+    <td align='center' width='33%'>
+      <img src={myMessageActions} />
+    </td>
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'><strong>Actions on received message</strong></td>
-    <td align='center'><strong>Actions on my message</strong></td>
+    <td align='center'>
+      <strong>Actions on received message</strong>
+    </td>
+    <td align='center'>
+      <strong>Actions on my message</strong>
+    </td>
   </tr>
 </table>
 
@@ -70,18 +78,16 @@ Please continue reading further to difference use cases.
 ## How to conditionally render message actions
 
 Following example demonstrates how to:
+
 - Only show "Copy Message", "Edit Message" actions from default action set.
 - Show "Edit Message" messages from current user.
 
 Additionally, the following example demonstrates how you can add custom styles for a message action title.
 
-  ```jsx
-  <Channel
-    messageActions={({
-      copyMessage,
-      editMessage,
-      isMyMessage,
-    }) => isMyMessage
+```jsx
+<Channel
+  messageActions={({ copyMessage, editMessage, isMyMessage }) =>
+    isMyMessage
       ? [
           copyMessage,
           editMessage,
@@ -89,16 +95,16 @@ Additionally, the following example demonstrates how you can add custom styles f
             ...deleteMessage,
             textStyle: {
               color: 'red',
-              fontWeight: 'bold'
-            }
-          }
+              fontWeight: 'bold',
+            },
+          },
         ]
       : [copyMessage]
-    }
-  >
-    {/** MessageList and MessageInput component here */}
-  </Channel>
-  ```
+  }
+>
+  {/** MessageList and MessageInput component here */}
+</Channel>
+```
 
 ## How to add a custom message action
 
@@ -110,16 +116,16 @@ Following example demonstrates how to introduce a new/custom message action:
   ```jsx
   <Channel
     channel={channel}
-    messageActions={({ dismissOverlay }) => ([
+    messageActions={({ dismissOverlay }) => [
       {
         action: () => {
-          channel.sendMessage({text: '👉'});
+          channel.sendMessage({ text: '👉' });
           dismissOverlay();
         },
         icon: <PokeUserSVGIcon />,
-        title: "Poke User",
-      }
-    ])}
+        title: 'Poke User',
+      },
+    ]}
   >
     {/** MessageList and MessageInput component here */}
   </Channel>
@@ -127,7 +133,7 @@ Following example demonstrates how to introduce a new/custom message action:
 
 ## How to intercept a message action
 
-If you are looking to add some analytics tracking to message action, you can do so in following handler prop functions. 
+If you are looking to add some analytics tracking to message action, you can do so in following handler prop functions.
 These functions will be called right before the underlying default handlers.
 
 :::note
