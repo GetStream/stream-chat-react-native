@@ -21,7 +21,7 @@ The Stream Chat client, `StreamChat` is a dependency of `stream-chat-react-nativ
 To create a client instance you can call `getInstance` on the client and provide and api key.
 
 ```ts
-import { StreamChat } from 'stream-chat';
+import { StreamChat } from 'stream-chat'; 
 
 const client = StreamChat.getInstance('api_key');
 ```
@@ -29,18 +29,13 @@ const client = StreamChat.getInstance('api_key');
 :::caution
 
 **Usage of `StreamChat.getInstance()` available since stream-chat@2.12.0.**
-
 <br />
-This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and retrieve
-it wherever you need it on your app to perform API calls. After calling it once, any following <code>
-  getInstance
-</code> call will return the initial StreamChat instance. This will prevent you from accidentally creating multiple StreamChat
-instances, opening multiple WebSockets, and driving up your concurrent connections unnecessarily.
-<br />
-<br />
+This new Singleton pattern allows you to instantiate a unique StreamChat client, i.e create a StreamChat instance and retrieve it wherever you need it on your app to perform API calls.
+After calling it once, any following <code>getInstance</code> call will return the initial StreamChat instance.
+This will prevent you from accidentally creating multiple StreamChat instances, opening multiple WebSockets, and driving up your concurrent connections unnecessarily.
+<br /><br />
 
 Stream Chat is backward compatible. Users can continue using <code>new StreamChat()</code> if desired.
-
 <br />
 
 ```ts
@@ -48,7 +43,7 @@ const client = new StreamChat('api_key');
 ```
 
 Calling <code>new StreamChat()</code> repeatedly will create new copies of the client and in turn new WebSocket connections when <code>connectUser</code> is called.
-If you are using <code>new StreamChat()</code> you need to be vigilant about your use to ensure you are not creating multiple WebSocket connections unnecessarily.
+If you are using <code>new StreamChat()</code> you need to be vigilant about your use to ensure you are not creating multiple WebSocket connections unnecessarily. 
 
 :::
 
@@ -58,13 +53,13 @@ To connect a user a the `connectUser` function should be called and provided wit
 The `user_token` is typically sent from your back end when a user is authenticated.
 
 ```ts
-await client.connectUser(
-  {
-    id: 'testUser',
-    name: 'Test User',
-  },
-  'user_token',
-);
+await client.connectUser( 
+    { 
+        id: 'testUser', 
+        name: 'Test User', 
+    }, 
+    'user_token',
+); 
 ```
 
 It is recommended to not repeatedly call `connectUser` unnecessarily, multiple calls to `connectUser` will result in warnings, and attempting to call `connectUser` before disconnecting a current user will throw an Error.
@@ -75,15 +70,18 @@ The Stream Chat for React Native UI components handle most interactions with the
 
 ### Providing the Client to the UI
 
-To provide the the client to the UI components you simply provide the client instance as the prop `client` to the `Chat` component.
+To provide the the client to the UI components you simply provide the client instance as the prop `client` to the `Chat` component. 
 
 ```tsx
-import { StreamChat } from 'stream-chat';
+import { StreamChat } from 'stream-chat'; 
 import { Chat } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const Screen = () => <Chat client={client}>{/** App components */}</Chat>;
+export const Screen = () =>
+  <Chat client={client}>
+    {/** App components */}
+  </Chat>
 ```
 
 The Stream Chat for React Native UI components then handle interacting with the client internally by accessing the client via [`context`](https://reactjs.org/docs/context.html).
@@ -92,7 +90,6 @@ The Stream Chat for React Native UI components then handle interacting with the 
 
 If you are customizing certain components or functionality you may have to interact with the client as well.
 You can access the client provided to the `Chat` component internally via the `useChatContext`.
-
 <br />
 
 ```ts
@@ -162,27 +159,27 @@ You can't add or remove members from channel created using a list of members.
 >
 <TabItem value='channelId'>
 
-```ts
-/**
- *  Channel created using a channel id
- */
-const channel = client.channel(channel_type, 'channel_id', {
-  name: 'My New Channel',
-});
-```
+  ```ts
+  /**
+   *  Channel created using a channel id
+   */
+  const channel = client.channel(channel_type, 'channel_id', { 
+      name: 'My New Channel', 
+  });
+  ```
 
 </TabItem>
 <TabItem value='members'>
 
-```ts
-/**
- *  Channel created using a members list
- */
-const channel = client.channel(channel_type, {
-    members: ['userOne', 'userTwo']
-    name: 'My New Channel',
-});
-```
+  ```ts
+  /**
+   *  Channel created using a members list
+   */
+  const channel = client.channel(channel_type, {
+      members: ['userOne', 'userTwo']
+      name: 'My New Channel',
+  });
+  ```
 
 </TabItem>
 </Tabs>
@@ -199,16 +196,16 @@ To create a channel on the server you must call `create` or `watch` on a new cha
 >
 <TabItem value='watch'>
 
-```ts
-await channel.watch();
-```
+  ```ts
+  await channel.watch();
+  ```
 
 </TabItem>
 <TabItem value='create'>
 
-```ts
-await channel.create();
-```
+  ```ts
+  await channel.create();
+  ```
 
 </TabItem>
 </Tabs>

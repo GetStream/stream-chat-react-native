@@ -3,13 +3,13 @@ id: image-gallery-context
 title: ImageGalleryContext
 ---
 
-import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx';
+import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx'
 
 `ImageGalleryContext` is provided by [`OverlayProvider`](../core-components/overlay_provider.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
 
-`ImageGalleryContext` can be consumed by any of the child component of `OverlayProvider` component as following:
+`ImageGalleryContext` can be consumed by any of the child  component of `OverlayProvider` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -59,16 +59,16 @@ Current active image in image viewer/gallery.
 }
 ```
 
-| Type   |
-| ------ |
+| Type |
+| - |
 | object |
 
 ### images
 
 All the messages in channel which contain image attachments. Image viewer/gallery uses this array to navigate to next or previous image.
 
-| Type                                                                                                                                          |
-| --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type |
+| - |
 | [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/hooks/useMessageList.ts)[] |
 
 ### setImage
@@ -79,6 +79,6 @@ All the messages in channel which contain image attachments. Image viewer/galler
 
 Setter for value [images](#images).
 
-| Type                                                                                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type |
+| - |
 | (messageWithImages: [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/hooks/useMessageList.ts)[]) => void |

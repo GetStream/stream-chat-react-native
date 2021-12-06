@@ -14,94 +14,70 @@ import ThreadList from '../message-context/thread_list.mdx';
 
 This is an object with following keys:
 
-- `alignment`
+  - `alignment`
 
-{' '}
+  <Alignment />
 
-<Alignment />
+  - `clientId`
 
-- `clientId`
+  Id of the current user connected to the chat.
 
-Id of the current user connected to the chat.
+  | Type |
+  | - |
+  | string |
 
-| Type   |
-| ------ |
-| string |
+  - `files`
 
-- `files`
+  <Files />
 
-{' '}
+  - `groupStyles`
 
-<Files />
+  <GroupStyles />
 
-- `groupStyles`
+  - `handleReaction`
 
-{' '}
+  <HandleReaction />
 
-<GroupStyles />
+  - `images`
+  
+  <Images />
 
-- `handleReaction`
+  - `message`
 
-{' '}
+  <MessageProp />
 
-<HandleReaction />
+  - `messageActions`
 
-- `images`
+  <MessageActions />
 
-{' '}
+  - `messageReactionTitle`
 
-<Images />
+  Title for `MessageReactions` component.
 
-- `message`
+  | Type | Default |
+  | - | - |
+  | string | "Message Reactions" |
 
-{' '}
+  - `messagesContext`
 
-<MessageProp />
+  Entire value object of [MessagesContext](../../../contexts/messages_context.mdx#value)
 
-- `messageActions`
+  - `onlyEmojis`
 
-{' '}
+  <OnlyEmojis />
 
-<MessageActions />
+  - `otherAttachments`
 
-- `messageReactionTitle`
+  <OtherAttachments />
 
-Title for `MessageReactions` component.
+  - `OverlayReactionList`
 
-| Type   | Default             |
-| ------ | ------------------- |
-| string | "Message Reactions" |
+  <OverlayReactionList />
 
-- `messagesContext`
+  - `supportedReactions`
 
-Entire value object of [MessagesContext](../../../contexts/messages_context.mdx#value)
+  <SupportedReactions />
 
-- `onlyEmojis`
+  - `threadList`
 
-{' '}
-
-<OnlyEmojis />
-
-- `otherAttachments`
-
-{' '}
-
-<OtherAttachments />
-
-- `OverlayReactionList`
-
-{' '}
-
-<OverlayReactionList />
-
-- `supportedReactions`
-
-{' '}
-
-<SupportedReactions />
-
-- `threadList`
-
-{' '}
-
-<ThreadList />
+  <ThreadList />

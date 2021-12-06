@@ -4,9 +4,9 @@ sidebar_position: 1
 title: Theming
 ---
 
-import inspector from '../assets/customization/theming/inspector.png';
-import themed from '../assets/customization/theming/themed.png';
-import unthemed from '../assets/customization/theming/unthemed.png';
+import inspector from '../assets/customization/theming/inspector.png'
+import themed from '../assets/customization/theming/themed.png'
+import unthemed from '../assets/customization/theming/unthemed.png'
 
 The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system.
 
@@ -15,7 +15,7 @@ The majority of components used in `stream-chat-react-native` can have custom st
 To accurately create a theme we suggest utilizing our exported types to create your own theme.
 This will allow you to ensure the keys you are using in your theme object are correct.
 
-When you provide a theme as a prop a deep merge of the theme and default theme is performed so only styles designated in the custom theme overwrite the defaults.
+When you provide a theme as a prop a deep merge of the theme and default theme is performed so only styles designated in the custom theme overwrite the defaults. 
 We provide a helper type `DeepPartial` that makes all of the keys at every depth optional, this is to account for the deep merge that is performed.
 
 You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts).
@@ -45,13 +45,12 @@ Nested `ThemeProvider` components merge themes provided by higher level `ThemePr
 This allows you to provide a different theme at different levels of the application if you choose.
 
 ```tsx {2}
-export const App = () => (
+export const App = () =>
   <OverlayProvider value={{ style: theme }}>
     <Chat client={client}>
       <ChannelList />
     </Chat>
-  </OverlayProvider>
-);
+  </OverlayProvider>;
 ```
 
 ## Dark mode
@@ -67,7 +66,7 @@ import type { DeepPartial, Theme } from 'stream-chat-react-native';
 export const App = () => {
   const colorScheme = useColorScheme();
   const getTheme = (): DeepPartial<Theme> => ({
-    colors: colorScheme === 'dark' ? { black: '#FFFFFF' } : { black: '#000000' },
+    colors: colorScheme === 'dark' ? { black: '#FFFFFF' } : { black: '#000000' }
   });
   const [theme, setTheme] = useState(getTheme());
 
@@ -110,7 +109,7 @@ To view the `displayName` on a component.
 Not all theme styles are tied to high level components; but we have added this debugging strategy to help in locating the most common components easily.
 
 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-  <img src={inspector} alt='Inspector' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+<img src={inspector} alt="Inspector" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
 </div>
 
 To find the path and customize the style on a file attachment for instance we locate the component using the inspector.
@@ -139,8 +138,8 @@ const theme: DeepPartial<Theme> = {
 ```
 
 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={unthemed} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-  <img src={themed} alt='Themed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+<img src={unthemed} alt="Unthemed" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
+<img src={themed} alt="Themed" width="280" style={{ objectFit: 'contain', paddingBottom: '8px' }} />
 </div>
 
 The resulting changes by applying the custom theme are easily seen in the change in icon size and background color of the file attachment.

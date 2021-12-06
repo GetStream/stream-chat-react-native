@@ -3,16 +3,17 @@ id: message-input-context
 title: MessageInputContext
 ---
 
-import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
+import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx'
 
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
-import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx';
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx'
 import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx';
 import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx';
 import CompressImageQuality from '../common-content/core-components/channel/props/compress_image_quality.mdx';
 import DoDocUploadRequest from '../common-content/core-components/channel/props/do_doc_upload_request.mdx';
 import DoImageUploadRequest from '../common-content/core-components/channel/props/do_image_upload_request.mdx';
+import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
 import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx';
 import HasCommands from '../common-content/core-components/channel/props/has_commands.mdx';
 import HasFilePicker from '../common-content/core-components/channel/props/has_file_picker.mdx';
@@ -23,64 +24,64 @@ import Input from '../common-content/core-components/channel/props/input.mdx';
 import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx';
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
 import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx';
-import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx';
-import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx';
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx'
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx'
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx';
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
 import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
-import SendMessageDisallowedIndicator from '../common-content/core-components/channel/props/send_message_disallowed_indicator.mdx';
 import SendImageAsync from '../common-content/core-components/channel/props/send_image_async.mdx';
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
 import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
-import AppendText from '../common-content/contexts/message-input-context/append_text.mdx';
-import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx';
-import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx';
-import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx';
-import Editing from '../common-content/contexts/message-input-context/editing.mdx';
-import EditMessage from '../common-content/contexts/message-input-context/edit_message.mdx';
+import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx';
+
+import AppendText from '../common-content/contexts/message-input-context/append_text.mdx'
+import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx'
+import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx'
+import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx'
+import Editing from '../common-content/contexts/message-input-context/editing.mdx'
 import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx';
 import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx';
 import ImageUploads from '../common-content/contexts/message-input-context/image_uploads.mdx';
-import InputBoxRef from '../common-content/contexts/message-input-context/input_box_ref.mdx';
-import IsValidMessage from '../common-content/contexts/message-input-context/is_valid_message.mdx';
-import MentionedUsers from '../common-content/contexts/message-input-context/mentioned_users.mdx';
-import NumberOfUploads from '../common-content/contexts/message-input-context/number_of_uploads.mdx';
-import OpenAttachmentPicker from '../common-content/contexts/message-input-context/open_attachment_picker.mdx';
-import OpenCommandsPicker from '../common-content/contexts/message-input-context/open_commands_picker.mdx';
-import OpenFilePicker from '../common-content/contexts/message-input-context/open_file_picker.mdx';
-import OpenMentionsPicker from '../common-content/contexts/message-input-context/open_mentions_picker.mdx';
+import InputBoxRef from '../common-content/contexts/message-input-context/input_box_ref.mdx'
+import IsValidMessage from '../common-content/contexts/message-input-context/is_valid_message.mdx'
+import MentionedUsers from '../common-content/contexts/message-input-context/mentioned_users.mdx'
+import NumberOfUploads from '../common-content/contexts/message-input-context/number_of_uploads.mdx'
+import OpenAttachmentPicker from '../common-content/contexts/message-input-context/open_attachment_picker.mdx'
+import OpenCommandsPicker from '../common-content/contexts/message-input-context/open_commands_picker.mdx'
+import OpenFilePicker from '../common-content/contexts/message-input-context/open_file_picker.mdx'
+import OpenMentionsPicker from '../common-content/contexts/message-input-context/open_mentions_picker.mdx'
 import QuotedMessage from '../common-content/contexts/message-input-context/quoted_message.mdx';
 import RemoveFile from '../common-content/contexts/message-input-context/remove_file.mdx';
 import RemoveImage from '../common-content/contexts/message-input-context/remove_image.mdx';
-import ResetInput from '../common-content/contexts/message-input-context/reset_input.mdx';
-import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx';
-import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx';
-import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx';
-import SetFileUploads from '../common-content/contexts/message-input-context/set_file_uploads.mdx';
-import SetImageUploads from '../common-content/contexts/message-input-context/set_image_uploads.mdx';
-import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx';
-import SetMentionedUsers from '../common-content/contexts/message-input-context/set_mentioned_users.mdx';
-import SetNumberOfUploads from '../common-content/contexts/message-input-context/set_number_of_uploads.mdx';
-import SetSendThreadMessageInChannel from '../common-content/contexts/message-input-context/set_send_thread_message_in_channel.mdx';
-import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx';
-import SetText from '../common-content/contexts/message-input-context/set_text.mdx';
-import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx';
-import Text from '../common-content/contexts/message-input-context/text.mdx';
-import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx';
-import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx';
+import ResetInput from '../common-content/contexts/message-input-context/reset_input.mdx'
+import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
+import SendMessage from '../common-content/contexts/message-input-context/send_message.mdx'
+import SendThreadMessageInChannel from '../common-content/contexts/message-input-context/send_thread_message_in_channel.mdx'
+import SetFileUploads from '../common-content/contexts/message-input-context/set_file_uploads.mdx'
+import SetImageUploads from '../common-content/contexts/message-input-context/set_image_uploads.mdx'
+import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
+import SetMentionedUsers from '../common-content/contexts/message-input-context/set_mentioned_users.mdx'
+import SetNumberOfUploads from '../common-content/contexts/message-input-context/set_number_of_uploads.mdx'
+import SetSendThreadMessageInChannel from '../common-content/contexts/message-input-context/set_send_thread_message_in_channel.mdx'
+import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx'
+import SetText from '../common-content/contexts/message-input-context/set_text.mdx'
+import ShowMoreOptions from '../common-content/contexts/message-input-context/show_more_options.mdx'
+import Text from '../common-content/contexts/message-input-context/text.mdx'
+import ToggleAttachmentPicker from '../common-content/contexts/message-input-context/toggle_attachment_picker.mdx'
+import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx'
 import UploadFile from '../common-content/contexts/message-input-context/upload_file.mdx';
 import UploadImage from '../common-content/contexts/message-input-context/upload_image.mdx';
-import UpdateMessage from '../common-content/contexts/message-input-context/update_message.mdx';
-import UploadNewFile from '../common-content/contexts/message-input-context/upload_new_file.mdx';
-import UploadNewImage from '../common-content/contexts/message-input-context/upload_new_image.mdx';
+import UpdateMessage from '../common-content/contexts/message-input-context/update_message.mdx'
+import UploadNewFile from '../common-content/contexts/message-input-context/upload_new_file.mdx'
+import UploadNewImage from '../common-content/contexts/message-input-context/upload_new_image.mdx'
 
 `MessageInputContext` is provided by [`Channel`](../core-components/channel.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
 
-`MessageInputContext` can be consumed by any of the child component of `Channel` component as following:
+`MessageInputContext` can be consumed by any of the child  component of `Channel` component as following:
 
 ```tsx
 import { useContext } from 'react';
@@ -194,6 +195,10 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 <!-- ### setInputRef -->
 
 <!-- ### setQuotedMessageState -->
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#uploadsenabled)_ props</div> uploadsEnabled {#uploadsenabled}
+
+<UploadsEnabled />
 
 ### appendText
 
@@ -389,13 +394,9 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 <MoreOptionsButton />
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendbutton)_ props</div> SendButton {#sendbutton}
+### SendButton
 
 <SendButton />
-
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#sendmessagedisallowedindicator)_ props</div> SendMessageDisallowedIndicator {#sendmessagedisallowedindicator}
-
-<SendMessageDisallowedIndicator />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#showthreadmessageinchannelbutton)_ props</div> ShowThreadMessageInChannelButton {#showthreadmessageinchannelbutton}
 

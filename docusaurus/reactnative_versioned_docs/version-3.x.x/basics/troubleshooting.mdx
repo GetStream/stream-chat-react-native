@@ -30,7 +30,7 @@ We suggest you keep track of a `thread` state on your own and provide it to any 
 
 ```tsx {2}
 <Chat client={chatClient} i18nInstance={streami18n}>
-  <Channel channel={channel} thread={thread} threadList>
+  <Channel channel={channel} thread={thread}>
     <Thread onThreadDismount={() => setThread(null)} />
   </Channel>
 </Chat>
@@ -73,7 +73,7 @@ To do this make sure your `Channel` components are always aware of the thread st
 ```
 
 ```tsx
-<Channel channel={channel} thread={thread} threadList>
+<Channel channel={channel} thread={thread}>
   <Thread onThreadDismount={() => setThread(null)} />
 </Channel>
 ```
@@ -158,7 +158,7 @@ The standard camera permissions are required for the camera to work on Android, 
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
 
-Add `maven { url 'https://maven.google.com' }` to `android/build.gradle`
+Add `maven { url 'https://maven.google.com' }` to `android/build.gradle` 
 
 ```java {15}
 allprojects {
@@ -195,7 +195,9 @@ buildscript {
 }
 ```
 
+
 Add `vectorDrawables.useSupportLibrary = true` to `android/app/build.gradle`
+
 
 ```java
 android {
@@ -206,20 +208,6 @@ android {
     ...
 }
 ```
-
-## External Link not opening
-
-### Android
-
-Opening an external link doesn't work without permissions on `targetSdkVersion` >= 30. So, the following permission must be included in the `AndroidManifest.xml` file.
-
-```xml
-<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-```
-
-:::caution
-**Note:** Make sure you are aware of [upcoming policies](https://support.google.com/googleplay/android-developer/answer/10158779) that this change will be subjected to.
-:::
 
 ## GIF and WebP not displaying
 
@@ -242,6 +230,24 @@ dependencies {
 
   // For WebP support, without animations
   implementation 'com.facebook.fresco:webpsupport:2.0.0'
+  ...
+}
+```
+
+## BlurView crashing
+
+### Android
+
+[`@react-native-community/blur`](https://github.com/Kureev/react-native-blur) utilizes the native Android library [`BlurView`](https://github.com/Dimezis/BlurView) for the Android implementation.
+A [bug in the `BlurView` library](https://github.com/Dimezis/BlurView/issues/110#issuecomment-786939860) is translated into the current version of `@react-native-community/blur`, a [fix has been merged](https://github.com/Kureev/react-native-blur/issues/405#issuecomment-810539226) but a new version is not yet released.
+
+Until a new version is released the best solution is to force Android to use the fixed native library in your `android/app/build.gradle`
+
+```java
+dependencies {
+  implementation('com.eightbitlab:blurview:1.6.6') {
+    force = true
+  }
   ...
 }
 ```

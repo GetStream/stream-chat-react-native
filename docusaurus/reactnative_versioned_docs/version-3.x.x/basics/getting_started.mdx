@@ -29,16 +29,16 @@ Install the required packages in your React Native project.
 >
 <TabItem value='yarn'>
 
-```bash
-  yarn add stream-chat-react-native
-```
+  ```bash
+    yarn add stream-chat-react-native
+  ```
 
 </TabItem>
 <TabItem value='npm'>
 
-```bash
-  npm install stream-chat-react-native
-```
+  ```bash
+    npm install stream-chat-react-native
+  ```
 
 </TabItem>
 </Tabs>
@@ -47,6 +47,7 @@ Stream Chat has a number of peer dependencies that are required to take advantag
 It is suggested you follow the install instructions for each package to ensure it is properly setup.
 Most if not all of the required packages now support auto-linking so setup should be minimal. Those with known [additional steps](#additional-steps) have been noted.
 
+- [`@react-native-community/blur`](https://github.com/Kureev/react-native-blur)
 - [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
@@ -70,16 +71,16 @@ Most if not all of the required packages now support auto-linking so setup shoul
 >
 <TabItem value='yarn'>
 
-```bash
-yarn add @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
-```
+  ```bash
+  yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
+  ```
 
 </TabItem>
 <TabItem value='npm'>
 
-```bash
-npm install @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
-```
+  ```bash
+  npm add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
+  ```
 
 </TabItem>
 </Tabs>
@@ -91,10 +92,10 @@ For iOS on a Mac install the pods `npx pod-install ios`.
 To be able to use the Stream Chat React Native SDK, a few dependencies must meet the following version requirements:
 
 | react-native | stream-chat-react-native (min required) | react-native-reanimated (min required) |
-| ------------ | --------------------------------------- | -------------------------------------- |
-| 0.65         | 3.9.0                                   | 2.2.1                                  |
-| 0.64         | 3.6.2                                   | 2.2.0                                  |
-| 0.63         | 3.0.0                                   | 2.2.0                                  |
+| - | - | - |
+| 0.65 |  3.9.0 | 2.2.1 |
+| 0.64 |  3.6.2 | 2.2.0 |
+| 0.63 |  3.0.0 | 2.2.0 |
 
 ### Additional Steps
 
@@ -103,11 +104,11 @@ To be able to use the Stream Chat React Native SDK, a few dependencies must meet
 - `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
 - `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 - `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
+- `@react-native-community/blur` - [additional installation steps](/reactnative/basics/troubleshooting#blurview-crashing)
 
 :::info
 
 `react-native-gesture-handler` requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
-
 <br />
 
 ```tsx
@@ -131,8 +132,8 @@ If you are planning to use file picker functionality, make sure you enable iClou
 ### AndroidX Support
 
 > AndroidX is a major step forward in the Android ecosystem, and the old support library artifacts are being deprecated.
-> For 0.60, React Native has been migrated over to AndroidX.
-> This is a breaking change, and your native code and dependencies will need to be migrated as well.
+For 0.60, React Native has been migrated over to AndroidX.
+This is a breaking change, and your native code and dependencies will need to be migrated as well.
 
 (Reference: <https://facebook.github.io/react-native/blog/2019/07/03/version-60#androidx-support>)
 
@@ -145,5 +146,5 @@ Stream Chat for React Native is set up for parity on Expo, expo requires a diffe
 
 ```bash
 expo install stream-chat-expo
-expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
+expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
 ```

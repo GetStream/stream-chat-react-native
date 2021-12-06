@@ -3,7 +3,7 @@ id: message-touchable-handler-payload
 title: MessageTouchableHandlerPayload
 ---
 
-`MessageTouchableHandlerPayload` object is provided as param to callback handlers such as `onLongPressMessage`, `onPressMessage`
+`MessageTouchableHandlerPayload` object is provided as param to callback handlers such as `onLongPressMessage`, `onDoubleTapMessage`, `onPressMessage`
 for user interaction with message.
 
 ## Example
@@ -33,24 +33,24 @@ for user interaction with message.
 
 Default handler function for corresponding interaction.
 
-| Type     |
-| -------- |
+| Type |
+| - |
 | function |
 
 ### emitter
 
 Location within message, where the interaction occured.
 
-| Type                                                                                                                                         |
-| -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Type |
+| - |
 | enum('card', 'fileAttachment', 'gallery', 'giphy', 'message', 'messageContent', 'messageReplies', 'reactionList', 'textLink', 'textMention') |
 
 ### event
 
 Native event object which could either be coming from TouchableOpacity or react-native-gesture-handler
 
-| Type   |
-| ------ |
+| Type |
+| - |
 | object |
 
 ### actionHandlers
@@ -70,8 +70,8 @@ Set of action handler functions for various message actions. You can use these f
 <Channel onLongPressMessage={({ defaultHandlers }) => defaultHandlers.quotedReply()}
 ```
 
-| Type   |
-| ------ |
+| Type |
+| - |
 | object |
 
 ### message
@@ -82,6 +82,6 @@ Message object, on which interaction occured.
 <Channel onLongPressMessage={({ message }) => console.log(message.id, message.text)}
 ```
 
-| Type   |
-| ------ |
+| Type |
+| - |
 | object |

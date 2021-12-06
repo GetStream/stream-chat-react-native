@@ -4,7 +4,7 @@ title: ThemeContext
 ---
 
 `ThemeContext` is provided by [`OverlayProvider`](../core-components/overlay_provider.mdx) and [`Chat`](../core-components/chat.mdx) components.
-Read the [theming section](../customization/theming.mdx) for more information on how to customize your theme.
+Read the [theming section](../customization/theming.mdx) for more information on how to customize your theme. 
 If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
 ## Basic Usage
@@ -16,10 +16,10 @@ import { useContext } from 'react';
 import { ThemeContext } from 'stream-chat-react-native';
 
 const {
-  theme: {
-    colors: { accent_red },
-  },
-} = useContext(OverlayContext);
+    theme: {
+      colors: { accent_red },
+    },
+  } = useContext(OverlayContext);
 ```
 
 Alternatively, you can also use `useTheme` hook provided by library to consume ThemeContext.
@@ -28,19 +28,19 @@ Alternatively, you can also use `useTheme` hook provided by library to consume T
 import { useTheme } from 'stream-chat-react-native';
 
 const {
-  theme: {
-    colors: { accent_red },
-  },
-} = useTheme();
+    theme: {
+      colors: { accent_red },
+    },
+  } = useTheme();
 ```
 
 ## Value
 
 ### theme
 
-The default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts)
-merged with the theme you pass as `style` to [`OverlayProvider`](../core-components/overlay_provider.mdx) or [`Chat`](../core-components/chat.mdx) components.
+The default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/themeContext/utils/theme.ts) 
+merged with the theme you pass as `style` to [`OverlayProvider`](../core-components/overlay_provider.mdx) or [`Chat`](../core-components/chat.mdx) components. 
 
-| Type   |
-| ------ |
+| Type |
+| - |
 | object |

@@ -16,18 +16,12 @@ The guidance provided makes the assumption you are using [React Navigation](http
 :::note
 
 **If you are using another navigation solution, or utilizing [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator/), other considerations will need to be taken depending on your navigation arrangement.**
-
 <br />
 
-<code>createNativeStackNavigator</code> uses the native APIs <code>UINavigationController</code> on iOS and <code>
-  Fragment
-</code> on Android. The <code>OverlayProvider</code> needs to exist in a view that can render content in front of the chat
-screen. Therefore using a <code>fullScreenModal</code> with <code>createNativeStackNavigator</code>, which uses <code>
-  UIModalPresentationFullScreen
-</code> on iOS and <code>modal</code> on Android, to render your chat screen will leave the <code>
-  OverlayProvider
-</code> rendered behind the chat. If you are having issues we suggest you get in touch with support and we can find a
-solution to your specific navigation arrangement.
+<code>createNativeStackNavigator</code> uses the native APIs <code>UINavigationController</code> on iOS and <code>Fragment</code> on Android.
+The <code>OverlayProvider</code> needs to exist in a view that can render content in front of the chat screen.
+Therefore using a <code>fullScreenModal</code> with <code>createNativeStackNavigator</code>, which uses <code>UIModalPresentationFullScreen</code> on iOS and <code>modal</code> on Android, to render your chat screen will leave the <code>OverlayProvider</code> rendered behind the chat.
+If you are having issues we suggest you get in touch with support and we can find a solution to your specific navigation arrangement.
 
 :::
 
@@ -88,7 +82,9 @@ import { Chat } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const Screen = () => <Chat client={client}>{/** App components */}</Chat>;
+export const Screen = () => (
+  <Chat client={client}>{/** App components */}</Chat>
+);
 ```
 
 ```tsx
@@ -246,7 +242,7 @@ export const ThreadScreen = () => {
   const { setThread, thread } = useAppThread();
 
   return (
-    <Channel channel={channel} thread={thread} threadList>
+    <Channel channel={channel} thread={thread}>
       <Thread onThreadDismount={() => setThread(undefined)} />
     </Channel>
   );
@@ -261,7 +257,7 @@ export const ChannelScreen = () => {
   return (
     <Channel channel={channel} thread={thread}>
       <MessageList
-        onThreadSelect={selectedThread => {
+        onThreadSelect={(selectedThread) => {
           setThread(selectedThread);
           navigation.navigate('ThreadScreen');
         }}
@@ -287,7 +283,7 @@ export const ChannelScreen = () => {
   return (
     <Channel channel={channel} thread={selectedThread}>
       <MessageList
-        onThreadSelect={thread => {
+        onThreadSelect={(thread) => {
           setSelectedThread(thread);
           navigation.navigate('ThreadScreen', { thread });
         }}

@@ -3,26 +3,27 @@ id: auto-complete-input
 title: AutoCompleteInput
 ---
 
-import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx';
+import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx'
 
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
-import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx';
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx'
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
-import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx';
-import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx';
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx'
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx'
 import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
 
-import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx';
-import OnChange from '../common-content/contexts/message-input-context/on_change.mdx';
-import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx';
-import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx';
-import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx';
-import Text from '../common-content/contexts/message-input-context/text.mdx';
-import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx';
+import GiphyActive from '../common-content/contexts/message-input-context/giphy_active.mdx'
+import OnChange from '../common-content/contexts/message-input-context/on_change.mdx'
+import SetGiphyActive from '../common-content/contexts/message-input-context/set_giphy_active.mdx'
+import SetInputBoxRef from '../common-content/contexts/message-input-context/set_input_box_ref.mdx'
+import SetShowMoreOptions from '../common-content/contexts/message-input-context/set_show_more_options.mdx'
+import Text from '../common-content/contexts/message-input-context/text.mdx'
+import TriggerSettings from '../common-content/contexts/message-input-context/trigger_settings.mdx'
 
-import CloseSuggestions from '../common-content/contexts/suggestions-context/close_suggestions.mdx';
-import OpenSuggestions from '../common-content/contexts/suggestions-context/open_suggestions.mdx';
-import UpdateSuggestions from '../common-content/contexts/suggestions-context/update_suggestions.mdx';
+import CloseSuggestions from '../common-content/contexts/suggestions-context/close_suggestions.mdx'
+import OpenSuggestions from '../common-content/contexts/suggestions-context/open_suggestions.mdx'
+import UpdateSuggestions from '../common-content/contexts/suggestions-context/update_suggestions.mdx'
+
 
 Component to render input box within within the [`MessageInput`](./message_input.mdx).
 This component provides autocomplete functionality for the commands and mentions feature.
@@ -31,14 +32,6 @@ Commands suggestions will show up when user types "`/`", while mentions suggesti
 Check the [Customize Message Input guide]([Customize Message Input](../guides/message_input_customization.mdx)) for more details on how to customize this component
 
 ## Props
-
-### cooldownActive {#cooldownActive}
-
-Whether there is currently a cooldown active in a channel with [slow mode](https://getstream.io/chat/docs/javascript/slow_mode/?language=javascript#channel-slow-mode) enabled.
-
-| type    | default |
-| ------- | ------- |
-| boolean | false   |
 
 ### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#additionaltextinputprops)_</div> additionalTextInputProps {#additionaltextinputprops}
 
