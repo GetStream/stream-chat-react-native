@@ -7,10 +7,11 @@ import Disabled from '../common-content/contexts/channel-context/disabled.mdx';
 import Members from '../common-content/contexts/channel-context/members.mdx';
 import Watchers from '../common-content/contexts/channel-context/watchers.mdx';
 
+import ComponentType from '../common-content/contexts/suggestions-context/component_type.mdx';
 import Suggestions from '../common-content/contexts/suggestions-context/suggestions.mdx';
 import SuggestionsTitle from '../common-content/contexts/suggestions-context/suggestions_title.mdx';
-import TriggerType from '../common-content/contexts/suggestions-context/trigger_type.mdx';
 
+import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx';
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
 import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
 import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx';
@@ -75,6 +76,10 @@ Additionally please take a look at our [Guide Section](../guides/message_input_c
 
 <CloseAttachmentPicker />
 
+### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#componenttype)_</div> componentType {#componenttype}
+
+<ComponentType />
+
 ### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#disabled)_</div> disabled {#disabled}
 
 <Disabled />
@@ -106,6 +111,10 @@ Additionally please take a look at our [Guide Section](../guides/message_input_c
 ### <div class="label description">_overrides the value from [ChannelContext](../contexts/channel_context.mdx#members)_</div> members {#members}
 
 <Members />
+
+### <div class="label description">_overrides the value from [ChannelContext](../contexts/messages_context.mdx#quotedrepliesenabled)_</div> quotedRepliesEnabled {#quotedrepliesenabled}
+
+<QuotedRepliesEnabled />
 
 ### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#suggestions)_</div> suggestions {#suggestions}
 
@@ -206,7 +215,3 @@ Additionally please take a look at our [Guide Section](../guides/message_input_c
 ### <div class="label description">_overrides the value from [MessageInputContext](../contexts/message_input_context.mdx#showthreadmessageinchannelbutton)_</div> ShowThreadMessageInChannelButton {#showthreadmessageinchannelbutton}
 
 <ShowThreadMessageInChannelButton />
-
-### <div class="label description">_overrides the value from [SuggestionsContext](../contexts/suggestions_context.mdx#triggertype)_</div> triggerType {#triggertype}
-
-<TriggerType />
