@@ -338,8 +338,8 @@ Following warning from v3 of SDK has been fixed now.
 
 This warning was a result of `ScrollView` wrapped around `FlatList` inside overlay. Purpose of the wrapping ScrollView was to make overlay scrollable in case
 message text content is too long. The UX and this warning has been fixed by removing the ScrollView and truncating the text content of message within overlay.
-You can customize the truncation length of message text by providing a prop [`maxTextNumberOfLines`](../core-components/overlay_provider.mdx#maxtextnumberoflines) (number) on `OverlayProvider`.
+You can customize the truncation length of message text by providing a prop [`messageTextNumberOfLines`](../core-components/overlay_provider.mdx#messagetextnumberoflines) (number) on `OverlayProvider`.
 
 ```tsx
-<OverlayProvider maxTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
+<OverlayProvider messageTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
 ```
