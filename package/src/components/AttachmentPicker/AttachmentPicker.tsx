@@ -7,6 +7,7 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import BottomSheet, {
@@ -33,10 +34,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     flex: 1,
   },
-  unionIcon: {
+  timeColor: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  videoView: {
     bottom: 5,
-    left: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 5,
     position: 'absolute',
+    width: '100%',
   },
 });
 
@@ -49,6 +58,7 @@ type AttachmentImageProps = {
   selected: boolean;
   type: 'image' | 'video';
   uri: string;
+  videoDuration: number | null;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
@@ -60,6 +70,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     selected,
     type,
     uri,
+    videoDuration,
   } = props;
   const {
     theme: {
@@ -88,7 +99,18 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
             <ImageOverlaySelectedComponent />
           </View>
         )}
-        {type === 'video' && <Video pathFill={'#fff'} style={styles.unionIcon} />}
+        {type === 'video' && (
+          <View style={styles.videoView}>
+            <Video height={20} pathFill={'#fff'} width={25} />
+            {videoDuration ? (
+              <Text style={styles.timeColor}>
+                {(videoDuration / 60).toFixed(0) +
+                  ':' +
+                  (videoDuration.toLocaleString().length < 2 ? `0${videoDuration}` : videoDuration)}
+              </Text>
+            ) : null}
+          </View>
+        )}
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -162,6 +184,7 @@ const renderImage = ({
         return [
           ...files,
           {
+            duration: asset.playableDuration,
             name: asset.filename,
             size: asset.fileSize,
             type: 'video/mp4',
@@ -180,6 +203,7 @@ const renderImage = ({
       selected={selected}
       type={isImage ? 'image' : 'video'}
       uri={asset.uri}
+      videoDuration={asset.playableDuration}
     />
   );
 };

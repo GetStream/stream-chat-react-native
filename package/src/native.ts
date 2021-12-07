@@ -1,6 +1,6 @@
 import { FlatList as DefaultFlatList } from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
-import type { Asset } from './types/types';
+import type { Asset, File } from './types/types';
 
 const fail = () => {
   throw Error(
@@ -51,12 +51,7 @@ export let NetInfo: NetInfo = {
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
-      docs?: {
-        name: string;
-        size?: number | string;
-        type?: string;
-        uri?: string;
-      }[];
+      docs?: File[];
     }>
   | never;
 export let pickDocument: PickDocument = fail;

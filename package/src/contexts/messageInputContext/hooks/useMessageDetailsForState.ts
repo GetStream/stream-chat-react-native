@@ -84,7 +84,11 @@ export const useMessageDetailsForState = <
         } else if (attachment.type === 'image') {
           const id = generateRandomId();
           newImageUploads.push({
-            file: { name: attachment.fallback, size: attachment.file_size, type: attachment.type },
+            file: {
+              name: attachment.fallback,
+              size: attachment.file_size,
+              type: attachment.type,
+            },
             id,
             state: 'finished',
             url: attachment.image_url || attachment.asset_url || attachment.thumb_url,

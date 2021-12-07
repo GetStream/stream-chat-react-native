@@ -72,7 +72,7 @@ registerNativeHandlers({
         after,
         assetType: 'All',
         first,
-        include: ['fileSize', 'filename', 'imageSize'],
+        include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
       });
       const assets = results.edges.map((edge) => ({
         ...edge.node.image,

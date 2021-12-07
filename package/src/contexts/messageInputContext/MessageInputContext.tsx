@@ -65,12 +65,7 @@ import type {
 } from '../../types/types';
 
 export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
+  file: File;
   id: string;
   state: string;
   url?: string;
@@ -1012,7 +1007,7 @@ export const MessageInputProvider = <
   const uploadNewFile = async (file: File) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
-    const newFile = {
+    const newFile: FileUpload = {
       file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,

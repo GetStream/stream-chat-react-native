@@ -427,6 +427,7 @@ const MessageInputWithContext = <
        **/
       setSelectedFiles(
         fileUploads.map((fileUpload) => ({
+          duration: fileUpload.file.duration,
           name: fileUpload.file.name,
           size: fileUpload.file.size,
           type: fileUpload.file.type,
