@@ -1,0 +1,94 @@
+---
+id: card
+title: Card
+---
+
+import OnLongPress from '../common-content/contexts/message-context/on_long_press.mdx';
+import OnPress from '../common-content/contexts/message-context/on_press.mdx';
+import OnPressIn from '../common-content/contexts/message-context/on_press_in.mdx';
+
+import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
+import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
+import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
+import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
+
+Component to render custom attachments within the [`MessageList`](./message_list.mdx).
+Please check the guides for [Custom Attachment](../guides/attachment_customizations.mdx) for basic usage.
+
+## Props
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#additionaltouchableprops)_</div> additionalTouchableProps {#additionaltouchableprops}
+
+<AdditionalTouchableProps />
+
+### author_name
+
+Author name, to be rendered in footer of card.
+
+| Type   |
+| ------ |
+| string |
+
+### image_url
+
+Url of image to render as cover image for card. In absence of `image_url`, `thumb_url` will be used for cover.
+
+| Type   |
+| ------ |
+| string |
+
+### og_scrape_url
+
+URL to redirect to, when user presses on card.
+
+| Type   |
+| ------ |
+| string |
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onlongpress)_</div> onLongPress {#onlongpress}
+
+<OnLongPress />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpress)_</div> onPress {#onpress}
+
+<OnPress />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#onpressin)_</div> onPressIn {#onpressin}
+
+<OnPressIn />
+
+### text
+
+Text description for card, which will be rendered in footer of card.
+
+| Type   |
+| ------ |
+| string |
+
+### thumb_url
+
+Thumbnail url for cover image.
+
+| Type   |
+| ------ |
+| string |
+
+### title
+
+Title for card, which will be rendered in footer of card
+
+| Type   |
+| ------ |
+| string |
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardcover)_</div> CardCover {#cardcover}
+
+<CardCover />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardfooter)_</div> CardFooter {#cardfooter}
+
+<CardFooter />
+
+### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#cardheader)_</div> CardHeader {#cardheader}
+
+<CardHeader />

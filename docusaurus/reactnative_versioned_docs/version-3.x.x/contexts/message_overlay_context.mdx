@@ -1,0 +1,37 @@
+---
+id: message-overlay-context
+title: MessageOverlayContext
+---
+
+import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
+import OverlayReactions from '../common-content/core-components/overlay-provider/props/overlay_reactions.mdx';
+
+import MessageOverlayContextData from '../common-content/contexts/message-overlay-context/data.mdx';
+
+`MessageOverlayContext` is a context provided by `OverlayProvider`, to provide values for message overlay. Message overlay shows up when user long presses a message.
+
+## Value
+
+<!-- ### MessageActions -->
+
+<!-- ### reset -->
+
+### setData
+
+Setter function for [data](#data).
+
+| Type     |
+| -------- |
+| function |
+
+### data
+
+<MessageOverlayContextData />
+
+### <div class="label description">_forwarded from [OverlayProvider](../core-components/overlay_provider.mdx#overlayreactionlist)_ props</div> OverlayReactionList {#overlayreactionlist}
+
+<OverlayReactionList />
+
+### <div class="label description">_forwarded from [OverlayProvider](../core-components/overlay_provider.mdx#overlayreactions)_ props</div> OverlayReactions {#overlayreactions}
+
+<OverlayReactions />
