@@ -277,6 +277,9 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
 - `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
   - Long press animation on message UI has been removed
   - `animatedLongPress` prop has been removed from `Channel` component.
+- Redundant http requests for downloading image attachments have been fixed [#1010](https://github.com/GetStream/stream-chat-react-native/pull/1010)
+- Performance intensive legacy image viewer behaviour has been turned off by default [#1006](https://github.com/GetStream/stream-chat-react-native/pull/1006).
+  Please take a look at description of the prop [legacyImageViewerSwipeBehaviour](../core-components/channel.mdx#legacyimageviewerswipebehaviour) for details.
 
 ### Improved Customizability
 
