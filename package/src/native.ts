@@ -1,5 +1,6 @@
 import { FlatList as DefaultFlatList } from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
+import type { Asset } from './types/types';
 
 const fail = () => {
   throw Error(
@@ -25,23 +26,6 @@ export let deleteFile: DeleteFile = fail;
 
 type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
-
-export type Asset = {
-  filename: string;
-  fileSize: string;
-  height: number;
-  source: 'camera' | 'picker';
-  uri: string;
-  width: number;
-  id?: string;
-};
-
-export type File = {
-  name: string;
-  size?: number | string;
-  type?: string;
-  uri?: string;
-};
 
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{

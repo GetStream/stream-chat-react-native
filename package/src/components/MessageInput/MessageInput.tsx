@@ -34,7 +34,7 @@ import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { Asset } from '../../native';
+import type { Asset } from '../../types/types';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -338,7 +338,7 @@ const MessageInputWithContext = <
           return !uploadedImage;
         });
         imagesToUpload.forEach((image) => uploadNewImage(image));
-      } else if (selectedImagesLength < imageUploadsLength) {
+      } else {
         /** User de-selected an image in bottom sheet attachment picker */
         const imagesToRemove = imageUploads.filter(
           (imageUpload) =>
@@ -363,7 +363,7 @@ const MessageInputWithContext = <
         return !uploadedFile;
       });
       filesToUpload.forEach((file) => uploadNewFile(file));
-    } else if (selectedFilesLength < fileUploadsLength) {
+    } else {
       /** User de-selected a video in bottom sheet attachment picker */
       const filesToRemove = fileUploads.filter(
         (fileUpload) =>

@@ -18,7 +18,8 @@ import { lookup } from 'mime-types';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Asset, File, getPhotos } from '../../native';
+import { getPhotos } from '../../native';
+import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';

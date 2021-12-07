@@ -1,5 +1,22 @@
 import type { LiteralStringForUnion } from 'stream-chat';
 
+export type Asset = {
+  filename: string;
+  fileSize: string;
+  height: number;
+  source: 'camera' | 'picker';
+  uri: string;
+  width: number;
+  id?: string;
+};
+
+export type File = {
+  name: string;
+  size?: number | string;
+  type?: string;
+  uri?: string;
+};
+
 export type DefaultAttachmentType = UnknownType & {
   file_size?: number | string;
   mime_type?: string;
