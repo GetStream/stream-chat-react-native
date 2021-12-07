@@ -50,6 +50,28 @@ The arguments to this function is an object with all the default message actions
 
 You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
 
+```tsx
+messageActions={({
+  blockUser, // MessageAction | null;
+  copyMessage, // MessageAction | null;
+  deleteMessage, // MessageAction | null;
+  dismissOverlay, // () => void;
+  editMessage, // MessageAction | null;
+  error, // boolean;
+  flagMessage, // MessageAction | null;
+  isMyMessage, // boolean;
+  isThreadMessage, // boolean;
+  message, // MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  messageReactions, // boolean;
+  reply, // MessageAction | null;
+  retry, // MessageAction | null;
+  threadReply, // MessageAction | null;
+  ownCapabilities, // object
+}) => {
+  return [] // Array<MessageAction>
+}}
+```
+
 ## How to conditionally render message actions
 
 The following example demonstrates how to:
@@ -79,6 +101,49 @@ Additionally, the following example demonstrates how you can add custom styles f
 >
   {/** MessageList and MessageInput component here */}
 </Channel>
+```
+
+## How to add a custom message action
+
+- Add a new custom action - "Mute User"
+- Show "Mute User" action only for messages from other user.
+
+```jsx
+import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'stream-chat-react-native';
+
+<Channel
+  channel={channel}
+  messageActions={param => {
+    const { isMyMessage, ownCapabilities, dismissOverlay } = param;
+    const actions = defaultMessageActions({ ...param });
+
+    if (!isMyMessage) {
+      const isMuted = (client.mutedUsers || []).some(
+        mute => mute.user.id === client.userID && mute.target.id === message.user?.id,
+      );
+
+      actions.push({
+        action: async () => {
+          dismissOverlay();
+          if (message.user?.id) {
+            if (isMuted) {
+              await client.unmuteUser(message.user.id);
+            } else {
+              await client.muteUser(message.user.id);
+            }
+          }
+        },
+        actionType: 'muteUser',
+        icon: <MuteIcon />,
+        title: isMuted ? t('Unmute User') : t('Mute User'),
+      });
+    }
+
+    return actions;
+  }}
+>
+  {/** MessageList and MessageInput component here */}
+</Channel>;
 ```
 
 ## How to customize message action UI
@@ -191,29 +256,6 @@ const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
 Note: The `useMessageActionAnimation` hook takes in the `action` for the message action and this would give some utitilites like `ontap`, `animatedStyle` and the `opacity` value which would be helpful with the Animated View which can be used in support of the package `react-native-reanimated`.
 
 Please continue reading further to see different use cases.
-
-## How to add a custom message action
-
-- Add a new custom action - "Poke User", which simply sends a new message (👉) to screen and dismisses the overlay.
-- Show "Poke User" action only for messages from other user.
-
-```jsx
-<Channel
-  channel={channel}
-  messageActions={({ dismissOverlay }) => [
-    {
-      action: () => {
-        channel.sendMessage({ text: '👉' });
-        dismissOverlay();
-      },
-      icon: <PokeUserSVGIcon />,
-      title: 'Poke User',
-    },
-  ]}
->
-  {/** MessageList and MessageInput component here */}
-</Channel>
-```
 
 ## How to intercept a message action
 
