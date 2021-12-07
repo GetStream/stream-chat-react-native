@@ -32,7 +32,7 @@ import {
   urlRegex,
 } from '../../utils/utils';
 
-import { Asset, compressImage, File, getLocalAssetUri, pickDocument } from '../../native';
+import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
 
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
@@ -52,6 +52,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
+  Asset,
   DefaultAttachmentType,
   DefaultChannelType,
   DefaultCommandType,
@@ -59,6 +60,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  File,
   UnknownType,
 } from '../../types/types';
 
