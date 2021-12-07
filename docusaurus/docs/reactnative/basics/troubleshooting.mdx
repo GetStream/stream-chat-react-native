@@ -30,7 +30,7 @@ We suggest you keep track of a `thread` state on your own and provide it to any 
 
 ```tsx {2}
 <Chat client={chatClient} i18nInstance={streami18n}>
-  <Channel channel={channel} thread={thread}>
+  <Channel channel={channel} thread={thread} threadList>
     <Thread onThreadDismount={() => setThread(null)} />
   </Channel>
 </Chat>
@@ -73,7 +73,7 @@ To do this make sure your `Channel` components are always aware of the thread st
 ```
 
 ```tsx
-<Channel channel={channel} thread={thread}>
+<Channel channel={channel} thread={thread} threadList>
   <Thread onThreadDismount={() => setThread(null)} />
 </Channel>
 ```
@@ -158,7 +158,7 @@ The standard camera permissions are required for the camera to work on Android, 
 <uses-permission android:name="android.permission.CAMERA"/>
 ```
 
-Add `maven { url 'https://maven.google.com' }` to `android/build.gradle` 
+Add `maven { url 'https://maven.google.com' }` to `android/build.gradle`
 
 ```java {15}
 allprojects {
@@ -195,9 +195,7 @@ buildscript {
 }
 ```
 
-
 Add `vectorDrawables.useSupportLibrary = true` to `android/app/build.gradle`
-
 
 ```java
 android {
@@ -206,6 +204,45 @@ android {
         ...
     }
     ...
+}
+```
+
+## External Link not opening
+
+### Android
+
+Opening an external link doesn't work without permissions on `targetSdkVersion` >= 30. So, the following permission must be included in the `AndroidManifest.xml` file.
+
+```xml
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+```
+
+:::caution
+**Note:** Make sure you are aware of [upcoming policies](https://support.google.com/googleplay/android-developer/answer/10158779) that this change will be subjected to.
+:::
+
+## GIF and WebP not displaying
+
+### Android
+
+GIF and WebP do not work without additional modules by default on Android.
+
+You will need to add some modules in your `android/app/build.gradle`
+
+```java
+dependencies {
+  // For Android versions less than Ice Cream Sandwich (API level 14)
+  implementation 'com.facebook.fresco:animated-base-support:1.3.0'
+
+  // For GIF support
+  implementation 'com.facebook.fresco:animated-gif:2.0.0'
+
+  // For WebP support, with animations
+  implementation 'com.facebook.fresco:animated-webp:2.1.0'
+
+  // For WebP support, without animations
+  implementation 'com.facebook.fresco:webpsupport:2.0.0'
+  ...
 }
 ```
 
@@ -297,3 +334,9 @@ private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
 };
 ...
 ```
+
+## Project won't build on a MacBook with Apple M1
+
+On newer MacBooks with the Apple M1 SoC, there are a few required steps that need to be followed for an app to build. The user [aiba](https://github.com/aiba) has written [a guide](https://github.com/aiba/react-native-m1) to make the necessary changes to your project.
+
+The iOS build version can be changed to suit your needs, but keep in mind to change the version to the same major and minor version consistently throughout the guide.

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BackHandler, StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -8,21 +7,22 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AppOverlayContext, AppOverlayContextValue, BlurType } from './AppOverlayContext';
+import { OverlayBackdrop } from 'stream-chat-react-native';
+
+import { AppOverlayContext, AppOverlayContextValue } from './AppOverlayContext';
 
 import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
 import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
 import { UserInfoOverlay } from '../components/UserInfoOverlay';
-import { BottomSheetOverlayProvider } from '../context/BottomSheetOverlayContext';
-import { ChannelInfoOverlayProvider } from '../context/ChannelInfoOverlayContext';
-import { UserInfoOverlayProvider } from '../context/UserInfoOverlayContext';
+import { BottomSheetOverlayProvider } from './BottomSheetOverlayContext';
+import { ChannelInfoOverlayProvider } from './ChannelInfoOverlayContext';
+import { UserInfoOverlayProvider } from './UserInfoOverlayContext';
 
 export const AppOverlayProvider: React.FC<{
   value?: Partial<AppOverlayContextValue>;
 }> = (props) => {
   const { children, value } = props;
 
-  const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
 
   const overlayOpacity = useSharedValue(0);
@@ -31,7 +31,6 @@ export const AppOverlayProvider: React.FC<{
   useEffect(() => {
     const backAction = () => {
       if (overlay !== 'none') {
-        setBlurType(undefined);
         setOverlay('none');
         return true;
       }
@@ -75,7 +74,7 @@ export const AppOverlayProvider: React.FC<{
               pointerEvents={overlay === 'none' ? 'none' : 'auto'}
               style={[StyleSheet.absoluteFill, overlayStyle]}
             >
-              <BlurView blurType={blurType} style={[StyleSheet.absoluteFill, { height, width }]} />
+              <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
             </Animated.View>
             <UserInfoOverlay overlayOpacity={overlayOpacity} visible={overlay === 'userInfo'} />
             <ChannelInfoOverlay

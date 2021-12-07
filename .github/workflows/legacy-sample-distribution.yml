@@ -3,9 +3,7 @@ name: legacy-sample-distribution
 on:
   push:
     branches:
-      - master
-    paths-ignore:
-      - docusaurus/**   
+      - v4.0.0
 jobs:
   build_and_deploy_ios_firebase:
     runs-on: [macos-latest]
@@ -19,10 +17,11 @@ jobs:
         run: npm install -g firebase-tools
       - name: RN setup
         run: |
+          cd package
           yarn;
           cd native-package
           yarn;
-          cd ../examples/SampleApp
+          cd ../../examples/SampleApp
           yarn;
           cd ios
           pod install
@@ -45,10 +44,11 @@ jobs:
       - name: RN setup
         run: |
           yarn add global react-native-cli;
+          cd package
           yarn;
           cd native-package
           yarn;
-          cd ../examples/SampleApp
+          cd ../../examples/SampleApp
           yarn;
       - name: Build
         run: |

@@ -4,24 +4,20 @@ title: MessagesContext
 ---
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
-import AnimatedLongPress from '../common-content/core-components/channel/props/animated_long_press.mdx';
 import Attachment from '../common-content/core-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
-import BlockUser from '../common-content/core-components/channel/props/block_user.mdx';
 import Card from '../common-content/core-components/channel/props/card.mdx';
 import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
 import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
 import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
-import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
 import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
-import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
+import DeletedMessagesVisibilityType from '../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
 import DisableTypingIndicator from '../common-content/core-components/channel/props/disable_typing_indicator.mdx';
 import DismissKeyboardOnMessageTouch from '../common-content/core-components/channel/props/dismiss_keyboard_on_message_touch.mdx';
-import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
+import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
 import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
 import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
-import FlagMessage from '../common-content/core-components/channel/props/flag_message.mdx';
 import FlatList from '../common-content/core-components/channel/props/flat_list.mdx';
 import ForceAlignMessages from '../common-content/core-components/channel/props/force_align_messages.mdx';
 import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
@@ -40,8 +36,8 @@ import HandleThreadReply from '../common-content/core-components/channel/props/h
 import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
 import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
-// import Message from '../common-content/core-components/channel/props/message.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
 import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
@@ -49,268 +45,161 @@ import MessageContentOrder from '../common-content/core-components/channel/props
 import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx';
 import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx';
 import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx';
-// import MessageList from '../common-content/core-components/channel/props/message_list.mdx';
 import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx';
 import MessageRepliesAvatars from '../common-content/core-components/channel/props/message_replies_avatars.mdx';
 import MessageSimple from '../common-content/core-components/channel/props/message_simple.mdx';
 import MessageStatus from '../common-content/core-components/channel/props/message_status.mdx';
 import MessageSystem from '../common-content/core-components/channel/props/message_system.mdx';
 import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
-import MuteUser from '../common-content/core-components/channel/props/mute_user.mdx';
 import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
-import OnDoubleTapMessage from '../common-content/core-components/channel/props/on_double_tap_message.mdx';
 import OnLongPressMessage from '../common-content/core-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/core-components/channel/props/overlay_reaction_list.mdx';
-import QuotedReply from '../common-content/core-components/channel/props/quoted_reply.mdx';
+import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
-// import RemoveMessage from '../common-content/core-components/channel/props/remove_message.mdx';
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
-import Retry from '../common-content/core-components/channel/props/retry.mdx';
-// import RetrySendMessage from '../common-content/core-components/channel/props/retry_send_message.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
-import ThreadReply from '../common-content/core-components/channel/props/thread_reply.mdx';
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
 
 ## Value
 
-### additionalTouchableProps
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#additionaltouchableprops)_ props</div> additionalTouchableProps {#additionaltouchableprops}
 
 <AdditionalTouchableProps />
 
-### animatedLongPress
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<AnimatedLongPress />
-
-
-### blockUser
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<BlockUser />
 ### channelId
 
 Id of current channel.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | string |
 
-### copyMessage
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#deletedmessagesvisibiltytype)_ props</div> deletedMessagesVisibiltyType {#deletedmessagesvisibiltytype}
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+<DeletedMessagesVisibilityType />
 
-<CopyMessage />
-
-### deleteMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<DeleteMessage />
-
-### disableTypingIndicator
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#disabletypingindicator)_ props</div> disableTypingIndicator {#disabletypingindicator}
 
 <DisableTypingIndicator />
 
-### dismissKeyboardOnMessageTouch
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#dismisskeyboardonmessagetouch)_ props</div> dismissKeyboardOnMessageTouch {#dismisskeyboardonmessagetouch}
 
 <DismissKeyboardOnMessageTouch />
 
-### editMessage
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#enablemessagegroupingbyuser)_ props</div> enableMessageGroupingByUser {#enablemessagegroupingbyuser}
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+<EnableMessageGroupingByUser />
 
-<EditMessage />
-
-
-### flagMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<FlagMessage />
-
-### forceAlignMessages
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#forcealignmessages)_ props</div> forceAlignMessages {#forcealignmessages}
 
 <ForceAlignMessages />
 
-### formatDate
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#formatdate)_ props</div> formatDate {#formatdate}
 
 <FormatDate />
-### handleBlock
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handleblock)_ props</div> handleBlock {#handleblock}
 
 <HandleBlock />
 
-### handleCopy
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handlecopy)_ props</div> handleCopy {#handlecopy}
 
 <HandleCopy />
 
-### handleDelete
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handledelete)_ props</div> handleDelete {#handledelete}
 
 <HandleDelete />
 
-### handleEdit
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handleedit)_ props</div> handleEdit {#handleedit}
 
 <HandleEdit />
 
-### handleFlag
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handleflag)_ props</div> handleFlag {#handleflag}
 
 <HandleFlag />
 
-### handleMute
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handlemute)_ props</div> handleMute {#handlemute}
 
 <HandleMute />
 
-### handleQuotedReply
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handlequotedreply)_ props</div> handleQuotedReply {#handlequotedreply}
 
 <HandleQuotedReply />
 
-### handleReaction
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handlereaction)_ props</div> handleReaction {#handlereaction}
 
 <HandleReaction />
 
-### handleRetry
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handleretry)_ props</div> handleRetry {#handleretry}
 
 <HandleRetry />
 
-### handleThreadReply
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#handlethreadreply)_ props</div> handleThreadReply {#handlethreadreply}
 
 <HandleThreadReply />
 
-### initialScrollToFirstUnreadMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#initialscrolltofirstunreadmessage)_ props</div> initialScrollToFirstUnreadMessage {#initialscrolltofirstunreadmessage}
 
 <InitialScrollToFirstUnreadMessage />
 
-### markdownRules
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#legacyimageviewerswipebehaviour)_ props</div> legacyImageViewerSwipeBehaviour {#legacyimageviewerswipebehaviour}
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+<legacyImageViewerSwipeBehaviour />
+
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#markdownrules)_ props</div> markdownRules {#markdownrules}
 
 <MarkdownRules />
 
-### messageActions
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messageactions)_ props</div> messageActions {#messageactions}
 
 <MessageActions />
 
-### messageContentOrder
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagecontentorder)_ props</div> messageContentOrder {#messagecontentorder}
 
 <MessageContentOrder />
 
-
-### muteUser
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<MuteUser />
-
-### myMessageTheme
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#mymessagetheme)_ props</div> myMessageTheme {#mymessagetheme}
 
 <MyMessageTheme />
 
-### onDoubleTapMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<OnDoubleTapMessage />
-
-### onLongPressMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#onlongpressmessage)_ props</div> onLongPressMessage {#onlongpressmessage}
 
 <OnLongPressMessage />
 
-### onPressInMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#onpressinmessage)_ props</div> onPressInMessage {#onpressinmessage}
 
 <OnPressInMessage />
 
-### onPressMessage
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#onpressmessage)_ props</div> onPressMessage {#onpressmessage}
 
 <OnPressMessage />
-### quotedReply
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<QuotedReply />
 
 ### removeMessage
 
 Function to remove message from local channel state. Please note that this function is only for updating the local state, it doesn't call the api for deleting message (`channel.deleteMessage`).
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
-### Reply
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#reply)_ props</div> Reply {#reply}
 
 <Reply />
-
-### retry
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
-
-<Retry />
 
 ### retrySendMessage
 
 Function to re-attempt sending failed message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
-
-### selectReaction
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#selectreaction)_ props</div> selectReaction {#selectreaction}
 
 <SelectReaction />
 
@@ -318,237 +207,170 @@ _(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
 
 Enables editing state for given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
 ### setQuotedMessageState
 
 Enables quoted-reply state on given message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
 
-### supportedReactions
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#supportedreactions)_ props</div> supportedReactions {#supportedreactions}
 
 <SupportedReactions />
 
-### threadReply
+### targetedMessage
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+Has the message id of the message which is to be highlighted. By default the value is undefined. As soon as the highlight time is out this is set to `undefined`.
 
-<ThreadReply />
+| Type   |
+| ------ |
+| string |
 
 ### updateMessage
 
 Upserts a given message in local channel state. Please note that this function doesn't call `channel.sendMessage`. Channel component uses this function for optimistic updates to message.
 
-| Type |
-| - |
+| Type                |
+| ------------------- |
 | `(message) => void` |
-### Attachment
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#attachment)_ props</div> Attachment {#attachment}
 
 <Attachment />
 
-### AttachmentActions
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#attachmentactions)_ props</div> AttachmentActions {#attachmentactions}
 
 <AttachmentActions />
 
-### Card
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#card)_ props</div> Card {#card}
 
 <Card />
 
-### CardCover
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#cardcover)_ props</div> CardCover {#cardcover}
 
 <CardCover />
 
-### CardFooter
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#cardfooter)_ props</div> CardFooter {#cardfooter}
 
 <CardFooter />
 
-### CardHeader
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#cardheader)_ props</div> CardHeader {#cardheader}
 
 <CardHeader />
 
-### DateHeader
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#dateheader)_ props</div> DateHeader {#dateheader}
 
 <DateHeader />
 
-### FileAttachment
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#fileattachment)_ props</div> FileAttachment {#fileattachment}
 
 <FileAttachment />
 
-### FileAttachmentGroup
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#fileattachmentgroup)_ props</div> FileAttachmentGroup {#fileattachmentgroup}
 
 <FileAttachmentGroup />
 
-### FileAttachmentIcon
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#fileattachmenticon)_ props</div> FileAttachmentIcon {#fileattachmenticon}
 
 <FileAttachmentIcon />
 
-### FlatList
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#flatlist)_ props</div> FlatList {#flatlist}
 
 <FlatList />
 
-### Gallery
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#gallery)_ props</div> Gallery {#gallery}
 
 <Gallery />
 
-### Giphy
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#giphy)_ props</div> Giphy {#giphy}
 
 <Giphy />
 
-### InlineDateSeparator
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#inlinedateseparator)_ props</div> InlineDateSeparator {#inlinedateseparator}
 
 <InlineDateSeparator />
 
-### InlineUnreadIndicator
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#inlineunreadindicator)_ props</div> InlineUnreadIndicator {#inlineunreadindicator}
 
 <InlineUnreadIndicator />
 
-### Message
+<!-- ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#message)_ props</div> Message {#message}
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+<Message /> -->
 
-<Message />
-
-### MessageAvatar
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messageavatar)_ props</div> MessageAvatar {#messageavatar}
 
 <MessageAvatar />
 
-### MessageContent
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagecontent)_ props</div> MessageContent {#messagecontent}
 
 <MessageContent />
 
-### MessageDeleted
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagedeleted)_ props</div> MessageDeleted {#messagedeleted}
 
 <MessageDeleted />
 
-### MessageFooter
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagefooter)_ props</div> MessageFooter {#messagefooter}
 
 <MessageFooter />
 
-### MessageHeader
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messageheader)_ props</div> MessageHeader {#messageheader}
 
 <MessageHeader />
 
-### MessageList
+<!-- ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagelist)_ props</div> MessageList {#messagelist}
 
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+<MessageList /> -->
 
-<MessageList />
-
-### MessageReplies
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagereplies)_ props</div> MessageReplies {#messagereplies}
 
 <MessageReplies />
 
-### MessageRepliesAvatars
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagerepliesavatars)_ props</div> MessageRepliesAvatars {#messagerepliesavatars}
 
 <MessageRepliesAvatars />
 
-### MessageSimple
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagesimple)_ props</div> MessageSimple {#messagesimple}
 
 <MessageSimple />
 
-### MessageStatus
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagestatus)_ props</div> MessageStatus {#messagestatus}
 
 <MessageStatus />
 
-### MessageSystem
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagesystem)_ props</div> MessageSystem {#messagesystem}
 
 <MessageSystem />
 
-### MessageText
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#messagetext)_ props</div> MessageText {#messagetext}
 
 <MessageText />
 
-### OverlayReactionList
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#overlayreactionlist)_ props</div> OverlayReactionList {#overlayreactionlist}
 
 <OverlayReactionList />
 
-### ReactionList
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#reactionlist)_ props</div> ReactionList {#reactionlist}
 
 <ReactionList />
 
-### ScrollToBottomButton
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#scrolltobottombutton)_ props</div> ScrollToBottomButton {#scrolltobottombutton}
 
 <ScrollToBottomButton />
 
-### TypingIndicator
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#typingindicator)_ props</div> TypingIndicator {#typingindicator}
 
 <TypingIndicator />
 
-### TypingIndicatorContainer
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#typingindicatorcontainer)_ props</div> TypingIndicatorContainer {#typingindicatorcontainer}
 
 <TypingIndicatorContainer />
 
-### UrlPreview
-
-_(Forwarded from [`Channel`](../core-components/channel.mdx) props)_
+### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#urlpreview)_ props</div> UrlPreview {#urlpreview}
 
 <UrlPreview />

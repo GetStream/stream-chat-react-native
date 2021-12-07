@@ -1,0 +1,426 @@
+---
+id: translations
+sidebar_position: 4
+title: Adding Internationalization (i18n)
+---
+
+If you deploy your app to users who speak another language, you'll need to internationalize it.
+Stream’s Chat Client provides the option to translate the user-created contents of messages in addition to the UI.
+The React Native SDK's UI Components are available in multiple languages out-of-the-box.
+At the moment we support the following languages (and more will be added in the future):
+
+- [English (en)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/en.json)
+- [French (fr)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/fr.json)
+- [Hindi (hi)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/hi.json)
+- [Italian (it)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/it.json)
+- [Dutch (nl)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/nl.json)
+- [Turkish (tr)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/tr.json)
+- [Russian (ru)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ru.json)
+- [Japanese (ja)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ja.json)
+- [Korean (ko)](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/ko.json)
+
+## Usage
+
+The `Streami18n` provides static translations for React Native components from the Stream Chat SDK.
+`Streami18n` is a class that uses a configuration of [i18next](https://www.i18next.com/) with a subset of the functionality exposed.
+`Streami18n` is provided by `stream-chat-react-native` and can be imported from the library.
+
+The only step you need to start using `Streami18n` is to create an instance of the class.
+
+```tsx
+const streami18n = new Streami18n();
+```
+
+`Streami18n` will default to English (en). If you choose to use the default English settings with Day.js you do
+not need to deal directly with an instance of `Streami18n`, this is taken care of for you.
+
+If you choose to change the language, translation, or date handling, you will need to provide your modified instance of `Streami18n` to the component library.
+Two components require your custom instance of `Streami18n` to properly pass your translation and time-date functions to the component library, `OverlayProvider` and <!-- TODO: Change to new docs for links -->`Chat`.
+Both components accept an instance of `Streami18n` via the prop `i18nInstance`.
+Providing this prop will provide your instance of `Streami18n` to all of the components via [`context`](https://reactjs.org/docs/context.html) instead of the default instance.
+
+```tsx {5,8-9}
+import { StreamChat } from 'stream-chat';
+import { Chat, OverlayProvider, Streami18n } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+const streami18n = new Streami18n();
+
+export const App = () => (
+  <OverlayProvider i18nInstance={streami18n}>
+    <Chat client={client} i18nInstance={streami18n}>
+      {/** App components */}
+    </Chat>
+  </OverlayProvider>
+);
+```
+
+### Setting language for components
+
+Stream provides built in translations for some languages out-of-the-box.
+`Streami18n` accepts two optional parameters when being instantiated, [`options`](#options) and [`i18nextConfig`](#i18nextconfig).
+These parameters allow you to modify the `Streami18n` instance to your preferences.
+
+As an example, let's say we need to localize the UI of the application for a Dutch audience:
+
+```tsx
+const streami18n = new Streami18n({ language: 'nl' }); // Instantiate Streami18n with Dutch strings.
+```
+
+Alternatively, you can also use [`setLanguage`](#setlanguage) method on `Streami18n` class.
+This is useful especially if you want to build language toggle functionality within your app.
+
+For example, let's say an application needs to default to English but support French:
+
+```tsx
+const streami18n = new Streami18n();
+
+...
+// Logic for how a user can change the language
+...
+
+streami18n.setLanguage('fr'); // The UI will change to French.
+```
+
+### Adding a new language
+
+Let's see how you can add support for additional languages in the SDK. As an example, we'll implement a custom Polish language translation:
+
+```tsx
+const streami18n = new Streami18n();
+streami18n.registerTranslation('pl', {
+  'Copy Message': 'Kopiuj wiadomość',
+  'Delete Message': 'Usuń wiadomość',
+  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} i {{ secondUser }} piszą...',
+});
+```
+
+Please take a look at all the available texts [here](https://github.com/GetStream/stream-chat-react-native/blob/develop/package/src/i18n/en.json).
+
+### Overriding existing languages
+
+You can also make line item changes to the strings for existing UI components. This is useful if you want to tweak an existing language to use regional spelling variants (American English vs. UK English, for example) same process as [Adding a new language](#adding-a-new-language). As an example, we'll override the translations for Dutch language:
+
+```tsx
+const streami18n = new Streami18n();
+
+streami18n.registerTranslation('nl', {
+  'Delete Message': 'Verwijder bericht',
+});
+```
+
+### Using device locale to set language
+
+[`react-native-localize`](https://github.com/zoontek/react-native-localize#-react-native-localize) package provides a toolbox for React Native app localization.
+You can use this package to access user preferred locale, and use it to set language for chat components:
+
+```tsx
+import * as RNLocalize from 'react-native-localize';
+const streami18n = new Streami18n();
+
+const userPreferredLocales = RNLocalize.getLocales();
+
+streami18n.setLanguage(userPreferredLocales[0].languageCode);
+```
+
+### Overriding DateTime format
+
+React Native SDK uses [dayjs](https://day.js.org/en/) internally by default to format datetime stamp.
+Dayjs is a lightweight alternative to Momentjs with the same modern API and has [locale support](https://day.js.org/docs/en/i18n/i18n) as well.
+
+Dayjs provides locale config for plenty of languages, you can check the whole list of locale configs [here](https://github.com/iamkun/dayjs/tree/dev/src/locale)
+
+You can either provide the dayjs locale config while registering
+language with `Streami18n` (either via constructor or `registerTranslation()`) or you can provide your own Dayjs or Moment instance
+to Streami18n constructor, which will be then used internally (using the language locale) in components.
+
+```tsx
+const i18n = new Streami18n({
+ language: 'nl',
+ dayjsLocaleConfigForLanguage: {
+   months: [...],
+   monthsShort: [...],
+   calendar: {
+     sameDay: '...'
+   }
+ }
+});
+```
+
+You can add locale config for moment while registering translation via `registerTranslation` function:
+
+```tsx
+const i18n = new Streami18n();
+
+i18n.registerTranslation(
+ 'mr',
+ {
+   'Nothing yet...': 'काहीही नाही  ...',
+   '{{ firstUser }} and {{ secondUser }} are typing...':
+    '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+ },
+ {
+   months: [...],
+   monthsShort: [...],
+   calendar: {
+     sameDay: '...'
+   }
+ }
+);
+```
+
+Alternatively, you can use a utility library to handle DateTime by providing your own [`Moment`](https://momentjs.com/) object:
+
+```tsx
+import 'moment/locale/nl';
+import 'moment/locale/it';
+// or if you want to include all locales
+import 'moment/min/locales';
+
+import Moment from moment
+
+const i18n = new Streami18n({
+ language: 'nl',
+ DateTimeParser: Moment
+})
+```
+
+Or by providing your own [Dayjs](https://day.js.org/docs/en/installation/installation) object:
+
+```tsx
+import Dayjs from 'dayjs';
+
+import 'dayjs/locale/nl';
+import 'dayjs/locale/it';
+// or if you want to include all locales
+import 'dayjs/min/locales';
+
+const i18n = new Streami18n({
+  language: 'nl',
+  DateTimeParser: Dayjs,
+});
+```
+
+If you would like to stick with English language for date-times in Stream components, you can set `disableDateTimeTranslations` to true.
+
+### Translating messages
+
+If your application has a userbase that speaks more than one language, Stream's Chat Client provides the option to automatically translate messages. For more information on using automatic machine translation for messages, see the [Chat Client Guide on Translation](https://getstream.io/chat/docs/react-native/translation/?language=javascript).
+
+## Options
+
+`options` is the first optional parameter passed to `Streami18n`, it is an object with all keys being optional.
+
+### DateTimeParser
+
+Used for translating dates and times into the desired local format.
+Either [Day.js](https://day.js.org/) or [Moment](https://momentjs.com/) can be used.
+Day.js is a dependency of the repo and used by default.
+
+| TYPE            | DEFAULT |
+| --------------- | ------- |
+| Dayjs \| Moment | `Dayjs` |
+
+### dayjsLocaleConfigForLanguage
+
+You can [customize and create](https://day.js.org/docs/en/customization/customization) new locales using Day.js.
+To allow accessability to this option when using the default Day.js instance you can pass these customizations via the `dayjsLocaleConfigForLanguage` key.
+
+| TYPE   |
+| ------ |
+| object |
+
+### debug
+
+Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
+
+| TYPE    | DEFAULT |
+| ------- | ------- |
+| boolean | `false` |
+
+### disableDateTimeTranslations
+
+Use the default English language date-times instead of those dictated by the language set.
+
+| TYPE    | DEFAULT |
+| ------- | ------- |
+| boolean | `false` |
+
+### language
+
+Language code for language to be used.
+The following options are available:
+
+- English (`en`)
+- French (`fr`)
+- Hindi (`hi`)
+- Italian (`it`)
+- Dutch (`nl`)
+- Turkish (`tr`)
+- Russian (`ru`)
+- Japanese (`ja`)
+- Korean (`ko`)
+
+| TYPE   | DEFAULT |
+| ------ | ------- |
+| string | `en`    |
+
+### logger
+
+Function to log warnings & errors from `Streami18n`.
+
+| TYPE                     | DEFAULT        |
+| ------------------------ | -------------- |
+| `(msg?: string) => void` | `console.warn` |
+
+### translationsForLanguage
+
+Allows you to override the provided translations for given keys.
+
+```ts
+const streami18n = new Streami18n({
+  language: 'nl',
+  translationsForLanguage: {
+    'Nothing yet...': 'Nog Niet...',
+    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+  },
+});
+```
+
+| TYPE   |
+| ------ |
+| object |
+
+## I18NextConfig
+
+`i18NextConfig` is the second optional parameter passed to `Streami18n`, it is an object with all keys being optional.
+`i18nextConfig` is used in the instantiation of the i18next instance and mostly aligns with the [i18next options](https://www.i18next.com/translation-function/essentials#overview-options).
+
+### debug
+
+Enable [debug mode](https://www.i18next.com/overview/configuration-options#logging) in internal i18next instance.
+This overrides the [`debug` key on options](#debug) if provided.
+
+| TYPE    |
+| ------- |
+| boolean |
+
+### fallbackLng
+
+Fallback language setting for for i18next.
+
+| TYPE                                                                  |
+| --------------------------------------------------------------------- |
+| [`FallbackLng`](https://www.i18next.com/principles/fallback#fallback) |
+
+### interpolation
+
+i18next interpolation setting for integrating dynamic values into translations.
+
+| TYPE                                                                                 | DEFAULT                  |
+| ------------------------------------------------------------------------------------ | ------------------------ |
+| [`object`](https://www.i18next.com/translation-function/interpolation#interpolation) | `{ escapeValue: false }` |
+
+### keySeparator
+
+Override character to separate keys.
+
+| TYPE              | DEFAULT |
+| ----------------- | ------- |
+| string \| boolean | `false` |
+
+### lng
+
+Override language to use.
+
+| TYPE   |
+| ------ |
+| string |
+
+### nsSeparator
+
+Override character to split namespace from key.
+
+| TYPE              | DEFAULT |
+| ----------------- | ------- |
+| string \| boolean | `false` |
+
+### parseMissingKeyHandler
+
+Function to handle keys missing translations for the selected language.
+
+| TYPE                      | DEFAULT        |
+| ------------------------- | -------------- |
+| `(key: string) => string` | `(key) => key` |
+
+## Methods
+
+### getAvailableLanguages
+
+Returns an array of language code strings corresponding to available languages.
+
+```ts
+const availableLanguages = streami18n.getAvailableLanguages();
+```
+
+### geti18Instance
+
+Returns instance of i18next used within the `Streami18n` instance.
+
+```ts
+const i18n = streami18n.geti18Instance();
+```
+
+### getTranslations
+
+Returns the current translations dictionaries for all languages.
+
+```ts
+const translations = streami18n.getTranslations();
+```
+
+### getTranslators
+
+Asynchronous function that returns the current translator functions.
+
+```ts
+const { t, tDateTimeParser } = await streami18n.getTranslators();
+```
+
+### registerTranslation
+
+Allows you to register a custom translation, this will override a translation if one already exists for the given language code.
+The third parameter, which is optional, is a Day.js locale, which is structured the same as [dayjsLocaleConfigForLanguage](#dayjslocaleconfigforlanguage).
+
+It is suggested you look at the [`enTranslations` json file](https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n) exported from `stream-chat-react-native` for a current list of used translation keys.
+
+```ts
+streami18n.registerTranslation('mr', {
+  'Nothing yet...': 'काहीही नाही  ...',
+  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत',
+});
+```
+
+#### Parameters
+
+| NAME              | TYPE   | REQUIRED           |
+| ----------------- | ------ | ------------------ |
+| language          | string | :heavy_check_mark: |
+| translation       | object | :heavy_check_mark: |
+| customDayjsLocale | object |                    |
+
+### setLanguage
+
+Asynchronous function that changes the current language and returns the new translation function.
+If not initialized `undefined` will be returned.
+If the language fails to update the current translation function will be returned.
+
+```ts
+const t = await streami18n.setLanguage('nl');
+```
+
+#### Parameters
+
+| NAME     | TYPE   | REQUIRED           |
+| -------- | ------ | ------------------ |
+| language | string | :heavy_check_mark: |

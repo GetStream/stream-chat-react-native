@@ -4,45 +4,55 @@ sidebar_position: 4
 title: Customize Message Actions
 ---
 
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import messageActions from '../assets/guides/message_actions.png';
-import myMessageActions from '../assets/guides/my_message_actions.png';
+import messageActions from '../assets/guides/message-actions-customization/message_actions.png';
+import myMessageActions from '../assets/guides/message-actions-customization/my_message_actions.png';
 
 Message actions pop up in message overlay, when you longpress a message. We have provided a granular control over these actions.
 By default we render the following actions (as shown in screenshots)
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src={messageActions}/></td>
-    <td align='center' width="33%"><img src={myMessageActions}/></td>
+    <td align='center' width='33%'>
+      <img src={messageActions} />
+    </td>
+    <td align='center' width='33%'>
+      <img src={myMessageActions} />
+    </td>
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'><strong>Actions on received message</strong></td>
-    <td align='center'><strong>Actions on my message</strong></td>
+    <td align='center'>
+      <strong>Actions on received message</strong>
+    </td>
+    <td align='center'>
+      <strong>Actions on my message</strong>
+    </td>
   </tr>
 </table>
 
-Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, handler) for rendering the action button.
+Every message action that you see in UI, is represented by [`MessageAction`](../object-types/message_action.mdx) object for that action. And `MessageAction` object provides all the necessary inputs (title, icon, action handler, actionType) for rendering the action button.
 
 ```tsx
 type MessageAction = {
   action: () => void;
+  actionType: enum('blockUser', 'copyMessage', 'deleteMessage', 'editMessage', 'flagMessage', 'muteUser', 'pinMessage', 'selectReaction', 'reply', 'retry', 'quotedReply', 'threadReply', 'unpinMessage')
   title: string;
   icon?: React.ReactElement;
   titleStyle?: StyleProp<TextStyle>;
 };
 ```
 
-You can customize each one of the default actions using props on Channel component (as shown further on this page). Channel component makes these props available to enclosed components via context `MessagesContext`.
+You can customize each one of the default actions using props on the [`Channel component`](../) as shown further on this page. The channel component makes these props available in the `MessagesContext` context.
 
-[`Channel`](../) component accepts a prop called - `messageActions`. You can use this prop as a callback function to render message actions selectively.
-This parameters to this function includes all the default message actions as [`MessageAction`](../object-types/message_action.mdx) object, and some more relevant properties. Array of `MessageAction`'s returned by this function, will be rendered in message overlay (on long press).
+The channel component accepts a prop called `messageActions`. You can use this prop as a callback function to render message actions selectively.
+
+The arguments to this function is an object with all the default message actions as [`MessageAction`](../object-types/message_action.mdx) objects. The function should return an array of MessageAction objects to render in a [MessageActionList](../common-content/core-components/overlay-provider/props/message_action_list.mdx) within the message overlay, that is shown when a user long presses a message in a MessageList.
+
+You can also customize each one of the default actions using the `messageActions` prop passed to the OverlayProvider as shown in the example below. The OverlayProvider component makes these props available in the `MessageOverlayContext` context.
 
 ```tsx
 messageActions={({
   blockUser, // MessageAction | null;
-  canModifyMessage, // boolean;
   copyMessage, // MessageAction | null;
   deleteMessage, // MessageAction | null;
   dismissOverlay, // () => void;
@@ -53,66 +63,203 @@ messageActions={({
   isThreadMessage, // boolean;
   message, // MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageReactions, // boolean;
-  muteUser, // MessageAction | null;
   reply, // MessageAction | null;
   retry, // MessageAction | null;
   threadReply, // MessageAction | null;
-  repliesEnabled, // boolean;
+  ownCapabilities, // object
 }) => {
   return [] // Array<MessageAction>
 }}
 ```
 
-Please continue reading further to difference use cases.
-
 ## How to conditionally render message actions
 
-Following example demonstrates how to:
-- Only show "Copy Message", "Edit Message" actions from default action set.
-- Show "Edit Message" messages from current user.
+The following example demonstrates how to:
 
-  ```jsx
-  <Channel
-    messageActions={({
-      copyMessage,
-      editMessage,
-      isMyMessage,
-    }) => isMyMessage
-      ? [copyMessage, editMessage]
+- Only show the "Copy Message" and "Edit Message" actions from the default message actions.
+- Show "Edit Message" messages from the current user.
+
+Additionally, the following example demonstrates how you can add custom styles for a message action title.
+
+```jsx
+<Channel
+  messageActions={({ copyMessage, editMessage, isMyMessage }) =>
+    isMyMessage
+      ? [
+          copyMessage,
+          editMessage,
+          {
+            ...deleteMessage,
+            textStyle: {
+              color: 'red',
+              fontWeight: 'bold',
+            },
+          },
+        ]
       : [copyMessage]
-    }
-  >
-    {/** MessageList and MessageInput component here */}
-  </Channel>
-  ```
+  }
+>
+  {/** MessageList and MessageInput component here */}
+</Channel>
+```
 
 ## How to add a custom message action
 
-Following example demonstrates how to introduce a new/custom message action:
+- Add a new custom action - "Mute User"
+- Show "Mute User" action only for messages from other user.
 
-- Add a new custom action - "Poke User", which simply sends a new message (👉) to screen and dismisses the overlay.
-- Show "Poke User" action only for messages from other user.
+```jsx
+import { messageActions as defaultMessageActions, Mute as MuteIcon } from 'stream-chat-react-native';
 
-  ```jsx
-  <Channel
-    messageActions={() => ([
-      {
-        action: () => {
-          channel.sendMessage({text: '👉'});
+<Channel
+  channel={channel}
+  messageActions={param => {
+    const { isMyMessage, ownCapabilities, dismissOverlay } = param;
+    const actions = defaultMessageActions({ ...param });
+
+    if (!isMyMessage) {
+      const isMuted = (client.mutedUsers || []).some(
+        mute => mute.user.id === client.userID && mute.target.id === message.user?.id,
+      );
+
+      actions.push({
+        action: async () => {
           dismissOverlay();
+          if (message.user?.id) {
+            if (isMuted) {
+              await client.unmuteUser(message.user.id);
+            } else {
+              await client.muteUser(message.user.id);
+            }
+          }
         },
-        icon: <PokeUserSVGIcon />,
-        title: "Poke User",
-      }
-    )}
-  >
-    {/** MessageList and MessageInput component here */}
-  </Channel>
-  ```
+        actionType: 'muteUser',
+        icon: <MuteIcon />,
+        title: isMuted ? t('Unmute User') : t('Mute User'),
+      });
+    }
+
+    return actions;
+  }}
+>
+  {/** MessageList and MessageInput component here */}
+</Channel>;
+```
+
+## How to customize message action UI
+
+[`OverlayProvider`](../) component accepts props called - `MessageActionList` and `MessageActionListItem`. They both serve a different purpose.
+
+- `MessageActionList` - Allows full customizability of the message action list and allows users to add/define their own message action along with the style they prefer for the application.
+- `MessageActionListItem` - Allows customizability of an item in a message action list.
+
+### Customize a Message Action List
+
+An example for the usage of `MessageActionList` component is as follows. You can obviously have your own logic in the component.
+
+```tsx
+import { MessageActionListItem, OverlayProvider, useOverlayContext } from 'stream-chat-react-native';
+
+const CustomMessageActionList = () => {
+  const { setOverlay } = useOverlayContext();
+  const messageActions = [
+    {
+      action: function () {
+        Alert.alert('Edit Message action called.');
+        setOverlay('none');
+      },
+      actionType: 'editMessage',
+      title: 'Edit messagee',
+    },
+    {
+      action: function () {
+        Alert.alert('Delete message action');
+        setOverlay('none');
+      },
+      actionType: 'deleteMessage',
+      title: 'Delete Message',
+    },
+  ];
+  return (
+    <View style={{ backgroundColor: 'white' }}>
+      {messageActions.map(({ actionType, ...rest }) => (
+        <MessageActionListItem actionType={actionType} key={actionType} {...rest} />
+      ))}
+    </View>
+  );
+};
+
+<OverlayProvider MessageActionList={CustomMessageActionList}>
+  {/* Underlying Channel, MessageList and Message components */}
+</OverlayProvider>;
+```
+
+Notice that the `MessageActionList` is a simple prop which just accepts your own component for the messge action overlay. The content, styles and the action logic are all defined by the user itself.
+
+### Customize Message Action list item
+
+Suppose you want to customise `pinMessage` and `muteUser` actions, you just need to add a condition for that particular action type and return a component which you want to render for that actionType.
+
+The types of actions which are available by default are as follows:
+
+- `blockUser`
+- `copyMessage`
+- `deleteMessage`
+- `editMessage`
+- `flagMessage`
+- `muteUser`
+- `pinMessage`
+- `selectReaction`
+- `reply`
+- `retry`
+- `quotedReply`
+- `threadReply`
+- `unpinMessage`
+
+If you don't have any condition you need to return the `MessageActionListItem` as a default component and pass the action props to it so that it will be rendered.
+
+You can use these props to provide your own component.
+
+An example for the `MessageActionListItem` component customization is as following:
+
+```tsx
+import { MessageActionListItem, OverlayProvider, useMessageActionAnimation } from 'stream-chat-react-native';
+
+const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
+  const { onTap } = useMessageActionAnimation({ action: action });
+  if (actionType === 'pinMessage') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else if (actionType === 'muteUser') {
+    return (
+      <TapGestureHandler onHandlerStateChange={onTap}>
+        <Animated.View>
+          <Text>{actionType}</Text>
+        </Animated.View>
+      </TapGestureHandler>
+    );
+  } else {
+    return <MessageActionListItem action={action} actionType={actionType} {...rest} />;
+  }
+};
+
+<OverlayProvider MessageActionListItem={CustomMessageActionListItem}>
+  {/* Underlying Channel, MessageList and Message components */}
+</OverlayProvider>;
+```
+
+Note: The `useMessageActionAnimation` hook takes in the `action` for the message action and this would give some utitilites like `ontap`, `animatedStyle` and the `opacity` value which would be helpful with the Animated View which can be used in support of the package `react-native-reanimated`.
+
+Please continue reading further to see different use cases.
 
 ## How to intercept a message action
 
-If you are looking to add some analytics tracking to message action, you can do so in following handler prop functions. 
+If you are looking to add some analytics tracking to message action, you can do so in following handler prop functions.
 These functions will be called right before the underlying default handlers.
 
 :::note
@@ -138,24 +285,20 @@ Following example demostrates how to add analytics tracking to "Copy Message" ac
 
 ## How to disable a message action
 
-Channel component also allows you to override individual action via following props. These props are basically functions, which return `MessageAction` object corresponding to that action.
-You can provide `null` value for the props corresponding to action, which you want to remove from default action list.
-
-- `blockUser`
-- `copyMessage`
-- `deleteMessage`
-- `editMessage`
-- `flagMessage`
-- `muteUser`
-- `selectReaction`
-- `reply`
-- `retry`
-- `threadReply`
-
-<!-- With the exception of `selectReaction`, all of the functions are provided the `message` (as parameter) they are called on and must return a `MessageAction` for use in the context menu. `selectReaction` is also provided the `message` but should return an async function that takes a `reactionType`. This is called with the selected reaction type when a reaction is selected in the context menu. -->
-
-Following example demostrates how to disable/remove "Delete Message" action.
+To disable a particular action you can return `null` for a particular action type in the MessageActionListItem prop. An example to the situation would be as follows:
 
 ```tsx
-<Channel deleteMessage={null} />
+import { MessageActionListItem, OverlayProvider, useMessageActionAnimation } from 'stream-chat-react-native';
+
+const CustomMessageActionListItem = ({ action, actionType, ...rest }) => {
+  if (actionType === 'pinMessage') {
+    return null;
+  } else {
+    return <MessageActionListItem action={action} actionType={actionType} {...rest} />;
+  }
+};
+
+<OverlayProvider MessageActionListItem={CustomMessageActionListItem}>
+  {/* Underlying Channel, MessageList and Message components */}
+</OverlayProvider>;
 ```

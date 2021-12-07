@@ -7,14 +7,14 @@ title: Hello Stream Chat
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-import channelList from '../assets/basics/hello-stream-chat/channel_list.png'
-import messageInput from '../assets/basics/hello-stream-chat/message_input.png'
-import messageList from '../assets/basics/hello-stream-chat/message_list.png'
-import summary from '../assets/basics/hello-stream-chat/summary.png'
-import thread from '../assets/basics/hello-stream-chat/thread.png'
+import channelList from '../assets/basics/hello-stream-chat/channel_list.png';
+import messageInput from '../assets/basics/hello-stream-chat/message_input.png';
+import messageList from '../assets/basics/hello-stream-chat/message_list.png';
+import summary from '../assets/basics/hello-stream-chat/summary.png';
+import thread from '../assets/basics/hello-stream-chat/thread.png';
 
 Adding feature rich chat to a React Native application can be quite challenging when starting from scratch.
-There are many considerations, states, and edge cases that need need accounting for, styling, message grouping, read states, context menus, etc. all add to the complexity of the challenge.
+There are many considerations, states, and edge cases that need accounting for, styling, message grouping, read states, context menus, etc. all add to the complexity of the challenge.
 Stream Chat for React Native provides an easy to implement flexible solution.
 
 Stream Chat for React Native provides a way to add chat to an existing or new application with very little code.
@@ -31,7 +31,7 @@ To start you must get an instance of Stream Chat, for this you will need an api 
 To create one you can sign up for a [free 30-day trial](https://getstream.io/chat/trial/) of Stream Chat, no CC is required.
 
 ```ts
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 
 const client = StreamChat.getInstance('api_key');
 ```
@@ -44,20 +44,20 @@ Create your own class. Or using the Singleton structure you can call `getInstanc
 Tokens are used to authenticate a user.
 Typically, you send this token from your backend to the client when a user registers or logs in.
 See the <!-- TODO: Change to new docs -->[Tokens & Authentication](https://getstream.io/chat/docs/javascript/tokens_and_authentication/) documentation to learn more about creating tokens.
-For the purpose of this guide it will be assumed you have created and retrieved a `user_token`.
+You can use a [developer token](https://getstream.io/chat/docs/javascript/tokens_and_authentication/?language=javascript#developer-tokens) if desired, but for the purpose of this guide it will be assumed you have created and retrieved a `user_token`.
 
-To connect a user a the `connectUser` function should be called and provided with the user object and `user_token`.
-Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.  
+To connect a user the `connectUser` function should be called and provided with the user object and `user_token`.
+Connecting a user could be done in the login flow or elsewhere in the application after the client is instantiated.
 
 ```ts
-await client.connectUser( 
-    { 
-        id: 'jlahey', 
-        name: 'Jim Lahey', 
-        image: 'https://i.imgur.com/fR9Jz14.png', 
-    }, 
-    'user_token',
-); 
+await client.connectUser(
+  {
+    id: 'jlahey',
+    name: 'Jim Lahey',
+    image: 'https://i.imgur.com/fR9Jz14.png',
+  },
+  'user_token',
+);
 ```
 
 It is recommended to not repeatedly call `connectUser` unnecessarily, multiple calls to `connectUser` will result in warnings, and attempting to call `connectUser` before disconnecting a current user will throw an Error.
@@ -96,7 +96,7 @@ You can't add or remove members from channel created using a list of members.
 :::
 
 You can also add additional custom data to a channel.
-You can add as many custom fields as you desire as long as the total size of the custom fields object is *less than 5KB*.
+You can add as many custom fields as you desire as long as the total size of the custom fields object is _less than 5KB_.
 
 For the purpose of this guide you should create a `channel` as you see fit utilizing either a members list that includes your user's `id`, or a channel `id`.
 **This can be done once, then the code removed** as this guide will not be covering on the fly channel creation.
@@ -110,27 +110,27 @@ For the purpose of this guide you should create a `channel` as you see fit utili
 >
 <TabItem value='channelId'>
 
-  ```ts
-  /**
-   *  Channel created using a channel id
-   */
-  const channel = client.channel('messaging', 'the_park', { 
-      name: 'The Park', 
-  });
-  ```
+```ts
+/**
+ *  Channel created using a channel id
+ */
+const channel = client.channel('messaging', 'the_park', {
+  name: 'The Park',
+});
+```
 
 </TabItem>
 <TabItem value='members'>
 
-  ```ts
-  /**
-   *  Channel created using a members list
-   */
-  const channel = client.channel('messaging', {
-      members: ['jlahey', 'rlafleur']
-      name: 'The Park', 
-  });
-  ```
+```ts
+/**
+ *  Channel created using a members list
+ */
+const channel = client.channel('messaging', {
+  members: ['jlahey', 'rlafleur'],
+  name: 'The Park',
+});
+```
 
 </TabItem>
 </Tabs>
@@ -166,10 +166,7 @@ For additional information on the `OverlayProvider` check the [OverlayProvider d
 ```tsx
 import { OverlayProvider } from 'stream-chat-react-native';
 
-export const Screen = () =>
-  <OverlayProvider>
-    {/** App components */}
-  </OverlayProvider>
+export const Screen = () => <OverlayProvider>{/** App components */}</OverlayProvider>;
 ```
 
 ### Chat
@@ -189,44 +186,41 @@ For additional information on the `Chat` component check the [Chat component doc
 >
 <TabItem value='app'>
 
-  ```tsx {8-10}
-  import { StreamChat } from 'stream-chat'; 
-  import { Chat, OverlayProvider } from 'stream-chat-react-native';
+```tsx {8-10}
+import { StreamChat } from 'stream-chat';
+import { Chat, OverlayProvider } from 'stream-chat-react-native';
 
-  const client = StreamChat.getInstance('api_key');
+const client = StreamChat.getInstance('api_key');
 
-  export const App = () =>
-    <OverlayProvider>
-      <Chat client={client}>
-        {/** App components */}
-      </Chat>
-    </OverlayProvider>;
-  ```
+export const App = () => (
+  <OverlayProvider>
+    <Chat client={client}>{/** App components */}</Chat>
+  </OverlayProvider>
+);
+```
 
 </TabItem>
 <TabItem value='screen'>
 
-  ```tsx
-  import { StreamChat } from 'stream-chat'; 
-  import { Chat } from 'stream-chat-react-native';
+```tsx
+import { StreamChat } from 'stream-chat';
+import { Chat } from 'stream-chat-react-native';
 
-  const client = StreamChat.getInstance('api_key');
+const client = StreamChat.getInstance('api_key');
 
-  export const Screen = () =>
-    <Chat client={client}>
-      {/** App components */}
-    </Chat>;
-  ```
+export const Screen = () => <Chat client={client}>{/** App components */}</Chat>;
+```
 
-  ```tsx {6}
-  import { OverlayProvider } from 'stream-chat-react-native';
-  import { Screen } from './Screen';
+```tsx {6}
+import { OverlayProvider } from 'stream-chat-react-native';
+import { Screen } from './Screen';
 
-  export const App = () =>
-    <OverlayProvider>
-      <Screen />
-    </OverlayProvider>;
-  ```
+export const App = () => (
+  <OverlayProvider>
+    <Screen />
+  </OverlayProvider>
+);
+```
 
 </TabItem>
 </Tabs>
@@ -251,17 +245,18 @@ For the purpose of this guide the example implementation will continue to be giv
 </div>
 
 ```tsx {9}
-import { StreamChat } from 'stream-chat'; 
+import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-export const App = () =>
+export const App = () => (
   <OverlayProvider>
     <Chat client={client}>
       <ChannelList />
     </Chat>
-  </OverlayProvider>;
+  </OverlayProvider>
+);
 ```
 
 These three components in conjunction will provide a [`FlatList`](https://reactnative.dev/docs/flatlist) of all channels available to the connected user.
@@ -280,7 +275,7 @@ This can be created [as you did previously](#creating-a-channel), pulled directl
 
 ```tsx {8,13-19}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -291,13 +286,7 @@ export const App = () => {
   return (
     <OverlayProvider>
       <Chat client={client}>
-        {channel ? (
-          <Channel channel={channel}>
-            {/** App components */}
-          </Channel>
-        ) : (
-          <ChannelList onSelect={setChannel}/>
-        )}
+        {channel ? <Channel channel={channel}>{/** App components */}</Channel> : <ChannelList onSelect={setChannel} />}
       </Chat>
     </OverlayProvider>
   );
@@ -321,7 +310,7 @@ For additional information on the `MessageList` component, how to pass props to 
 
 ```tsx {15}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -337,7 +326,7 @@ export const App = () => {
             <MessageList />
           </Channel>
         ) : (
-          <ChannelList onSelect={setChannel}/>
+          <ChannelList onSelect={setChannel} />
         )}
       </Chat>
     </OverlayProvider>
@@ -365,7 +354,7 @@ For additional information on the `MessageInput` component, how to modify it usi
 
 ```tsx {14,16}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -382,7 +371,7 @@ export const App = () => {
             <MessageInput />
           </Channel>
         ) : (
-          <ChannelList onSelect={setChannel}/>
+          <ChannelList onSelect={setChannel} />
         )}
       </Chat>
     </OverlayProvider>
@@ -402,7 +391,7 @@ Stream Chat supports threaded messages, and the `MessageList` supplies a UI for 
 But as a thread on a mobile messaging app generally exists in a separate screen it is up to you to handle thread selection and subsequent navigation in your implementation.
 `Thread` has no required props as it relies heavily on `context` to function.
 The simple code snippet can be extended to include `Thread` and keep track of a `thread` state similarly to `channel` by utilizing the `onThreadSelect` prop on the `MessageList`.
-The code snippet now has a fully functional `ChannelList`, `MessageList`, and `threadList`, although currently it provides no way to *back* out of the sudo-navigation.
+The code snippet now has a fully functional `ChannelList`, `MessageList`, and `threadList`, although currently it provides no way to _back_ out of the sudo-navigation.
 
 For additional information on the `Thread` component, such as how to use `onThreadDismount` to manage your `thread` state, check the [Thread component docs.](../ui-components/thread.mdx)
 
@@ -412,7 +401,7 @@ For additional information on the `Thread` component, such as how to use `onThre
 
 ```tsx {9,15-24}
 import React, { useState } from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { ChannelList, Chat, MessageType, OverlayProvider } from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
@@ -425,7 +414,7 @@ export const App = () => {
     <OverlayProvider>
       <Chat client={client}>
         {channel ? (
-          <Channel channel={channel} keyboardVerticalOffset={0} thread={thread}>
+          <Channel channel={channel} keyboardVerticalOffset={0} thread={thread} threadList={!!thread}>
             {thread ? (
               <Thread />
             ) : (
@@ -449,15 +438,15 @@ export const App = () => {
 - You need a `client` that is an instance of `StreamChat` to provide to the UI components so they function correctly.
 
 - You need to connect a user via the `connectUser` call to interact with the backend properly.
-To do this you need to create tokens as per the <!-- TODO: Change to new docs -->[Tokens & Authentication](https://getstream.io/chat/docs/javascript/tokens_and_authentication/) docs.
+  To do this you need to create tokens as per the <!-- TODO: Change to new docs -->[Tokens & Authentication](https://getstream.io/chat/docs/javascript/tokens_and_authentication/) docs.
 
 - You need to surround your app with the `OverlayProvider` for the UI to function properly, and your app or chat screen with the `Chat` component to provide data to the UI components.
 
 - `ChannelList` provides access to the list of available channels in the UI, and using props, can be queried, filtered, and sorted as desired.
-`ChannelList` also provides convenient functionality for implementing navigation to a selected `Channel`.
+  `ChannelList` also provides convenient functionality for implementing navigation to a selected `Channel`.
 
 - The `Channel` component is the functional wrapper of the `MessageList`, `MessageInput`, and `Thread` components.
-It is the access point for the majority of the customization of the SDK, and controls much of the functionality.
+  It is the access point for the majority of the customization of the SDK, and controls much of the functionality.
 
 ### Hello Stream Chat
 
@@ -467,6 +456,7 @@ It is the access point for the majority of the customization of the SDK, and con
 Putting everything covered together into a single functional component most of the Stream Chat for React Native SDK can be tested with a few additional setup.
 
 The final sample code:
+
 - Adds a `useEffect` to connect the user on mount and render the UI when ready.
 - Adds a `back` button for sudo-navigation by resetting the states of `thread` and `channel` when appropriate.
 - Adds a `View` around the `Chat` component with style `flex: 1` to allow `Chat` to adjust for the `back` button height, and an empty `Thread` component to layout properly.
@@ -481,7 +471,7 @@ These additions result in a small but functional chat sample app.
 ```tsx
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Channel as ChannelType, StreamChat } from 'stream-chat'; 
+import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
   ChannelList,
@@ -504,13 +494,13 @@ export const App = () => {
     const setupClient = async () => {
       try {
         await client.connectUser(
-          { 
-            id: 'jlahey', 
-            name: 'Jim Lahey', 
-            image: 'https://i.imgur.com/fR9Jz14.png', 
-          }, 
+          {
+            id: 'jlahey',
+            name: 'Jim Lahey',
+            image: 'https://i.imgur.com/fR9Jz14.png',
+          },
           'user_token',
-        ); 
+        );
         setClientReady(true);
       } catch (e) {
         console.log(e);
@@ -533,14 +523,12 @@ export const App = () => {
   return (
     <OverlayProvider topInset={60}>
       <TouchableOpacity onPress={onBackPress} disabled={!channel}>
-        <View style={{ height: 60, paddingLeft: 16, paddingTop: 40 }}>
-          {channel && <Text>Back</Text>}
-        </View>
+        <View style={{ height: 60, paddingLeft: 16, paddingTop: 40 }}>{channel && <Text>Back</Text>}</View>
       </TouchableOpacity>
       <View style={{ flex: 1 }}>
         <Chat client={client}>
           {channel ? (
-            <Channel channel={channel} keyboardVerticalOffset={60} thread={thread}>
+            <Channel channel={channel} keyboardVerticalOffset={60} thread={thread} threadList={!!thread}>
               {thread ? (
                 <Thread />
               ) : (

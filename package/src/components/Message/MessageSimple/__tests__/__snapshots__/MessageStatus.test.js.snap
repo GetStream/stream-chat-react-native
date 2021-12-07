@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageStatus should render message status with read by container 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "alignItems": "flex-end",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "paddingRight": 3,
+      },
+      Object {},
+    ]
+  }
+>
+  <Text
+    style={
+      Array [
+        Object {
+          "fontSize": 11,
+          "fontWeight": "700",
+          "paddingRight": 3,
+        },
+        Object {
+          "color": "#005FFF",
+        },
+        Object {},
+      ]
+    }
+    testID="read-by-container"
+  >
+    2
+  </Text>
+  <RNSVGSvgView
+    align="xMidYMid"
+    bbHeight={16}
+    bbWidth={16}
+    focusable={false}
+    height={16}
+    meetOrSlice={0}
+    minX={0}
+    minY={0}
+    pathFill="#005FFF"
+    style={
+      Array [
+        Object {
+          "backgroundColor": "transparent",
+          "borderWidth": 0,
+        },
+        Object {
+          "flex": 0,
+          "height": 16,
+          "width": 16,
+        },
+      ]
+    }
+    vbHeight={24}
+    vbWidth={24}
+    width={16}
+  >
+    <RNSVGGroup>
+      <RNSVGPath
+        clipRule={0}
+        d="M2.293 11.293a1 1 0 011.414 0l4 4a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414zM9.293 12.293a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414z"
+        fill={4278214655}
+        fillRule={0}
+        propList={
+          Array [
+            "fill",
+            "fillRule",
+          ]
+        }
+      />
+      <RNSVGPath
+        clipRule={0}
+        d="M15.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0zM21.707 7.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0z"
+        fill={4278214655}
+        fillRule={0}
+        propList={
+          Array [
+            "fill",
+            "fillRule",
+          ]
+        }
+      />
+    </RNSVGGroup>
+  </RNSVGSvgView>
+</View>
+`;

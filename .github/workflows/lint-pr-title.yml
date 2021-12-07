@@ -1,0 +1,16 @@
+name: 'Lint PR title'
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    types: [opened, edited, synchronize]
+
+jobs:
+  lint_pr_title:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: deepakputhraya/action-pr-title@v1.0.2
+        with:
+          regex: '^(\w*)(?:\((.*)\))?: (.*)$'

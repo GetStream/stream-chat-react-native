@@ -3,22 +3,22 @@ id: thread
 title: Thread
 ---
 
-import Client from '../common-content/core-components/chat/props/client.mdx'
+import Client from '../common-content/core-components/chat/props/client.mdx';
 
-import Thread from '../common-content/core-components/channel/props/thread.mdx'
+import Thread from '../common-content/core-components/channel/props/thread.mdx';
 
-import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx'
-import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx'
-import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx'
+import CloseThread from '../common-content/contexts/thread-context/close_thread.mdx';
+import LoadMoreThread from '../common-content/contexts/thread-context/load_more_thread.mdx';
+import ReloadThread from '../common-content/contexts/thread-context/reload_thread.mdx';
 
-`Thread` component renders thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
+Component to render thread replies for a message, along with and input box for adding new thread replies. This component internally uses `MessageList` and `MessageInput` components.
 
 ## Basic Usage
 
 ```tsx
 <OverlayProvider>
   <Chat client={client}>
-    <Channel channel={channel} thread={messageId}>
+    <Channel channel={channel} thread={messageId} threadList>
       <Thread />
     </Channel>
   </Chat>
@@ -31,37 +31,33 @@ import ReloadThread from '../common-content/contexts/thread-context/reload_threa
 
 Additional [props](./message_input.mdx#props) for underlying `MessageInput` component.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### additionalMessageListProps
 
 Additional [props](./message_list.mdx#props) for underlying `MessageList` component.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | object |
 
 ### autoFocus
 
 When true, input box will be auto focused upon mounting.
 
-| Type | Default |
-| - | - |
-| boolean | true |
+| Type    | Default |
+| ------- | ------- |
+| boolean | true    |
 
 <!-- ### closeThreadOnDismount -->
 
-### client
-
-_(Overrides the value from [ChatContext](../contexts/chat_context.mdx))_
+### <div class="description">overrides the value from [ChatContext](../contexts/chat_context.mdx#client)</div> client {#client}
 
 <Client />
 
-### closeThread
-
-_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#closeThread)</div> closeThread {#closeThread}
 
 <CloseThread />
 
@@ -69,13 +65,11 @@ _(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 When true, the underlying input box will be disabled.
 
-| Type | Default |
-| - | - |
-| boolean | false |
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
-### loadMoreThread
-
-_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#loadMoreThread)</div> loadMoreThread {#loadMoreThread}
 
 <LoadMoreThread />
 
@@ -83,19 +77,14 @@ _(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
 
 Function which gets called when Thread component unmounts.
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
-### reloadThread
-
-_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#reloadThread)</div> reloadThread {#reloadThread}
 
 <ReloadThread />
 
-### thread
-
-_(Overrides the value from [ThreadContext](../contexts/thread_context.mdx))_
+### <div class="description">overrides the value from [ThreadContext](../contexts/thread_context.mdx#thread)</div> thread {#thread}
 
 <Thread />
-

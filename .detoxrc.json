@@ -1,0 +1,63 @@
+{
+  "testRunner": "jest",
+  "runnerConfig": "e2e/config.json",
+  "skipLegacyWorkersInjection": true,
+  "apps": {
+    "ios.sample.debug": {
+      "name": "iOS SampleApp Debug",
+      "type": "ios.app",
+      "binaryPath": "examples/SampleApp/ios/build/Build/Products/Debug-iphonesimulator/SampleApp.app",
+      "build": "cd examples/SampleApp && xcodebuild -workspace ios/SampleApp.xcworkspace -scheme SampleApp -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build"
+    },
+    "ios.sample.release": {
+      "name": "iOS SampleApp Release",
+      "type": "ios.app",
+      "binaryPath": "examples/SampleApp/ios/build/Build/Products/Release-iphonesimulator/SampleApp.app",
+      "build": "cd examples/SampleApp && xcodebuild -workspace ios/SampleApp.xcworkspace -scheme SampleApp -configuration Release -sdk iphonesimulator -derivedDataPath ios/build"
+    },
+    "android.sample.debug": {
+      "name": "Android SampleApp Debug",
+      "type": "android.apk",
+      "binaryPath": "examples/SampleApp/android/app/build/outputs/apk/debug/app-debug.apk",
+      "build": "cd examples/SampleApp/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug"
+    },
+    "android.sample.release": {
+      "name": "Android SampleApp Release",
+      "type": "android.apk",
+      "binaryPath": "examples/SampleApp/android/app/build/outputs/apk/release/app-release.apk",
+      "build": "cd examples/SampleApp/android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release"
+    }
+  },
+  "devices": {
+    "simulator": {
+      "type": "ios.simulator",
+      "device": {
+        "type": "iPhone 12"
+      }
+    },
+    "emulator": {
+      "type": "android.emulator",
+      "device": {
+        "avdName": "Pixel_29_AOSP"
+      }
+    }
+  },
+  "configurations": {
+    "ios.sample.debug": {
+      "device": "simulator",
+      "app": "ios.sample.debug"
+    },
+    "ios.sample.release": {
+      "device": "simulator",
+      "app": "ios.sample.release"
+    },
+    "android.sample.debug": {
+      "device": "emulator",
+      "app": "android.sample.debug"
+    },
+    "android.sample.release": {
+      "device": "emulator",
+      "app": "android.sample.release"
+    }
+  }
+}

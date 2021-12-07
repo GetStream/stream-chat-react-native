@@ -102,10 +102,15 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: white_snow }]}
       edges={['right', 'top', 'left']}
+      style={[styles.container, { backgroundColor: white_snow }]}
+      testID='user-selector-screen'
     >
-      <ScrollView contentContainerStyle={styles.contentContainer} style={styles.scrollContainer}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        style={styles.scrollContainer}
+        testID='users-list'
+      >
         <View style={styles.titleContainer}>
           <StreamLogo />
           <Text style={[styles.title, { color: black }]}>Welcome to Stream Chat</Text>
@@ -121,6 +126,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
               switchUser(u.id);
             }}
             style={[styles.userContainer, { borderBottomColor: border }]}
+            testID={`user-selector-button-${u.id}`}
           >
             <Image
               source={{
@@ -191,9 +197,9 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       <View
         style={[
           {
+            backgroundColor: white_snow,
             paddingBottom: bottom ? bottom : 16,
             paddingTop: 16,
-            backgroundColor: white_snow,
           },
         ]}
       >

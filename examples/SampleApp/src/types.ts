@@ -45,6 +45,17 @@ export type StackNavigatorParamList = {
     >;
   };
   ChannelListScreen: undefined;
+  ChannelPinnedMessagesScreen: {
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
+  };
   ChannelScreen: {
     channel?: Channel<
       LocalAttachmentType,
@@ -142,7 +153,7 @@ export type AppTheme = Theme & {
 export type LoginConfig = {
   apiKey: string;
   userId: string;
+  userToken: string;
   userImage?: string;
   userName?: string;
-  userToken: string;
 };

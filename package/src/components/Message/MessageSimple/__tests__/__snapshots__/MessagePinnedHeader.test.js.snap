@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessagePinnedHeader should render message pinned 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "display": "flex",
+        "flexDirection": "row",
+        "marginBottom": 8,
+        "marginLeft": 30,
+        "marginTop": 5,
+      },
+      Object {
+        "justifyContent": "flex-start",
+      },
+      Object {},
+    ]
+  }
+  testID="message-pinned"
+>
+  <RNSVGSvgView
+    align="xMidYMid"
+    bbHeight={24}
+    bbWidth={24}
+    focusable={false}
+    height={24}
+    meetOrSlice={0}
+    minX={0}
+    minY={0}
+    pathFill="#7A7A7A"
+    style={
+      Array [
+        Object {
+          "backgroundColor": "transparent",
+          "borderWidth": 0,
+        },
+        Object {
+          "flex": 0,
+          "height": 24,
+          "width": 24,
+        },
+      ]
+    }
+    vbHeight={24}
+    vbWidth={24}
+    width={24}
+  >
+    <RNSVGGroup>
+      <RNSVGPath
+        clipRule={0}
+        d="M10.694 1.52908C10.5304 1.36544 10.2937 1.2982 10.0685 1.35137C9.84327 1.40454 9.6616 1.57053 9.5884 1.79006L9.16613 3.05694L6.72027 5.50284C5.12809 5.14216 3.59999 5.79028 2.19557 7.1947C1.93481 7.45543 1.93481 7.87823 2.19557 8.13896L4.55625 10.4997L3.1399 11.916C2.87915 12.1768 2.87915 12.5995 3.1399 12.8603C3.40065 13.1211 3.82342 13.1211 4.08417 12.8603L5.50051 11.4439L7.8612 13.8046C8.12193 14.0654 8.54473 14.0654 8.80547 13.8046C10.2099 12.4002 10.858 10.8721 10.4973 9.2799L12.9432 6.83403L14.2101 6.41173C14.4296 6.33855 14.5956 6.15692 14.6488 5.9317C14.7019 5.70648 14.6347 5.46979 14.4711 5.30616L10.694 1.52908ZM10.3832 3.62876L10.5137 3.23728L12.7629 5.4865L12.3714 5.617C12.2731 5.64977 12.1837 5.705 12.1104 5.7783L9.2776 8.6111C9.09873 8.78996 9.03633 9.05443 9.11627 9.29436C9.43453 10.249 9.2382 11.2566 8.31287 12.3678L3.6324 7.6873C4.74353 6.76196 5.7511 6.56564 6.7058 6.8839C6.94573 6.96383 7.2102 6.90143 7.38906 6.72256L10.2219 3.88975C10.2951 3.81646 10.3504 3.7271 10.3832 3.62876Z"
+        fill={4286216826}
+        fillRule={0}
+        propList={
+          Array [
+            "fill",
+            "fillRule",
+          ]
+        }
+      />
+    </RNSVGGroup>
+  </RNSVGSvgView>
+  <Text
+    style={
+      Array [
+        Object {
+          "color": "#7A7A7A",
+        },
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    Pinned by
+     
+    You
+  </Text>
+</View>
+`;

@@ -109,12 +109,15 @@ export const usePaginatedUsers = (): PaginatedUsers => {
   };
 
   const fetchUsers = async (query = '') => {
-    if (queryInProgress.current) return;
+    if (queryInProgress.current || !chatClient?.userID) return;
     setLoading(true);
 
     try {
       queryInProgress.current = true;
       const filter: UserFilters = {
+        id: {
+          $nin: [chatClient?.userID],
+        },
         role: 'user',
       };
 

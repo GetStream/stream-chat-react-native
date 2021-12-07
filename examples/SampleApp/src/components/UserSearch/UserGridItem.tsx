@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { Avatar, Close, useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
@@ -56,6 +57,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   return (
     <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <Avatar
+        id={user.id}
         image={user.image}
         online={user.online}
         presenceIndicator={presenceIndicator}

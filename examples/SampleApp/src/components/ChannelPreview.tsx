@@ -68,18 +68,17 @@ export const ChannelPreview: React.FC<
 
   const { setData: setDataBottomSheet } = useBottomSheetOverlayContext();
 
-  const { setData, data } = useChannelInfoOverlayContext();
+  const { data, setData } = useChannelInfoOverlayContext();
 
-  const { client } =
-    useChatContext<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >();
+  const { client } = useChatContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 

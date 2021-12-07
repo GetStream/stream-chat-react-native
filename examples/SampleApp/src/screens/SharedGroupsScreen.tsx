@@ -119,9 +119,21 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     >
       <View style={styles.groupContainer}>
         {displayAvatar.images ? (
-          <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />
+          <GroupAvatar
+            channelId={channel.id}
+            ids={displayAvatar.ids}
+            images={displayAvatar.images}
+            names={displayAvatar.names}
+            size={40}
+          />
         ) : (
-          <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
+          <Avatar
+            channelId={channel.id}
+            id={displayAvatar.id}
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={40}
+          />
         )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>

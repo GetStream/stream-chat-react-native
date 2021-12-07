@@ -4,7 +4,7 @@ import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
-export const RightArrow: React.FC<IconProps> = ({ active, height, width }) => {
+export const RightArrow: React.FC<IconProps> = ({ height, width }) => {
   const {
     theme: {
       colors: { accent_blue },

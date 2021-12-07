@@ -1,4 +1,5 @@
 {
   "name": "NativeMessaging",
-  "displayName": "NativeMessaging"
+  "displayName": "NativeMessaging",
+  "scheme": "nativemessaging://"
 }

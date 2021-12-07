@@ -1,0 +1,27 @@
+name: Lint & Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    types: [opened, synchronize]
+
+jobs:
+  check_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installation & Build Package
+        # installation already takes care of calling prepare which calls build
+        # for the sdk package
+        run: yarn --frozen-lockfile && yarn bootstrap-ci
+      - name: Lint
+        run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
+      - name: Test
+        run: yarn test:unit

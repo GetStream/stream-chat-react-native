@@ -3,6 +3,7 @@ id: channel
 sidebar_position: 4
 title: Channel
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -13,34 +14,35 @@ import EmptyStateIndicator from '../common-content/core-components/channel/props
 import LoadingIndicator from '../common-content/core-components/channel/props/loading_indicator.mdx';
 import NetworkDownIndicator from '../common-content/core-components/channel/props/network_down_indicator.mdx';
 
-import AdditionalKeyboardAvoidingViewProps from '../common-content/core-components/channel/props/additional_keyboard_avoiding_view_props.mdx'
-import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx'
-import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx'
-import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx'
+import AdditionalKeyboardAvoidingViewProps from '../common-content/core-components/channel/props/additional_keyboard_avoiding_view_props.mdx';
+import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
+import AllowThreadMessagesInChannel from '../common-content/core-components/channel/props/allow_thread_messages_in_channel.mdx';
+import AutoCompleteSuggestionHeader from '../common-content/core-components/channel/props/autocomplete_suggestion_header.mdx';
+import AutoCompleteSuggestionItem from '../common-content/core-components/channel/props/autocomplete_suggestion_item.mdx';
+import AutoCompleteSuggestionList from '../common-content/core-components/channel/props/autocomplete_suggestion_list.mdx';
+import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx';
+import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx';
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
-import AnimatedLongPress from '../common-content/core-components/channel/props/animated_long_press.mdx';
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
 import Attachment from '../common-content/core-components/channel/props/attachment.mdx';
 import AttachmentActions from '../common-content/core-components/channel/props/attachment_actions.mdx';
-import BlockUser from '../common-content/core-components/channel/props/block_user.mdx';
 import Card from '../common-content/core-components/channel/props/card.mdx';
 import CardCover from '../common-content/core-components/channel/props/card_cover.mdx';
 import CardFooter from '../common-content/core-components/channel/props/card_footer.mdx';
 import CardHeader from '../common-content/core-components/channel/props/card_header.mdx';
 import CommandsButton from '../common-content/core-components/channel/props/commands_button.mdx';
-import CopyMessage from '../common-content/core-components/channel/props/copy_message.mdx';
+import CompressImageQuality from '../common-content/core-components/channel/props/compress_image_quality.mdx';
 import DateHeader from '../common-content/core-components/channel/props/date_header.mdx';
-import DeleteMessage from '../common-content/core-components/channel/props/delete_message.mdx';
+import DeletedMessagesVisibilityType from '../common-content/core-components/channel/props/deleted_messages_visibility_type.mdx';
 import DisableTypingIndicator from '../common-content/core-components/channel/props/disable_typing_indicator.mdx';
 import DismissKeyboardOnMessageTouch from '../common-content/core-components/channel/props/dismiss_keyboard_on_message_touch.mdx';
-import DoDocUploadRequest from '../common-content/core-components/channel/props/do_doc_upload_request.mdx'
-import DoImageUploadRequest from '../common-content/core-components/channel/props/do_image_upload_request.mdx'
-import EditMessage from '../common-content/core-components/channel/props/edit_message.mdx';
+import DoDocUploadRequest from '../common-content/core-components/channel/props/do_doc_upload_request.mdx';
+import DoImageUploadRequest from '../common-content/core-components/channel/props/do_image_upload_request.mdx';
+import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
 import FileAttachment from '../common-content/core-components/channel/props/file_attachment.mdx';
 import FileAttachmentGroup from '../common-content/core-components/channel/props/file_attachment_group.mdx';
 import FileAttachmentIcon from '../common-content/core-components/channel/props/file_attachment_icon.mdx';
-import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx'
-import FlagMessage from '../common-content/core-components/channel/props/flag_message.mdx';
+import FileUploadPreview from '../common-content/core-components/channel/props/file_upload_preview.mdx';
 import FlatList from '../common-content/core-components/channel/props/flat_list.mdx';
 import ForceAlignMessages from '../common-content/core-components/channel/props/force_align_messages.mdx';
 import FormatDate from '../common-content/core-components/channel/props/format_date.mdx';
@@ -53,6 +55,7 @@ import HandleDelete from '../common-content/core-components/channel/props/handle
 import HandleEdit from '../common-content/core-components/channel/props/handle_edit.mdx';
 import HandleFlag from '../common-content/core-components/channel/props/handle_flag.mdx';
 import HandleMute from '../common-content/core-components/channel/props/handle_mute.mdx';
+import HandlePinMessage from '../common-content/core-components/channel/props/handle_pin_message.mdx';
 import HandleQuotedReply from '../common-content/core-components/channel/props/handle_quoted_reply.mdx';
 import HandleReaction from '../common-content/core-components/channel/props/handle_reaction.mdx';
 import HandleRetry from '../common-content/core-components/channel/props/handle_retry.mdx';
@@ -60,17 +63,21 @@ import HandleThreadReply from '../common-content/core-components/channel/props/h
 import HasCommands from '../common-content/core-components/channel/props/has_commands.mdx';
 import HasFilePicker from '../common-content/core-components/channel/props/has_file_picker.mdx';
 import HasImagePicker from '../common-content/core-components/channel/props/has_image_picker.mdx';
-import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx'
-import ImageUploadPreview from '../common-content/core-components/channel/props/image_upload_preview.mdx'
-import InitialValue from '../common-content/core-components/channel/props/initial_value.mdx'
+import HideDateSeparators from '../common-content/core-components/channel/props/hide_date_separators.mdx';
+import HideStickyDateHeader from '../common-content/core-components/channel/props/hide_sticky_date_header.mdx';
+import ImageUploadPreview from '../common-content/core-components/channel/props/image_upload_preview.mdx';
+import InitialValue from '../common-content/core-components/channel/props/initial_value.mdx';
 import InitialScrollToFirstUnreadMessage from '../common-content/core-components/channel/props/initial_scroll_to_first_unread_message.mdx';
 import InlineDateSeparator from '../common-content/core-components/channel/props/inline_date_separator.mdx';
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
-import Input from '../common-content/core-components/channel/props/input.mdx'
-import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx'
+import Input from '../common-content/core-components/channel/props/input.mdx';
+import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx';
+import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
-import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx'
-// import Message from '../common-content/core-components/channel/props/message.mdx';
+import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
+import MaxNumberOfFiles from '../common-content/core-components/channel/props/max_number_of_files.mdx';
+import MentionAllAppUsersEnabled from '../common-content/core-components/channel/props/mention_all_app_users_enabled.mdx';
+import MentionAllAppUsersQuery from '../common-content/core-components/channel/props/mention_all_app_users_query.mdx';
 import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
 import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
 import MessageActions from '../common-content/core-components/channel/props/message_actions.mdx';
@@ -78,7 +85,7 @@ import MessageContentOrder from '../common-content/core-components/channel/props
 import MessageDeleted from '../common-content/core-components/channel/props/message_deleted.mdx';
 import MessageFooter from '../common-content/core-components/channel/props/message_footer.mdx';
 import MessageHeader from '../common-content/core-components/channel/props/message_header.mdx';
-// import MessageList from '../common-content/core-components/channel/props/message_list.mdx';
+import MessagePinnedHeader from '../common-content/core-components/channel/props/message_pinned_header.mdx';
 import MessageReplies from '../common-content/core-components/channel/props/message_replies.mdx';
 import MessageRepliesAvatars from '../common-content/core-components/channel/props/message_replies_avatars.mdx';
 import MessageSimple from '../common-content/core-components/channel/props/message_simple.mdx';
@@ -86,92 +93,107 @@ import MessageStatus from '../common-content/core-components/channel/props/messa
 import MessageSystem from '../common-content/core-components/channel/props/message_system.mdx';
 import MessageText from '../common-content/core-components/channel/props/message_text.mdx';
 import MoreOptionsButton from '../common-content/core-components/channel/props/more_options_button.mdx';
-import MuteUser from '../common-content/core-components/channel/props/mute_user.mdx';
 import MyMessageTheme from '../common-content/core-components/channel/props/my_message_theme.mdx';
-import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx'
-import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx'
-import OnDoubleTapMessage from '../common-content/core-components/channel/props/on_double_tap_message.mdx';
+import NewMessageStateUpdateThrottleInterval from '../common-content/core-components/channel/props/new_message_state_update_throttle_interval.mdx';
+import NumberOfLines from '../common-content/core-components/channel/props/number_of_lines.mdx';
+import OnChangeText from '../common-content/core-components/channel/props/on_change_text.mdx';
 import OnLongPressMessage from '../common-content/core-components/channel/props/on_long_press_message.mdx';
 import OnPressInMessage from '../common-content/core-components/channel/props/on_press_in_message.mdx';
 import OnPressMessage from '../common-content/core-components/channel/props/on_press_message.mdx';
-import OverlayReactionList from '../common-content/core-components/channel/props/overlay_reaction_list.mdx';
-import QuotedRepliesEnabled from '../common-content/core-components/channel/props/quoted_replies_enabled.mdx'
-import QuotedReply from '../common-content/core-components/channel/props/quoted_reply.mdx';
-import ReactionsEnabled from '../common-content/core-components/channel/props/reactions_enabled.mdx'
+import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
+import OverrideOwnCapabilities from '../common-content/core-components/channel/props/override_own_capabilities.mdx';
 import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
-import ReadEventsEnabled from '../common-content/core-components/channel/props/read_events_enabled.mdx'
 import Reply from '../common-content/core-components/channel/props/reply.mdx';
-import Retry from '../common-content/core-components/channel/props/retry.mdx';
 import ScrollToBottomButton from '../common-content/core-components/channel/props/scroll_to_bottom_button.mdx';
 import SelectReaction from '../common-content/core-components/channel/props/select_reaction.mdx';
-import SendButton from '../common-content/core-components/channel/props/send_button.mdx'
-import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx'
+import SendButton from '../common-content/core-components/channel/props/send_button.mdx';
+import SendMessageDisallowedIndicator from '../common-content/core-components/channel/props/send_message_disallowed_indicator.mdx';
+import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
+import StateUpdateThrottleInterval from '../common-content/core-components/channel/props/state_update_throttle_interval.mdx';
 import SupportedReactions from '../common-content/core-components/channel/props/supported_reactions.mdx';
-import Thread from '../common-content/core-components/channel/props/thread.mdx'
-import ThreadRepliesEnabled from '../common-content/core-components/channel/props/thread_replies_enabled.mdx'
-import ThreadReply from '../common-content/core-components/channel/props/thread_reply.mdx';
-import TypingEventsEnabled from '../common-content/core-components/channel/props/typing_events_enabled.mdx'
+import Thread from '../common-content/core-components/channel/props/thread.mdx';
+import ThreadList from '../common-content/core-components/channel/props/thread_list.mdx';
 import TypingIndicator from '../common-content/core-components/channel/props/typing_indicator.mdx';
 import TypingIndicatorContainer from '../common-content/core-components/channel/props/typing_indicator_container.mdx';
-import UploadsEnabled from '../common-content/core-components/channel/props/uploads_enabled.mdx'
 import UrlPreview from '../common-content/core-components/channel/props/url_preview.mdx';
 
+The `Channel` component is the main entry point for many Stream Chat customizations and contains the majority of the content providers and a significant amount of the logic utilized by Stream Chat for React Native.
+Components, custom and out of the box, channel information, and UI integrated chat functions are disseminated by the contexts contained in `Channel`.
+[MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx), and [Thread](../ui-components/thread.mdx) all rely on `Channel` to function correctly.
 
-`Channel` is a higher order component. It doesn't provide any UI itself, but mainly acts as a bridge between its child components such as [MessageList](../ui-components/message_list.mdx), [MessageInput](../ui-components/message_input.mdx) and [Thread](../ui-components/thread.mdx) components. Channel provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
+## Basic Usage
 
-Channel is provided by `stream-chat-react-native` and can be imported from the library as following
+`Channel` takes an instance of a StreamChat `channel` as a prop.
+You can [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript), or if you are navigating from the [`ChannelList`](./channel_list.mdx), access the selected channel via the parameter passed to the [`onSelect`](./channel_list.mdx#required-onselect) function.
 
-```tsx
-import { Channel } from 'stream-chat-react-native';
-```
+```tsx {7-17,22,25}
+import { StreamChat } from 'stream-chat';
+import { Channel, Chat, MessageInput, MessageList, OverlayProvider } from 'stream-chat-react-native';
 
-<!-- TODO: Change to new docs -->
-This component takes StreamChat `channel` as prop. You can either [create a channel](https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript) before rendering Channel component. Or if you are navigating from [`ChannelList`](./channel_list.mdx) component, channel is available as parameter on [`onSelect`](./channel_list.mdx#required-onselect) prop function.
+const client = StreamChat.getInstance('api_key');
 
-## Usage
+export const App = () => {
+  const [channel, setChannel] = useState();
 
-```jsx
-<OverlayProvider>
-  <Chat client={client}>
-    <Channel channel={channel}>
-      <MessageList />
-      <MessageInput />
-    </Channel>
-  </Chat>
-</OverlayProvider>
+  useEffect(() => {
+    const createAndWatchChannel = async () => {
+      const newChannel = client.channel('messaging', 'channel_id');
+      await newChannel.watch();
+      setChannel(newChannel);
+    };
+
+    createAndWatchChannel();
+  }, []);
+
+  return (
+    <OverlayProvider>
+      <Chat client={client}>
+        <Channel channel={channel}>
+          <MessageList />
+          <MessageInput />
+        </Channel>
+      </Chat>
+    </OverlayProvider>
+  );
+};
 ```
 
 ## Context Providers
 
-Channel component is a provider of following contexts:
+`Channel` contains providers for the `ChannelContext`, `KeyboardContext`, `MessageInputContext`, `MessagesContext`, `PaginatedMessageListContext`, `SuggestionsContext`, `ThreadContext`, and `TypingContext`.
+These can be accessed using the corresponding hooks.
 
-- [ChannelContext](../contexts/channel_context.mdx)
-- [MessageInputContext](../contexts/message_input_context.mdx)
-- [MessagesContext](../contexts/messages_context.mdx)
-- [PaginatedMessageListContext](../contexts/paginated_message_list_context.mdx)
-- [ThreadContext](../contexts/thread_context.mdx)
-- [TypingContext](../contexts/typing_context.mdx)
-
+| Context                       | Hook                             |
+| ----------------------------- | -------------------------------- |
+| `ChannelContext`              | `useChannelContext`              |
+| `KeyboardContext`             | `useKeyboardContext`             |
+| `MessageInputContext`         | `useMessageInputContext`         |
+| `MessagesContext`             | `useMessagesContext`             |
+| `PaginatedMessageListContext` | `usePaginatedMessageListContext` |
+| `SuggestionsContext`          | `useSuggestionsContext`          |
+| `ThreadContext`               | `useThreadContext`               |
+| `TypingContext`               | `useTypingContext`               |
 
 ## UI Customizations
 
-Channel component makes it possible to customize any of the enclosed child components. For every child UI component of Channel, you can provide your own custom implementation. You can reference the following visuals, to check which prop to use for customizing.
+`Channel` is the entry point for customizing the majority of the Stream Chat for React Native SDK.
+The UI can be tailored to your design by replacing any number of components with custom components.
+Custom components provided as props to `Channel` will be utilized throughout the SDK where appropriate.
 
-For example, you can customize message avatar component as following:
+Customizing the message avatar can be done easily by providing a custom component to the appropriate prop.
 
-```jsx
+```tsx
+import { Image } from 'react-native';
 import { Channel, useMessageContext } from 'stream-chat-react-native';
 
 const CustomAvatar = () => {
-  const {message} = useMessageContext();
+  const { message } = useMessageContext();
 
-  return <Image source={{ src: message.user.image }} />
-}
+  return <Image source={{ uri: message.user?.image }} />;
+};
 
-<Channel MessageAvatar={CustomAvatar} />
+<Channel MessageAvatar={CustomAvatar} />;
 ```
-
-You can reference the following visuals, to check which [prop](#props) to use for customizing any of the sub-components.
 
 <Tabs
   defaultValue='messages'
@@ -206,16 +228,17 @@ You can reference the following visuals, to check which [prop](#props) to use fo
 
 ## Props
 
-### <div class="label required">required</div> **channel**
+### channel
 
 <Channel />
 
-### <div class="label required">required</div> **keyboardVerticalOffset**
+### keyboardVerticalOffset
 
-Distance between top of the screen and top of Channel component. Generally this value needs to be - `headerHeight`.
+Distance between top of the screen and top of Channel component.
+This is often the header height.
 
-| Type |
-| - |
+| Type   |
+| ------ |
 | number |
 
 ### additionalKeyboardAvoidingViewProps
@@ -226,10 +249,6 @@ Distance between top of the screen and top of Channel component. Generally this 
 
 <AdditionalTextInputProps />
 
-### animatedLongPress
-
-<AnimatedLongPress />
-
 ### additionalTouchableProps
 
 <AdditionalTouchableProps />
@@ -238,37 +257,49 @@ Distance between top of the screen and top of Channel component. Generally this 
 
 <AllowThreadMessagesInChannel />
 
+### autoCompleteSuggestionsLimit
+
+<AutoCompleteSuggestionsLimit />
+
+### AutoCompleteSuggestionHeader
+
+<AutoCompleteSuggestionHeader />
+
+### AutoCompleteSuggestionItem
+
+<AutoCompleteSuggestionItem />
+
+### AutoCompleteSuggestionList
+
+<AutoCompleteSuggestionList />
+
 ### autoCompleteTriggerSettings
 
 <AutoCompleteTriggerSettings />
-
-### blockUser
-
-<BlockUser />
-
-<!-- ### closeSuggestions -->
 
 ### compressImageQuality
 
 <CompressImageQuality />
 
-### copyMessage
+### deletedMessagesVisibiltyType
 
-<CopyMessage />
-
-### deleteMessage
-
-<DeleteMessage />
+<DeletedMessagesVisibilityType />
 
 ### disableIfFrozenChannel
 
-If true, all the interactions with Channel component will be disabled if the channel is frozen.
+Disable all interaction with the Channel component if the channel is _frozen_.
 
-| Type | Default |
-| - | - |
-| boolean | true |
+| Type    | Default |
+| ------- | ------- |
+| boolean | true    |
 
 ### disableKeyboardCompatibleView
+
+Enable or disable the underlying [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview#enabled).
+
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
 ### disableTypingIndicator
 
@@ -288,64 +319,101 @@ If true, all the interactions with Channel component will be disabled if the cha
 
 ### doMarkReadRequest
 
-Overrides the Stream default mark read request for channel. This prop should be only used for some advanced purpose, where you want to conditionally allow or disallow some mark-read requests.
+Override the mark read request.
 
-:::caution
-Don't use this prop to disable read-recipts feature on chat. You should disable "Read Events" from dashboard for this purpose.
+:::note
+
+This prop should only be used for advanced functionality in which you want to conditionally allow mark-read requests.
+
+Don not use this function to disable the read-receipts feature.
+If you would like to disable read-receipts, this can be done via _Read Events_ on the dashboard.
+
 :::
+
+#### Example
 
 ```tsx
 const doMarkReadRequest = (channel) => {
-  /** Some custom logic here */
-  return channel.markRead();
-}
+  if (/** Some custom logic here */) {
+    channel.markRead();
+  }
+};
 ```
 
-| Type |
-| - |
-| `(channel) => void` |
+| Type     |
+| -------- |
+| function |
+
+| Parameter | Description      |
+| --------- | ---------------- |
+| channel   | channel instance |
 
 ### doSendMessageRequest
 
-Overrides the Stream default send message request. This prop should be only used for some advanced purpose, where you want override the message object before sending the request.
+Override the send message request.
+This function must return a Promise equivalent to `client.sendMessage`.
+
+:::note
+
+This prop should only be used for advanced functionality in which you want to alter the message object before sending.
+
+:::
+
+#### Example
 
 ```tsx
 const doSendMessageRequest = (channelId, messageObject) => {
-  /** Some custom logic here */
+  if (/** Some custom logic here */) {
+    messageObject.isSpecial = true;
+  }
   return channel.sendMessage(messageObject);
 }
 ```
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
+
+| Parameter     | Description |
+| ------------- | ----------- |
+| channelId     | string      |
+| messageObject | object      |
 
 ### doUpdateMessageRequest
 
-Overrides the Stream default update message request. This prop should be only used for some advanced purpose, where you want override the message object before sending the update request.
+Override the update message request.
+This function must return a Promise equivalent to `client.updateMessage`.
+
+:::note
+
+This prop should only be used for advanced functionality in which you want to alter the message object before updating it.
+
+:::
 
 ```tsx
 const doUpdateMessageRequest = (channelId, messageObject) => {
-  /** Some custom logic here */
-  return client.updateMessage(messageObject);
-}
+  const numberOfUpdates = (messageObject.numberOfUpdates ?? 0) + 1;
+  const messageToSend = { ...messageObject, numberOfUpdates };
+  return client.updateMessage(messageToSend);
+};
 ```
 
-| Type |
-| - |
+| Type     |
+| -------- |
 | function |
 
-### editMessage
+| Parameter     | Description |
+| ------------- | ----------- |
+| channelId     | string      |
+| messageObject | object      |
 
-<EditMessage />
+### enableMessageGroupingByUser
+
+<EnableMessageGroupingByUser />
 
 ### enforceUniqueReaction
 
 <EnforceUniqueReaction />
-
-### flagMessage
-
-<FlagMessage />
 
 ### forceAlignMessages
 
@@ -359,7 +427,14 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 <GiphyEnabled />
 
-<!-- ### globalUnreadCountLimit -->
+### globalUnreadCountLimit
+
+Maximum number of unread messages to show as a count on a channel before adding a `+`.
+The max allowable is 255, which when reached displays as `255+`.
+
+| Type   | Default |
+| ------ | ------- |
+| number | 255     |
 
 ### handleBlock
 
@@ -384,6 +459,10 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 ### handleMute
 
 <HandleMute />
+
+### handlePinMessage
+
+<HandlePinMessage />
 
 ### handleReaction
 
@@ -417,6 +496,10 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 <HideDateSeparators />
 
+### hideStickyDateHeader
+
+<HideStickyDateHeader />
+
 ### initialScrollToFirstUnreadMessage
 
 <InitialScrollToFirstUnreadMessage />
@@ -427,9 +510,31 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 ### keyboardBehavior
 
-<!-- ### loadingMore
+Behavior for the keyboard passed to the underlying [KeyboardAvoidingView](https://reactnative.dev/docs/keyboardavoidingview#behavior).
 
-### loadingMoreRecent -->
+| Type                                |
+| ----------------------------------- |
+| 'height' \| 'position' \| 'padding' |
+
+### legacyImageViewerSwipeBehaviour
+
+<LegacyImageViewerSwipeBehaviour />
+
+### loadingMore
+
+Override the `loadingMore` value supplied by the channel query logic.
+
+| Type    |
+| ------- |
+| boolean |
+
+### loadingMoreRecent
+
+Override the `loadingMoreRecent` value supplied by the channel query logic.
+
+| Type    |
+| ------- |
+| boolean |
 
 ### markdownRules
 
@@ -439,51 +544,29 @@ const doUpdateMessageRequest = (channelId, messageObject) => {
 
 <MaxMessageLength />
 
-### quotedRepliesEnabled
-
-<QuotedRepliesEnabled />
-
-### reactionsEnabled
-
-<ReactionsEnabled />
-
-### readEventsEnabled
-
-<ReadEventsEnabled />
-
-### threadRepliesEnabled
-
-<ThreadRepliesEnabled />
-
-### typingEventsEnabled
-
-<TypingEventsEnabled />
-
-### uploadsEnabled
-
-<UploadsEnabled />
-
-### messageId
-
-If provided, enclosed MessageList will be loaded at given `messageId`, instead of latest message.
-
-| Type |
-| - |
-| string |
-
-
 ### maxNumberOfFiles
 
-Maximum number of files (documents + images), that can be attached per message.
-
-| Type | Default |
-| - | - |
-| number | 10 |
-
+<MaxNumberOfFiles />
 
 ### maxTimeBetweenGroupedMessages
 
 <MaxTimeBetweenGroupedMessages />
+
+### mentionAllAppUsersEnabled
+
+<MentionAllAppUsersEnabled />
+
+### mentionAllAppUsersQuery
+
+<MentionAllAppUsersQuery />
+
+### messageId
+
+Load the channel at a specified message instead of the most recent message.
+
+| Type   |
+| ------ |
+| string |
 
 ### messageActions
 
@@ -497,13 +580,13 @@ Maximum number of files (documents + images), that can be attached per message.
 
 Provide a custom array of messages to render in `MessageList`. -->
 
-### muteUser
-
-<MuteUser />
-
 ### myMessageTheme
 
 <MyMessageTheme />
+
+### newMessageStateUpdateThrottleInterval
+
+<NewMessageStateUpdateThrottleInterval />
 
 ### numberOfLines
 
@@ -512,10 +595,6 @@ Provide a custom array of messages to render in `MessageList`. -->
 ### onChangeText
 
 <OnChangeText />
-
-### onDoubleTapMessage
-
-<OnDoubleTapMessage />
 
 ### onLongPressMessage
 
@@ -529,29 +608,40 @@ Provide a custom array of messages to render in `MessageList`. -->
 
 <OnPressInMessage />
 
+### overrideOwnCapabilities
+
+<OverrideOwnCapabilities />
+
 <!-- ### openSuggestions -->
-
-### quotedReply
-
-<QuotedReply />
-
-### retry
-
-<Retry />
 
 ### selectReaction
 
 <SelectReaction />
 
-<!-- ### sendImageAsync -->
+### sendImageAsync
+
+Sends a message with attachments in asynchronous way. By default, a message can't be sent until all the image/file attachments have been
+uploaded. If this prop is set to true, every attachment will be sent as a separate message, as soon as the upload is complete.
+
+| Type    | Default |
+| ------- | ------- |
+| boolean | false   |
 
 ### setInputRef
 
-Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.html#callback-refs) on underlying TextInput component within enclosed MessageInput component.
+Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.html#callback-refs) on the underlying `TextInput` in [`MessageInput`](/reactnative/ui-components/message-input).
 
-| Type |
-| - |
-| `(ref) => void` |
+| Type     |
+| -------- |
+| function |
+
+| Parameter | Description          |
+| --------- | -------------------- |
+| ref       | ref of the TextInput |
+
+### stateUpdateThrottleInterval
+
+<StateUpdateThrottleInterval />
 
 ### supportedReactions
 
@@ -560,13 +650,14 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 <!-- ### t -->
 
 <!-- TODO: Needs help with english -->
+
 ### thread
 
 <Thread />
 
-### threadReply
+### threadList
 
-<ThreadReply />
+<ThreadList />
 
 <!-- ### updateSuggestions -->
 
@@ -666,17 +757,17 @@ you can simply use following props instead:
 - [`keyboardVerticalOffset`](#required-keyboardverticaloffset)
 - [`disableKeyboardCompatibleView`](#disablekeyboardcompatibleview)
 
-| Type | Default |
-|- -|- -|
-| Component, element | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
+| Type      | Default                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| component | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
 
 ### LoadingErrorIndicator
 
-UI component to render full screen error indicator, when channel fails to load.
+Component to render full screen error indicator, when channel fails to load.
 
-| Type | Default |
-|- -|- -|
-| Component, element | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Indicators/LoadingErrorIndicator.tsx) |
+| Type      | Default                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| component | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Indicators/LoadingErrorIndicator.tsx) |
 
 ### LoadingIndicator
 
@@ -703,6 +794,10 @@ UI component to render full screen error indicator, when channel fails to load.
 ### MessageHeader
 
 <MessageHeader />
+
+### MessagePinnedHeader
+
+<MessagePinnedHeader />
 
 <!-- ### MessageList -->
 
@@ -758,6 +853,10 @@ UI component to render full screen error indicator, when channel fails to load.
 
 <SendButton />
 
+### SendMessageDisallowedIndicator
+
+<SendMessageDisallowedIndicator />
+
 ### ShowThreadMessageInChannelButton
 
 <ShowThreadMessageInChannelButton />
@@ -774,11 +873,11 @@ UI component to render full screen error indicator, when channel fails to load.
 
 ### UploadProgressIndicator
 
-UI component to render upload progress indicator as an overlay above [ImageUploadPreview](#imageuploadpreview) and [FileUploadPreview](#fileuploadpreview).
+Component to render upload progress indicator as an overlay above [ImageUploadPreview](#imageuploadpreview) and [FileUploadPreview](#fileuploadpreview).
 
-| Type | Default |
-|- -|- -|
-| Component, element | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/UploadProgressIndicator.tsx) |
+| Type      | Default                                                                                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| component | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/UploadProgressIndicator.tsx) |
 
 ### UrlPreview
 

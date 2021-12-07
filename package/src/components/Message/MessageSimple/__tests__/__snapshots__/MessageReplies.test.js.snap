@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageReplies should render message replies 1`] = `
+<View
+  style={
+    Object {
+      "flexDirection": "row",
+    }
+  }
+>
+  <View
+    testID="message-replies-left"
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "borderColor": undefined,
+          },
+          Object {
+            "borderTopColor": "transparent",
+            "borderTopWidth": 0,
+            "borderWidth": 1,
+            "height": 16,
+            "width": 16,
+          },
+          Object {
+            "borderBottomLeftRadius": 16,
+            "borderRightColor": "transparent",
+          },
+          Object {},
+        ]
+      }
+    />
+    <View
+      style={
+        Array [
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "paddingTop": 2,
+          },
+          Object {},
+        ]
+      }
+    />
+  </View>
+  <View
+    accessible={true}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginTop": 8,
+        "opacity": 1,
+      }
+    }
+    testID="message-replies"
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "fontSize": 12,
+            "fontWeight": "700",
+            "paddingBottom": 5,
+            "paddingLeft": 8,
+          },
+          Object {
+            "color": "#005FFF",
+          },
+          Object {},
+        ]
+      }
+    >
+      1 Thread Reply
+    </Text>
+  </View>
+</View>
+`;

@@ -1,0 +1,219 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgressIndicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="active-upload-progress-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "opacity": 0,
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "bottom": 0,
+          "justifyContent": "center",
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    >
+      <ActivityIndicator
+        animating={true}
+        color="#F2F2F2"
+        hidesWhenStopped={true}
+        size="small"
+        testID="upload-progress-indicator"
+      />
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UploadProgressIndicator should render an active RETRY UploadProgressIndicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="active-upload-progress-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "opacity": 0,
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  >
+    <View
+      accessible={true}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "alignItems": "center",
+          "bottom": 0,
+          "justifyContent": "center",
+          "left": 0,
+          "opacity": 1,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    >
+      <RNSVGSvgView
+        align="xMidYMid"
+        bbHeight={18}
+        bbWidth={18}
+        focusable={false}
+        height={18}
+        meetOrSlice={0}
+        minX={0}
+        minY={0}
+        pathFill="#F2F2F2"
+        style={
+          Array [
+            Object {
+              "backgroundColor": "transparent",
+              "borderWidth": 0,
+            },
+            Object {
+              "flex": 0,
+              "height": 18,
+              "width": 18,
+            },
+          ]
+        }
+        testID="retry-upload-progress-indicator"
+        vbHeight={24}
+        vbWidth={24}
+        width={18}
+      >
+        <RNSVGGroup>
+          <RNSVGPath
+            clipRule={0}
+            d="M12.868 4.221a8 8 0 102.834 14.251 1 1 0 00-1.175-1.618A6 6 0 1112.4 6.166c1.31.314 2.52.803 3.31 2.12.154.254.266.485.348.708h-1.152a1 1 0 00-.81 1.585l2.375 3.291a1 1 0 001.621 0l2.376-3.291a1 1 0 00-.811-1.585h-1.509c-.128-.639-.377-1.24-.867-1.947a8 8 0 00-4.414-2.826z"
+            fill={4294111986}
+            fillRule={0}
+            propList={
+              Array [
+                "fill",
+                "fillRule",
+              ]
+            }
+          />
+        </RNSVGGroup>
+      </RNSVGSvgView>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UploadProgressIndicator should render an inactive IN_PROGRESS UploadProgressIndicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="inactive-upload-progress-indicator"
+/>
+`;
+
+exports[`UploadProgressIndicator should render an inactive RETRY UploadProgressIndicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="inactive-upload-progress-indicator"
+/>
+`;

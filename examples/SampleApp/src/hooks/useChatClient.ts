@@ -15,19 +15,16 @@ import type {
   LoginConfig,
 } from '../types';
 
-const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min)) + min;
-
 export const useChatClient = () => {
-  const [chatClient, setChatClient] =
-    useState<StreamChat<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    > | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  > | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
@@ -42,7 +39,7 @@ export const useChatClient = () => {
     >(config.apiKey, {
       timeout: 6000,
     });
-    const randomSeed = getRandomInt(1, 50);
+
     const user = {
       id: config.userId,
       image: config.userImage,
@@ -50,7 +47,6 @@ export const useChatClient = () => {
     };
 
     await client.connectUser(user, config.userToken);
-
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
     setChatClient(client);
@@ -81,14 +77,13 @@ export const useChatClient = () => {
     } catch (e) {
       console.warn(e);
     }
-
     setIsConnecting(false);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setChatClient(null);
-    chatClient?.disconnect();
-    AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
+    chatClient?.disconnectUser();
+    await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');
   };
 
   useEffect(() => {

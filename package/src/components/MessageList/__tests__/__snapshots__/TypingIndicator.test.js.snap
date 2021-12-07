@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TypingIndicator should match typing indicator snapshot 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "height": 24,
+        "justifyContent": "flex-start",
+      },
+      Object {
+        "backgroundColor": "#FCFCFCE6",
+      },
+      Object {},
+    ]
+  }
+  testID="typing-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "row",
+        },
+        Object {},
+        Object {
+          "marginLeft": 8,
+        },
+      ]
+    }
+  >
+    <View
+      animatedStyle={
+        Object {
+          "value": Object {
+            "opacity": -0.3333333333333333,
+          },
+        }
+      }
+      collapsable={false}
+      style={
+        Object {
+          "backgroundColor": "#000000",
+          "borderRadius": 2,
+          "height": 4,
+          "marginRight": 2,
+          "opacity": -0.3333333333333333,
+          "width": 4,
+        }
+      }
+    />
+    <View
+      animatedStyle={
+        Object {
+          "value": Object {
+            "opacity": 0.3333333333333333,
+          },
+        }
+      }
+      collapsable={false}
+      style={
+        Object {
+          "backgroundColor": "#000000",
+          "borderRadius": 2,
+          "height": 4,
+          "marginHorizontal": 2,
+          "opacity": 0.3333333333333333,
+          "width": 4,
+        }
+      }
+    />
+    <View
+      animatedStyle={
+        Object {
+          "value": Object {
+            "opacity": 1,
+          },
+        }
+      }
+      collapsable={false}
+      style={
+        Object {
+          "backgroundColor": "#000000",
+          "borderRadius": 2,
+          "height": 4,
+          "marginLeft": 2,
+          "opacity": 1,
+          "width": 4,
+        }
+      }
+    />
+  </View>
+  <Text
+    style={
+      Array [
+        Object {
+          "marginLeft": 8,
+        },
+        Object {
+          "color": "#7A7A7A",
+        },
+        Object {
+          "fontSize": 14,
+        },
+      ]
+    }
+  >
+    Grant and 1 more are typing
+  </Text>
+</View>
+`;

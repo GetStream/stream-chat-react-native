@@ -6,30 +6,15 @@ title: MessageStatus
 import MessageProp from '../common-content/contexts/message-context/message.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
 
-`MessageStatus` is a UI component which renders the read recipts for message. If the message is being sent (`message.status === 'pending'`), then it will render pending state icon.
-
-:::tip
-You can disable read recipts at all by using [`readEventsEnabled`](../core-components/channel.mdx#readeventsenabled) prop on `Channel` component.
-:::
-
-You can replace this default UI component using the `MessageStatus` prop on [Channel](../core-components/channel.mdx) component.
-
-```tsx
-<Channel MessageStatus={CustomMessageStatus} />
-```
+Component to render the status (read receipts, pending state indicator etc.) of a message within the [`MessageList`](./message_list.mdx).
+This is the default component provided to the prop [`MessageStatus`](../core-components/channel.mdx#messagestatus) on the `Channel` component.
 
 ## Props
 
-### message
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
 
 <MessageProp />
 
-<!-- ### readEventsEnabled -->
-
-### threadList
-
-_(Overrides the value from [MessageContext](../contexts/message_context.mdx))_
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
 
 <ThreadList />

@@ -1,8 +1,8 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
-
+import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
@@ -76,6 +76,18 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
+  const scrollRef = useRef<FlatList<
+    Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalEventType,
+      LocalReactionType,
+      LocalUserType
+    >
+  > | null>(null);
+
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -93,6 +105,8 @@ export const ChannelListScreen: React.FC = () => {
     [chatClientUserId],
   );
 
+  useScrollToTop(scrollRef);
+
   const EmptySearchIndicator = () => (
     <View style={styles.emptyIndicatorContainer}>
       <Search height={112} pathFill={grey_gainsboro} width={112} />
@@ -103,6 +117,22 @@ export const ChannelListScreen: React.FC = () => {
   );
 
   if (!chatClient) return null;
+
+  const setScrollRef = (
+    ref: React.RefObject<FlatList<
+      Channel<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalEventType,
+        LocalReactionType,
+        LocalUserType
+      >
+    > | null>,
+  ) => {
+    scrollRef.current = ref;
+  };
 
   return (
     <View
@@ -165,6 +195,7 @@ export const ChannelListScreen: React.FC = () => {
             loading={loading}
             loadMore={loadMore}
             messages={messages}
+            ref={scrollRef}
             refreshing={refreshing}
             refreshList={refreshList}
             showResultCount
@@ -182,12 +213,12 @@ export const ChannelListScreen: React.FC = () => {
               LocalUserType
             >
               additionalFlatListProps={{
-                keyboardDismissMode: 'on-drag',
                 getItemLayout: (_, index) => ({
                   index,
                   length: 65,
                   offset: 65 * index,
                 }),
+                keyboardDismissMode: 'on-drag',
               }}
               filters={filters}
               HeaderNetworkDownIndicator={() => null}
@@ -199,6 +230,7 @@ export const ChannelListScreen: React.FC = () => {
               }}
               options={options}
               Preview={ChannelPreview}
+              setFlatListRef={setScrollRef}
               sort={sort}
             />
           </View>

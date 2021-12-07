@@ -55,8 +55,8 @@ const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   return (
     <ScreenHeader
       inSafeArea
-      titleText='Thread Reply'
       subtitleText={typing ? typing : `with ${thread?.user?.name}`}
+      titleText='Thread Reply'
     />
   );
 };
@@ -93,6 +93,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         enforceUniqueReaction
         keyboardVerticalOffset={0}
         thread={thread}
+        threadList
       >
         <View style={styles.container}>
           <ThreadHeader thread={thread} />
