@@ -137,23 +137,21 @@ describe('ChannelList', () => {
   });
 
   it('should update if filters are updated while awaiting api call', async () => {
-    const deferredCall = new DeferredPromise();
-    jest
-      .spyOn(chatClient, 'queryChannels')
-      .mockImplementation()
-      .mockResolvedValue(async () => {
-        console.log('in spy');
-        return [testChannel2];
-      });
-
+    // const deferredCall = new DeferredPromise();
     // useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
-    const { getByTestId } = render(
+
+    jest.spyOn(chatClient, 'queryChannels').mockImplementation().mockResolvedValue([ testChannel2 ])
+    // useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+    const { debug, getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} />
       </Chat>,
     );
 
+
     await waitFor(() => {
+
+      debug("helloooo");
       expect(getByTestId('channel-list')).toBeTruthy();
       expect(getByTestId(testChannel2.channel.id)).toBeTruthy();
     });
@@ -166,7 +164,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} onSelect={setActiveChannel} />
-      </Chat>,
+      </Chat>
     );
 
     await waitFor(() => {

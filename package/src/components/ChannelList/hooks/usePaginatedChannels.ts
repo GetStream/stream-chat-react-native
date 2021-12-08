@@ -68,13 +68,19 @@ export const usePaginatedChannels = <
   const activeRequestId = useRef<number>(0)
 
   const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
+    console.log('Query channels');
     if (!client || !isMounted.current) return;
 
     const hasUpdatedData = () =>
       JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
       JSON.stringify(sortRef.current) !== JSON.stringify(sort)
 
+    /**
+     * We don't need to make another call to query channels if we don't
+     * have new data for the query to include
+     * */
     if (!hasUpdatedData) {
+
       if (loadingChannels || loadingNextPage || refreshing) return;
     }
 
@@ -103,6 +109,7 @@ export const usePaginatedChannels = <
         skipInitialization: activeChannels.current,
       });
 
+      console.log({ Rez: channelQueryResponse })
       if (activeRequestId.current !== currentRequestId) {
         return;
       }
