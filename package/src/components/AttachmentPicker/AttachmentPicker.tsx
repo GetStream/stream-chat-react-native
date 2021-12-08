@@ -75,7 +75,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
-      colors: { overlay },
+      colors: { overlay, white },
     },
   } = useTheme();
 
@@ -101,7 +101,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         )}
         {type === 'video' && (
           <View style={styles.videoView}>
-            <Video height={20} pathFill={'#fff'} width={25} />
+            <Video height={20} pathFill={white} width={25} />
             {videoDuration ? (
               <Text style={styles.timeColor}>
                 {(videoDuration / 60).toFixed(0) +
