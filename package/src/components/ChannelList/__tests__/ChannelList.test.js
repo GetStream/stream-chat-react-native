@@ -30,7 +30,7 @@ import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsCo
  * We are gonna use following custom UI components for preview and list.
  * If we use ChannelPreviewMessenger or ChannelPreviewLastMessage here, then changes
  * to those components might end up breaking tests for ChannelList, which will be quite painful
- * to debug then.
+ * to debug.
  */
 const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
   <View accessibilityRole='list-item' onPress={setActiveChannel} testID={channel.id}>
@@ -55,6 +55,15 @@ const ChannelListComponent = (props) => {
   );
 };
 
+class DeferredPromise {
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
 describe('ChannelList', () => {
   let chatClient;
   let testChannel1;
@@ -67,6 +76,7 @@ describe('ChannelList', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     chatClient = await getTestClientWithUser({ id: 'dan' });
     testChannel1 = generateChannel();
     testChannel2 = generateChannel();
@@ -122,6 +132,29 @@ describe('ChannelList', () => {
     );
 
     await waitFor(() => {
+      expect(getByTestId(testChannel2.channel.id)).toBeTruthy();
+    });
+  });
+
+  it('should update if filters are updated while awaiting api call', async () => {
+    const deferredCall = new DeferredPromise();
+    jest
+      .spyOn(chatClient, 'queryChannels')
+      .mockImplementation()
+      .mockResolvedValue(async () => {
+        console.log('in spy');
+        return [testChannel2];
+      });
+
+    // useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} />
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('channel-list')).toBeTruthy();
       expect(getByTestId(testChannel2.channel.id)).toBeTruthy();
     });
   });

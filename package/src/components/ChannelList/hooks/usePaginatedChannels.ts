@@ -74,7 +74,6 @@ export const usePaginatedChannels = <
       JSON.stringify(filtersRef.current) !== JSON.stringify(filters) ||
       JSON.stringify(sortRef.current) !== JSON.stringify(sort)
 
-
     if (!hasUpdatedData) {
       if (loadingChannels || loadingNextPage || refreshing) return;
     }
