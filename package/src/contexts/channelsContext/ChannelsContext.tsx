@@ -16,6 +16,7 @@ import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPre
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
+import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -67,7 +68,7 @@ export type ChannelsContextValue<
   /**
    * Error in channels query, if any
    */
-  error: boolean | Error;
+  error?: Error;
   /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
@@ -121,7 +122,7 @@ export type ChannelsContextValue<
   /**
    * Loads the next page of `channels`, which is present as a required prop
    */
-  loadNextPage: ((queryType?: string, retryCount?: number) => Promise<void>) | undefined;
+  loadNextPage: QueryChannels | undefined;
   /**
    * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
    */
