@@ -93,6 +93,18 @@ export const useMessageDetailsForState = <
             state: 'finished',
             url: attachment.image_url || attachment.asset_url || attachment.thumb_url,
           });
+        } else if (attachment.type === 'video') {
+          const id = generateRandomId();
+          newFileUploads.push({
+            file: {
+              name: attachment.title || '',
+              size: attachment.file_size,
+              type: attachment.mime_type,
+            },
+            id,
+            state: 'finished',
+            url: attachment.asset_url,
+          });
         }
       }
       if (newFileUploads.length) {
