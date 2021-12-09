@@ -59,7 +59,7 @@ const getChannelDefaults = ({ id, type } = { id: uuidv4(), type: 'messaging' }) 
     config: {
       ...defaultConfig,
       name: type,
-      type: type,
+      type,
     },
     created_at: '2020-04-28T11:20:48.578147Z',
     created_by: getUserDefaults(),
@@ -98,8 +98,8 @@ export const generateChannelResponse = (
       ...{
         cid: `${type}:${id}`,
         ...channel,
-        id: id,
-        type: type,
+        id,
+        type,
         user: generateUser(),
       },
     },

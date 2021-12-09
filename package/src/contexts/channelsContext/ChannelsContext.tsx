@@ -66,10 +66,6 @@ export type ChannelsContextValue<
    * */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
-   * Error in channels query, if any
-   */
-  error?: Error;
-  /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
    * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListFooterLoadingIndicator)
@@ -175,6 +171,10 @@ export type ChannelsContextValue<
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/v3/#skeleton)
    */
   Skeleton: React.ComponentType;
+  /**
+   * Error in channels query, if any
+   */
+  error?: Error;
   ListHeaderComponent?: React.ComponentType;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components

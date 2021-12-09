@@ -30,7 +30,6 @@ describe('Message', () => {
       members,
       messages,
     });
-    console.log(members)
 
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);

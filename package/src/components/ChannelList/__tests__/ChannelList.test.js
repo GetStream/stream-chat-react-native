@@ -90,7 +90,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
@@ -102,7 +102,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => expect(getByTestId(testChannel1.channel.id)).toBeTruthy());
@@ -114,7 +114,7 @@ describe('ChannelList', () => {
     const { getByTestId, rerender } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -127,7 +127,7 @@ describe('ChannelList', () => {
     rerender(
       <Chat client={chatClient}>
         <ChannelList {...props} filters={{ dummyFilter: true }} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -154,7 +154,7 @@ describe('ChannelList', () => {
     const { getByTestId, rerender } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} filters={staleFilter} />
-      </Chat>
+      </Chat>,
     );
 
     expect(spy).toHaveBeenCalledWith(
@@ -171,7 +171,7 @@ describe('ChannelList', () => {
     rerender(
       <Chat client={chatClient}>
         <ChannelList {...props} filters={freshFilter} />
-      </Chat>
+      </Chat>,
     );
 
     expect(spy).toHaveBeenCalledWith(
@@ -197,7 +197,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} onSelect={setActiveChannel} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -229,7 +229,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId, getByText } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
@@ -251,7 +251,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId, getByText } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} lockChannelOrder={true} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -284,7 +284,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -309,7 +309,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onMessageNew={onMessageNew} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -336,7 +336,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -361,7 +361,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -385,7 +385,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -410,7 +410,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -434,7 +434,7 @@ describe('ChannelList', () => {
         const { getByTestId, getByText } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -458,7 +458,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -487,7 +487,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -512,7 +512,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -536,7 +536,7 @@ describe('ChannelList', () => {
         const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -561,7 +561,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onChannelHidden={onChannelHidden} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -584,7 +584,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -606,7 +606,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -630,7 +630,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
@@ -660,7 +660,7 @@ describe('ChannelList', () => {
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
-          </Chat>
+          </Chat>,
         );
 
         await waitFor(() => {
