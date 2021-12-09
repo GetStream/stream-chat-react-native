@@ -56,6 +56,12 @@ export const ProgressIndicatorTypes: {
   RETRY: 'retry',
 });
 
+export const MessageStatusTypes = {
+  FAILED: 'failed',
+  RECEIVED: 'received',
+  SENDING: 'sending',
+};
+
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {
   filters: {},

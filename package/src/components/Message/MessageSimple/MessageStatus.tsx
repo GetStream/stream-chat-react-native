@@ -11,6 +11,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -69,7 +70,7 @@ const MessageStatusWithContext = <
     },
   } = useTheme();
 
-  if (message.status === 'sending') {
+  if (message.status === MessageStatusTypes.SENDING) {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='sending-container'>
         <Time {...timeIcon} />
@@ -97,7 +98,11 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (message.status === 'received' && message.type !== 'ephemeral' && !threadList) {
+  if (
+    message.status === MessageStatusTypes.RECEIVED &&
+    message.type !== 'ephemeral' &&
+    !threadList
+  ) {
     return (
       <View style={[styles.statusContainer, statusContainer]} testID='delivered-container'>
         <Check pathFill={grey_dark} {...checkIcon} />

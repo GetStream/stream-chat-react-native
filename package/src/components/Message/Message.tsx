@@ -45,7 +45,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { triggerHaptic } from '../../native';
-import { emojiRegex } from '../../utils/utils';
+import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
 
 import type { Attachment } from 'stream-chat';
 
@@ -288,7 +288,8 @@ const MessageWithContext = <
     },
   } = useTheme();
 
-  const actionsEnabled = message.type === 'regular' && message.status === 'received';
+  const actionsEnabled =
+    message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
@@ -312,7 +313,9 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
+  const onPress = (
+    error = message.type === 'error' || message.status === MessageStatusTypes.FAILED,
+  ) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
@@ -454,6 +457,7 @@ const MessageWithContext = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -492,6 +496,7 @@ const MessageWithContext = <
     message,
     onThreadSelect,
     openThread,
+    removeMessage,
     retrySendMessage,
     selectReaction,
     setEditingState,
@@ -504,7 +509,7 @@ const MessageWithContext = <
 
   const showMessageOverlay = async (
     messageReactions = false,
-    error = message.type === 'error' || message.status === 'failed',
+    error = message.type === 'error' || message.status === MessageStatusTypes.FAILED,
   ) => {
     await dismissKeyboard();
 

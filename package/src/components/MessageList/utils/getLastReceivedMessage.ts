@@ -1,3 +1,5 @@
+import { MessageStatusTypes } from '../../../utils/utils';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,7 +27,10 @@ export const getLastReceivedMessage = <
    * There are no status on dates so they will be skipped
    */
   for (const message of messages) {
-    if (message?.status === 'received' || message?.status === 'sending') {
+    if (
+      message?.status === MessageStatusTypes.RECEIVED ||
+      message?.status === MessageStatusTypes.SENDING
+    ) {
       return message;
     }
   }

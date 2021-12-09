@@ -20,7 +20,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { Error } from '../../../icons';
-import { vw } from '../../../utils/utils';
+import { MessageStatusTypes, vw } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -201,7 +201,7 @@ const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 

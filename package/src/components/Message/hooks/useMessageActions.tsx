@@ -22,6 +22,9 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
+
+import { MessageStatusTypes } from '../../../utils/utils';
+
 import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
@@ -64,6 +67,7 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
+  removeMessage,
   retrySendMessage,
   selectReaction,
   setEditingState,
@@ -85,6 +89,7 @@ export const useMessageActions = <
   | 'handleRetry'
   | 'handleReaction'
   | 'handleThreadReply'
+  | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -119,6 +124,7 @@ export const useMessageActions = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -126,7 +132,7 @@ export const useMessageActions = <
     updateMessage,
   });
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const onOpenThread = () => {
     if (onThreadSelect) {

@@ -110,7 +110,7 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
-import { generateRandomId, ReactionData } from '../../utils/utils';
+import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
@@ -1019,11 +1019,13 @@ const ChannelWithContext = <
         } as unknown as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
       const failedMessages = messages
-        .filter((message) => message.status === 'failed')
+        .filter((message) => message.status === MessageStatusTypes.FAILED)
         .map(parseMessage);
 
       const failedThreadMessages = thread
-        ? threadMessages.filter((message) => message.status === 'failed').map(parseMessage)
+        ? threadMessages
+            .filter((message) => message.status === MessageStatusTypes.FAILED)
+            .map(parseMessage)
         : [];
 
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
@@ -1250,7 +1252,7 @@ const ChannelWithContext = <
         })) || [],
       parent_id,
       reactions: [],
-      status: 'sending',
+      status: MessageStatusTypes.SENDING,
       text,
       type: 'regular',
       user: {
@@ -1329,7 +1331,7 @@ const ChannelWithContext = <
         messageResponse = await channel.sendMessage(messageData);
       }
       if (messageResponse.message) {
-        messageResponse.message.status = 'received';
+        messageResponse.message.status = MessageStatusTypes.RECEIVED;
         if (retrying) {
           replaceMessage(message, messageResponse.message);
         } else {
@@ -1338,7 +1340,7 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.log(err);
-      message.status = 'failed';
+      message.status = MessageStatusTypes.FAILED;
       updateMessage(message);
     }
   };
@@ -1370,7 +1372,7 @@ const ChannelWithContext = <
     async (message) => {
       const statusPendingMessage = {
         ...message,
-        status: 'sending',
+        status: MessageStatusTypes.SENDING,
       };
 
       updateMessage(statusPendingMessage);
@@ -1408,7 +1410,7 @@ const ChannelWithContext = <
 
     const oldestMessage = messages && messages[0];
 
-    if (oldestMessage && oldestMessage.status !== 'received') {
+    if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
       return setLoadingMore(false);
     }
 
@@ -1452,7 +1454,7 @@ const ChannelWithContext = <
 
     const recentMessage = messages[messages.length - 1];
 
-    if (recentMessage?.status !== 'received') {
+    if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
       setLoadingMoreRecent(false);
       return;
     }
