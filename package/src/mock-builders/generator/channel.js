@@ -1,74 +1,84 @@
 import { v4 as uuidv4 } from 'uuid';
+import { getUserDefaults } from './user';
 
-export const generateChannel = (options = { channel: {} }) => {
-  const { channel: optionsChannel, ...optionsBesidesChannel } = options;
-  const id = (optionsChannel && optionsChannel.id) || uuidv4();
-  const type = (optionsChannel && optionsChannel.type) || 'messaging';
+const defaultCapabilities = [
+        "ban-channel-members",
+        "delete-any-message",
+        "delete-own-message",
+        "flag-message",
+        "mute-channel",
+        "pin-message",
+        "quote-message",
+        "read-events",
+        "send-links",
+        "send-message",
+        "send-reaction",
+        "send-reply",
+        "typing-events",
+        "update-any-message",
+        "update-own-message",
+        "upload-file"
+      ];
+
+const defaultConfig = {
+        "automod": "disabled",
+        "automod_behavior": "flag",
+        "commands": [
+          { "args": "[text]", "description": "Post a random gif to the channel", "name": "giphy", "set": "fun_set" }
+        ],
+        "connect_events": true,
+        "created_at": "2020-04-24T11:36:43.859020368Z",
+        "max_message_length": 5000,
+        "message_retention": "infinite",
+        "mutes": true,
+        "name": "Channel name",
+        "reactions": true,
+        "read_events": true,
+        "replies": true,
+        "search": true,
+        "typing_events": true,
+        "updated_at": "2020-04-24T11:36:43.859022903Z",
+        "uploads": true, "url_enrichment": true
+      }
+
+const getChannelDefaults = ({ id, type } = { id: uuidv4(), type: 'messaging'}) => {
+  return {
+    "_client": {},
+    "type": type,
+    "id": id,
+    "data": {
+      "cid": "${type}:${id}",
+      "config": {
+        ...defaultConfig,
+        name: type,
+      },
+      "created_at": "2020-04-28T11:20:48.578147Z",
+      "created_by": getUserDefaults(),
+      "frozen": false,
+      "id": id,
+      "own_capabilities": defaultCapabilities,
+      "type": type,
+      "updated_at": "2020-04-28T11:20:48.578147Z"
+    }
+  }}
+
+export const generateChannel = (customValues) => ({
+    ...getChannelDefaults(), ...customValues
+});
+
+export const generateChannelResponse = (options = { id: uuidv4(), type: 'messaging', channel: {}}) => {
+  const { id = uuidv4(), type = 'messaging', channel = {}, ...rest } = options;
+
+  const defaults = getChannelDefaults();
   return {
     channel: {
-      cid: `${type}:${id}`,
-      config: {
-        automod: 'disabled',
-        automod_behavior: 'flag',
-        commands: [
-          {
-            args: '[text]',
-            description: 'Post a random gif to the channel',
-            name: 'giphy',
-            set: 'fun_set',
-          },
-        ],
-        connect_events: true,
-        created_at: '2020-04-24T11:36:43.859020368Z',
-        max_message_length: 5000,
-        message_retention: 'infinite',
-        mutes: true,
-        name: 'messaging',
-        reactions: true,
-        read_events: true,
-        replies: true,
-        search: true,
-        typing_events: true,
-        updated_at: '2020-04-24T11:36:43.859022903Z',
-        uploads: true,
-        url_enrichment: true,
-      },
-      created_at: '2020-04-28T11:20:48.578147Z',
-      created_by: {
-        banned: false,
-        created_at: '2020-04-27T13:05:13.847572Z',
-        id: 'vishal',
-        last_active: '2020-04-28T11:21:08.353026Z',
-        online: false,
-        role: 'user',
-        updated_at: '2020-04-28T11:21:08.357468Z',
-      },
-      frozen: false,
-      id,
-      own_capabilities: [
-        'ban-channel-members',
-        'delete-any-message',
-        'delete-own-message',
-        'flag-message',
-        'mute-channel',
-        'pin-message',
-        'quote-message',
-        'read-events',
-        'send-links',
-        'send-message',
-        'send-reaction',
-        'send-reply',
-        'typing-events',
-        'update-any-message',
-        'update-own-message',
-        'upload-file',
-      ],
-      type,
-      updated_at: '2020-04-28T11:20:48.578147Z',
-      ...optionsChannel,
+      ...defaults.data, ...{
+        cid: `${type}:${id}`,
+        ...channel,
+      }
     },
     members: [],
     messages: [],
-    ...optionsBesidesChannel,
-  };
+    ...rest
+  }
 };

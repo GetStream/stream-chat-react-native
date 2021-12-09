@@ -13,7 +13,7 @@ import { FileState } from '../../../utils/utils';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -39,7 +39,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -114,7 +114,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -191,7 +191,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -273,7 +273,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
