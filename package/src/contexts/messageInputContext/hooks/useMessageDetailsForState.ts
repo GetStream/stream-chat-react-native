@@ -41,12 +41,7 @@ export const useMessageDetailsForState = <
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
-  const [mentionedUsers, setMentionedUsers] = useState(
-    (!isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
-      Array.isArray(message?.mentioned_users) &&
-      message.mentioned_users.map((user) => user.id)) ||
-      [],
-  );
+  const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const initialTextValue = initialValue || '';
@@ -57,6 +52,16 @@ export const useMessageDetailsForState = <
       setShowMoreOptions(false);
     }
   }, [text]);
+
+  useEffect(() => {
+    if (
+      !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
+      Array.isArray(message?.mentioned_users)
+    ) {
+      const mentionedUsers = message.mentioned_users.map((user) => user.id);
+      setMentionedUsers(mentionedUsers);
+    }
+  }, [message]);
 
   const messageValue =
     typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
