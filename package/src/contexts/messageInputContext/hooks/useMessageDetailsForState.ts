@@ -53,6 +53,9 @@ export const useMessageDetailsForState = <
     }
   }, [text]);
 
+  const messageValue =
+    typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
+
   useEffect(() => {
     if (
       !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
@@ -61,10 +64,8 @@ export const useMessageDetailsForState = <
       const mentionedUsers = message.mentioned_users.map((user) => user.id);
       setMentionedUsers(mentionedUsers);
     }
-  }, [message]);
+  }, [messageValue]);
 
-  const messageValue =
-    typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       setText(message?.text || '');
