@@ -2,7 +2,9 @@ import type { LiteralStringForUnion } from 'stream-chat';
 
 export type DefaultAttachmentType = UnknownType & {
   file_size?: number | string;
+  height?: number;
   mime_type?: string;
+  width?: number;
 };
 
 export type DefaultChannelType = UnknownType & {

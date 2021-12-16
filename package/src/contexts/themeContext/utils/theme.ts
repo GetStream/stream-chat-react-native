@@ -399,15 +399,18 @@ export type Theme = {
       container: ViewStyle;
     };
     gallery: {
+      defaultHeight: number;
+      defaultWidth: number;
       galleryContainer: ViewStyle;
       galleryItemColumn: ViewStyle;
-      halfSize: ViewStyle['height'];
       image: ImageStyle;
       imageContainer: ViewStyle;
+      maxHeight: number;
+      maxWidth: number;
+      minHeight: number;
+      minWidth: number;
       moreImagesContainer: ViewStyle;
       moreImagesText: TextStyle;
-      size: ViewStyle['height'];
-      width: ViewStyle['width'];
     };
     giphy: {
       cancel: TextStyle;
@@ -882,15 +885,18 @@ export const defaultTheme: Theme = {
       container: {},
     },
     gallery: {
+      defaultHeight: 195,
+      defaultWidth: 256,
       galleryContainer: {},
       galleryItemColumn: {},
-      halfSize: 100,
       image: {},
       imageContainer: {},
+      maxHeight: 300,
+      maxWidth: 256,
+      minHeight: 100,
+      minWidth: 170,
       moreImagesContainer: {},
       moreImagesText: {},
-      size: 200,
-      width: 250,
     },
     giphy: {
       cancel: {},

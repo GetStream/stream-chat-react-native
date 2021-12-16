@@ -65,6 +65,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const isAndroid = Platform.OS === 'android';
 const fullScreenHeight = Dimensions.get('screen').height;
@@ -136,7 +137,7 @@ type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomCompone
 };
 
 export const ImageGallery = <
-  At extends UnknownType = DefaultAttachmentType,
+  At extends DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
@@ -160,6 +161,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
+  const [gridPhotos, setGridPhotos] = useState<Photo<Us>[]>([]);
   const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -347,17 +349,23 @@ export const ImageGallery = <
           (attachment.image_url || attachment.thumb_url),
       ) || [];
 
-    const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
+    const attachmentPhotos = attachmentImages.map((a) => ({
       channelId: cur.cid,
       created_at: cur.created_at,
-      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
+      height: a.height,
+      id: `photoId-${cur.id}-${a.image_url || a.thumb_url}`,
       messageId: cur.id,
-      uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
+      uri: getResizedImageUrl({
+        height: screenHeight,
+        image: a,
+        width: screenWidth,
+      }),
       user: cur.user,
       user_id: cur.user_id,
+      width: a.width,
     }));
 
-    return [...acc, ...attachmentPhotos];
+    return [...acc, ...attachmentPhotos] as Photo<Us>[];
   }, []);
 
   /**
@@ -398,8 +406,16 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    if (photos[index.value]?.uri) {
-      Image.getSize(photos[index.value].uri, (width, height) => {
+    const photo = photos[index.value];
+    const height = photo?.height;
+    const width = photo?.width;
+
+    if (height && width) {
+      const imageHeight = Math.floor(height * (screenWidth / width));
+      setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+    } else if (photo?.uri) {
+      console.log('Fetching image dimensions', photo);
+      Image.getSize(photo.uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
         setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
       });
@@ -1043,11 +1059,13 @@ export const ImageGallery = <
   const closeGridView = () => {
     if (bottomSheetRef.current) {
       bottomSheetRef.current.close();
+      setGridPhotos([]);
     }
   };
   const openGridView = () => {
     if (bottomSheetRef.current) {
       bottomSheetRef.current.snapTo(1);
+      setGridPhotos(photos);
     }
   };
 
@@ -1171,7 +1189,7 @@ export const ImageGallery = <
         <ImageGrid
           closeGridView={closeGridView}
           numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-          photos={photos}
+          photos={gridPhotos}
           resetVisibleValues={resetVisibleValues}
           setImage={setImage}
           {...imageGalleryCustomComponents?.grid}
@@ -1201,9 +1219,11 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
   uri: string;
   channelId?: string;
   created_at?: string | Date;
+  height?: number;
   messageId?: string;
   user?: UserResponse<Us> | null;
   user_id?: string;
+  width?: number;
 };
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

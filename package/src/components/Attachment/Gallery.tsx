@@ -1,13 +1,5 @@
-import React, { useState } from 'react';
-import {
-  Image,
-  ImageProps,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useMemo } from 'react';
+import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   ImageGalleryContextValue,
@@ -39,27 +31,21 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getGallery } from './utils/getGallery';
+import { getGalleryImageStyles } from './utils/getGalleryStyles';
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {
-    height: number | string;
     uri: string;
   }
 > = (props) => {
-  const { height, uri, ...rest } = props;
-
-  const [error, setError] = useState(false);
+  const { uri, ...rest } = props;
 
   return (
     <Image
       {...rest}
-      onError={() => setError(true)}
       source={{
-        uri: uri.includes('&h=%2A')
-          ? error
-            ? uri
-            : uri.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`)
-          : uri,
+        uri: makeImageCompatibleUrl(uri),
       }}
       testID='image-attachment-single'
     />
@@ -69,7 +55,6 @@ const GalleryImage: React.FC<
 const MemoizedGalleryImage = React.memo(
   GalleryImage,
   (prevProps, nextProps) =>
-    prevProps.height === nextProps.height &&
     getUrlWithoutParams(prevProps.uri) === getUrlWithoutParams(nextProps.uri),
 ) as typeof GalleryImage;
 
@@ -82,7 +67,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { flex: 1, padding: 1 },
+  imageContainer: { padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -172,181 +157,174 @@ const GalleryWithContext = <
       colors: { overlay },
       messageSimple: {
         gallery: {
+          defaultHeight,
+          defaultWidth,
           galleryContainer,
           galleryItemColumn,
-          halfSize,
           image,
           imageContainer,
+          maxHeight,
+          maxWidth,
+          minHeight,
+          minWidth,
           moreImagesContainer,
           moreImagesText,
-          size,
-          width,
         },
       },
     },
   } = useTheme();
 
+  // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
+  const { height, invertedDirections, thumbnailGrid, width } = useMemo(
+    () =>
+      getGallery({
+        images,
+        sizeConfig: {
+          defaultHeight,
+          defaultWidth,
+          maxHeight,
+          maxWidth,
+          minHeight,
+          minWidth,
+        },
+      }),
+    [images.length],
+  );
+
   if (!images?.length) return null;
 
-  // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
-  const galleryImages = images.slice(0, 4).reduce((returnArray, currentImage, index) => {
-    const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
-    if (attachmentUrl) {
-      const url = makeImageCompatibleUrl(attachmentUrl);
-      if (images.length <= 2) {
-        returnArray[0] = [...(returnArray[0] || []), { height: size || 200, url }];
-      } else if (images.length === 3) {
-        if (index === 0) {
-          returnArray[0] = [{ height: size || 200, url }];
-        } else {
-          returnArray[1] = [...(returnArray[1] || []), { height: halfSize || 100, url }];
-        }
-      } else {
-        returnArray[index % 2] = [
-          ...(returnArray[index % 2] || []),
-          { height: halfSize || 100, url },
-        ];
-      }
-    }
-    return returnArray;
-  }, [] as { height: number | string; url: string }[][]);
-
-  const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
   const messageText = messageTextProp || message?.text;
+  const numOfColumns = thumbnailGrid.length;
 
   return (
     <View
       style={[
         styles.galleryContainer,
         {
+          height,
           width,
         },
         galleryContainer,
+        {
+          flexDirection: invertedDirections ? 'column' : 'row',
+        },
       ]}
       testID='image-multiple-container'
     >
-      {galleryImages.map((column, colIndex) => (
-        <View
-          key={`gallery-item-column-${colIndex}`}
-          style={[
-            styles.flex,
-            {
-              flexDirection: images.length === 2 ? 'row' : 'column',
-            },
-            galleryItemColumn,
-          ]}
-        >
-          {column.map(({ height, url }, rowIndex) => {
-            const defaultOnPress = () => {
-              // Added if-else to keep the logic readable, instead of DRY.
-              // if - legacyImageViewerSwipeBehaviour is disabled
-              // else - legacyImageViewerSwipeBehaviour is enabled
-              if (!legacyImageViewerSwipeBehaviour && message) {
-                setImages([message]);
-                setImage({ messageId: messageId || message.id, url });
-                setOverlay('gallery');
-              } else if (legacyImageViewerSwipeBehaviour) {
-                setImage({ messageId: messageId || message?.id, url });
-                setOverlay('gallery');
-              }
-            };
+      {thumbnailGrid.map((column, colIndex) => {
+        const numOfRows = column.length;
+        return (
+          <View
+            key={`gallery-item-column-${colIndex}`}
+            style={[
+              {
+                flexDirection: invertedDirections ? 'row' : 'column',
+              },
+              galleryItemColumn,
+            ]}
+          >
+            {column.map(({ height, resizeMode, url, width }, rowIndex) => {
+              const defaultOnPress = () => {
+                // Added if-else to keep the logic readable, instead of DRY.
+                // if - legacyImageViewerSwipeBehaviour is disabled
+                // else - legacyImageViewerSwipeBehaviour is enabled
+                if (!legacyImageViewerSwipeBehaviour && message) {
+                  setImages([message]);
+                  setImage({ messageId: messageId || message.id, url });
+                  setOverlay('gallery');
+                } else if (legacyImageViewerSwipeBehaviour) {
+                  setImage({ messageId: messageId || message?.id, url });
+                  setOverlay('gallery');
+                }
+              };
 
-            return (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                disabled={preventPress}
-                key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
-                onLongPress={(event) => {
-                  if (onLongPress) {
-                    onLongPress({
-                      emitter: 'gallery',
-                      event,
-                    });
-                  }
-                }}
-                onPress={(event) => {
-                  if (onPress) {
-                    onPress({
-                      defaultHandler: defaultOnPress,
-                      emitter: 'gallery',
-                      event,
-                    });
-                  }
-                }}
-                onPressIn={(event) => {
-                  if (onPressIn) {
-                    onPressIn({
-                      defaultHandler: defaultOnPress,
-                      emitter: 'gallery',
-                      event,
-                    });
-                  }
-                }}
-                style={[
-                  styles.imageContainer,
-                  {
-                    height,
-                  },
-                  imageContainer,
-                ]}
-                testID='image-multiple'
-                {...additionalTouchableProps}
-              >
-                <MemoizedGalleryImage
-                  height={height}
-                  resizeMode='cover'
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  disabled={preventPress}
+                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
+                  onLongPress={(event) => {
+                    if (onLongPress) {
+                      onLongPress({
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
+                  onPress={(event) => {
+                    if (onPress) {
+                      onPress({
+                        defaultHandler: defaultOnPress,
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
+                  onPressIn={(event) => {
+                    if (onPressIn) {
+                      onPressIn({
+                        defaultHandler: defaultOnPress,
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
                   style={[
-                    styles.flex,
+                    styles.imageContainer,
                     {
-                      borderBottomLeftRadius:
-                        (images.length === 1 ||
-                          (images.length === 2 && rowIndex === 0) ||
-                          (images.length === 3 && colIndex === 0 && rowIndex === 0) ||
-                          (images.length === 4 && colIndex === 0 && rowIndex === 1)) &&
-                        !messageText &&
-                        ((groupStyle !== 'left_bottom' && groupStyle !== 'left_single') ||
-                          (hasThreadReplies && !threadList))
-                          ? 14
-                          : 0,
-                      borderBottomRightRadius:
-                        (images.length === 1 ||
-                          (colIndex === 1 && (images.length === 2 || rowIndex === 1))) &&
-                        !messageText &&
-                        ((groupStyle !== 'right_bottom' && groupStyle !== 'right_single') ||
-                          (hasThreadReplies && !threadList))
-                          ? 14
-                          : 0,
-                      borderTopLeftRadius: colIndex === 0 && rowIndex === 0 ? 14 : 0,
-                      borderTopRightRadius:
-                        ((colIndex === 1 || images.length === 1) && rowIndex === 0) ||
-                        (images.length === 3 && colIndex === 0 && rowIndex === 1) ||
-                        (images.length === 2 && rowIndex === 1)
-                          ? 14
-                          : 0,
+                      height,
+                      width,
                     },
-                    image,
+                    imageContainer,
                   ]}
-                  uri={url}
-                />
-                {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
-                  <View
+                  testID='image-multiple'
+                  {...additionalTouchableProps}
+                >
+                  <MemoizedGalleryImage
+                    resizeMode={resizeMode}
                     style={[
-                      StyleSheet.absoluteFillObject,
-                      styles.moreImagesContainer,
-                      { backgroundColor: overlay },
-                      moreImagesContainer,
+                      getGalleryImageStyles({
+                        alignment,
+                        colIndex,
+                        groupStyles,
+                        hasThreadReplies,
+                        invertedDirections,
+                        messageText,
+                        numOfColumns,
+                        numOfRows,
+                        rowIndex,
+                        threadList,
+                      }),
+                      image,
+                      {
+                        height: height - 1,
+                        width: width - 1,
+                      },
                     ]}
-                  >
-                    <Text style={[styles.moreImagesText, moreImagesText]}>
-                      {`+${images.length - 3}`}
-                    </Text>
-                  </View>
-                ) : null}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      ))}
+                    uri={url}
+                  />
+                  {colIndex === numOfColumns - 1 &&
+                  rowIndex === numOfRows - 1 &&
+                  images.length > 4 ? (
+                    <View
+                      style={[
+                        StyleSheet.absoluteFillObject,
+                        styles.moreImagesContainer,
+                        { backgroundColor: overlay },
+                        moreImagesContainer,
+                      ]}
+                    >
+                      <Text style={[styles.moreImagesText, moreImagesText]}>
+                        {`+${images.length - 4}`}
+                      </Text>
+                    </View>
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        );
+      })}
     </View>
   );
 };

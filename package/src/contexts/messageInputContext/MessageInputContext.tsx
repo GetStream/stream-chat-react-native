@@ -669,8 +669,10 @@ export const MessageInputProvider = <
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
         attachments.push({
           fallback: image.file.name,
+          height: image.height,
           image_url: image.url,
           type: 'image',
+          width: image.width,
         } as Attachment<At>);
       }
     }
@@ -983,8 +985,10 @@ export const MessageInputProvider = <
             if (imageUpload.id === id) {
               return {
                 ...imageUpload,
+                height: file.height,
                 state: FileState.UPLOADED,
                 url: response.file,
+                width: file.width,
               };
             }
             return imageUpload;
