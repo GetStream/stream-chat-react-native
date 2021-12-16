@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ChannelPreviewProps } from './ChannelPreview';
+
+import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Check, CheckAll } from '../../icons';
-
-import type { ChannelPreviewProps } from './ChannelPreview';
-import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
 
 import type {
   DefaultAttachmentType,

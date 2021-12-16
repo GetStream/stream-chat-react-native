@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -26,9 +27,6 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -39,6 +37,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {

@@ -1,29 +1,30 @@
 import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
-import { Channel } from '../Channel';
-
-import { Attachment } from '../../Attachment/Attachment';
-import { Chat } from '../../Chat/Chat';
 
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
+
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
+import { Attachment } from '../../Attachment/Attachment';
+import { Chat } from '../../Chat/Chat';
+import { Channel } from '../Channel';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.

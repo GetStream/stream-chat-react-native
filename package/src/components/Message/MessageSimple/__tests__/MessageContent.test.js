@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
+
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { Message } from '../../Message';
-import { MessageContent } from '../../MessageSimple/MessageContent';
 
-import { Chat } from '../../../Chat/Chat';
-import { Channel } from '../../../Channel/Channel';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
@@ -18,6 +15,10 @@ import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateReaction } from '../../../../mock-builders/generator/reaction';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
+import { Channel } from '../../../Channel/Channel';
+import { Chat } from '../../../Chat/Chat';
+import { Message } from '../../Message';
+import { MessageContent } from '../../MessageSimple/MessageContent';
 
 describe('MessageContent', () => {
   let channel;

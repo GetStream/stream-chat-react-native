@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
+
+import type { StreamChat, Event as StreamEvent } from 'stream-chat';
+
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 import { NetInfo } from '../../../native';
-
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
-import type { StreamChat, Event as StreamEvent } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,

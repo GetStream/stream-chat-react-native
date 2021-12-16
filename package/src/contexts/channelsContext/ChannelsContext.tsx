@@ -1,9 +1,8 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { FlatListProps } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
+
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -26,6 +25,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelsContextValue<
   At extends UnknownType = DefaultAttachmentType,

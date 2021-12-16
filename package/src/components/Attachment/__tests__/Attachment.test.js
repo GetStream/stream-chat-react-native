@@ -1,9 +1,8 @@
 import React from 'react';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { Attachment } from '../Attachment';
-import { AttachmentActions } from '../AttachmentActions';
-
+import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAttachmentAction,
@@ -15,7 +14,9 @@ import {
   generateImgurAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import { Attachment } from '../Attachment';
+import { AttachmentActions } from '../AttachmentActions';
+
 
 const getAttachmentComponent = (props) => {
   const message = generateMessage();

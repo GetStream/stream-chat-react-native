@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { generateRandomId } from '../../../utils/utils';
-
-import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -14,6 +10,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { generateRandomId } from '../../../utils/utils';
+
+import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
   At extends UnknownType = DefaultAttachmentType,

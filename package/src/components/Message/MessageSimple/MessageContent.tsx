@@ -20,8 +20,6 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { Error } from '../../../icons';
-import { vw } from '../../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -32,6 +30,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {

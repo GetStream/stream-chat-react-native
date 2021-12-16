@@ -3,16 +3,14 @@ import React, { useEffect, useState } from 'react';
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
-import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+import type { Channel } from 'stream-chat';
 
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-import type { Channel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -24,6 +22,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
 const styles = StyleSheet.create({
   flatList: { flex: 1 },

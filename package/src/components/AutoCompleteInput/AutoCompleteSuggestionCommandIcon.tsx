@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType } from '../../types/types';
 
 const styles = StyleSheet.create({

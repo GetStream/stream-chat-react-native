@@ -1,9 +1,11 @@
 import React from 'react';
 import { GestureResponderEvent, Linking, Text, View } from 'react-native';
-import anchorme from 'anchorme';
-import truncate from 'lodash/truncate';
+
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
+
+import anchorme from 'anchorme';
+import truncate from 'lodash/truncate';
 import {
   DefaultRules,
   defaultRules,
@@ -14,8 +16,8 @@ import {
   SingleASTNode,
 } from 'simple-markdown';
 
-import type { MessageType } from '../../../MessageList/hooks/useMessageList';
-
+import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
+import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,8 +28,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
-import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {

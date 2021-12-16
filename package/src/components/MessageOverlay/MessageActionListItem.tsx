@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vw } from '../../utils/utils';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 

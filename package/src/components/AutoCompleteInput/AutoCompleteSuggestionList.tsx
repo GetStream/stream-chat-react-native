@@ -1,5 +1,9 @@
 import React from 'react';
 import { FlatList, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+
+import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
+import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
+
 import {
   isSuggestionCommand,
   isSuggestionEmoji,
@@ -8,11 +12,8 @@ import {
   SuggestionsContextValue,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
-
-import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
-import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 type AutoCompleteSuggestionListComponentProps<
   Co extends string = DefaultCommandType,

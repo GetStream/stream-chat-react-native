@@ -9,13 +9,13 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-import type { Attachment } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,

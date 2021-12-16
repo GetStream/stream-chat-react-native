@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { SuggestionsProvider, useSuggestionsContext } from '../SuggestionsContext';
