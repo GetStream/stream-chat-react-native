@@ -1,17 +1,18 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { Chat } from '../Chat';
-
-import { Streami18n } from '../../../utils/Streami18n';
-
+import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
+
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient } from '../../../mock-builders/mock';
-import { setNetInfoFetchMock } from '../../../../jest-setup';
+import { Streami18n } from '../../../utils/Streami18n';
+import { Chat } from '../Chat';
 
 const ChatContextConsumer = ({ fn }) => {
   fn(useChatContext());

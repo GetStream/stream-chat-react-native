@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { MessageTextContainer } from '../MessageTextContainer';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -11,6 +11,7 @@ import {
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
+import { MessageTextContainer } from '../MessageTextContainer';
 
 afterEach(cleanup);
 

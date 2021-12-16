@@ -1,12 +1,13 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
+
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
-import { getDisplayName } from '../utils/getDisplayName';
 import type { AutoCompleteSuggestionHeaderProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionHeader';
-import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { Emoji } from '../../emoji-data/compiled';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type SuggestionComponentType = 'command' | 'emoji' | 'mention';
 

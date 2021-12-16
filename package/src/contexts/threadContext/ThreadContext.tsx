@@ -1,7 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { ChannelState } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
@@ -15,6 +13,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ThreadContextValue<
   At extends UnknownType = DefaultAttachmentType,

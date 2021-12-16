@@ -1,10 +1,11 @@
 import React from 'react';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { SendButton } from '../SendButton';
 
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { SendButton } from '../SendButton';
 
 describe('SendButton', () => {
   it('should render a non-editing enabled SendButton', async () => {

@@ -1,10 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
+import type { ImageStyle, StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { vw } from '../../../utils/utils';
-
-import type { ImageStyle, StyleProp } from 'react-native';
 
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);

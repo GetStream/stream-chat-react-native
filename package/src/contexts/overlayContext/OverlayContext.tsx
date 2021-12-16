@@ -1,14 +1,7 @@
 import React, { useContext } from 'react';
 import type Animated from 'react-native-reanimated';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
-
-import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
-import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
-import type { DeepPartial } from '../themeContext/ThemeContext';
-import type { Theme } from '../themeContext/utils/theme';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
@@ -24,6 +17,11 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
+import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
+import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
+import type { DeepPartial } from '../themeContext/ThemeContext';
+import type { Theme } from '../themeContext/utils/theme';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 

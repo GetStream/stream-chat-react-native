@@ -1,10 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import { ChannelPreview } from '../ChannelPreview';
 
-import { Chat } from '../../Chat/Chat';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -14,6 +13,8 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Chat } from '../../Chat/Chat';
+import { ChannelPreview } from '../ChannelPreview';
 
 const ChannelPreviewUIComponent = (props) => (
   <>

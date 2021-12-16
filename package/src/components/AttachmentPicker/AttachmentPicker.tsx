@@ -9,18 +9,19 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetHandleProps,
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
 
+import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
+
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Asset, getPhotos } from '../../native';
 import { vh, vw } from '../../utils/utils';
-
-import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
 
 const styles = StyleSheet.create({
   container: {

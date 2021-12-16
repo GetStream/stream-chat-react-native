@@ -9,7 +9,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
+
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -18,6 +18,7 @@ import {
   TapGestureHandler,
   TapGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
+
 import Animated, {
   cancelAnimation,
   Easing,
@@ -31,6 +32,10 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
+
+import BottomSheet from '@gorhom/bottom-sheet';
+
+import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import {
@@ -52,9 +57,6 @@ import { useImageGalleryContext } from '../../contexts/imageGalleryContext/Image
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import { vh, vw } from '../../utils/utils';
-
-import type { UserResponse } from 'stream-chat';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -65,6 +67,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { vh, vw } from '../../utils/utils';
 
 const isAndroid = Platform.OS === 'android';
 const fullScreenHeight = Dimensions.get('screen').height;

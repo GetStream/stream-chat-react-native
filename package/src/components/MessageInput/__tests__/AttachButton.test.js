@@ -1,9 +1,10 @@
 import React from 'react';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { AttachButton } from '../AttachButton';
 
-import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 describe('AttachButton', () => {
   it('should render an enabled AttachButton', async () => {

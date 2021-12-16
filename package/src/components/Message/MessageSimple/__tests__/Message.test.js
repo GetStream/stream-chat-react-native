@@ -1,20 +1,21 @@
 import React from 'react';
+
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { Message } from '../../Message';
-
-import { Chat } from '../../../Chat/Chat';
-import { Channel } from '../../../Channel/Channel';
-import { MessageInput } from '../../../MessageInput/MessageInput';
-
+import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+
+
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
-import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
+import { Channel } from '../../../Channel/Channel';
+import { Chat } from '../../../Chat/Chat';
+import { MessageInput } from '../../../MessageInput/MessageInput';
+import { Message } from '../../Message';
 
 describe('Message', () => {
   let channel;

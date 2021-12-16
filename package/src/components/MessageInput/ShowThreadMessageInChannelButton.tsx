@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Check } from '../../icons';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -12,6 +11,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { Check } from '../../icons';
 
 import type {
   DefaultAttachmentType,

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
-import Dayjs from 'dayjs';
+
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -8,32 +8,25 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
-import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
-import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
-import { ThemeProvider } from '../themeContext/ThemeContext';
-import {
-  TranslationContextValue,
-  TranslationProvider,
-} from '../translationContext/TranslationContext';
+import type BottomSheet from '@gorhom/bottom-sheet';
+import Dayjs from 'dayjs';
+
+import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
-import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
+
 import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
 import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
 import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
+import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
-
-import type BottomSheet from '@gorhom/bottom-sheet';
-
-import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
 import type {
   DefaultAttachmentType,
@@ -45,6 +38,14 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
+import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
+import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
+import { ThemeProvider } from '../themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  TranslationProvider,
+} from '../translationContext/TranslationContext';
 
 /**
  * - The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
