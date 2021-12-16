@@ -59,7 +59,27 @@
       }
     ],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "minKeys": 2, "natural": false }],
-    "valid-typeof": 2
+    "valid-typeof": 2,
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "sibling", "parent", "index", "object"],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react*"],
+        "newlines-between": "always-and-inside-groups",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-unresolved": ["error", { "ignore": ["types"] }]
   },
   "settings": {
     "import/resolver": {
