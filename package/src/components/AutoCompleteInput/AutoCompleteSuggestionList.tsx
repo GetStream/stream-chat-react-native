@@ -5,15 +5,13 @@ import {
   isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
+  SuggestionsContextValue,
+  useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 import type { AutoCompleteSuggestionHeaderProps } from './AutoCompleteSuggestionHeader';
 import type { AutoCompleteSuggestionItemProps } from './AutoCompleteSuggestionItem';
-import {
-  SuggestionsContextValue,
-  useSuggestionsContext,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 type AutoCompleteSuggestionListComponentProps<

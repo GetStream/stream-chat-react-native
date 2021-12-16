@@ -69,6 +69,7 @@
         "paths": ["src"]
       }
     },
+    "import/ignore": ["react-native"],
     "react": {
       "pragma": "React",
       "version": "detect"
@@ -94,6 +95,8 @@
       "extends": [
         "@react-native-community",
         "eslint:recommended",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
         "plugin:@typescript-eslint/recommended",
         "plugin:jest/recommended",
         "plugin:prettier/recommended",
