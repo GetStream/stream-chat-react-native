@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
-
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import {

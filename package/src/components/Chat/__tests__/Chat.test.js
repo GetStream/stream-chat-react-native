@@ -6,7 +6,6 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';

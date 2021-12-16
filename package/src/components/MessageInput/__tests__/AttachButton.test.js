@@ -5,7 +5,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { AttachButton } from '../AttachButton';
 
-
 describe('AttachButton', () => {
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();

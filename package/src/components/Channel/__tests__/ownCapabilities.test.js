@@ -3,7 +3,6 @@ import { FlatList } from 'react-native';
 
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';

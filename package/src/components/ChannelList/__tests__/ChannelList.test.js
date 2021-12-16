@@ -6,7 +6,6 @@ import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-libra
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
-
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';

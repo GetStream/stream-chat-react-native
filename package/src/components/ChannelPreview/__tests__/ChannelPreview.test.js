@@ -3,8 +3,6 @@ import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
-
-
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';

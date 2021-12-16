@@ -17,7 +17,6 @@ import { generateMessage } from '../../../mock-builders/generator/message';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
 
-
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (

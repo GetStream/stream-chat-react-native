@@ -2,9 +2,6 @@ import React from 'react';
 
 import { render, waitFor } from '@testing-library/react-native';
 
-
-
-
 import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';

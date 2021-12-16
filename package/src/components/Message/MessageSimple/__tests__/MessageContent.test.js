@@ -3,8 +3,6 @@ import { View } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-
-
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';

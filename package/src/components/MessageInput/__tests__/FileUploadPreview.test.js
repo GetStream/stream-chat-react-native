@@ -17,9 +17,6 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { FileUploadPreview } from '../FileUploadPreview';
 
-
-
-
 function MockedFlatList(props) {
   const items = props.data.map((item, index) => {
     const key = props.keyExtractor(item, index);

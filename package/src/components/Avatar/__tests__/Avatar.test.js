@@ -5,7 +5,6 @@ import { render, waitFor } from '@testing-library/react-native';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { Avatar } from '../Avatar';
 
-
 describe('Avatar', () => {
   it('should render an image with no name and default size', async () => {
     const { queryByTestId } = render(
