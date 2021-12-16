@@ -1,3 +1,4 @@
+/* global require */
 import { FlatList } from 'react-native';
 import { registerNativeHandlers } from './src/native';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
