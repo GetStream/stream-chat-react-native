@@ -2,7 +2,6 @@ import React from 'react';
 
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 

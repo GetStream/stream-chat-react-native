@@ -2,7 +2,6 @@ import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
 
-
 import frTranslations from '../../i18n/fr.json';
 import nlTranslations from '../../i18n/nl.json';
 import { Streami18n } from '../Streami18n';

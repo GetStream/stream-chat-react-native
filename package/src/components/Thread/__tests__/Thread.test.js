@@ -3,9 +3,6 @@ import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { v5 as uuidv5 } from 'uuid';
 
-
-
-
 import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';

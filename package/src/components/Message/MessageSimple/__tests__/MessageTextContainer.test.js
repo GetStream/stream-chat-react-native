@@ -3,7 +3,6 @@ import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {

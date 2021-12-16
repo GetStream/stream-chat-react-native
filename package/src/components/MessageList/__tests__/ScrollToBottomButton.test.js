@@ -2,7 +2,6 @@ import React from 'react';
 
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
