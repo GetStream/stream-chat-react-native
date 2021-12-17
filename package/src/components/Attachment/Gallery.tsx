@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { getGallery } from './utils/getGallery';
+import { buildGallery } from './utils/buildGallery';
 
 import { getGalleryImageStyles } from './utils/getGalleryStyles';
 
@@ -159,10 +159,10 @@ const GalleryWithContext = <
       colors: { overlay },
       messageSimple: {
         gallery: {
-          defaultHeight,
-          defaultWidth,
           galleryContainer,
           galleryItemColumn,
+          gridHeight,
+          gridWidth,
           image,
           imageContainer,
           maxHeight,
@@ -179,11 +179,11 @@ const GalleryWithContext = <
   // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
-      getGallery({
+      buildGallery({
         images,
         sizeConfig: {
-          defaultHeight,
-          defaultWidth,
+          gridHeight,
+          gridWidth,
           maxHeight,
           maxWidth,
           minHeight,

@@ -8,7 +8,7 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultAttachmentType } from '../../../types/types';
 
-export function getGallery<At extends DefaultAttachmentType>({
+export function buildGallery<At extends DefaultAttachmentType = DefaultAttachmentType>({
   images,
   sizeConfig,
 }: {

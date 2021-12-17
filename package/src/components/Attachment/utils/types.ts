@@ -8,8 +8,8 @@ export type Thumbnail = {
 };
 
 export type GallerySizeConfig = {
-  defaultHeight: number;
-  defaultWidth: number;
+  gridHeight: number;
+  gridWidth: number;
   maxHeight: number;
   maxWidth: number;
   minHeight: number;

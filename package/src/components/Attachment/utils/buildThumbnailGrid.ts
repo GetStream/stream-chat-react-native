@@ -5,7 +5,7 @@ import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } fr
 
 import type { DefaultAttachmentType } from '../../../types/types';
 
-export function buildThumbnailGrid<At extends DefaultAttachmentType>({
+export function buildThumbnailGrid<At extends DefaultAttachmentType = DefaultAttachmentType>({
   grid,
   images,
   invertedDirections = false,
@@ -16,7 +16,7 @@ export function buildThumbnailGrid<At extends DefaultAttachmentType>({
   invertedDirections: boolean;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
-  const { defaultHeight, defaultWidth } = sizeConfig;
+  const { gridHeight, gridWidth } = sizeConfig;
 
   let imageIndex = 0;
   const thumbnailGrid: ThumbnailGrid = [];
@@ -26,12 +26,12 @@ export function buildThumbnailGrid<At extends DefaultAttachmentType>({
 
     rows.forEach((flexValue) => {
       const tHeight = invertedDirections
-        ? defaultHeight / numOfColumns
-        : defaultHeight * (flexValue / totalFlexValue);
+        ? gridHeight / numOfColumns
+        : gridHeight * (flexValue / totalFlexValue);
 
       const tWidth = invertedDirections
-        ? defaultWidth * (flexValue / totalFlexValue)
-        : defaultWidth / numOfColumns;
+        ? gridWidth * (flexValue / totalFlexValue)
+        : gridWidth / numOfColumns;
 
       const currentImage = images[imageIndex];
       const thumbnail = buildThumbnail({
@@ -50,9 +50,9 @@ export function buildThumbnailGrid<At extends DefaultAttachmentType>({
     });
   });
   return {
-    height: defaultHeight,
+    height: gridHeight,
     invertedDirections,
     thumbnailGrid,
-    width: defaultWidth,
+    width: gridWidth,
   };
 }

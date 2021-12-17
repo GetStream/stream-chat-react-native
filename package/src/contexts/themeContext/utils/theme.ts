@@ -398,10 +398,10 @@ export type Theme = {
       container: ViewStyle;
     };
     gallery: {
-      defaultHeight: number;
-      defaultWidth: number;
       galleryContainer: ViewStyle;
       galleryItemColumn: ViewStyle;
+      gridHeight: number;
+      gridWidth: number;
       image: ImageStyle;
       imageContainer: ViewStyle;
       maxHeight: number;
@@ -884,10 +884,10 @@ export const defaultTheme: Theme = {
       container: {},
     },
     gallery: {
-      defaultHeight: 195,
-      defaultWidth: 256,
       galleryContainer: {},
       galleryItemColumn: {},
+      gridHeight: 195,
+      gridWidth: 256,
       image: {},
       imageContainer: {},
       maxHeight: 300,

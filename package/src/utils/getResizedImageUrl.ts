@@ -1,52 +1,18 @@
 import { PixelRatio } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
-
-import type { DefaultAttachmentType } from '../types/types';
-
-type GetResizedImageUrlParams<At extends DefaultAttachmentType> = {
+type GetResizedImageUrlParams = {
   height: number;
-  image: Attachment<At>;
+  url: string;
   width: number;
 };
 
-export function getResizedImageUrl<At extends DefaultAttachmentType>({
-  height,
-  image,
-  width,
-}: GetResizedImageUrlParams<At>) {
-  const { height: originalImageHeight, width: originalImageWidth } = image;
-  const url = (image.image_url || image.thumb_url) as string;
+export function getResizedImageUrl({ height, url, width }: GetResizedImageUrlParams) {
+  const isResizableUrl = url.includes('&h=*') && url.includes('&w=*') && url.includes('&resize=*');
 
-  if (
-    originalImageHeight &&
-    originalImageWidth &&
-    height &&
-    width &&
-    originalImageHeight + originalImageWidth < height + width
-  ) {
-    return url;
-  }
+  if (!isResizableUrl) return url;
 
-  let resizedUrl = url;
-
-  if (url.includes('&h=*')) {
-    resizedUrl = resizedUrl.replace(
-      'h=*',
-      `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-    );
-  }
-
-  if (url.includes('&w=*')) {
-    resizedUrl = resizedUrl.replace(
-      'w=*',
-      `w=${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`,
-    );
-  }
-
-  if (url.includes('&resize=*')) {
-    resizedUrl = resizedUrl.replace('resize=*', `resize=clip`);
-  }
-
-  return resizedUrl;
+  return url
+    .replace('h=*', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`)
+    .replace('w=*', `w=${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`)
+    .replace('resize=*', `resize=clip`);
 }

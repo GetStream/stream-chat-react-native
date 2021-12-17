@@ -1,15 +1,16 @@
 import type { Attachment } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
+import { getAspectRatio } from './getAspectRatio';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultAttachmentType } from '../../../types/types';
 
-function limitNumberWithinRange(number: number, min: number, max: number) {
+function clamp(number: number, min: number, max: number) {
   return Math.min(Math.max(number, min), max);
 }
 
-export function getContainerSizeOfSingleImage<At extends DefaultAttachmentType>({
+function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentType>({
   image,
   sizeConfig,
 }: {
@@ -17,34 +18,17 @@ export function getContainerSizeOfSingleImage<At extends DefaultAttachmentType>(
   sizeConfig: GallerySizeConfig;
 }) {
   const { height, width } = image;
-  const { defaultHeight, defaultWidth, maxHeight, maxWidth, minHeight, minWidth } = sizeConfig;
+  const { gridHeight, gridWidth, maxHeight, maxWidth, minHeight, minWidth } = sizeConfig;
 
   if (!height || !width) {
-    return { height: defaultHeight, width: defaultWidth };
+    return { height: gridHeight, width: gridWidth };
   }
 
-  const aspectRatio = height / width;
-  if (aspectRatio > 1) {
-    const containerHeight = limitNumberWithinRange(height, minHeight, maxHeight);
-    const containerWidth = limitNumberWithinRange(
-      containerHeight / aspectRatio,
-      minWidth,
-      maxWidth,
-    );
-
-    return {
-      height: containerHeight,
-      width: containerWidth,
-    };
-  }
+  const aspectRatio = getAspectRatio(image);
 
   if (aspectRatio <= 1) {
-    const containerWidth = limitNumberWithinRange(width, minWidth, maxWidth);
-    const containerHeight = limitNumberWithinRange(
-      containerWidth * aspectRatio,
-      minHeight,
-      maxHeight,
-    );
+    const containerHeight = clamp(height, minHeight, maxHeight);
+    const containerWidth = clamp(containerHeight * aspectRatio, minWidth, maxWidth);
 
     return {
       height: containerHeight,
@@ -52,25 +36,32 @@ export function getContainerSizeOfSingleImage<At extends DefaultAttachmentType>(
     };
   }
 
-  return { height: defaultHeight, width: defaultWidth };
+  const containerWidth = clamp(width, minWidth, maxWidth);
+  const containerHeight = clamp(containerWidth / aspectRatio, minHeight, maxHeight);
+
+  return {
+    height: containerHeight,
+    width: containerWidth,
+  };
 }
 
-export function buildGalleryOfSingleImage<At extends DefaultAttachmentType>({
+export function buildGalleryOfSingleImage<
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+>({
   image,
   sizeConfig,
 }: {
   image: Attachment<At>;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
-  const container = getContainerSizeOfSingleImage({
+  const container = getContainerSize({
     image,
     sizeConfig,
   });
 
   const thumbnail = buildThumbnail({
-    height: container.height,
     image,
-    width: container.width,
+    ...container,
   });
 
   const column = [thumbnail];

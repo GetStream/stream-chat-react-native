@@ -1,11 +1,12 @@
 import type { Attachment } from 'stream-chat';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
+import { getAspectRatio } from './getAspectRatio';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
 import type { DefaultAttachmentType } from '../../../types/types';
 
-// function to move item to the front of the array
+/** function to move item to the front of the array */
 function moveToFront<T>(array: T[], item: T): T[] {
   const index = array.indexOf(item);
   if (index === -1) {
@@ -17,33 +18,24 @@ function moveToFront<T>(array: T[], item: T): T[] {
   return newArray;
 }
 
-export function buildGalleryOfThreeImages<At extends DefaultAttachmentType>({
+export function buildGalleryOfThreeImages<
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+>({
   images,
   sizeConfig,
 }: {
   images: Attachment<At>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
-  // check if all the images have width and height
-  const hasWidthAndHeight = images.every((image) => image.width && image.height);
-
-  if (!hasWidthAndHeight) {
-    return buildThumbnailGrid({
-      grid: [[1], [1, 1]],
-      images,
-      invertedDirections: false,
-      sizeConfig,
-    });
-  }
-
   // Find the most ladscape and most portrait image.
   const { landscapeImage, landscapeImageAspectRatio, portraitImage, portraitImageAspectRatio } =
     images.reduce(
       (acc, image) => {
-        // @ts-ignore
-        const aspectRatio = image.width / image.height;
+        const aspectRatio = getAspectRatio(image);
         const o = { ...acc };
-        // I know
+
+        // Following nested if conditions can be combined, but have been kept
+        // separate intentionally for the sake of readability.
         if (aspectRatio > 1) {
           if (!o.landscapeImage || aspectRatio > o.landscapeImageAspectRatio) {
             o.landscapeImage = image;

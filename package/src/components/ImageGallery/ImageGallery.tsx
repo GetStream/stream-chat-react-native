@@ -68,6 +68,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { vh, vw } from '../../utils/utils';
 
 const isAndroid = Platform.OS === 'android';
@@ -140,7 +141,7 @@ type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomCompone
 };
 
 export const ImageGallery = <
-  At extends DefaultAttachmentType,
+  At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
@@ -349,24 +350,28 @@ export const ImageGallery = <
           attachment.type === 'image' &&
           !attachment.title_link &&
           !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
+          getUrlOfImageAttachment(attachment),
       ) || [];
 
-    const attachmentPhotos = attachmentImages.map((a) => ({
-      channelId: cur.cid,
-      created_at: cur.created_at,
-      height: a.height,
-      id: `photoId-${cur.id}-${a.image_url || a.thumb_url}`,
-      messageId: cur.id,
-      uri: getResizedImageUrl({
-        height: screenHeight,
-        image: a,
-        width: screenWidth,
-      }),
-      user: cur.user,
-      user_id: cur.user_id,
-      width: a.width,
-    }));
+    const attachmentPhotos = attachmentImages.map((a) => {
+      const imageUrl = getUrlOfImageAttachment(a) as string;
+
+      return {
+        channelId: cur.cid,
+        created_at: cur.created_at,
+        height: a.height,
+        id: `photoId-${cur.id}-${imageUrl}`,
+        messageId: cur.id,
+        uri: getResizedImageUrl({
+          height: screenHeight,
+          url: imageUrl,
+          width: screenWidth,
+        }),
+        user: cur.user,
+        user_id: cur.user_id,
+        width: a.width,
+      };
+    });
 
     return [...acc, ...attachmentPhotos] as Photo<Us>[];
   }, []);
@@ -417,7 +422,6 @@ export const ImageGallery = <
       const imageHeight = Math.floor(height * (screenWidth / width));
       setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
     } else if (photo?.uri) {
-      console.log('Fetching image dimensions', photo);
       Image.getSize(photo.uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
         setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
