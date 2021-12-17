@@ -1,9 +1,12 @@
 import type { ImageResizeMode } from 'react-native';
+
 import type { Attachment } from 'stream-chat';
+
+import type { Thumbnail } from './types';
+
 import type { DefaultAttachmentType } from '../../../types/types';
 
 import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
-import type { Thumbnail } from './types';
 
 export function buildThumbnail<At extends DefaultAttachmentType>({
   height,

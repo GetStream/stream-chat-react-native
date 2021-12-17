@@ -1,6 +1,11 @@
 import React, { useMemo } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { getGallery } from './utils/getGallery';
+
+import { getGalleryImageStyles } from './utils/getGalleryStyles';
+
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -18,9 +23,6 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -31,8 +33,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { getGallery } from './utils/getGallery';
-import { getGalleryImageStyles } from './utils/getGalleryStyles';
+
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {

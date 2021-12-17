@@ -10,8 +10,6 @@ import {
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
-import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,6 +20,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
 

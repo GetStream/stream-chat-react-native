@@ -1,5 +1,7 @@
 import { PixelRatio } from 'react-native';
+
 import type { Attachment } from 'stream-chat';
+
 import type { DefaultAttachmentType } from '../types/types';
 
 type GetResizedImageUrlParams<At extends DefaultAttachmentType> = {

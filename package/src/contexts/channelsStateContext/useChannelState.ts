@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
+
 import type { Channel as ChannelType } from 'stream-chat';
 
 import { useChannelsStateContext } from './ChannelsStateContext';

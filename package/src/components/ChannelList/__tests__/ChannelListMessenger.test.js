@@ -1,21 +1,20 @@
 import React from 'react';
+
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { ChannelListMessenger } from '../ChannelListMessenger';
-import { ChannelList } from '../ChannelList';
-
-import { Chat } from '../../Chat/Chat';
-
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import {
   ChannelsProvider,
   useChannelsContext,
 } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Chat } from '../../Chat/Chat';
+import { ChannelList } from '../ChannelList';
+import { ChannelListMessenger } from '../ChannelListMessenger';
 
 let mockChannels;
 let chatClient;

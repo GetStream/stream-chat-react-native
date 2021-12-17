@@ -1,11 +1,12 @@
 import type { Attachment } from 'stream-chat';
-import type { DefaultAttachmentType } from '../../../types/types';
 
 import { buildGalleryOfSingleImage } from './buildGalleryOfSingleImage';
 import { buildGalleryOfThreeImages } from './buildGalleryOfThreeImages';
 import { buildGalleryOfTwoImages } from './buildGalleryOfTwoImages';
-import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 import { buildThumbnailGrid } from './buildThumbnailGrid';
+import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
+
+import type { DefaultAttachmentType } from '../../../types/types';
 
 export function getGallery<At extends DefaultAttachmentType>({
   images,

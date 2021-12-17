@@ -2,15 +2,14 @@ import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
+
 import {
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import type { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
-import { vw } from '../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -21,6 +20,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   bottomBorder: {

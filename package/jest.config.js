@@ -1,7 +1,6 @@
+/* global require */
 // eslint-disable-next-line no-undef
 module.exports = {
-  testEnvironment: 'jsdom',
-
   moduleNameMapper: {
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
   },
@@ -12,8 +11,8 @@ module.exports = {
     './node_modules/react-native-gesture-handler/jestSetup.js',
   ],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],
-  transformIgnorePatterns: ['node_modules/!(react-native-reanimated)'],
   testRegex: [
     /**
      * If you want to test single file, mention it here
@@ -25,5 +24,6 @@ module.exports = {
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest',
   },
+  transformIgnorePatterns: ['node_modules/!(react-native-reanimated)'],
   verbose: true,
 };

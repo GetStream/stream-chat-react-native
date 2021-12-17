@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -13,24 +19,17 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
 
+import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 
-import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
-import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
-
+import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import {
   OverlayContextValue,
@@ -38,11 +37,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vh, vw } from '../../utils/utils';
 
-import type { ReplyProps } from '../Reply/Reply';
-
-import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -53,6 +48,10 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { vh, vw } from '../../utils/utils';
+import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
+import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
+import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
   alignEnd: { alignItems: 'flex-end' },

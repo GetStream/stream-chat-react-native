@@ -1,8 +1,9 @@
 import type { Attachment } from 'stream-chat';
-import type { DefaultAttachmentType } from '../../../types/types';
 
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
+
+import type { DefaultAttachmentType } from '../../../types/types';
 
 export function buildThumbnailGrid<At extends DefaultAttachmentType>({
   grid,

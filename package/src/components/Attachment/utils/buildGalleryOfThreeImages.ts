@@ -1,8 +1,9 @@
 import type { Attachment } from 'stream-chat';
-import type { DefaultAttachmentType } from '../../../types/types';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
+
+import type { DefaultAttachmentType } from '../../../types/types';
 
 // function to move item to the front of the array
 function moveToFront<T>(array: T[], item: T): T[] {

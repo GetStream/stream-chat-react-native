@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+
 import throttle from 'lodash/throttle';
 
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import type { Emoji } from '../../emoji-data/compiled';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -26,8 +26,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
-
+import type { Emoji } from '../../emoji-data/compiled';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -38,6 +37,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
+
 import type { Trigger } from '../../utils/utils';
 
 const styles = StyleSheet.create({

@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import type { Channel } from 'stream-chat';
+
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
@@ -15,7 +17,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type { Channel } from 'stream-chat';
 
 export const useCreateOwnCapabilitiesContext = <
   At extends UnknownType = DefaultAttachmentType,

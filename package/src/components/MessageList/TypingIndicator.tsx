@@ -3,8 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useTypingString } from './hooks/useTypingString';
 
-import { LoadingDots } from '../Indicators/LoadingDots';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
@@ -17,6 +15,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { LoadingDots } from '../Indicators/LoadingDots';
 
 const styles = StyleSheet.create({
   container: {

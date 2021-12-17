@@ -1,10 +1,10 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { UploadProgressIndicator } from '../UploadProgressIndicator';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
+import { UploadProgressIndicator } from '../UploadProgressIndicator';
 
 describe('UploadProgressIndicator', () => {
   it('should render an inactive IN_PROGRESS UploadProgressIndicator', async () => {

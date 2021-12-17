@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { generateRandomId } from '../../../utils/utils';
-
-import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -14,6 +10,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { generateRandomId } from '../../../utils/utils';
+
+import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
   At extends UnknownType = DefaultAttachmentType,
@@ -41,12 +40,7 @@ export const useMessageDetailsForState = <
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
-  const [mentionedUsers, setMentionedUsers] = useState(
-    (!isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
-      Array.isArray(message?.mentioned_users) &&
-      message.mentioned_users.map((user) => user.id)) ||
-      [],
-  );
+  const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
   const initialTextValue = initialValue || '';
@@ -60,6 +54,17 @@ export const useMessageDetailsForState = <
 
   const messageValue =
     typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
+
+  useEffect(() => {
+    if (
+      !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
+      Array.isArray(message?.mentioned_users)
+    ) {
+      const mentionedUsers = message.mentioned_users.map((user) => user.id);
+      setMentionedUsers(mentionedUsers);
+    }
+  }, [messageValue]);
+
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       setText(message?.text || '');
