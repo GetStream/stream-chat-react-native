@@ -1,16 +1,16 @@
 import React from 'react';
 
+import type { Attachment as AttachmentType } from 'stream-chat';
+
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { Card as CardDefault } from '../../components/Attachment/Card';
+import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../../components/Attachment/Giphy';
-import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-
-import type { Attachment as AttachmentType } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,

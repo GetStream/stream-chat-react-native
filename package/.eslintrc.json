@@ -59,7 +59,27 @@
       }
     ],
     "sort-keys": ["error", "asc", { "caseSensitive": false, "minKeys": 2, "natural": false }],
-    "valid-typeof": 2
+    "valid-typeof": 2,
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "sibling", "parent", "index", "object"],
+        "pathGroups": [
+          {
+            "pattern": "react*",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react*"],
+        "newlines-between": "always-and-inside-groups",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-unresolved": ["error", { "ignore": ["types"] }]
   },
   "settings": {
     "import/resolver": {
@@ -69,6 +89,7 @@
         "paths": ["src"]
       }
     },
+    "import/ignore": ["react-native"],
     "react": {
       "pragma": "React",
       "version": "detect"
@@ -94,6 +115,8 @@
       "extends": [
         "@react-native-community",
         "eslint:recommended",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
         "plugin:@typescript-eslint/recommended",
         "plugin:jest/recommended",
         "plugin:prettier/recommended",
@@ -130,7 +153,8 @@
         "array-callback-return": 2,
         "arrow-body-style": 2,
         "comma-dangle": 0,
-        "babel/no-invalid-this": 2,
+        "babel/no-invalid-this": 0,
+        "@typescript-eslint/no-invalid-this": ["error"],
         "default-case": 2,
         "eqeqeq": [2, "smart"],
         "linebreak-style": [2, "unix"],

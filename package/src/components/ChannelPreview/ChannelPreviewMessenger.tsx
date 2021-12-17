@@ -3,18 +3,20 @@ import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { ChannelAvatar } from './ChannelAvatar';
+import type { ChannelPreviewProps } from './ChannelPreview';
+import { ChannelPreviewMessage } from './ChannelPreviewMessage';
+import { ChannelPreviewStatus } from './ChannelPreviewStatus';
+import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
+
+import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vw } from '../../utils/utils';
-
-import type { ChannelPreviewProps } from './ChannelPreview';
-import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,10 +27,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { ChannelPreviewMessage } from './ChannelPreviewMessage';
-import { ChannelPreviewStatus } from './ChannelPreviewStatus';
-import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
+import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {

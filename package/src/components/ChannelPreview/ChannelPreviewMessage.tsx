@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
   DefaultAttachmentType,

@@ -1,7 +1,9 @@
 import React from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+
 import merge from 'lodash/merge';
 
+import type { MessageFooterProps } from './MessageFooter';
 import { MessageTextContainer } from './MessageTextContainer';
 
 import {
@@ -19,10 +21,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type { MessageFooterProps } from './MessageFooter';
-
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -33,6 +31,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   containerInner: {

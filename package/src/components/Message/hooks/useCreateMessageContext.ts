@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 
-import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
-
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
@@ -13,6 +11,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 export const useCreateMessageContext = <
   At extends UnknownType = DefaultAttachmentType,

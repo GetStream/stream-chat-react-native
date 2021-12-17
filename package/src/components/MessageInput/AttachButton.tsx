@@ -1,4 +1,5 @@
 import React from 'react';
+import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
@@ -8,8 +9,6 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Attach } from '../../icons/Attach';
-
-import type { GestureResponderEvent } from 'react-native';
 
 import type {
   DefaultAttachmentType,

@@ -1,11 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Avatar } from '../../Avatar/Avatar';
-
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -16,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { Avatar } from '../../Avatar/Avatar';
 
 const styles = StyleSheet.create({
   avatarContainer: {

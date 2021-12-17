@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 type OverlayBackdropProps = {

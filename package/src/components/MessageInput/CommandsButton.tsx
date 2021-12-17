@@ -1,4 +1,5 @@
 import React from 'react';
+import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import {
@@ -12,8 +13,6 @@ import {
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Lightning } from '../../icons/Lightning';
-
-import type { GestureResponderEvent } from 'react-native';
 
 import type {
   DefaultAttachmentType,

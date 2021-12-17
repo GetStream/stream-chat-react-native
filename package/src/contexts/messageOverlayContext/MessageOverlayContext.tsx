@@ -1,19 +1,13 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { Attachment } from 'stream-chat';
 
-import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
-import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
-import type { MessagesContextValue } from '../messagesContext/MessagesContext';
-
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type {
   MessageActionListItemProps,
   MessageActionType,
 } from '../../components/MessageOverlay/MessageActionListItem';
-import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type {
@@ -27,6 +21,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
+import type { MessagesContextValue } from '../messagesContext/MessagesContext';
+import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageOverlayData<
   At extends UnknownType = DefaultAttachmentType,

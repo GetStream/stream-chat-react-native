@@ -1,7 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
 import { TagObject, TagProps } from 'react-docgen';
+
 import map from 'lodash/map';
+import PropTypes from 'prop-types';
 import Markdown from 'react-styleguidist/lib/client/rsg-components/Markdown';
 
 const plural = (array: TagObject[], caption: string) =>

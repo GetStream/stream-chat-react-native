@@ -10,6 +10,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
 import {
@@ -21,10 +23,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vw } from '../../utils/utils';
-
-import type { Attachment } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -35,6 +33,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {

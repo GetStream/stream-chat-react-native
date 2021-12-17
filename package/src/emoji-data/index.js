@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const emojis = require('./emojis.ts');
 const emojiNames = require('./emojiNames.ts');
+const emojis = require('./emojis.ts');
 
 const emojiLib = emojis.reduce((acc, cur) => {
   acc[cur.name] = {

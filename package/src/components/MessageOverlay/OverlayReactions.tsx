@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { FlatList } from 'react-native-gesture-handler';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
-import { Avatar } from '../Avatar/Avatar';
-
+import type { Alignment } from '../../contexts/messageContext/MessageContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   LOLReaction,
   LoveReaction,
@@ -14,10 +14,9 @@ import {
   Unknown,
   WutReaction,
 } from '../../icons';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { Alignment } from '../../contexts/messageContext/MessageContext';
 import type { ReactionData } from '../../utils/utils';
+import { Avatar } from '../Avatar/Avatar';
 
 const styles = StyleSheet.create({
   avatarContainer: {

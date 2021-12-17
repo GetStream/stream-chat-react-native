@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -22,6 +20,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   readByCount: {

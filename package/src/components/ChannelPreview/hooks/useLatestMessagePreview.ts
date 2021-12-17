@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
+import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   isDayOrMoment,
   TDateTimeParser,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
-
-import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,

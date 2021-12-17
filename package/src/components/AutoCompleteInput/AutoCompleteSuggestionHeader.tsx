@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { SuggestionsContextValue } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 import { Lightning } from '../../icons/Lightning';
 import { Smile } from '../../icons/Smile';
-import type { SuggestionsContextValue } from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
 
 export type AutoCompleteSuggestionHeaderPropsWithContext<
   Co extends string = DefaultCommandType,

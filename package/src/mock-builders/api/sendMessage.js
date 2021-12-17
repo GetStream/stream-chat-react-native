@@ -1,4 +1,5 @@
 import { mockedApiResponse } from './utils';
+
 import { generateMessage } from '../generator/message';
 /**
  * Returns the api response for sendMessage api.

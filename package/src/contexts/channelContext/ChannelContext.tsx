@@ -1,7 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
@@ -16,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelContextValue<
   At extends UnknownType = DefaultAttachmentType,

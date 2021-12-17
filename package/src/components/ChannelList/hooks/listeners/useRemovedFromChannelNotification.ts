@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-
 import type { Channel, Event } from 'stream-chat';
+
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type {
   DefaultAttachmentType,
