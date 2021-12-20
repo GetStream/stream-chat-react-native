@@ -36,6 +36,15 @@ export function buildGallery<At extends DefaultAttachmentType = DefaultAttachmen
     });
   }
 
+  /**
+   * -----------
+   * |    |    |
+   * |    |    |
+   * -----------
+   * |    |    |
+   * |    |    |
+   * -----------
+   */
   return buildThumbnailGrid({
     grid: [
       [1, 1],

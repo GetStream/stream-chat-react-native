@@ -63,6 +63,15 @@ export function buildGalleryOfThreeImages<
 
   // Check weather landscape image gets preference or portrait, by comparing aspect ratio.
   if (landscapeImageAspectRatio > 1 / portraitImageAspectRatio) {
+    /**
+     * -----------
+     * |         |
+     * |         |
+     * |---------|
+     * |    |    |
+     * |    |    |
+     * -----------
+     */
     return buildThumbnailGrid({
       grid: [[1], [1, 1]],
       images: landscapeImage ? moveToFront(images, landscapeImage) : images,
@@ -70,6 +79,15 @@ export function buildGalleryOfThreeImages<
       sizeConfig,
     });
   } else {
+    /**
+     * -----------
+     * |    |    |
+     * |    |    |
+     * |    |----|
+     * |    |    |
+     * |    |    |
+     * -----------
+     */
     return buildThumbnailGrid({
       grid: [[1], [1, 1]],
       images: portraitImage ? moveToFront(images, portraitImage) : images,

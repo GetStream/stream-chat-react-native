@@ -42,6 +42,14 @@ describe('Gallery', () => {
     );
   };
 
+  /**
+   * -----------
+   * |    |    |
+   * |    |    |
+   * |    |    |
+   * |    |    |
+   * -----------
+   */
   it('should render two portrait images in two columns', async () => {
     const attachment1 = generateImageAttachment({
       height: 600,
@@ -63,6 +71,14 @@ describe('Gallery', () => {
     });
   });
 
+  /**
+   *
+   * ----------
+   * |        |
+   * ----------
+   * |        |
+   * ----------
+   */
   it('should render two landscape images in two rows', async () => {
     const attachment1 = generateImageAttachment({
       height: 200,
@@ -83,6 +99,15 @@ describe('Gallery', () => {
     });
   });
 
+  /**
+   * -----------
+   * |    |    |
+   * |    |    |
+   * |    |----|
+   * |    |    |
+   * |    |    |
+   * -----------
+   */
   it('should render 3 images containing a portrait image in two columns, with portrait in its own column', async () => {
     const portraitImage = generateImageAttachment({
       height: 600,
@@ -110,6 +135,15 @@ describe('Gallery', () => {
     });
   });
 
+  /**
+   * -----------
+   * |         |
+   * |         |
+   * |---------|
+   * |    |    |
+   * |    |    |
+   * -----------
+   */
   it('should render 3 images containing a landscape image in two rows, with landscape in its own row', async () => {
     const portraitImage = generateImageAttachment({
       height: 300,
@@ -137,6 +171,15 @@ describe('Gallery', () => {
     });
   });
 
+  /**
+   * -----------
+   * |    |    |
+   * |    |    |
+   * -----------
+   * |    |    |
+   * |    |    |
+   * -----------
+   */
   it('should render 4 images in grid of two columns and 2 rows', async () => {
     const image1 = generateImageAttachment({
       height: 300,
