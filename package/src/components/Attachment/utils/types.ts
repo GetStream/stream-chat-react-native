@@ -5,6 +5,7 @@ export type Thumbnail = {
   resizeMode: ImageResizeMode;
   url: string;
   width: number;
+  id?: string;
 };
 
 export type GallerySizeConfig = {

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { v4 as uuidv4 } from 'uuid';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -71,7 +72,10 @@ describe('Attachment', () => {
   });
 
   it('should render UrlPreview component if attachment has title_link or og_scrape_url', async () => {
-    const attachment = generateImageAttachment();
+    const attachment = generateImageAttachment({
+      og_scrape_url: uuidv4(),
+      title_link: uuidv4(),
+    });
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -80,14 +84,11 @@ describe('Attachment', () => {
   });
 
   it('should render Gallery component if image does not have title_link or og_scrape_url', async () => {
-    const attachment = generateImageAttachment({
-      og_scrape_url: undefined,
-      title_link: undefined,
-    });
+    const attachment = generateImageAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('image-multiple')).toBeTruthy();
+      expect(getByTestId('gallery-container')).toBeTruthy();
     });
   });
 

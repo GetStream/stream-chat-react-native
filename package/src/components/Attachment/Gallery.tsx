@@ -115,12 +115,9 @@ export type GalleryPropsWithContext<
      * here, but due to some circular dependencies within the SDK, it causes "exccesive deep nesting" issue with
      * typescript within Channel component. We should take it as a mini-project and resolve all these circular imports.
      *
-     * TODO[major]: remove messageId and messageText
      * TODO: Fix circular dependencies of imports
      */
     message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-    messageId?: string;
-    messageText?: string;
   };
 
 const GalleryWithContext = <
@@ -142,8 +139,6 @@ const GalleryWithContext = <
     images,
     legacyImageViewerSwipeBehaviour,
     message,
-    messageId,
-    messageText: messageTextProp,
     onLongPress,
     onPress,
     onPressIn,
@@ -195,7 +190,8 @@ const GalleryWithContext = <
 
   if (!images?.length) return null;
 
-  const messageText = messageTextProp || message?.text;
+  const messageText = message?.text;
+  const messageId = message?.id;
   const numOfColumns = thumbnailGrid.length;
 
   return (
@@ -211,19 +207,20 @@ const GalleryWithContext = <
           flexDirection: invertedDirections ? 'column' : 'row',
         },
       ]}
-      testID='image-multiple-container'
+      testID='gallery-container'
     >
       {thumbnailGrid.map((column, colIndex) => {
         const numOfRows = column.length;
         return (
           <View
-            key={`gallery-item-column-${colIndex}`}
+            key={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
             style={[
               {
                 flexDirection: invertedDirections ? 'row' : 'column',
               },
               galleryItemColumn,
             ]}
+            testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
             {column.map(({ height, resizeMode, url, width }, rowIndex) => {
               const defaultOnPress = () => {
@@ -232,10 +229,10 @@ const GalleryWithContext = <
                 // else - legacyImageViewerSwipeBehaviour is enabled
                 if (!legacyImageViewerSwipeBehaviour && message) {
                   setImages([message]);
-                  setImage({ messageId: messageId || message.id, url });
+                  setImage({ messageId: message.id, url });
                   setOverlay('gallery');
                 } else if (legacyImageViewerSwipeBehaviour) {
-                  setImage({ messageId: messageId || message?.id, url });
+                  setImage({ messageId: message?.id, url });
                   setOverlay('gallery');
                 }
               };
@@ -279,7 +276,9 @@ const GalleryWithContext = <
                     },
                     imageContainer,
                   ]}
-                  testID='image-multiple'
+                  testID={`gallery-${
+                    invertedDirections ? 'row' : 'column'
+                  }-${colIndex}-item-${rowIndex}`}
                   {...additionalTouchableProps}
                 >
                   <MemoizedGalleryImage
@@ -347,17 +346,17 @@ const areEqual = <
     groupStyles: prevGroupStyles,
     hasThreadReplies: prevHasThreadReplies,
     images: prevImages,
-    messageText: prevMessageText,
+    message: prevMessage,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
     hasThreadReplies: nextHasThreadReplies,
     images: nextImages,
-    messageText: nextMessageText,
+    message: nextMessage,
   } = nextProps;
 
-  const messageTextEqual = prevMessageText === nextMessageText;
-  if (!messageTextEqual) return false;
+  const messageEqual = prevMessage?.id === nextMessage?.id;
+  if (!messageEqual) return false;
 
   const groupStylesEqual =
     prevGroupStyles.length === nextGroupStyles.length && prevGroupStyles[0] === nextGroupStyles[0];
@@ -410,8 +409,6 @@ export const Gallery = <
     groupStyles: propGroupStyles,
     hasThreadReplies,
     images: propImages,
-    messageId,
-    messageText,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -460,14 +457,12 @@ export const Gallery = <
       {...{
         additionalTouchableProps,
         alignment,
-        channelId: message.cid,
+        channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         images,
         legacyImageViewerSwipeBehaviour,
         message,
-        messageId: messageId || message?.id,
-        messageText: messageText || message?.text,
         onLongPress,
         onPress,
         onPressIn,
