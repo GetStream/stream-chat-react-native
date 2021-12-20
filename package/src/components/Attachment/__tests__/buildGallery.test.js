@@ -22,23 +22,28 @@ describe('buildGallery', () => {
     ];
 
     imageSizeTestCases.forEach((size) => {
-      const a1 = generateImageAttachment({
-        ...size,
-      });
+      const attachments = [];
+      for (let numOfImages = 0; numOfImages < 4; numOfImages++) {
+        const a1 = generateImageAttachment({
+          ...size,
+        });
 
-      const { height, thumbnailGrid, width } = buildGallery({
-        images: [a1],
-        sizeConfig: defaultSizeConfig,
-      });
+        attachments.push(a1);
 
-      expect(height).toBeLessThanOrEqual(defaultSizeConfig.maxHeight);
-      expect(height).toBeGreaterThanOrEqual(defaultSizeConfig.minHeight);
+        const { height, thumbnailGrid, width } = buildGallery({
+          images: attachments,
+          sizeConfig: defaultSizeConfig,
+        });
 
-      expect(width).toBeLessThanOrEqual(defaultSizeConfig.maxWidth);
-      expect(width).toBeGreaterThanOrEqual(defaultSizeConfig.minWidth);
+        expect(height).toBeLessThanOrEqual(defaultSizeConfig.maxHeight);
+        expect(height).toBeGreaterThanOrEqual(defaultSizeConfig.minHeight);
 
-      expect(thumbnailGrid[0][0].height).toBeLessThanOrEqual(height);
-      expect(thumbnailGrid[0][0].width).toBeLessThanOrEqual(width);
+        expect(width).toBeLessThanOrEqual(defaultSizeConfig.maxWidth);
+        expect(width).toBeGreaterThanOrEqual(defaultSizeConfig.minWidth);
+
+        expect(thumbnailGrid[0][0].height).toBeLessThanOrEqual(height);
+        expect(thumbnailGrid[0][0].width).toBeLessThanOrEqual(width);
+      }
     });
   });
 
@@ -75,15 +80,18 @@ describe('buildGallery', () => {
   });
 
   it('gallery size should default to gridHeight and gridWidth if original image size is unavailable', () => {
-    const a1 = generateImageAttachment();
+    const attachments = [];
+    for (let numOfImages = 0; numOfImages < 4; numOfImages++) {
+      // During each iteration, size of attachments goes up.
+      attachments.push(generateImageAttachment());
+      const { height, width } = buildGallery({
+        images: attachments,
+        sizeConfig: defaultSizeConfig,
+      });
 
-    const { height, width } = buildGallery({
-      images: [a1],
-      sizeConfig: defaultSizeConfig,
-    });
-
-    expect(height).toBe(defaultSizeConfig.gridHeight);
-    expect(width).toBe(defaultSizeConfig.gridWidth);
+      expect(height).toBe(defaultSizeConfig.gridHeight);
+      expect(width).toBe(defaultSizeConfig.gridWidth);
+    }
   });
 
   it('thumbnail size should be smaller than the limits set by sizeConfig', () => {
