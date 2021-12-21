@@ -6,8 +6,9 @@ import { buildGalleryOfTwoImages } from './buildGalleryOfTwoImages';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
 
-import type { DefaultAttachmentType } from '../../../../../../types/types';
-import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from '../types';
+import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
+
+import type { DefaultAttachmentType } from '../../../../types/types';
 
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.

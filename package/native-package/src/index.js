@@ -1,14 +1,16 @@
 import React from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
-import CameraRoll from '@react-native-community/cameraroll';
-import NetInfo from '@react-native-community/netinfo';
-import { FlatList } from '@stream-io/flat-list-mvcp';
+import { Image, PermissionsAndroid, Platform } from 'react-native';
+
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
+
+import CameraRoll from '@react-native-community/cameraroll';
+import NetInfo from '@react-native-community/netinfo';
+import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
@@ -198,14 +200,43 @@ registerNativeHandlers({
   takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
+      includeExif: true,
     });
+
     if (photo.height && photo.width && photo.path) {
+      let size = {};
+      if (Platform.OS === 'android') {
+        // Height and width returned by ImagePicker are incorrect on Android.
+        // The issue is described in following github issue:
+        // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
+        // This we can't rely on them as it is, and we need to use Image.getSize
+        // to get accurate size.
+        const getSize = () => new Promise((resolve) => {
+          Image.getSize(photo.path, (width, height) => {
+            resolve({height, width});
+          });
+        });
+
+        try {
+          const { height, width } = await getSize();
+          size.height = height;
+          size.width = width;
+        } catch (e) {
+          // do nothing
+          console.warning('Error get image size of picture caputred from camera ', e);
+        }
+      } else {
+        size = {
+          height: photo.height,
+          width: photo.width,
+        };
+      }
+
       return {
         cancelled: false,
-        height: photo.height,
         source: 'camera',
         uri: photo.path,
-        width: photo.width,
+        ...size,
       };
     }
     return { cancelled: true };
