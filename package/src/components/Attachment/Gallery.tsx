@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { buildGallery } from './utils/buildGallery';
+import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageStyles } from './utils/getGalleryStyles';
 
@@ -171,7 +171,6 @@ const GalleryWithContext = <
     },
   } = useTheme();
 
-  // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({

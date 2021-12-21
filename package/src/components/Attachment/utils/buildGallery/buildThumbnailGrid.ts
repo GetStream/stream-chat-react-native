@@ -3,8 +3,19 @@ import type { Attachment } from 'stream-chat';
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
 
-import type { DefaultAttachmentType } from '../../../types/types';
+import type { DefaultAttachmentType } from '../../../../types/types';
 
+/**
+ * Builds a grid of thumbnail images from image attachments.
+ * This function take a object parameter with following properties:
+ *
+ * - {number[][]} grid - Grid pattern of the gallery. Each numeric value in the array represents the flex value of corresponding image in grid.
+ * - {Attachment[]} images - Array of image attachments.
+ * - {GallerySizeConfig} sizeConfig - Theme config for the gallery.
+ * - {boolean} invertedDirections - Whether to invert the direction of the grid. By default grid is rendered with column as primary direction and row as secondary direction.
+ *
+ * @return {GallerySizeAndThumbnailGrid}
+ */
 export function buildThumbnailGrid<At extends DefaultAttachmentType = DefaultAttachmentType>({
   grid,
   images,

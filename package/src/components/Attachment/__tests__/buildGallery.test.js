@@ -1,7 +1,7 @@
 import { PixelRatio } from 'react-native';
 
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
-import { buildGallery } from '../utils/buildGallery';
+import { buildGallery } from '../utils/buildGallery/buildGallery';
 
 describe('buildGallery', () => {
   const defaultSizeConfig = {

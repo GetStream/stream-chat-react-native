@@ -1,11 +1,20 @@
 import type { Attachment } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
-import { getAspectRatio } from './getAspectRatio';
+
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../types/types';
+import type { DefaultAttachmentType } from '../../../../types/types';
+import { getAspectRatio } from '../getAspectRatio';
 
+/**
+ * Bound a number to a range.
+ * @param number The number to bound.
+ * @param min The minimum value.
+ * @param max The maximum value.
+ *
+ * @returns The bounded number.
+ */
 function clamp(number: number, min: number, max: number) {
   return Math.min(Math.max(number, min), max);
 }

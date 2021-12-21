@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, Keyboard } from 'react-native';
+import { Alert, Keyboard, Platform } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -666,12 +666,14 @@ export const MessageInputProvider = <
       }
 
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
+        // TODO: Image dimensions returned by cameraroll library are sometimes rotated by 90 degrees,
+        // and thus incorrect. Thus, disabling attaching height and width until we can fix this.
+        const size = Platform.OS === 'android' ? {} : { height: image.height, width: image.width };
         attachments.push({
           fallback: image.file.name,
-          height: image.height,
           image_url: image.url,
           type: 'image',
-          width: image.width,
+          ...size,
         } as Attachment<At>);
       }
     }

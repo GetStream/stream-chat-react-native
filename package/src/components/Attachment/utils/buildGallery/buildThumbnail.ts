@@ -4,10 +4,10 @@ import type { Attachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
-import type { DefaultAttachmentType } from '../../../types/types';
+import type { DefaultAttachmentType } from '../../../../types/types';
 
-import { getResizedImageUrl } from '../../../utils/getResizedImageUrl';
-import { getUrlOfImageAttachment } from '../../../utils/getUrlOfImageAttachment';
+import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
+import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 
 export function buildThumbnail<At extends DefaultAttachmentType = DefaultAttachmentType>({
   height,

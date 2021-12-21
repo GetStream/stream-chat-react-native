@@ -1,10 +1,11 @@
 import type { Attachment } from 'stream-chat';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
-import { getAspectRatio } from './getAspectRatio';
+
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../types/types';
+import type { DefaultAttachmentType } from '../../../../types/types';
+import { getAspectRatio } from '../getAspectRatio';
 
 /** function to move item to the front of the array */
 function moveToFront<T>(array: T[], item: T): T[] {
