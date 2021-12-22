@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { flex: 1, padding: 1 },
+  imageContainer: { padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -236,7 +236,6 @@ const GalleryWithContext = <
                   setOverlay('gallery');
                 }
               };
-
               return (
                 <TouchableOpacity
                   activeOpacity={0.8}

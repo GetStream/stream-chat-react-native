@@ -71,6 +71,27 @@ describe('Gallery', () => {
     });
   });
 
+  it('should render portrait and landscape image in two columns', async () => {
+    const attachment1 = generateImageAttachment({
+      height: 600,
+      width: 400,
+    });
+    const attachment2 = generateImageAttachment({
+      height: 200,
+      width: 400,
+    });
+    const component = await getComponent([attachment1, attachment2]);
+    const { queryAllByTestId } = render(component);
+
+    await waitFor(() => {
+      expect(queryAllByTestId('gallery-column-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-column-1').length).toBe(1);
+
+      expect(queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
+    });
+  });
+
   /**
    *
    * ----------

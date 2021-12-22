@@ -200,7 +200,6 @@ registerNativeHandlers({
   takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
-      includeExif: true,
     });
 
     if (photo.height && photo.width && photo.path) {
