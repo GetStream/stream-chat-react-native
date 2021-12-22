@@ -34,10 +34,16 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
   }
 
   const aspectRatio = getAspectRatio(image);
-
   if (aspectRatio <= 1) {
     const containerHeight = clamp(height, minHeight, maxHeight);
     const containerWidth = clamp(containerHeight * aspectRatio, minWidth, maxWidth);
+
+    if (containerWidth === maxWidth) {
+      return {
+        height: clamp(containerWidth / aspectRatio, minHeight, maxHeight),
+        width: containerWidth,
+      };
+    }
 
     return {
       height: containerHeight,
@@ -47,6 +53,13 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
 
   const containerWidth = clamp(width, minWidth, maxWidth);
   const containerHeight = clamp(containerWidth / aspectRatio, minHeight, maxHeight);
+
+  if (containerHeight === maxHeight) {
+    return {
+      height: containerHeight,
+      width: clamp(containerHeight * aspectRatio, minHeight, maxHeight),
+    };
+  }
 
   return {
     height: containerHeight,

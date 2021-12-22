@@ -3,7 +3,7 @@ import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
-import { getGalleryImageStyles } from './utils/getGalleryStyles';
+import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
@@ -171,24 +171,25 @@ const GalleryWithContext = <
     },
   } = useTheme();
 
+  const sizeConfig = {
+    gridHeight,
+    gridWidth,
+    maxHeight,
+    maxWidth,
+    minHeight,
+    minWidth,
+  };
+
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
         images,
-        sizeConfig: {
-          gridHeight,
-          gridWidth,
-          maxHeight,
-          maxWidth,
-          minHeight,
-          minWidth,
-        },
+        sizeConfig,
       }),
     [images.length],
   );
 
   if (!images?.length) return null;
-
   const messageText = message?.text;
   const messageId = message?.id;
   const numOfColumns = thumbnailGrid.length;
@@ -283,17 +284,20 @@ const GalleryWithContext = <
                   <MemoizedGalleryImage
                     resizeMode={resizeMode}
                     style={[
-                      getGalleryImageStyles({
+                      getGalleryImageBorderRadius({
                         alignment,
                         colIndex,
                         groupStyles,
                         hasThreadReplies,
+                        height,
                         invertedDirections,
                         messageText,
                         numOfColumns,
                         numOfRows,
                         rowIndex,
+                        sizeConfig,
                         threadList,
+                        width,
                       }),
                       image,
                       {
