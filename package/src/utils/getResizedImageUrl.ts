@@ -1,12 +1,14 @@
 import { PixelRatio } from 'react-native';
 
 type GetResizedImageUrlParams = {
-  height: number;
-  url: string;
-  width: number;
+  height?: string | number;
+  url?: string;
+  width?: string | number;
 };
 
 export function getResizedImageUrl({ height, url, width }: GetResizedImageUrlParams) {
+  if (!url) return undefined;
+
   const isResizableUrl = url.includes('&h=*') && url.includes('&w=*') && url.includes('&resize=*');
 
   if (!isResizableUrl) return url;
