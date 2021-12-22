@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { padding: 1 },
+  imageContainer: { flex: 1, padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',

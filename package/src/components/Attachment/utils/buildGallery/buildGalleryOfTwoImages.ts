@@ -24,7 +24,6 @@ export function buildGalleryOfTwoImages<At extends DefaultAttachmentType = Defau
   // Both the images are landscape
   if (isLandscape1 && isLandscape2) {
     /**
-     *
      * ----------
      * |        |
      * ----------

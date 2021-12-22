@@ -183,10 +183,9 @@ const ReplyWithContext = <
                     stylesProp.imageAttachment?.height ||
                     imageAttachment?.height ||
                     styles.imageAttachment.height,
-                  url:
-                    lastAttachment.image_url ||
+                  url: (lastAttachment.image_url ||
                     lastAttachment.thumb_url ||
-                    lastAttachment.og_scrape_url,
+                    lastAttachment.og_scrape_url) as string,
                   width:
                     stylesProp.imageAttachment?.width ||
                     imageAttachment?.width ||
