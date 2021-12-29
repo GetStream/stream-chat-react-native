@@ -4,7 +4,6 @@ import { GestureResponderEvent, Linking, Text, View } from 'react-native';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
 
-import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
 import {
   DefaultRules,
@@ -29,6 +28,7 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+import { parseUrlsFromText } from './parseUrls';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
@@ -70,19 +70,6 @@ const defaultMarkdownStyles: MarkdownStyle = {
 const parse: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
-
-const parseUrlsFromText = (text: string) => {
-  try {
-    return anchorme(text, {
-      list: true,
-    });
-  } catch (e) {
-    console.warn(`failure at parseUrlsFromText: ${e}`);
-    // In case of failures its not worth crashing the app,
-    // and instead simply to have un-parsed urls in message text.
-    return [];
-  }
-};
 
 export type MarkdownRules = Partial<DefaultRules>;
 
@@ -142,7 +129,7 @@ export const renderText = <
   const urls = parseUrlsFromText(newText);
 
   for (const urlInfo of urls) {
-    const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
+    const displayLink = truncate(urlInfo.encoded, {
       length: 200,
       omission: '...',
     });
