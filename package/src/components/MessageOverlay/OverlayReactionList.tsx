@@ -334,14 +334,12 @@ const OverlayReactionListWithContext = <
   const animatedBigCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius * 3,
     cy: messageLayout.value.y - radius * 3,
-    fill: fill || white_snow,
     r: radius * 2,
   }));
 
   const animateSmallCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius,
     cy: messageLayout.value.y,
-    fill: fill || white_snow,
     r: radius,
   }));
 
@@ -380,8 +378,8 @@ const OverlayReactionListWithContext = <
         style={showScreenStyle}
       >
         <Svg>
-          <AnimatedCircle animatedProps={animatedBigCircleProps} />
-          <AnimatedCircle animatedProps={animateSmallCircleProps} />
+          <AnimatedCircle animatedProps={animatedBigCircleProps} fill={fill || white_snow} />
+          <AnimatedCircle animatedProps={animateSmallCircleProps} fill={fill || white_snow} />
         </Svg>
         <Animated.View
           onLayout={({
