@@ -6,7 +6,7 @@ on:
       - develop
       - master
       - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+*.[0-9]'
     types: [opened, synchronize]
 
 jobs:
