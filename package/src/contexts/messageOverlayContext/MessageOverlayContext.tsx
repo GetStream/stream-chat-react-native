@@ -25,6 +25,7 @@ import type { Alignment, MessageContextValue } from '../messageContext/MessageCo
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getDisplayName } from '../utils/getDisplayName';
+import { useResettableState } from './hooks/useResettableState';
 
 export type MessageOverlayData<
   At extends UnknownType = DefaultAttachmentType,
@@ -103,18 +104,7 @@ export const MessageOverlayProvider = <
 }: PropsWithChildren<{
   value?: MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
-  const [data, setData] = useState(value?.data);
-
-  const reset = () => {
-    // TODO: Add the isMounted check here.
-    setData(value?.data);
-  };
-
-  const messageOverlayContext = {
-    data,
-    reset,
-    setData,
-  };
+  const messageOverlayContext = useResettableState(value);
   return (
     <MessageOverlayContext.Provider value={messageOverlayContext as MessageOverlayContextValue}>
       {children}
