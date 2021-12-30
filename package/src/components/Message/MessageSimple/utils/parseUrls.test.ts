@@ -46,9 +46,9 @@ describe('parseUrlsFromText', () => {
     const result = parseUrlsFromText(input);
 
     expect(result[0]).toEqual({
-      raw: input,
-      protocol: 'mailto:',
       encoded: 'support@getstream.io',
+      protocol: 'mailto:',
+      raw: input,
     });
   });
 

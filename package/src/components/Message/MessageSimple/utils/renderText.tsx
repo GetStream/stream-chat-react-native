@@ -15,6 +15,8 @@ import {
   SingleASTNode,
 } from 'simple-markdown';
 
+import { parseUrlsFromText } from './parseUrls';
+
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type {
@@ -28,7 +30,6 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
-import { parseUrlsFromText } from './parseUrls';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
