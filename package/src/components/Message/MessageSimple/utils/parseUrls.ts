@@ -44,9 +44,9 @@ export const parseUrlsFromText = (input: string): Link[] => {
   let matches;
 
   const results: Array<{
-    raw: string;
     encoded: string;
     protocol: string;
+    raw: string;
   }> = [];
 
   while ((matches = linkRegexp.exec(input)) !== null) {
@@ -64,10 +64,10 @@ export const parseUrlsFromText = (input: string): Link[] => {
 const extractFromMatchGroups = (
   rawLink: string,
   {
-    fqdnDisplay = null,
-    pplDisplay = null,
     emailDisplay = null,
+    fqdnDisplay = null,
     fqdnProtocol = null,
+    pplDisplay = null,
     pplProtocol = null,
   },
 ): Link => {
