@@ -33,6 +33,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
