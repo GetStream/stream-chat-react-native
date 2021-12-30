@@ -24,11 +24,9 @@ export function buildThumbnail<At extends DefaultAttachmentType = DefaultAttachm
 
   // Only resize if the original image is larger than the thumbnail container size.
   const shouldResize =
-    originalImageHeight &&
-    originalImageWidth &&
-    height &&
-    width &&
-    originalImageHeight + originalImageWidth > height + width;
+    originalImageHeight && originalImageWidth
+      ? originalImageHeight + originalImageWidth > height + width
+      : true;
   const imageUrl = getUrlOfImageAttachment(image) as string;
 
   return {
