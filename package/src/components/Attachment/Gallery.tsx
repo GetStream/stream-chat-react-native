@@ -35,8 +35,6 @@ import type {
 } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {
     uri: string;
