@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ChannelPreviewProps } from './ChannelPreview';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { ChannelPreviewProps } from './ChannelPreview';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

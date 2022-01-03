@@ -1,12 +1,10 @@
 import React from 'react';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { MessageList } from '../MessageList';
-
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
-
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
@@ -15,8 +13,10 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { registerNativeHandlers } from '../../../native';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { MessageList } from '../MessageList';
 
 describe('MessageList', () => {
   afterEach(cleanup);

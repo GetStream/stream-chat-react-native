@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import type { UserResponse } from 'stream-chat';
+
 import { useCountdown } from './hooks/useCountdown';
 
-import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
-import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -20,6 +18,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   SuggestionsContextValue,
   useSuggestionsContext,
@@ -32,10 +31,8 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
-import type { UserResponse } from 'stream-chat';
-
-import type { Asset } from '../../types/types';
 import type {
+  Asset,
   DefaultAttachmentType,
   DefaultChannelType,
   DefaultCommandType,
@@ -45,6 +42,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
+import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
 const styles = StyleSheet.create({
   attachmentSeparator: {

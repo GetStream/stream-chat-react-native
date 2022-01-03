@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Spinner } from '../Spinner/Spinner';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { Spinner } from '../Spinner/Spinner';
 
 const styles = StyleSheet.create({
   container: {

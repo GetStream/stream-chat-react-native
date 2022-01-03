@@ -1,6 +1,5 @@
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
-import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,6 +10,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
 export type MessageActionsParams<
   At extends UnknownType = DefaultAttachmentType,

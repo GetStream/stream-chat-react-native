@@ -1,6 +1,10 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
+
+import type { TextInput, TextInputProps } from 'react-native';
+
 import uniq from 'lodash/uniq';
+import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
@@ -16,34 +20,11 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
-import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
-import { useChatContext } from '../chatContext/ChatContext';
-import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
-import { useThreadContext } from '../threadContext/ThreadContext';
-import { getDisplayName } from '../utils/getDisplayName';
-import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
-
-import {
-  ACITriggerSettings,
-  ACITriggerSettingsParams,
-  FileState,
-  generateRandomId,
-  TriggerSettings,
-  urlRegex,
-} from '../../utils/utils';
-
-import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
-
-import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
-import { useTranslationContext } from '../translationContext/TranslationContext';
-
-import type { TextInput, TextInputProps } from 'react-native';
-import { lookup } from 'mime-types';
-
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
+import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
@@ -51,6 +32,7 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
 import type {
   Asset,
   DefaultAttachmentType,
@@ -63,6 +45,21 @@ import type {
   File,
   UnknownType,
 } from '../../types/types';
+import {
+  ACITriggerSettings,
+  ACITriggerSettingsParams,
+  FileState,
+  generateRandomId,
+  TriggerSettings,
+  urlRegex,
+} from '../../utils/utils';
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
+import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
+import { useChatContext } from '../chatContext/ChatContext';
+import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useThreadContext } from '../threadContext/ThreadContext';
+import { useTranslationContext } from '../translationContext/TranslationContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type FileUpload = {
   file: File;

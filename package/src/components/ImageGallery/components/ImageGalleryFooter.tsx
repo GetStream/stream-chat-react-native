@@ -7,9 +7,8 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
-import type { Photo } from '../ImageGallery';
-
 import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)

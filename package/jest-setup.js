@@ -1,3 +1,4 @@
+/* global require */
 import { FlatList } from 'react-native';
 import { registerNativeHandlers } from './src/native';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
@@ -39,9 +40,9 @@ jest.mock('@gorhom/bottom-sheet', () => {
   const react = require('react-native');
   return {
     __esModule: true,
-    default: react.View,
-    BottomSheetScrollView: react.ScrollView,
     BottomSheetFlatList: react.FlatList,
+    BottomSheetScrollView: react.ScrollView,
+    default: react.View,
   };
 });
 // jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));

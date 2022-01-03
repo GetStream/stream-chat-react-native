@@ -1,9 +1,10 @@
 import React from 'react';
 import { GestureResponderEvent, Linking, Text, View } from 'react-native';
-import anchorme from 'anchorme';
-import truncate from 'lodash/truncate';
+
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
+
+import truncate from 'lodash/truncate';
 import {
   DefaultRules,
   defaultRules,
@@ -14,8 +15,10 @@ import {
   SingleASTNode,
 } from 'simple-markdown';
 
-import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+import { parseUrlsFromText } from './parseUrls';
 
+import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
+import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,8 +29,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
-import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
@@ -69,19 +71,6 @@ const defaultMarkdownStyles: MarkdownStyle = {
 const parse: ParseFunction = (capture, parse, state) => ({
   content: parseInline(parse, capture[0], state),
 });
-
-const parseUrlsFromText = (text: string) => {
-  try {
-    return anchorme(text, {
-      list: true,
-    });
-  } catch (e) {
-    console.warn(`failure at parseUrlsFromText: ${e}`);
-    // In case of failures its not worth crashing the app,
-    // and instead simply to have un-parsed urls in message text.
-    return [];
-  }
-};
 
 export type MarkdownRules = Partial<DefaultRules>;
 
@@ -141,7 +130,7 @@ export const renderText = <
   const urls = parseUrlsFromText(newText);
 
   for (const urlInfo of urls) {
-    const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
+    const displayLink = truncate(urlInfo.encoded, {
       length: 200,
       omission: '...',
     });

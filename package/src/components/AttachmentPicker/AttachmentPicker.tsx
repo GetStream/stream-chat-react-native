@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetHandleProps,
@@ -17,14 +18,14 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { lookup } from 'mime-types';
 
+import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
+
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Video } from '../../icons';
 import { getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
-
-import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
-import { Video } from '../../icons';
 
 const styles = StyleSheet.create({
   container: {

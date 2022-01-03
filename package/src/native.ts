@@ -1,5 +1,7 @@
 import { FlatList as DefaultFlatList } from 'react-native';
+
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
+
 import type { Asset, File } from './types/types';
 
 const fail = () => {

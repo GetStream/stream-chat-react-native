@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { Asset, File, UnknownType } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type AttachmentPickerIconProps = {
   numberOfImageUploads: number;

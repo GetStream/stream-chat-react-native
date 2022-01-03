@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { UnknownType } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 type ActiveChannels = React.MutableRefObject<string[]>;
 

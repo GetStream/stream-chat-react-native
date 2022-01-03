@@ -1,17 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Avatar } from '../Avatar/Avatar';
-import { AtMentions } from '../../icons/AtMentions';
-import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+
+import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
+
 import type {
   Suggestion,
   SuggestionCommand,
   SuggestionsContextValue,
   SuggestionUser,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
-import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Emoji } from '../../emoji-data/compiled';
+import { AtMentions } from '../../icons/AtMentions';
+import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import { Avatar } from '../Avatar/Avatar';
 
 export type AutoCompleteSuggestionItemPropsWithContext<
   Co extends string = DefaultCommandType,
