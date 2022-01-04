@@ -22,6 +22,7 @@ import Animated, {
 
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
+import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
 
 import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
@@ -99,6 +100,7 @@ export type MessageOverlayPropsWithContext<
   | 'MessageActionListItem'
   | 'OverlayReactionList'
   | 'OverlayReactions'
+  | 'OverlayReactionsAvatar'
   | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
@@ -150,6 +152,7 @@ const MessageOverlayWithContext = <
     overlayOpacity,
     OverlayReactionList = OverlayReactionListDefault,
     OverlayReactions = DefaultOverlayReactions,
+    OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
     reset,
     setOverlay,
     threadList,
@@ -529,6 +532,7 @@ const MessageOverlayWithContext = <
                           message.latest_reactions.length > 0 ? (
                             <OverlayReactions
                               alignment={alignment}
+                              OverlayReactionsAvatar={OverlayReactionsAvatar}
                               reactions={message.latest_reactions.map((reaction) => ({
                                 alignment:
                                   clientId && clientId === reaction.user?.id ? 'right' : 'left',
@@ -642,6 +646,7 @@ export const MessageOverlay = <
     MessageActionListItem,
     OverlayReactionList,
     OverlayReactions,
+    OverlayReactionsAvatar,
     reset,
   } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
@@ -652,6 +657,7 @@ export const MessageOverlay = <
     OverlayReactionList:
       props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,
+    OverlayReactionsAvatar: props.OverlayReactionsAvatar || OverlayReactionsAvatar,
   };
 
   return (
