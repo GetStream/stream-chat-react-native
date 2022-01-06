@@ -109,8 +109,8 @@ export const OverlayProvider = <
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
-      if (ref.current?.snapTo) {
-        ref.current.snapTo(0);
+      if (ref.current?.snapToIndex) {
+        ref.current.snapToIndex(0);
       } else {
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }

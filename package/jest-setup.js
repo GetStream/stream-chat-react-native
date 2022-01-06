@@ -1,7 +1,9 @@
 /* global require */
 import { FlatList } from 'react-native';
-import { registerNativeHandlers } from './src/native';
+
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
+
+import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
 
@@ -41,6 +43,8 @@ jest.mock('@gorhom/bottom-sheet', () => {
   return {
     __esModule: true,
     BottomSheetFlatList: react.FlatList,
+    BottomSheetModal: react.View,
+    BottomSheetModalProvider: react.View,
     BottomSheetScrollView: react.ScrollView,
     default: react.View,
   };

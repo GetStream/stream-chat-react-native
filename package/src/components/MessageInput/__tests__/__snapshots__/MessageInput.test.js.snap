@@ -1264,71 +1264,73 @@ Array [
         </View>
       </RCTSafeAreaView>
     </View>
-    <View
-      animatedIndex={
-        MutableValue {
-          "_animation": null,
-          "_id": 4,
-          "_listeners": Array [
-            [Function],
-          ],
-          "_setter": [Function],
-          "_value": 0,
+    <View>
+      <View
+        animatedIndex={
+          MutableValue {
+            "_animation": null,
+            "_id": 4,
+            "_listeners": Array [
+              [Function],
+            ],
+            "_setter": [Function],
+            "_value": 0,
+          }
         }
-      }
-      containerHeight={1334}
-      handleComponent={[Function]}
-      handleHeight={40}
-      index={0}
-      onChange={[Function]}
-      snapPoints={
-        Array [
-          0,
-          1200.6,
-        ]
-      }
-    >
-      <RCTScrollView
-        contentContainerStyle={
+        enablePanDownToClose={true}
+        handleComponent={[Function]}
+        handleHeight={40}
+        index={0}
+        onChange={[Function]}
+        snapPoints={
           Array [
-            Object {
-              "flexGrow": 1,
-            },
-            Object {
-              "backgroundColor": "#FFFFFF",
-            },
-            Object {},
+            1200.6,
           ]
         }
-        data={Array []}
-        disableVirtualization={false}
-        getItem={[Function]}
-        getItemCount={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
-        keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
-        onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
-        onLayout={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        removeClippedSubviews={false}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
-        viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
       >
-        <View />
-      </RCTScrollView>
+        <RCTScrollView
+          contentContainerStyle={
+            Array [
+              Object {
+                "flexGrow": 1,
+              },
+              Object {
+                "backgroundColor": "#FFFFFF",
+              },
+              Object {},
+            ]
+          }
+          data={Array []}
+          disableVirtualization={false}
+          getItem={[Function]}
+          getItemCount={[Function]}
+          horizontal={false}
+          initialNumToRender={10}
+          keyExtractor={[Function]}
+          maxToRenderPerBatch={10}
+          onContentSizeChange={[Function]}
+          onEndReachedThreshold={2}
+          onLayout={[Function]}
+          onMomentumScrollEnd={[Function]}
+          onScroll={[Function]}
+          onScrollBeginDrag={[Function]}
+          onScrollEndDrag={[Function]}
+          removeClippedSubviews={false}
+          renderItem={[Function]}
+          scrollEventThrottle={50}
+          stickyHeaderIndices={Array []}
+          updateCellsBatchingPeriod={50}
+          viewabilityConfigCallbackPairs={Array []}
+          windowSize={21}
+        >
+          <View />
+        </RCTScrollView>
+      </View>
     </View>
   </View>,
   <View
     containerHeight={1334}
+    enablePanDownToClose={true}
     handleComponent={[Function]}
     handleHeight={20}
     index={-1}
