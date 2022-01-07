@@ -1,19 +1,33 @@
-/* eslint-env node */
+const exclusionList = require("metro-config/src/defaults/exclusionList");
+const { getMetroTools, getMetroAndroidAssetsResolutionFix } = require("react-native-monorepo-tools");
 
-const PATH = require('path');
-const blacklist = require('metro-config/src/defaults/exclusionList');
+const monorepoMetroTools = getMetroTools();
 
-const extractLinkedPackages = require('stream-chat-react-native-core/metro-dev-helpers/extract-linked-packages');
-
-const projectRoot = PATH.resolve(__dirname);
-
-const { alternateRoots, extraNodeModules, moduleBlacklist } = extractLinkedPackages(projectRoot);
+const androidAssetsResolutionFix = getMetroAndroidAssetsResolutionFix();
 
 module.exports = {
-  resolver: {
-    blacklistRE: blacklist(moduleBlacklist),
-    extraNodeModules,
-    useWatchman: false,
+  transformer: {
+    // Apply the Android assets resolution fix to the public path...
+    publicPath: androidAssetsResolutionFix.publicPath,
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: false,
+      },
+    }),
   },
-  watchFolders: [projectRoot].concat(alternateRoots),
+  server: {
+    // ...and to the server middleware.
+    enhanceMiddleware: (middleware) => {
+      return androidAssetsResolutionFix.applyMiddleware(middleware);
+    },
+  },
+  // Add additional Yarn workspace package roots to the module map.
+  // This allows importing importing from all the project's packages.
+  watchFolders: monorepoMetroTools.watchFolders,
+  resolver: {
+    // Ensure we resolve nohoist libraries from this directory.
+    blockList: exclusionList(monorepoMetroTools.blockList),
+    extraNodeModules: monorepoMetroTools.extraNodeModules,
+  },
 };
