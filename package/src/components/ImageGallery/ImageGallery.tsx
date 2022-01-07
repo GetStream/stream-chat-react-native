@@ -141,7 +141,7 @@ type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomCompone
 };
 
 export const ImageGallery = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
+  At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
@@ -415,8 +415,8 @@ export const ImageGallery = <
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
     const photo = photos[index.value];
-    const height = photo?.height;
-    const width = photo?.width;
+    const height = photo?.original_height;
+    const width = photo?.original_width;
 
     if (height && width) {
       const imageHeight = Math.floor(height * (screenWidth / width));

@@ -4,10 +4,10 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
-export function buildGalleryOfTwoImages<At extends DefaultAttachmentType = DefaultAttachmentType>({
+export function buildGalleryOfTwoImages<At extends UnknownType = DefaultAttachmentType>({
   images,
   sizeConfig,
 }: {

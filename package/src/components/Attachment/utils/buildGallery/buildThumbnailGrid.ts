@@ -3,7 +3,7 @@ import type { Attachment } from 'stream-chat';
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
 
 /**
  * Builds a grid of thumbnail images from image attachments.
@@ -133,7 +133,7 @@ import type { DefaultAttachmentType } from '../../../../types/types';
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildThumbnailGrid<At extends DefaultAttachmentType = DefaultAttachmentType>({
+export function buildThumbnailGrid<At extends UnknownType = DefaultAttachmentType>({
   grid,
   images,
   invertedDirections = false,

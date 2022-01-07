@@ -8,7 +8,7 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
 
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.
@@ -26,7 +26,7 @@ import type { DefaultAttachmentType } from '../../../../types/types';
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildGallery<At extends DefaultAttachmentType = DefaultAttachmentType>({
+export function buildGallery<At extends UnknownType = DefaultAttachmentType>({
   images,
   sizeConfig,
 }: {

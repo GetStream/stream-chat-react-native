@@ -4,12 +4,12 @@ import type { Attachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 
-export function buildThumbnail<At extends DefaultAttachmentType = DefaultAttachmentType>({
+export function buildThumbnail<At extends UnknownType = DefaultAttachmentType>({
   height,
   image,
   resizeMode,
@@ -20,7 +20,7 @@ export function buildThumbnail<At extends DefaultAttachmentType = DefaultAttachm
   width: number;
   resizeMode?: ImageResizeMode;
 }): Thumbnail {
-  const { height: originalImageHeight, width: originalImageWidth } = image;
+  const { original_height: originalImageHeight, original_width: originalImageWidth } = image;
 
   // Only resize if the original image is larger than the thumbnail container size.
   const shouldResize =
@@ -33,7 +33,7 @@ export function buildThumbnail<At extends DefaultAttachmentType = DefaultAttachm
     height,
     resizeMode: resizeMode
       ? resizeMode
-      : ((image.height && image.width ? 'contain' : 'cover') as ImageResizeMode),
+      : ((image.original_height && image.original_width ? 'contain' : 'cover') as ImageResizeMode),
     url: shouldResize
       ? getResizedImageUrl({
           height,
