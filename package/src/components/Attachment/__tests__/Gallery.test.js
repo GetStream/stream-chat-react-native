@@ -63,15 +63,15 @@ describe('Gallery', () => {
     const { queryAllByTestId } = render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-column-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+      // expect(queryAllByTestId('gallery-row-1').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
     });
   });
 
-  it('should render portrait and landscape image in two columns', async () => {
+  it('should render portrait and landscape image in two rows', async () => {
     const attachment1 = generateImageAttachment({
       height: 600,
       width: 400,
@@ -84,11 +84,10 @@ describe('Gallery', () => {
     const { queryAllByTestId } = render(component);
 
     await waitFor(() => {
-      expect(queryAllByTestId('gallery-column-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
 
-      expect(queryAllByTestId('gallery-column-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
     });
   });
 

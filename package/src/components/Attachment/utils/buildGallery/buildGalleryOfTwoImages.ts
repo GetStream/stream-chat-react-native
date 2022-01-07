@@ -48,9 +48,9 @@ export function buildGalleryOfTwoImages<At extends DefaultAttachmentType = Defau
      * -----------
      */
     return buildThumbnailGrid({
-      grid: [[1], [1]],
+      grid: [[1, 1]],
       images,
-      invertedDirections: false,
+      invertedDirections: true,
       sizeConfig,
     });
   }

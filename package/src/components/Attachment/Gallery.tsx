@@ -208,8 +208,8 @@ const GalleryWithContext = <
       ]}
       testID='gallery-container'
     >
-      {thumbnailGrid.map((column, colIndex) => {
-        const numOfRows = column.length;
+      {thumbnailGrid.map((rows, colIndex) => {
+        const numOfRows = rows.length;
         return (
           <View
             key={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
@@ -221,7 +221,7 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {column.map(({ height, resizeMode, url, width }, rowIndex) => {
+            {rows.map(({ height, resizeMode, url, width }, rowIndex) => {
               const defaultOnPress = () => {
                 // Added if-else to keep the logic readable, instead of DRY.
                 // if - legacyImageViewerSwipeBehaviour is disabled
