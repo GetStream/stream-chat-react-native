@@ -19,7 +19,7 @@ import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/no
 import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
 import dispatchUserPresenceEvent from '../../../mock-builders/event/userPresence';
 import dispatchUserUpdatedEvent from '../../../mock-builders/event/userUpdated';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -78,9 +78,9 @@ describe('ChannelList', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     chatClient = await getTestClientWithUser({ id: 'dan' });
-    testChannel1 = generateChannel();
-    testChannel2 = generateChannel();
-    testChannel3 = generateChannel();
+    testChannel1 = generateChannelResponse();
+    testChannel2 = generateChannelResponse();
+    testChannel3 = generateChannelResponse();
   });
 
   afterEach(cleanup);
@@ -137,23 +137,57 @@ describe('ChannelList', () => {
   });
 
   it('should update if filters are updated while awaiting api call', async () => {
-    // const deferredCall = new DeferredPromise();
-    // useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
+    const deferredCallForStaleFilter = new DeferredPromise();
+    const deferredCallForFreshFilter = new DeferredPromise();
+    const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
+    const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
+    const staleChannel = [generateChannel({ id: 'stale-channel' })];
+    const freshChannel = [generateChannel({ id: 'new-channel' })];
 
-    jest.spyOn(chatClient, 'queryChannels').mockImplementation().mockResolvedValue([ testChannel2 ])
-    // useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
-    const { debug, getByTestId } = render(
+    const spy = jest.spyOn(chatClient, 'queryChannels');
+    spy.mockImplementationOnce((filters = {}) => {
+      if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
+        return deferredCallForFreshFilter.promise;
+      }
+      return deferredCallForStaleFilter.promise;
+    });
+
+    const { getByTestId, rerender } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} />
+        <ChannelList {...props} filters={staleFilter} />
       </Chat>,
     );
 
+    expect(spy).toHaveBeenCalledWith(
+      staleFilter,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    );
 
     await waitFor(() => {
-
-      debug("helloooo");
       expect(getByTestId('channel-list')).toBeTruthy();
-      expect(getByTestId(testChannel2.channel.id)).toBeTruthy();
+    });
+
+    rerender(
+      <Chat client={chatClient}>
+        <ChannelList {...props} filters={freshFilter} />
+      </Chat>,
+    );
+
+    expect(spy).toHaveBeenCalledWith(
+      freshFilter,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    );
+
+    deferredCallForStaleFilter.resolve(staleChannel);
+    deferredCallForFreshFilter.resolve(freshChannel);
+
+    await waitFor(() => {
+      expect(getByTestId('channel-list')).toBeTruthy();
+      expect(getByTestId('new-channel')).toBeTruthy();
     });
   });
 
@@ -164,7 +198,7 @@ describe('ChannelList', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <ChannelList {...props} onSelect={setActiveChannel} />
-      </Chat>
+      </Chat>,
     );
 
     await waitFor(() => {

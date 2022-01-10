@@ -7,7 +7,7 @@ import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateReaction } from '../../../../mock-builders/generator/reaction';
@@ -28,7 +28,7 @@ describe('MessageContent', () => {
 
   beforeEach(async () => {
     const members = [generateMember({ user })];
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members,
       messages,
     });
