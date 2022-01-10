@@ -1,4 +1,3 @@
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -9,6 +8,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 export const removeReservedFields = <
   At extends UnknownType = DefaultAttachmentType,

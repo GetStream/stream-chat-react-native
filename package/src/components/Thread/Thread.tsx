@@ -2,10 +2,6 @@ import React, { useEffect } from 'react';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
-import {
-  MessageInput as DefaultMessageInput,
-  MessageInputProps,
-} from '../MessageInput/MessageInput';
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
@@ -13,8 +9,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
-
-import type { MessageListProps } from '../MessageList/MessageList';
 
 import type {
   DefaultAttachmentType,
@@ -26,6 +20,11 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import {
+  MessageInput as DefaultMessageInput,
+  MessageInputProps,
+} from '../MessageInput/MessageInput';
+import type { MessageListProps } from '../MessageList/MessageList';
 
 type ThreadPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,

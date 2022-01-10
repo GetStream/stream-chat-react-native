@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -13,10 +15,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Left } from '../../icons/Left';
 import { Lightning } from '../../icons/Lightning';
 import { Right } from '../../icons/Right';
-import { makeImageCompatibleUrl } from '../../utils/utils';
-
-import type { Attachment } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -27,6 +25,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   cancel: {

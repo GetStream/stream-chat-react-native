@@ -1,7 +1,5 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
@@ -13,6 +11,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ImageGalleryContextValue<
   At extends UnknownType = DefaultAttachmentType,

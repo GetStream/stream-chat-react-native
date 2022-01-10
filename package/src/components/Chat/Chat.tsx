@@ -1,6 +1,9 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+
 import Dayjs from 'dayjs';
+
+import type { Channel } from 'stream-chat';
 
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
@@ -9,6 +12,7 @@ import { useMutedUsers } from './hooks/useMutedUsers';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -16,12 +20,6 @@ import {
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { SDK } from '../../native';
-import { version } from '../../version.json';
-
-import type { Channel } from 'stream-chat';
-
-import type { Theme } from '../../contexts/themeContext/utils/theme';
-import type { Streami18n } from '../../utils/Streami18n';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -32,6 +30,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { Streami18n } from '../../utils/Streami18n';
+import { version } from '../../version.json';
 
 export type ChatProps<
   At extends UnknownType = DefaultAttachmentType,

@@ -1,12 +1,11 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+
 import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 
-import { ChannelList } from '../ChannelList';
-
-import { Chat } from '../../Chat/Chat';
-
+import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
@@ -24,7 +23,8 @@ import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
+import { Chat } from '../../Chat/Chat';
+import { ChannelList } from '../ChannelList';
 
 /**
  * We are gonna use following custom UI components for preview and list.

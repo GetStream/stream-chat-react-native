@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { Keyboard } from 'react-native';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { UnknownType } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type KeyboardContextValue = {
   dismissKeyboard: () => void;

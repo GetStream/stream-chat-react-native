@@ -1,9 +1,5 @@
 import { useMemo } from 'react';
 
-import type { MessageInputContextValue } from '../MessageInputContext';
-
-import type { ThreadContextValue } from '../../threadContext/ThreadContext';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -14,6 +10,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { ThreadContextValue } from '../../threadContext/ThreadContext';
+import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = <
   At extends UnknownType = DefaultAttachmentType,

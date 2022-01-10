@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
-
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -18,6 +16,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
 const wait = (ms: number) =>
   new Promise((resolve) => {

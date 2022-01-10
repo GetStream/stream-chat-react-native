@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { Audio } from '../../icons/Audio';
@@ -17,11 +18,10 @@ import { RTF } from '../../icons/RTF';
 import { SEVEN_Z } from '../../icons/SEVEN_Z';
 import { TAR } from '../../icons/TAR';
 import { TXT } from '../../icons/TXT';
+import type { IconProps } from '../../icons/utils/base';
 import { XLS } from '../../icons/XLS';
 import { XLSX } from '../../icons/XLSX';
 import { ZIP } from '../../icons/ZIP';
-
-import type { IconProps } from '../../icons/utils/base';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
 const audioFileTypes = [

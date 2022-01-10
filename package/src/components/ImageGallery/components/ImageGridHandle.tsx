@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
