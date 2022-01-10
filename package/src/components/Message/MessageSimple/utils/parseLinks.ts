@@ -6,7 +6,6 @@
  * the patterns below, but note that some are optional,
  * specified in the patterns these are added to.
  * */
-const notInMarkdownLink = `(?<!\\]\\(.*)`;
 const emailUserName = '[\\w+\\.~$_-]+';
 const schema = `(\\w{2,15}:\\/\\/)`;
 const domain = `((?:\\w+\\.\\w+)+(?:[^:\\/\\s]+))`;
@@ -23,13 +22,13 @@ const emailPattern = `(mailto:)?((?:${emailUserName})@(?:${domain}))`;
 /**
  * Match any string starting with something that seems like it's a schema.
  * */
-const schemePrefixedLinkPattern = `${notInMarkdownLink}${schema}(\\S+)`;
+const schemePrefixedLinkPattern = `${schema}(\\S+)`;
 
 /**
  * Match as much as possible of a fqdn, at least with a domain name formed as
  * something.tld
  */
-const fqdnLinkPattern = `${notInMarkdownLink}${schema}?${domain}${port}?${path}?${queryString}?${fragment}?`;
+const fqdnLinkPattern = `${schema}?${domain}${port}?${path}?${queryString}?${fragment}?`;
 
 interface Link {
   encoded: string;
@@ -37,8 +36,16 @@ interface Link {
   scheme: string;
 }
 
+/**
+ * This is done separately because of the version of javascript run
+ * for expo
+ * */
+const removeMarkdownLinksFromText = (input: string) => input.replace(/\[[\w\s]+\]\(.*\)/g, '');
+
 export const parseLinksFromText = (input: string): Link[] => {
   let matches;
+
+  const inputWithoutMarkdownLinks = removeMarkdownLinksFromText(input);
 
   const results: Link[] = [];
 
@@ -53,7 +60,7 @@ export const parseLinksFromText = (input: string): Link[] => {
    * to avoid overlapping matches being duplicated in the output.
    * */
   const linkRegex = new RegExp(`${fqdnLinkPattern}|${schemePrefixedLinkPattern}`, 'gi');
-  while ((matches = linkRegex.exec(input)) !== null) {
+  while ((matches = linkRegex.exec(inputWithoutMarkdownLinks)) !== null) {
     const [
       raw,
       fqdnScheme = '',
