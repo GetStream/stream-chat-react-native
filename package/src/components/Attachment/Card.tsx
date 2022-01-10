@@ -12,6 +12,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -21,10 +23,6 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { makeImageCompatibleUrl } from '../../utils/utils';
-
-import type { Attachment } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -35,6 +33,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   authorName: { fontSize: 14.5, fontWeight: '600' },

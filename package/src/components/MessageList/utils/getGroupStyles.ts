@@ -1,7 +1,5 @@
 import type { DateSeparators } from './getDateSeparators';
 
-import type { GroupType } from '../hooks/useMessageList';
-
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
@@ -14,6 +12,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { GroupType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams<
   At extends UnknownType = DefaultAttachmentType,

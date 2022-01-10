@@ -1,12 +1,12 @@
-import { MessageStatusTypes } from '../../../utils/utils';
-
 import type { MessageResponse, Reaction } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type {
+  MessageContextValue,
+  Reactions,
+} from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import type { Reactions } from '../../../contexts/messageContext/MessageContext';
 
 import type {
   DefaultAttachmentType,
@@ -18,6 +18,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
   At extends UnknownType = DefaultAttachmentType,

@@ -1,10 +1,8 @@
-import debounce from 'lodash/debounce';
+import type React from 'react';
 import { Dimensions } from 'react-native';
 
-import { compiledEmojis, Emoji } from '../emoji-data/compiled';
-
-import type React from 'react';
 import type { DebouncedFunc } from 'lodash';
+import debounce from 'lodash/debounce';
 import type {
   Channel,
   ChannelMemberAPIResponse,
@@ -20,6 +18,7 @@ import type {
   SuggestionComponentType,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
+import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
 import type {
   DefaultAttachmentType,

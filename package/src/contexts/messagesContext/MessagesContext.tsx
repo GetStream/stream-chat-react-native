@@ -1,17 +1,10 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { TouchableOpacityProps } from 'react-native';
 
-import type { ChannelState, MessageResponse } from 'stream-chat';
+import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
-import type { Alignment } from '../messageContext/MessageContext';
-import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
-import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
-import type { DeepPartial } from '../themeContext/ThemeContext';
-import type { Theme } from '../themeContext/utils/theme';
-import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
@@ -29,22 +22,23 @@ import type { MessageAvatarProps } from '../../components/Message/MessageSimple/
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageDeletedProps } from '../../components/Message/MessageSimple/MessageDeleted';
 import type { MessageFooterProps } from '../../components/Message/MessageSimple/MessageFooter';
-import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
+
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
 import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
-import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
+import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
+import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { MessageActionsParams } from '../../components/Message/utils/messageActions';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { InlineDateSeparatorProps } from '../../components/MessageList/InlineDateSeparator';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
-import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
+import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
+import type { MessageActionType } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
-import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
 import type {
@@ -58,6 +52,12 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import type { Alignment } from '../messageContext/MessageContext';
+import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
+import type { DeepPartial } from '../themeContext/ThemeContext';
+import type { Theme } from '../themeContext/utils/theme';
+import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 

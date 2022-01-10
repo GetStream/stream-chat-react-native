@@ -1,17 +1,12 @@
-import { getDateSeparators } from '../utils/getDateSeparators';
-import { getGroupStyles } from '../utils/getGroupStyles';
-import { getReadStates } from '../utils/getReadStates';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
-
-import type { ChannelState, MessageResponse } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,6 +17,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { getDateSeparators } from '../utils/getDateSeparators';
+import { getGroupStyles } from '../utils/getGroupStyles';
+import { getReadStates } from '../utils/getReadStates';
 
 export type UseMessageListParams = {
   deletedMessagesVisibilityType?: 'always' | 'never' | 'receiver' | 'sender';

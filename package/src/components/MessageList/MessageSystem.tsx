@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import type { MessageType } from './hooks/useMessageList';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TDateTimeParserInput,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-
-import type { MessageType } from './hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,

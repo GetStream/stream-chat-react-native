@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { PinHeader } from '../../../icons';
 
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { PinHeader } from '../../../icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,7 +31,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 export type MessagePinnedHeaderPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,

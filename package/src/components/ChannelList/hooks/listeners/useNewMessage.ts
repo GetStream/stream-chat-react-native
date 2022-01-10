@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 
-import { moveChannelUp } from '../../utils';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-
-import type { Channel, Event } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -16,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
+import { moveChannelUp } from '../../utils';
 
 type Parameters<
   At extends UnknownType = DefaultAttachmentType,

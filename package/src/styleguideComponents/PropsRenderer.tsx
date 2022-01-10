@@ -1,14 +1,17 @@
 import React from 'react';
-import Arguments from './ArgumentsRenderer';
+
 import Argument from 'react-styleguidist/lib/client/rsg-components/Argument';
-import JsDoc from './JsDoc';
+
 import Markdown from 'react-styleguidist/lib/client/rsg-components/Markdown';
 import Name from 'react-styleguidist/lib/client/rsg-components/Name';
 import Para from 'react-styleguidist/lib/client/rsg-components/Para';
-import renderTypeColumn from 'react-styleguidist/lib/client/rsg-components/Props/renderType';
-import renderExtra from 'react-styleguidist/lib/client/rsg-components/Props/renderExtra';
 import renderDefault from 'react-styleguidist/lib/client/rsg-components/Props/renderDefault';
+import renderExtra from 'react-styleguidist/lib/client/rsg-components/Props/renderExtra';
+import renderTypeColumn from 'react-styleguidist/lib/client/rsg-components/Props/renderType';
 import { PropDescriptor } from 'react-styleguidist/lib/client/rsg-components/Props/util';
+
+import Arguments from './ArgumentsRenderer';
+import JsDoc from './JsDoc';
 
 function renderDescription(prop: PropDescriptor) {
   const { description, tags = {} } = prop;

@@ -19,9 +19,8 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
-import type { Photo } from '../ImageGallery';
-
 import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)

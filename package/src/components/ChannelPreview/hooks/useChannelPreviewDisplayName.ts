@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-
-import { vw } from '../../../utils/utils';
-
 import type { Channel } from 'stream-chat';
+
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type {
   DefaultAttachmentType,
@@ -16,6 +14,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { vw } from '../../../utils/utils';
 
 const maxCharacterLengthDefault = (vw(100) - 16) / 6;
 

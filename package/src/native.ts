@@ -1,4 +1,5 @@
 import { FlatList as DefaultFlatList } from 'react-native';
+
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {

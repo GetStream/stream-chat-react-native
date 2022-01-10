@@ -1,8 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { Avatar, AvatarProps } from '../../Avatar/Avatar';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -19,6 +17,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
 export type MessageAvatarPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,

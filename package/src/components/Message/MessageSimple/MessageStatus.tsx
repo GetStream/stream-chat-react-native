@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -11,8 +9,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
-import { MessageStatusTypes } from '../../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -23,6 +19,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
+
+import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
   readByCount: {

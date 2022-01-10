@@ -1,5 +1,3 @@
-import { MessageStatusTypes } from '../../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -10,6 +8,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
+
 import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <

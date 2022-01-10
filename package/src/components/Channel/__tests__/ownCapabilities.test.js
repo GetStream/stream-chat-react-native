@@ -1,22 +1,22 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { Chat } from '../../Chat/Chat';
-import { Channel } from '../../Channel/Channel';
-import { MessageInput } from '../../MessageInput/MessageInput';
-import { MessageList } from '../../MessageList/MessageList';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { sendMessageApi } from '../../../mock-builders/api/sendMessage';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { registerNativeHandlers } from '../../../native';
-import { sendMessageApi } from '../../../mock-builders/api/sendMessage';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { MessageInput } from '../../MessageInput/MessageInput';
+import { MessageList } from '../../MessageList/MessageList';
 
 describe('Own capabilities', () => {
   const clientUser = generateUser();

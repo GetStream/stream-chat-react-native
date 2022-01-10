@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 
-import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
+import type { FlatList } from 'react-native-gesture-handler';
+
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
+
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
+import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import { ChannelListMessenger, ChannelListMessengerProps } from './ChannelListMessenger';
@@ -20,18 +24,10 @@ import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
-import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
-import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
-import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
-
 import {
   ChannelsContextValue,
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
-
-import type { FlatList } from 'react-native-gesture-handler';
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -42,6 +38,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
+import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
+import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
 export type ChannelListProps<
   At extends UnknownType = DefaultAttachmentType,
