@@ -82,7 +82,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { generateRandomId, ReactionData } from '../../utils/utils';
+import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { Card as CardDefault } from '../Attachment/Card';

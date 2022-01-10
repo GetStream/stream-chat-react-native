@@ -30,7 +30,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { MessageStatusTypes, vw, vw } from '../../../utils/utils';
+import { MessageStatusTypes, vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {

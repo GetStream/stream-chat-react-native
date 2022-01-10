@@ -1,7 +1,7 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment, Attachment } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -312,9 +312,9 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (
-    error = message.type === 'error' || message.status === MessageStatusTypes.FAILED,
-  ) => {
+  const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
+
+  const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
@@ -505,11 +505,7 @@ const MessageWithContext = <
     t,
     updateMessage,
   });
-
-  const showMessageOverlay = async (
-    messageReactions = false,
-    error = message.type === 'error' || message.status === MessageStatusTypes.FAILED,
-  ) => {
+  const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
     const isThreadMessage = threadList || !!message.parent_id;
