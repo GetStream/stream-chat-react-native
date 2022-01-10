@@ -18,6 +18,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
   At extends UnknownType = DefaultAttachmentType,
@@ -32,6 +33,7 @@ export const useMessageActionHandlers = <
   client,
   enforceUniqueReaction,
   message,
+  removeMessage,
   retrySendMessage,
   setEditingState,
   setQuotedMessageState,
@@ -39,6 +41,7 @@ export const useMessageActionHandlers = <
   updateMessage,
 }: Pick<
   MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -60,8 +63,12 @@ export const useMessageActionHandlers = <
   );
 
   const handleDeleteMessage = async () => {
-    const data = await client.deleteMessage(message.id);
-    updateMessage(data.message);
+    if (message.status === MessageStatusTypes.FAILED) {
+      removeMessage(message);
+    } else {
+      const data = await client.deleteMessage(message.id);
+      updateMessage(data.message);
+    }
   };
 
   const handleToggleMuteUser = async () => {

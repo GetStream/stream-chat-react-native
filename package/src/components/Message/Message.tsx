@@ -43,7 +43,6 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { triggerHaptic } from '../../native';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -54,7 +53,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { emojiRegex } from '../../utils/utils';
+import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
+
 import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
@@ -287,7 +287,8 @@ const MessageWithContext = <
     },
   } = useTheme();
 
-  const actionsEnabled = message.type === 'regular' && message.status === 'received';
+  const actionsEnabled =
+    message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
@@ -311,7 +312,9 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
+  const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
+
+  const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
@@ -453,6 +456,7 @@ const MessageWithContext = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -491,6 +495,7 @@ const MessageWithContext = <
     message,
     onThreadSelect,
     openThread,
+    removeMessage,
     retrySendMessage,
     selectReaction,
     setEditingState,
@@ -500,11 +505,7 @@ const MessageWithContext = <
     t,
     updateMessage,
   });
-
-  const showMessageOverlay = async (
-    messageReactions = false,
-    error = message.type === 'error' || message.status === 'failed',
-  ) => {
+  const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
     const isThreadMessage = threadList || !!message.parent_id;
