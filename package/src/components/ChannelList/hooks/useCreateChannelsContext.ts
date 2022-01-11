@@ -55,12 +55,11 @@ export const useCreateChannelsContext = <
   const channelValueString = channels
     .map(
       (channel) =>
-        `${channel.data?.name}${Object.values(channel.state.members)
+        `${channel.data?.name ?? ''}${channel.id ?? ''}${Object.values(channel.state.members)
           .map((member) => member.user?.online)
           .join()}`,
     )
     .join();
-
   const channelsContext: ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
       additionalFlatListProps,

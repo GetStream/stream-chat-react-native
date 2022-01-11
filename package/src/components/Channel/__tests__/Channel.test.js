@@ -16,7 +16,7 @@ import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/T
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
@@ -63,7 +63,7 @@ const renderComponent = (props = {}, callback = () => {}, context = ChannelConte
 describe('Channel', () => {
   beforeEach(async () => {
     const members = [generateMember({ user })];
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members,
       messages,
     });
@@ -177,7 +177,7 @@ describe('Channel', () => {
   const queryChannelWithNewMessages = (newMessages) =>
     // generate new channel mock from existing channel with new messages added
     getOrCreateChannelApi(
-      generateChannel({
+      generateChannelResponse({
         channel: {
           config: channel.getConfig(),
           id: channel.id,

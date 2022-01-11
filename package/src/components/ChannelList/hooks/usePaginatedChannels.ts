@@ -16,11 +16,12 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms: number) =>
+const waitSeconds = (seconds: number) =>
   new Promise((resolve) => {
-    setTimeout(resolve, ms);
+    setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
 type Parameters<
@@ -36,6 +37,12 @@ type Parameters<
 const DEFAULT_OPTIONS = {
   message_limit: 10,
 };
+
+const MAX_NUMBER_OF_RETRIES = 3;
+const RETRY_INTERVAL_IN_MS = 5000;
+
+type QueryType = 'reload' | 'refresh' | 'loadChannels';
+export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
 export const usePaginatedChannels = <
   At extends UnknownType = DefaultAttachmentType,
@@ -54,32 +61,49 @@ export const usePaginatedChannels = <
   const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
   const activeChannels = useActiveChannelsRefContext();
 
-  const [error, setError] = useState<boolean | Error>(false);
+  const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
-  const querying = useRef(false);
-  const [loadingChannels, setLoadingChannels] = useState(false);
-  const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const isMounted = useIsMountedRef();
+  const isQueryingRef = useRef(false);
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>();
+  const isMountedRef = useIsMountedRef();
+  const filtersRef = useRef<typeof filters | null>(null);
+  const sortRef = useRef<typeof filters | null>(null);
+  const activeRequestId = useRef<number>(0);
 
-  const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
-    if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
+  const queryChannels: QueryChannels = async (
+    queryType: QueryType = 'loadChannels',
+    retryCount = 0,
+  ): Promise<void> => {
+    if (!client || !isMountedRef.current) return;
 
-    querying.current = true;
-    setError(false);
+    const hasUpdatedData = () =>
+      [
+        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
+        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
+        activeRequestId.current !== currentRequestId,
+      ].some(Boolean); // will return true if any element is truthy
 
-    if (queryType === 'reload') {
-      setLoadingChannels(true);
-    } else if (queryType === 'refresh') {
-      setRefreshing(true);
-    } else if (!queryType) {
-      setLoadingNextPage(true);
+    const queryIsStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
+
+    /**
+     * We don't need to make another call to query channels if we don't
+     * have new data for the query to include
+     * */
+    if (!hasUpdatedData) {
+      if (activeQueryType === null) return;
     }
+
+    filtersRef.current = filters;
+    isQueryingRef.current = true;
+    setError(undefined);
+    activeRequestId.current++;
+    const currentRequestId = activeRequestId.current;
+    setActiveQueryType(queryType);
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : channels.length,
+      offset: queryType === 'loadChannels' ? channels.length : 0,
       ...options,
     };
 
@@ -88,54 +112,61 @@ export const usePaginatedChannels = <
         skipInitialization: activeChannels.current,
       });
 
-      if (!isMounted.current) return;
+      if (queryIsStale() || !isMountedRef.current) {
+        return;
+      }
 
       channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
       const newChannels =
-        queryType === 'reload' || queryType === 'refresh'
-          ? channelQueryResponse
-          : [...channels, ...channelQueryResponse];
+        queryType === 'loadChannels'
+          ? [...channels, ...channelQueryResponse]
+          : channelQueryResponse;
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setError(false);
-      querying.current = false;
-    } catch (err) {
-      querying.current = false;
-      await wait(2000);
+      setError(undefined);
+      isQueryingRef.current = false;
+    } catch (err: unknown) {
+      isQueryingRef.current = false;
+      await waitSeconds(2);
 
-      if (!isMounted.current) return;
+      if (queryIsStale()) {
+        return;
+      }
 
       // querying.current check is needed in order to make sure the next query call doesnt flick an error
       // state and then succeed (reconnect case)
-      if (retryCount === 3 && !querying.current) {
-        setLoadingChannels(false);
-        setLoadingNextPage(false);
-        setRefreshing(false);
+      if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
+        setActiveQueryType(null);
         console.warn(err);
-        return setError(true);
+        setError(
+          new Error(
+            `Maximum number of retries reached in queryChannels. Last error message is: ${err}`,
+          ),
+        );
+        return;
       }
 
       return queryChannels(queryType, retryCount + 1);
     }
 
-    setLoadingChannels(false);
-    setLoadingNextPage(false);
-    setRefreshing(false);
+    setActiveQueryType(null);
   };
 
   const loadNextPage = hasNextPage ? queryChannels : undefined;
+
   const refreshList = () => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
-    if (now - lastRefresh.current < 5000 && !error) {
+    if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
       return;
     }
 
     lastRefresh.current = Date.now();
     return queryChannels('refresh');
   };
+
   const reloadList = () => queryChannels('reload');
 
   /**
@@ -164,10 +195,10 @@ export const usePaginatedChannels = <
     channels,
     error,
     hasNextPage,
-    loadingChannels,
-    loadingNextPage,
+    loadingChannels: activeQueryType === 'reload',
+    loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
-    refreshing,
+    refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
     setChannels,

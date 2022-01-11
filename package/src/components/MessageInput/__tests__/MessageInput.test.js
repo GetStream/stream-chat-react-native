@@ -6,7 +6,7 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Channel } from '../../Channel/Channel';
@@ -46,7 +46,7 @@ describe('MessageInput', () => {
   });
 
   it('should render MessageInput', async () => {
-    await initializeChannel(generateChannel());
+    await initializeChannel(generateChannelResponse());
     const openPicker = jest.fn();
     const closePicker = jest.fn();
     const attachmentValue = { closePicker, openPicker };

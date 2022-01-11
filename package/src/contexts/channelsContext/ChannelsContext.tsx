@@ -6,6 +6,7 @@ import type { FlatList } from 'react-native-gesture-handler';
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
+import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type { ChannelAvatarProps } from '../../components/ChannelPreview/ChannelAvatar';
 import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
@@ -65,10 +66,6 @@ export type ChannelsContextValue<
    * */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
-   * Error in channels query, if any
-   */
-  error: boolean | Error;
-  /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
    * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListFooterLoadingIndicator)
@@ -121,7 +118,7 @@ export type ChannelsContextValue<
   /**
    * Loads the next page of `channels`, which is present as a required prop
    */
-  loadNextPage: ((queryType?: string, retryCount?: number) => Promise<void>) | undefined;
+  loadNextPage: QueryChannels | undefined;
   /**
    * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
    */
@@ -174,6 +171,10 @@ export type ChannelsContextValue<
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/v3/#skeleton)
    */
   Skeleton: React.ComponentType;
+  /**
+   * Error in channels query, if any
+   */
+  error?: Error;
   ListHeaderComponent?: React.ComponentType;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
