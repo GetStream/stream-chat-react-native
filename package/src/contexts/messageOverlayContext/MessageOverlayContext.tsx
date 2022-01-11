@@ -1,6 +1,8 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
 
 import type { Attachment } from 'stream-chat';
+
+import { useResettableState } from './hooks/useResettableState';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
@@ -103,18 +105,7 @@ export const MessageOverlayProvider = <
 }: PropsWithChildren<{
   value?: MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
-  const [data, setData] = useState(value?.data);
-
-  const reset = () => {
-    // TODO: Add the isMounted check here.
-    setData(value?.data);
-  };
-
-  const messageOverlayContext = {
-    data,
-    reset,
-    setData,
-  };
+  const messageOverlayContext = useResettableState(value);
   return (
     <MessageOverlayContext.Provider value={messageOverlayContext as MessageOverlayContextValue}>
       {children}
