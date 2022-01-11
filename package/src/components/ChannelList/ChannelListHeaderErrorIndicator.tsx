@@ -13,7 +13,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    fontWeight: 'bold',
     padding: 3,
   },
 });
@@ -28,7 +27,7 @@ export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
   const {
     theme: {
       channelListHeaderErrorIndicator: { container, errorText },
-      colors: { accent_red, grey },
+      colors: { grey_dark, white },
     },
   } = useTheme();
   const { t } = useTranslationContext();
@@ -36,12 +35,9 @@ export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.container, { backgroundColor: `${grey}E6` }, container]}
+      style={[styles.container, { backgroundColor: `${grey_dark}E6` }, container]}
     >
-      <Text
-        style={[styles.errorText, { color: accent_red }, errorText]}
-        testID='channel-loading-error'
-      >
+      <Text style={[styles.errorText, { color: white }, errorText]} testID='channel-loading-error'>
         {t('Error while loading, please reload/refresh')}
       </Text>
     </TouchableOpacity>
