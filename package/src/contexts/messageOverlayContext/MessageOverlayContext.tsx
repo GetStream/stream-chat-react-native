@@ -12,6 +12,7 @@ import type {
 } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
+import type { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -84,6 +85,7 @@ export type MessageOverlayContextValue<
    * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactions.tsx)
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps>;
+  OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
   reset: () => void;
   setData: React.Dispatch<React.SetStateAction<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>>>;
   data?: MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>;

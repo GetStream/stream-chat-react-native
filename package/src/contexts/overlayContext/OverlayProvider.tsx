@@ -119,6 +119,7 @@ export const OverlayProvider = <
     translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
+    OverlayReactionsAvatar,
     value,
   } = props;
 
@@ -231,6 +232,7 @@ export const OverlayProvider = <
                     overlayOpacity={overlayOpacity}
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}
+                    OverlayReactionsAvatar={OverlayReactionsAvatar}
                     visible={overlay === 'message'}
                   />
                 )}
