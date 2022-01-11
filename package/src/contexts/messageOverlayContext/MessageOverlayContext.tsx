@@ -2,6 +2,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { Attachment } from 'stream-chat';
 
+import { useResettableState } from './hooks/useResettableState';
+
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type {
@@ -25,7 +27,6 @@ import type { Alignment, MessageContextValue } from '../messageContext/MessageCo
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getDisplayName } from '../utils/getDisplayName';
-import { useResettableState } from './hooks/useResettableState';
 
 export type MessageOverlayData<
   At extends UnknownType = DefaultAttachmentType,
