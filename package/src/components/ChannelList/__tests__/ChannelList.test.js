@@ -143,9 +143,8 @@ describe('ChannelList', () => {
     const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
     const staleChannel = [generateChannel({ id: 'stale-channel' })];
     const freshChannel = [generateChannel({ id: 'new-channel' })];
-
     const spy = jest.spyOn(chatClient, 'queryChannels');
-    spy.mockImplementationOnce((filters = {}) => {
+    spy.mockImplementation((filters = {}) => {
       if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
         return deferredCallForFreshFilter.promise;
       }
@@ -184,7 +183,6 @@ describe('ChannelList', () => {
 
     deferredCallForStaleFilter.resolve(staleChannel);
     deferredCallForFreshFilter.resolve(freshChannel);
-
     await waitFor(() => {
       expect(getByTestId('channel-list')).toBeTruthy();
       expect(getByTestId('new-channel')).toBeTruthy();
@@ -287,7 +285,6 @@ describe('ChannelList', () => {
             <ChannelList {...props} />
           </Chat>,
         );
-
         await waitFor(() => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
@@ -297,9 +294,7 @@ describe('ChannelList', () => {
         await waitFor(() => {
           expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
-
         const items = getAllByRole('list-item');
-
         await waitFor(() => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
