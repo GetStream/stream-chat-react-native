@@ -60,7 +60,7 @@ const options = {
   presence: true,
   state: true,
   watch: true,
-    limit: 40,
+  limit: 30,
 };
 
 /**
