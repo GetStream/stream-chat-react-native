@@ -4,8 +4,14 @@ defineTest(
   __dirname,
   "imports",
   null,
-    // {test name}.(input|output).ts
   "imports",
-  // Jscodeshift options.
-  { parser: "ts" }
+  { parser: "tsx" }
+);
+
+defineTest(
+  __dirname,
+  "function",
+  null,
+  "function",
+  { parser: "tsx" }
 );

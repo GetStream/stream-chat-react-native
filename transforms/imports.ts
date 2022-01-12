@@ -1,6 +1,6 @@
-import { API, FileInfo, ImportSpecifier, Options } from "jscodeshift";
+import { API, FileInfo, Options } from "jscodeshift";
 
-module.exports = function (fileInfo: FileInfo, api: API, options: Options) {
+module.exports = function (fileInfo: FileInfo, api: API) {
     const j = api.jscodeshift;
 const oldGenerics = [
                 "DefaultAttachmentType",
