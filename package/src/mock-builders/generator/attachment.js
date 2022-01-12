@@ -19,10 +19,8 @@ export const generateVideoAttachment = (a) => ({
 
 export const generateImageAttachment = (a) => ({
   image_url: uuidv4(),
-  text: uuidv4(),
   thumb_url: uuidv4(),
   title: uuidv4(),
-  title_link: 'https://getstream.io',
   type: 'image',
   ...a,
 });

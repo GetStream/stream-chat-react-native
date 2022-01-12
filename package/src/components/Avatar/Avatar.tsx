@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  ImageStyle,
-  PixelRatio,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Image, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
@@ -103,7 +96,11 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
                 ? imageProp?.includes(streamCDN)
                   ? imageProp
                   : `${randomImageBaseUrl}${name ? `?name=${getInitials(name)}&size=${size}` : ''}`
-                : imageProp.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`),
+                : getResizedImageUrl({
+                    height: size,
+                    url: imageProp,
+                    width: size,
+                  }),
           }}
           style={[
             image,

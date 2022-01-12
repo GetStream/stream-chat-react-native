@@ -167,21 +167,6 @@ describe('MessageContent', () => {
     });
   });
 
-  it('renders the Gallery when image attachments exist', async () => {
-    const user = generateUser();
-    const message = generateMessage({
-      attachments: [{ image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' }],
-      user,
-    });
-
-    const { getByTestId } = renderMessage({ message });
-
-    await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('image-attachment-single')).toBeTruthy();
-    });
-  });
-
   it('renders the GalleryContainer when multiple image attachments exist', async () => {
     const user = generateUser();
     const message = generateMessage({
@@ -192,12 +177,11 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId, queryAllByTestId } = renderMessage({ message });
+    const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('image-multiple-container')).toBeTruthy();
-      expect(queryAllByTestId('image-multiple')).toHaveLength(2);
+      expect(getByTestId('gallery-container')).toBeTruthy();
     });
   });
 

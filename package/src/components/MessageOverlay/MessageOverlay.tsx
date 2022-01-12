@@ -497,8 +497,7 @@ const MessageOverlayWithContext = <
                                             hasThreadReplies={!!message?.reply_count}
                                             images={images}
                                             key={`gallery_${messageContentOrderIndex}`}
-                                            messageId={message.id}
-                                            messageText={message.text}
+                                            message={message}
                                             threadList={threadList}
                                           />
                                         )
