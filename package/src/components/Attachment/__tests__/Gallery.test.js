@@ -7,7 +7,7 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
@@ -22,11 +22,10 @@ describe('Gallery', () => {
   const getComponent = async (attachments = []) => {
     const chatClient = await getTestClientWithUser({ id: 'testID' });
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ attachments, user: user1 })],
     });
-
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.watch();
@@ -52,12 +51,12 @@ describe('Gallery', () => {
    */
   it('should render two portrait images in two columns', async () => {
     const attachment1 = generateImageAttachment({
-      height: 600,
-      width: 400,
+      original_height: 600,
+      original_width: 400,
     });
     const attachment2 = generateImageAttachment({
-      height: 700,
-      width: 400,
+      original_height: 700,
+      original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
     const { queryAllByTestId } = render(component);
@@ -73,12 +72,12 @@ describe('Gallery', () => {
 
   it('should render portrait and landscape image in two rows', async () => {
     const attachment1 = generateImageAttachment({
-      height: 600,
-      width: 400,
+      original_height: 600,
+      original_width: 400,
     });
     const attachment2 = generateImageAttachment({
-      height: 200,
-      width: 400,
+      original_height: 200,
+      original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
     const { queryAllByTestId } = render(component);
@@ -101,12 +100,12 @@ describe('Gallery', () => {
    */
   it('should render two landscape images in two rows', async () => {
     const attachment1 = generateImageAttachment({
-      height: 200,
-      width: 400,
+      original_height: 200,
+      original_width: 400,
     });
     const attachment2 = generateImageAttachment({
-      height: 300,
-      width: 400,
+      original_height: 300,
+      original_width: 400,
     });
     const component = await getComponent([attachment1, attachment2]);
     const { queryAllByTestId } = render(component);
@@ -130,16 +129,16 @@ describe('Gallery', () => {
    */
   it('should render 3 images containing a portrait image in two columns, with portrait in its own column', async () => {
     const portraitImage = generateImageAttachment({
-      height: 600,
-      width: 300,
+      original_height: 600,
+      original_width: 300,
     });
     const squareImage1 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
     const squareImage2 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
 
     const component = await getComponent([portraitImage, squareImage1, squareImage2]);
@@ -166,16 +165,16 @@ describe('Gallery', () => {
    */
   it('should render 3 images containing a landscape image in two rows, with landscape in its own row', async () => {
     const portraitImage = generateImageAttachment({
-      height: 300,
-      width: 600,
+      original_height: 300,
+      original_width: 600,
     });
     const squareImage1 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
     const squareImage2 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
 
     const component = await getComponent([portraitImage, squareImage1, squareImage2]);
@@ -202,20 +201,20 @@ describe('Gallery', () => {
    */
   it('should render 4 images in grid of two columns and 2 rows', async () => {
     const image1 = generateImageAttachment({
-      height: 300,
-      width: 600,
+      original_height: 300,
+      original_width: 600,
     });
     const image2 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
     const image3 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
     const image4 = generateImageAttachment({
-      height: 400,
-      width: 400,
+      original_height: 400,
+      original_width: 400,
     });
 
     const component = await getComponent([image1, image2, image3, image4]);

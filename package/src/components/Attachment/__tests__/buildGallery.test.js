@@ -15,10 +15,10 @@ describe('buildGallery', () => {
 
   it('gallery size should not exceed max sizes provided by size config', () => {
     const imageSizeTestCases = [
-      { height: 1000, width: 2000 },
-      { height: 100, width: 200 },
-      { height: 10, width: 20 },
-      { height: 200, width: 300 },
+      { original_height: 1000, original_width: 2000 },
+      { original_height: 100, original_width: 200 },
+      { original_height: 10, original_width: 20 },
+      { original_height: 200, original_width: 300 },
     ];
 
     imageSizeTestCases.forEach((size) => {
@@ -57,10 +57,10 @@ describe('buildGallery', () => {
     };
 
     const imageSizeTestCases = [
-      { height: 1000, width: 2000 },
-      { height: 100, width: 200 },
-      { height: 10, width: 20 },
-      { height: 200, width: 300 },
+      { original_height: 1000, original_width: 2000 },
+      { original_height: 100, original_width: 200 },
+      { original_height: 10, original_width: 20 },
+      { original_height: 200, original_width: 300 },
     ];
 
     imageSizeTestCases.forEach((size) => {
@@ -73,7 +73,7 @@ describe('buildGallery', () => {
         sizeConfig,
       });
 
-      const originalAspectRatio = size.width / size.height;
+      const originalAspectRatio = size.original_width / size.original_height;
       const resultingAspectRatio = width / height;
       expect(originalAspectRatio).toBe(resultingAspectRatio);
     });
@@ -96,10 +96,10 @@ describe('buildGallery', () => {
 
   it('thumbnail size should be smaller than the limits set by sizeConfig', () => {
     const bigImage = generateImageAttachment({
-      height: 1200,
       image_url:
         'https://stream-io.cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&h=*&w=*&resize=*',
-      width: 900,
+      original_height: 1200,
+      original_width: 900,
     });
 
     const { thumbnailGrid: tg1 } = buildGallery({
@@ -112,10 +112,10 @@ describe('buildGallery', () => {
     expect(t1.url.includes(`&resize=clip`)).toBe(true);
 
     const smallImage = generateImageAttachment({
-      height: 30,
       image_url:
         'https://stream-io.cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&h=*&w=*&resize=*',
-      width: 20,
+      original_height: 30,
+      original_width: 20,
     });
 
     const { thumbnailGrid: tg2 } = buildGallery({
