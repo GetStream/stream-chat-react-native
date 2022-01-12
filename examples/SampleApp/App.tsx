@@ -82,23 +82,19 @@ const App = () => {
   );
 };
 
-const DrawerNavigator: React.FC = () => {
-  const { overlay } = useOverlayContext();
-
-  return (
-    <Drawer.Navigator
-      drawerContent={(props) => <MenuDrawer {...props} />}
-      drawerStyle={{
-        width: 300,
-      }}
-      screenOptions={{
-        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
-      }}
-    >
-      <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
-    </Drawer.Navigator>
-  );
-};
+const DrawerNavigator: React.FC = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <MenuDrawer {...props} />}
+    drawerStyle={{
+      width: 300,
+    }}
+    screenOptions={{
+      gestureEnabled: true,
+    }}
+  >
+    <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
+  </Drawer.Navigator>
+);
 
 const DrawerNavigatorWrapper: React.FC<{
   chatClient: StreamChat<
