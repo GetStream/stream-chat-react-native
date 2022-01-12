@@ -8,7 +8,7 @@ import { allOwnCapabilities } from '../../../contexts/ownCapabilitiesContext/Own
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { sendMessageApi } from '../../../mock-builders/api/sendMessage';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -58,7 +58,7 @@ describe('Own capabilities', () => {
   );
 
   const generateChannelWithCapabilities = async (capabilities = []) => {
-    const c = generateChannel({
+    const c = generateChannelResponse({
       channel: {
         own_capabilities: capabilities,
       },

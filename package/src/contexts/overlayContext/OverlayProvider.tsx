@@ -119,6 +119,7 @@ export const OverlayProvider = <
     translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
+    OverlayReactionsAvatar,
     value,
   } = props;
 
@@ -231,17 +232,20 @@ export const OverlayProvider = <
                     overlayOpacity={overlayOpacity}
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}
+                    OverlayReactionsAvatar={OverlayReactionsAvatar}
                     visible={overlay === 'message'}
                   />
                 )}
-                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                  imageGalleryCustomComponents={imageGalleryCustomComponents}
-                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'gallery'}
-                />
+                {overlay === 'gallery' && (
+                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                    imageGalleryCustomComponents={imageGalleryCustomComponents}
+                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                    numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'gallery'}
+                  />
+                )}
                 <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
               </ThemeProvider>
             </ImageGalleryProvider>

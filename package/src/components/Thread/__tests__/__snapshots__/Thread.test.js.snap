@@ -68,9 +68,9 @@ exports[`Thread should match thread snapshot 1`] = `
               "user": Object {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "GrantyBoi2",
-                "image": "https://i.imgur.com/SLx06PP.png",
-                "name": "Grant",
+                "id": "arthur",
+                "image": "https://i.imgur.com/LuuGvh0.png",
+                "name": "Arthur",
                 "online": false,
                 "role": "user",
                 "updated_at": "2020-04-27T13:39:49.332087Z",
@@ -96,9 +96,9 @@ exports[`Thread should match thread snapshot 1`] = `
               "user": Object {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "NeiliBoi3",
-                "image": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
-                "name": "Neil",
+                "id": "finn",
+                "image": "https://i.imgur.com/spueyAP.png",
+                "name": "Finn",
                 "online": false,
                 "role": "user",
                 "updated_at": "2020-04-27T13:39:49.332087Z",
@@ -124,9 +124,9 @@ exports[`Thread should match thread snapshot 1`] = `
               "user": Object {
                 "banned": false,
                 "created_at": "2020-04-27T13:39:49.331742Z",
-                "id": "GrantyBoi2",
-                "image": "https://i.imgur.com/SLx06PP.png",
-                "name": "Grant",
+                "id": "arthur",
+                "image": "https://i.imgur.com/LuuGvh0.png",
+                "name": "Arthur",
                 "online": false,
                 "role": "user",
                 "updated_at": "2020-04-27T13:39:49.332087Z",
@@ -314,7 +314,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               onError={[Function]}
                               source={
                                 Object {
-                                  "uri": "https://i.imgur.com/SLx06PP.png",
+                                  "uri": "https://i.imgur.com/LuuGvh0.png",
                                 }
                               }
                               style={
@@ -561,7 +561,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               onError={[Function]}
                               source={
                                 Object {
-                                  "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
+                                  "uri": "https://i.imgur.com/spueyAP.png",
                                 }
                               }
                               style={
@@ -808,7 +808,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               onError={[Function]}
                               source={
                                 Object {
-                                  "uri": "https://i.imgur.com/SLx06PP.png",
+                                  "uri": "https://i.imgur.com/LuuGvh0.png",
                                 }
                               }
                               style={
@@ -1098,7 +1098,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 onError={[Function]}
                                 source={
                                   Object {
-                                    "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
+                                    "uri": "https://i.imgur.com/spueyAP.png",
                                   }
                                 }
                                 style={

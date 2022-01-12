@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
@@ -137,7 +138,11 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
                       : `${randomImageBaseUrl}${
                           name ? `?name=${getInitials(name)}&size=${height}` : ''
                         }`
-                    : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`),
+                    : getResizedImageUrl({
+                        height,
+                        url,
+                        width,
+                      }),
               }}
               style={[
                 image,

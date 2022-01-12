@@ -27,6 +27,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { emojiRegex } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -177,10 +178,19 @@ const ReplyWithContext = <
             <Image
               onError={() => setError(true)}
               source={{
-                uri:
-                  lastAttachment.image_url ||
-                  lastAttachment.thumb_url ||
-                  lastAttachment.og_scrape_url,
+                uri: getResizedImageUrl({
+                  height:
+                    stylesProp.imageAttachment?.height ||
+                    imageAttachment?.height ||
+                    styles.imageAttachment.height,
+                  url: (lastAttachment.image_url ||
+                    lastAttachment.thumb_url ||
+                    lastAttachment.og_scrape_url) as string,
+                  width:
+                    stylesProp.imageAttachment?.width ||
+                    imageAttachment?.width ||
+                    styles.imageAttachment.width,
+                }),
               }}
               style={[styles.imageAttachment, imageAttachment, stylesProp.imageAttachment]}
             />

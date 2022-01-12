@@ -77,7 +77,9 @@ export type ImageUpload = {
   };
   id: string;
   state: string;
+  height?: number;
   url?: string;
+  width?: number;
 };
 
 export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
@@ -667,6 +669,8 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          original_height: image.height,
+          original_width: image.width,
           type: 'image',
         } as Attachment<At>);
       }
@@ -980,8 +984,10 @@ export const MessageInputProvider = <
             if (imageUpload.id === id) {
               return {
                 ...imageUpload,
+                height: file.height,
                 state: FileState.UPLOADED,
                 url: response.file,
+                width: file.width,
               };
             }
             return imageUpload;
