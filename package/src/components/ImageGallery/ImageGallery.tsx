@@ -359,9 +359,10 @@ export const ImageGallery = <
       return {
         channelId: cur.cid,
         created_at: cur.created_at,
-        height: a.height,
         id: `photoId-${cur.id}-${imageUrl}`,
         messageId: cur.id,
+        original_height: a.original_height,
+        original_width: a.original_width,
         uri: getResizedImageUrl({
           height: screenHeight,
           url: imageUrl,
@@ -369,7 +370,6 @@ export const ImageGallery = <
         }),
         user: cur.user,
         user_id: cur.user_id,
-        width: a.width,
       };
     });
 
@@ -1226,11 +1226,11 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
   uri: string;
   channelId?: string;
   created_at?: string | Date;
-  height?: number;
   messageId?: string;
+  original_height?: number;
+  original_width?: number;
   user?: UserResponse<Us> | null;
   user_id?: string;
-  width?: number;
 };
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

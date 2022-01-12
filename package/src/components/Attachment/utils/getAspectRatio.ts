@@ -15,7 +15,7 @@ export function getAspectRatio<At extends UnknownType = DefaultAttachmentType>(
     throw new Error('getAspectRatio() can only be called on an image attachment');
   }
 
-  if (!image.original_height || !image.original_height) return 1;
+  if (!image.original_width || !image.original_height) return 1;
 
-  return image.original_height / image.original_height;
+  return image.original_width / image.original_height;
 }

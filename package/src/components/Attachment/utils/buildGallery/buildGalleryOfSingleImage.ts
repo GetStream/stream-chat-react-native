@@ -26,7 +26,7 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
   image: Attachment<At>;
   sizeConfig: GallerySizeConfig;
 }) {
-  const { height, width } = image;
+  const { original_height: height, original_width: width } = image;
   const { gridHeight, gridWidth, maxHeight, maxWidth, minHeight, minWidth } = sizeConfig;
 
   if (!height || !width) {
@@ -34,6 +34,7 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
   }
 
   const aspectRatio = getAspectRatio(image);
+
   if (aspectRatio <= 1) {
     const containerHeight = clamp(height, minHeight, maxHeight);
     const containerWidth = clamp(containerHeight * aspectRatio, minWidth, maxWidth);
@@ -44,7 +45,6 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
         width: containerWidth,
       };
     }
-
     return {
       height: containerHeight,
       width: containerWidth,

@@ -668,10 +668,10 @@ export const MessageInputProvider = <
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
         attachments.push({
           fallback: image.file.name,
-          height: image.height,
           image_url: image.url,
+          original_height: image.height,
+          original_width: image.width,
           type: 'image',
-          width: image.width,
         } as Attachment<At>);
       }
     }
