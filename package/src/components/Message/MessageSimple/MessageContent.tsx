@@ -30,7 +30,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { vw } from '../../../utils/utils';
+import { MessageStatusTypes, vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -200,7 +200,7 @@ const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 

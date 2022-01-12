@@ -1,8 +1,8 @@
-import { parseUrlsFromText } from './parseUrls';
+import { parseLinksFromText } from './parseLinks';
 
-describe('parseUrlsFromText', () => {
+describe('parseLinksFromText', () => {
   it.each([
-    ['www.getstream.io', 'getstream.io'],
+    ['www.getstream.io', 'www.getstream.io'],
     ['getstream.io', 'getstream.io'],
     ['scrn://team-chat', 'team-chat'],
     ['https://localhost', 'localhost'],
@@ -22,10 +22,29 @@ describe('parseUrlsFromText', () => {
     ],
     ['127.0.0.1/local_(development)_server', '127.0.0.1/local_(development)_server'],
     ['https://a.co:8999/ab.php?p=12', 'a.co:8999/ab.php?p=12'],
-  ])('Returns the encoded value of %p as %p', (url, expected) => {
-    const result = parseUrlsFromText(url);
+  ])('Returns the encoded value of %p as %p', (link, expected) => {
+    const result = parseLinksFromText(link);
 
     expect(result[0].encoded).toBe(expected);
+  });
+
+  it('parses fqdn', () => {
+    const input = `We have put the apim bol,
+temporarily so :sj: we can later put the monitors on my grasp
+on reality right now is
+https://www.contrived-example.com:8080/sub/page.php?p1=1🇳🇴&p2=2#fragment-identifier
+:)`;
+
+    const result = parseLinksFromText(input);
+
+    expect(result).toEqual([
+      {
+        encoded:
+          'www.contrived-example.com:8080/sub/page.php?p1=1%F0%9F%87%B3%F0%9F%87%B4&p2=2#fragment-identifier',
+        raw: 'https://www.contrived-example.com:8080/sub/page.php?p1=1🇳🇴&p2=2#fragment-identifier',
+        scheme: 'https://',
+      },
+    ]);
   });
 
   it.each([
@@ -34,25 +53,25 @@ describe('parseUrlsFromText', () => {
     ['support-rn@getstream.io'],
     ['support_rn@getstream.io'],
   ])('Can parse the email address %p', (email) => {
-    const result = parseUrlsFromText(email);
+    const result = parseLinksFromText(email);
 
     expect(result[0].encoded).toBe(email);
-    expect(result[0].protocol).toBe('mailto:');
+    expect(result[0].scheme).toBe('mailto:');
   });
 
   it("doesn't double the mailto prefix", () => {
     const input = 'mailto:support@getstream.io';
 
-    const result = parseUrlsFromText(input);
+    const result = parseLinksFromText(input);
 
     expect(result[0]).toEqual({
       encoded: 'support@getstream.io',
-      protocol: 'mailto:',
       raw: input,
+      scheme: 'mailto:',
     });
   });
 
-  it('Does not falsely parse URLs from text content', () => {
+  it('Does not falsely parse LINKs from text content', () => {
     const input = `#This string exists to test that we don't produce false positives
 
 Existing links:
@@ -63,20 +82,19 @@ Existing links:
 www.getstream.io
 getstream.io
 `;
-    const result = parseUrlsFromText(input);
+    const result = parseLinksFromText(input);
 
     expect(result).toHaveLength(2);
   });
 
-  it('strips out broken emoji from both input and encoded URL', () => {
+  it('Encodes incomplete emoji unicode', () => {
     const input = 'https://getstream.io/�';
-
-    const result = parseUrlsFromText(input);
+    const result = parseLinksFromText(input);
 
     expect(result[0]).toEqual({
-      encoded: 'getstream.io/',
-      protocol: 'https://',
-      raw: 'https://getstream.io/',
+      encoded: 'getstream.io/%EF%BF%BD',
+      raw: 'https://getstream.io/�',
+      scheme: 'https://',
     });
   });
 });

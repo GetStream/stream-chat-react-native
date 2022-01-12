@@ -10,7 +10,7 @@ import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/Imag
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../mock-builders/generator/user';
@@ -35,7 +35,7 @@ describe('Thread', () => {
       generateMessage({ parent_id }),
     ];
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       messages: [thread, thread2],
     });
 
@@ -75,7 +75,7 @@ describe('Thread', () => {
       generateStaticMessage('Message6', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
     ];
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       channel: {
         id: uuidv5('Channel', StreamReactNativeNamespace),
       },

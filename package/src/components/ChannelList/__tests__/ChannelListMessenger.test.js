@@ -10,7 +10,7 @@ import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatCon
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelList } from '../ChannelList';
@@ -53,8 +53,8 @@ const Component = ({ error = false, loadingChannels = false }) => (
 describe('ChannelListMessenger', () => {
   beforeAll(async () => {
     chatClient = await getTestClientWithUser({ id: 'vishal' });
-    const c1 = generateChannel();
-    const c2 = generateChannel();
+    const c1 = generateChannelResponse();
+    const c2 = generateChannelResponse();
     useMockedApis(chatClient, [getOrCreateChannelApi(c1), getOrCreateChannelApi(c2)]);
     const channel1 = chatClient.channel(c1.channel.type, c1.channel.id);
     await channel1.watch();

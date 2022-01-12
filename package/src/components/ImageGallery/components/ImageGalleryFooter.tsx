@@ -125,9 +125,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
     setShareMenuOpen(true);
     try {
       const localImage = await saveFile({
-        fileName: `${photo.user?.name || photo.user_id || 'ChatPhoto'}-${
-          photo.messageId
-        }-${selectedIndex}.jpg`,
+        fileName: `${photo.user?.id || 'ChatPhoto'}-${photo.messageId}-${selectedIndex}.jpg`,
         fromUrl: photo.uri,
       });
       await shareImage({ type: 'image/jpeg', url: localImage });

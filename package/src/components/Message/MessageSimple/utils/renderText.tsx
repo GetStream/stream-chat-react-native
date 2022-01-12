@@ -15,7 +15,7 @@ import {
   SingleASTNode,
 } from 'simple-markdown';
 
-import { parseUrlsFromText } from './parseUrls';
+import { parseLinksFromText } from './parseLinks';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
@@ -53,7 +53,6 @@ const defaultMarkdownStyles: MarkdownStyle = {
   mentions: {
     fontWeight: '700',
   },
-  // unfortunately marginVertical doesn't override the defaults for these within the 3rd party lib
   paragraph: {
     marginBottom: 8,
     marginTop: 8,
@@ -127,14 +126,14 @@ export const renderText = <
   if (!text) return null;
 
   let newText = text.trim();
-  const urls = parseUrlsFromText(newText);
+  const urls = parseLinksFromText(newText);
 
   for (const urlInfo of urls) {
     const displayLink = truncate(urlInfo.encoded, {
       length: 200,
       omission: '...',
     });
-    const markdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
+    const markdown = `[${displayLink}](${urlInfo.scheme}${urlInfo.encoded})`;
     newText = newText.replace(urlInfo.raw, markdown);
   }
 
@@ -261,7 +260,7 @@ export const renderText = <
    *
    * This custom rule overrides this behavior both for top level lists and sublists,
    * in order to start the numbering from the number of the first list item provided.
-   * */
+   */
   const customListAtLevel =
     (level: keyof typeof listLevels): ReactNodeOutput =>
     (node, output, { ...state }) => {

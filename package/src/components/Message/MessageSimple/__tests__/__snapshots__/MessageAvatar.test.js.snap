@@ -36,7 +36,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
         onError={[Function]}
         source={
           Object {
-            "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
+            "uri": "https://i.imgur.com/ytIyojl.png",
           }
         }
         style={
