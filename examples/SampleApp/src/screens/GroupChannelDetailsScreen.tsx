@@ -19,7 +19,7 @@ import {
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
@@ -166,7 +166,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     params: { channel },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { setOverlay: setAppOverlay } = useAppOverlayContext();
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
@@ -261,11 +261,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <ScreenHeader
         inSafeArea
-        RightContent={() => (
-          <RoundButton onPress={openAddMembersSheet}>
-            <AddUser fill={accent_blue} height={24} width={24} />
-          </RoundButton>
-        )}
+        RightContent={() =>
+          channelCreatorId === chatClient?.user?.id ? (
+            <RoundButton onPress={openAddMembersSheet}>
+              <AddUser fill={accent_blue} height={24} width={24} />
+            </RoundButton>
+          ) : null
+        }
         subtitleText={membersStatus}
         titleText={displayName}
       />
