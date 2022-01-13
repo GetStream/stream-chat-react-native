@@ -33,7 +33,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import BottomSheet from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -186,15 +186,15 @@ export const ImageGallery = <
     : vh(100);
   const halfScreenHeight = screenHeight / 2;
   const quarterScreenHeight = screenHeight / 4;
-  const snapPoints = React.useMemo(() => [0, (screenHeight * 9) / 10], []);
+  const snapPoints = React.useMemo(() => [(screenHeight * 9) / 10], []);
 
   /**
-   * BottomSheet ref
+   * BottomSheetModal ref
    */
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   /**
-   * BottomSheet state
+   * BottomSheetModal state
    */
   const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
   const animatedBottomSheetIndex = useSharedValue(0);
@@ -1061,17 +1061,21 @@ export const ImageGallery = <
   );
 
   /**
-   * Functions to open and close BottomSheet with image grid
+   * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
+    if (bottomSheetModalRef.current?.close) {
+      bottomSheetModalRef.current.close();
       setGridPhotos([]);
     }
   };
+
+  /**
+   * Function to open BottomSheetModal with image grid
+   */
   const openGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.snapTo(1);
+    if (bottomSheetModalRef.current?.present) {
+      bottomSheetModalRef.current.present();
       setGridPhotos(photos);
     }
   };
@@ -1178,30 +1182,32 @@ export const ImageGallery = <
         closeGridView={closeGridView}
         currentBottomSheetIndex={currentBottomSheetIndex}
       />
-      <BottomSheet
-        animatedIndex={animatedBottomSheetIndex}
-        containerHeight={fullScreenHeight}
-        handleComponent={() => (
-          <ImageGridHandle
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          animatedIndex={animatedBottomSheetIndex}
+          enablePanDownToClose={true}
+          handleComponent={() => (
+            <ImageGridHandle
+              closeGridView={closeGridView}
+              {...imageGalleryCustomComponents?.gridHandle}
+            />
+          )}
+          handleHeight={imageGalleryGridHandleHeight ?? 40}
+          index={0}
+          onChange={(index: number) => setCurrentBottomSheetIndex(index)}
+          ref={bottomSheetModalRef}
+          snapPoints={imageGalleryGridSnapPoints || snapPoints}
+        >
+          <ImageGrid
             closeGridView={closeGridView}
-            {...imageGalleryCustomComponents?.gridHandle}
+            numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+            photos={gridPhotos}
+            resetVisibleValues={resetVisibleValues}
+            setImage={setImage}
+            {...imageGalleryCustomComponents?.grid}
           />
-        )}
-        handleHeight={imageGalleryGridHandleHeight ?? 40}
-        index={0}
-        onChange={(index: number) => setCurrentBottomSheetIndex(index)}
-        ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || snapPoints}
-      >
-        <ImageGrid
-          closeGridView={closeGridView}
-          numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-          photos={gridPhotos}
-          resetVisibleValues={resetVisibleValues}
-          setImage={setImage}
-          {...imageGalleryCustomComponents?.grid}
-        />
-      </BottomSheet>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </Animated.View>
   );
 };

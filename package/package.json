@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.13.10",
-    "@gorhom/bottom-sheet": "3.6.4",
+    "@gorhom/bottom-sheet": "4.1.5",
     "dayjs": "1.10.5",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
@@ -83,11 +83,6 @@
     "stream-chat": "^5.1.2"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*",
-    "react-native": "*",
-    "react-native-gesture-handler": "^1.8.0",
-    "react-native-reanimated": "^2.0.0",
     "react-native-svg": "^12.1.0"
   },
   "devDependencies": {
