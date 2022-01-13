@@ -7,7 +7,6 @@ const ReplyWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType,
 >(
-  props: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     FileAttachmentIcon,

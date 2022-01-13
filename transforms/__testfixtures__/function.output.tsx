@@ -1,5 +1,4 @@
-const ReplyWithContext = <StreamChatApplication extends StreamChatGenerics>(
-  props: ReplyPropsWithContext<StreamChatApplication>,
+const ReplyWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
 ) => {
   const {
     FileAttachmentIcon,
