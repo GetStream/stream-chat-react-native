@@ -20,8 +20,10 @@ const oldGenerics = [
             j(path).remove();
         })
 
-    out.get('specifiers')
-    out.get().insertAfter(j.importSpecifier(j.identifier("StreamChatGenerics")))
+    if (out.length > 0) {
+        out.get('specifiers')
+        out.get().insertAfter(j.importSpecifier(j.identifier("StreamChatGenerics")))
+    }
     return out.toSource();
 
 }

@@ -19,9 +19,11 @@ module.exports = function (fileInfo: FileInfo, api: API) {
     j.tsTypeReference(j.identifier('DefaultStreamChatGenerics')),
   );
 
+
   const out = j(fileInfo.source)
     .find(j.TSTypeParameterDeclaration)
-    .find(j.TSTypeParameter, (p) => {
+    .forEach(p => {
+       j(p).find(j.TSTypeParameter, (p) => {
       if (p.default) {
         return oldGenerics.includes(p.default['typeName'].name);
       }
@@ -32,6 +34,8 @@ module.exports = function (fileInfo: FileInfo, api: API) {
     })
     .at(0)
     .insertBefore(newGeneric);
+    })
+    
 
   return out.toSource();
 };

@@ -1,3 +1,5 @@
+const AutoCompleteInputWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() => {};
+
 const ReplyWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
 ) => {
   const {
