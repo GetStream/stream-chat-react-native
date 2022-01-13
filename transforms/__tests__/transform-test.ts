@@ -15,3 +15,10 @@ defineTest(
   "function",
   { parser: "tsx" }
 );
+defineTest(
+  __dirname,
+  "variable-declaration",
+  null,
+  "variable-declaration",
+  { parser: "tsx" }
+);
