@@ -17,16 +17,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../../icons/Unknown';
 
 import type { IconProps } from '../../../icons/utils/base';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import type { ReactionData } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -68,15 +59,7 @@ const Icon: React.FC<
   );
 };
 
-export type ReactionListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<
+export type ReactionListPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'alignment'
   | 'message'
@@ -97,15 +80,7 @@ export type ReactionListPropsWithContext<
     strokeSize?: number; // not recommended to change this
   };
 
-const ReactionListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const ReactionListWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -297,15 +272,7 @@ const ReactionListWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -350,29 +317,13 @@ const MemoizedReactionList = React.memo(
   areEqual,
 ) as typeof ReactionListWithContext;
 
-export type ReactionListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>> &
+export type ReactionListProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<Omit<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>> &
   Pick<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>;
 
 /**
  * ReactionList - A high level component which implements all the logic required for a message reaction list
  */
-export const ReactionList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ReactionList = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {

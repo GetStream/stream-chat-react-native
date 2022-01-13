@@ -8,16 +8,7 @@ import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMe
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Check, CheckAll } from '../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   date: {
@@ -30,29 +21,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ChannelPreviewStatusProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<
+export type ChannelPreviewStatusProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<
   ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'latestMessagePreview' | 'formatLatestMessageDate'
 > &
   Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
 
-export const ChannelPreviewStatus = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ChannelPreviewStatus = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { formatLatestMessageDate, latestMessagePreview } = props;

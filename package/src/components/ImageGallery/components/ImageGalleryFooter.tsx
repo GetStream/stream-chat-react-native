@@ -7,7 +7,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
-import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryFooterCustomComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryFooterCustomComponent<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = ({
   openGridView,
   photo,
   share,
@@ -58,7 +58,7 @@ export type ImageGalleryFooterCustomComponent<Us extends UnknownType = DefaultUs
   photo?: Photo<Us>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryFooterCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryFooterCustomComponentProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   centerElement?: ImageGalleryFooterCustomComponent<Us>;
   GridIcon?: React.ReactElement;
   leftElement?: ImageGalleryFooterCustomComponent<Us>;
@@ -66,7 +66,7 @@ export type ImageGalleryFooterCustomComponentProps<Us extends UnknownType = Defa
   ShareIcon?: React.ReactElement;
 };
 
-type Props<Us extends UnknownType = DefaultUserType> =
+type Props<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryFooterCustomComponentProps<Us> & {
     opacity: Animated.SharedValue<number>;
     openGridView: () => void;
@@ -76,7 +76,7 @@ type Props<Us extends UnknownType = DefaultUserType> =
     visible: Animated.SharedValue<number>;
   };
 
-export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGalleryFooter = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(props: Props<Us>) => {
   const {
     centerElement,
     GridIcon,

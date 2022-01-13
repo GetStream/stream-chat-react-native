@@ -10,38 +10,13 @@ import { Search } from '../../icons/Search';
 import { SendRight } from '../../icons/SendRight';
 import { SendUp } from '../../icons/SendUp';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
-type SendButtonPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
+type SendButtonPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
-const SendButtonWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const SendButtonWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false, giphyActive, sendMessage } = props;
@@ -66,15 +41,7 @@ const SendButtonWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -106,28 +73,12 @@ const MemoizedSendButton = React.memo(
   areEqual,
 ) as typeof SendButtonWithContext;
 
-export type SendButtonProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type SendButtonProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<SendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
-export const SendButton = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const SendButton = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { giphyActive, sendMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();

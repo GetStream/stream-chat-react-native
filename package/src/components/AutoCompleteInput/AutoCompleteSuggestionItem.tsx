@@ -12,13 +12,10 @@ import type {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { Emoji } from '../../emoji-data/compiled';
 import { AtMentions } from '../../icons/AtMentions';
-import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { Avatar } from '../Avatar/Avatar';
 
-export type AutoCompleteSuggestionItemPropsWithContext<
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<SuggestionsContextValue, 'triggerType'> & {
+export type AutoCompleteSuggestionItemPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<SuggestionsContextValue, 'triggerType'> & {
   itemProps: Suggestion<Co, Us>;
 };
 
@@ -56,10 +53,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const AutoCompleteSuggestionItemWithContext = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
->({
+const AutoCompleteSuggestionItemWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   itemProps,
   triggerType,
 }: AutoCompleteSuggestionItemPropsWithContext<Co, Us>) => {
@@ -119,10 +113,7 @@ const AutoCompleteSuggestionItemWithContext = <
   }
 };
 
-const areEqual = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AutoCompleteSuggestionItemPropsWithContext<Co, Us>,
   nextProps: AutoCompleteSuggestionItemPropsWithContext<Co, Us>,
 ) => {
@@ -140,15 +131,9 @@ const MemoizedAutoCompleteSuggestionItem = React.memo(
   areEqual,
 ) as typeof AutoCompleteSuggestionItemWithContext;
 
-export type AutoCompleteSuggestionItemProps<
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
-> = AutoCompleteSuggestionItemPropsWithContext<Co, Us>;
+export type AutoCompleteSuggestionItemProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = AutoCompleteSuggestionItemPropsWithContext<Co, Us>;
 
-export const AutoCompleteSuggestionItem = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
->(
+export const AutoCompleteSuggestionItem = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: AutoCompleteSuggestionItemProps<Co, Us>,
 ) => <MemoizedAutoCompleteSuggestionItem {...props} />;
 

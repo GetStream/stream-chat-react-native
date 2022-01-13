@@ -15,27 +15,10 @@ import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPre
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
-export type ChannelsContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type ChannelsContextValue<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
    * additional props to the underlying React Native FlatList.
@@ -217,15 +200,7 @@ export type ChannelsContextValue<
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
 
-export const ChannelsProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->({
+export const ChannelsProvider = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   children,
   value,
 }: PropsWithChildren<{
@@ -236,31 +211,14 @@ export const ChannelsProvider = <
   </ChannelsContext.Provider>
 );
 
-export const useChannelsContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+export const useChannelsContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() => useContext(ChannelsContext) as unknown as ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withChannelsContext = <
-  P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const withChannelsContext = <P extends UnknownType, StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithChannelsContextComponent = (

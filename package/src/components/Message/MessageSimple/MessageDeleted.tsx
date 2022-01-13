@@ -21,16 +21,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
@@ -55,28 +46,12 @@ type MessageDeletedComponentProps = {
   onLayout: (event: LayoutChangeEvent) => void;
 };
 
-type MessageDeletedPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'> &
+type MessageDeletedPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'> &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'> &
   Pick<TranslationContextValue, 't'> &
   MessageDeletedComponentProps;
 
-const MessageDeletedWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const MessageDeletedWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout, t } =
@@ -134,15 +109,7 @@ const MessageDeletedWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -182,29 +149,13 @@ const MemoizedMessageDeleted = React.memo(
   areEqual,
 ) as typeof MessageDeletedWithContext;
 
-export type MessageDeletedProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = MessageDeletedComponentProps & {
+export type MessageDeletedProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = MessageDeletedComponentProps & {
   alignment?: Alignment;
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   MessageFooter?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
 };
 
-export const MessageDeleted = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
->(
+export const MessageDeleted = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();

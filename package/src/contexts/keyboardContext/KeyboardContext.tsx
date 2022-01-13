@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Keyboard } from 'react-native';
 
-import type { UnknownType } from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type KeyboardContextValue = {

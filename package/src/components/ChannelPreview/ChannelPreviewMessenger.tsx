@@ -17,16 +17,7 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -50,15 +41,7 @@ const styles = StyleSheet.create({
 
 const maxWidth = vw(80) - 16 - 40;
 
-export type ChannelPreviewMessengerPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
+export type ChannelPreviewMessengerPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
   Pick<
     ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'maxUnreadCount'
@@ -103,15 +86,7 @@ export type ChannelPreviewMessengerPropsWithContext<
     unread?: number;
   };
 
-const ChannelPreviewMessengerWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const ChannelPreviewMessengerWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -176,15 +151,7 @@ const ChannelPreviewMessengerWithContext = <
   );
 };
 
-export type ChannelPreviewMessengerProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<
+export type ChannelPreviewMessengerProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<
   Omit<
     ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
     'channel' | 'latestMessagePreview'
@@ -203,15 +170,7 @@ const MemoizedChannelPreviewMessengerWithContext = React.memo(
  * This UI component displays an individual preview item for each channel in a list. It also receives all props
  * from the ChannelPreview component.
  */
-export const ChannelPreviewMessenger = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ChannelPreviewMessenger = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {

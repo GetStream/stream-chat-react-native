@@ -27,16 +27,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 const GalleryImage: React.FC<
@@ -90,15 +81,7 @@ const styles = StyleSheet.create({
   moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
 });
 
-export type GalleryPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ImageGalleryContextValue, 'setImage' | 'setImages'> &
+export type GalleryPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ImageGalleryContextValue, 'setImage' | 'setImages'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'alignment'
@@ -135,15 +118,7 @@ export type GalleryPropsWithContext<
     messageText?: string;
   };
 
-const GalleryWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const GalleryWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -350,15 +325,7 @@ const GalleryWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -399,28 +366,12 @@ const areEqual = <
 
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 
-export type GalleryProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type GalleryProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  * UI component for card in attachments.
  */
-export const Gallery = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const Gallery = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {

@@ -10,26 +10,9 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
-export type ChannelPreviewPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+export type ChannelPreviewPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Preview'> & {
     /**
      * The previewed channel
@@ -41,15 +24,7 @@ export type ChannelPreviewPropsWithContext<
  * This component manages state for the ChannelPreviewMessenger UI component and receives
  * all props from the ChannelListMessenger component.
  */
-const ChannelPreviewWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const ChannelPreviewWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { channel, client, Preview } = props;
@@ -121,26 +96,10 @@ const ChannelPreviewWithContext = <
   return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;
 };
 
-export type ChannelPreviewProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>> &
+export type ChannelPreviewProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<Omit<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>> &
   Pick<ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
 
-export const ChannelPreview = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ChannelPreview = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();

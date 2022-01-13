@@ -12,16 +12,7 @@ import {
   useThreadContext,
 } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -44,26 +35,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type ThreadFooterComponentPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Message'> &
+type ThreadFooterComponentPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Message'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
 
-const ThreadFooterComponentWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const ThreadFooterComponentWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { Message, thread } = props;
@@ -124,15 +99,7 @@ const ThreadFooterComponentWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -165,15 +132,7 @@ const MemoizedThreadFooter = React.memo(
   areEqual,
 ) as typeof ThreadFooterComponentWithContext;
 
-export const ThreadFooterComponent = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => {
+export const ThreadFooterComponent = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() => {
   const { Message } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 

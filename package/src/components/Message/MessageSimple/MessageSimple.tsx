@@ -11,16 +11,7 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,15 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageSimplePropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<
+export type MessageSimplePropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
 > &
@@ -50,15 +33,7 @@ export type MessageSimplePropsWithContext<
     | 'ReactionList'
   >;
 
-const MessageSimpleWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const MessageSimpleWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -116,15 +91,7 @@ const MessageSimpleWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -204,29 +171,13 @@ const MemoizedMessageSimple = React.memo(
   areEqual,
 ) as typeof MessageSimpleWithContext;
 
-export type MessageSimpleProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type MessageSimpleProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<MessageSimplePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  *
  * Message UI component
  */
-export const MessageSimple = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const MessageSimple = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =

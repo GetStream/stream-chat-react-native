@@ -9,16 +9,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
 import { Time } from '../../../icons/Time';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
@@ -37,25 +28,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageStatusPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'threadList'>;
+export type MessageStatusPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'threadList'>;
 
-const MessageStatusWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
->(
+const MessageStatusWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message, threadList } = props;
@@ -112,15 +87,7 @@ const MessageStatusWithContext = <
   return null;
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -145,25 +112,9 @@ const MemoizedMessageStatus = React.memo(
   areEqual,
 ) as typeof MessageStatusWithContext;
 
-export type MessageStatusProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type MessageStatusProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
-export const MessageStatus = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
->(
+export const MessageStatus = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message, threadList } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();

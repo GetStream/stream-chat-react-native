@@ -5,7 +5,7 @@ import Dayjs from 'dayjs';
 import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
-import type { UnknownType } from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>

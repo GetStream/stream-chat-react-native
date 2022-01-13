@@ -13,16 +13,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { Check } from '../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   checkBox: {
@@ -157,15 +148,7 @@ const MemoizedShowThreadMessageInChannelButton = React.memo(
 export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
-export const ShowThreadMessageInChannelButton = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ShowThreadMessageInChannelButton = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {
   const { t } = useTranslationContext();

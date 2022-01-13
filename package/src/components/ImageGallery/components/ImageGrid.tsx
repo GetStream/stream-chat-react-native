@@ -4,7 +4,7 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { StreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 import { Avatar } from '../../Avatar/Avatar';
 
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryGridImageComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryGridImageComponent<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = ({
   item,
 }: {
   item: Photo<Us> & {
@@ -40,18 +40,18 @@ export type ImageGalleryGridImageComponent<Us extends UnknownType = DefaultUserT
   };
 }) => React.ReactElement | null;
 
-export type ImageGalleryGridImageComponents<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryGridImageComponents<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   avatarComponent?: ImageGalleryGridImageComponent<Us>;
   imageComponent?: ImageGalleryGridImageComponent<Us>;
 };
 
-export type GridImageItem<Us extends DefaultUserType = DefaultUserType> = Photo<Us> &
+export type GridImageItem<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Photo<Us> &
   ImageGalleryGridImageComponents<Us> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 
-const GridImage = <Us extends DefaultUserType = DefaultUserType>({
+const GridImage = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   item,
 }: {
   item: GridImageItem<Us>;
@@ -99,13 +99,13 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
   );
 };
 
-const renderItem = <Us extends UnknownType = DefaultUserType>({
+const renderItem = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   item,
 }: {
   item: GridImageItem<Us>;
 }) => <GridImage item={item} />;
 
-type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryGridImageComponents<Us> & {
+type Props<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = ImageGalleryGridImageComponents<Us> & {
   closeGridView: () => void;
   photos: Photo<Us>[];
   resetVisibleValues: () => void;
@@ -121,7 +121,7 @@ type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryGridImageComp
   numberOfImageGalleryGridColumns?: number;
 };
 
-export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGrid = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(props: Props<Us>) => {
   const {
     avatarComponent,
     closeGridView,

@@ -10,31 +10,14 @@ import type {
 } from '../../components/MessageOverlay/MessageActionListItem';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-export type MessageOverlayData<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type MessageOverlayData<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   alignment?: Alignment;
   clientId?: string;
   files?: Attachment<At>[];
@@ -54,15 +37,7 @@ export type MessageOverlayData<
   threadList?: boolean;
 };
 
-export type MessageOverlayContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type MessageOverlayContextValue<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
@@ -89,15 +64,7 @@ export type MessageOverlayContextValue<
 
 export const MessageOverlayContext = React.createContext({} as MessageOverlayContextValue);
 
-export const MessageOverlayProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->({
+export const MessageOverlayProvider = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   children,
   value,
 }: PropsWithChildren<{
@@ -122,15 +89,7 @@ export const MessageOverlayProvider = <
   );
 };
 
-export const useMessageOverlayContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() =>
+export const useMessageOverlayContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() =>
   useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<
     At,
     Ch,
@@ -146,16 +105,7 @@ export const useMessageOverlayContext = <
  * typing is desired while using the HOC withMessageOverlayContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessageOverlayContext = <
-  P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const withMessageOverlayContext = <P extends UnknownType, StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithMessageOverlayContextComponent = (

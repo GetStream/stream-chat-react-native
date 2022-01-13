@@ -57,16 +57,7 @@ import { useImageGalleryContext } from '../../contexts/imageGalleryContext/Image
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
 const isAndroid = Platform.OS === 'android';
@@ -87,7 +78,7 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryCustomComponents<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
    *
@@ -127,7 +118,7 @@ export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserTyp
   };
 };
 
-type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomComponents<Us> & {
+type Props<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = ImageGalleryCustomComponents<Us> & {
   overlayOpacity: Animated.SharedValue<number>;
   visible: boolean;
   imageGalleryGridHandleHeight?: number;
@@ -138,15 +129,7 @@ type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomCompone
   numberOfImageGalleryGridColumns?: number;
 };
 
-export const ImageGallery = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const ImageGallery = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: Props<Us>,
 ) => {
   const {
@@ -1199,7 +1182,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<Us extends UnknownType = DefaultUserType> = {
+export type Photo<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   id: string;
   uri: string;
   channelId?: string;

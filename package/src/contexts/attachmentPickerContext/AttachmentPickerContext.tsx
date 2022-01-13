@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import type { Asset } from '../../native';
-import type { UnknownType } from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type AttachmentPickerIconProps = {

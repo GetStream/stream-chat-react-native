@@ -8,40 +8,15 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
 });
 
-export type InputButtonsProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+export type InputButtonsProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
 
-export type InputButtonsWithContextProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<
+export type InputButtonsWithContextProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'AttachButton'
   | 'CommandsButton'
@@ -58,15 +33,7 @@ export type InputButtonsWithContextProps<
   | 'toggleAttachmentPicker'
 >;
 
-export const InputButtonsWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const InputButtonsWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -115,15 +82,7 @@ export const InputButtonsWithContext = <
     </>
   );
 };
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -183,15 +142,7 @@ const MemoizedInputButtonsWithContext = React.memo(
   areEqual,
 ) as typeof InputButtonsWithContext;
 
-export const InputButtons = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const InputButtons = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {

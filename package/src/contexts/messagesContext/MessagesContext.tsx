@@ -41,16 +41,7 @@ import type { MessageActionType } from '../../components/MessageOverlay/MessageA
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
@@ -61,15 +52,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
-export type MessagesContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type MessagesContextValue<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
@@ -475,15 +458,7 @@ export type MessagesContextValue<
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);
 
-export const MessagesProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->({
+export const MessagesProvider = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   children,
   value,
 }: PropsWithChildren<{
@@ -494,31 +469,14 @@ export const MessagesProvider = <
   </MessagesContext.Provider>
 );
 
-export const useMessagesContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(MessagesContext) as unknown as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+export const useMessagesContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() => useContext(MessagesContext) as unknown as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext
  * typing is desired while using the HOC withMessagesContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessagesContext = <
-  P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const withMessagesContext = <P extends UnknownType, StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithMessagesContextComponent = (

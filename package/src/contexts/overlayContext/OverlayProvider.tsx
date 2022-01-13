@@ -28,16 +28,7 @@ import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
@@ -67,15 +58,7 @@ import {
  *
  * @example ./OverlayProvider.md
  */
-export const OverlayProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const OverlayProvider = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {

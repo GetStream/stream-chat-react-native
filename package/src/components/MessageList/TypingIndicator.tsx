@@ -5,16 +5,7 @@ import { useTypingString } from './hooks/useTypingString';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { LoadingDots } from '../Indicators/LoadingDots';
 
 const styles = StyleSheet.create({
@@ -32,15 +23,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const TypingIndicator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
->() => {
+export const TypingIndicator = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() => {
   const {
     theme: {
       colors: { grey, white_snow },

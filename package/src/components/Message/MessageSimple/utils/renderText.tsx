@@ -19,16 +19,7 @@ import { parseLinksFromText } from './parseLinks';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
+import type { StreamChatGenerics } from '../../../../types/types';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
@@ -73,15 +64,7 @@ const parse: ParseFunction = (capture, parse, state) => ({
 
 export type MarkdownRules = Partial<DefaultRules>;
 
-export type RenderTextParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<
+export type RenderTextParams<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
@@ -94,15 +77,7 @@ export type RenderTextParams<
   onlyEmojis?: boolean;
 };
 
-export const renderText = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const renderText = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {

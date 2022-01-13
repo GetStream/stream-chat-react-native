@@ -27,16 +27,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import type { Emoji } from '../../emoji-data/compiled';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 
 import type { Trigger } from '../../utils/utils';
@@ -57,15 +48,7 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 
 const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
-type AutoCompleteInputPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
+type AutoCompleteInputPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
@@ -94,25 +77,9 @@ type AutoCompleteInputPropsWithContext<
     cooldownActive?: boolean;
   };
 
-export type AutoCompleteInputProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type AutoCompleteInputProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
-const AutoCompleteInputWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const AutoCompleteInputWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -460,15 +427,7 @@ const AutoCompleteInputWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -505,15 +464,7 @@ const MemoizedAutoCompleteInput = React.memo(
   areEqual,
 ) as typeof AutoCompleteInputWithContext;
 
-export const AutoCompleteInput = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const AutoCompleteInput = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();

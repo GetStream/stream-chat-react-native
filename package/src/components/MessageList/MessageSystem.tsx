@@ -10,16 +10,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,15 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageSystemProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type MessageSystemProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
@@ -69,15 +52,7 @@ export type MessageSystemProps<
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-export const MessageSystem = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const MessageSystem = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { formatDate, message, style } = props;

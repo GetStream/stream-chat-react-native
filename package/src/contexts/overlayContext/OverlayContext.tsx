@@ -6,16 +6,7 @@ import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/typ
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
@@ -34,15 +25,7 @@ export type OverlayContextValue = {
 
 export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
-export type OverlayProviderProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<AttachmentPickerProps> &
+export type OverlayProviderProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
       AttachmentPickerContextValue,

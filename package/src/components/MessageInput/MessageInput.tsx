@@ -32,16 +32,7 @@ import {
 import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { Asset } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -107,15 +98,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageInputPropsWithContext<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled' | 'members' | 'watchers'> &
+type MessageInputPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
@@ -165,15 +148,7 @@ type MessageInputPropsWithContext<
     threadList?: boolean;
   };
 
-const MessageInputWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const MessageInputWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
@@ -611,15 +586,7 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const areEqual = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -734,15 +701,7 @@ const MemoizedMessageInput = React.memo(
   areEqual,
 ) as typeof MessageInputWithContext;
 
-export type MessageInputProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type MessageInputProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  * UI Component for message input
@@ -753,15 +712,7 @@ export type MessageInputProps<
  * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/v3/#suggestionscontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
-export const MessageInput = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const MessageInput = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();

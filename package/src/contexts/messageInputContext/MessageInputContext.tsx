@@ -33,16 +33,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -86,11 +77,7 @@ export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
   sort?: UserSort<Us>;
 };
 
-export type LocalMessageInputContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type LocalMessageInputContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
@@ -219,15 +206,7 @@ export type LocalMessageInputContext<
   uploadNewImage: (image: Partial<Asset>) => Promise<void>;
 };
 
-export type InputMessageInputContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
+export type InputMessageInputContextValue<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = {
   /**
    * Custom UI component for attach button.
    *
@@ -401,28 +380,12 @@ export type InputMessageInputContextValue<
   setInputRef?: (ref: TextInput | null) => void;
 };
 
-export type MessageInputContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = LocalMessageInputContext<At, Co, Us> &
+export type MessageInputContextValue<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = LocalMessageInputContext<At, Co, Us> &
   Omit<InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'sendMessage'>;
 
 export const MessageInputContext = React.createContext({} as MessageInputContextValue);
 
-export const MessageInputProvider = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->({
+export const MessageInputProvider = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>({
   children,
   value,
 }: PropsWithChildren<{
@@ -1106,15 +1069,7 @@ export const MessageInputProvider = <
   );
 };
 
-export const useMessageInputContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() =>
+export const useMessageInputContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>() =>
   useContext(MessageInputContext) as unknown as MessageInputContextValue<
     At,
     Ch,
@@ -1130,16 +1085,7 @@ export const useMessageInputContext = <
  * typing is desired while using the HOC withMessageInputContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessageInputContext = <
-  P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const withMessageInputContext = <P extends UnknownType, StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
   const WithMessageInputContextComponent = (

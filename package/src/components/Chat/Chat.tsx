@@ -20,28 +20,11 @@ import {
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { SDK } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
 
-export type ChatProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
+export type ChatProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
    * To receive push notifications, its necessary that user doesn't have active
@@ -132,15 +115,7 @@ export type ChatProps<
   style?: DeepPartial<Theme>;
 };
 
-const ChatWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const ChatWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
@@ -221,15 +196,7 @@ const ChatWithContext = <
  * - Re (ReactionType) - custom Reaction object extension
  * - Us (UserType) - custom User object extension
  */
-export const Chat = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const Chat = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const { style } = useOverlayContext();

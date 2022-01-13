@@ -53,16 +53,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { StreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,15 +86,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const keyExtractor = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   item: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
 ) =>
   item.id ||
@@ -117,15 +100,7 @@ const flatListViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
 
-type MessageListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
+type MessageListPropsWithContext<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
   Pick<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
@@ -241,15 +216,7 @@ type MessageListPropsWithContext<
  * [ThreadContext](https://getstream.github.io/stream-chat-react-native/v3/#threadcontext)
  * [TranslationContext](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
-const MessageListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+const MessageListWithContext = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const LoadingMoreIndicator = props.threadList
@@ -976,25 +943,9 @@ const MessageListWithContext = <
   );
 };
 
-export type MessageListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+export type MessageListProps<StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics> = Partial<MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
-export const MessageList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
+export const MessageList = <StreamChatClient extends StreamChatGenerics = DefaultStreamChatGenerics>(
   props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
