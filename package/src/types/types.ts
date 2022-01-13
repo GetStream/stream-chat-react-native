@@ -1,24 +1,20 @@
-import type { LiteralStringForUnion } from 'stream-chat';
+import type {
+  Attachment as AttachmentType,
+  Channel as ChannelType,
+  CommandResponse as CommandType,
+  Event as EventType,
+  Message as MessageType,
+  Reaction as ReactionType,
+  User as UserType,
+  StreamChatGenerics
+} from 'stream-chat';
 
-export type DefaultAttachmentType = UnknownType & {
-  file_size?: number | string;
-  mime_type?: string;
-};
-
-export type DefaultChannelType = UnknownType & {
-  image?: string;
-};
-
-export type DefaultCommandType = LiteralStringForUnion;
-
-export type DefaultEventType = UnknownType;
-
-export type DefaultMessageType = UnknownType;
-
-export type DefaultReactionType = UnknownType;
-
-export type DefaultUserType = UnknownType & {
-  image?: string;
-};
-
-export type UnknownType = Record<string, unknown>;
+export type DefaultStreamChatGenerics = StreamChatGenerics & {
+  attachmentType: AttachmentType;
+  channelType: ChannelType;
+  commandType: CommandType;
+  eventType: EventType;
+  messageType: MessageType;
+  reactionType: ReactionType;
+  userType: UserType;
+}
