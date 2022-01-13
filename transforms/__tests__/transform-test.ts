@@ -15,6 +15,15 @@ defineTest(
   "function",
   { parser: "tsx" }
 );
+
+defineTest(
+  __dirname,
+  "type-parameter-instantiation",
+  null,
+  "type-parameter-instantiation",
+  { parser: "tsx" }
+);
+
 defineTest(
   __dirname,
   "variable-declaration",
