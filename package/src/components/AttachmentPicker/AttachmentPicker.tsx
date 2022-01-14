@@ -345,6 +345,7 @@ export const AttachmentPicker = React.forwardRef(
       <>
         <BottomSheet
           containerHeight={fullScreenHeight}
+          enablePanDownToClose={true}
           handleComponent={
             /**
              * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`

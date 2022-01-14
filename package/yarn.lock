@@ -1306,17 +1306,17 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gorhom/bottom-sheet@3.6.4":
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-3.6.4.tgz#9f8c590493e1067dd638b69d7d7f1e86089844fc"
-  integrity sha512-jWZH64tur/PdwCdv6Ojt3Q85f/Q2LuyHV7gYjrN/30INnQw8ArRTOLUmLoLnwWFxeh561JdQ+XTvE53Hjo9wOw==
+"@gorhom/bottom-sheet@4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.1.5.tgz#35341d45799de28082c380db6639537b04fa0b26"
+  integrity sha512-3F5P8jK3NXwT2lGwkAdkdLwDVHaRvMZalUTXjK6Ogf0Tki6idffJ3TNlQZlg8k6+OnXAx0+i80f4XaI+J4GFrA==
   dependencies:
-    "@gorhom/portal" "^1.0.4"
+    "@gorhom/portal" "^1.0.11"
     invariant "^2.2.4"
     nanoid "^3.1.20"
-    react-native-redash "^16.0.10"
+    react-native-redash "^16.1.1"
 
-"@gorhom/portal@^1.0.4":
+"@gorhom/portal@^1.0.11":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.11.tgz#4224d45fea25e70d7e55af3b67249bad0ac9359b"
   integrity sha512-Vrh2hAVp8ZToJ1a1NbYnehNzdJTxJv1BF3vMNbz1pnJIqm0nbi2W51piVvfiqohCDAegOyCCH1j/AEhW2cJYTA==
@@ -9707,7 +9707,7 @@ react-native-reanimated@2.1.0:
     mockdate "^3.0.2"
     string-hash-64 "^1.0.3"
 
-react-native-redash@^16.0.10:
+react-native-redash@^16.1.1:
   version "16.2.3"
   resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-16.2.3.tgz#ee63e100c60f83275116e57d4e8bc79f26349db9"
   integrity sha512-vSjHA6/mBY3IpDYPish3DlG06PKNLkb/b89hw7nsDM3yxAJ7Db+yMnEL3pp2YsoYblDc3s+0+wBRlvxay4X4vQ==

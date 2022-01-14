@@ -160,7 +160,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props
         { backgroundColor: white },
         contentContainer,
       ]}
-      data={imageGridItems}
+      data={imageGridItems as GridImageItem<UnknownType>[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}

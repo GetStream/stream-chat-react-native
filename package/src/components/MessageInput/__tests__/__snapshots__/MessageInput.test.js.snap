@@ -686,6 +686,7 @@ Array [
   </View>,
   <View
     containerHeight={1334}
+    enablePanDownToClose={true}
     handleComponent={[Function]}
     handleHeight={20}
     index={-1}
