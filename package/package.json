@@ -29,7 +29,6 @@
     "lint": "prettier --ignore-path ../.prettierignore --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && yarn run validate-translations",
     "lint-fix": "prettier --ignore-path ../.prettierignore --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0",
     "prepare": "yarn run build",
-    "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify",
     "test:unit": "TZ=UTC jest",
     "validate-translations": "node bin/validate-translations.js",
     "version": "bash ./bin/before-tag.sh",
