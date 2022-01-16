@@ -31,7 +31,6 @@
     "prepare": "yarn run build",
     "test:unit": "TZ=UTC jest",
     "validate-translations": "node bin/validate-translations.js",
-    "version": "bash ./bin/before-tag.sh",
     "bootstrap": "yarn install",
     "bootstrap-ci": "yarn install --frozen-lockfile",
     "extract-changelog": "FILTER_PATH='package' TAG_FORMAT='v${version}' node ../release/extract-changelog.js",
