@@ -8,22 +8,28 @@ const i18nCacheDir = '.tmpi18ncache';
 
 async function cleanI18nCache() {
   await exec('rm -rf ' + i18nCacheDir);
-  console.log('Deleted ' + i18nCacheDir)
+  console.log('Deleted ' + i18nCacheDir);
 }
 
 async function createI18nCacheDir() {
-  await mkdir(i18nCacheDir)
-  console.log('created ' + i18nCacheDir)
+  await mkdir(i18nCacheDir);
+  console.log('created ' + i18nCacheDir);
 }
 
 async function compileTranslations() {
-  await exec("yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '" + i18nCacheDir + "'")
+  await exec(
+    "yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '" +
+      i18nCacheDir +
+      "'",
+  );
   console.log('Compiled translations');
 }
 
 async function formatI18nFiles() {
-  await exec("prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc")
-  console.log('Formatted i18n files')
+  await exec(
+    "prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json ../.prettierrc .babelrc",
+  );
+  console.log('Formatted i18n files');
 }
 
 const run = async () => {
@@ -37,6 +43,6 @@ const run = async () => {
   } catch (error) {
     console.error(`Error during build-translations: ${error}`);
   }
-}
+};
 
 run();
