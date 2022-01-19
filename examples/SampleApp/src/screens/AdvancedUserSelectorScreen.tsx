@@ -64,15 +64,29 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 }) => {
   const {
     theme: {
-      colors: { accent_red, black, grey, white_smoke },
+      colors: { accent_blue, accent_red, black, grey, white_smoke },
     },
   } = useTheme();
+  const [borderColor, setBorderColor] = useState(white_smoke);
+
+  const onFocus = () => {
+    setBorderColor(accent_blue);
+  };
+
+  const onBlur = () => {
+    setBorderColor(white_smoke);
+  };
+
+  const isEmpty = value === undefined;
+
   return (
     <View
       style={[
         styles.labelTextContainer,
         {
           backgroundColor: white_smoke,
+          borderColor,
+          borderWidth: 1,
           paddingVertical: !!value || !!error ? 16 : 8,
         },
       ]}
@@ -102,13 +116,18 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         </Text>
       )}
       <TextInput
+        onBlur={onBlur}
         onChangeText={onChangeText}
+        onFocus={onFocus}
         placeholder={label}
         placeholderTextColor={grey}
         returnKeyType='next'
         style={[
           styles.input,
-          { color: black, fontWeight: value ? undefined : '500' }, // design team wanted placeholder fontWeight of 500
+          {
+            color: black,
+            fontWeight: isEmpty ? '500' : 'normal',
+          }, // design team wanted placeholder fontWeight of 500
         ]}
         value={value}
       />
