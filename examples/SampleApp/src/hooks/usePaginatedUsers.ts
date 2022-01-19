@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 import type { UserFilters, UserResponse } from 'stream-chat';
 
@@ -27,7 +27,7 @@ export type PaginatedUsers = {
 };
 
 export const usePaginatedUsers = (): PaginatedUsers => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   const [initialResults, setInitialResults] = useState<UserResponse<LocalUserType>[] | null>(null);
   const [loading, setLoading] = useState(true);

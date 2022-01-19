@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 const styles = StyleSheet.create({
   bottomContainer: {
@@ -143,7 +143,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
     },
   } = useTheme();
 
-  const { loginUser } = useContext(AppContext);
+  const { loginUser } = useAppContext();
   const [apiKey, setApiKey] = useState('');
   const [apiKeyError, setApiKeyError] = useState(false);
   const [userId, setUserId] = useState('');

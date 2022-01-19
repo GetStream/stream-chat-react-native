@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -15,7 +15,7 @@ import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -130,7 +130,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       colors: { accent_blue, black, border, grey, white },
     },
   } = useTheme();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   const {
     onChangeSearchText,
