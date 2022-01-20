@@ -5,6 +5,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
+import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
 import { ChannelPreviewStatus } from './ChannelPreviewStatus';
 import { ChannelPreviewTitle } from './ChannelPreviewTitle';
 import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
@@ -45,6 +46,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 8,
   },
+  statusContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   title: { fontSize: 14, fontWeight: '700' },
 });
 
@@ -65,6 +70,7 @@ export type ChannelPreviewMessengerPropsWithContext<
     | 'onSelect'
     | 'PreviewAvatar'
     | 'PreviewMessage'
+    | 'PreviewMutedStatus'
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
@@ -125,6 +131,7 @@ const ChannelPreviewMessengerWithContext = <
     PreviewStatus = ChannelPreviewStatus,
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
+    PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
 
@@ -139,6 +146,8 @@ const ChannelPreviewMessengerWithContext = <
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
+
+  const isChannelMuted = channel.muteStatus().muted;
 
   return (
     <TouchableOpacity
@@ -161,7 +170,10 @@ const ChannelPreviewMessengerWithContext = <
       >
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
-          <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+          <View style={[styles.statusContainer, row]}>
+            <PreviewMutedStatus channel={channel} muted={isChannelMuted} />
+            <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+          </View>
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
@@ -219,6 +231,7 @@ export const ChannelPreviewMessenger = <
     onSelect,
     PreviewAvatar,
     PreviewMessage,
+    PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
@@ -230,6 +243,7 @@ export const ChannelPreviewMessenger = <
         onSelect,
         PreviewAvatar,
         PreviewMessage,
+        PreviewMutedStatus,
         PreviewStatus,
         PreviewTitle,
         PreviewUnreadCount,

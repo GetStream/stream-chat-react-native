@@ -3,6 +3,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { FlatListProps } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
 
+import type { ChannelPreviewMutedStatusProps } from 'src/components/ChannelPreview/ChannelPreviewMutedStatus';
+
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
@@ -194,6 +196,14 @@ export type ChannelsContextValue<
    * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
   PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component to render muted status.
+   *
+   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
+   */
+  PreviewMutedStatus?: React.ComponentType<
+    ChannelPreviewMutedStatusProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component to render preview avatar.
    *
