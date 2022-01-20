@@ -249,8 +249,10 @@ export const useChannelsStateContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<
     At,
     Ch,
     Co,
@@ -259,6 +261,17 @@ export const useChannelsStateContext = <
     Re,
     Us
   >;
+
+  if (!contextValue) {
+    console.warn(
+      `The useChannelStateContext hook was called outside the ChannelStateContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 export const withChannelsStateContext = <
   P extends UnknownType,

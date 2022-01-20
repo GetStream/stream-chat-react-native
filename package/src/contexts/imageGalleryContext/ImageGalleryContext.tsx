@@ -70,8 +70,10 @@ export const useImageGalleryContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<
     At,
     Ch,
     Co,
@@ -80,6 +82,17 @@ export const useImageGalleryContext = <
     Re,
     Us
   >;
+
+  if (!contextValue) {
+    console.warn(
+      `The useImageGalleryContext hook was called outside the ImageGalleryContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 export const withImageGalleryContext = <
   P extends UnknownType,

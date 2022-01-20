@@ -65,8 +65,29 @@ export const useThreadContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() => useContext(ThreadContext) as unknown as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(ThreadContext) as unknown as ThreadContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >;
 
+  if (!contextValue) {
+    console.warn(
+      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure this hook is called within the Thread's UI component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 /**
  * Typescript currently does not support partial inference so if ThreadContext
  * typing is desired while using the HOC withThreadContextContext the Props for the

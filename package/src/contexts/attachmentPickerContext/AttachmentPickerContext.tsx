@@ -114,8 +114,21 @@ export const AttachmentPickerProvider = ({
   );
 };
 
-export const useAttachmentPickerContext = () =>
-  useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
+export const useAttachmentPickerContext = (componentName?: string) => {
+  const contextValue = useContext(
+    AttachmentPickerContext,
+  ) as unknown as AttachmentPickerContextValue;
+
+  if (!contextValue) {
+    console.warn(
+      `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as AttachmentPickerContextValue;
+  }
+
+  return contextValue as AttachmentPickerContextValue;
+};
 
 export const withAttachmentPickerContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,

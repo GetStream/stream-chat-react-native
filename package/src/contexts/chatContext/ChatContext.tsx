@@ -98,7 +98,29 @@ export const useChatContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() => useContext(ChatContext) as unknown as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(ChatContext) as unknown as ChatContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >;
+
+  if (!contextValue) {
+    console.warn(
+      `The useChatContext hook was called outside the ChatContext Provider. Make sure this hook is called within a child of the Chat component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 /**
  * Typescript currently does not support partial inference so if ChatContext

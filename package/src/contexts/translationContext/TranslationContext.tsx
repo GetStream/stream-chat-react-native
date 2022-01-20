@@ -33,7 +33,19 @@ export const TranslationProvider: React.FC<{
   <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
 );
 
-export const useTranslationContext = () => useContext(TranslationContext);
+export const useTranslationContext = (componentName?: string) => {
+  const contextValue = useContext(TranslationContext);
+
+  if (!contextValue) {
+    console.warn(
+      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as TranslationContextValue;
+  }
+
+  return contextValue as TranslationContextValue;
+};
 
 export const withTranslationContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,

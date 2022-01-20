@@ -502,7 +502,29 @@ export const useMessagesContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() => useContext(MessagesContext) as unknown as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(MessagesContext) as unknown as MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >;
+
+  if (!contextValue) {
+    console.warn(
+      `The useMessagesContext hook was called outside of the MessagesContext provider. Make sure this hook is called within the MessageList's UI component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext

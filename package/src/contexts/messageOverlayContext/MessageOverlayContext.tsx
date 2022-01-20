@@ -123,8 +123,10 @@ export const useMessageOverlayContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<
     At,
     Ch,
     Co,
@@ -133,6 +135,17 @@ export const useMessageOverlayContext = <
     Re,
     Us
   >;
+
+  if (!contextValue) {
+    console.warn(
+      `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageOverlayContext

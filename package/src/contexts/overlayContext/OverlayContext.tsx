@@ -84,7 +84,19 @@ export type OverlayProviderProps<
     value?: Partial<OverlayContextValue>;
   };
 
-export const useOverlayContext = () => useContext(OverlayContext);
+export const useOverlayContext = () => {
+  const contextValue = useContext(OverlayContext);
+
+  if (!contextValue) {
+    console.warn(
+      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called at the top level before the Stream Chat Component.`,
+    );
+
+    return {} as OverlayContextValue;
+  }
+
+  return contextValue as OverlayContextValue;
+};
 
 export const withOverlayContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,

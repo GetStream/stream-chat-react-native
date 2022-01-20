@@ -255,8 +255,29 @@ export const useChannelsContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(ChannelsContext) as unknown as ChannelsContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >;
 
+  if (!contextValue) {
+    console.warn(
+      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure this hook is called within the ChannelList's UI component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the
