@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { StyleSheet } from 'react-native';
+
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -14,6 +16,12 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+
+const styles = StyleSheet.create({
+  iconStyle: {
+    marginRight: 8,
+  },
+});
 
 export type ChannelPreviewMutedStatusProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -45,11 +53,19 @@ export const ChannelPreviewMutedStatus = <
 
   const {
     theme: {
+      channelPreview: {
+        mutedStatus: { height, iconStyle, width },
+      },
       colors: { grey_dark },
     },
   } = useTheme();
 
   return muted ? (
-    <Mute height={20} pathFill={grey_dark} style={{ marginRight: 8 }} width={20} />
+    <Mute
+      height={height}
+      pathFill={grey_dark}
+      style={[styles.iconStyle, iconStyle]}
+      width={width}
+    />
   ) : null;
 };
