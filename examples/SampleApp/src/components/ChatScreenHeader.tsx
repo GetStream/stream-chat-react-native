@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { useChatContext, useTheme } from 'stream-chat-react-native';
@@ -6,7 +6,7 @@ import { useChatContext, useTheme } from 'stream-chat-react-native';
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -36,7 +36,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
   } = useTheme('ChatScreenHeader');
 
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { isOnline } = useChatContext('ChatScreenHeader');
 
   return (

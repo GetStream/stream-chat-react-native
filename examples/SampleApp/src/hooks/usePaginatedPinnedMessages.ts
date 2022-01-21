@@ -1,6 +1,6 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 import type { Channel, MessageResponse } from 'stream-chat';
 
@@ -26,7 +26,7 @@ export const usePaginatedPinnedMessages = (
     LocalUserType
   >,
 ) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);

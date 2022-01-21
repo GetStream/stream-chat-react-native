@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { isOwnUser } from 'stream-chat';
 import { useTheme } from 'stream-chat-react-native';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 const styles = StyleSheet.create({
   unreadContainer: {
@@ -27,7 +27,7 @@ export const UnreadCountBadge: React.FC = () => {
     },
   } = useTheme('UnreadCountBadge');
 
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const [count, setCount] = useState<number>();
 
   useEffect(() => {

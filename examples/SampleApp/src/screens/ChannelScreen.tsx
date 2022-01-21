@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
@@ -17,7 +17,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
@@ -65,7 +65,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
   const { isOnline } = useChatContext('ChannelScreen');
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
@@ -110,7 +110,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {

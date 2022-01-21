@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { AtMentions, useTheme } from 'stream-chat-react-native';
 import { MessageResponse } from 'stream-chat';
@@ -11,7 +11,7 @@ import { useScrollToTop } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import type {
   LocalAttachmentType,
   LocalChannelType,
@@ -61,7 +61,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
       colors: { white_snow },
     },
   } = useTheme('MentionsScreen');
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const messageFilters = useMemo(
     () => ({
       'mentioned_users.id': {

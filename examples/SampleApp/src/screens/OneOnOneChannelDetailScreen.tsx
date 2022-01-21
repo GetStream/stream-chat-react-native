@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { Contacts } from '../icons/Contacts';
@@ -146,7 +146,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
       colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
     },
   } = useTheme('NewGroupChannelAssignNameScreen');
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
 

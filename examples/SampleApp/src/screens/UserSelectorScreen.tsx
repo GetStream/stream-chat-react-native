@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Image,
   Platform,
@@ -12,7 +12,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTheme, version } from 'stream-chat-react-native';
 
 import { USERS } from '../ChatUsers';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
@@ -93,7 +93,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
       colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
     },
   } = useTheme('UserSelectorScreen');
-  const { switchUser } = useContext(AppContext);
+  const { switchUser } = useAppContext();
   const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
