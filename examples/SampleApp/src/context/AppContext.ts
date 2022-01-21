@@ -29,3 +29,5 @@ type AppContextType = {
 };
 
 export const AppContext = React.createContext({} as AppContextType);
+
+export const useAppContext = () => React.useContext(AppContext);

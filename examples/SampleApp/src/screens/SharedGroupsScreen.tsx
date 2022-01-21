@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import {
@@ -15,7 +15,7 @@ import {
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
 
 import type {
@@ -74,7 +74,7 @@ type CustomPreviewProps = ChannelPreviewMessengerProps<
 >;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation();
   const {
@@ -199,7 +199,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
     params: { user },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   if (!chatClient?.user) return null;
 

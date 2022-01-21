@@ -134,6 +134,11 @@ export type Theme = {
     message: TextStyle & {
       fontWeight: TextStyle['fontWeight'];
     };
+    mutedStatus: {
+      height: number;
+      iconStyle: ViewStyle;
+      width: number;
+    };
     row: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
@@ -586,6 +591,11 @@ export const defaultTheme: Theme = {
     date: {},
     message: {
       fontWeight: '400',
+    },
+    mutedStatus: {
+      height: 20,
+      iconStyle: {},
+      width: 20,
     },
     row: {},
     title: {},
