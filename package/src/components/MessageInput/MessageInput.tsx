@@ -250,7 +250,7 @@ const MessageInputWithContext = <
         suggestionsListContainer: { container: suggestionListContainer },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageInput');
 
   const {
     attachmentPickerBottomSheetHeight,
@@ -260,7 +260,7 @@ const MessageInputWithContext = <
     selectedPicker,
     setMaxNumberOfFiles,
     setSelectedImages,
-  } = useAttachmentPickerContext();
+  } = useAttachmentPickerContext('MessageInput');
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
@@ -766,7 +766,11 @@ export const MessageInput = <
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    disabled = false,
+    members,
+    watchers,
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
 
   const {
     additionalTextInputProps,
@@ -802,9 +806,9 @@ export const MessageInput = <
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
 
-  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
 
   const {
     AutoCompleteSuggestionHeader,
@@ -812,11 +816,11 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<Co, Us>();
+  } = useSuggestionsContext<Co, Us>('MessageInput');
 
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
 
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('MessageInput');
 
   if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;

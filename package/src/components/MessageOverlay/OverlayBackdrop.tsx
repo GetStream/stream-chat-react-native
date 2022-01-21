@@ -13,6 +13,6 @@ export const OverlayBackdrop = (props: OverlayBackdropProps): JSX.Element => {
     theme: {
       colors: { overlay },
     },
-  } = useTheme();
+  } = useTheme('OverlayBackdrop');
   return <View style={[{ backgroundColor: overlay }, style]} />;
 };

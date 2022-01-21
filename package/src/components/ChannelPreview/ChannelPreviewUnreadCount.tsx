@@ -62,7 +62,7 @@ export const ChannelPreviewUnreadCount = <
       channelPreview: { unreadContainer, unreadText },
       colors: { accent_red },
     },
-  } = useTheme();
+  } = useTheme('ChannelPreviewUnreadCount');
 
   return (
     <View style={[styles.unreadContainer, { backgroundColor: accent_red }, unreadContainer]}>

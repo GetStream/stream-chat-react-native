@@ -83,7 +83,7 @@ const App = () => {
 };
 
 const DrawerNavigator: React.FC = () => {
-  const { overlay } = useOverlayContext();
+  const { overlay } = useOverlayContext('App');
 
   return (
     <Drawer.Navigator
@@ -171,7 +171,7 @@ const UserSelector = () => {
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
-  const { overlay } = useOverlayContext();
+  const { overlay } = useOverlayContext('App');
 
   return (
     <Stack.Navigator initialRouteName='ChatScreen'>

@@ -181,15 +181,7 @@ function reducer(state: ChannelsState, action: Action) {
   }
 }
 
-const ChannelsStateContext = React.createContext({
-  removeChannelState: () => {
-    // do nothing.
-  },
-  setState: () => {
-    // do nothing.
-  },
-  state: {},
-} as unknown as ChannelsStateContextValue);
+const ChannelsStateContext = React.createContext<ChannelsStateContextValue | undefined>(undefined);
 
 export const ChannelsStateProvider = <
   At extends UnknownType = DefaultAttachmentType,

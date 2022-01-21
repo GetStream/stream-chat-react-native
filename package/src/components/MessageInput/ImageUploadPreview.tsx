@@ -87,7 +87,7 @@ const ImageUploadPreviewWithContext = <
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
-  } = useTheme();
+  } = useTheme('ImageUploadPreview');
 
   const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => (
     <View
@@ -188,7 +188,7 @@ export const ImageUploadPreview = <
   props: ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { imageUploads, removeImage, uploadImage } =
-    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('ImageUploadPreview');
 
   return (
     <MemoizedImageUploadPreviewWithContext

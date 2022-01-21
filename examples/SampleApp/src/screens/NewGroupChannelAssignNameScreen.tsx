@@ -60,7 +60,7 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
     theme: {
       colors: { accent_blue, grey },
     },
-  } = useTheme();
+  } = useTheme('NewGroupChannelAssignNameScreen');
 
   return (
     <RoundButton disabled={disabled} onPress={onPress}>
@@ -88,7 +88,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
     theme: {
       colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
     },
-  } = useTheme();
+  } = useTheme('NewGroupChannelAssignNameScreen');
 
   const [groupName, setGroupName] = useState('');
 

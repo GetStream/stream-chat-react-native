@@ -42,7 +42,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
     theme: {
       groupAvatar: { container, image },
     },
-  } = useTheme();
+  } = useTheme('GroupAvatar');
 
   const [imageError, setImageError] = useState(false);
 

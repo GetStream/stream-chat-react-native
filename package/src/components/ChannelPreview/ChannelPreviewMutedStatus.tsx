@@ -58,7 +58,7 @@ export const ChannelPreviewMutedStatus = <
       },
       colors: { grey_dark },
     },
-  } = useTheme();
+  } = useTheme('ChannelPreviewMutedStatus');
 
   return muted ? (
     <Mute

@@ -23,15 +23,15 @@ const styles = StyleSheet.create({
 });
 
 export const NetworkDownIndicator = () => {
-  const { error } = useChannelContext();
-  const { isOnline } = useChatContext();
+  const { error } = useChannelContext('NetworkDownIndicator');
+  const { isOnline } = useChatContext('NetworkDownIndicator');
   const {
     theme: {
       colors: { grey },
       messageList: { errorNotification, errorNotificationText },
     },
-  } = useTheme();
-  const { t } = useTranslationContext();
+  } = useTheme('NetworkDownIndicator');
+  const { t } = useTranslationContext('NetworkDownIndicator');
 
   if (isOnline && !error) {
     return null;

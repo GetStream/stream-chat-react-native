@@ -61,10 +61,10 @@ export type ChannelHeaderProps = {
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
-  const { closePicker } = useAttachmentPickerContext();
+  const { closePicker } = useAttachmentPickerContext('ChannelScreen');
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
-  const { isOnline } = useChatContext();
+  const { isOnline } = useChatContext('ChannelScreen');
   const { chatClient } = useContext(AppContext);
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
@@ -117,7 +117,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     theme: {
       colors: { white },
     },
-  } = useTheme();
+  } = useTheme('ChannelScreen');
 
   const [channel, setChannel] = useState<
     | StreamChatChannel<

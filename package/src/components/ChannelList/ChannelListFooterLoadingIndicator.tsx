@@ -17,7 +17,7 @@ export const ChannelListFooterLoadingIndicator: React.FC = () => {
     theme: {
       channelListFooterLoadingIndicator: { container },
     },
-  } = useTheme();
+  } = useTheme('ChannelListFooterLoadingIndicator');
 
   return (
     <View style={[styles.container, container]} testID='channel-list-footer-loading-indicator'>

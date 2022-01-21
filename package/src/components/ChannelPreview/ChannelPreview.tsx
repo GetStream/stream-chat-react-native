@@ -143,8 +143,8 @@ export const ChannelPreview = <
 >(
   props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { Preview } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelPreview');
+  const { Preview } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelPreview');
 
   return <ChannelPreviewWithContext {...{ client, Preview }} {...props} />;
 };

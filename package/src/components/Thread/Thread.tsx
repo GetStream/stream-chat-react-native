@@ -162,11 +162,11 @@ export const Thread = <
 >(
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { threadList } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageList } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('Thread');
+  const { threadList } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('Thread');
+  const { MessageList } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Thread');
   const { closeThread, loadMoreThread, reloadThread, thread } =
-    useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('Thread');
 
   if (thread?.id && !threadList) {
     throw new Error(

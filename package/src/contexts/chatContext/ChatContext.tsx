@@ -69,7 +69,7 @@ export type ChatContextValue<
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
 };
 
-export const ChatContext = React.createContext({} as ChatContextValue);
+export const ChatContext = React.createContext<ChatContextValue | undefined>(undefined);
 
 export const ChatProvider = <
   At extends UnknownType = DefaultAttachmentType,

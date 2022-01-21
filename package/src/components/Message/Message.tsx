@@ -285,7 +285,7 @@ const MessageWithContext = <
       colors: { bg_gradient_start, targetedMessageBackground },
       messageSimple: { targetedMessageUnderlay },
     },
-  } = useTheme();
+  } = useTheme('Message');
 
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
@@ -860,14 +860,14 @@ export const Message = <
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { channel, disabled, enforceUniqueReaction, members } =
-    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('Message');
+  const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('Message');
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setOverlay } = useOverlayContext();
-  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
+  const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>('Message');
+  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Message');
+  const { setOverlay } = useOverlayContext('Message');
+  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('Message');
+  const { t } = useTranslationContext('Message');
 
   return (
     <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>

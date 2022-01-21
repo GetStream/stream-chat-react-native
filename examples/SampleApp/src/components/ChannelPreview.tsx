@@ -78,7 +78,7 @@ export const ChannelPreview: React.FC<
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  >();
+  >('ChannelPreview');
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
@@ -86,7 +86,7 @@ export const ChannelPreview: React.FC<
     theme: {
       colors: { accent_red, white_smoke },
     },
-  } = useTheme();
+  } = useTheme('ChannelPreview');
 
   const otherMembers = channel
     ? Object.values(channel.state.members).filter((member) => member.user?.id !== data?.clientId)

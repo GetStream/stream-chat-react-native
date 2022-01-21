@@ -57,9 +57,8 @@ export type PaginatedMessageListContextValue<
   setLoadingMoreRecent: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const PaginatedMessageListContext = React.createContext(
-  {} as PaginatedMessageListContextValue,
-);
+export const PaginatedMessageListContext =
+  React.createContext<PaginatedMessageListContextValue | undefined>(undefined);
 
 export const PaginatedMessageListProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -90,16 +89,23 @@ export const usePaginatedMessageListContext = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(PaginatedMessageListContext) as unknown as PaginatedMessageListContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(
+    PaginatedMessageListContext,
+  ) as unknown as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+
+  if (!contextValue) {
+    console.warn(
+      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure this hook is called within the MessageList's UI component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  }
+
+  return contextValue as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageListContextValue

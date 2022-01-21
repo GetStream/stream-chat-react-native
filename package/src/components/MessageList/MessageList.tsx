@@ -307,7 +307,7 @@ const MessageListWithContext = <
     TypingIndicatorContainer,
   } = props;
 
-  const { theme } = useTheme();
+  const { theme } = useTheme('MessageList');
 
   const {
     colors: { white_snow },
@@ -997,7 +997,8 @@ export const MessageList = <
 >(
   props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
+  const { closePicker, selectedPicker, setSelectedPicker } =
+    useAttachmentPickerContext('MessageList');
   const {
     channel,
     disabled,
@@ -1016,9 +1017,9 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
+  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
   const {
     DateHeader,
     deletedMessagesVisibilityType,
@@ -1034,11 +1035,12 @@ export const MessageList = <
     ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { overlay } = useOverlayContext();
-  const { loadMoreThread, thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t, tDateTimeParser } = useTranslationContext();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
+  const { loadMore, loadMoreRecent } =
+    usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
+  const { overlay } = useOverlayContext('MessageList');
+  const { loadMoreThread, thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('MessageList');
+  const { t, tDateTimeParser } = useTranslationContext('MessageList');
 
   return (
     <MessageListWithContext

@@ -80,7 +80,7 @@ export const ChannelPinnedMessagesScreen: React.FC<ChannelPinnedMessagesScreenPr
     theme: {
       colors: { white_snow },
     },
-  } = useTheme();
+  } = useTheme('ChannelPinnedMessagesScreen');
   const { loading, loadMore, messages } = usePaginatedPinnedMessages(channel);
   const insets = useSafeAreaInsets();
   return (
@@ -109,7 +109,7 @@ const EmptyListComponent = () => {
     theme: {
       colors: { black, grey, grey_gainsboro },
     },
-  } = useTheme();
+  } = useTheme('ChannelPinnedMessagesScreen');
   return (
     <View style={styles.emptyContainer}>
       <Message fill={grey_gainsboro} height={110} width={130} />

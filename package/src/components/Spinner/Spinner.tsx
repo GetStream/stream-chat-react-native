@@ -28,7 +28,7 @@ export const Spinner: React.FC = () => {
       colors: { accent_blue },
       spinner,
     },
-  } = useTheme();
+  } = useTheme('Spinner');
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [

@@ -119,7 +119,7 @@ const ReplyWithContext = <
         textContainer,
       },
     },
-  } = useTheme();
+  } = useTheme('Reply');
 
   if (typeof quotedMessage === 'boolean') return null;
 
@@ -306,18 +306,18 @@ export const Reply = <
 >(
   props: ReplyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('Reply');
 
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Reply');
 
-  const { editing, quotedMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { editing, quotedMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('Reply');
 
   const quotedEditingMessage = (
     typeof editing !== 'boolean' ? editing?.quoted_message || false : false
   ) as MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['quotedMessage'];
 
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('Reply');
 
   return (
     <MemoizedReply

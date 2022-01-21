@@ -100,7 +100,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
       theme: {
         colors: { black, border, grey, white_snow },
       },
-    } = useTheme();
+    } = useTheme('MessageSearchList');
     const navigation = useNavigation();
 
     if (loading && !refreshing && (!messages || messages.length === 0)) {

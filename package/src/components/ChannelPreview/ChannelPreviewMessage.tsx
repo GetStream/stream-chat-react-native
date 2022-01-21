@@ -43,7 +43,7 @@ export const ChannelPreviewMessage: React.FC<ChannelPreviewMessageProps> = ({
       channelPreview: { message },
       colors: { grey },
     },
-  } = useTheme();
+  } = useTheme('ChannelPreviewMessage');
 
   return (
     <Text numberOfLines={1} style={[styles.message, { color: grey }, message]}>

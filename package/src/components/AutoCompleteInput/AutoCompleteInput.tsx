@@ -146,7 +146,7 @@ const AutoCompleteInputWithContext = <
       colors: { black, grey },
       messageInput: { inputBox },
     },
-  } = useTheme();
+  } = useTheme('AutoCompleteInput');
 
   const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
@@ -516,7 +516,7 @@ export const AutoCompleteInput = <
 >(
   props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('AutoCompleteInput');
   const {
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
@@ -531,9 +531,10 @@ export const AutoCompleteInput = <
     setShowMoreOptions,
     text,
     triggerSettings,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Co, Us>();
-  const { t } = useTranslationContext();
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('AutoCompleteInput');
+  const { closeSuggestions, openSuggestions, updateSuggestions } =
+    useSuggestionsContext<Co, Us>('AutoCompleteInput');
+  const { t } = useTranslationContext('AutoCompleteInput');
 
   return (
     <MemoizedAutoCompleteInput

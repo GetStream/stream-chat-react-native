@@ -92,7 +92,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
     theme: {
       colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
     },
-  } = useTheme();
+  } = useTheme('UserSelectorScreen');
   const { switchUser } = useContext(AppContext);
   const { bottom } = useSafeAreaInsets();
 

@@ -182,7 +182,7 @@ export type ChannelContextValue<
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 };
 
-export const ChannelContext = React.createContext({} as ChannelContextValue);
+export const ChannelContext = React.createContext<ChannelContextValue | undefined>(undefined);
 
 export const ChannelProvider = <
   At extends UnknownType = DefaultAttachmentType,

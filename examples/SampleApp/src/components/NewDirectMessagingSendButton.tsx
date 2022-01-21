@@ -62,7 +62,7 @@ const SendButtonWithContext = <
       colors: { accent_blue, grey_gainsboro },
       messageInput: { sendButton },
     },
-  } = useTheme();
+  } = useTheme('NewDirectMessagingSendButton');
 
   return (
     <TouchableOpacity
@@ -151,7 +151,7 @@ export const NewDirectMessagingSendButton = (
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  >();
+  >('NewDirectMessagingSendButton');
 
   const { giphyActive, text } = useMessageInputContext<
     LocalAttachmentType,
@@ -161,7 +161,7 @@ export const NewDirectMessagingSendButton = (
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  >();
+  >('NewDirectMessagingSendButton');
 
   const sendMessage = async () => {
     if (!channel) return;

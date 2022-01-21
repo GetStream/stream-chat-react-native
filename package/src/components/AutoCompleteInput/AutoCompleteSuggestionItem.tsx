@@ -74,7 +74,7 @@ const AutoCompleteSuggestionItemWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('AutoCompleteSuggestionItem');
 
   if (triggerType === 'mention') {
     const { id, image, name, online } = itemProps as SuggestionUser<Us>;

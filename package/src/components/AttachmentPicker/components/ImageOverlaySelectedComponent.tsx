@@ -22,7 +22,7 @@ export const ImageOverlaySelectedComponent: React.FC = () => {
       },
       colors: { white },
     },
-  } = useTheme();
+  } = useTheme('ImageOverlaySelectedComponent');
   return (
     <View style={[styles.check, { backgroundColor: white }, check]}>
       <Check />

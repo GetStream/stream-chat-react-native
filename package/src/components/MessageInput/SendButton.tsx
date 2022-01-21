@@ -50,7 +50,7 @@ const SendButtonWithContext = <
       colors: { accent_blue, grey_gainsboro },
       messageInput: { sendButton },
     },
-  } = useTheme();
+  } = useTheme('SendButton');
 
   return (
     <TouchableOpacity
@@ -130,7 +130,8 @@ export const SendButton = <
 >(
   props: SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { giphyActive, sendMessage } =
+    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('SendButton');
 
   return (
     <MemoizedSendButton

@@ -91,7 +91,8 @@ export type MessageOverlayContextValue<
   data?: MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>;
 };
 
-export const MessageOverlayContext = React.createContext({} as MessageOverlayContextValue);
+export const MessageOverlayContext =
+  React.createContext<MessageOverlayContextValue | undefined>(undefined);
 
 export const MessageOverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,

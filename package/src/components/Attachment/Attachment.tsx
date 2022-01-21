@@ -178,7 +178,7 @@ export const Attachment = <
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
     UrlPreview: ContextUrlPreview,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Attachment');
 
   if (!attachment) {
     return null;

@@ -30,7 +30,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({ dateString }) => {
       colors: { overlay, white },
       dateHeader: { container, text },
     },
-  } = useTheme();
+  } = useTheme('DateHeader');
 
   return (
     <View style={[styles.container, { backgroundColor: overlay }, container]}>

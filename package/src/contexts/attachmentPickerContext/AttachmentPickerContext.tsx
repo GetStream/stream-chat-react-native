@@ -54,9 +54,8 @@ export type AttachmentPickerContextValue = {
   selectedPicker?: 'images';
 };
 
-export const AttachmentPickerContext = React.createContext<AttachmentPickerContextValue>(
-  {} as AttachmentPickerContextValue,
-);
+export const AttachmentPickerContext =
+  React.createContext<AttachmentPickerContextValue | undefined>(undefined);
 
 export const AttachmentPickerProvider = ({
   children,

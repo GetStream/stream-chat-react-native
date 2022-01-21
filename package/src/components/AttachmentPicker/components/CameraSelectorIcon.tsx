@@ -8,7 +8,7 @@ export const CameraSelectorIcon: React.FC = () => {
     theme: {
       colors: { grey },
     },
-  } = useTheme();
+  } = useTheme('CameraSelectorIcon');
 
   return <Camera pathFill={grey} />;
 };

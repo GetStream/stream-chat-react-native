@@ -70,8 +70,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     theme: {
       colors: { white },
     },
-  } = useTheme();
-  const { setSelectedImages } = useAttachmentPickerContext();
+  } = useTheme('ThreadScreen');
+  const { setSelectedImages } = useAttachmentPickerContext('ThreadScreen');
 
   useEffect(() => {
     setSelectedImages([]);

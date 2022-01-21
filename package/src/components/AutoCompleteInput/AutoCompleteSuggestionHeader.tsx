@@ -33,7 +33,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
   queryText,
   triggerType,
 }: AutoCompleteSuggestionHeaderPropsWithContext<Co, Us>) => {
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('AutoCompleteSuggestionHeader');
   const {
     theme: {
       colors: { accent_blue, grey },
@@ -43,7 +43,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('AutoCompleteSuggestionHeader');
 
   if (triggerType === 'command') {
     return (

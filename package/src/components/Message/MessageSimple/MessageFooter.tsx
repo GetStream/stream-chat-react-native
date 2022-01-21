@@ -91,8 +91,8 @@ const MessageFooterWithContext = <
         content: { deletedMetaText, eyeIcon, messageUser, metaContainer, metaText },
       },
     },
-  } = useTheme();
-  const { t } = useTranslationContext();
+  } = useTheme('MessageFooter');
+  const { t } = useTranslationContext('MessageFooter');
 
   if (isDeleted) {
     return (
@@ -267,10 +267,10 @@ export const MessageFooter = <
   props: MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageFooter');
 
   const { deletedMessagesVisibilityType, MessageStatus } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageFooter');
 
   return (
     <MemoizedMessageFooter

@@ -69,7 +69,7 @@ const FileAttachmentGroupWithContext = <
         fileAttachmentGroup: { container },
       },
     },
-  } = useTheme();
+  } = useTheme('FileAttachmentGroup');
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
@@ -137,9 +137,11 @@ export const FileAttachmentGroup = <
 ) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { files: contextFiles } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachmentGroup');
 
-  const { Attachment = AttachmentDefault } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Attachment = AttachmentDefault } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachmentGroup');
 
   const files = propFiles || contextFiles;
 

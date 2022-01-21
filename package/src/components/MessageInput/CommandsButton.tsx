@@ -57,7 +57,7 @@ const CommandsButtonWithContext = <
       colors: { accent_blue, grey },
       messageInput: { commandsButton },
     },
-  } = useTheme();
+  } = useTheme('CommandsButton');
 
   return (
     <TouchableOpacity
@@ -131,8 +131,8 @@ export const CommandsButton = <
 >(
   props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { suggestions } = useSuggestionsContext<Co, Us>();
+  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('CommandsButton');
+  const { suggestions } = useSuggestionsContext<Co, Us>('CommandsButton');
 
   return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };

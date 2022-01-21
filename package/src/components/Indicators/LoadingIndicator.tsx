@@ -24,7 +24,7 @@ const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
       colors: { black },
       loadingIndicator: { container, loadingText },
     },
-  } = useTheme();
+  } = useTheme('LoadingIndicator');
 
   return (
     <View style={[styles.container, container]}>
@@ -47,7 +47,7 @@ export type LoadingProps = {
 export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
   const { listType, loadingText } = props;
 
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('LoadingIndicator');
 
   if (loadingText) {
     return <LoadingIndicatorWrapper text={loadingText} />;

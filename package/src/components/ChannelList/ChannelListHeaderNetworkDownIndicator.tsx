@@ -22,8 +22,8 @@ export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
       channelListHeaderErrorIndicator: { container, errorText },
       colors: { grey_dark, white },
     },
-  } = useTheme();
-  const { t } = useTranslationContext();
+  } = useTheme('ChannelListHeaderNetworkDownIndicator');
+  const { t } = useTranslationContext('ChannelListHeaderNetworkDownIndicator');
 
   return (
     <View

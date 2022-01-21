@@ -56,7 +56,7 @@ const TypingIndicatorContainerWithContext = <
     theme: {
       messageList: { typingIndicatorContainer },
     },
-  } = useTheme();
+  } = useTheme('TypingIndicatorContainer');
   const typingUsers = filterTypingUsers({ client, thread, typing });
 
   if (!typingUsers.length) {
@@ -91,9 +91,9 @@ export const TypingIndicatorContainer = <
 >(
   props: PropsWithChildren<TypingIndicatorContainerProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>('TypingIndicatorContainer');
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('TypingIndicatorContainer');
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('TypingIndicatorContainer');
 
   return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };

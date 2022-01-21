@@ -28,7 +28,7 @@ export type InlineLoadingMoreThreadIndicatorPropsWithContext = {
 
 export const InlineLoadingMoreThreadIndicatorWithContext: React.FC<InlineLoadingMoreThreadIndicatorPropsWithContext> =
   ({ threadLoadingMore }) => {
-    const { theme } = useTheme();
+    const { theme } = useTheme('InlineLoadingMoreThreadIndicator');
 
     const {
       colors: { accent_blue },
@@ -72,7 +72,9 @@ export const InlineLoadingMoreThreadIndicator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >() => {
-  const { threadLoadingMore } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { threadLoadingMore } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>(
+    'InlineLoadingMoreThreadIndicator',
+  );
 
   return <MemoizedInlineLoadingMoreThreadIndicator threadLoadingMore={threadLoadingMore} />;
 };

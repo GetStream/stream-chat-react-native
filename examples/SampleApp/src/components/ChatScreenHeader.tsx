@@ -33,11 +33,11 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({ title = 'Stream
     theme: {
       colors: { accent_blue },
     },
-  } = useTheme();
+  } = useTheme('ChatScreenHeader');
 
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useContext(AppContext);
-  const { isOnline } = useChatContext();
+  const { isOnline } = useChatContext('ChatScreenHeader');
 
   return (
     <ScreenHeader

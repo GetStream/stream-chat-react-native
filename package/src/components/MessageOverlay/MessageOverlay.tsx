@@ -171,7 +171,7 @@ const MessageOverlayWithContext = <
     messageReactions,
   };
 
-  const { theme } = useTheme();
+  const { theme } = useTheme('MessageOverlay');
 
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
@@ -647,8 +647,8 @@ export const MessageOverlay = <
     OverlayReactions,
     OverlayReactionsAvatar,
     reset,
-  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { overlay, setOverlay } = useOverlayContext();
+  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>('MessageOverlay');
+  const { overlay, setOverlay } = useOverlayContext('MessageOverlay');
 
   const componentProps = {
     MessageActionList: props.MessageActionList || MessageActionList,

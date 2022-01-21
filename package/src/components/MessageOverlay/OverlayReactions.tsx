@@ -170,7 +170,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         },
       },
     },
-  } = useTheme();
+  } = useTheme('OverlayReactions');
 
   const width = useWindowDimensions().width;
   const height = useWindowDimensions().height;

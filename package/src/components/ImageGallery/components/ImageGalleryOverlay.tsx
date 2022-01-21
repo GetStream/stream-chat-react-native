@@ -31,7 +31,7 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
         grid: { overlay },
       },
     },
-  } = useTheme();
+  } = useTheme('ImageGalleryOverlay');
 
   const [visible, setVisible] = useState(false);
   const [fadedIn, setFadedIn] = useState(false);

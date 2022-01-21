@@ -63,7 +63,7 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
         grid: { gridAvatar, gridAvatarWrapper, gridImage },
       },
     },
-  } = useTheme();
+  } = useTheme('ImageGrid');
   const { avatarComponent, imageComponent, ...restItem } = item;
 
   const { numberOfImageGalleryGridColumns, selectAndClose, uri, user } = restItem;
@@ -139,7 +139,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props
         grid: { contentContainer },
       },
     },
-  } = useTheme();
+  } = useTheme('ImageGrid');
 
   const imageGridItems = photos.map((photo) => ({
     ...photo,

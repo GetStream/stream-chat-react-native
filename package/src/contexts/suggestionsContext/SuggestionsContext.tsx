@@ -78,7 +78,8 @@ export type SuggestionsContextValue<
   suggestionsViewActive?: boolean;
 };
 
-export const SuggestionsContext = React.createContext({} as SuggestionsContextValue);
+export const SuggestionsContext =
+  React.createContext<SuggestionsContextValue | undefined>(undefined);
 
 /**
  * This provider component exposes the properties stored within the SuggestionsContext.
@@ -130,7 +131,21 @@ export const SuggestionsProvider = <
 export const useSuggestionsContext = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType,
->() => useContext(SuggestionsContext) as unknown as SuggestionsContextValue<Co, Us>;
+>(
+  componentName?: string,
+) => {
+  const contextValue = useContext(SuggestionsContext) as unknown as SuggestionsContextValue<Co, Us>;
+
+  if (!contextValue) {
+    console.warn(
+      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure this hook is called within the AutoComplete's UI component. The errored call is located in the ${componentName} component.`,
+    );
+
+    return {} as SuggestionsContextValue<Co, Us>;
+  }
+
+  return contextValue as SuggestionsContextValue<Co, Us>;
+};
 
 export const withSuggestionsContext = <
   P extends UnknownType,

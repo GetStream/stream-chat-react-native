@@ -22,7 +22,7 @@ export type TranslationContextValue = {
   tDateTimeParser: TDateTimeParser;
 };
 
-export const TranslationContext = React.createContext<TranslationContextValue>({
+export const TranslationContext = React.createContext<TranslationContextValue | undefined>({
   t: (key: string) => key,
   tDateTimeParser: (input) => Dayjs(input),
 });

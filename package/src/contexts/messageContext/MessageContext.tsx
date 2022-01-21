@@ -112,7 +112,7 @@ export type MessageContextValue<
   showAvatar?: boolean;
 } & Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'disabled' | 'members'>;
 
-export const MessageContext = React.createContext({} as MessageContextValue);
+export const MessageContext = React.createContext<MessageContextValue | undefined>(undefined);
 
 export const MessageProvider = <
   At extends UnknownType = DefaultAttachmentType,

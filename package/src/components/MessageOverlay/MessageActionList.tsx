@@ -100,7 +100,7 @@ const MessageActionListWithContext = <
     theme: {
       colors: { white_snow },
     },
-  } = useTheme();
+  } = useTheme('MessageActionList');
 
   const height = useSharedValue(0);
   const width = useSharedValue(0);
@@ -203,7 +203,7 @@ export const MessageActionList = <
 >(
   props: MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>('MessageActionList');
 
   const { alignment, messageActions } = data || {};
 

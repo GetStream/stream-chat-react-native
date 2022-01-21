@@ -28,7 +28,7 @@ export const LoadingDot: React.FC<Props> = (props) => {
       colors: { black },
       loadingDots: { loadingDot },
     },
-  } = useTheme();
+  } = useTheme('LoadingDot');
   const opacity = useSharedValue(startingOffset / halfDuration);
 
   useEffect(() => {

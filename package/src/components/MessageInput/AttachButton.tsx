@@ -52,7 +52,7 @@ const AttachButtonWithContext = <
       colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
-  } = useTheme();
+  } = useTheme('AttachButton');
 
   return (
     <TouchableOpacity
@@ -131,8 +131,8 @@ export const AttachButton = <
 >(
   props: AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { selectedPicker } = useAttachmentPickerContext();
+  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('AttachButton');
+  const { selectedPicker } = useAttachmentPickerContext('AttachmentButton');
 
   return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;
 };

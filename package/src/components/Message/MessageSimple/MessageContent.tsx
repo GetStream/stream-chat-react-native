@@ -175,7 +175,7 @@ const MessageContentWithContext = <
         reactionList: { radius, reactionSize },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageContent');
 
   const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
     if (!message.created_at) return '';
@@ -556,7 +556,7 @@ export const MessageContent = <
     preventPress,
     showMessageStatus,
     threadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageContent');
   const {
     additionalTouchableProps,
     Attachment,
@@ -569,8 +569,8 @@ export const MessageContent = <
     MessageReplies,
     MessageStatus,
     Reply,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t, tDateTimeParser } = useTranslationContext();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageContent');
+  const { t, tDateTimeParser } = useTranslationContext('MessageContent');
 
   return (
     <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>

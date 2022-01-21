@@ -45,7 +45,7 @@ export const Skeleton: React.FC = () => {
       },
       colors: { border, grey_gainsboro, white_snow },
     },
-  } = useTheme();
+  } = useTheme('Skeleton');
 
   useEffect(() => {
     startOffset.value = withRepeat(

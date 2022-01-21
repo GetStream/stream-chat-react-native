@@ -106,8 +106,8 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
         },
       },
     },
-  } = useTheme();
-  const { t } = useTranslationContext();
+  } = useTheme('ImageGalleryFooter');
+  const { t } = useTranslationContext('ImageGalleryFooter');
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({

@@ -32,7 +32,7 @@ export type OverlayContextValue = {
   translucentStatusBar?: boolean;
 };
 
-export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
+export const OverlayContext = React.createContext<OverlayContextValue | undefined>(undefined);
 
 export type OverlayProviderProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -84,12 +84,12 @@ export type OverlayProviderProps<
     value?: Partial<OverlayContextValue>;
   };
 
-export const useOverlayContext = () => {
+export const useOverlayContext = (componentName?: string) => {
   const contextValue = useContext(OverlayContext);
 
   if (!contextValue) {
     console.warn(
-      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called at the top level before the Stream Chat Component.`,
+      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called at the top level before the Stream Chat Component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as OverlayContextValue;

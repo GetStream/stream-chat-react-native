@@ -140,7 +140,7 @@ const ChannelPreviewMessengerWithContext = <
       channelPreview: { container, contentContainer, row, title },
       colors: { border, white_snow },
     },
-  } = useTheme();
+  } = useTheme('ChannelPreviewMessenger');
 
   const displayName = useChannelPreviewDisplayName(
     channel,
@@ -235,7 +235,7 @@ export const ChannelPreviewMessenger = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
-  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelPreviewMessenger');
   return (
     <MemoizedChannelPreviewMessengerWithContext
       {...{

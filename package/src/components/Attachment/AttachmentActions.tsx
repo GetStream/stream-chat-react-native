@@ -89,7 +89,7 @@ const AttachmentActionsWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('AttachmentActions');
 
   return (
     <View style={[styles.container, container, stylesProp.container]} testID='attachment-actions'>
@@ -187,7 +187,7 @@ export const AttachmentActions = <
 >(
   props: AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { handleAction } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { handleAction } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('AttachmentActions');
   return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
 };
 

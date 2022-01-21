@@ -34,7 +34,7 @@ export const CooldownTimer = (props: CooldownTimerProps) => {
         cooldownTimer: { container, text },
       },
     },
-  } = useTheme();
+  } = useTheme('CooldownTimer');
 
   return (
     <View

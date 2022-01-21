@@ -144,7 +144,7 @@ export const ReactionButton = <
         reactionsList: { reaction, reactionSize },
       },
     },
-  } = useTheme();
+  } = useTheme('ReactionButton');
   const selected = ownReactionTypes.includes(type);
   const animationScale = useSharedValue(0);
   const hasShown = useSharedValue(0);
@@ -302,7 +302,7 @@ const OverlayReactionListWithContext = <
         reactionsList: { radius, reactionList },
       },
     },
-  } = useTheme();
+  } = useTheme('OverlayReactionList');
 
   const reactionListHeight = useSharedValue(0);
   const reactionBubbleWidth = useSharedValue(0);
@@ -479,9 +479,10 @@ export const OverlayReactionList = <
 >(
   props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setOverlay } = useOverlayContext();
+  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>('OverlayReactionList');
+  const { supportedReactions } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('OverlayReactionList');
+  const { setOverlay } = useOverlayContext('OverlayReactionList');
 
   return (
     <MemoizedOverlayReactionList

@@ -81,7 +81,7 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     theme: {
       colors: { black, grey, grey_whisper, white_snow },
     },
-  } = useTheme();
+  } = useTheme('SharedGroupsScreen');
 
   if (!chatClient) return null;
 
@@ -153,7 +153,7 @@ const EmptyListComponent = () => {
     theme: {
       colors: { black, grey, grey_gainsboro },
     },
-  } = useTheme();
+  } = useTheme('SharedGroupsScreen');
 
   return (
     <View style={styles.emptyListContainer}>
@@ -179,7 +179,7 @@ type ListComponentProps = ChannelListMessengerProps<
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.
 const ListComponent: React.FC<ListComponentProps> = (props) => {
-  const { channels, loadingChannels, refreshing } = useChannelsContext();
+  const { channels, loadingChannels, refreshing } = useChannelsContext('SharedGroupsScreen');
 
   if (channels.length <= 1 && !loadingChannels && !refreshing) {
     return <EmptyListComponent />;

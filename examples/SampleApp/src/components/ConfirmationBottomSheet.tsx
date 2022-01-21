@@ -55,7 +55,7 @@ export const ConfirmationBottomSheet: React.FC = () => {
     theme: {
       colors: { accent_red, black, border, grey, white },
     },
-  } = useTheme();
+  } = useTheme('ConfirmationBottomSheet');
   const inset = useSafeAreaInsets();
 
   if (!data) {

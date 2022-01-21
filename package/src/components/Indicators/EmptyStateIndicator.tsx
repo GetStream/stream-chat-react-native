@@ -35,7 +35,7 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => 
       colors: { black, grey, grey_gainsboro },
       emptyStateIndicator: { channelContainer, channelDetails, channelTitle },
     },
-  } = useTheme();
+  } = useTheme('EmptyStateIndicator');
 
   switch (listType) {
     case 'channel':

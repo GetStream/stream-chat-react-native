@@ -46,7 +46,7 @@ export const TypingIndicator = <
       colors: { grey, white_snow },
       typingIndicator: { container, text },
     },
-  } = useTheme();
+  } = useTheme('TypingIndicator');
   const typingString = useTypingString<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (

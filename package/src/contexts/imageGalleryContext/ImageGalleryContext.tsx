@@ -28,9 +28,8 @@ export type ImageGalleryContextValue<
   image?: { messageId?: string; url?: string };
 };
 
-export const ImageGalleryContext = React.createContext<ImageGalleryContextValue>(
-  {} as ImageGalleryContextValue,
-);
+export const ImageGalleryContext =
+  React.createContext<ImageGalleryContextValue | undefined>(undefined);
 
 export const ImageGalleryProvider = <
   At extends UnknownType = DefaultAttachmentType,

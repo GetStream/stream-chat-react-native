@@ -414,7 +414,8 @@ export type MessageInputContextValue<
 > = LocalMessageInputContext<At, Co, Us> &
   Omit<InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'sendMessage'>;
 
-export const MessageInputContext = React.createContext({} as MessageInputContextValue);
+export const MessageInputContext =
+  React.createContext<MessageInputContextValue | undefined>(undefined);
 
 export const MessageInputProvider = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -431,13 +432,14 @@ export const MessageInputProvider = <
   value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useAttachmentPickerContext('MessageInputContext');
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInputContext');
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
+  const { channel, giphyEnabled } =
+    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInputContext');
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInputContext');
+  const { t } = useTranslationContext('MessageInputContext');
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 

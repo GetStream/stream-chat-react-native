@@ -88,7 +88,7 @@ export const InputButtonsWithContext = <
     theme: {
       messageInput: { attachButtonContainer, commandsButtonContainer },
     },
-  } = useTheme();
+  } = useTheme('InputButtons');
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -208,7 +208,7 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('InputButtons');
 
   return (
     <MemoizedInputButtonsWithContext

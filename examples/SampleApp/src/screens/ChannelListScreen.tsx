@@ -73,7 +73,7 @@ export const ChannelListScreen: React.FC = () => {
     theme: {
       colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
     },
-  } = useTheme();
+  } = useTheme('ChannelListScreen');
 
   const searchInputRef = useRef<TextInput | null>(null);
   const scrollRef = useRef<FlatList<

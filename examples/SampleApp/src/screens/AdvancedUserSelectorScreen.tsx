@@ -66,7 +66,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
     theme: {
       colors: { accent_red, black, grey, white_smoke },
     },
-  } = useTheme();
+  } = useTheme('AdvancedUserSelectorScreen');
   return (
     <View
       style={[
@@ -122,7 +122,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
     theme: {
       colors: { button_background, button_text, grey_gainsboro, white_snow },
     },
-  } = useTheme();
+  } = useTheme('AdvancedUserSelectorScreen');
 
   const { loginUser } = useContext(AppContext);
   const [apiKey, setApiKey] = useState('');

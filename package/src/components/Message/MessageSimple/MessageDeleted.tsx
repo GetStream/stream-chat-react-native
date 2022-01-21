@@ -94,7 +94,7 @@ const MessageDeletedWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageDeleted');
 
   return (
     <View
@@ -207,11 +207,11 @@ export const MessageDeleted = <
 >(
   props: MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageDeleted');
 
-  const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageDeleted');
 
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('MessageDeleted');
 
   return (
     <MemoizedMessageDeleted

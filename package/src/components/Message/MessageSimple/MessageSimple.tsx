@@ -78,7 +78,7 @@ const MessageSimpleWithContext = <
     theme: {
       messageSimple: { container },
     },
-  } = useTheme();
+  } = useTheme('MessageSimple');
 
   const [messageContentWidth, setMessageContentWidth] = useState(0);
 
@@ -230,14 +230,14 @@ export const MessageSimple = <
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageSimple');
   const {
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
     MessagePinnedHeader,
     ReactionList,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageSimple');
 
   return (
     <MemoizedMessageSimple<At, Ch, Co, Ev, Me, Re, Us>

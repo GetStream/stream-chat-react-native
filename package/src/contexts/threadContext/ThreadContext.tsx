@@ -36,7 +36,7 @@ export type ThreadContextValue<
   threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
 };
 
-export const ThreadContext = React.createContext({} as ThreadContextValue);
+export const ThreadContext = React.createContext<ThreadContextValue | undefined>(undefined);
 
 export const ThreadProvider = <
   At extends UnknownType = DefaultAttachmentType,

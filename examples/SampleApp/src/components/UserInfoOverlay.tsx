@@ -124,7 +124,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  >();
+  >('UserInfoOverlay');
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
 
@@ -134,7 +134,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     theme: {
       colors: { accent_red, black, border, grey, white },
     },
-  } = useTheme();
+  } = useTheme('UserInfoOverlay');
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);

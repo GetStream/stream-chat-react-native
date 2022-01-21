@@ -67,7 +67,7 @@ const MessageStatusWithContext = <
         status: { checkAllIcon, checkIcon, readByCount, statusContainer, timeIcon },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageStatus');
 
   if (message.status === MessageStatusTypes.SENDING) {
     return (
@@ -166,7 +166,7 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, threadList } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { message, threadList } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageStatus');
 
   return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };

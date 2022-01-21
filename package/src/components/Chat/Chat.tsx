@@ -232,7 +232,7 @@ export const Chat = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { style } = useOverlayContext();
+  const { style } = useOverlayContext('Chat');
 
   return <ChatWithContext {...{ style }} {...props} />;
 };

@@ -166,7 +166,7 @@ const CardWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('Card');
 
   const uri = image_url || thumb_url;
 
@@ -320,9 +320,9 @@ export const Card = <
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('Card');
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Card');
 
   return (
     <MemoizedCard

@@ -168,7 +168,7 @@ const GalleryWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('Gallery');
 
   const sizeConfig = {
     gridHeight,
@@ -419,7 +419,7 @@ export const Gallery = <
     threadList: propThreadList,
   } = props;
 
-  const { setImage: contextSetImage, setImages } = useImageGalleryContext();
+  const { setImage: contextSetImage, setImages } = useImageGalleryContext('Gallery');
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -430,12 +430,12 @@ export const Gallery = <
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     threadList: contextThreadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('Gallery');
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setOverlay: contextSetOverlay } = useOverlayContext();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Gallery');
+  const { setOverlay: contextSetOverlay } = useOverlayContext('Gallery');
 
   const images = propImages || contextImages;
 

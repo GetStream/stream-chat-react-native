@@ -64,7 +64,7 @@ export const AutoCompleteSuggestionListWithContext = <
         suggestionsListContainer: { flatlist },
       },
     },
-  } = useTheme();
+  } = useTheme('AutoCompleteSuggestionList');
 
   const renderItem = ({ index, item }: { index: number; item: Suggestion<Co, Us> }) => {
     switch (triggerType) {
@@ -198,8 +198,11 @@ export const AutoCompleteSuggestionList = <
 >(
   props: AutoCompleteSuggestionListProps<Co, Us>,
 ) => {
-  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
-    useSuggestionsContext<Co, Us>();
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useSuggestionsContext<
+    Co,
+    Us
+  >('AutoCompleteSuggestionList');
+
   return (
     <MemoizedAutoCompleteSuggestionList
       {...{ AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem }}

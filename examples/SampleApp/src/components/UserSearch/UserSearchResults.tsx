@@ -102,7 +102,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         white_snow,
       },
     },
-  } = useTheme();
+  } = useTheme('UserSearchResults');
 
   const results = resultsProp || resultsContext;
   const resultsLength = results.length;

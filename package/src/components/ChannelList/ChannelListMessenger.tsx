@@ -63,9 +63,9 @@ const StatusIndicator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >() => {
-  const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelListMessenger');
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelListMessenger');
 
   if (loadingChannels) return null;
 
@@ -147,7 +147,7 @@ const ChannelListMessengerWithContext = <
       channelListMessenger: { flatList, flatListContent },
       colors: { white_snow },
     },
-  } = useTheme();
+  } = useTheme('ChannelListMessenger');
 
   /**
    * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
@@ -261,7 +261,7 @@ export const ChannelListMessenger = <
     refreshList,
     reloadList,
     setFlatListRef,
-  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>('ChannelListMessenger');
 
   return (
     <ChannelListMessengerWithContext

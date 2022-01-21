@@ -37,7 +37,7 @@ export const mergeThemes = (params: MergedThemesParams) => {
   return finalTheme;
 };
 
-export const ThemeContext = React.createContext({} as Theme);
+export const ThemeContext = React.createContext<Theme | undefined>(undefined);
 
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const { children, mergedStyle, style } = props;
@@ -58,7 +58,7 @@ export const useTheme = (componentName?: string) => {
 
   if (!theme) {
     console.warn(
-      `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as ThemeContextValue;

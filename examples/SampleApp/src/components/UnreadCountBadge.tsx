@@ -25,7 +25,7 @@ export const UnreadCountBadge: React.FC = () => {
     theme: {
       colors: { accent_red },
     },
-  } = useTheme();
+  } = useTheme('UnreadCountBadge');
 
   const { chatClient } = useContext(AppContext);
   const [count, setCount] = useState<number>();

@@ -473,7 +473,7 @@ export type MessagesContextValue<
   targetedMessage?: string;
 };
 
-export const MessagesContext = React.createContext({} as MessagesContextValue);
+export const MessagesContext = React.createContext<MessagesContextValue | undefined>(undefined);
 
 export const MessagesProvider = <
   At extends UnknownType = DefaultAttachmentType,

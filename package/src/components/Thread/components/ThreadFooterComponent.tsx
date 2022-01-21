@@ -67,7 +67,7 @@ const ThreadFooterComponentWithContext = <
   props: ThreadFooterComponentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { Message, thread } = props;
-  const { t } = useTranslationContext();
+  const { t } = useTranslationContext('ThreadFooterComponent');
 
   const {
     theme: {
@@ -76,7 +76,7 @@ const ThreadFooterComponentWithContext = <
         newThread: { backgroundGradientStart, backgroundGradientStop, text, ...newThread },
       },
     },
-  } = useTheme();
+  } = useTheme('ThreadFooterComponent');
 
   if (!thread) return null;
 
@@ -174,8 +174,8 @@ export const ThreadFooterComponent = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >() => {
-  const { Message } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Message } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('ThreadFooterComponent');
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('ThreadFooterComponent');
 
   return (
     <MemoizedThreadFooter

@@ -164,10 +164,11 @@ export const ImageGallery = <
       colors: { white_snow },
       imageGallery: { backgroundColor },
     },
-  } = useTheme();
+  } = useTheme('ImageGallery');
   const [gridPhotos, setGridPhotos] = useState<Photo<Us>[]>([]);
-  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext('ImageGallery');
+  const { image, images, setImage } =
+    useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>('ImageGallery');
 
   /**
    * Height constants

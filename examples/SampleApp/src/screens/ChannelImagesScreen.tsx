@@ -83,14 +83,14 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  >();
-  const { setBlurType, setOverlay } = useOverlayContext();
+  >('ChannelImagesScreen');
+  const { setBlurType, setOverlay } = useOverlayContext('ChannelImagesScreen');
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
     theme: {
       colors: { white },
     },
-  } = useTheme();
+  } = useTheme('ChannelImagesScreen');
 
   const channelImages = useRef(images);
 
@@ -230,7 +230,7 @@ const EmptyListComponent = () => {
     theme: {
       colors: { black, grey, grey_gainsboro },
     },
-  } = useTheme();
+  } = useTheme('ChannelImagesScreen');
   return (
     <View style={styles.emptyContainer}>
       <Picture fill={grey_gainsboro} scale={6} />

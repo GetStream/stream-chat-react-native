@@ -51,7 +51,7 @@ const MoreOptionsButtonWithContext = <
       colors: { accent_blue },
       messageInput: { moreOptionsButton },
     },
-  } = useTheme();
+  } = useTheme('MoreOptionsButton');
 
   return (
     <TouchableOpacity
@@ -118,7 +118,7 @@ export const MoreOptionsButton = <
 >(
   props: MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('MoreOptionsButton');
 
   return <MemoizedMoreOptionsButton {...{ disabled }} {...props} />;
 };

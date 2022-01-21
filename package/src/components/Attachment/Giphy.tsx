@@ -161,7 +161,7 @@ const GiphyWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('Giphy');
 
   const uri = image_url || thumb_url;
 
@@ -352,8 +352,9 @@ export const Giphy = <
   props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('AttachmentActions');
+  const { additionalTouchableProps } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('AttachmentActions');
 
   return (
     <MemoizedGiphy

@@ -19,7 +19,7 @@ export const OverlayReactionsAvatar: React.FC<OverlayReactionsAvatarProps> = (pr
     theme: {
       avatar: { BASE_AVATAR_SIZE },
     },
-  } = useTheme();
+  } = useTheme('OverlayReactionsAvatar');
 
   return <Avatar image={image} name={name} size={size || BASE_AVATAR_SIZE} />;
 };

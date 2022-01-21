@@ -554,7 +554,7 @@ const ChannelWithContext = <
       channel: { selectChannel },
       colors: { black },
     },
-  } = useTheme();
+  } = useTheme('Channel');
   const [deleted, setDeleted] = useState(false);
   const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
   const [error, setError] = useState<Error | boolean>(false);
@@ -1892,8 +1892,8 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>('Channel');
+  const { t } = useTranslationContext('Channel');
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
 

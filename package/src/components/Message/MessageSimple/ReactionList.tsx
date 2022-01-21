@@ -152,7 +152,7 @@ const ReactionListWithContext = <
       },
       screenPadding,
     },
-  } = useTheme();
+  } = useTheme('ReactionList');
 
   const width = useWindowDimensions().width;
 
@@ -384,8 +384,9 @@ export const ReactionList = <
     preventPress,
     reactions,
     showMessageOverlay,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions, targetedMessage } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('ReactionList');
+  const { supportedReactions, targetedMessage } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('ReactionList');
 
   return (
     <MemoizedReactionList

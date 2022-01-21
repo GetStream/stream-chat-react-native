@@ -115,7 +115,7 @@ const FileUploadPreviewWithContext = <
         },
       },
     },
-  } = useTheme();
+  } = useTheme('FileUploadPreview');
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
     const indicatorType =
@@ -276,8 +276,9 @@ export const FileUploadPreview = <
   props: FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { fileUploads, removeFile, uploadFile } =
-    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { FileAttachmentIcon } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('FileUploadPreview');
+  const { FileAttachmentIcon } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('FileUploadPreview');
 
   return (
     <MemoizedFileUploadPreview

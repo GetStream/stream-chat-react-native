@@ -59,10 +59,10 @@ const MessagePinnedHeaderWithContext = <
       colors: { grey },
       messageSimple: { pinnedHeader },
     },
-  } = useTheme();
+  } = useTheme('MessagePinnedHeader');
   const { container, label } = pinnedHeader;
-  const { t } = useTranslationContext();
-  const { client } = useChatContext();
+  const { t } = useTranslationContext('MessagePinnedHeader');
+  const { client } = useChatContext('MessagePinnedHeader');
   return (
     <View
       style={[
@@ -133,7 +133,8 @@ export const MessagePinnedHeader = <
 >(
   props: MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, lastGroupMessage, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, lastGroupMessage, message } =
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessagePinnedHeader');
 
   return (
     <MemoizedMessagePinnedHeader

@@ -113,7 +113,7 @@ const FileAttachmentWithContext = <
         file: { container, details, fileSize, title },
       },
     },
-  } = useTheme();
+  } = useTheme('FileAttachment');
 
   const defaultOnPress = () => goToURL(attachment.asset_url);
 
@@ -188,12 +188,12 @@ export const FileAttachment = <
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachment');
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachment');
 
   return (
     <FileAttachmentWithContext

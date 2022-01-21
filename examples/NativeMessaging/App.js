@@ -72,7 +72,7 @@ const ChannelListScreen = ({ navigation }) => {
 const ChannelScreen = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
+  const { setTopInset } = useAttachmentPickerContext('App');
 
   useEffect(() => {
     setTopInset(headerHeight);

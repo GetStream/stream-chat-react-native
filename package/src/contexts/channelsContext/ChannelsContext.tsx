@@ -226,7 +226,7 @@ export type ChannelsContextValue<
   >;
 };
 
-export const ChannelsContext = React.createContext({} as ChannelsContextValue);
+export const ChannelsContext = React.createContext<ChannelsContextValue | undefined>(undefined);
 
 export const ChannelsProvider = <
   At extends UnknownType = DefaultAttachmentType,

@@ -126,7 +126,7 @@ const MessageRepliesWithContext = <
         replies: { container, leftCurve, messageRepliesText, rightCurve },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageReplies');
 
   if (threadList || !message.reply_count) return null;
 
@@ -285,9 +285,10 @@ export const MessageReplies = <
     onPressIn,
     preventPress,
     threadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageRepliesAvatars } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageReplies');
+  const { MessageRepliesAvatars } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageReplies');
+  const { t } = useTranslationContext('MessageReplies');
 
   return (
     <MemoizedMessageReplies

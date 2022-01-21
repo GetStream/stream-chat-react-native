@@ -43,7 +43,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
     theme: {
       colors: { black, grey_gainsboro },
     },
-  } = useTheme();
+  } = useTheme('SelectedUserTag');
 
   return (
     <TouchableOpacity

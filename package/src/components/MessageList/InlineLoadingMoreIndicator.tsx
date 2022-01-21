@@ -28,7 +28,7 @@ export type InlineLoadingMoreIndicatorPropsWithContext = {
 
 export const InlineLoadingMoreIndicatorWithContext: React.FC<InlineLoadingMoreIndicatorPropsWithContext> =
   ({ loadingMore }) => {
-    const { theme } = useTheme();
+    const { theme } = useTheme('InlineLoadingMoreIndicator');
 
     const {
       colors: { accent_blue },
@@ -72,7 +72,9 @@ export const InlineLoadingMoreIndicator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >() => {
-  const { loadingMore } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadingMore } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>(
+    'InlineLoadingMoreIndicator',
+  );
 
   return <MemoizedInlineLoadingMoreIndicator loadingMore={loadingMore} />;
 };

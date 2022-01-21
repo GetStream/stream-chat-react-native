@@ -31,7 +31,7 @@ export const AutoCompleteSuggestionCommandIcon = <Co extends string = DefaultCom
         },
       },
     },
-  } = useTheme();
+  } = useTheme('AutoCompleteSuggestionCommandIcon');
   switch (name) {
     case 'ban':
       return (

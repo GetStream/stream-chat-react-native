@@ -28,7 +28,7 @@ export type InlineLoadingMoreRecentIndicatorPropsWithContext = {
 
 export const InlineLoadingMoreRecentIndicatorWithContext: React.FC<InlineLoadingMoreRecentIndicatorPropsWithContext> =
   ({ loadingMoreRecent }) => {
-    const { theme } = useTheme();
+    const { theme } = useTheme('InlineLoadingMoreRecentIndicator');
 
     const {
       colors: { accent_blue },
@@ -72,7 +72,9 @@ export const InlineLoadingMoreRecentIndicator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >() => {
-  const { loadingMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadingMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>(
+    'InlineLoadingMoreRecentIndicator',
+  );
 
   return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />;
 };

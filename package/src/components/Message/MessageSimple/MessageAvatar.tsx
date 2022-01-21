@@ -52,7 +52,7 @@ const MessageAvatarWithContext = <
         avatarWrapper: { container, leftAlign, rightAlign, spacer },
       },
     },
-  } = useTheme();
+  } = useTheme('MessageAvatar');
 
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
@@ -128,7 +128,7 @@ export const MessageAvatar = <
   props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { alignment, lastGroupMessage, message, showAvatar } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageAvatar');
 
   return (
     <MemoizedMessageAvatar

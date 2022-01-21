@@ -26,7 +26,7 @@ export type TypingContextValue<
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
 };
 
-export const TypingContext = React.createContext({} as TypingContextValue);
+export const TypingContext = React.createContext<TypingContextValue | undefined>(undefined);
 
 export const TypingProvider = <
   At extends UnknownType = DefaultAttachmentType,

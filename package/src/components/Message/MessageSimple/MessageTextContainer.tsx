@@ -74,7 +74,7 @@ const MessageTextContainerWithContext = <
 >(
   props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const theme = useTheme();
+  const theme = useTheme('MessageTextContainer');
 
   const {
     markdownRules,
@@ -193,8 +193,9 @@ export const MessageTextContainer = <
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { markdownRules, MessageText } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessageTextContainer');
+  const { markdownRules, MessageText } =
+    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageTextContainer');
   const { messageTextNumberOfLines } = props;
 
   return (

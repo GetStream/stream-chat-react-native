@@ -112,8 +112,8 @@ type ChannelScreenProps = {
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
-  const { overlay } = useOverlayContext();
+  const { setTopInset } = useAttachmentPickerContext('App');
+  const { overlay } = useOverlayContext('App');
 
   useEffect(() => {
     navigation.setOptions({
@@ -162,7 +162,7 @@ type ThreadScreenProps = {
 const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
-  const { overlay } = useOverlayContext();
+  const { overlay } = useOverlayContext('App');
 
   useEffect(() => {
     navigation.setOptions({

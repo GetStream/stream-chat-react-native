@@ -41,7 +41,7 @@ const EmptyMentionsSearchIndicator = () => {
     theme: {
       colors: { grey, grey_gainsboro },
     },
-  } = useTheme();
+  } = useTheme('MentionsScreen');
 
   return (
     <View style={styles.emptyIndicatorContainer}>
@@ -60,7 +60,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     theme: {
       colors: { white_snow },
     },
-  } = useTheme();
+  } = useTheme('MentionsScreen');
   const { chatClient } = useContext(AppContext);
   const messageFilters = useMemo(
     () => ({
