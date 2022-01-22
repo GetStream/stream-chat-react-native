@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 8,
-    width: '68%',
+    width: '60%',
   },
   margin: {
     margin: 1,
