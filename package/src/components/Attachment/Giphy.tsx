@@ -12,9 +12,8 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Left } from '../../icons/Left';
+import { GiphyIcon } from '../../icons';
 import { Lightning } from '../../icons/Lightning';
-import { Right } from '../../icons/Right';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -28,25 +27,20 @@ import type {
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
+  buttonContainer: { alignItems: 'center', borderTopWidth: 1, flex: 1, justifyContent: 'center' },
   cancel: {
     fontSize: 14,
     fontWeight: '600',
     paddingVertical: 16,
   },
-  cancelContainer: {
-    alignItems: 'center',
-    borderRightWidth: 1,
-    flex: 1,
-    justifyContent: 'center',
-  },
   container: {
     overflow: 'hidden',
-    width: 256,
+    width: 270,
   },
   giphy: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    height: 140,
+    borderRadius: 2,
+    height: 170,
+    width: 270,
   },
   giphyContainer: {
     alignItems: 'center',
@@ -56,36 +50,47 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 68,
   },
+  giphyHeaderText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  giphyHeaderTitle: {
+    fontSize: 14,
+  },
   giphyMask: {
     bottom: 8,
     left: 8,
     position: 'absolute',
   },
-  giphyText: { fontSize: 11, fontWeight: '600' },
+  giphyMaskText: { fontSize: 13, fontWeight: '600' },
+  header: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 8,
+    width: '68%',
+  },
   margin: {
-    margin: 8,
+    margin: 1,
   },
   row: { flexDirection: 'row' },
   selectionContainer: {
-    borderRadius: 8,
+    borderBottomLeftRadius: 8,
     borderWidth: 1,
     overflow: 'hidden',
-    width: 250,
-  },
-  selector: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 8,
-    paddingHorizontal: 8,
+    width: 272,
   },
   send: {
     fontSize: 14,
     fontWeight: '600',
     paddingVertical: 16,
   },
-  sendContainer: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  shuffle: {
+    fontSize: 14,
+    fontWeight: '600',
+    paddingVertical: 16,
+  },
   shuffleButton: {
     alignItems: 'center',
     borderRadius: 16,
@@ -93,11 +98,6 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     width: 32,
-  },
-  title: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    fontWeight: '500',
   },
 });
 
@@ -142,22 +142,22 @@ const GiphyWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, overlay, white },
+      colors: { accent_blue, black, grey, grey_dark, grey_gainsboro, white },
       messageSimple: {
         giphy: {
+          buttonContainer,
           cancel,
-          cancelContainer,
           container,
           giphy,
           giphyContainer,
+          giphyHeaderText,
+          giphyHeaderTitle,
           giphyMask,
-          giphyText,
+          giphyMaskText,
+          header,
           selectionContainer,
-          selector,
           send,
-          sendContainer,
-          shuffleButton,
-          title: titleStyle,
+          shuffle,
         },
       },
     },
@@ -175,41 +175,21 @@ const GiphyWithContext = <
         selectionContainer,
       ]}
     >
+      <View style={[styles.header, header]}>
+        <GiphyIcon />
+        <Text style={[styles.giphyHeaderText, giphyHeaderText]}>Giphy</Text>
+        <Text
+          style={[styles.giphyHeaderTitle, giphyHeaderTitle, { color: grey_dark }]}
+        >{`/giphy ${title}`}</Text>
+      </View>
       <View style={styles.margin}>
         <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphy]}
         />
-        <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
-            <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, { color: white }, giphyText]}>
-              {type?.toUpperCase()}
-            </Text>
-          </View>
-        </View>
       </View>
       <View>
-        <View style={[styles.selector, { borderBottomColor: border }, selector]}>
-          <TouchableOpacity
-            onPress={() => handleAction('image_action', 'shuffle')}
-            style={[styles.shuffleButton, { borderColor: border }, shuffleButton]}
-          >
-            <Left />
-          </TouchableOpacity>
-          <Text style={[styles.title, { color: black }, titleStyle]}>{`"${title}"`}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (actions?.[1].name && actions?.[1].value && handleAction) {
-                handleAction(actions[1].name, actions[1].value);
-              }
-            }}
-            style={[styles.shuffleButton, shuffleButton]}
-          >
-            <Right />
-          </TouchableOpacity>
-        </View>
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() => {
@@ -217,9 +197,27 @@ const GiphyWithContext = <
                 handleAction(actions[2].name, actions[2].value);
               }
             }}
-            style={[styles.cancelContainer, { borderRightColor: border }, cancelContainer]}
+            style={[
+              styles.buttonContainer,
+              { borderColor: grey_gainsboro, borderRightWidth: 1 },
+              buttonContainer,
+            ]}
           >
             <Text style={[styles.cancel, { color: grey }, cancel]}>{actions?.[2].text}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              if (actions?.[1].name && actions?.[1].value && handleAction) {
+                handleAction(actions[1].name, actions[1].value);
+              }
+            }}
+            style={[
+              styles.buttonContainer,
+              { borderColor: grey_gainsboro, borderRightWidth: 1 },
+              buttonContainer,
+            ]}
+          >
+            <Text style={[styles.shuffle, { color: grey }, shuffle]}>{actions?.[1].text}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -227,7 +225,7 @@ const GiphyWithContext = <
                 handleAction(actions[0].name, actions[0].value);
               }
             }}
-            style={[styles.sendContainer, sendContainer]}
+            style={[styles.buttonContainer, { borderColor: grey_gainsboro }, buttonContainer]}
           >
             <Text style={[styles.send, { color: accent_blue }, send]}>{actions?.[0].text}</Text>
           </TouchableOpacity>
@@ -272,9 +270,9 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
+          <View style={[styles.giphyContainer, { backgroundColor: grey_dark }, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, { color: white }, giphyText]}>
+            <Text style={[styles.giphyMaskText, { color: white }, giphyMaskText]}>
               {type?.toUpperCase()}
             </Text>
           </View>
