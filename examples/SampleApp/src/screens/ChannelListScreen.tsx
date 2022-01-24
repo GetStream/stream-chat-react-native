@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
@@ -6,7 +6,7 @@ import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
 import type { ChannelSort } from 'stream-chat';
@@ -67,7 +67,7 @@ const options = {
 };
 
 export const ChannelListScreen: React.FC = () => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation();
   const {
     theme: {

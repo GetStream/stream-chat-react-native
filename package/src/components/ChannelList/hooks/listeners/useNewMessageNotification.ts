@@ -1,11 +1,10 @@
-import uniqBy from 'lodash/uniqBy';
 import { useEffect } from 'react';
 
-import { getChannel } from '../../utils';
-
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+import uniqBy from 'lodash/uniqBy';
 
 import type { Channel, Event } from 'stream-chat';
+
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type {
   DefaultAttachmentType,
@@ -17,6 +16,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
+import { getChannel } from '../../utils';
 
 type Parameters<
   At extends UnknownType = DefaultAttachmentType,

@@ -1,21 +1,18 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
-
-import { getDisplayName } from '../utils/getDisplayName';
+import React, { PropsWithChildren, useContext } from 'react';
 
 import type { Attachment } from 'stream-chat';
 
-import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
-import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
-import type { MessagesContextValue } from '../messagesContext/MessagesContext';
+import { useResettableState } from './hooks/useResettableState';
 
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type {
   MessageActionListItemProps,
   MessageActionType,
 } from '../../components/MessageOverlay/MessageActionListItem';
-import type { MessageActionListProps } from '../../components/MessageOverlay/MessageActionList';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
+import type { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -27,6 +24,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
+import type { MessagesContextValue } from '../messagesContext/MessagesContext';
+import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageOverlayData<
   At extends UnknownType = DefaultAttachmentType,
@@ -84,6 +85,7 @@ export type MessageOverlayContextValue<
    * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactions.tsx)
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps>;
+  OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
   reset: () => void;
   setData: React.Dispatch<React.SetStateAction<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>>>;
   data?: MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>;
@@ -105,18 +107,7 @@ export const MessageOverlayProvider = <
 }: PropsWithChildren<{
   value?: MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
-  const [data, setData] = useState(value?.data);
-
-  const reset = () => {
-    // TODO: Add the isMounted check here.
-    setData(value?.data);
-  };
-
-  const messageOverlayContext = {
-    data,
-    reset,
-    setData,
-  };
+  const messageOverlayContext = useResettableState(value);
   return (
     <MessageOverlayContext.Provider value={messageOverlayContext as MessageOverlayContextValue}>
       {children}

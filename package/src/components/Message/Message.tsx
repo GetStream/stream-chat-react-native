@@ -1,15 +1,13 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
+import { useMessageActions } from './hooks/useMessageActions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
 
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
-
-import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -28,7 +26,6 @@ import {
   MessageOverlayContextValue,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -37,6 +34,7 @@ import {
   OverlayContextValue,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
@@ -45,10 +43,6 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 
 import { triggerHaptic } from '../../native';
-import { emojiRegex } from '../../utils/utils';
-
-import type { Attachment } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -59,8 +53,13 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
+import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
+
+import {
+  isMessageWithStylesReadByAndDateSeparator,
+  MessageType,
+} from '../MessageList/hooks/useMessageList';
+import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
@@ -288,7 +287,8 @@ const MessageWithContext = <
     },
   } = useTheme();
 
-  const actionsEnabled = message.type === 'regular' && message.status === 'received';
+  const actionsEnabled =
+    message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
   const isMyMessage = client && message && client.userID === message.user?.id;
 
@@ -312,7 +312,9 @@ const MessageWithContext = <
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
+  const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
+
+  const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
@@ -454,6 +456,7 @@ const MessageWithContext = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -492,6 +495,7 @@ const MessageWithContext = <
     message,
     onThreadSelect,
     openThread,
+    removeMessage,
     retrySendMessage,
     selectReaction,
     setEditingState,
@@ -501,11 +505,7 @@ const MessageWithContext = <
     t,
     updateMessage,
   });
-
-  const showMessageOverlay = async (
-    messageReactions = false,
-    error = message.type === 'error' || message.status === 'failed',
-  ) => {
+  const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
     const isThreadMessage = threadList || !!message.parent_id;

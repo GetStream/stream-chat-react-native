@@ -1,14 +1,16 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
 
+import { useMessageActionHandlers } from './useMessageActionHandlers';
+
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import { removeReservedFields } from '../utils/removeReservedFields';
+import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import {
   Copy,
   CurveLineLeftUp,
@@ -22,10 +24,6 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
-import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -36,7 +34,11 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import { useMessageActionHandlers } from './useMessageActionHandlers';
+import { MessageStatusTypes } from '../../../utils/utils';
+
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
   At extends UnknownType = DefaultAttachmentType,
@@ -64,6 +66,7 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
+  removeMessage,
   retrySendMessage,
   selectReaction,
   setEditingState,
@@ -85,6 +88,7 @@ export const useMessageActions = <
   | 'handleRetry'
   | 'handleReaction'
   | 'handleThreadReply'
+  | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -119,6 +123,7 @@ export const useMessageActions = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -126,7 +131,7 @@ export const useMessageActions = <
     updateMessage,
   });
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const onOpenThread = () => {
     if (onThreadSelect) {

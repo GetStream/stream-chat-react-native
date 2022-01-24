@@ -9,7 +9,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
+
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -18,6 +18,7 @@ import {
   TapGestureHandler,
   TapGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
+
 import Animated, {
   cancelAnimation,
   Easing,
@@ -31,6 +32,10 @@ import Animated, {
   withDecay,
   withTiming,
 } from 'react-native-reanimated';
+
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
+import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import {
@@ -52,9 +57,6 @@ import { useImageGalleryContext } from '../../contexts/imageGalleryContext/Image
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import { vh, vw } from '../../utils/utils';
-
-import type { UserResponse } from 'stream-chat';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -65,6 +67,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
+import { vh, vw } from '../../utils/utils';
 
 const isAndroid = Platform.OS === 'android';
 const fullScreenHeight = Dimensions.get('screen').height;
@@ -160,6 +165,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
+  const [gridPhotos, setGridPhotos] = useState<Photo<Us>[]>([]);
   const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
   const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -180,15 +186,15 @@ export const ImageGallery = <
     : vh(100);
   const halfScreenHeight = screenHeight / 2;
   const quarterScreenHeight = screenHeight / 4;
-  const snapPoints = React.useMemo(() => [0, (screenHeight * 9) / 10], []);
+  const snapPoints = React.useMemo(() => [(screenHeight * 9) / 10], []);
 
   /**
-   * BottomSheet ref
+   * BottomSheetModal ref
    */
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   /**
-   * BottomSheet state
+   * BottomSheetModal state
    */
   const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
   const animatedBottomSheetIndex = useSharedValue(0);
@@ -344,20 +350,30 @@ export const ImageGallery = <
           attachment.type === 'image' &&
           !attachment.title_link &&
           !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
+          getUrlOfImageAttachment(attachment),
       ) || [];
 
-    const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
-      channelId: cur.cid,
-      created_at: cur.created_at,
-      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
-      messageId: cur.id,
-      uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
-      user: cur.user,
-      user_id: cur.user_id,
-    }));
+    const attachmentPhotos = attachmentImages.map((a) => {
+      const imageUrl = getUrlOfImageAttachment(a) as string;
 
-    return [...acc, ...attachmentPhotos];
+      return {
+        channelId: cur.cid,
+        created_at: cur.created_at,
+        id: `photoId-${cur.id}-${imageUrl}`,
+        messageId: cur.id,
+        original_height: a.original_height,
+        original_width: a.original_width,
+        uri: getResizedImageUrl({
+          height: screenHeight,
+          url: imageUrl,
+          width: screenWidth,
+        }),
+        user: cur.user,
+        user_id: cur.user_id,
+      };
+    });
+
+    return [...acc, ...attachmentPhotos] as Photo<Us>[];
   }, []);
 
   /**
@@ -398,8 +414,15 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    if (photos[index.value]?.uri) {
-      Image.getSize(photos[index.value].uri, (width, height) => {
+    const photo = photos[index.value];
+    const height = photo?.original_height;
+    const width = photo?.original_width;
+
+    if (height && width) {
+      const imageHeight = Math.floor(height * (screenWidth / width));
+      setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+    } else if (photo?.uri) {
+      Image.getSize(photo.uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
         setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
       });
@@ -1038,16 +1061,22 @@ export const ImageGallery = <
   );
 
   /**
-   * Functions to open and close BottomSheet with image grid
+   * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
+    if (bottomSheetModalRef.current?.close) {
+      bottomSheetModalRef.current.close();
+      setGridPhotos([]);
     }
   };
+
+  /**
+   * Function to open BottomSheetModal with image grid
+   */
   const openGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.snapTo(1);
+    if (bottomSheetModalRef.current?.present) {
+      bottomSheetModalRef.current.present();
+      setGridPhotos(photos);
     }
   };
 
@@ -1153,30 +1182,32 @@ export const ImageGallery = <
         closeGridView={closeGridView}
         currentBottomSheetIndex={currentBottomSheetIndex}
       />
-      <BottomSheet
-        animatedIndex={animatedBottomSheetIndex}
-        containerHeight={fullScreenHeight}
-        handleComponent={() => (
-          <ImageGridHandle
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          animatedIndex={animatedBottomSheetIndex}
+          enablePanDownToClose={true}
+          handleComponent={() => (
+            <ImageGridHandle
+              closeGridView={closeGridView}
+              {...imageGalleryCustomComponents?.gridHandle}
+            />
+          )}
+          handleHeight={imageGalleryGridHandleHeight ?? 40}
+          index={0}
+          onChange={(index: number) => setCurrentBottomSheetIndex(index)}
+          ref={bottomSheetModalRef}
+          snapPoints={imageGalleryGridSnapPoints || snapPoints}
+        >
+          <ImageGrid
             closeGridView={closeGridView}
-            {...imageGalleryCustomComponents?.gridHandle}
+            numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+            photos={gridPhotos}
+            resetVisibleValues={resetVisibleValues}
+            setImage={setImage}
+            {...imageGalleryCustomComponents?.grid}
           />
-        )}
-        handleHeight={imageGalleryGridHandleHeight ?? 40}
-        index={0}
-        onChange={(index: number) => setCurrentBottomSheetIndex(index)}
-        ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || snapPoints}
-      >
-        <ImageGrid
-          closeGridView={closeGridView}
-          numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-          photos={photos}
-          resetVisibleValues={resetVisibleValues}
-          setImage={setImage}
-          {...imageGalleryCustomComponents?.grid}
-        />
-      </BottomSheet>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </Animated.View>
   );
 };
@@ -1202,6 +1233,8 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
   channelId?: string;
   created_at?: string | Date;
   messageId?: string;
+  original_height?: number;
+  original_width?: number;
   user?: UserResponse<Us> | null;
   user_id?: string;
 };

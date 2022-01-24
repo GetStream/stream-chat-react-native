@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import {
@@ -15,15 +16,73 @@ import {
   Message as StreamMessage,
 } from 'stream-chat';
 
-import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
+
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
+
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
+
+import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
+
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+
 import { useCreateTypingContext } from './hooks/useCreateTypingContext';
+
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
+import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
+import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
+import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import {
+  InputMessageInputContextValue,
+  MessageInputProvider,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessagesContextValue,
+  MessagesProvider,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
+  OwnCapabilitiesContextValue,
+  OwnCapabilitiesProvider,
+} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import {
+  PaginatedMessageListContextValue,
+  PaginatedMessageListProvider,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+import {
+  SuggestionsContextValue,
+  SuggestionsProvider,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
+import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { useAppStateListener } from '../../hooks/useAppStateListener';
+
+import {
+  LOLReaction,
+  LoveReaction,
+  ThumbsDownReaction,
+  ThumbsUpReaction,
+  WutReaction,
+} from '../../icons';
+import { FlatList as FlatListDefault } from '../../native';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
+import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { Card as CardDefault } from '../Attachment/Card';
@@ -32,13 +91,15 @@ import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
+import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
+import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
+import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import {
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
-import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -63,73 +124,17 @@ import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
+import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
-import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
-import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
-import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
-
-import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
-import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
-import {
-  InputMessageInputContextValue,
-  MessageInputProvider,
-} from '../../contexts/messageInputContext/MessageInputContext';
-import {
-  MessagesContextValue,
-  MessagesProvider,
-} from '../../contexts/messagesContext/MessagesContext';
-import {
-  PaginatedMessageListContextValue,
-  PaginatedMessageListProvider,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  SuggestionsContextValue,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
-import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import {
-  LOLReaction,
-  LoveReaction,
-  ThumbsDownReaction,
-  ThumbsUpReaction,
-  WutReaction,
-} from '../../icons';
-import { FlatList as FlatListDefault } from '../../native';
-import { generateRandomId, ReactionData } from '../../utils/utils';
-
-import type { MessageType } from '../MessageList/hooks/useMessageList';
-import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-import {
-  OwnCapabilitiesContextValue,
-  OwnCapabilitiesProvider,
-} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -1019,11 +1024,13 @@ const ChannelWithContext = <
         } as unknown as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
       const failedMessages = messages
-        .filter((message) => message.status === 'failed')
+        .filter((message) => message.status === MessageStatusTypes.FAILED)
         .map(parseMessage);
 
       const failedThreadMessages = thread
-        ? threadMessages.filter((message) => message.status === 'failed').map(parseMessage)
+        ? threadMessages
+            .filter((message) => message.status === MessageStatusTypes.FAILED)
+            .map(parseMessage)
         : [];
 
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
@@ -1250,7 +1257,7 @@ const ChannelWithContext = <
         })) || [],
       parent_id,
       reactions: [],
-      status: 'sending',
+      status: MessageStatusTypes.SENDING,
       text,
       type: 'regular',
       user: {
@@ -1329,7 +1336,7 @@ const ChannelWithContext = <
         messageResponse = await channel.sendMessage(messageData);
       }
       if (messageResponse.message) {
-        messageResponse.message.status = 'received';
+        messageResponse.message.status = MessageStatusTypes.RECEIVED;
         if (retrying) {
           replaceMessage(message, messageResponse.message);
         } else {
@@ -1338,7 +1345,7 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.log(err);
-      message.status = 'failed';
+      message.status = MessageStatusTypes.FAILED;
       updateMessage(message);
     }
   };
@@ -1370,7 +1377,7 @@ const ChannelWithContext = <
     async (message) => {
       const statusPendingMessage = {
         ...message,
-        status: 'sending',
+        status: MessageStatusTypes.SENDING,
       };
 
       updateMessage(statusPendingMessage);
@@ -1408,7 +1415,7 @@ const ChannelWithContext = <
 
     const oldestMessage = messages && messages[0];
 
-    if (oldestMessage && oldestMessage.status !== 'received') {
+    if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
       return setLoadingMore(false);
     }
 
@@ -1452,7 +1459,7 @@ const ChannelWithContext = <
 
     const recentMessage = messages[messages.length - 1];
 
-    if (recentMessage?.status !== 'received') {
+    if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
       setLoadingMoreRecent(false);
       return;
     }

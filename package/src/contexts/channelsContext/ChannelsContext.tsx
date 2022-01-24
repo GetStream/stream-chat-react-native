@@ -1,12 +1,14 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { FlatListProps } from 'react-native';
 import type { FlatList } from 'react-native-gesture-handler';
+
+import type { ChannelPreviewMutedStatusProps } from 'src/components/ChannelPreview/ChannelPreviewMutedStatus';
+
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
+import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
 import type { ChannelAvatarProps } from '../../components/ChannelPreview/ChannelAvatar';
 import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
@@ -26,6 +28,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelsContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -64,10 +67,6 @@ export type ChannelsContextValue<
    * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/v3/#emptystateindicator)
    * */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
-  /**
-   * Error in channels query, if any
-   */
-  error: boolean | Error;
   /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
@@ -121,7 +120,7 @@ export type ChannelsContextValue<
   /**
    * Loads the next page of `channels`, which is present as a required prop
    */
-  loadNextPage: ((queryType?: string, retryCount?: number) => Promise<void>) | undefined;
+  loadNextPage: QueryChannels | undefined;
   /**
    * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
    */
@@ -174,6 +173,10 @@ export type ChannelsContextValue<
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/v3/#skeleton)
    */
   Skeleton: React.ComponentType;
+  /**
+   * Error in channels query, if any
+   */
+  error?: Error;
   ListHeaderComponent?: React.ComponentType;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
@@ -193,6 +196,14 @@ export type ChannelsContextValue<
    * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
   PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom UI component to render muted status.
+   *
+   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
+   */
+  PreviewMutedStatus?: React.ComponentType<
+    ChannelPreviewMutedStatusProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component to render preview avatar.
    *

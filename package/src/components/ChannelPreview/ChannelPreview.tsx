@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
+import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
+
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
-
-import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import type {
   DefaultAttachmentType,

@@ -1,6 +1,11 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
+import type { Attachment } from 'stream-chat';
+
+import type { MessageStatusProps } from './MessageStatus';
+
+import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import {
   Alignment,
   MessageContextValue,
@@ -15,13 +20,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
-import type { Attachment } from 'stream-chat';
-
-import type { MessageStatusProps } from './MessageStatus';
-
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-
-import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -32,6 +30,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
   formattedDate: string | Date;

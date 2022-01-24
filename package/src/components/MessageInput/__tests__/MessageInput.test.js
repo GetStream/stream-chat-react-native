@@ -1,17 +1,17 @@
 import React from 'react';
+
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { MessageInput } from '../MessageInput';
-
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
-
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { MessageInput } from '../MessageInput';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();
@@ -46,7 +46,7 @@ describe('MessageInput', () => {
   });
 
   it('should render MessageInput', async () => {
-    await initializeChannel(generateChannel());
+    await initializeChannel(generateChannelResponse());
     const openPicker = jest.fn();
     const closePicker = jest.fn();
     const attachmentValue = { closePicker, openPicker };

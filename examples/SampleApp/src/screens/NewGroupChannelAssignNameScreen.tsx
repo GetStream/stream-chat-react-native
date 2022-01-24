@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native';
@@ -6,7 +6,7 @@ import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native'
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -81,7 +81,7 @@ export type NewGroupChannelAssignNameScreenProps = {
 export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignNameScreenProps> = ({
   navigation,
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { selectedUserIds, selectedUsers } = useUserSearchContext();
 
   const {

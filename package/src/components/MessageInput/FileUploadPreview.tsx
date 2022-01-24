@@ -3,7 +3,6 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import {
   FileUpload,
   MessageInputContextValue,
@@ -15,8 +14,6 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
-import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -27,6 +24,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+
+import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 
 const FILE_PREVIEW_HEIGHT = 60;
 

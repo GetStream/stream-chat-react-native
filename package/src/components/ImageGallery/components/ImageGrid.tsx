@@ -1,15 +1,14 @@
 import React from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
+
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import type { DefaultUserType, UnknownType } from '../../../types/types';
+import { vw } from '../../../utils/utils';
 import { Avatar } from '../../Avatar/Avatar';
 
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { vw } from '../../../utils/utils';
-
 import type { Photo } from '../ImageGallery';
-
-import type { DefaultUserType, UnknownType } from '../../../types/types';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -161,7 +160,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props
         { backgroundColor: white },
         contentContainer,
       ]}
-      data={imageGridItems}
+      data={imageGridItems as GridImageItem<UnknownType>[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}

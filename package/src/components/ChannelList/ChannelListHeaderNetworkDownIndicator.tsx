@@ -20,14 +20,14 @@ export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
   const {
     theme: {
       channelListHeaderErrorIndicator: { container, errorText },
-      colors: { grey, white },
+      colors: { grey_dark, white },
     },
   } = useTheme();
   const { t } = useTranslationContext();
 
   return (
     <View
-      style={[styles.container, { backgroundColor: `${grey}E6` }, container]}
+      style={[styles.container, { backgroundColor: `${grey_dark}E6` }, container]}
       testID='network-down-indicator'
     >
       <Text style={[styles.errorText, { color: white }, errorText]}>{t('Reconnecting...')}</Text>

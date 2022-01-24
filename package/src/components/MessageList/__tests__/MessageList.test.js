@@ -1,22 +1,22 @@
 import React from 'react';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { MessageList } from '../MessageList';
-
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
-
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchTypingEvent from '../../../mock-builders/event/typing';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { registerNativeHandlers } from '../../../native';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { MessageList } from '../MessageList';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -24,7 +24,7 @@ describe('MessageList', () => {
   it('should add new message at bottom of the list', async () => {
     const user1 = generateUser();
     const user2 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -55,7 +55,7 @@ describe('MessageList', () => {
 
   it('should render a system message in the list', async () => {
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ user: user1 }),
@@ -88,7 +88,7 @@ describe('MessageList', () => {
 
   it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to default(always)', async () => {
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ type: 'deleted', user: user1 }),
@@ -122,7 +122,7 @@ describe('MessageList', () => {
   it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to sender', async () => {
     const user1 = generateUser();
     const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ type: 'deleted', user: user2 }),
@@ -156,7 +156,7 @@ describe('MessageList', () => {
   it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to receiver', async () => {
     const user1 = generateUser();
     const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ user: user2 }),
@@ -190,7 +190,7 @@ describe('MessageList', () => {
   it('should render deleted message in the list when `deleteMessagesVisibilityType` is set to never', async () => {
     const user1 = generateUser();
     const user2 = generateUser({ id: 'testID' });
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ user: user2 }),
@@ -223,7 +223,7 @@ describe('MessageList', () => {
 
   it('should render deleted message in the list', async () => {
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ type: 'deleted', user: user1 }),
@@ -255,7 +255,7 @@ describe('MessageList', () => {
 
   it('should render the typing indicator when typing object is non empty', async () => {
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 })],
     });
@@ -288,7 +288,7 @@ describe('MessageList', () => {
 
   it('should render the EmptyStateIndicator when no messages loaded', async () => {
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [],
     });
@@ -325,7 +325,7 @@ describe('MessageList', () => {
     });
 
     const user1 = generateUser();
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 })],
     });

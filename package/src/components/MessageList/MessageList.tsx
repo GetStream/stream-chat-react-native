@@ -8,6 +8,8 @@ import {
   ViewToken,
 } from 'react-native';
 
+import type { Channel as StreamChannel } from 'stream-chat';
+
 import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
@@ -43,15 +45,13 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   isDayOrMoment,
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-
-import type { Channel as StreamChannel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,

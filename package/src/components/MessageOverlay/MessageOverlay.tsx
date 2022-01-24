@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
   Easing,
@@ -13,24 +19,18 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
 
-import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
-
-import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
-import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
+import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
+import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
 
+import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import {
   MessageOverlayContextValue,
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import {
   OverlayContextValue,
@@ -38,11 +38,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vh, vw } from '../../utils/utils';
 
-import type { ReplyProps } from '../Reply/Reply';
-
-import { MessageProvider } from '../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -53,6 +49,10 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { vh, vw } from '../../utils/utils';
+import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
+import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
+import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
   alignEnd: { alignItems: 'flex-end' },
@@ -100,6 +100,7 @@ export type MessageOverlayPropsWithContext<
   | 'MessageActionListItem'
   | 'OverlayReactionList'
   | 'OverlayReactions'
+  | 'OverlayReactionsAvatar'
   | 'reset'
 > &
   Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
@@ -151,6 +152,7 @@ const MessageOverlayWithContext = <
     overlayOpacity,
     OverlayReactionList = OverlayReactionListDefault,
     OverlayReactions = DefaultOverlayReactions,
+    OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
     reset,
     setOverlay,
     threadList,
@@ -495,8 +497,7 @@ const MessageOverlayWithContext = <
                                             hasThreadReplies={!!message?.reply_count}
                                             images={images}
                                             key={`gallery_${messageContentOrderIndex}`}
-                                            messageId={message.id}
-                                            messageText={message.text}
+                                            message={message}
                                             threadList={threadList}
                                           />
                                         )
@@ -530,6 +531,7 @@ const MessageOverlayWithContext = <
                           message.latest_reactions.length > 0 ? (
                             <OverlayReactions
                               alignment={alignment}
+                              OverlayReactionsAvatar={OverlayReactionsAvatar}
                               reactions={message.latest_reactions.map((reaction) => ({
                                 alignment:
                                   clientId && clientId === reaction.user?.id ? 'right' : 'left',
@@ -643,6 +645,7 @@ export const MessageOverlay = <
     MessageActionListItem,
     OverlayReactionList,
     OverlayReactions,
+    OverlayReactionsAvatar,
     reset,
   } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { overlay, setOverlay } = useOverlayContext();
@@ -653,6 +656,7 @@ export const MessageOverlay = <
     OverlayReactionList:
       props.OverlayReactionList || OverlayReactionList || data?.OverlayReactionList,
     OverlayReactions: props.OverlayReactions || OverlayReactions,
+    OverlayReactionsAvatar: props.OverlayReactionsAvatar || OverlayReactionsAvatar,
   };
 
   return (

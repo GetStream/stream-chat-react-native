@@ -3,18 +3,21 @@ import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { ChannelAvatar } from './ChannelAvatar';
+import type { ChannelPreviewProps } from './ChannelPreview';
+import { ChannelPreviewMessage } from './ChannelPreviewMessage';
+import { ChannelPreviewMutedStatus } from './ChannelPreviewMutedStatus';
+import { ChannelPreviewStatus } from './ChannelPreviewStatus';
+import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
+
+import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vw } from '../../utils/utils';
-
-import type { ChannelPreviewProps } from './ChannelPreview';
-import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,10 +28,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { ChannelPreviewTitle } from './ChannelPreviewTitle';
-import { ChannelPreviewMessage } from './ChannelPreviewMessage';
-import { ChannelPreviewStatus } from './ChannelPreviewStatus';
-import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
+import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,6 +45,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingLeft: 8,
+  },
+  statusContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   title: { fontSize: 14, fontWeight: '700' },
 });
@@ -66,6 +70,7 @@ export type ChannelPreviewMessengerPropsWithContext<
     | 'onSelect'
     | 'PreviewAvatar'
     | 'PreviewMessage'
+    | 'PreviewMutedStatus'
     | 'PreviewStatus'
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
@@ -126,6 +131,7 @@ const ChannelPreviewMessengerWithContext = <
     PreviewStatus = ChannelPreviewStatus,
     PreviewTitle = ChannelPreviewTitle,
     PreviewUnreadCount = ChannelPreviewUnreadCount,
+    PreviewMutedStatus = ChannelPreviewMutedStatus,
     unread,
   } = props;
 
@@ -140,6 +146,8 @@ const ChannelPreviewMessengerWithContext = <
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
+
+  const isChannelMuted = channel.muteStatus().muted;
 
   return (
     <TouchableOpacity
@@ -162,7 +170,10 @@ const ChannelPreviewMessengerWithContext = <
       >
         <View style={[styles.row, row]}>
           <PreviewTitle channel={channel} displayName={displayName} />
-          <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+          <View style={[styles.statusContainer, row]}>
+            <PreviewMutedStatus channel={channel} muted={isChannelMuted} />
+            <PreviewUnreadCount channel={channel} maxUnreadCount={maxUnreadCount} unread={unread} />
+          </View>
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
@@ -220,6 +231,7 @@ export const ChannelPreviewMessenger = <
     onSelect,
     PreviewAvatar,
     PreviewMessage,
+    PreviewMutedStatus,
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
@@ -231,6 +243,7 @@ export const ChannelPreviewMessenger = <
         onSelect,
         PreviewAvatar,
         PreviewMessage,
+        PreviewMutedStatus,
         PreviewStatus,
         PreviewTitle,
         PreviewUnreadCount,

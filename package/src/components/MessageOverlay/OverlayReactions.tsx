@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, useWindowDimensions, View, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { FlatList } from 'react-native-gesture-handler';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
-import { Avatar } from '../Avatar/Avatar';
-
+import type { Alignment } from '../../contexts/messageContext/MessageContext';
+import type { MessageOverlayContextValue } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   LOLReaction,
   LoveReaction,
@@ -14,9 +15,17 @@ import {
   Unknown,
   WutReaction,
 } from '../../icons';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { Alignment } from '../../contexts/messageContext/MessageContext';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -101,7 +110,15 @@ export type Reaction = {
   image?: string;
 };
 
-export type OverlayReactionsProps = {
+export type OverlayReactionsProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType,
+> = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'OverlayReactionsAvatar'> & {
   reactions: Reaction[];
   showScreen: Animated.SharedValue<number>;
   title: string;
@@ -130,6 +147,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     supportedReactions = reactionData,
     showScreen,
     title,
+    OverlayReactionsAvatar,
   } = props;
   const layoutHeight = useSharedValue(0);
   const layoutWidth = useSharedValue(0);
@@ -184,7 +202,8 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         2,
   );
 
-  const renderItem = ({ item: { alignment = 'left', image, name, type } }: { item: Reaction }) => {
+  const renderItem = ({ item }: { item: Reaction }) => {
+    const { alignment = 'left', name, type } = item;
     const x = avatarSize / 2 - (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
     const y = avatarSize - radius;
 
@@ -202,7 +221,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     return (
       <View style={[styles.avatarContainer, avatarContainer]}>
         <View style={styles.avatarInnerContainer}>
-          <Avatar image={image} name={name} size={avatarSize} />
+          <OverlayReactionsAvatar reaction={item} size={avatarSize} />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle

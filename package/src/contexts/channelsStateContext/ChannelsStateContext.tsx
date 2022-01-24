@@ -8,14 +8,6 @@ import React, {
   useRef,
 } from 'react';
 
-import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
-
-import type { ChannelContextValue } from '../channelContext/ChannelContext';
-import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
-import type { ThreadContextValue } from '../threadContext/ThreadContext';
-import type { TypingContextValue } from '../typingContext/TypingContext';
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,6 +18,13 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
+
+import type { ChannelContextValue } from '../channelContext/ChannelContext';
+import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
+import type { ThreadContextValue } from '../threadContext/ThreadContext';
+import type { TypingContextValue } from '../typingContext/TypingContext';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelState<
   At extends UnknownType = DefaultAttachmentType,

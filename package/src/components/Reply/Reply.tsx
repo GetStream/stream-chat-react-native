@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
+
 import merge from 'lodash/merge';
 
-import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
-import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
-import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../contexts/messagesContext/MessagesContext';
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { emojiRegex } from '../../utils/utils';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -32,6 +27,12 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { emojiRegex } from '../../utils/utils';
+
+import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
+import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 
 const styles = StyleSheet.create({
   container: {
@@ -177,10 +178,19 @@ const ReplyWithContext = <
             <Image
               onError={() => setError(true)}
               source={{
-                uri:
-                  lastAttachment.image_url ||
-                  lastAttachment.thumb_url ||
-                  lastAttachment.og_scrape_url,
+                uri: getResizedImageUrl({
+                  height:
+                    stylesProp.imageAttachment?.height ||
+                    imageAttachment?.height ||
+                    styles.imageAttachment.height,
+                  url: (lastAttachment.image_url ||
+                    lastAttachment.thumb_url ||
+                    lastAttachment.og_scrape_url) as string,
+                  width:
+                    stylesProp.imageAttachment?.width ||
+                    imageAttachment?.width ||
+                    styles.imageAttachment.width,
+                }),
               }}
               style={[styles.imageAttachment, imageAttachment, stylesProp.imageAttachment]}
             />

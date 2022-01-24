@@ -1,7 +1,6 @@
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { MessageAvatar } from '../MessageAvatar';
+import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
@@ -10,6 +9,7 @@ import {
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
+import { MessageAvatar } from '../MessageAvatar';
 
 afterEach(cleanup);
 
