@@ -195,6 +195,8 @@ export type Theme = {
       usernameText: TextStyle;
     };
     backgroundColor?: string;
+    pager?: ViewStyle;
+    slide?: ImageStyle;
   };
   inlineDateSeparator: {
     container: ViewStyle;
