@@ -299,6 +299,13 @@ export interface ListOutputProps {
   styles?: Partial<MarkdownStyle>;
 }
 
+/**
+ * For lists and sublists, the default behavior of the markdown library we use is
+ * to always renumber any list, so all ordered lists start from 1.
+ *
+ * This custom rule overrides this behavior both for top level lists and sublists,
+ * in order to start the numbering from the number of the first list item provided.
+ */
 export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => {
   let isSublist = state.withinList;
   const parentTypes = ['text', 'paragraph', 'strong'];
