@@ -1,5 +1,5 @@
-import React from 'react';
-import { GestureResponderEvent, Linking, Text, View } from 'react-native';
+import React, { PropsWithChildren } from 'react';
+import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from 'react-native';
 
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
@@ -12,7 +12,9 @@ import {
   ParseFunction,
   parseInline,
   ReactNodeOutput,
+  ReactOutput,
   SingleASTNode,
+  State,
 } from 'simple-markdown';
 
 import { parseLinksFromText } from './parseLinks';
@@ -171,7 +173,7 @@ export const renderText = <
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
 
-  const react: ReactNodeOutput = (node, output, { ...state }) => {
+  const link: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
@@ -249,56 +251,18 @@ export const renderText = <
     );
   };
 
-  const listLevels = {
-    sub: 'sub',
-    top: 'top',
-  };
-
-  /**
-   * For lists and sublists, the default behavior of the markdown library we use is
-   * to always renumber any list, so all ordered lists start from 1.
-   *
-   * This custom rule overrides this behavior both for top level lists and sublists,
-   * in order to start the numbering from the number of the first list item provided.
-   */
-  const customListAtLevel =
-    (level: keyof typeof listLevels): ReactNodeOutput =>
-    (node, output, { ...state }) => {
-      const items = node.items.map((item: Array<SingleASTNode>, index: number) => {
-        const withinList = item.length > 1 && item[1].type === 'list';
-        const content = output(item, { ...state, withinList });
-
-        const isTopLevelText =
-          ['text', 'paragraph', 'strong'].includes(item[0].type) && withinList === false;
-
-        return (
-          <View key={index} style={styles.listRow}>
-            <Text style={styles.listItemNumber}>
-              {node.ordered ? `${node.start + index}. ` : `\u2022`}
-            </Text>
-            <Text style={[styles.listItemText, isTopLevelText && { marginBottom: 0 }]}>
-              {content}
-            </Text>
-          </View>
-        );
-      });
-
-      const isSublist = level === 'sub';
-      return (
-        <View key={state.key} style={[isSublist ? styles.list : styles.sublist]}>
-          {items}
-        </View>
-      );
-    };
+  const list: ReactNodeOutput = (node, output, state) => (
+    <ListOutput node={node} output={output} state={state} styles={styles} />
+  );
 
   const customRules = {
-    link: { react },
-    list: { react: customListAtLevel('top') },
+    link: { link },
+    list: { react: list },
     // Truncate long text content in the message overlay
     paragraph: messageTextNumberOfLines ? { react: paragraphText } : {},
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
-    sublist: { react: customListAtLevel('sub') },
+    sublist: { react: list },
     ...(mentionedUsers
       ? {
           mentions: {
@@ -327,3 +291,69 @@ export const renderText = <
     </Markdown>
   );
 };
+
+export interface ListOutputProps {
+  node: SingleASTNode;
+  output: ReactOutput;
+  state: State;
+  styles?: Partial<MarkdownStyle>;
+}
+
+/**
+ * For lists and sublists, the default behavior of the markdown library we use is
+ * to always renumber any list, so all ordered lists start from 1.
+ *
+ * This custom rule overrides this behavior both for top level lists and sublists,
+ * in order to start the numbering from the number of the first list item provided.
+ */
+export const ListOutput = ({ node, output, state, styles }: ListOutputProps) => {
+  let isSublist = state.withinList;
+  const parentTypes = ['text', 'paragraph', 'strong'];
+
+  return (
+    <View key={state.key} style={isSublist ? styles?.sublist : styles?.list}>
+      {node.items.map((item: SingleASTNode, index: number) => {
+        const indexAfterStart = node.start + index;
+
+        if (item === null) {
+          return (
+            <ListRow key={index} style={styles?.listRow} testID='list-item'>
+              <Bullet index={node.ordered && indexAfterStart} />
+            </ListRow>
+          );
+        }
+
+        isSublist = item.length > 1 && item[1].type === 'list';
+        const isSublistWithinText = parentTypes.includes((item[0] ?? {}).type) && isSublist;
+        const style = isSublistWithinText ? { marginBottom: 0 } : {};
+
+        return (
+          <ListRow key={index} style={styles?.listRow} testID='list-item'>
+            <Bullet index={node.ordered && indexAfterStart} />
+            <ListItem key={1} style={[styles?.listItemText, style]}>
+              {output(item, state)}
+            </ListItem>
+          </ListRow>
+        );
+      })}
+    </View>
+  );
+};
+
+interface BulletProps extends TextProps {
+  index?: number;
+}
+
+const Bullet = ({ index, style }: BulletProps) => (
+  <Text key={0} style={[style, defaultMarkdownStyles.listItemNumber]}>
+    {index ? `${index}. ` : '\u2022 '}
+  </Text>
+);
+
+const ListRow = (props: PropsWithChildren<ViewProps>) => (
+  <Text style={[props.style, defaultMarkdownStyles.listRow]}>{props.children}</Text>
+);
+
+const ListItem = ({ children, style }: PropsWithChildren<TextProps>) => (
+  <Text style={style}>{children}</Text>
+);
