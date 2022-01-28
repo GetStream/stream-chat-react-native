@@ -430,7 +430,6 @@ export type Theme = {
       selectionContainer: ViewStyle;
       send: TextStyle;
       shuffle: TextStyle;
-      shuffleButton: ViewStyle;
       title: TextStyle;
     };
     pinnedHeader: {
@@ -923,7 +922,6 @@ export const defaultTheme: Theme = {
       selectionContainer: {},
       send: {},
       shuffle: {},
-      shuffleButton: {},
       title: {},
     },
     pinnedHeader: {
