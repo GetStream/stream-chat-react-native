@@ -344,14 +344,19 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
   }}
 ```
 
-### UI/UX Changes and Performance Improvements
+### Replaced next/prev Giphy Navigation With Shuffle
 
-- Images will be rendered
+Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
+api doesn't support pagination and it resulted into confusing user experience.
+
+### Dropped BlurView Package
 
 - Background for the overlay which opens up when user long-presses on a message, has been replaced with
   opacity based background instead of [BlurView](https://github.com/Kureev/react-native-blur) [#874](https://github.com/GetStream/stream-chat-react-native/pull/874)
   This dependency caused a lot of issues due to its underlying native [BlurView](https://github.com/Dimezis/BlurView) dependency.
   Thus we decided to get rid of this hurdle by dropping this peer dependency.
+
+### Performance Improvements
 
 - `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
   - Long press animation on message UI has been removed
