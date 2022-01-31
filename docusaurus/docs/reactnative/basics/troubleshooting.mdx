@@ -246,19 +246,6 @@ dependencies {
 }
 ```
 
-## Blank screen on channel delete
-
-When a channel is deleted, an event is shared from the backend which could be listened to get the status of the deleted channel.
-Users can listen to the event and store the status of the deleted channel and thereby display the appropriate messa
-
-```tsx
-client.on('channel.deleted', (event) => {
-  if (event.cid === channel.cid) {
-    // add your action here
-  }
-}),
-```
-
 ## Touchables not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
