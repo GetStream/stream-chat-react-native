@@ -248,7 +248,7 @@ dependencies {
 
 ## Blank screen on channel delete
 
-When a channel is deleted, and you are active on that channel a blank screen appears by default in the SDK as we return `null` by checking the status of the event returned from the backend. 
+When a channel is deleted, and you are active on that channel a blank screen appears by default in the SDK as we return `null` by checking the status of the event returned from the backend.
 A user can go back to the channel list and then the channel gets disappeared from the list. At the same time, an event is shared from the backend which could be listened to get the status of the deleted channel.
 
 Users can listen to the event and store the status of the deleted channel and thereby display the appropriate message in the UI.
