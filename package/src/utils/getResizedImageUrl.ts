@@ -1,8 +1,12 @@
 import { PixelRatio } from 'react-native';
+import { setupURLPolyfill } from 'react-native-url-polyfill';
+
+setupURLPolyfill();
 
 type GetResizedImageUrlParams = {
   url: string;
   height?: string | number;
+  resize?: 'clip' | 'crop' | 'fill' | 'scale';
   width?: string | number;
 };
 
@@ -18,26 +22,27 @@ type GetResizedImageUrlParams = {
  *
  * @returns {string} Url of the image with given height and width.
  */
-export function getResizedImageUrl({ height, url, width }: GetResizedImageUrlParams) {
-  const isResizableUrl = url.includes('&h=*') && url.includes('&w=*') && url.includes('&resize=*');
-
+export function getResizedImageUrl({
+  height,
+  resize = 'clip',
+  url,
+  width,
+}: GetResizedImageUrlParams) {
+  // Check if url belongs to cloudfront CDN
+  const isResizableUrl = url.includes('.stream-io-cdn.com');
   if (!isResizableUrl || (!height && !width)) return url;
 
-  let resizedUrl = url;
+  const parsedUrl = new URL(url);
 
   if (height) {
-    resizedUrl = resizedUrl.replace(
-      'h=*',
-      `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-    );
+    parsedUrl.searchParams.set('h', `${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`);
   }
 
   if (width) {
-    resizedUrl = resizedUrl.replace(
-      'w=*',
-      `w=${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`,
-    );
+    parsedUrl.searchParams.set('w', `${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`);
   }
 
-  return resizedUrl.replace('resize=*', `resize=clip`);
+  parsedUrl.searchParams.set('resize', `${resize}`);
+
+  return parsedUrl.toString();
 }
