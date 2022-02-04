@@ -1,7 +1,4 @@
 import { PixelRatio } from 'react-native';
-import { setupURLPolyfill } from 'react-native-url-polyfill';
-
-setupURLPolyfill();
 
 type GetResizedImageUrlParams = {
   url: string;
