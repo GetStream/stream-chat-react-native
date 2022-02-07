@@ -1,20 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   bold: { fontWeight: '600' },
@@ -25,19 +18,18 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewMessageProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
-  latestMessagePreview: LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>;
+  latestMessagePreview: LatestMessagePreview<StreamChatClient>;
 };
-export const ChannelPreviewMessage: React.FC<ChannelPreviewMessageProps> = ({
-  latestMessagePreview,
-}) => {
+
+export const ChannelPreviewMessage = <
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>(
+  props: ChannelPreviewMessageProps<StreamChatClient>,
+) => {
+  const { latestMessagePreview } = props;
+
   const {
     theme: {
       channelPreview: { message },

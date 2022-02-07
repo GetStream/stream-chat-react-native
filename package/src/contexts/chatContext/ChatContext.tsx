@@ -1,27 +1,12 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, Mute, StreamChat } from 'stream-chat';
+import type { Channel, ExtendableGenerics, Mute, StreamChat } from 'stream-chat';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChatContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * The StreamChat client object
@@ -39,16 +24,16 @@ export type ChatContextValue<
    *
    * @overrideType StreamChat
    * */
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+  client: StreamChat<StreamChatClient>;
   connectionRecovering: boolean;
   isOnline: boolean;
-  mutedUsers: Mute<Us>[];
+  mutedUsers: Mute<StreamChatClient>[];
   /**
    * @param newChannel Channel to set as active.
    *
    * @overrideType Function
    */
-  setActiveChannel: (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  setActiveChannel: (newChannel?: Channel<StreamChatClient>) => void;
   /**
    * Instance of channel object from stream-chat package.
    *
@@ -66,24 +51,18 @@ export type ChatContextValue<
    *
    * @overrideType Channel
    */
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  channel?: Channel<StreamChatClient>;
 };
 
 export const ChatContext = React.createContext({} as ChatContextValue);
 
 export const ChatProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ChatContextValue<StreamChatClient>;
 }>) => (
   <ChatContext.Provider value={value as unknown as ChatContextValue}>
     {children}
@@ -91,14 +70,8 @@ export const ChatProvider = <
 );
 
 export const useChatContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(ChatContext) as unknown as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChatContext) as unknown as ChatContextValue<StreamChatClient>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -107,20 +80,12 @@ export const useChatContext = <
  */
 export const withChatContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
-  const WithChatContextComponent = (
-    props: Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
-  ) => {
-    const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+): React.FC<Omit<P, keyof ChatContextValue<StreamChatClient>>> => {
+  const WithChatContextComponent = (props: Omit<P, keyof ChatContextValue<StreamChatClient>>) => {
+    const chatContext = useChatContext<StreamChatClient>();
 
     return <Component {...(props as P)} {...chatContext} />;
   };

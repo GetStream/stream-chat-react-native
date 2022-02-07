@@ -1,17 +1,19 @@
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
-export function buildGalleryOfTwoImages<At extends UnknownType = DefaultAttachmentType>({
+export function buildGalleryOfTwoImages<
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>({
   images,
   sizeConfig,
 }: {
-  images: Attachment<At>[];
+  images: Attachment<StreamChatClient>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   const aspectRatio1 = getAspectRatio(images[0]);

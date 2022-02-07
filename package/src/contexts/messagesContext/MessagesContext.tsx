@@ -4,7 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
-import type { ChannelState, MessageResponse } from 'stream-chat';
+import type { ChannelState, ExtendableGenerics, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
@@ -41,16 +41,7 @@ import type { MessageActionType } from '../../components/MessageOverlay/MessageA
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
@@ -62,29 +53,23 @@ import { getDisplayName } from '../utils/getDisplayName';
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
 export type MessagesContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
    */
-  Attachment: React.ComponentType<AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Attachment: React.ComponentType<AttachmentProps<StreamChatClient>>;
   /**
    * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx)
    */
-  AttachmentActions: React.ComponentType<AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  AttachmentActions: React.ComponentType<AttachmentActionsProps<StreamChatClient>>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx)
    */
-  Card: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Card: React.ComponentType<CardProps<StreamChatClient>>;
   /**
    * UI component for DateHeader
    * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)
@@ -100,12 +85,12 @@ export type MessagesContextValue<
    * UI component to display File type attachment.
    * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx)
    */
-  FileAttachment: React.ComponentType<FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  FileAttachment: React.ComponentType<FileAttachmentProps<StreamChatClient>>;
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx)
    */
-  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<StreamChatClient>>;
   /**
    * UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
@@ -116,12 +101,12 @@ export type MessagesContextValue<
    * UI component to display image attachments
    * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx)
    */
-  Gallery: React.ComponentType<GalleryProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Gallery: React.ComponentType<GalleryProps<StreamChatClient>>;
   /**
    * UI component for Giphy
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
    */
-  Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Giphy: React.ComponentType<GiphyProps<StreamChatClient>>;
 
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
@@ -137,87 +122,85 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
-  Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Message: React.ComponentType<MessageProps<StreamChatClient>>;
   /**
    * UI component for MessageAvatar
    * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
-  MessageAvatar: React.ComponentType<MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageAvatar: React.ComponentType<MessageAvatarProps<StreamChatClient>>;
   /**
    * UI component for MessageContent
    * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx)
    */
-  MessageContent: React.ComponentType<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageContent: React.ComponentType<MessageContentProps<StreamChatClient>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
    * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageDeleted.tsx)
    */
-  MessageDeleted: React.ComponentType<MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatClient>>;
   /**
    * Custom message footer component
    */
-  MessageFooter: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  MessageList: React.ComponentType<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageFooter: React.ComponentType<MessageFooterProps<StreamChatClient>>;
+  MessageList: React.ComponentType<MessageListProps<StreamChatClient>>;
   /**
    * Custom message pinned component
    */
-  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<StreamChatClient>>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)
    */
 
-  MessageReplies: React.ComponentType<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageReplies: React.ComponentType<MessageRepliesProps<StreamChatClient>>;
   /**
    * UI Component for MessageRepliesAvatars
    * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageRepliesAvatars.tsx)
    */
-  MessageRepliesAvatars: React.ComponentType<
-    MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps<StreamChatClient>>;
   /**
    * UI component for MessageSimple
    * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
-  MessageSimple: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageSimple: React.ComponentType<MessageSimpleProps<StreamChatClient>>;
   /**
    * UI component for MessageStatus (delivered/read)
    * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageStatus.tsx)
    */
-  MessageStatus: React.ComponentType<MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageStatus: React.ComponentType<MessageStatusProps<StreamChatClient>>;
   /**
    * UI component for MessageSystem
    * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
    */
-  MessageSystem: React.ComponentType<MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageSystem: React.ComponentType<MessageSystemProps<StreamChatClient>>;
   /**
    * UI component for OverlayReactionList
    */
-  OverlayReactionList: React.ComponentType<OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatClient>>;
   /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx)
    */
-  ReactionList: React.ComponentType<ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  ReactionList: React.ComponentType<ReactionListProps<StreamChatClient>>;
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
    * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/v3/#reply)
    */
-  Reply: React.ComponentType<ReplyProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  Reply: React.ComponentType<ReplyProps<StreamChatClient>>;
   /**
    * Override the api request for retry message functionality.
    */
-  retrySendMessage: (message: MessageResponse<At, Ch, Co, Me, Re, Us>) => Promise<void>;
+  retrySendMessage: (message: MessageResponse<StreamChatClient>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
    * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
-  setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  setQuotedMessageState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  setEditingState: (message: MessageType<StreamChatClient>) => void;
+  setQuotedMessageState: (message: MessageType<StreamChatClient>) => void;
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
@@ -230,18 +213,18 @@ export type MessagesContextValue<
    */
   TypingIndicatorContainer: React.ComponentType;
   updateMessage: (
-    updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    updatedMessage: MessageResponse<StreamChatClient>,
     extraState?: {
-      commands?: SuggestionCommand<Co>[];
+      commands?: SuggestionCommand<StreamChatClient>[];
       messageInput?: string;
-      threadMessages?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
+      threadMessages?: ChannelState<StreamChatClient>['threads'][string];
     },
   ) => void;
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  UrlPreview: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  UrlPreview: React.ComponentType<CardProps<StreamChatClient>>;
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -253,17 +236,17 @@ export type MessagesContextValue<
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  CardCover?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  CardCover?: React.ComponentType<CardProps<StreamChatClient>>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  CardFooter?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  CardFooter?: React.ComponentType<CardProps<StreamChatClient>>;
   /**
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  CardHeader?: React.ComponentType<CardProps<StreamChatClient>>;
 
   /**
    * Full override of the delete message button in the Message Actions
@@ -286,32 +269,27 @@ export type MessagesContextValue<
    * Optional function to custom format the message date
    */
   formatDate?: (date: TDateTimeParserInput) => string;
-  handleBlock?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleBlock?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when a copy message action is invoked */
-  handleCopy?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleCopy?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when a delete message action is invoked */
-  handleDelete?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleDelete?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when an edit message action is invoked */
-  handleEdit?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  handleEdit?: (message: MessageType<StreamChatClient>) => void;
   /** Handler to access when a flag message action is invoked */
-  handleFlag?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleFlag?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when a mute user action is invoked */
-  handleMute?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleMute?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when a pin/unpin user action is invoked*/
-  handlePinMessage?:
-    | ((message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType)
-    | null;
+  handlePinMessage?: ((message: MessageType<StreamChatClient>) => MessageActionType) | null;
   /** Handler to access when a quoted reply action is invoked */
-  handleQuotedReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleQuotedReply?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to process a reaction */
-  handleReaction?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    reactionType: string,
-  ) => Promise<void>;
+  handleReaction?: (message: MessageType<StreamChatClient>, reactionType: string) => Promise<void>;
   /** Handler to access when a retry action is invoked */
-  handleRetry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleRetry?: (message: MessageType<StreamChatClient>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
-  handleThreadReply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => Promise<void>;
+  handleThreadReply?: (message: MessageType<StreamChatClient>) => Promise<void>;
   legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
@@ -365,13 +343,13 @@ export type MessagesContextValue<
    *
    * @overrideType Function | Array<Objects>
    */
-  messageActions?: (param: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType[];
+  messageActions?: (param: MessageActionsParams<StreamChatClient>) => MessageActionType[];
   /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageHeader?: React.ComponentType<MessageFooterProps<StreamChatClient>>;
   /** Custom UI component for message text */
-  MessageText?: React.ComponentType<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MessageText?: React.ComponentType<MessageTextProps<StreamChatClient>>;
 
   /**
    * Theme provided only to messages that are the current users
@@ -403,9 +381,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onLongPressMessage?: (
-    payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
+  onLongPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatClient>) => void;
   /**
    * Add onPressIn handler for attachments. You have access to payload of that handler as param:
    *
@@ -432,7 +408,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressInMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  onPressInMessage?: (payload: MessageTouchableHandlerPayload<StreamChatClient>) => void;
   /**
    * Override onPress handler for message. You have access to payload of that handler as param:
    *
@@ -459,7 +435,7 @@ export type MessagesContextValue<
    * />
    * ```
    */
-  onPressMessage?: (payload: MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  onPressMessage?: (payload: MessageTouchableHandlerPayload<StreamChatClient>) => void;
 
   /**
    * Full override of the reaction function on Message and Message Overlay
@@ -467,7 +443,7 @@ export type MessagesContextValue<
    * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
    * */
   selectReaction?: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+    message: MessageType<StreamChatClient>,
   ) => (reactionType: string) => Promise<void>;
 
   targetedMessage?: string;
@@ -476,18 +452,12 @@ export type MessagesContextValue<
 export const MessagesContext = React.createContext({} as MessagesContextValue);
 
 export const MessagesProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: MessagesContextValue<StreamChatClient>;
 }>) => (
   <MessagesContext.Provider value={value as unknown as MessagesContextValue}>
     {children}
@@ -495,14 +465,8 @@ export const MessagesProvider = <
 );
 
 export const useMessagesContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(MessagesContext) as unknown as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>() => useContext(MessagesContext) as unknown as MessagesContextValue<StreamChatClient>;
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext
@@ -511,20 +475,14 @@ export const useMessagesContext = <
  */
 export const withMessagesContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof MessagesContextValue<StreamChatClient>>> => {
   const WithMessagesContextComponent = (
-    props: Omit<P, keyof MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof MessagesContextValue<StreamChatClient>>,
   ) => {
-    const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const messagesContext = useMessagesContext<StreamChatClient>();
 
     return <Component {...(props as P)} {...messagesContext} />;
   };

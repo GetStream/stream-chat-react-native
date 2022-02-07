@@ -1,46 +1,25 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { ChannelState } from 'stream-chat';
+import type { ChannelState, ExtendableGenerics } from 'stream-chat';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type TypingContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
-  typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
+  typing: ChannelState<StreamChatClient>['typing'];
 };
 
 export const TypingContext = React.createContext({} as TypingContextValue);
 
 export const TypingProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: TypingContextValue<StreamChatClient>;
 }>) => (
   <TypingContext.Provider value={value as unknown as TypingContextValue}>
     {children}
@@ -48,14 +27,8 @@ export const TypingProvider = <
 );
 
 export const useTypingContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(TypingContext) as unknown as TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>() => useContext(TypingContext) as unknown as TypingContextValue<StreamChatClient>;
 
 /**
  * Typescript currently does not support partial inference so if TypingContext
@@ -64,20 +37,14 @@ export const useTypingContext = <
  */
 export const withTypingContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof TypingContextValue<StreamChatClient>>> => {
   const WithTypingContextComponent = (
-    props: Omit<P, keyof TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof TypingContextValue<StreamChatClient>>,
   ) => {
-    const typingContext = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const typingContext = useTypingContext<StreamChatClient>();
 
     return <Component {...(props as P)} {...typingContext} />;
   };

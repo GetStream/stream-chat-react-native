@@ -1,19 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -64,15 +57,9 @@ const MemoizedInlineLoadingMoreThreadIndicator = React.memo(
 ) as typeof InlineLoadingMoreThreadIndicatorWithContext;
 
 export const InlineLoadingMoreThreadIndicator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { threadLoadingMore } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { threadLoadingMore } = useThreadContext<StreamChatClient>();
 
   return <MemoizedInlineLoadingMoreThreadIndicator threadLoadingMore={threadLoadingMore} />;
 };

@@ -1,32 +1,19 @@
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { DateSeparators } from './getDateSeparators';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { GroupType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   dateSeparators: DateSeparators;
   messages:
-    | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
+    | PaginatedMessageListContextValue<StreamChatClient>['messages']
+    | ThreadContextValue<StreamChatClient>['threadMessages'];
   hideDateSeparators?: boolean;
   maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
@@ -34,15 +21,9 @@ export type GetGroupStylesParams<
 };
 
 export const getGroupStyles = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
+  params: GetGroupStylesParams<StreamChatClient>,
 ) => {
   const {
     dateSeparators,

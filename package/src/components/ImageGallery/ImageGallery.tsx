@@ -35,7 +35,7 @@ import Animated, {
 
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
-import type { UserResponse } from 'stream-chat';
+import type { ExtendableGenerics, UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import {
@@ -57,16 +57,7 @@ import { useImageGalleryContext } from '../../contexts/imageGalleryContext/Image
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { vh, vw } from '../../utils/utils';
@@ -89,7 +80,9 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryCustomComponents<
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
    *
@@ -122,34 +115,29 @@ export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserTyp
    * @overrideType object
    */
   imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps<Us>;
-    grid?: ImageGalleryGridImageComponents<Us>;
+    footer?: ImageGalleryFooterCustomComponentProps<StreamChatClient>;
+    grid?: ImageGalleryGridImageComponents<StreamChatClient>;
     gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps<Us>;
+    header?: ImageGalleryHeaderCustomComponentProps<StreamChatClient>;
   };
 };
 
-type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomComponents<Us> & {
-  overlayOpacity: Animated.SharedValue<number>;
-  visible: boolean;
-  imageGalleryGridHandleHeight?: number;
-  /**
-   * This should be
-   */
-  imageGalleryGridSnapPoints?: [string | number, string | number];
-  numberOfImageGalleryGridColumns?: number;
-};
+type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryCustomComponents<StreamChatClient> & {
+    overlayOpacity: Animated.SharedValue<number>;
+    visible: boolean;
+    imageGalleryGridHandleHeight?: number;
+    /**
+     * This should be
+     */
+    imageGalleryGridSnapPoints?: [string | number, string | number];
+    numberOfImageGalleryGridColumns?: number;
+  };
 
 export const ImageGallery = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<Us>,
+  props: Props<StreamChatClient>,
 ) => {
   const {
     imageGalleryCustomComponents,
@@ -165,9 +153,9 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const [gridPhotos, setGridPhotos] = useState<Photo<Us>[]>([]);
+  const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatClient>[]>([]);
   const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { image, images, setImage } = useImageGalleryContext<StreamChatClient>();
 
   /**
    * Height constants
@@ -343,7 +331,7 @@ export const ImageGallery = <
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = images.reduce((acc: Photo<Us>[], cur) => {
+  const photos = images.reduce((acc: Photo<StreamChatClient>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
@@ -373,7 +361,7 @@ export const ImageGallery = <
       };
     });
 
-    return [...acc, ...attachmentPhotos] as Photo<Us>[];
+    return [...acc, ...attachmentPhotos] as Photo<StreamChatClient>[];
   }, []);
 
   /**
@@ -1162,13 +1150,13 @@ export const ImageGallery = <
           </TapGestureHandler>
         </Animated.View>
       </TapGestureHandler>
-      <ImageGalleryHeader<Us>
+      <ImageGalleryHeader<StreamChatClient>
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
-      <ImageGalleryFooter<Us>
+      <ImageGalleryFooter<StreamChatClient>
         opacity={headerFooterOpacity}
         openGridView={openGridView}
         photo={photos[selectedIndex]}
@@ -1227,7 +1215,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<Us extends UnknownType = DefaultUserType> = {
+export type Photo<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
   id: string;
   uri: string;
   channelId?: string;
@@ -1235,7 +1223,7 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
   messageId?: string;
   original_height?: number;
   original_width?: number;
-  user?: UserResponse<Us> | null;
+  user?: UserResponse<StreamChatClient> | null;
   user_id?: string;
 };
 

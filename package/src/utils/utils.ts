@@ -8,6 +8,7 @@ import type {
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
   CommandResponse,
+  ExtendableGenerics,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -20,16 +21,7 @@ import type {
 } from '../contexts/suggestionsContext/SuggestionsContext';
 import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 import type { IconProps } from '../icons/utils/base';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../types/types';
+import type { DefaultStreamChatGenerics } from '../types/types';
 
 export type ReactionData = {
   Icon: React.FC<IconProps>;
@@ -68,69 +60,40 @@ const defaultMentionAllAppUsersQuery = {
   sort: {},
 };
 
-const isUserResponse = <Us extends DefaultUserType = DefaultUserType>(
-  user: SuggestionUser<Us> | undefined,
-): user is SuggestionUser<Us> => (user as SuggestionUser<Us>) !== undefined;
+const isUserResponse = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  user: SuggestionUser<StreamChatClient> | undefined,
+): user is SuggestionUser<StreamChatClient> =>
+  (user as SuggestionUser<StreamChatClient>) !== undefined;
 
-const getCommands = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+const getCommands = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  channel: Channel<StreamChatClient>,
 ) => channel.getConfig()?.commands || [];
 
-const getMembers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+const getMembers = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  channel: Channel<StreamChatClient>,
 ) => {
   const members = channel.state.members;
 
   return Object.values(members).length
     ? (
         Object.values(members).filter((member) => member.user) as Array<
-          ChannelMemberResponse<Us> & { user: UserResponse<Us> }
+          ChannelMemberResponse<StreamChatClient> & { user: UserResponse<StreamChatClient> }
         >
       ).map((member) => member.user)
     : [];
 };
 
-const getWatchers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+const getWatchers = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  channel: Channel<StreamChatClient>,
 ) => {
   const watchers = channel.state.watchers;
   return Object.values(watchers).length ? [...Object.values(watchers)] : [];
 };
 
 const getMembersAndWatchers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  channel: Channel<StreamChatClient>,
 ) => {
   const users = [...getMembers(channel), ...getWatchers(channel)];
 
@@ -141,22 +104,16 @@ const getMembersAndWatchers = <
       }
 
       return acc;
-    }, {} as { [key: string]: SuggestionUser<Us> }),
+    }, {} as { [key: string]: SuggestionUser<StreamChatClient> }),
   );
 };
 
 const queryMembers = async <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser<Us>['name'],
-  onReady?: (users: SuggestionUser<Us>[]) => void,
+  channel: Channel<StreamChatClient>,
+  query: SuggestionUser<StreamChatClient>['name'],
+  onReady?: (users: SuggestionUser<StreamChatClient>[]) => void,
   options: {
     limit?: number;
   } = {},
@@ -170,9 +127,9 @@ const queryMembers = async <
       },
       {},
       { limit },
-    )) as ChannelMemberAPIResponse<Us>;
+    )) as ChannelMemberAPIResponse<StreamChatClient>;
 
-    const users: SuggestionUser<Us>[] = [];
+    const users: SuggestionUser<StreamChatClient>[] = [];
     response.members.forEach((member) => isUserResponse(member.user) && users.push(member.user));
     if (onReady && users) {
       onReady(users);
@@ -185,21 +142,13 @@ export const queryMembersDebounced = debounce(queryMembers, 200, {
   trailing: true,
 });
 
-const queryUsers = async <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser<Us>['name'],
-  onReady?: (users: SuggestionUser<Us>[]) => void,
+const queryUsers = async <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  client: StreamChat<StreamChatClient>,
+  query: SuggestionUser<StreamChatClient>['name'],
+  onReady?: (users: SuggestionUser<StreamChatClient>[]) => void,
   options: {
     limit?: number;
-    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatClient>;
   } = {},
 ): Promise<void> => {
   if (typeof query === 'string') {
@@ -223,7 +172,7 @@ const queryUsers = async <
       { id: 1, ...mentionAllAppUsersQuery?.sort },
       { limit, ...mentionAllAppUsersQuery?.options },
     );
-    const users: SuggestionUser<Us>[] = [];
+    const users: SuggestionUser<StreamChatClient>[] = [];
     response.users.forEach((user) => isUserResponse(user) && users.push(user));
     if (onReady && users) {
       onReady(users);
@@ -245,19 +194,21 @@ export const isMentionTrigger = (trigger: Trigger): trigger is '@' => trigger ==
 export type Trigger = '/' | '@' | ':';
 
 export type TriggerSettings<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   '/'?: {
     dataProvider: (
-      query: CommandResponse<Co>['name'],
+      query: CommandResponse<StreamChatClient>['name'],
       text: string,
-      onReady?: (data: CommandResponse<Co>[], q: CommandResponse<Co>['name']) => void,
+      onReady?: (
+        data: CommandResponse<StreamChatClient>[],
+        q: CommandResponse<StreamChatClient>['name'],
+      ) => void,
       options?: {
         limit?: number;
       },
-    ) => SuggestionCommand<Co>[];
-    output: (entity: CommandResponse<Co>) => {
+    ) => SuggestionCommand<StreamChatClient>[];
+    output: (entity: CommandResponse<StreamChatClient>) => {
       caretPosition: string;
       key: string;
       text: string;
@@ -278,18 +229,21 @@ export type TriggerSettings<
     type: SuggestionComponentType;
   };
   '@'?: {
-    callback: (item: SuggestionUser<Us>) => void;
+    callback: (item: SuggestionUser<StreamChatClient>) => void;
     dataProvider: (
-      query: SuggestionUser<Us>['name'],
+      query: SuggestionUser<StreamChatClient>['name'],
       _: string,
-      onReady?: (data: SuggestionUser<Us>[], q: SuggestionUser<Us>['name']) => void,
+      onReady?: (
+        data: SuggestionUser<StreamChatClient>[],
+        q: SuggestionUser<StreamChatClient>['name'],
+      ) => void,
       options?: {
         limit?: number;
         mentionAllAppUsersEnabled?: boolean;
-        mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+        mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatClient>;
       },
-    ) => SuggestionUser<Us>[] | Promise<void> | void;
-    output: (entity: SuggestionUser<Us>) => {
+    ) => SuggestionUser<StreamChatClient>[] | Promise<void> | void;
+    output: (entity: SuggestionUser<StreamChatClient>) => {
       caretPosition: string;
       key: string;
       text: string;
@@ -299,49 +253,31 @@ export type TriggerSettings<
 };
 
 export type ACITriggerSettingsParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
+  channel: Channel<StreamChatClient>;
+  client: StreamChat<StreamChatClient>;
+  onMentionSelectItem: (item: SuggestionUser<StreamChatClient>) => void;
 };
 
 export type QueryUsersFunction<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = (
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser<Us>['name'],
-  onReady?: (users: SuggestionUser<Us>[]) => void,
+  client: StreamChat<StreamChatClient>,
+  query: SuggestionUser<StreamChatClient>['name'],
+  onReady?: (users: SuggestionUser<StreamChatClient>[]) => void,
   options?: {
     limit?: number;
-    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+    mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatClient>;
   },
 ) => Promise<void>;
 
 export type QueryMembersFunction<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = (
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser<Us>['name'],
-  onReady?: (users: SuggestionUser<Us>[]) => void,
+  channel: Channel<StreamChatClient>,
+  query: SuggestionUser<StreamChatClient>['name'],
+  onReady?: (users: SuggestionUser<StreamChatClient>[]) => void,
   options?: {
     limit?: number;
   },
@@ -359,18 +295,12 @@ export type QueryMembersFunction<
  * end of debounce executes.
  */
 export const ACITriggerSettings = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
   onMentionSelectItem,
-}: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<Co, Us> => ({
+}: ACITriggerSettingsParams<StreamChatClient>): TriggerSettings<StreamChatClient> => ({
   '/': {
     dataProvider: (query, text, onReady, options = {}) => {
       if (text.indexOf('/') !== 0) return [];
@@ -470,9 +400,7 @@ export const ACITriggerSettings = <
       },
     ) => {
       if (options?.mentionAllAppUsersEnabled) {
-        return (
-          queryUsersDebounced as DebouncedFunc<QueryUsersFunction<At, Ch, Co, Ev, Me, Re, Us>>
-        )(
+        return (queryUsersDebounced as DebouncedFunc<QueryUsersFunction<StreamChatClient>>)(
           client,
           query,
           (data) => {
@@ -516,9 +444,7 @@ export const ACITriggerSettings = <
         return data;
       }
 
-      return (
-        queryMembersDebounced as DebouncedFunc<QueryMembersFunction<At, Ch, Co, Ev, Me, Re, Us>>
-      )(
+      return (queryMembersDebounced as DebouncedFunc<QueryMembersFunction<StreamChatClient>>)(
         channel,
         query,
         (data) => {

@@ -1,10 +1,10 @@
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
 /**
@@ -19,11 +19,11 @@ function clamp(number: number, min: number, max: number) {
   return Math.min(Math.max(number, min), max);
 }
 
-function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentType>({
+function getContainerSize<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>({
   image,
   sizeConfig,
 }: {
-  image: Attachment<At>;
+  image: Attachment<StreamChatClient>;
   sizeConfig: GallerySizeConfig;
 }) {
   const { original_height: height, original_width: width } = image;
@@ -68,12 +68,12 @@ function getContainerSize<At extends DefaultAttachmentType = DefaultAttachmentTy
 }
 
 export function buildGalleryOfSingleImage<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   image,
   sizeConfig,
 }: {
-  image: Attachment<At>;
+  image: Attachment<StreamChatClient>;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   const container = getContainerSize({

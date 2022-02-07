@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
@@ -21,37 +23,16 @@ const styles = StyleSheet.create({
   label: {},
 });
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type MessagePinnedHeaderPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'>;
 
 const MessagePinnedHeaderWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
 ) => {
   const { alignment, message } = props;
   const {
@@ -83,17 +64,9 @@ const MessagePinnedHeaderWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
+  nextProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
 ) => {
   const { message: prevMessage } = prevProps;
   const { message: nextMessage } = nextProps;
@@ -113,27 +86,15 @@ const MemoizedMessagePinnedHeader = React.memo(
 ) as typeof MessagePinnedHeaderWithContext;
 
 export type MessagePinnedHeaderProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<MessagePinnedHeaderPropsWithContext<StreamChatClient>>;
 
 export const MessagePinnedHeader = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderProps<StreamChatClient>,
 ) => {
-  const { alignment, lastGroupMessage, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, lastGroupMessage, message } = useMessageContext<StreamChatClient>();
 
   return (
     <MemoizedMessagePinnedHeader

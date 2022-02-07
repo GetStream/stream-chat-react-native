@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { MessageType } from './hooks/useMessageList';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -10,16 +12,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,16 +37,10 @@ const styles = StyleSheet.create({
 });
 
 export type MessageSystemProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  message: MessageType<StreamChatClient>;
   /**
    * Formatter function for date object.
    *
@@ -70,15 +57,9 @@ export type MessageSystemProps<
  * in message list as (type) system message.
  */
 export const MessageSystem = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageSystemProps<StreamChatClient>,
 ) => {
   const { formatDate, message, style } = props;
 

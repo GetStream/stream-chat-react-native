@@ -1,6 +1,8 @@
 import React from 'react';
 import { ColorValue, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import {
   MessageContextValue,
   useMessageContext,
@@ -15,16 +17,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -69,15 +62,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageRepliesPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatClient>,
   | 'alignment'
   | 'message'
   | 'onLongPress'
@@ -87,22 +74,16 @@ export type MessageRepliesPropsWithContext<
   | 'preventPress'
   | 'threadList'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageRepliesAvatars'> &
+  Pick<MessagesContextValue<StreamChatClient>, 'MessageRepliesAvatars'> &
   Pick<TranslationContextValue, 't'> & {
     noBorder?: boolean;
     repliesCurveColor?: ColorValue;
   };
 
 const MessageRepliesWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageRepliesPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -205,17 +186,9 @@ const MessageRepliesWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageRepliesPropsWithContext<StreamChatClient>,
+  nextProps: MessageRepliesPropsWithContext<StreamChatClient>,
 ) => {
   const {
     message: prevMessage,
@@ -256,25 +229,13 @@ const MemoizedMessageReplies = React.memo(
 ) as typeof MessageRepliesWithContext;
 
 export type MessageRepliesProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageRepliesPropsWithContext<StreamChatClient>>;
 
 export const MessageReplies = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageRepliesProps<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -285,8 +246,8 @@ export const MessageReplies = <
     onPressIn,
     preventPress,
     threadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageRepliesAvatars } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<StreamChatClient>();
+  const { MessageRepliesAvatars } = useMessagesContext<StreamChatClient>();
   const { t } = useTranslationContext();
 
   return (

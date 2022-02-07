@@ -1,36 +1,21 @@
 import { useMemo } from 'react';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, ExtendableGenerics } from 'stream-chat';
 
 import {
   allOwnCapabilities,
   OwnCapabilitiesContextValue,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateOwnCapabilitiesContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   overrideCapabilities,
 }: {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  channel: Channel<StreamChatClient>;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
   const overrideCapabilitiesStr = overrideCapabilities

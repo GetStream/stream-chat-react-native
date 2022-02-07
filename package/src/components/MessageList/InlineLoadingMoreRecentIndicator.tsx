@@ -1,19 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -64,15 +57,9 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
 export const InlineLoadingMoreRecentIndicator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { loadingMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadingMoreRecent } = usePaginatedMessageListContext<StreamChatClient>();
 
   return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />;
 };

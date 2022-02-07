@@ -1,25 +1,12 @@
 import { useMemo } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateChannelsContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   additionalFlatListProps,
   channels,
@@ -51,7 +38,7 @@ export const useCreateChannelsContext = <
   reloadList,
   setFlatListRef,
   Skeleton,
-}: ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: ChannelsContextValue<StreamChatClient>) => {
   const channelValueString = channels
     .map(
       (channel) =>
@@ -60,7 +47,7 @@ export const useCreateChannelsContext = <
           .join()}`,
     )
     .join();
-  const channelsContext: ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
+  const channelsContext: ChannelsContextValue<StreamChatClient> = useMemo(
     () => ({
       additionalFlatListProps,
       channels,

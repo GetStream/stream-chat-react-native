@@ -1,25 +1,12 @@
 import { useMemo } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { InputMessageInputContextValue } from '../../../contexts/messageInputContext/MessageInputContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateInputMessageInputContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
   AttachButton,
@@ -59,7 +46,7 @@ export const useCreateInputMessageInputContext = <
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
-}: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+}: InputMessageInputContextValue<StreamChatClient> & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -72,56 +59,55 @@ export const useCreateInputMessageInputContext = <
       : quotedMessage.id
     : '';
 
-  const inputMessageInputContext: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> =
-    useMemo(
-      () => ({
-        additionalTextInputProps,
-        AttachButton,
-        autoCompleteSuggestionsLimit,
-        autoCompleteTriggerSettings,
-        clearEditingState,
-        clearQuotedMessageState,
-        CommandsButton,
-        compressImageQuality,
-        CooldownTimer,
-        doDocUploadRequest,
-        doImageUploadRequest,
-        editing,
-        editMessage,
-        FileUploadPreview,
-        hasCommands,
-        hasFilePicker,
-        hasImagePicker,
-        ImageUploadPreview,
-        initialValue,
-        Input,
-        InputButtons,
-        maxMessageLength,
-        maxNumberOfFiles,
-        mentionAllAppUsersEnabled,
-        mentionAllAppUsersQuery,
-        MoreOptionsButton,
-        numberOfLines,
-        onChangeText,
-        quotedMessage,
-        SendButton,
-        sendImageAsync,
-        sendMessage,
-        SendMessageDisallowedIndicator,
-        setInputRef,
-        setQuotedMessageState,
-        ShowThreadMessageInChannelButton,
-        UploadProgressIndicator,
-      }),
-      [
-        compressImageQuality,
-        channelId,
-        editingExists,
-        initialValue,
-        maxMessageLength,
-        quotedMessageId,
-      ],
-    );
+  const inputMessageInputContext: InputMessageInputContextValue<StreamChatClient> = useMemo(
+    () => ({
+      additionalTextInputProps,
+      AttachButton,
+      autoCompleteSuggestionsLimit,
+      autoCompleteTriggerSettings,
+      clearEditingState,
+      clearQuotedMessageState,
+      CommandsButton,
+      compressImageQuality,
+      CooldownTimer,
+      doDocUploadRequest,
+      doImageUploadRequest,
+      editing,
+      editMessage,
+      FileUploadPreview,
+      hasCommands,
+      hasFilePicker,
+      hasImagePicker,
+      ImageUploadPreview,
+      initialValue,
+      Input,
+      InputButtons,
+      maxMessageLength,
+      maxNumberOfFiles,
+      mentionAllAppUsersEnabled,
+      mentionAllAppUsersQuery,
+      MoreOptionsButton,
+      numberOfLines,
+      onChangeText,
+      quotedMessage,
+      SendButton,
+      sendImageAsync,
+      sendMessage,
+      SendMessageDisallowedIndicator,
+      setInputRef,
+      setQuotedMessageState,
+      ShowThreadMessageInChannelButton,
+      UploadProgressIndicator,
+    }),
+    [
+      compressImageQuality,
+      channelId,
+      editingExists,
+      initialValue,
+      maxMessageLength,
+      quotedMessageId,
+    ],
+  );
 
   return inputMessageInputContext;
 };

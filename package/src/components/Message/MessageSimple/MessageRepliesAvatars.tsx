@@ -1,19 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar } from '../../Avatar/Avatar';
 
 const styles = StyleSheet.create({
@@ -29,25 +22,13 @@ const styles = StyleSheet.create({
 });
 
 export type MessageRepliesAvatarsProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'>;
 
 export const MessageRepliesAvatars = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageRepliesAvatarsProps<StreamChatClient>,
 ) => {
   const { alignment, message } = props;
 

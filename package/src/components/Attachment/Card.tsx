@@ -12,7 +12,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -23,16 +23,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -88,20 +79,14 @@ const goToURL = (url?: string) => {
 };
 
 export type CardPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Attachment<At> &
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Attachment<StreamChatClient> &
   Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageContextValue<StreamChatClient>,
     'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
   > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatClient>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
     channelId: string | undefined;
@@ -120,16 +105,8 @@ export type CardPropsWithContext<
     }>;
   };
 
-const CardWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  props: CardPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const CardWithContext = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  props: CardPropsWithContext<StreamChatClient>,
 ) => {
   const {
     additionalTouchableProps,
@@ -288,41 +265,26 @@ const CardWithContext = <
 
 const MemoizedCard = React.memo(CardWithContext, () => true) as typeof CardWithContext;
 
-export type CardProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Attachment<At> &
-  Partial<
-    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPress' | 'onPressIn'> &
-      Pick<
-        MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-        'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
-      >
-  >;
+export type CardProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+  Attachment<StreamChatClient> &
+    Partial<
+      Pick<MessageContextValue<StreamChatClient>, 'onLongPress' | 'onPress' | 'onPressIn'> &
+        Pick<
+          MessagesContextValue<StreamChatClient>,
+          'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
+        >
+    >;
 
 /**
  * UI component for card in attachments.
  */
-export const Card = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
+export const Card = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  props: CardProps<StreamChatClient>,
 ) => {
   const { message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<StreamChatClient>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessagesContext<StreamChatClient>();
 
   return (
     <MemoizedCard

@@ -1,47 +1,24 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event } from 'stream-chat';
+import type { Channel, Event, ExtendableGenerics } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type Parameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
+type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
 };
 
 export const useUserPresence = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   setChannels,
-}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+}: Parameters<StreamChatClient>) => {
+  const { client } = useChatContext<StreamChatClient>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<StreamChatClient>) => {
       setChannels((channels) => {
         const newChannels = channels.map((channel) => {
           if (!event.user?.id || !channel.state.members[event.user.id]) {

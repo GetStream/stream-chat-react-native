@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -17,16 +17,7 @@ import {
 } from '../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   actionButton: {
@@ -43,15 +34,9 @@ const styles = StyleSheet.create({
 });
 
 export type AttachmentActionsPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<Attachment<At>, 'actions'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'> & {
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<Attachment<StreamChatClient>, 'actions'> &
+  Pick<MessageContextValue<StreamChatClient>, 'handleAction'> & {
     styles?: Partial<{
       actionButton: StyleProp<ViewStyle>;
       buttonText: StyleProp<TextStyle>;
@@ -60,15 +45,9 @@ export type AttachmentActionsPropsWithContext<
   };
 
 const AttachmentActionsWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentActionsPropsWithContext<StreamChatClient>,
 ) => {
   const { actions, handleAction, styles: stylesProp = {} } = props;
 
@@ -137,17 +116,9 @@ const AttachmentActionsWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: AttachmentActionsPropsWithContext<StreamChatClient>,
+  nextProps: AttachmentActionsPropsWithContext<StreamChatClient>,
 ) => {
   const { actions: prevActions } = prevProps;
   const { actions: nextActions } = nextProps;
@@ -163,31 +134,20 @@ const MemoizedAttachmentActions = React.memo(
 ) as typeof AttachmentActionsWithContext;
 
 export type AttachmentActionsProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Attachment<At> & Partial<Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Attachment<StreamChatClient> &
+  Partial<Pick<MessageContextValue<StreamChatClient>, 'handleAction'>>;
 
 /**
  * AttachmentActions - The actions you can take on an attachment.
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  */
 export const AttachmentActions = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentActionsProps<StreamChatClient>,
 ) => {
-  const { handleAction } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { handleAction } = useMessageContext<StreamChatClient>();
   return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
 };
 

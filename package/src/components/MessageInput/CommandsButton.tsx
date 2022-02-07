@@ -2,6 +2,8 @@ import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import {
   ChannelContextValue,
   useChannelContext,
@@ -14,41 +16,20 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Lightning } from '../../icons/Lightning';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type CommandsButtonPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'suggestions'> & {
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> &
+  Pick<SuggestionsContextValue<StreamChatClient>, 'suggestions'> & {
     /** Function that opens commands selector */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   };
 
 const CommandsButtonWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: CommandsButtonPropsWithContext<StreamChatClient>,
 ) => {
   const { disabled, handleOnPress, suggestions } = props;
 
@@ -78,17 +59,9 @@ const CommandsButtonWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: CommandsButtonPropsWithContext<StreamChatClient>,
+  nextProps: CommandsButtonPropsWithContext<StreamChatClient>,
 ) => {
   const { disabled: prevDisabled, suggestions: prevSuggestions } = prevProps;
   const { disabled: nextDisabled, suggestions: nextSuggestions } = nextProps;
@@ -108,31 +81,19 @@ const MemoizedCommandsButton = React.memo(
 ) as typeof CommandsButtonWithContext;
 
 export type CommandsButtonProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<CommandsButtonPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
 export const CommandsButton = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: CommandsButtonProps<StreamChatClient>,
 ) => {
-  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { suggestions } = useSuggestionsContext<Co, Us>();
+  const { disabled = false } = useChannelContext<StreamChatClient>();
+  const { suggestions } = useSuggestionsContext<StreamChatClient>();
 
   return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };

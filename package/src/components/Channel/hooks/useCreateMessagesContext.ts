@@ -1,25 +1,12 @@
 import { useMemo } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateMessagesContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   additionalTouchableProps,
   Attachment,
@@ -93,7 +80,7 @@ export const useCreateMessagesContext = <
   TypingIndicatorContainer,
   updateMessage,
   UrlPreview,
-}: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+}: MessagesContextValue<StreamChatClient> & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -104,7 +91,7 @@ export const useCreateMessagesContext = <
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions.length;
 
-  const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
+  const messagesContext: MessagesContextValue<StreamChatClient> = useMemo(
     () => ({
       additionalTouchableProps,
       Attachment,

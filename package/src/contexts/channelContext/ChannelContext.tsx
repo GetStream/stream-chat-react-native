@@ -1,29 +1,14 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState } from 'stream-chat';
+import type { Channel, ChannelState, ExtendableGenerics } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Instance of channel object from stream-chat package.
@@ -47,7 +32,7 @@ export type ChannelContextValue<
    *
    * @overrideType Channel
    */
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  channel: Channel<StreamChatClient>;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
@@ -121,12 +106,12 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
+  members: ChannelState<StreamChatClient>['members'];
   /**
    * Custom network down indicator to override the Stream default
    */
   NetworkDownIndicator: React.ComponentType;
-  read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
+  read: ChannelState<StreamChatClient>['read'];
   reloadChannel: () => Promise<void>;
   /**
    * When true, messagelist will be scrolled to first unread message, when opened.
@@ -157,7 +142,7 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
+  watchers: ChannelState<StreamChatClient>['watchers'];
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
@@ -179,24 +164,18 @@ export type ChannelContextValue<
    */
   targetedMessage?: string;
   threadList?: boolean;
-  watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
+  watcherCount?: ChannelState<StreamChatClient>['watcher_count'];
 };
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 
 export const ChannelProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ChannelContextValue<StreamChatClient>;
 }>) => (
   <ChannelContext.Provider value={value as unknown as ChannelContextValue}>
     {children}
@@ -204,14 +183,8 @@ export const ChannelProvider = <
 );
 
 export const useChannelContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(ChannelContext) as unknown as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatClient>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -220,20 +193,14 @@ export const useChannelContext = <
  */
 export const withChannelContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof ChannelContextValue<StreamChatClient>>> => {
   const WithChannelContextComponent = (
-    props: Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof ChannelContextValue<StreamChatClient>>,
   ) => {
-    const channelContext = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const channelContext = useChannelContext<StreamChatClient>();
 
     return <Component {...(props as P)} {...channelContext} />;
   };

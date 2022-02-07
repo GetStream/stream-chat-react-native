@@ -1,18 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { SuggestionsContextValue } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import { Lightning } from '../../icons/Lightning';
 import { Smile } from '../../icons/Smile';
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type AutoCompleteSuggestionHeaderPropsWithContext<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<SuggestionsContextValue<Co, Us>, 'triggerType' | 'queryText'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<SuggestionsContextValue<StreamChatClient>, 'triggerType' | 'queryText'>;
 
 const styles = StyleSheet.create({
   container: {
@@ -27,12 +28,11 @@ const styles = StyleSheet.create({
 });
 
 const AutoCompleteSuggestionHeaderWithContext = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   queryText,
   triggerType,
-}: AutoCompleteSuggestionHeaderPropsWithContext<Co, Us>) => {
+}: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -70,12 +70,9 @@ const AutoCompleteSuggestionHeaderWithContext = <
   }
 };
 
-const areEqual = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
->(
-  prevProps: AutoCompleteSuggestionHeaderPropsWithContext<Co, Us>,
-  nextProps: AutoCompleteSuggestionHeaderPropsWithContext<Co, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>,
+  nextProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>,
 ) => {
   const { queryText: prevQueryText, triggerType: prevType } = prevProps;
   const { queryText: nextQueryText, triggerType: nextType } = nextProps;
@@ -94,15 +91,13 @@ const MemoizedAutoCompleteSuggestionHeader = React.memo(
 ) as typeof AutoCompleteSuggestionHeaderWithContext;
 
 export type AutoCompleteSuggestionHeaderProps<
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
-> = AutoCompleteSuggestionHeaderPropsWithContext<Co, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>;
 
 export const AutoCompleteSuggestionHeader = <
-  Co extends string = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionHeaderProps<Co, Us>,
+  props: AutoCompleteSuggestionHeaderProps<StreamChatClient>,
 ) => <MemoizedAutoCompleteSuggestionHeader {...props} />;
 
 AutoCompleteSuggestionHeader.displayName =

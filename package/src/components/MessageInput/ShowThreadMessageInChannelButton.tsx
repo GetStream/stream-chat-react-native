@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -13,16 +15,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { Check } from '../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   checkBox: {
@@ -158,20 +151,14 @@ export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
 export const ShowThreadMessageInChannelButton = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {
   const { t } = useTranslationContext();
-  const { allowThreadMessagesInChannel } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatClient>();
   const { sendThreadMessageInChannel, setSendThreadMessageInChannel } =
-    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageInputContext<StreamChatClient>();
 
   return (
     <MemoizedShowThreadMessageInChannelButton

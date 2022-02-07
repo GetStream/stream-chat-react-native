@@ -4,6 +4,8 @@ import { FlatList } from 'react-native-gesture-handler';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { Alignment } from '../../contexts/messageContext/MessageContext';
 import type { MessageOverlayContextValue } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -16,16 +18,7 @@ import {
   WutReaction,
 } from '../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -111,14 +104,8 @@ export type Reaction = {
 };
 
 export type OverlayReactionsProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'OverlayReactionsAvatar'> & {
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageOverlayContextValue<StreamChatClient>, 'OverlayReactionsAvatar'> & {
   reactions: Reaction[];
   showScreen: Animated.SharedValue<number>;
   title: string;

@@ -1,33 +1,18 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
-import type { Channel as ChannelType } from 'stream-chat';
+import type { Channel as ChannelType, ExtendableGenerics } from 'stream-chat';
 
 import { useChannelsStateContext } from './ChannelsStateContext';
 
 import type { ChannelsStateContextValue, ChannelState, Keys } from './ChannelsStateContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type StateManagerParams<
   Key extends Keys,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Omit<
-  ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  ChannelsStateContextValue<StreamChatClient>,
   'increaseSubscriberCount' | 'decreaseSubscriberCount'
 > & {
   cid: string;
@@ -41,13 +26,7 @@ type StateManagerParams<
 */
 function useStateManager<
   Key extends Keys,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   {
     cid,
@@ -55,17 +34,16 @@ function useStateManager<
     setState,
     state,
   }: Omit<
-    StateManagerParams<Key, At, Ch, Co, Ev, Me, Re, Us>,
+    StateManagerParams<Key, StreamChatClient>,
     'increaseSubscriberCount' | 'decreaseSubscriberCount'
   >,
-  initialValue?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>[Key],
+  initialValue?: ChannelState<StreamChatClient>[Key],
 ) {
   const memoizedInitialValue = useMemo(() => initialValue, []);
-  const value =
-    state[cid]?.[key] || (memoizedInitialValue as ChannelState<At, Ch, Co, Ev, Me, Re, Us>[Key]);
+  const value = state[cid]?.[key] || (memoizedInitialValue as ChannelState<StreamChatClient>[Key]);
 
   const setValue = useCallback(
-    (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>[Key]) => setState({ cid, key, value }),
+    (value: ChannelState<StreamChatClient>[Key]) => setState({ cid, key, value }),
     [cid, key],
   );
 
@@ -73,45 +51,33 @@ function useStateManager<
 }
 
 export type UseChannelStateValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
-  members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
-  messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
-  read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
-  setMembers: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members']) => void;
-  setMessages: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => void;
-  setRead: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read']) => void;
-  setThreadMessages: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']) => void;
-  setTyping: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing']) => void;
-  setWatcherCount: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']) => void;
-  setWatchers: (value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers']) => void;
-  threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
-  typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
-  watcherCount: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcherCount'];
-  watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
+  members: ChannelState<StreamChatClient>['members'];
+  messages: ChannelState<StreamChatClient>['messages'];
+  read: ChannelState<StreamChatClient>['read'];
+  setMembers: (value: ChannelState<StreamChatClient>['members']) => void;
+  setMessages: (value: ChannelState<StreamChatClient>['messages']) => void;
+  setRead: (value: ChannelState<StreamChatClient>['read']) => void;
+  setThreadMessages: (value: ChannelState<StreamChatClient>['threadMessages']) => void;
+  setTyping: (value: ChannelState<StreamChatClient>['typing']) => void;
+  setWatcherCount: (value: ChannelState<StreamChatClient>['watcherCount']) => void;
+  setWatchers: (value: ChannelState<StreamChatClient>['watchers']) => void;
+  threadMessages: ChannelState<StreamChatClient>['threadMessages'];
+  typing: ChannelState<StreamChatClient>['typing'];
+  watcherCount: ChannelState<StreamChatClient>['watcherCount'];
+  watchers: ChannelState<StreamChatClient>['watchers'];
 };
 
 export function useChannelState<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
+  channel: ChannelType<StreamChatClient> | undefined,
   threadId?: string,
-): UseChannelStateValue<At, Ch, Co, Ev, Me, Re, Us> {
+): UseChannelStateValue<StreamChatClient> {
   const cid = channel?.id || 'id'; // in case channel is not initialized, use generic id string for indexing
   const { decreaseSubscriberCount, increaseSubscriberCount, setState, state } =
-    useChannelsStateContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useChannelsStateContext<StreamChatClient>();
 
   // Keeps track of how many Channel components are subscribed to this Channel state (Channel vs Thread concurrency)
   useEffect(() => {

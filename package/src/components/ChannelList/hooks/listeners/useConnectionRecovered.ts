@@ -1,17 +1,10 @@
 import { useEffect, useRef } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Parameters = {
   refreshList: () => void;
@@ -19,18 +12,12 @@ type Parameters = {
 };
 
 export const useConnectionRecovered = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   refreshList,
   setForceUpdate,
 }: Parameters) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatClient>();
 
   const refRefreshList = useRef(refreshList);
   refRefreshList.current = refreshList;

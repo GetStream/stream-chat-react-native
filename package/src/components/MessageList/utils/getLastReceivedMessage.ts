@@ -1,27 +1,14 @@
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { ExtendableGenerics } from 'stream-chat';
+
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  messages: MessageType<At, Ch, Co, Ev, Me, Re, Us>[],
+  messages: MessageType<StreamChatClient>[],
 ) => {
   /**
    * There are no status on dates so they will be skipped

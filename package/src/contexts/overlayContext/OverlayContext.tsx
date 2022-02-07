@@ -3,19 +3,13 @@ import type Animated from 'react-native-reanimated';
 
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
@@ -35,13 +29,7 @@ export type OverlayContextValue = {
 export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
 export type OverlayProviderProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
@@ -55,10 +43,10 @@ export type OverlayProviderProps<
       | 'topInset'
     >
   > &
-  ImageGalleryCustomComponents<Us> &
+  ImageGalleryCustomComponents<StreamChatClient> &
   Partial<
     Pick<
-      MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      MessageOverlayContextValue<StreamChatClient>,
       | 'MessageActionList'
       | 'MessageActionListItem'
       | 'OverlayReactionList'
@@ -76,7 +64,7 @@ export type OverlayProviderProps<
     imageGalleryGridSnapPoints?: [string | number, string | number];
     isMyMessage?: boolean;
     isThreadMessage?: boolean;
-    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    message?: MessageType<StreamChatClient>;
     messageReactions?: boolean;
     messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
@@ -86,13 +74,17 @@ export type OverlayProviderProps<
 
 export const useOverlayContext = () => useContext(OverlayContext);
 
-export const withOverlayContext = <P extends UnknownType>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof OverlayContextValue>> => {
-  const WithOverlayContextComponent = (props: Omit<P, keyof OverlayContextValue>) => {
+export const withOverlayContext = <
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>(
+  Component: React.ComponentType<StreamChatClient>,
+): React.FC<Omit<StreamChatClient, keyof OverlayContextValue>> => {
+  const WithOverlayContextComponent = (
+    props: Omit<StreamChatClient, keyof OverlayContextValue>,
+  ) => {
     const overlayContext = useOverlayContext();
 
-    return <Component {...(props as P)} {...overlayContext} />;
+    return <Component {...(props as StreamChatClient)} {...overlayContext} />;
   };
   WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(Component)}`;
   return WithOverlayContextComponent;

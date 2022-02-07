@@ -1,4 +1,4 @@
-import type { MessageResponse, Reaction } from 'stream-chat';
+import type { ExtendableGenerics, MessageResponse, Reaction } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -8,26 +8,11 @@ import type {
 } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
@@ -40,7 +25,7 @@ export const useMessageActionHandlers = <
   supportedReactions,
   updateMessage,
 }: Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessagesContextValue<StreamChatClient>,
   | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
@@ -48,11 +33,10 @@ export const useMessageActionHandlers = <
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message'>) => {
-  const handleResendMessage = () =>
-    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
+  Pick<ChannelContextValue<StreamChatClient>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatClient>, 'client'> &
+  Pick<MessageContextValue<StreamChatClient>, 'message'>) => {
+  const handleResendMessage = () => retrySendMessage(message as MessageResponse<StreamChatClient>);
 
   const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
@@ -149,7 +133,7 @@ export const useMessageActionHandlers = <
             messageId,
             {
               type: reactionType,
-            } as Reaction<Re, Us>,
+            } as Reaction<StreamChatClient>,
             { enforce_unique: enforceUniqueReaction },
           );
         }

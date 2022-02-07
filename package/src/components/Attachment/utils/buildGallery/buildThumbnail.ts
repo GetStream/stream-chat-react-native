@@ -1,22 +1,24 @@
 import type { ImageResizeMode } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 
-export function buildThumbnail<At extends UnknownType = DefaultAttachmentType>({
+export function buildThumbnail<
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>({
   height,
   image,
   resizeMode,
   width,
 }: {
   height: number;
-  image: Attachment<At>;
+  image: Attachment<StreamChatClient>;
   width: number;
   resizeMode?: ImageResizeMode;
 }): Thumbnail {

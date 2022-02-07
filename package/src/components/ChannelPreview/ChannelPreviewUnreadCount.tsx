@@ -1,20 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   unreadContainer: {
@@ -33,28 +26,16 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewUnreadCountProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> & {
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> & {
   maxUnreadCount: number;
   unread?: number;
 };
 
 export const ChannelPreviewUnreadCount = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewUnreadCountProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelPreviewUnreadCountProps<StreamChatClient>,
 ) => {
   const { maxUnreadCount, unread } = props;
   const {

@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { Keyboard } from 'react-native';
 
-import type { UnknownType } from '../../types/types';
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type KeyboardContextValue = {
@@ -20,13 +21,15 @@ export const KeyboardProvider: React.FC<{
 
 export const useKeyboardContext = () => useContext(KeyboardContext);
 
-export const withKeyboardContext = <P extends UnknownType>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof KeyboardContextValue>> => {
-  const WithKeyboardContextComponent = (props: Omit<P, keyof KeyboardContextValue>) => {
+export const withKeyboardContext = <StreamChatClient extends ExtendableGenerics>(
+  Component: React.ComponentType<StreamChatClient>,
+): React.FC<Omit<StreamChatClient, keyof KeyboardContextValue>> => {
+  const WithKeyboardContextComponent = (
+    props: Omit<StreamChatClient, keyof KeyboardContextValue>,
+  ) => {
     const keyboardContext = useKeyboardContext();
 
-    return <Component {...(props as P)} {...keyboardContext} />;
+    return <Component {...(props as StreamChatClient)} {...keyboardContext} />;
   };
   WithKeyboardContextComponent.displayName = `WithKeyboardContext${getDisplayName(Component)}`;
   return WithKeyboardContextComponent;

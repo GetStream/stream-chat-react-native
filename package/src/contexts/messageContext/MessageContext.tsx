@@ -1,22 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { TouchableHandlerPayload } from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';
@@ -27,20 +18,14 @@ export type Reactions = {
 }[];
 
 export type MessageContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   /** Whether or not actions can be performed on message */
   actionsEnabled: boolean;
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
   /** The files attached to a message */
-  files: Attachment<At>[];
+  files: Attachment<StreamChatClient>[];
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -60,13 +45,13 @@ export type MessageContextValue<
   /** Whether or not message has reactions */
   hasReactions: boolean;
   /** The images attached to a message */
-  images: Attachment<At>[];
+  images: Attachment<StreamChatClient>[];
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  message: MessageType<StreamChatClient>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
@@ -97,7 +82,7 @@ export type MessageContextValue<
   onPress: (payload: TouchableHandlerPayload) => void;
   onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
   /** The images attached to a message */
-  otherAttachments: Attachment<At>[];
+  otherAttachments: Attachment<StreamChatClient>[];
   reactions: Reactions;
   showMessageOverlay: (messageReactions?: boolean) => void;
   showMessageStatus: boolean;
@@ -110,23 +95,17 @@ export type MessageContextValue<
   preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
-} & Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'disabled' | 'members'>;
+} & Pick<ChannelContextValue<StreamChatClient>, 'channel' | 'disabled' | 'members'>;
 
 export const MessageContext = React.createContext({} as MessageContextValue);
 
 export const MessageProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: MessageContextValue<StreamChatClient>;
 }>) => (
   <MessageContext.Provider value={value as unknown as MessageContextValue}>
     {children}
@@ -134,14 +113,8 @@ export const MessageProvider = <
 );
 
 export const useMessageContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(MessageContext) as unknown as MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>() => useContext(MessageContext) as unknown as MessageContextValue<StreamChatClient>;
 
 /**
  * Typescript currently does not support partial inference so if MessageContext
@@ -150,20 +123,14 @@ export const useMessageContext = <
  */
 export const withMessageContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof MessageContextValue<StreamChatClient>>> => {
   const WithMessageContextComponent = (
-    props: Omit<P, keyof MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof MessageContextValue<StreamChatClient>>,
   ) => {
-    const messageContext = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const messageContext = useMessageContext<StreamChatClient>();
 
     return <Component {...(props as P)} {...messageContext} />;
   };

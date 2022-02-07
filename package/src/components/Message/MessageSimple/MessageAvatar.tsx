@@ -1,48 +1,29 @@
 import React from 'react';
 import { View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
 export type MessageAvatarPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatClient>,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
 > &
   Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageAvatarPropsWithContext<StreamChatClient>,
 ) => {
   const { alignment, lastGroupMessage, message, showAvatar, size } = props;
   const {
@@ -74,17 +55,9 @@ const MessageAvatarWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageAvatarPropsWithContext<StreamChatClient>,
+  nextProps: MessageAvatarPropsWithContext<StreamChatClient>,
 ) => {
   const { lastGroupMessage: prevLastGroupMessage, message: prevMessage } = prevProps;
   const { lastGroupMessage: nextLastGroupMessage, message: nextMessage } = nextProps;
@@ -107,28 +80,16 @@ const MemoizedMessageAvatar = React.memo(
 ) as typeof MessageAvatarWithContext;
 
 export type MessageAvatarProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageAvatarPropsWithContext<StreamChatClient>>;
 
 export const MessageAvatar = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageAvatarProps<StreamChatClient>,
 ) => {
   const { alignment, lastGroupMessage, message, showAvatar } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<StreamChatClient>();
 
   return (
     <MemoizedMessageAvatar

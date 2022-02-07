@@ -3,6 +3,8 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import merge from 'lodash/merge';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { MessageFooterProps } from './MessageFooter';
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -21,16 +23,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
@@ -56,28 +49,16 @@ type MessageDeletedComponentProps = {
 };
 
 type MessageDeletedPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageFooter'> &
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'> &
+  Pick<MessagesContextValue<StreamChatClient>, 'MessageFooter'> &
   Pick<TranslationContextValue, 't'> &
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageDeletedPropsWithContext<StreamChatClient>,
 ) => {
   const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout, t } =
     props;
@@ -124,7 +105,7 @@ const MessageDeletedWithContext = <
         ]}
         testID='message-content-wrapper'
       >
-        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+        <MessageTextContainer<StreamChatClient>
           markdownStyles={merge({ em: { color: grey } }, deletedText)}
           message={{ ...message, text: `_${t('Message deleted')}_` }}
         />
@@ -134,17 +115,9 @@ const MessageDeletedWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageDeletedPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageDeletedPropsWithContext<StreamChatClient>,
+  nextProps: MessageDeletedPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -183,33 +156,21 @@ const MemoizedMessageDeleted = React.memo(
 ) as typeof MessageDeletedWithContext;
 
 export type MessageDeletedProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = MessageDeletedComponentProps & {
   alignment?: Alignment;
-  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  MessageFooter?: React.ComponentType<MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  message?: MessageType<StreamChatClient>;
+  MessageFooter?: React.ComponentType<MessageFooterProps<StreamChatClient>>;
 };
 
 export const MessageDeleted = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageDeletedProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageDeletedProps<StreamChatClient>,
 ) => {
-  const { alignment, message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, message } = useMessageContext<StreamChatClient>();
 
-  const { MessageFooter } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { MessageFooter } = useMessagesContext<StreamChatClient>();
 
   const { t } = useTranslationContext();
 

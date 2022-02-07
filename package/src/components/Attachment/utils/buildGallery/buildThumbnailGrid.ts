@@ -1,9 +1,9 @@
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
  * Builds a grid of thumbnail images from image attachments.
@@ -133,14 +133,16 @@ import type { DefaultAttachmentType, UnknownType } from '../../../../types/types
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildThumbnailGrid<At extends UnknownType = DefaultAttachmentType>({
+export function buildThumbnailGrid<
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>({
   grid,
   images,
   invertedDirections = false,
   sizeConfig,
 }: {
   grid: number[][];
-  images: Attachment<At>[];
+  images: Attachment<StreamChatClient>[];
   invertedDirections: boolean;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {

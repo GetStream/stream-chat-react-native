@@ -1,6 +1,8 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -24,16 +26,7 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
@@ -41,13 +34,7 @@ import type { MessageActionType } from '../../MessageOverlay/MessageActionListIt
 import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
@@ -76,7 +63,7 @@ export const useMessageActions = <
   t,
   updateMessage,
 }: Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessagesContextValue<StreamChatClient>,
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -96,13 +83,13 @@ export const useMessageActions = <
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ChannelContextValue<StreamChatClient>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatClient>, 'client'> &
   Pick<OverlayContextValue, 'setOverlay'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message'> &
+  Pick<ThreadContextValue<StreamChatClient>, 'openThread'> &
+  Pick<MessageContextValue<StreamChatClient>, 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+    onThreadSelect?: (message: MessageType<StreamChatClient>) => void;
   }) => {
   const {
     theme: {

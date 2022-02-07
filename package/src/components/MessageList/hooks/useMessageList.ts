@@ -1,4 +1,4 @@
-import type { ChannelState, MessageResponse } from 'stream-chat';
+import type { ChannelState, ExtendableGenerics, MessageResponse } from 'stream-chat';
 
 import {
   ChannelContextValue,
@@ -7,16 +7,7 @@ import {
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { usePaginatedMessageListContext } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { getDateSeparators } from '../utils/getDateSeparators';
 import { getGroupStyles } from '../utils/getGroupStyles';
 import { getReadStates } from '../utils/getReadStates';
@@ -31,75 +22,49 @@ export type UseMessageListParams = {
 export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
 
 export type MessagesWithStylesReadByAndDateSeparator<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = MessageResponse<At, Ch, Co, Me, Re, Us> & {
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = MessageResponse<StreamChatClient> & {
   groupStyles: GroupType[];
   readBy: boolean | number;
   dateSeparator?: Date;
 };
 
-export type MessageType<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> =
-  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-  | MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>;
+export type MessageType<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+  | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
+  | MessagesWithStylesReadByAndDateSeparator<StreamChatClient>;
 
 // Type guards to check MessageType
 export const isMessageWithStylesReadByAndDateSeparator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-): message is MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us> =>
-  (message as MessagesWithStylesReadByAndDateSeparator<At, Ch, Co, Me, Re, Us>).readBy !==
-  undefined;
+  message: MessageType<StreamChatClient>,
+): message is MessagesWithStylesReadByAndDateSeparator<StreamChatClient> =>
+  (message as MessagesWithStylesReadByAndDateSeparator<StreamChatClient>).readBy !== undefined;
 
 export const useMessageList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   params: UseMessageListParams,
 ) => {
   const { deletedMessagesVisibilityType, inverted, noGroupByUser, threadList } = params;
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatClient>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
-    useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { messages } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useChannelContext<StreamChatClient>();
+  const { messages } = usePaginatedMessageListContext<StreamChatClient>();
+  const { threadMessages } = useThreadContext<StreamChatClient>();
 
   const messageList = threadList ? threadMessages : messages;
-  const readList: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'] | undefined = threadList
+  const readList: ChannelContextValue<StreamChatClient>['read'] | undefined = threadList
     ? undefined
     : read;
 
-  const dateSeparators = getDateSeparators<At, Ch, Co, Ev, Me, Re, Us>({
+  const dateSeparators = getDateSeparators<StreamChatClient>({
     hideDateSeparators,
     messages: messageList,
     userId: client.userID,
   });
 
-  const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({
+  const messageGroupStyles = getGroupStyles<StreamChatClient>({
     dateSeparators,
     hideDateSeparators,
     maxTimeBetweenGroupedMessages,
@@ -134,5 +99,5 @@ export const useMessageList = <
     inverted
       ? messagesWithStylesReadByAndDateSeparator.reverse()
       : messagesWithStylesReadByAndDateSeparator
-  ) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
+  ) as MessageType<StreamChatClient>[];
 };

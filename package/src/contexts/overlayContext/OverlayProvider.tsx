@@ -10,6 +10,7 @@ import Animated, {
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 import Dayjs from 'dayjs';
+import type { ExtendableGenerics } from 'stream-chat';
 
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
@@ -28,16 +29,7 @@ import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop
 import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
@@ -68,15 +60,9 @@ import {
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<OverlayProviderProps<StreamChatClient>>,
 ) => {
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
@@ -213,10 +199,10 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={translators}>
       <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+        <MessageOverlayProvider<StreamChatClient>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>{children}</ChannelsStateProvider>
+              <ChannelsStateProvider<StreamChatClient>>{children}</ChannelsStateProvider>
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}
@@ -225,7 +211,7 @@ export const OverlayProvider = <
                   <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                 </Animated.View>
                 {overlay === 'message' && (
-                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  <MessageOverlay<StreamChatClient>
                     MessageActionList={MessageActionList}
                     MessageActionListItem={MessageActionListItem}
                     messageTextNumberOfLines={messageTextNumberOfLines}
@@ -237,7 +223,7 @@ export const OverlayProvider = <
                   />
                 )}
                 {overlay === 'gallery' && (
-                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                  <ImageGallery<StreamChatClient>
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                     imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}

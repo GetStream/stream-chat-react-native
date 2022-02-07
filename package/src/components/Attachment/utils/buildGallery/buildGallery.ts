@@ -1,4 +1,4 @@
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { buildGalleryOfSingleImage } from './buildGalleryOfSingleImage';
 import { buildGalleryOfThreeImages } from './buildGalleryOfThreeImages';
@@ -8,7 +8,7 @@ import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 /**
  * Builds and returns a gallery of optimized images to be rendered on UI.
@@ -26,11 +26,13 @@ import type { DefaultAttachmentType, UnknownType } from '../../../../types/types
  *
  * @return {GallerySizeAndThumbnailGrid}
  */
-export function buildGallery<At extends UnknownType = DefaultAttachmentType>({
+export function buildGallery<
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>({
   images,
   sizeConfig,
 }: {
-  images: Attachment<At>[];
+  images: Attachment<StreamChatClient>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   if (images.length === 1) {

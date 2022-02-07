@@ -20,6 +20,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
@@ -39,16 +41,7 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
@@ -87,15 +80,9 @@ const halfScreenHeight = vh(50);
 const DefaultMessageTextNumberOfLines = 5;
 
 export type MessageOverlayPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageOverlayContextValue<StreamChatClient>,
   | 'MessageActionList'
   | 'MessageActionListItem'
   | 'OverlayReactionList'
@@ -103,10 +90,10 @@ export type MessageOverlayPropsWithContext<
   | 'OverlayReactionsAvatar'
   | 'reset'
 > &
-  Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
+  Omit<MessageOverlayData<StreamChatClient>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
   Pick<
-    OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+    OverlayProviderProps<StreamChatClient>,
     | 'error'
     | 'isMyMessage'
     | 'isThreadMessage'
@@ -120,15 +107,9 @@ export type MessageOverlayPropsWithContext<
   };
 
 const MessageOverlayWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageOverlayPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -339,7 +320,7 @@ const MessageOverlayWithContext = <
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
   return (
-    <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
+    <MessagesProvider<StreamChatClient> value={messagesContext}>
       <MessageProvider value={messageContext}>
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
@@ -449,15 +430,7 @@ const MessageOverlayWithContext = <
                                           >
                                             <Reply
                                               quotedMessage={
-                                                message.quoted_message as ReplyProps<
-                                                  At,
-                                                  Ch,
-                                                  Co,
-                                                  Ev,
-                                                  Me,
-                                                  Re,
-                                                  Us
-                                                >['quotedMessage']
+                                                message.quoted_message as ReplyProps<StreamChatClient>['quotedMessage']
                                               }
                                               styles={{
                                                 messageContainer: {
@@ -506,7 +479,7 @@ const MessageOverlayWithContext = <
                                     default:
                                       return otherAttachments?.length &&
                                         otherAttachments[0].actions ? null : (
-                                        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                                        <MessageTextContainer<StreamChatClient>
                                           key={`message_text_container_${messageContentOrderIndex}`}
                                           message={message}
                                           messageOverlay
@@ -559,17 +532,9 @@ const MessageOverlayWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageOverlayPropsWithContext<StreamChatClient>,
+  nextProps: MessageOverlayPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -611,17 +576,11 @@ const MemoizedMessageOverlay = React.memo(
 ) as typeof MessageOverlayWithContext;
 
 export type MessageOverlayProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<Omit<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'>> &
-  Pick<MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'overlayOpacity'> &
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'>> &
+  Pick<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'> &
   Pick<
-    MessageOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageOverlayPropsWithContext<StreamChatClient>,
     'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
   >;
 
@@ -629,15 +588,9 @@ export type MessageOverlayProps<
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
  */
 export const MessageOverlay = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageOverlayProps<StreamChatClient>,
 ) => {
   const {
     data,
@@ -647,7 +600,7 @@ export const MessageOverlay = <
     OverlayReactions,
     OverlayReactionsAvatar,
     reset,
-  } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageOverlayContext<StreamChatClient>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {

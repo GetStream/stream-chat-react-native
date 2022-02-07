@@ -4,8 +4,8 @@ import Dayjs from 'dayjs';
 
 import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
+import type { ExtendableGenerics } from 'stream-chat';
 
-import type { UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>
@@ -35,13 +35,15 @@ export const TranslationProvider: React.FC<{
 
 export const useTranslationContext = () => useContext(TranslationContext);
 
-export const withTranslationContext = <P extends UnknownType>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof TranslationContextValue>> => {
-  const WithTranslationContextComponent = (props: Omit<P, keyof TranslationContextValue>) => {
+export const withTranslationContext = <StreamChatClient extends ExtendableGenerics>(
+  Component: React.ComponentType<StreamChatClient>,
+): React.FC<Omit<StreamChatClient, keyof TranslationContextValue>> => {
+  const WithTranslationContextComponent = (
+    props: Omit<StreamChatClient, keyof TranslationContextValue>,
+  ) => {
     const translationContext = useTranslationContext();
 
-    return <Component {...(props as P)} {...translationContext} />;
+    return <Component {...(props as StreamChatClient)} {...translationContext} />;
   };
   WithTranslationContextComponent.displayName = `WithTranslationContext${getDisplayName(
     Component,

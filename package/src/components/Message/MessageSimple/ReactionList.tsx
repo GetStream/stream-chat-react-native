@@ -3,6 +3,8 @@ import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-n
 
 import Svg, { Circle } from 'react-native-svg';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import {
   MessageContextValue,
   Reactions,
@@ -17,16 +19,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Unknown } from '../../../icons/Unknown';
 
 import type { IconProps } from '../../../icons/utils/base';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { ReactionData } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -69,15 +62,9 @@ const Icon: React.FC<
 };
 
 export type ReactionListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatClient>,
   | 'alignment'
   | 'message'
   | 'onLongPress'
@@ -87,7 +74,7 @@ export type ReactionListPropsWithContext<
   | 'reactions'
   | 'showMessageOverlay'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'targetedMessage'> & {
+  Pick<MessagesContextValue<StreamChatClient>, 'targetedMessage'> & {
     messageContentWidth: number;
     supportedReactions: ReactionData[];
     fill?: string;
@@ -98,15 +85,9 @@ export type ReactionListPropsWithContext<
   };
 
 const ReactionListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReactionListPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -297,17 +278,9 @@ const ReactionListWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: ReactionListPropsWithContext<StreamChatClient>,
+  nextProps: ReactionListPropsWithContext<StreamChatClient>,
 ) => {
   const {
     message: prevMessage,
@@ -351,29 +324,17 @@ const MemoizedReactionList = React.memo(
 ) as typeof ReactionListWithContext;
 
 export type ReactionListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>> &
-  Pick<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>> &
+  Pick<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>;
 
 /**
  * ReactionList - A high level component which implements all the logic required for a message reaction list
  */
 export const ReactionList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReactionListProps<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -384,8 +345,8 @@ export const ReactionList = <
     preventPress,
     reactions,
     showMessageOverlay,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions, targetedMessage } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<StreamChatClient>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<StreamChatClient>();
 
   return (
     <MemoizedReactionList

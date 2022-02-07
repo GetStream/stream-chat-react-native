@@ -1,25 +1,12 @@
 import { useMemo } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreatePaginatedMessageListContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   channelId,
   hasMore,
@@ -30,7 +17,7 @@ export const useCreatePaginatedMessageListContext = <
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
-}: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+}: PaginatedMessageListContextValue<StreamChatClient> & {
   channelId?: string;
 }) => {
   const messagesUpdated = messages
@@ -42,20 +29,19 @@ export const useCreatePaginatedMessageListContext = <
     )
     .join();
 
-  const paginatedMessagesContext: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> =
-    useMemo(
-      () => ({
-        hasMore,
-        loadingMore,
-        loadingMoreRecent,
-        loadMore,
-        loadMoreRecent,
-        messages,
-        setLoadingMore,
-        setLoadingMoreRecent,
-      }),
-      [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
-    );
+  const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatClient> = useMemo(
+    () => ({
+      hasMore,
+      loadingMore,
+      loadingMoreRecent,
+      loadMore,
+      loadMoreRecent,
+      messages,
+      setLoadingMore,
+      setLoadingMoreRecent,
+    }),
+    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
+  );
 
   return paginatedMessagesContext;
 };

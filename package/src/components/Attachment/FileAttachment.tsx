@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
@@ -23,16 +23,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -56,23 +47,17 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentPropsWithContext<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatClient>,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatClient>,
     'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
   > & {
     /** The attachment to render */
-    attachment: Attachment<At>;
+    attachment: Attachment<StreamChatClient>;
     attachmentSize?: number;
     styles?: Partial<{
       container: StyleProp<ViewStyle>;
@@ -83,15 +68,9 @@ export type FileAttachmentPropsWithContext<
   };
 
 const FileAttachmentWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileAttachmentPropsWithContext<StreamChatClient>,
 ) => {
   const {
     additionalTouchableProps,
@@ -166,34 +145,21 @@ const FileAttachmentWithContext = <
 };
 
 export type FileAttachmentProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>> &
-  Pick<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>> &
+  Pick<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>;
 
 export const FileAttachment = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileAttachmentProps<StreamChatClient>,
 ) => {
-  const { onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext<StreamChatClient>();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatClient>();
 
   return (
     <FileAttachmentWithContext

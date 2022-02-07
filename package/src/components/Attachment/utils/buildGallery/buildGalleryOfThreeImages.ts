@@ -1,10 +1,10 @@
-import type { Attachment } from 'stream-chat';
+import type { Attachment, ExtendableGenerics } from 'stream-chat';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
 
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig } from './types';
 
-import type { DefaultAttachmentType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
 /** function to move item to the front of the array */
@@ -20,12 +20,12 @@ function moveToFront<T>(array: T[], item: T): T[] {
 }
 
 export function buildGalleryOfThreeImages<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   images,
   sizeConfig,
 }: {
-  images: Attachment<At>[];
+  images: Attachment<StreamChatClient>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   // Find the most ladscape and most portrait image.
@@ -55,9 +55,9 @@ export function buildGalleryOfThreeImages<
         landscapeImageAspectRatio: 1,
         portraitImageAspectRatio: 1,
       } as {
-        landscapeImage: Attachment<At>;
+        landscapeImage: Attachment<StreamChatClient>;
         landscapeImageAspectRatio: number;
-        portraitImage: Attachment<At>;
+        portraitImage: Attachment<StreamChatClient>;
         portraitImageAspectRatio: number;
       },
     );

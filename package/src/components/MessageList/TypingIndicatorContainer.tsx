@@ -1,6 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { filterTypingUsers } from './utils/filterTypingUsers';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -8,16 +10,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { TypingContextValue, useTypingContext } from '../../contexts/typingContext/TypingContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -28,27 +21,15 @@ const styles = StyleSheet.create({
 });
 
 type TypingIndicatorContainerPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'typing'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<TypingContextValue<StreamChatClient>, 'typing'> &
+  Pick<ChatContextValue<StreamChatClient>, 'client'> &
+  Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
 
 const TypingIndicatorContainerWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<TypingIndicatorContainerPropsWithContext<StreamChatClient>>,
 ) => {
   const { children, client, thread, typing } = props;
 
@@ -71,29 +52,17 @@ const TypingIndicatorContainerWithContext = <
 };
 
 export type TypingIndicatorContainerProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<TypingIndicatorContainerPropsWithContext<StreamChatClient>>;
 
 export const TypingIndicatorContainer = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<TypingIndicatorContainerProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<TypingIndicatorContainerProps<StreamChatClient>>,
 ) => {
-  const { typing } = useTypingContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { typing } = useTypingContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatClient>();
+  const { thread } = useThreadContext<StreamChatClient>();
 
   return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };

@@ -1,26 +1,13 @@
 import { useMemo } from 'react';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 export const useCreateMessageContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   actionsEnabled,
   alignment,
@@ -57,7 +44,7 @@ export const useCreateMessageContext = <
   showMessageOverlay,
   showMessageStatus,
   threadList,
-}: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: MessageContextValue<StreamChatClient>) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ own, type }) => `${own}${type}`).join();
   const latestReactions = message.latest_reactions ? message.latest_reactions : undefined;
@@ -71,7 +58,7 @@ export const useCreateMessageContext = <
 
   const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
 
-  const messageContext: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
+  const messageContext: MessageContextValue<StreamChatClient> = useMemo(
     () => ({
       actionsEnabled,
       alignment,

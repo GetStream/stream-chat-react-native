@@ -1,26 +1,13 @@
 import { useMemo } from 'react';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { ExtendableGenerics } from 'stream-chat';
+
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { ThreadContextValue } from '../../threadContext/ThreadContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
   appendText,
@@ -105,8 +92,8 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
-}: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>) => {
+}: MessageInputContextValue<StreamChatClient> &
+  Pick<ThreadContextValue<StreamChatClient>, 'thread'>) => {
   const editingExists = !!editing;
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
@@ -118,7 +105,7 @@ export const useCreateMessageInputContext = <
     : '';
   const threadId = thread?.id;
 
-  const messageInputContext: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
+  const messageInputContext: MessageInputContextValue<StreamChatClient> = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,

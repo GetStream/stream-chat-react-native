@@ -1,41 +1,18 @@
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel, ExtendableGenerics, StreamChat } from 'stream-chat';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
-type MoveParameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
+type MoveParameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+  channels: Channel<StreamChatClient>[];
   cid: string;
 };
 
 export const moveChannelUp = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   cid,
   channels = [],
-}: MoveParameters<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: MoveParameters<StreamChatClient>) => {
   // get channel from channels
   const index = channels.findIndex((c) => c.cid === cid);
   if (index <= 0) return channels;
@@ -48,33 +25,19 @@ export const moveChannelUp = <
   return [...channels];
 };
 
-type GetParameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+type GetParameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+  client: StreamChat<StreamChatClient>;
   id: string;
   type: string;
 };
 
 export const getChannel = async <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   client,
   id,
   type,
-}: GetParameters<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: GetParameters<StreamChatClient>) => {
   const channel = client.channel(type, id);
   await channel.watch();
   return channel;

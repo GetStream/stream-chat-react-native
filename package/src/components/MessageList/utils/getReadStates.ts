@@ -1,31 +1,18 @@
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const getReadStates = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
   clientUserId: string | undefined,
   messages:
-    | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'],
-  read?: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'],
+    | PaginatedMessageListContextValue<StreamChatClient>['messages']
+    | ThreadContextValue<StreamChatClient>['threadMessages'],
+  read?: ChannelContextValue<StreamChatClient>['read'],
 ) => {
   const readData = messages.reduce((acc, cur) => {
     if (cur.id) {

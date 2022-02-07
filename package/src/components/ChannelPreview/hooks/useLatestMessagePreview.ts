@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+import type {
+  Channel,
+  ChannelState,
+  ExtendableGenerics,
+  MessageResponse,
+  StreamChat,
+} from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
@@ -9,40 +15,17 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-type LatestMessage<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> =
-  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-  | MessageResponse<At, Ch, Co, Me, Re, Us>;
+type LatestMessage<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+  | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
+  | MessageResponse<StreamChatClient>;
 
 export type LatestMessagePreview<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = {
   created_at: string | number | Date;
-  messageObject: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined;
+  messageObject: LatestMessage<StreamChatClient> | undefined;
   previews: {
     bold: boolean;
     text: string;
@@ -51,17 +34,11 @@ export type LatestMessagePreview<
 };
 
 const getLatestMessageDisplayText = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
+  channel: Channel<StreamChatClient>,
+  client: StreamChat<StreamChatClient>,
+  message: LatestMessage<StreamChatClient> | undefined,
   t: (key: string) => string,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
@@ -127,15 +104,9 @@ const getLatestMessageDisplayText = <
 };
 
 const getLatestMessageDisplayDate = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
+  message: LatestMessage<StreamChatClient> | undefined,
   tDateTimeParser: TDateTimeParser,
 ) => {
   const parserOutput = tDateTimeParser(message?.created_at);
@@ -155,17 +126,11 @@ const getLatestMessageDisplayDate = <
  * 2 = someone has read latest message which is the current user's message
  */
 const getLatestMessageReadStatus = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
+  channel: Channel<StreamChatClient>,
+  client: StreamChat<StreamChatClient>,
+  message: LatestMessage<StreamChatClient> | undefined,
   readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
@@ -190,22 +155,16 @@ const getLatestMessageReadStatus = <
 };
 
 const getLatestMessagePreview = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(params: {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+  channel: Channel<StreamChatClient>;
+  client: StreamChat<StreamChatClient>;
   readEvents: boolean;
   t: (key: string) => string;
   tDateTimeParser: TDateTimeParser;
   lastMessage?:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>;
+    | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
+    | MessageResponse<StreamChatClient>;
 }) => {
   const { channel, client, lastMessage, readEvents, t, tDateTimeParser } = params;
 
@@ -242,21 +201,15 @@ const getLatestMessagePreview = <
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
  */
 export const useLatestMessagePreview = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  channel: Channel<StreamChatClient>,
   forceUpdate: number,
   lastMessage?:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>,
+    | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
+    | MessageResponse<StreamChatClient>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatClient>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
@@ -270,7 +223,7 @@ export const useLatestMessagePreview = <
 
   const [readEvents, setReadEvents] = useState(true);
   const [latestMessagePreview, setLatestMessagePreview] = useState<
-    LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>
+    LatestMessagePreview<StreamChatClient>
   >({
     created_at: '',
     messageObject: undefined,

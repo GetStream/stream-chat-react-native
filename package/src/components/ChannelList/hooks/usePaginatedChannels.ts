@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  ExtendableGenerics,
+} from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
@@ -24,14 +21,10 @@ const waitSeconds = (seconds: number) =>
     setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  filters: ChannelFilters<Ch, Co, Us>;
+type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+  filters: ChannelFilters<StreamChatClient>;
   options: ChannelOptions;
-  sort: ChannelSort<Ch>;
+  sort: ChannelSort<StreamChatClient>;
 };
 
 const DEFAULT_OPTIONS = {
@@ -45,20 +38,14 @@ type QueryType = 'reload' | 'refresh' | 'loadChannels';
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
 export const usePaginatedChannels = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
-}: Parameters<Ch, Co, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
+}: Parameters<StreamChatClient>) => {
+  const { client } = useChatContext<StreamChatClient>();
+  const [channels, setChannels] = useState<Channel<StreamChatClient>[]>([]);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();

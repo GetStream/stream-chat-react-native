@@ -1,42 +1,23 @@
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 type FilterTypingUsersParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'typing'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>;
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Pick<TypingContextValue<StreamChatClient>, 'typing'> &
+  Pick<ChatContextValue<StreamChatClient>, 'client'> &
+  Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
 
 export const filterTypingUsers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   client,
   thread,
   typing,
-}: FilterTypingUsersParams<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: FilterTypingUsersParams<StreamChatClient>) => {
   const nonSelfUsers: string[] = [];
 
   if (!client || !client.user || !typing) return nonSelfUsers;

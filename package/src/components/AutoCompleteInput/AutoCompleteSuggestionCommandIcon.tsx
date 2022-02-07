@@ -1,10 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Flag, GiphyIcon, Imgur, Lightning, Mute, Sound, UserAdd, UserDelete } from '../../icons';
-import type { DefaultCommandType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   iconContainer: {
@@ -17,10 +19,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AutoCompleteSuggestionCommandIcon = <Co extends string = DefaultCommandType>({
+export const AutoCompleteSuggestionCommandIcon = <
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+>({
   name,
 }: {
-  name: SuggestionCommand<Co>['name'];
+  name: SuggestionCommand<StreamChatClient>['name'];
 }) => {
   const {
     theme: {

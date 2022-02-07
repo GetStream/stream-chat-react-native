@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+import type { ExtendableGenerics } from 'stream-chat';
+
 import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
 
 import {
@@ -10,16 +12,7 @@ import {
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import type { OverlayProviderProps } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -45,15 +38,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageActionListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>,
+  OverlayProviderProps<StreamChatClient>,
   | 'MessageActionListItem'
   | 'error'
   | 'isMyMessage'
@@ -61,20 +48,14 @@ export type MessageActionListPropsWithContext<
   | 'message'
   | 'messageReactions'
 > &
-  Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'messageActions'> & {
+  Pick<MessageOverlayData<StreamChatClient>, 'alignment' | 'messageActions'> & {
     showScreen: Animated.SharedValue<number>;
   };
 
 const MessageActionListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageActionListPropsWithContext<StreamChatClient>,
 ) => {
   const {
     alignment,
@@ -146,17 +127,9 @@ const MessageActionListWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageActionListPropsWithContext<StreamChatClient>,
+  nextProps: MessageActionListPropsWithContext<StreamChatClient>,
 ) => {
   const { alignment: prevAlignment, messageActions: prevMessageActions } = prevProps;
   const { alignment: nextAlignment, messageActions: nextMessageActions } = nextProps;
@@ -176,16 +149,10 @@ const MemoizedMessageActionList = React.memo(
 ) as typeof MessageActionListWithContext;
 
 export type MessageActionListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>> &
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageActionListPropsWithContext<StreamChatClient>, 'showScreen'>> &
   Pick<
-    MessageActionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageActionListPropsWithContext<StreamChatClient>,
     'showScreen' | 'message' | 'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
   >;
 
@@ -193,17 +160,11 @@ export type MessageActionListProps<
  * MessageActionList - A high level component which implements all the logic required for MessageActions
  */
 export const MessageActionList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageActionListProps<StreamChatClient>,
 ) => {
-  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data } = useMessageOverlayContext<StreamChatClient>();
 
   const { alignment, messageActions } = data || {};
 
