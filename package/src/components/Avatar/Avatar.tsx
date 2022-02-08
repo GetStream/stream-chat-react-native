@@ -47,7 +47,7 @@ export type AvatarProps = {
 };
 
 /**
- * Avatar - A round avatar image with fallback to user's initials
+ * Avatar - A round avatar image with fallback to user's initials.
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
