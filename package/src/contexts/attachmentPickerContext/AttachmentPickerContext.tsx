@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { Asset } from '../../native';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type AttachmentPickerIconProps = {
@@ -118,7 +117,9 @@ export const AttachmentPickerProvider = ({
 export const useAttachmentPickerContext = () =>
   useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
 
-export const withAttachmentPickerContext = <StreamChatClient extends ExtendableGenerics>(
+export const withAttachmentPickerContext = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   Component: React.ComponentType<StreamChatClient>,
 ): React.FC<Omit<StreamChatClient, keyof AttachmentPickerContextValue>> => {
   const WithAttachmentPickerContextComponent = (
@@ -129,7 +130,7 @@ export const withAttachmentPickerContext = <StreamChatClient extends ExtendableG
     return <Component {...(props as StreamChatClient)} {...attachmentPickerContext} />;
   };
   WithAttachmentPickerContextComponent.displayName = `WithAttachmentPickerContext${getDisplayName(
-    Component,
+    Component as React.ComponentType,
   )}`;
   return WithAttachmentPickerContextComponent;
 };

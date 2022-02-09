@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { TouchableHandlerPayload } from '../../components/Message/Message';
@@ -18,7 +18,7 @@ export type Reactions = {
 }[];
 
 export type MessageContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /** Whether or not actions can be performed on message */
   actionsEnabled: boolean;
@@ -100,7 +100,7 @@ export type MessageContextValue<
 export const MessageContext = React.createContext({} as MessageContextValue);
 
 export const MessageProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -113,7 +113,7 @@ export const MessageProvider = <
 );
 
 export const useMessageContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(MessageContext) as unknown as MessageContextValue<StreamChatClient>;
 
 /**
@@ -123,7 +123,7 @@ export const useMessageContext = <
  */
 export const withMessageContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageContextValue<StreamChatClient>>> => {

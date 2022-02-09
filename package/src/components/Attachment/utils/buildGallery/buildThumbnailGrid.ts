@@ -1,4 +1,4 @@
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { buildThumbnail } from './buildThumbnail';
 import type { GallerySizeAndThumbnailGrid, GallerySizeConfig, ThumbnailGrid } from './types';
@@ -134,7 +134,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
  * @return {GallerySizeAndThumbnailGrid}
  */
 export function buildThumbnailGrid<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   grid,
   images,

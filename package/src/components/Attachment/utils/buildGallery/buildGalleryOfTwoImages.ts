@@ -1,4 +1,4 @@
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { buildThumbnailGrid } from './buildThumbnailGrid';
 
@@ -8,7 +8,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getAspectRatio } from '../getAspectRatio';
 
 export function buildGalleryOfTwoImages<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
   sizeConfig,

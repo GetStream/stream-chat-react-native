@@ -5,7 +5,7 @@ import type { FlatList } from 'react-native-gesture-handler';
 
 import type { ChannelPreviewMutedStatusProps } from 'src/components/ChannelPreview/ChannelPreviewMutedStatus';
 
-import type { Channel, ExtendableGenerics } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
 import type { QueryChannels } from '../../components/ChannelList/hooks/usePaginatedChannels';
@@ -22,7 +22,7 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelsContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
@@ -210,7 +210,7 @@ export type ChannelsContextValue<
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
 
 export const ChannelsProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -223,7 +223,7 @@ export const ChannelsProvider = <
 );
 
 export const useChannelsContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatClient>;
 
 /**
@@ -233,7 +233,7 @@ export const useChannelsContext = <
  */
 export const withChannelsContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChannelsContextValue<StreamChatClient>>> => {

@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -38,12 +36,12 @@ const styles = StyleSheet.create({
 });
 
 type ThreadFooterComponentPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessagesContextValue<StreamChatClient>, 'Message'> &
   Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
 
 const ThreadFooterComponentWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ThreadFooterComponentPropsWithContext<StreamChatClient>,
 ) => {
@@ -105,7 +103,7 @@ const ThreadFooterComponentWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ThreadFooterComponentPropsWithContext<StreamChatClient>,
   nextProps: ThreadFooterComponentPropsWithContext<StreamChatClient>,
 ) => {
@@ -139,7 +137,7 @@ const MemoizedThreadFooter = React.memo(
 ) as typeof ThreadFooterComponentWithContext;
 
 export const ThreadFooterComponent = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const { Message } = useMessagesContext<StreamChatClient>();
   const { thread } = useThreadContext<StreamChatClient>();

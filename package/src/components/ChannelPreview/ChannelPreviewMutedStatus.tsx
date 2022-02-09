@@ -2,8 +2,6 @@ import React from 'react';
 
 import { StyleSheet } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -17,7 +15,7 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewMutedStatusProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> & {
   muted: boolean;
 };
@@ -26,7 +24,7 @@ export type ChannelPreviewMutedStatusProps<
  * This UI component displays an avatar for a particular channel.
  */
 export const ChannelPreviewMutedStatus = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewMutedStatusProps<StreamChatClient>,
 ) => {

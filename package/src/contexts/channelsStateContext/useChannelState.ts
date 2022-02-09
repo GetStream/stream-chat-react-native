@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
-import type { Channel as ChannelType, ExtendableGenerics } from 'stream-chat';
+import type { Channel as ChannelType } from 'stream-chat';
 
 import { useChannelsStateContext } from './ChannelsStateContext';
 
@@ -10,7 +10,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type StateManagerParams<
   Key extends Keys,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
   ChannelsStateContextValue<StreamChatClient>,
   'increaseSubscriberCount' | 'decreaseSubscriberCount'
@@ -26,7 +26,7 @@ type StateManagerParams<
 */
 function useStateManager<
   Key extends Keys,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   {
     cid,
@@ -51,7 +51,7 @@ function useStateManager<
 }
 
 export type UseChannelStateValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   members: ChannelState<StreamChatClient>['members'];
   messages: ChannelState<StreamChatClient>['messages'];
@@ -70,7 +70,7 @@ export type UseChannelStateValue<
 };
 
 export function useChannelState<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: ChannelType<StreamChatClient> | undefined,
   threadId?: string,

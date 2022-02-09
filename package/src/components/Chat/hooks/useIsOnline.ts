@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
-import type { ExtendableGenerics, StreamChat, Event as StreamEvent } from 'stream-chat';
+import type { StreamChat, Event as StreamEvent } from 'stream-chat';
 
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
@@ -17,7 +17,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
  * You can't receive push notification until you have active websocket connection.
  */
 export const useIsOnline = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   client: StreamChat<StreamChatClient>,
   closeConnectionOnBackground = true,

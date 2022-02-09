@@ -8,7 +8,6 @@ import type {
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
   CommandResponse,
-  ExtendableGenerics,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -60,16 +59,20 @@ const defaultMentionAllAppUsersQuery = {
   sort: {},
 };
 
-const isUserResponse = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const isUserResponse = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   user: SuggestionUser<StreamChatClient> | undefined,
 ): user is SuggestionUser<StreamChatClient> =>
   (user as SuggestionUser<StreamChatClient>) !== undefined;
 
-const getCommands = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const getCommands = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   channel: Channel<StreamChatClient>,
 ) => channel.getConfig()?.commands || [];
 
-const getMembers = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const getMembers = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   channel: Channel<StreamChatClient>,
 ) => {
   const members = channel.state.members;
@@ -83,7 +86,9 @@ const getMembers = <StreamChatClient extends ExtendableGenerics = DefaultStreamC
     : [];
 };
 
-const getWatchers = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const getWatchers = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   channel: Channel<StreamChatClient>,
 ) => {
   const watchers = channel.state.watchers;
@@ -91,7 +96,7 @@ const getWatchers = <StreamChatClient extends ExtendableGenerics = DefaultStream
 };
 
 const getMembersAndWatchers = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
 ) => {
@@ -109,7 +114,7 @@ const getMembersAndWatchers = <
 };
 
 const queryMembers = async <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
   query: SuggestionUser<StreamChatClient>['name'],
@@ -142,7 +147,9 @@ export const queryMembersDebounced = debounce(queryMembers, 200, {
   trailing: true,
 });
 
-const queryUsers = async <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const queryUsers = async <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   client: StreamChat<StreamChatClient>,
   query: SuggestionUser<StreamChatClient>['name'],
   onReady?: (users: SuggestionUser<StreamChatClient>[]) => void,
@@ -194,7 +201,7 @@ export const isMentionTrigger = (trigger: Trigger): trigger is '@' => trigger ==
 export type Trigger = '/' | '@' | ':';
 
 export type TriggerSettings<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   '/'?: {
     dataProvider: (
@@ -253,7 +260,7 @@ export type TriggerSettings<
 };
 
 export type ACITriggerSettingsParams<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   channel: Channel<StreamChatClient>;
   client: StreamChat<StreamChatClient>;
@@ -261,7 +268,7 @@ export type ACITriggerSettingsParams<
 };
 
 export type QueryUsersFunction<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = (
   client: StreamChat<StreamChatClient>,
   query: SuggestionUser<StreamChatClient>['name'],
@@ -273,7 +280,7 @@ export type QueryUsersFunction<
 ) => Promise<void>;
 
 export type QueryMembersFunction<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = (
   channel: Channel<StreamChatClient>,
   query: SuggestionUser<StreamChatClient>['name'],
@@ -295,7 +302,7 @@ export type QueryMembersFunction<
  * end of debounce executes.
  */
 export const ACITriggerSettings = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,

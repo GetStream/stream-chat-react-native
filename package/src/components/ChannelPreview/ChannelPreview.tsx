@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import type {
-  Channel,
-  ChannelState,
-  Event,
-  ExtendableGenerics,
-  MessageResponse,
-} from 'stream-chat';
+import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
 
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
@@ -19,7 +13,7 @@ import { ChatContextValue, useChatContext } from '../../contexts/chatContext/Cha
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type ChannelPreviewPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatClient>, 'client'> &
   Pick<ChannelsContextValue<StreamChatClient>, 'Preview'> & {
     /**
@@ -33,7 +27,7 @@ export type ChannelPreviewPropsWithContext<
  * all props from the ChannelListMessenger component.
  */
 const ChannelPreviewWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewPropsWithContext<StreamChatClient>,
 ) => {
@@ -107,12 +101,12 @@ const ChannelPreviewWithContext = <
 };
 
 export type ChannelPreviewProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<ChannelPreviewPropsWithContext<StreamChatClient>, 'channel'>> &
   Pick<ChannelPreviewPropsWithContext<StreamChatClient>, 'channel'>;
 
 export const ChannelPreview = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewProps<StreamChatClient>,
 ) => {

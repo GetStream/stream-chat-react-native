@@ -1,13 +1,11 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ImageGalleryContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   images: MessageType<StreamChatClient>[];
   setImage: React.Dispatch<React.SetStateAction<{ messageId?: string; url?: string } | undefined>>;
@@ -20,7 +18,7 @@ export const ImageGalleryContext = React.createContext<ImageGalleryContextValue>
 );
 
 export const ImageGalleryProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
@@ -44,12 +42,12 @@ export const ImageGalleryProvider = <
 };
 
 export const useImageGalleryContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<StreamChatClient>;
 
 export const withImageGalleryContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatClient>>> => {

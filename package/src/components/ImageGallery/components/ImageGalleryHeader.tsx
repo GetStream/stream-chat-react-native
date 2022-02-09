@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
 });
 
 export type ImageGalleryHeaderCustomComponent<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
   hideOverlay,
   photo,
@@ -71,7 +69,7 @@ export type ImageGalleryHeaderCustomComponent<
 }) => React.ReactElement | null;
 
 export type ImageGalleryHeaderCustomComponentProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   centerElement?: ImageGalleryHeaderCustomComponent<StreamChatClient>;
   CloseIcon?: React.ReactElement;
@@ -79,7 +77,7 @@ export type ImageGalleryHeaderCustomComponentProps<
   rightElement?: ImageGalleryHeaderCustomComponent<StreamChatClient>;
 };
 
-type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryHeaderCustomComponentProps<StreamChatClient> & {
     opacity: Animated.SharedValue<number>;
     visible: Animated.SharedValue<number>;
@@ -87,7 +85,7 @@ type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGeneri
   };
 
 export const ImageGalleryHeader = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: Props<StreamChatClient>,
 ) => {

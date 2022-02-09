@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { Attachment as AttachmentDefault } from './Attachment';
 
 import {
@@ -24,7 +22,7 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentGroupPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatClient>, 'files'> &
   Pick<MessagesContextValue<StreamChatClient>, 'Attachment'> & {
     /**
@@ -38,7 +36,7 @@ export type FileAttachmentGroupPropsWithContext<
   };
 
 const FileAttachmentGroupWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: FileAttachmentGroupPropsWithContext<StreamChatClient>,
 ) => {
@@ -69,7 +67,7 @@ const FileAttachmentGroupWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: FileAttachmentGroupPropsWithContext<StreamChatClient>,
   nextProps: FileAttachmentGroupPropsWithContext<StreamChatClient>,
 ) => {
@@ -87,12 +85,12 @@ const MemoizedFileAttachmentGroup = React.memo(
 ) as typeof FileAttachmentGroupWithContext;
 
 export type FileAttachmentGroupProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<FileAttachmentGroupPropsWithContext<StreamChatClient>, 'messageId'>> &
   Pick<FileAttachmentGroupPropsWithContext<StreamChatClient>, 'messageId'>;
 
 export const FileAttachmentGroup = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: FileAttachmentGroupProps<StreamChatClient>,
 ) => {

@@ -1,14 +1,16 @@
-import type { Channel, ExtendableGenerics, StreamChat } from 'stream-chat';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-type MoveParameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type MoveParameters<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
   channels: Channel<StreamChatClient>[];
   cid: string;
 };
 
 export const moveChannelUp = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   cid,
   channels = [],
@@ -25,14 +27,15 @@ export const moveChannelUp = <
   return [...channels];
 };
 
-type GetParameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
-  client: StreamChat<StreamChatClient>;
-  id: string;
-  type: string;
-};
+type GetParameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    client: StreamChat<StreamChatClient>;
+    id: string;
+    type: string;
+  };
 
 export const getChannel = async <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   client,
   id,

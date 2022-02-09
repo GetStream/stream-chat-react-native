@@ -3,8 +3,6 @@ import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 
 import merge from 'lodash/merge';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessageFooterProps } from './MessageFooter';
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -49,14 +47,14 @@ type MessageDeletedComponentProps = {
 };
 
 type MessageDeletedPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'> &
   Pick<MessagesContextValue<StreamChatClient>, 'MessageFooter'> &
   Pick<TranslationContextValue, 't'> &
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageDeletedPropsWithContext<StreamChatClient>,
 ) => {
@@ -115,7 +113,7 @@ const MessageDeletedWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageDeletedPropsWithContext<StreamChatClient>,
   nextProps: MessageDeletedPropsWithContext<StreamChatClient>,
 ) => {
@@ -156,7 +154,7 @@ const MemoizedMessageDeleted = React.memo(
 ) as typeof MessageDeletedWithContext;
 
 export type MessageDeletedProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageDeletedComponentProps & {
   alignment?: Alignment;
   message?: MessageType<StreamChatClient>;
@@ -164,7 +162,7 @@ export type MessageDeletedProps<
 };
 
 export const MessageDeleted = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageDeletedProps<StreamChatClient>,
 ) => {

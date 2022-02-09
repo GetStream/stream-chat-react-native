@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import type { Channel, ExtendableGenerics } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import {
   allOwnCapabilities,
@@ -10,7 +10,7 @@ import {
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateOwnCapabilitiesContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   overrideCapabilities,

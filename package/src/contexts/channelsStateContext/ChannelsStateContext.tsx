@@ -8,8 +8,6 @@ import React, {
   useRef,
 } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
@@ -19,34 +17,38 @@ import type { ThreadContextValue } from '../threadContext/ThreadContext';
 import type { TypingContextValue } from '../typingContext/TypingContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-export type ChannelState<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  {
-    members: ChannelContextValue<StreamChatClient>['members'];
-    messages: PaginatedMessageListContextValue<StreamChatClient>['messages'];
-    read: ChannelContextValue<StreamChatClient>['read'];
-    subscriberCount: number;
-    threadMessages: ThreadContextValue<StreamChatClient>['threadMessages'];
-    typing: TypingContextValue<StreamChatClient>['typing'];
-    watcherCount: ChannelContextValue<StreamChatClient>['watcherCount'];
-    watchers: ChannelContextValue<StreamChatClient>['watchers'];
-  };
-
-type ChannelsState<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
-  [cid: string]: ChannelState<StreamChatClient>;
+export type ChannelState<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  members: ChannelContextValue<StreamChatClient>['members'];
+  messages: PaginatedMessageListContextValue<StreamChatClient>['messages'];
+  read: ChannelContextValue<StreamChatClient>['read'];
+  subscriberCount: number;
+  threadMessages: ThreadContextValue<StreamChatClient>['threadMessages'];
+  typing: TypingContextValue<StreamChatClient>['typing'];
+  watcherCount: ChannelContextValue<StreamChatClient>['watcherCount'];
+  watchers: ChannelContextValue<StreamChatClient>['watchers'];
 };
+
+type ChannelsState<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    [cid: string]: ChannelState<StreamChatClient>;
+  };
 
 export type Keys = keyof ChannelState;
 
 export type Payload<
   Key extends Keys = Keys,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   cid: string;
   key: Key;
   value: ChannelState<StreamChatClient>[Key];
 };
 
-type SetStateAction<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type SetStateAction<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
   payload: Payload<Keys, StreamChatClient>;
   type: 'SET_STATE';
 };
@@ -60,13 +62,13 @@ type DecreaseSubscriberCountAction = {
   type: 'DECREASE_SUBSCRIBER_COUNT';
 };
 
-type Action<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+type Action<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   | SetStateAction<StreamChatClient>
   | IncreaseSubscriberCountAction
   | DecreaseSubscriberCountAction;
 
 export type ChannelsStateContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   decreaseSubscriberCount: (value: { cid: string }) => void;
   increaseSubscriberCount: (value: { cid: string }) => void;
@@ -74,7 +76,7 @@ export type ChannelsStateContextValue<
   state: ChannelsState<StreamChatClient>;
 };
 
-type Reducer<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = (
+type Reducer<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = (
   state: ChannelsState<StreamChatClient>,
   action: Action<StreamChatClient>,
 ) => ChannelsState<StreamChatClient>;
@@ -139,7 +141,7 @@ const ChannelsStateContext = React.createContext({
 } as unknown as ChannelsStateContextValue);
 
 export const ChannelsStateProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
 }: {
@@ -183,12 +185,12 @@ export const ChannelsStateProvider = <
 };
 
 export const useChannelsStateContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<StreamChatClient>;
 
 export const withChannelsStateContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChannelsStateContextValue<StreamChatClient>>> => {

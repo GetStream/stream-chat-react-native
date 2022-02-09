@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event, ExtendableGenerics } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
   setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
   onRemovedFromChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
@@ -15,7 +15,7 @@ type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatG
 };
 
 export const useRemovedFromChannelNotification = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onRemovedFromChannel,
   setChannels,

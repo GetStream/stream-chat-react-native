@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   MessageContextValue,
@@ -26,11 +24,11 @@ const styles = StyleSheet.create({
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type MessagePinnedHeaderPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'>;
 
 const MessagePinnedHeaderWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
 ) => {
@@ -64,7 +62,7 @@ const MessagePinnedHeaderWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
   nextProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
 ) => {
@@ -86,11 +84,11 @@ const MemoizedMessagePinnedHeader = React.memo(
 ) as typeof MessagePinnedHeaderWithContext;
 
 export type MessagePinnedHeaderProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessagePinnedHeaderPropsWithContext<StreamChatClient>>;
 
 export const MessagePinnedHeader = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessagePinnedHeaderProps<StreamChatClient>,
 ) => {

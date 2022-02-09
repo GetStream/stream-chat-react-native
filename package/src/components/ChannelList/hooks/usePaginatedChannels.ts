@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-  ExtendableGenerics,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
 import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -21,7 +15,7 @@ const waitSeconds = (seconds: number) =>
     setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
   filters: ChannelFilters<StreamChatClient>;
   options: ChannelOptions;
   sort: ChannelSort<StreamChatClient>;
@@ -38,7 +32,7 @@ type QueryType = 'reload' | 'refresh' | 'loadChannels';
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
 export const usePaginatedChannels = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,

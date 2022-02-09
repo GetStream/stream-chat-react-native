@@ -1,5 +1,3 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -9,7 +7,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { filterTypingUsers } from '../utils/filterTypingUsers';
 
 export const useTypingString = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const { client } = useChatContext<StreamChatClient>();
   const { thread } = useThreadContext<StreamChatClient>();

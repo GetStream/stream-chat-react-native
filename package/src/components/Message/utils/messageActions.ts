@@ -1,12 +1,10 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
 export type MessageActionsParams<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   blockUser: MessageActionType;
   copyMessage: MessageActionType;
@@ -27,11 +25,11 @@ export type MessageActionsParams<
 } & Pick<MessageContextValue<StreamChatClient>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = (param: MessageActionsParams<StreamChatClient>) => MessageActionType[];
 
 export const messageActions = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   blockUser,
   copyMessage,

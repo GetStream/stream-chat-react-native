@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { AutoCompleteSuggestionCommandIcon } from './AutoCompleteSuggestionCommandIcon';
 
 import type {
@@ -18,7 +16,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { Avatar } from '../Avatar/Avatar';
 
 export type AutoCompleteSuggestionItemPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<SuggestionsContextValue, 'triggerType'> & {
   itemProps: Suggestion<StreamChatClient>;
 };
@@ -58,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 const AutoCompleteSuggestionItemWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   itemProps,
   triggerType,
@@ -119,7 +117,7 @@ const AutoCompleteSuggestionItemWithContext = <
   }
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AutoCompleteSuggestionItemPropsWithContext<StreamChatClient>,
   nextProps: AutoCompleteSuggestionItemPropsWithContext<StreamChatClient>,
 ) => {
@@ -138,11 +136,11 @@ const MemoizedAutoCompleteSuggestionItem = React.memo(
 ) as typeof AutoCompleteSuggestionItemWithContext;
 
 export type AutoCompleteSuggestionItemProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = AutoCompleteSuggestionItemPropsWithContext<StreamChatClient>;
 
 export const AutoCompleteSuggestionItem = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AutoCompleteSuggestionItemProps<StreamChatClient>,
 ) => <MemoizedAutoCompleteSuggestionItem {...props} />;

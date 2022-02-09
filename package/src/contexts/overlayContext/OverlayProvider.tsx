@@ -10,7 +10,6 @@ import Animated, {
 
 import type BottomSheet from '@gorhom/bottom-sheet';
 import Dayjs from 'dayjs';
-import type { ExtendableGenerics } from 'stream-chat';
 
 import { OverlayContext, OverlayProviderProps } from './OverlayContext';
 
@@ -60,7 +59,7 @@ import {
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: PropsWithChildren<OverlayProviderProps<StreamChatClient>>,
 ) => {

@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChannelsContextValue } from '../../../contexts/channelsContext/ChannelsContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateChannelsContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalFlatListProps,
   channels,

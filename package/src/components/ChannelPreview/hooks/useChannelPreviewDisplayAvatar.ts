@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ExtendableGenerics, StreamChat } from 'stream-chat';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const getChannelPreviewDisplayAvatar = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
   client: StreamChat<StreamChatClient>,
@@ -55,7 +55,7 @@ export const getChannelPreviewDisplayAvatar = <
  * @returns {object} e.g., { image: 'http://dummyurl.com/test.png', name: 'Uhtred Bebbanburg' }
  */
 export const useChannelPreviewDisplayAvatar = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
 ) => {

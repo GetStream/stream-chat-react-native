@@ -1,4 +1,4 @@
-import type { ChannelState, ExtendableGenerics, MessageResponse } from 'stream-chat';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import {
   ChannelContextValue,
@@ -22,27 +22,29 @@ export type UseMessageListParams = {
 export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
 
 export type MessagesWithStylesReadByAndDateSeparator<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageResponse<StreamChatClient> & {
   groupStyles: GroupType[];
   readBy: boolean | number;
   dateSeparator?: Date;
 };
 
-export type MessageType<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+export type MessageType<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> =
   | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
   | MessagesWithStylesReadByAndDateSeparator<StreamChatClient>;
 
 // Type guards to check MessageType
 export const isMessageWithStylesReadByAndDateSeparator = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: MessageType<StreamChatClient>,
 ): message is MessagesWithStylesReadByAndDateSeparator<StreamChatClient> =>
   (message as MessagesWithStylesReadByAndDateSeparator<StreamChatClient>).readBy !== undefined;
 
 export const useMessageList = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   params: UseMessageListParams,
 ) => {

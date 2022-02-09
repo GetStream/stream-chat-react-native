@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateMessagesContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTouchableProps,
   Attachment,

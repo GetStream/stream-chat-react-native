@@ -1,8 +1,6 @@
 import React from 'react';
 import { ColorValue, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -62,7 +60,7 @@ const styles = StyleSheet.create({
 });
 
 export type MessageRepliesPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   | 'alignment'
@@ -81,7 +79,7 @@ export type MessageRepliesPropsWithContext<
   };
 
 const MessageRepliesWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageRepliesPropsWithContext<StreamChatClient>,
 ) => {
@@ -186,7 +184,7 @@ const MessageRepliesWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageRepliesPropsWithContext<StreamChatClient>,
   nextProps: MessageRepliesPropsWithContext<StreamChatClient>,
 ) => {
@@ -229,11 +227,11 @@ const MemoizedMessageReplies = React.memo(
 ) as typeof MessageRepliesWithContext;
 
 export type MessageRepliesProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageRepliesPropsWithContext<StreamChatClient>>;
 
 export const MessageReplies = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageRepliesProps<StreamChatClient>,
 ) => {

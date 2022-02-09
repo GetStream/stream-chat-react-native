@@ -3,7 +3,7 @@ import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
 });
 
 type ReplyPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageInputContextValue<StreamChatClient>, 'quotedMessage'> &
   Pick<MessagesContextValue<StreamChatClient>, 'FileAttachmentIcon' | 'MessageAvatar'> &
   Pick<TranslationContextValue, 't'> & {
@@ -69,7 +69,9 @@ type ReplyPropsWithContext<
     }>;
   };
 
-const ReplyWithContext = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const ReplyWithContext = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: ReplyPropsWithContext<StreamChatClient>,
 ) => {
   const {
@@ -230,7 +232,7 @@ const ReplyWithContext = <StreamChatClient extends ExtendableGenerics = DefaultS
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ReplyPropsWithContext<StreamChatClient>,
   nextProps: ReplyPropsWithContext<StreamChatClient>,
 ) => {
@@ -253,13 +255,16 @@ const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamCha
 
 const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
-export type ReplyProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<ReplyPropsWithContext<StreamChatClient>>;
+export type ReplyProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ReplyPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for reply
  */
-export const Reply = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Reply = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: ReplyProps<StreamChatClient>,
 ) => {
   const { message } = useMessageContext<StreamChatClient>();

@@ -2,8 +2,6 @@ import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   ChannelContextValue,
   useChannelContext,
@@ -14,14 +12,14 @@ import { CircleRight } from '../../icons/CircleRight';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoreOptionsButtonPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
 };
 
 const MoreOptionsButtonWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MoreOptionsButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -47,7 +45,7 @@ const MoreOptionsButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MoreOptionsButtonPropsWithContext<StreamChatClient>,
   nextProps: MoreOptionsButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -68,14 +66,14 @@ const MemoizedMoreOptionsButton = React.memo(
 ) as typeof MoreOptionsButtonWithContext;
 
 export type MoreOptionsButtonProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MoreOptionsButtonPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for more options button in MessageInput component.
  */
 export const MoreOptionsButton = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MoreOptionsButtonProps<StreamChatClient>,
 ) => {

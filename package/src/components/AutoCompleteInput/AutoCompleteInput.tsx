@@ -3,8 +3,6 @@ import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 
 import throttle from 'lodash/throttle';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   ChannelContextValue,
   useChannelContext,
@@ -51,7 +49,7 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
 type AutoCompleteInputPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'giphyEnabled'> &
   Pick<
     MessageInputContextValue<StreamChatClient>,
@@ -82,11 +80,11 @@ type AutoCompleteInputPropsWithContext<
   };
 
 export type AutoCompleteInputProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AutoCompleteInputPropsWithContext<StreamChatClient>>;
 
 const AutoCompleteInputWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AutoCompleteInputPropsWithContext<StreamChatClient>,
 ) => {
@@ -435,7 +433,7 @@ const AutoCompleteInputWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AutoCompleteInputPropsWithContext<StreamChatClient>,
   nextProps: AutoCompleteInputPropsWithContext<StreamChatClient>,
 ) => {
@@ -473,7 +471,7 @@ const MemoizedAutoCompleteInput = React.memo(
 ) as typeof AutoCompleteInputWithContext;
 
 export const AutoCompleteInput = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AutoCompleteInputProps<StreamChatClient>,
 ) => {

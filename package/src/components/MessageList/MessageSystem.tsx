@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessageType } from './hooks/useMessageList';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -37,7 +35,7 @@ const styles = StyleSheet.create({
 });
 
 export type MessageSystemProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: MessageType<StreamChatClient>;
@@ -57,7 +55,7 @@ export type MessageSystemProps<
  * in message list as (type) system message.
  */
 export const MessageSystem = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageSystemProps<StreamChatClient>,
 ) => {

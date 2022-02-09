@@ -8,7 +8,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import type { ExtendableGenerics, Channel as StreamChannel } from 'stream-chat';
+import type { Channel as StreamChannel } from 'stream-chat';
 
 import {
   isMessageWithStylesReadByAndDateSeparator,
@@ -86,7 +86,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const keyExtractor = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const keyExtractor = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   item: MessageType<StreamChatClient>,
 ) =>
   item.id ||
@@ -101,7 +103,7 @@ const flatListViewabilityConfig = {
 };
 
 type MessageListPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
   Pick<
     ChannelContextValue<StreamChatClient>,
@@ -216,7 +218,7 @@ type MessageListPropsWithContext<
  * [TranslationContext](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 const MessageListWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageListPropsWithContext<StreamChatClient>,
 ) => {
@@ -945,11 +947,11 @@ const MessageListWithContext = <
 };
 
 export type MessageListProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageListPropsWithContext<StreamChatClient>>;
 
 export const MessageList = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageListProps<StreamChatClient>,
 ) => {

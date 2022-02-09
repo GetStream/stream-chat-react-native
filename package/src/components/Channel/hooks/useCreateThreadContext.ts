@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateThreadContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   allowThreadMessagesInChannel,
   closeThread,

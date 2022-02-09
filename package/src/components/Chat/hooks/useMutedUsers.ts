@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import type { Event, ExtendableGenerics, Mute, StreamChat } from 'stream-chat';
+import type { Event, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useMutedUsers = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   client: StreamChat<StreamChatClient>,
 ) => {

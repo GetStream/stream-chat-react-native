@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -31,11 +29,11 @@ const styles = StyleSheet.create({
 });
 
 export type MessageStatusPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatClient>, 'message' | 'threadList'>;
 
 const MessageStatusWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageStatusPropsWithContext<StreamChatClient>,
 ) => {
@@ -93,7 +91,7 @@ const MessageStatusWithContext = <
   return null;
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageStatusPropsWithContext<StreamChatClient>,
   nextProps: MessageStatusPropsWithContext<StreamChatClient>,
 ) => {
@@ -119,11 +117,11 @@ const MemoizedMessageStatus = React.memo(
 ) as typeof MessageStatusWithContext;
 
 export type MessageStatusProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageStatusPropsWithContext<StreamChatClient>>;
 
 export const MessageStatus = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageStatusProps<StreamChatClient>,
 ) => {

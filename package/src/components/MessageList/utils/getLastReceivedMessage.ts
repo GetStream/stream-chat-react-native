@@ -1,12 +1,10 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   messages: MessageType<StreamChatClient>[],
 ) => {

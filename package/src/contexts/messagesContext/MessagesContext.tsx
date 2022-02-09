@@ -4,7 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
-import type { ChannelState, ExtendableGenerics, MessageResponse } from 'stream-chat';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
@@ -53,7 +53,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
 export type MessagesContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * UI component for Attachment.
@@ -452,7 +452,7 @@ export type MessagesContextValue<
 export const MessagesContext = React.createContext({} as MessagesContextValue);
 
 export const MessagesProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -465,7 +465,7 @@ export const MessagesProvider = <
 );
 
 export const useMessagesContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(MessagesContext) as unknown as MessagesContextValue<StreamChatClient>;
 
 /**
@@ -475,7 +475,7 @@ export const useMessagesContext = <
  */
 export const withMessagesContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessagesContextValue<StreamChatClient>>> => {

@@ -9,7 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 export type AttachmentActionsPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<Attachment<StreamChatClient>, 'actions'> &
   Pick<MessageContextValue<StreamChatClient>, 'handleAction'> & {
     styles?: Partial<{
@@ -45,7 +45,7 @@ export type AttachmentActionsPropsWithContext<
   };
 
 const AttachmentActionsWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AttachmentActionsPropsWithContext<StreamChatClient>,
 ) => {
@@ -116,7 +116,7 @@ const AttachmentActionsWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AttachmentActionsPropsWithContext<StreamChatClient>,
   nextProps: AttachmentActionsPropsWithContext<StreamChatClient>,
 ) => {
@@ -134,7 +134,7 @@ const MemoizedAttachmentActions = React.memo(
 ) as typeof AttachmentActionsWithContext;
 
 export type AttachmentActionsProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Attachment<StreamChatClient> &
   Partial<Pick<MessageContextValue<StreamChatClient>, 'handleAction'>>;
 
@@ -143,7 +143,7 @@ export type AttachmentActionsProps<
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  */
 export const AttachmentActions = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AttachmentActionsProps<StreamChatClient>,
 ) => {

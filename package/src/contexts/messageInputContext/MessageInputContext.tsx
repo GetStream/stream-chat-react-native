@@ -7,7 +7,6 @@ import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
   Attachment,
-  ExtendableGenerics,
   logChatPromiseExecution,
   SendFileAPIResponse,
   StreamChat,
@@ -75,7 +74,7 @@ export type ImageUpload = {
 };
 
 export type MentionAllAppUsersQuery<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   filters?: UserFilters<StreamChatClient>;
   options?: UserOptions;
@@ -83,7 +82,7 @@ export type MentionAllAppUsersQuery<
 };
 
 export type LocalMessageInputContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   appendText: (newText: string) => void;
   asyncIds: string[];
@@ -214,7 +213,7 @@ export type LocalMessageInputContext<
 };
 
 export type InputMessageInputContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Custom UI component for attach button.
@@ -390,14 +389,14 @@ export type InputMessageInputContextValue<
 };
 
 export type MessageInputContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = LocalMessageInputContext<StreamChatClient> &
   Omit<InputMessageInputContextValue<StreamChatClient>, 'sendMessage'>;
 
 export const MessageInputContext = React.createContext({} as MessageInputContextValue);
 
 export const MessageInputProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -1086,7 +1085,7 @@ export const MessageInputProvider = <
 };
 
 export const useMessageInputContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(MessageInputContext) as unknown as MessageInputContextValue<StreamChatClient>;
 
 /**
@@ -1096,7 +1095,7 @@ export const useMessageInputContext = <
  */
 export const withMessageInputContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatClient>>> => {

@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { renderText, RenderTextParams } from './utils/renderText';
 
 import {
@@ -23,14 +21,14 @@ const styles = StyleSheet.create({
 });
 
 export type MessageTextProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageTextContainerProps<StreamChatClient> & {
   renderText: (params: RenderTextParams<StreamChatClient>) => JSX.Element | null;
   theme: { theme: Theme };
 };
 
 export type MessageTextContainerPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
@@ -45,7 +43,7 @@ export type MessageTextContainerPropsWithContext<
   };
 
 const MessageTextContainerWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageTextContainerPropsWithContext<StreamChatClient>,
 ) => {
@@ -109,7 +107,7 @@ const MessageTextContainerWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageTextContainerPropsWithContext<StreamChatClient>,
   nextProps: MessageTextContainerPropsWithContext<StreamChatClient>,
 ) => {
@@ -139,11 +137,11 @@ const MemoizedMessageTextContainer = React.memo(
 ) as typeof MessageTextContainerWithContext;
 
 export type MessageTextContainerProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageTextContainerPropsWithContext<StreamChatClient>>;
 
 export const MessageTextContainer = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageTextContainerProps<StreamChatClient>,
 ) => {

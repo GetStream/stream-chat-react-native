@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-  Event,
-  ExtendableGenerics,
-} from 'stream-chat';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort, Event } from 'stream-chat';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
@@ -41,7 +34,7 @@ import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 
 export type ChannelListProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
     ChannelsContextValue<StreamChatClient>,
@@ -206,7 +199,7 @@ const DEFAULT_SORT = {};
  * @example ./ChannelList.md
  */
 export const ChannelList = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelListProps<StreamChatClient>,
 ) => {

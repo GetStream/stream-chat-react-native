@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState, ExtendableGenerics } from 'stream-chat';
+import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -8,7 +8,7 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Instance of channel object from stream-chat package.
@@ -170,7 +170,7 @@ export type ChannelContextValue<
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 
 export const ChannelProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -183,7 +183,7 @@ export const ChannelProvider = <
 );
 
 export const useChannelContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatClient>;
 
 /**
@@ -193,7 +193,7 @@ export const useChannelContext = <
  */
 export const withChannelContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChannelContextValue<StreamChatClient>>> => {

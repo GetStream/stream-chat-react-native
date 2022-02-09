@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { MessageActionListItem as DefaultMessageActionListItem } from './MessageActionListItem';
 
 import {
@@ -38,9 +36,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageActionListPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayProviderProps,
+  OverlayProviderProps<StreamChatClient>,
   | 'MessageActionListItem'
   | 'error'
   | 'isMyMessage'
@@ -53,7 +51,7 @@ export type MessageActionListPropsWithContext<
   };
 
 const MessageActionListWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageActionListPropsWithContext<StreamChatClient>,
 ) => {
@@ -127,7 +125,7 @@ const MessageActionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageActionListPropsWithContext<StreamChatClient>,
   nextProps: MessageActionListPropsWithContext<StreamChatClient>,
 ) => {
@@ -149,7 +147,7 @@ const MemoizedMessageActionList = React.memo(
 ) as typeof MessageActionListWithContext;
 
 export type MessageActionListProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<MessageActionListPropsWithContext<StreamChatClient>, 'showScreen'>> &
   Pick<
     MessageActionListPropsWithContext<StreamChatClient>,
@@ -160,7 +158,7 @@ export type MessageActionListProps<
  * MessageActionList - A high level component which implements all the logic required for MessageActions
  */
 export const MessageActionList = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageActionListProps<StreamChatClient>,
 ) => {

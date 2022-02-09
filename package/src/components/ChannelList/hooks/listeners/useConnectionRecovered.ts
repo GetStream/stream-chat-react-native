@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
@@ -12,7 +10,7 @@ type Parameters = {
 };
 
 export const useConnectionRecovered = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   refreshList,
   setForceUpdate,

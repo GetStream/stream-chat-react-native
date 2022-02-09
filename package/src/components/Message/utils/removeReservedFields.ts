@@ -1,10 +1,8 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 export const removeReservedFields = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: MessageType<StreamChatClient>,
 ) => {

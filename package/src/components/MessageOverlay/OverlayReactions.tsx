@@ -4,8 +4,6 @@ import { FlatList } from 'react-native-gesture-handler';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { Alignment } from '../../contexts/messageContext/MessageContext';
 import type { MessageOverlayContextValue } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -104,7 +102,7 @@ export type Reaction = {
 };
 
 export type OverlayReactionsProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageOverlayContextValue<StreamChatClient>, 'OverlayReactionsAvatar'> & {
   reactions: Reaction[];
   showScreen: Animated.SharedValue<number>;

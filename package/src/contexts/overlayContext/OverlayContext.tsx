@@ -3,8 +3,6 @@ import type Animated from 'react-native-reanimated';
 
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
 
@@ -29,7 +27,7 @@ export type OverlayContextValue = {
 export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
 export type OverlayProviderProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
@@ -75,7 +73,7 @@ export type OverlayProviderProps<
 export const useOverlayContext = () => useContext(OverlayContext);
 
 export const withOverlayContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<StreamChatClient>,
 ): React.FC<Omit<StreamChatClient, keyof OverlayContextValue>> => {
@@ -86,6 +84,8 @@ export const withOverlayContext = <
 
     return <Component {...(props as StreamChatClient)} {...overlayContext} />;
   };
-  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(Component)}`;
+  WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
+    Component as React.ComponentType,
+  )}`;
   return WithOverlayContextComponent;
 };

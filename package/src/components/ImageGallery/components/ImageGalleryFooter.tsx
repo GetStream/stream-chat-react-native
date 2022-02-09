@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
@@ -49,7 +47,7 @@ const styles = StyleSheet.create({
 });
 
 export type ImageGalleryFooterCustomComponent<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
   openGridView,
   photo,
@@ -63,7 +61,7 @@ export type ImageGalleryFooterCustomComponent<
 }) => React.ReactElement | null;
 
 export type ImageGalleryFooterCustomComponentProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   centerElement?: ImageGalleryFooterCustomComponent<StreamChatClient>;
   GridIcon?: React.ReactElement;
@@ -72,7 +70,7 @@ export type ImageGalleryFooterCustomComponentProps<
   ShareIcon?: React.ReactElement;
 };
 
-type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryFooterCustomComponentProps<StreamChatClient> & {
     opacity: Animated.SharedValue<number>;
     openGridView: () => void;
@@ -83,7 +81,7 @@ type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGeneri
   };
 
 export const ImageGalleryFooter = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: Props<StreamChatClient>,
 ) => {

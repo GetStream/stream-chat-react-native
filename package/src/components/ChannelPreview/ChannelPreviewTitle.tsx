@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -14,13 +12,13 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewTitleProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> & {
   displayName: string;
 };
 
 export const ChannelPreviewTitle = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewTitleProps<StreamChatClient>,
 ) => {

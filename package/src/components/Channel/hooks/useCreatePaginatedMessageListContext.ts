@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreatePaginatedMessageListContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelId,
   hasMore,

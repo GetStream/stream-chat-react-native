@@ -2,8 +2,6 @@ import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
@@ -15,7 +13,7 @@ import { Attach } from '../../icons/Attach';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type AttachButtonPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
@@ -23,7 +21,7 @@ type AttachButtonPropsWithContext<
 };
 
 const AttachButtonWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AttachButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -48,7 +46,7 @@ const AttachButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AttachButtonPropsWithContext<StreamChatClient>,
   nextProps: AttachButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -81,14 +79,14 @@ const MemoizedAttachButton = React.memo(
 ) as typeof AttachButtonWithContext;
 
 export type AttachButtonProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AttachButtonPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
 export const AttachButton = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AttachButtonProps<StreamChatClient>,
 ) => {

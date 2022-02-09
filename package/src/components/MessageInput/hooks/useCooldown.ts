@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { BuiltinRoles, ChannelResponse, ExtendableGenerics, Role } from 'stream-chat';
+import { BuiltinRoles, ChannelResponse, Role } from 'stream-chat';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
@@ -14,7 +14,7 @@ type Roles = Array<Role>;
  * for a Channel by setting an end time for
  **/
 export const useCooldown = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const [endsAt, setEndsAt] = useState(new Date());
 

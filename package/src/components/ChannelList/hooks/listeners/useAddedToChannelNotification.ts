@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 
 import uniqBy from 'lodash/uniqBy';
 
-import type { Channel, Event, ExtendableGenerics } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
 
-type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
   setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
   onAddedToChannel?: (
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
@@ -18,7 +18,7 @@ type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatG
 };
 
 export const useAddedToChannelNotification = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onAddedToChannel,
   setChannels,

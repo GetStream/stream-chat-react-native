@@ -1,12 +1,10 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const getReadStates = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   clientUserId: string | undefined,
   messages:
