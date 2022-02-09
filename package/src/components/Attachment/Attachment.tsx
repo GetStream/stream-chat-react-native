@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { Attachment as AttachmentType, ExtendableGenerics } from 'stream-chat';
+import type { Attachment as AttachmentType } from 'stream-chat';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { Card as CardDefault } from '../../components/Attachment/Card';
@@ -17,7 +17,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 export type ActionHandler = (name: string, value: string) => void;
 
 export type AttachmentPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessagesContextValue<StreamChatClient>,
   'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
@@ -29,7 +29,7 @@ export type AttachmentPropsWithContext<
 };
 
 const AttachmentWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: AttachmentPropsWithContext<StreamChatClient>,
 ) => {
@@ -82,7 +82,7 @@ const AttachmentWithContext = <
   }
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: AttachmentPropsWithContext<StreamChatClient>,
   nextProps: AttachmentPropsWithContext<StreamChatClient>,
 ) => {
@@ -103,7 +103,7 @@ const MemoizedAttachment = React.memo(
 ) as typeof AttachmentWithContext;
 
 export type AttachmentProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
     MessagesContextValue<StreamChatClient>,
@@ -115,7 +115,9 @@ export type AttachmentProps<
 /**
  * Attachment - The message attachment
  */
-export const Attachment = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Attachment = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: AttachmentProps<StreamChatClient>,
 ) => {
   const {

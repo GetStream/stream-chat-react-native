@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
 import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   editing: MessageInputContextValue<StreamChatClient>['editing'],
 ): editing is boolean => typeof editing === 'boolean';
 
 export const useMessageDetailsForState = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: MessageInputContextValue<StreamChatClient>['editing'],
   initialValue?: string,

@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -151,7 +149,7 @@ export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
 export const ShowThreadMessageInChannelButton = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {

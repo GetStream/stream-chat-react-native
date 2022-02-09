@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { ExtendableGenerics, UserResponse } from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
 import { useCountdown } from './hooks/useCountdown';
 
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
 });
 
 type MessageInputPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'disabled' | 'members' | 'watchers'> &
   Pick<
     MessageInputContextValue<StreamChatClient>,
@@ -151,7 +151,7 @@ type MessageInputPropsWithContext<
   };
 
 const MessageInputWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageInputPropsWithContext<StreamChatClient>,
 ) => {
@@ -590,7 +590,7 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageInputPropsWithContext<StreamChatClient>,
   nextProps: MessageInputPropsWithContext<StreamChatClient>,
 ) => {
@@ -706,7 +706,7 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageInputPropsWithContext<StreamChatClient>>;
 
 /**
@@ -719,7 +719,7 @@ export type MessageInputProps<
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 export const MessageInput = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageInputProps<StreamChatClient>,
 ) => {

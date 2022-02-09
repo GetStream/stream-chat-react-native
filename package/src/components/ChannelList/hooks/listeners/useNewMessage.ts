@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 
-import type { Channel, Event, ExtendableGenerics } from 'stream-chat';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
 
-type Parameters<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
+type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
   lockChannelOrder: boolean;
   setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
 };
 
 export const useNewMessage = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   lockChannelOrder,
   setChannels,

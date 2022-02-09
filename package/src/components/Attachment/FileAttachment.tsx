@@ -10,7 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
@@ -68,7 +68,7 @@ export type FileAttachmentPropsWithContext<
   };
 
 const FileAttachmentWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: FileAttachmentPropsWithContext<StreamChatClient>,
 ) => {
@@ -145,12 +145,12 @@ const FileAttachmentWithContext = <
 };
 
 export type FileAttachmentProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>> &
   Pick<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>;
 
 export const FileAttachment = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: FileAttachmentProps<StreamChatClient>,
 ) => {

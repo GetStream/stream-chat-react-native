@@ -35,7 +35,7 @@ import Animated, {
 
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
-import type { ExtendableGenerics, UserResponse } from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import {
@@ -81,7 +81,7 @@ export enum IsSwiping {
 }
 
 export type ImageGalleryCustomComponents<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
@@ -122,7 +122,7 @@ export type ImageGalleryCustomComponents<
   };
 };
 
-type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
+type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatClient> & {
     overlayOpacity: Animated.SharedValue<number>;
     visible: boolean;
@@ -135,7 +135,7 @@ type Props<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGeneri
   };
 
 export const ImageGallery = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: Props<StreamChatClient>,
 ) => {
@@ -1215,16 +1215,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> = {
-  id: string;
-  uri: string;
-  channelId?: string;
-  created_at?: string | Date;
-  messageId?: string;
-  original_height?: number;
-  original_width?: number;
-  user?: UserResponse<StreamChatClient> | null;
-  user_id?: string;
-};
+export type Photo<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    id: string;
+    uri: string;
+    channelId?: string;
+    created_at?: string | Date;
+    messageId?: string;
+    original_height?: number;
+    original_width?: number;
+    user?: UserResponse<StreamChatClient> | null;
+    user_id?: string;
+  };
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

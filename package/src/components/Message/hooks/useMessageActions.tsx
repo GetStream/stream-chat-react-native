@@ -1,8 +1,6 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useMessageActionHandlers } from './useMessageActionHandlers';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -34,7 +32,7 @@ import type { MessageActionType } from '../../MessageOverlay/MessageActionListIt
 import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,

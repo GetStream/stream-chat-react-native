@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import type { MessageStatusProps } from './MessageStatus';
 
@@ -29,7 +29,7 @@ type MessageFooterComponentProps = {
 };
 
 type MessageFooterPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   | 'alignment'
@@ -43,7 +43,7 @@ type MessageFooterPropsWithContext<
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageFooterPropsWithContext<StreamChatClient>,
 ) => {
@@ -138,7 +138,7 @@ const MessageFooterWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageFooterPropsWithContext<StreamChatClient>,
   nextProps: MessageFooterPropsWithContext<StreamChatClient>,
 ) => {
@@ -206,7 +206,7 @@ const MemoizedMessageFooter = React.memo(
 ) as typeof MessageFooterWithContext;
 
 export type MessageFooterProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Pick<ChannelContextValue<StreamChatClient>, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
@@ -218,7 +218,7 @@ export type MessageFooterProps<
   };
 
 export const MessageFooter = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageFooterProps<StreamChatClient>,
 ) => {

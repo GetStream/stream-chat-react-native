@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ExtendableGenerics, StreamChat } from 'stream-chat';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const getChannelPreviewDisplayPresence = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
   client: StreamChat<StreamChatClient>,
@@ -32,7 +32,7 @@ const getChannelPreviewDisplayPresence = <
  * @returns {boolean} e.g., true
  */
 export const useChannelPreviewDisplayPresence = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatClient>,
 ) => {

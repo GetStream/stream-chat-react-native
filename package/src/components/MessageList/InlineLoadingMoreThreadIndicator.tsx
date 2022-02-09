@@ -1,8 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
@@ -57,7 +55,7 @@ const MemoizedInlineLoadingMoreThreadIndicator = React.memo(
 ) as typeof InlineLoadingMoreThreadIndicatorWithContext;
 
 export const InlineLoadingMoreThreadIndicator = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const { threadLoadingMore } = useThreadContext<StreamChatClient>();
 

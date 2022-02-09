@@ -8,7 +8,6 @@ import {
   Channel as ChannelType,
   ConnectionChangeEvent,
   EventHandler,
-  ExtendableGenerics,
   logChatPromiseExecution,
   MessageResponse,
   SendMessageAPIResponse,
@@ -179,7 +178,7 @@ const debounceOptions = {
 const unreadMessagesOnInitialLoadLimit = 2;
 
 export type ChannelPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'channel'> &
   Partial<
     Pick<
@@ -374,7 +373,7 @@ export type ChannelPropsWithContext<
   };
 
 const ChannelWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: PropsWithChildren<ChannelPropsWithContext<StreamChatClient>>,
 ) => {
@@ -1787,9 +1786,10 @@ const ChannelWithContext = <
   );
 };
 
-export type ChannelProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<Omit<ChannelPropsWithContext<StreamChatClient>, 'channel'>> &
-    Pick<ChannelPropsWithContext<StreamChatClient>, 'channel'>;
+export type ChannelProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<ChannelPropsWithContext<StreamChatClient>, 'channel'>> &
+  Pick<ChannelPropsWithContext<StreamChatClient>, 'channel'>;
 
 /**
  *
@@ -1799,7 +1799,9 @@ export type ChannelProps<StreamChatClient extends ExtendableGenerics = DefaultSt
  *
  * @example ./Channel.md
  */
-export const Channel = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Channel = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: PropsWithChildren<ChannelProps<StreamChatClient>>,
 ) => {
   const { client } = useChatContext<StreamChatClient>();

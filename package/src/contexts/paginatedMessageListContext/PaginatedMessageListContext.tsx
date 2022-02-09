@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { ChannelState, ExtendableGenerics } from 'stream-chat';
+import type { ChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type PaginatedMessageListContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Has more messages to load
@@ -47,7 +47,7 @@ export const PaginatedMessageListContext = React.createContext(
 );
 
 export const PaginatedMessageListProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -62,7 +62,7 @@ export const PaginatedMessageListProvider = <
 );
 
 export const usePaginatedMessageListContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() =>
   useContext(
     PaginatedMessageListContext,
@@ -75,7 +75,7 @@ export const usePaginatedMessageListContext = <
  */
 export const withPaginatedMessageListContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatClient>>> => {

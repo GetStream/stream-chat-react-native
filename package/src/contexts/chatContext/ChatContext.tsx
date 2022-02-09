@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ExtendableGenerics, Mute, StreamChat } from 'stream-chat';
+import type { Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChatContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * The StreamChat client object
@@ -57,7 +57,7 @@ export type ChatContextValue<
 export const ChatContext = React.createContext({} as ChatContextValue);
 
 export const ChatProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -70,7 +70,7 @@ export const ChatProvider = <
 );
 
 export const useChatContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ChatContext) as unknown as ChatContextValue<StreamChatClient>;
 
 /**
@@ -80,7 +80,7 @@ export const useChatContext = <
  */
 export const withChatContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ChatContextValue<StreamChatClient>>> => {

@@ -1,8 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
@@ -57,7 +55,7 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
 export const InlineLoadingMoreRecentIndicator = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const { loadingMoreRecent } = usePaginatedMessageListContext<StreamChatClient>();
 

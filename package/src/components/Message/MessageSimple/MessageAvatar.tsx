@@ -1,8 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageContextValue,
   useMessageContext,
@@ -13,7 +11,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
 export type MessageAvatarPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
@@ -21,7 +19,7 @@ export type MessageAvatarPropsWithContext<
   Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageAvatarPropsWithContext<StreamChatClient>,
 ) => {
@@ -55,7 +53,7 @@ const MessageAvatarWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageAvatarPropsWithContext<StreamChatClient>,
   nextProps: MessageAvatarPropsWithContext<StreamChatClient>,
 ) => {
@@ -80,11 +78,11 @@ const MemoizedMessageAvatar = React.memo(
 ) as typeof MessageAvatarWithContext;
 
 export type MessageAvatarProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<MessageAvatarPropsWithContext<StreamChatClient>>;
 
 export const MessageAvatar = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageAvatarProps<StreamChatClient>,
 ) => {

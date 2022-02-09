@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -17,11 +15,11 @@ const styles = StyleSheet.create({
 });
 
 export type InputButtonsProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<InputButtonsWithContextProps<StreamChatClient>>;
 
 export type InputButtonsWithContextProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatClient>,
   | 'AttachButton'
@@ -40,7 +38,7 @@ export type InputButtonsWithContextProps<
 >;
 
 export const InputButtonsWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: InputButtonsWithContextProps<StreamChatClient>,
 ) => {
@@ -90,7 +88,7 @@ export const InputButtonsWithContext = <
     </>
   );
 };
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: InputButtonsWithContextProps<StreamChatClient>,
   nextProps: InputButtonsWithContextProps<StreamChatClient>,
 ) => {
@@ -151,7 +149,7 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: InputButtonsProps<StreamChatClient>,
 ) => {

@@ -16,7 +16,6 @@ import {
   SingleASTNode,
   State,
 } from 'simple-markdown';
-import type { ExtendableGenerics } from 'stream-chat';
 
 import { parseLinksFromText } from './parseLinks';
 
@@ -68,7 +67,7 @@ const parse: ParseFunction = (capture, parse, state) => ({
 export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<MessageContextValue<StreamChatClient>, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
@@ -82,7 +81,9 @@ export type RenderTextParams<
   onlyEmojis?: boolean;
 };
 
-export const renderText = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const renderText = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   params: RenderTextParams<StreamChatClient>,
 ) => {
   const {

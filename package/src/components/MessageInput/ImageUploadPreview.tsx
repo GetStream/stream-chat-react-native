@@ -1,8 +1,6 @@
 import React from 'react';
 import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import {
@@ -38,18 +36,18 @@ const styles = StyleSheet.create({
 });
 
 type ImageUploadPreviewPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatClient>,
   'imageUploads' | 'removeImage' | 'uploadImage'
 >;
 
 export type ImageUploadPreviewProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<ImageUploadPreviewPropsWithContext<StreamChatClient>>;
 
 const ImageUploadPreviewWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ImageUploadPreviewPropsWithContext<StreamChatClient>,
 ) => {
@@ -120,7 +118,7 @@ const ImageUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ImageUploadPreviewPropsWithContext<StreamChatClient>,
   nextProps: ImageUploadPreviewPropsWithContext<StreamChatClient>,
 ) => {
@@ -144,7 +142,7 @@ const MemoizedImageUploadPreviewWithContext = React.memo(
  * UI Component to preview the images set for upload
  */
 export const ImageUploadPreview = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ImageUploadPreviewProps<StreamChatClient>,
 ) => {

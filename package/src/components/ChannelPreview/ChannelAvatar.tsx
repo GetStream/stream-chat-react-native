@@ -1,7 +1,5 @@
 import React from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChannelPreviewProps } from './ChannelPreview';
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
 import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
@@ -11,14 +9,14 @@ import { Avatar } from '../Avatar/Avatar';
 import { GroupAvatar } from '../Avatar/GroupAvatar';
 
 export type ChannelAvatarProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'>;
 
 /**
  * This UI component displays an avatar for a particular channel.
  */
 export const ChannelAvatar = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelAvatarProps<StreamChatClient>,
 ) => {

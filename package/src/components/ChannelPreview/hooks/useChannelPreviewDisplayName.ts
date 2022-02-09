@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ExtendableGenerics } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
@@ -10,7 +10,7 @@ import { vw } from '../../../utils/utils';
 const maxCharacterLengthDefault = (vw(100) - 16) / 6;
 
 export const getChannelPreviewDisplayName = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelName,
   currentUserId,
@@ -49,7 +49,7 @@ export const getChannelPreviewDisplayName = <
 };
 
 export const useChannelPreviewDisplayName = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel?: Channel<StreamChatClient>,
   characterLength?: number,

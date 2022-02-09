@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
 });
 
 export type GalleryPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ImageGalleryContextValue<StreamChatClient>, 'setImage' | 'setImages'> &
   Pick<
     MessageContextValue<StreamChatClient>,
@@ -107,7 +105,7 @@ export type GalleryPropsWithContext<
   };
 
 const GalleryWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: GalleryPropsWithContext<StreamChatClient>,
 ) => {
@@ -312,7 +310,7 @@ const GalleryWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: GalleryPropsWithContext<StreamChatClient>,
   nextProps: GalleryPropsWithContext<StreamChatClient>,
 ) => {
@@ -353,13 +351,16 @@ const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamCha
 
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 
-export type GalleryProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<GalleryPropsWithContext<StreamChatClient>>;
+export type GalleryProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<GalleryPropsWithContext<StreamChatClient>>;
 
 /**
  * UI component for card in attachments.
  */
-export const Gallery = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Gallery = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: GalleryProps<StreamChatClient>,
 ) => {
   const {

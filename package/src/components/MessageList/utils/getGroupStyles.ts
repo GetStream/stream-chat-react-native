@@ -1,5 +1,3 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { DateSeparators } from './getDateSeparators';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
@@ -8,7 +6,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { GroupType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   dateSeparators: DateSeparators;
   messages:
@@ -21,7 +19,7 @@ export type GetGroupStylesParams<
 };
 
 export const getGroupStyles = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   params: GetGroupStylesParams<StreamChatClient>,
 ) => {

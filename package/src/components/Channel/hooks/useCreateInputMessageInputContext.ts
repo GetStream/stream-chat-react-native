@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { InputMessageInputContextValue } from '../../../contexts/messageInputContext/MessageInputContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateInputMessageInputContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
   AttachButton,

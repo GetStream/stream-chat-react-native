@@ -20,8 +20,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { MessageActionList as DefaultMessageActionList } from './MessageActionList';
 import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
 import { OverlayReactionsAvatar as OverlayReactionsAvatarDefault } from './OverlayReactionsAvatar';
@@ -44,7 +42,10 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { OverlayReactions as DefaultOverlayReactions } from '../MessageOverlay/OverlayReactions';
+import {
+  OverlayReactions as DefaultOverlayReactions,
+  Reaction,
+} from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -80,7 +81,7 @@ const halfScreenHeight = vh(50);
 const DefaultMessageTextNumberOfLines = 5;
 
 export type MessageOverlayPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageOverlayContextValue<StreamChatClient>,
   | 'MessageActionList'
@@ -107,7 +108,7 @@ export type MessageOverlayPropsWithContext<
   };
 
 const MessageOverlayWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageOverlayPropsWithContext<StreamChatClient>,
 ) => {
@@ -320,7 +321,7 @@ const MessageOverlayWithContext = <
   const { Attachment, FileAttachmentGroup, Gallery, MessageAvatar, Reply } = messagesContext || {};
 
   return (
-    <MessagesProvider<StreamChatClient> value={messagesContext}>
+    <MessagesProvider value={messagesContext}>
       <MessageProvider value={messageContext}>
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
@@ -497,6 +498,7 @@ const MessageOverlayWithContext = <
                               MessageActionListItem={MessageActionListItem}
                               showScreen={showScreen}
                               {...messageActionProps}
+                              message={message}
                             />
                           )}
                           {!!messageReactionTitle &&
@@ -505,14 +507,16 @@ const MessageOverlayWithContext = <
                             <OverlayReactions
                               alignment={alignment}
                               OverlayReactionsAvatar={OverlayReactionsAvatar}
-                              reactions={message.latest_reactions.map((reaction) => ({
-                                alignment:
-                                  clientId && clientId === reaction.user?.id ? 'right' : 'left',
-                                id: reaction?.user?.id || '',
-                                image: reaction?.user?.image,
-                                name: reaction?.user?.name || reaction.user_id || '',
-                                type: reaction.type,
-                              }))}
+                              reactions={
+                                message.latest_reactions.map((reaction) => ({
+                                  alignment:
+                                    clientId && clientId === reaction.user?.id ? 'right' : 'left',
+                                  id: reaction?.user?.id || '',
+                                  image: reaction?.user?.image,
+                                  name: reaction?.user?.name || reaction.user_id || '',
+                                  type: reaction.type,
+                                })) as Reaction[]
+                              }
                               showScreen={showScreen}
                               supportedReactions={messagesContext?.supportedReactions}
                               title={messageReactionTitle}
@@ -532,7 +536,7 @@ const MessageOverlayWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessageOverlayPropsWithContext<StreamChatClient>,
   nextProps: MessageOverlayPropsWithContext<StreamChatClient>,
 ) => {
@@ -576,7 +580,7 @@ const MemoizedMessageOverlay = React.memo(
 ) as typeof MessageOverlayWithContext;
 
 export type MessageOverlayProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'>> &
   Pick<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'> &
   Pick<
@@ -588,7 +592,7 @@ export type MessageOverlayProps<
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
  */
 export const MessageOverlay = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessageOverlayProps<StreamChatClient>,
 ) => {

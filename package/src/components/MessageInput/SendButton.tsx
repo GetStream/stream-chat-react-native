@@ -1,8 +1,6 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -15,13 +13,13 @@ import { SendUp } from '../../icons/SendUp';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type SendButtonPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageInputContextValue<StreamChatClient>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
 const SendButtonWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: SendButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -47,7 +45,7 @@ const SendButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: SendButtonPropsWithContext<StreamChatClient>,
   nextProps: SendButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -80,13 +78,15 @@ const MemoizedSendButton = React.memo(
 ) as typeof SendButtonWithContext;
 
 export type SendButtonProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<SendButtonPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
-export const SendButton = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const SendButton = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: SendButtonProps<StreamChatClient>,
 ) => {
   const { giphyActive, sendMessage } = useMessageInputContext<StreamChatClient>();

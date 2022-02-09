@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 // See https://github.com/software-mansion/react-native-gesture-handler/issues/598
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
-import type { Channel, ExtendableGenerics } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import {
   ChannelsContextValue,
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelListMessengerPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
   ChannelsContextValue<StreamChatClient>,
   | 'hasNextPage'
@@ -40,7 +40,7 @@ export type ChannelListMessengerPropsWithContext<
 >;
 
 const StatusIndicator = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const { isOnline } = useChatContext<StreamChatClient>();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
@@ -64,18 +64,22 @@ const StatusIndicator = <
   return null;
 };
 
-const renderItem = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>({
+const renderItem = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   item,
 }: {
   item: Channel<StreamChatClient>;
 }) => <ChannelPreview<StreamChatClient> channel={item} />;
 
-const keyExtractor = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const keyExtractor = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   item: Channel<StreamChatClient>,
 ) => item.cid;
 
 const ChannelListMessengerWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelListMessengerPropsWithContext<StreamChatClient>,
 ) => {
@@ -174,7 +178,7 @@ const ChannelListMessengerWithContext = <
 };
 
 export type ChannelListMessengerProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<ChannelListMessengerPropsWithContext<StreamChatClient>>;
 
 /**
@@ -184,7 +188,7 @@ export type ChannelListMessengerProps<
  * @example ./ChannelListMessenger.md
  */
 export const ChannelListMessenger = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelListMessengerProps<StreamChatClient>,
 ) => {

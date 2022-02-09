@@ -1,7 +1,7 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -69,7 +69,7 @@ export type TouchableHandlerPayload = {
 };
 
 export type MessageTouchableHandlerPayload<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
   message?: MessageType<StreamChatClient>;
@@ -88,7 +88,7 @@ export type MessageActionHandlers = {
 };
 
 export type MessagePropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   ChannelContextValue<StreamChatClient>,
   'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
@@ -184,7 +184,7 @@ export type MessagePropsWithContext<
  * each individual Message component.
  */
 const MessageWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: MessagePropsWithContext<StreamChatClient>,
 ) => {
@@ -674,7 +674,7 @@ const MessageWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: MessagePropsWithContext<StreamChatClient>,
   nextProps: MessagePropsWithContext<StreamChatClient>,
 ) => {
@@ -790,9 +790,10 @@ const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamCha
 
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
-export type MessageProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<Omit<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>> &
-    Pick<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>;
+export type MessageProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>> &
+  Pick<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -800,7 +801,9 @@ export type MessageProps<StreamChatClient extends ExtendableGenerics = DefaultSt
  *
  * @example ./Message.md
  */
-export const Message = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Message = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: MessageProps<StreamChatClient>,
 ) => {
   const { channel, disabled, enforceUniqueReaction, members } =

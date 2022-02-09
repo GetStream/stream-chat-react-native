@@ -1,13 +1,11 @@
 import { useMemo } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 export const useCreateMessageContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   actionsEnabled,
   alignment,

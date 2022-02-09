@@ -1,8 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { filterTypingUsers } from './utils/filterTypingUsers';
 
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -21,13 +19,13 @@ const styles = StyleSheet.create({
 });
 
 type TypingIndicatorContainerPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<TypingContextValue<StreamChatClient>, 'typing'> &
   Pick<ChatContextValue<StreamChatClient>, 'client'> &
   Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
 
 const TypingIndicatorContainerWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: PropsWithChildren<TypingIndicatorContainerPropsWithContext<StreamChatClient>>,
 ) => {
@@ -52,11 +50,11 @@ const TypingIndicatorContainerWithContext = <
 };
 
 export type TypingIndicatorContainerProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<TypingIndicatorContainerPropsWithContext<StreamChatClient>>;
 
 export const TypingIndicatorContainer = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: PropsWithChildren<TypingIndicatorContainerProps<StreamChatClient>>,
 ) => {

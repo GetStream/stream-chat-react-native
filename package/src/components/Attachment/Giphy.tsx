@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { Attachment, ExtendableGenerics } from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 import {
   MessageContextValue,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 });
 
 export type GiphyPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
@@ -102,7 +102,9 @@ export type GiphyPropsWithContext<
     attachment: Attachment<StreamChatClient>;
   };
 
-const GiphyWithContext = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const GiphyWithContext = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: GiphyPropsWithContext<StreamChatClient>,
 ) => {
   const {
@@ -259,7 +261,7 @@ const GiphyWithContext = <StreamChatClient extends ExtendableGenerics = DefaultS
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: GiphyPropsWithContext<StreamChatClient>,
   nextProps: GiphyPropsWithContext<StreamChatClient>,
 ) => {
@@ -289,18 +291,21 @@ const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamCha
 
 const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWithContext;
 
-export type GiphyProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<
-    Pick<MessageContextValue<StreamChatClient>, 'onLongPress' | 'onPressIn'> &
-      Pick<MessagesContextValue<StreamChatClient>, 'additionalTouchableProps'>
-  > & {
-    attachment: Attachment<StreamChatClient>;
-  };
+export type GiphyProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<
+  Pick<MessageContextValue<StreamChatClient>, 'onLongPress' | 'onPressIn'> &
+    Pick<MessagesContextValue<StreamChatClient>, 'additionalTouchableProps'>
+> & {
+  attachment: Attachment<StreamChatClient>;
+};
 
 /**
  * UI component for card in attachments.
  */
-export const Giphy = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Giphy = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: GiphyProps<StreamChatClient>,
 ) => {
   const { handleAction, onLongPress, onPress, onPressIn, preventPress } =

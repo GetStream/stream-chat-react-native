@@ -1,4 +1,4 @@
-import type { ExtendableGenerics, MessageResponse, Reaction } from 'stream-chat';
+import type { MessageResponse, Reaction } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
@@ -12,7 +12,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,

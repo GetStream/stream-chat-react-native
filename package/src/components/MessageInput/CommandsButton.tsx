@@ -2,8 +2,6 @@ import React from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   ChannelContextValue,
   useChannelContext,
@@ -19,7 +17,7 @@ import { Lightning } from '../../icons/Lightning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type CommandsButtonPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> &
   Pick<SuggestionsContextValue<StreamChatClient>, 'suggestions'> & {
     /** Function that opens commands selector */
@@ -27,7 +25,7 @@ type CommandsButtonPropsWithContext<
   };
 
 const CommandsButtonWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: CommandsButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -59,7 +57,7 @@ const CommandsButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: CommandsButtonPropsWithContext<StreamChatClient>,
   nextProps: CommandsButtonPropsWithContext<StreamChatClient>,
 ) => {
@@ -81,14 +79,14 @@ const MemoizedCommandsButton = React.memo(
 ) as typeof CommandsButtonWithContext;
 
 export type CommandsButtonProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<CommandsButtonPropsWithContext<StreamChatClient>>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
 export const CommandsButton = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: CommandsButtonProps<StreamChatClient>,
 ) => {

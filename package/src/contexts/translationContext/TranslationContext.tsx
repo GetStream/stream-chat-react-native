@@ -4,7 +4,8 @@ import Dayjs from 'dayjs';
 
 import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
-import type { ExtendableGenerics } from 'stream-chat';
+
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -35,7 +36,9 @@ export const TranslationProvider: React.FC<{
 
 export const useTranslationContext = () => useContext(TranslationContext);
 
-export const withTranslationContext = <StreamChatClient extends ExtendableGenerics>(
+export const withTranslationContext = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   Component: React.ComponentType<StreamChatClient>,
 ): React.FC<Omit<StreamChatClient, keyof TranslationContextValue>> => {
   const WithTranslationContextComponent = (
@@ -46,7 +49,7 @@ export const withTranslationContext = <StreamChatClient extends ExtendableGeneri
     return <Component {...(props as StreamChatClient)} {...translationContext} />;
   };
   WithTranslationContextComponent.displayName = `WithTranslationContext${getDisplayName(
-    Component,
+    Component as React.ComponentType,
   )}`;
   return WithTranslationContextComponent;
 };

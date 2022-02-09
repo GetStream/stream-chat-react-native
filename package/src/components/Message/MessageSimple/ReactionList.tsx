@@ -3,8 +3,6 @@ import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-n
 
 import Svg, { Circle } from 'react-native-svg';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import {
   MessageContextValue,
   Reactions,
@@ -62,7 +60,7 @@ const Icon: React.FC<
 };
 
 export type ReactionListPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatClient>,
   | 'alignment'
@@ -85,7 +83,7 @@ export type ReactionListPropsWithContext<
   };
 
 const ReactionListWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ReactionListPropsWithContext<StreamChatClient>,
 ) => {
@@ -278,7 +276,7 @@ const ReactionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ReactionListPropsWithContext<StreamChatClient>,
   nextProps: ReactionListPropsWithContext<StreamChatClient>,
 ) => {
@@ -324,7 +322,7 @@ const MemoizedReactionList = React.memo(
 ) as typeof ReactionListWithContext;
 
 export type ReactionListProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<Omit<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>> &
   Pick<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>;
 
@@ -332,7 +330,7 @@ export type ReactionListProps<
  * ReactionList - A high level component which implements all the logic required for a message reaction list
  */
 export const ReactionList = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ReactionListProps<StreamChatClient>,
 ) => {

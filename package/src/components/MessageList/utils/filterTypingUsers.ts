@@ -1,18 +1,16 @@
-import type { ExtendableGenerics } from 'stream-chat';
-
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { TypingContextValue } from '../../../contexts/typingContext/TypingContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 type FilterTypingUsersParams<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<TypingContextValue<StreamChatClient>, 'typing'> &
   Pick<ChatContextValue<StreamChatClient>, 'client'> &
   Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
 
 export const filterTypingUsers = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   client,
   thread,

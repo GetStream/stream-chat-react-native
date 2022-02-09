@@ -1,13 +1,13 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { ChannelState, ExtendableGenerics } from 'stream-chat';
+import type { ChannelState } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ThreadContextValue<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
@@ -24,7 +24,7 @@ export type ThreadContextValue<
 export const ThreadContext = React.createContext({} as ThreadContextValue);
 
 export const ThreadProvider = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
@@ -37,7 +37,7 @@ export const ThreadProvider = <
 );
 
 export const useThreadContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => useContext(ThreadContext) as unknown as ThreadContextValue<StreamChatClient>;
 
 /**
@@ -47,7 +47,7 @@ export const useThreadContext = <
  */
 export const withThreadContext = <
   P extends UnknownType,
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof ThreadContextValue<StreamChatClient>>> => {

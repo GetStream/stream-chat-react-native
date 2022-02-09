@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { useTypingString } from './hooks/useTypingString';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -26,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 export const TypingIndicator = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const {
     theme: {

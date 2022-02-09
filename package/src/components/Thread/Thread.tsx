@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
@@ -20,7 +18,7 @@ import {
 import type { MessageListProps } from '../MessageList/MessageList';
 
 type ThreadPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChatContextValue<StreamChatClient>, 'client'> &
   Pick<MessagesContextValue<StreamChatClient>, 'MessageList'> &
   Pick<
@@ -54,7 +52,9 @@ type ThreadPropsWithContext<
     onThreadDismount?: () => void;
   };
 
-const ThreadWithContext = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+const ThreadWithContext = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: ThreadPropsWithContext<StreamChatClient>,
 ) => {
   const {
@@ -111,8 +111,9 @@ const ThreadWithContext = <StreamChatClient extends ExtendableGenerics = Default
   );
 };
 
-export type ThreadProps<StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics> =
-  Partial<ThreadPropsWithContext<StreamChatClient>>;
+export type ThreadProps<
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ThreadPropsWithContext<StreamChatClient>>;
 
 /**
  * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
@@ -123,7 +124,9 @@ export type ThreadProps<StreamChatClient extends ExtendableGenerics = DefaultStr
  * - additionalMessageListProps
  * - additionalMessageInputProps
  */
-export const Thread = <StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics>(
+export const Thread = <
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
   props: ThreadProps<StreamChatClient>,
 ) => {
   const { client } = useChatContext<StreamChatClient>();

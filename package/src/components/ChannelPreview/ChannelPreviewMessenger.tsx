@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import type { ExtendableGenerics } from 'stream-chat';
-
 import { ChannelAvatar } from './ChannelAvatar';
 import type { ChannelPreviewProps } from './ChannelPreview';
 import { ChannelPreviewMessage } from './ChannelPreviewMessage';
@@ -49,7 +47,7 @@ const styles = StyleSheet.create({
 const maxWidth = vw(80) - 16 - 40;
 
 export type ChannelPreviewMessengerPropsWithContext<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> &
   Pick<
     ChannelsContextValue<StreamChatClient>,
@@ -97,7 +95,7 @@ export type ChannelPreviewMessengerPropsWithContext<
   };
 
 const ChannelPreviewMessengerWithContext = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
 ) => {
@@ -170,7 +168,7 @@ const ChannelPreviewMessengerWithContext = <
 };
 
 export type ChannelPreviewMessengerProps<
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Omit<
     ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
@@ -191,7 +189,7 @@ const MemoizedChannelPreviewMessengerWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewMessenger = <
-  StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
+  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ChannelPreviewMessengerProps<StreamChatClient>,
 ) => {
