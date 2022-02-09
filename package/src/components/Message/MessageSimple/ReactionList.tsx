@@ -179,34 +179,7 @@ const ReactionListWithContext = <
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
   return (
-    <TouchableOpacity
-      disabled={preventPress}
-      onLongPress={(event) => {
-        if (onLongPress) {
-          onLongPress({
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPress={(event) => {
-        if (onPress) {
-          onPress({
-            defaultHandler: () => showMessageOverlay(true),
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPressIn={(event) => {
-        if (onPressIn) {
-          onPressIn({
-            defaultHandler: () => showMessageOverlay(true),
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
+    <View
       style={[
         styles.container,
         {
@@ -247,7 +220,34 @@ const ReactionListWithContext = <
               <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
             </Svg>
           </View>
-          <View
+          <TouchableOpacity
+            disabled={preventPress}
+            onLongPress={(event) => {
+              if (onLongPress) {
+                onLongPress({
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
+            onPress={(event) => {
+              if (onPress) {
+                onPress({
+                  defaultHandler: () => showMessageOverlay(true),
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
+            onPressIn={(event) => {
+              if (onPressIn) {
+                onPressIn({
+                  defaultHandler: () => showMessageOverlay(true),
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
             style={[
               styles.reactionBubble,
               {
@@ -271,10 +271,10 @@ const ReactionListWithContext = <
                 type={reaction.type}
               />
             ))}
-          </View>
+          </TouchableOpacity>
         </View>
       ) : null}
-    </TouchableOpacity>
+    </View>
   );
 };
 
