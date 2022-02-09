@@ -18,7 +18,7 @@ import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPre
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelsContextValue<

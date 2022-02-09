@@ -4,26 +4,10 @@ import { useAppContext } from '../context/AppContext';
 
 import type { Channel, MessageResponse } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatType } from '../types';
 
 export const usePaginatedAttachments = (
-  channel: Channel<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >,
+  channel: Channel<StreamChatType>,
   attachmentType: string,
 ) => {
   const { chatClient } = useAppContext();
@@ -31,16 +15,7 @@ export const usePaginatedAttachments = (
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<
-    MessageResponse<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >[]
-  >([]);
+  const [messages, setMessages] = useState<MessageResponse<StreamChatType>[]>([]);
 
   const fetchAttachments = async () => {
     if (queryInProgress.current) {

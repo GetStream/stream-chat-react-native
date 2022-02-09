@@ -41,7 +41,7 @@ import type { MessageActionType } from '../../components/MessageOverlay/MessageA
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';

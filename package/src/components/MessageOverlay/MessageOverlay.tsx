@@ -581,7 +581,7 @@ export type MessageOverlayProps<
   Pick<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'> &
   Pick<
     MessageOverlayPropsWithContext<StreamChatClient>,
-    'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
+    'isMyMessage' | 'error' | 'isThreadMessage' | 'message' | 'messageReactions'
   >;
 
 /**
@@ -614,14 +614,14 @@ export const MessageOverlay = <
 
   return (
     <MemoizedMessageOverlay
-      {...(data || {})}
       {...{
         overlay,
         reset,
         setOverlay,
       }}
-      {...props}
       {...componentProps}
+      {...(data || {})}
+      {...props}
     />
   );
 };

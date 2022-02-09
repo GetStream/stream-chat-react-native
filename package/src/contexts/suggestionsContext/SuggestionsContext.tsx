@@ -6,7 +6,7 @@ import type { AutoCompleteSuggestionHeaderProps } from '../../components/AutoCom
 import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { Emoji } from '../../emoji-data/compiled';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type SuggestionComponentType = 'command' | 'emoji' | 'mention';

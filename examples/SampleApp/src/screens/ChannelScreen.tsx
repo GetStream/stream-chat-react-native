@@ -22,16 +22,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatType } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 
 const styles = StyleSheet.create({
@@ -49,15 +40,7 @@ export type ChannelScreenProps = {
 };
 
 export type ChannelHeaderProps = {
-  channel: StreamChatChannel<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  channel: StreamChatChannel<StreamChatType>;
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
@@ -119,31 +102,12 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<
-    | StreamChatChannel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    | undefined
-  >(channelFromProp);
+  const [channel, setChannel] = useState<StreamChatChannel<StreamChatType> | undefined>(
+    channelFromProp,
+  );
 
   const [selectedThread, setSelectedThread] =
-    useState<
-      ThreadContextValue<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >['thread']
-    >();
+    useState<ThreadContextValue<StreamChatType>['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -179,15 +143,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalReactionType,
-          LocalUserType
-        >
+        <MessageList<StreamChatType>
           onThreadSelect={(thread) => {
             setSelectedThread(thread);
             navigation.navigate('ThreadScreen', {

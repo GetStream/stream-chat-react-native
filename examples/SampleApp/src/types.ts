@@ -16,6 +16,16 @@ export type LocalUserType = {
   image?: string;
 };
 
+export type StreamChatType = {
+  attachmentType: LocalAttachmentType;
+  channelType: LocalChannelType;
+  commandType: LocalCommandType;
+  eventType: LocalEventType;
+  messageType: LocalMessageType;
+  reactionType: LocalReactionType;
+  userType: LocalUserType;
+};
+
 export type DrawerNavigatorParamList = {
   HomeScreen: undefined;
   UserSelectorScreen: undefined;
@@ -23,100 +33,36 @@ export type DrawerNavigatorParamList = {
 
 export type StackNavigatorParamList = {
   ChannelFilesScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel: Channel<StreamChatType>;
   };
   ChannelImagesScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel: Channel<StreamChatType>;
   };
   ChannelListScreen: undefined;
   ChannelPinnedMessagesScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel: Channel<StreamChatType>;
   };
   ChannelScreen: {
-    channel?: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel?: Channel<StreamChatType>;
     channelId?: string;
     messageId?: string;
   };
   ChatScreen: undefined;
   GroupChannelDetailsScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel: Channel<StreamChatType>;
   };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
   OneOnOneChannelDetailScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    channel: Channel<StreamChatType>;
   };
   SharedGroupsScreen: {
-    user: Immutable<UserResponse<LocalUserType>> | UserResponse<LocalUserType>;
+    user: Immutable<UserResponse<StreamChatType>> | UserResponse<StreamChatType>;
   };
   ThreadScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
-    thread: ThreadContextValue<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >['thread'];
+    channel: Channel<StreamChatType>;
+    thread: ThreadContextValue<StreamChatType>['thread'];
   };
 };
 

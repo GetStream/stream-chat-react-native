@@ -22,16 +22,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatType } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -145,18 +136,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel =
-    useRef<
-      StreamChatChannel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    >();
+  const currentChannel = useRef<StreamChatChannel<StreamChatType>>();
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -328,15 +308,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         },
       ]}
     >
-      <Channel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
+      <Channel<StreamChatType>
         additionalTextInputProps={{
           onFocus: () => {
             setFocusOnMessageInput(true);

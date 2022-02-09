@@ -4,42 +4,16 @@ import { useAppContext } from '../context/AppContext';
 
 import type { MessageFilters, MessageResponse } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatType } from '../types';
 import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
 export const usePaginatedSearchedMessages = (
-  messageFilters:
-    | string
-    | MessageFilters<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      > = {},
+  messageFilters: string | MessageFilters<StreamChatType> = {},
 ) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] =
-    useState<
-      MessageResponse<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >[]
-    >();
+  const [messages, setMessages] = useState<MessageResponse<StreamChatType>[]>();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);

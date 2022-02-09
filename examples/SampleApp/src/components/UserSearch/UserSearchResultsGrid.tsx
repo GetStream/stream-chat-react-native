@@ -8,7 +8,7 @@ import { EmptySearchState } from '../../icons/EmptySearchState';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { LocalUserType } from '../../types';
+import type { StreamChatType } from '../../types';
 
 const totalUserSpace = vw(100) - 56; // 36 = outside margin 8 * 2 + inner padding 20 * 2;
 
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
 });
 
 type UserSearchResultsGridProps = {
-  onPress: (user: UserResponse<LocalUserType>) => void;
-  results: UserResponse<LocalUserType>[];
+  onPress: (user: UserResponse<StreamChatType>) => void;
+  results: UserResponse<StreamChatType>[];
   gridSize?: number;
   loading?: boolean;
   loadMore?: () => void;

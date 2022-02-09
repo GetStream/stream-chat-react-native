@@ -10,7 +10,7 @@ import React, {
 
 import type { ExtendableGenerics } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
 import type { ChannelContextValue } from '../channelContext/ChannelContext';

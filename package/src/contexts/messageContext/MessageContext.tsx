@@ -7,7 +7,7 @@ import type { TouchableHandlerPayload } from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';

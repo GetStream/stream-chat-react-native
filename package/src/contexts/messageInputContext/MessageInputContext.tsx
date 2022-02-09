@@ -34,7 +34,7 @@ import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,

@@ -20,3 +20,5 @@ export type DefaultStreamChatGenerics = StreamChatGenerics & {
   reactionType: Reaction;
   userType: User;
 };
+
+export type UnknownType = Record<string, unknown>;

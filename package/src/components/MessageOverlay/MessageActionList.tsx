@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 export type MessageActionListPropsWithContext<
   StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayProviderProps<StreamChatClient>,
+  OverlayProviderProps,
   | 'MessageActionListItem'
   | 'error'
   | 'isMyMessage'

@@ -13,7 +13,7 @@ import type {
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type { OverlayReactionsAvatarProps } from '../../components/MessageOverlay/OverlayReactionsAvatar';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';

@@ -3,7 +3,7 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 import type { ExtendableGenerics } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ImageGalleryContextValue<
@@ -23,7 +23,7 @@ export const ImageGalleryProvider = <
   StreamChatClient extends ExtendableGenerics = DefaultStreamChatGenerics,
 >({
   children,
-}: PropsWithChildren<StreamChatClient>) => {
+}: PropsWithChildren<UnknownType>) => {
   const [images, setImages] = useState<MessageType<StreamChatClient>[]>([]);
   const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 

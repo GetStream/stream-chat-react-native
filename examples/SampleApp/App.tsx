@@ -29,17 +29,7 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
 import type { StreamChat } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-  UserSelectorParamList,
-} from './src/types';
+import type { StackNavigatorParamList, StreamChatType, UserSelectorParamList } from './src/types';
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
@@ -97,43 +87,14 @@ const DrawerNavigator: React.FC = () => (
 );
 
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  chatClient: StreamChat<StreamChatType>;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-      bottomInset={bottom}
-      value={{ style: streamChatTheme }}
-    >
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-        client={chatClient}
-      >
+    <OverlayProvider<StreamChatType> bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <Chat<StreamChatType> client={chatClient}>
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />

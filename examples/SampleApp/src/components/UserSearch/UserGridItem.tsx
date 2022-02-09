@@ -5,7 +5,7 @@ import { Avatar, Close, useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { LocalUserType } from '../../types';
+import type { StreamChatType } from '../../types';
 
 const presenceIndicator = { cx: 7, cy: 7, r: 5 };
 
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 
 export type UserGridItemProps = {
   onPress: () => void;
-  user: UserResponse<LocalUserType>;
+  user: UserResponse<StreamChatType>;
   removeButton?: boolean;
 };
 

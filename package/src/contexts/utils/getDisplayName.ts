@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 
-import type { ExtendableGenerics } from 'stream-chat';
+import type { UnknownType } from '../../types/types';
 
-export const getDisplayName = <StreamChatClient extends ExtendableGenerics>(
-  Component: ComponentType<StreamChatClient>,
-) => Component.displayName || Component.name || 'Component';
+export const getDisplayName = <P extends UnknownType>(Component: ComponentType<P>) =>
+  Component.displayName || Component.name || 'Component';

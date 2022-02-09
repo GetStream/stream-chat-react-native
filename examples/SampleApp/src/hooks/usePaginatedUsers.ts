@@ -4,37 +4,37 @@ import { useAppContext } from '../context/AppContext';
 
 import type { UserFilters, UserResponse } from 'stream-chat';
 
-import type { LocalUserType } from '../types';
+import type { StreamChatType } from '../types';
 
 export type PaginatedUsers = {
   clearText: () => void;
-  initialResults: UserResponse<LocalUserType>[] | null;
+  initialResults: UserResponse<StreamChatType>[] | null;
   loading: boolean;
   loadMore: () => void;
   onChangeSearchText: (newText: string) => void;
   onFocusInput: () => void;
   removeUser: (index: number) => void;
   reset: () => void;
-  results: UserResponse<LocalUserType>[];
+  results: UserResponse<StreamChatType>[];
   searchText: string;
   selectedUserIds: string[];
-  selectedUsers: UserResponse<LocalUserType>[];
-  setInitialResults: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[] | null>>;
-  setResults: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[]>>;
+  selectedUsers: UserResponse<StreamChatType>[];
+  setInitialResults: React.Dispatch<React.SetStateAction<UserResponse<StreamChatType>[] | null>>;
+  setResults: React.Dispatch<React.SetStateAction<UserResponse<StreamChatType>[]>>;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse<LocalUserType>[]>>;
-  toggleUser: (user: UserResponse<LocalUserType>) => void;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<UserResponse<StreamChatType>[]>>;
+  toggleUser: (user: UserResponse<StreamChatType>) => void;
 };
 
 export const usePaginatedUsers = (): PaginatedUsers => {
   const { chatClient } = useAppContext();
 
-  const [initialResults, setInitialResults] = useState<UserResponse<LocalUserType>[] | null>(null);
+  const [initialResults, setInitialResults] = useState<UserResponse<StreamChatType>[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<UserResponse<LocalUserType>[]>([]);
+  const [results, setResults] = useState<UserResponse<StreamChatType>[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<UserResponse<LocalUserType>[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<UserResponse<StreamChatType>[]>([]);
 
   const hasMoreResults = useRef(true);
   const offset = useRef(0);
@@ -47,7 +47,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     setSelectedUsers([]);
   };
 
-  const addUser = (user: UserResponse<LocalUserType>) => {
+  const addUser = (user: UserResponse<StreamChatType>) => {
     setSelectedUsers([...selectedUsers, user]);
     setSelectedUserIds((prevSelectedUserIds) => {
       prevSelectedUserIds.push(user.id);
@@ -75,7 +75,7 @@ export const usePaginatedUsers = (): PaginatedUsers => {
     });
   };
 
-  const toggleUser = (user: UserResponse<LocalUserType>) => {
+  const toggleUser = (user: UserResponse<StreamChatType>) => {
     if (!user.id) {
       return;
     }

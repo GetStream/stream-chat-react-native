@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ChannelState, ExtendableGenerics } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type TypingContextValue<

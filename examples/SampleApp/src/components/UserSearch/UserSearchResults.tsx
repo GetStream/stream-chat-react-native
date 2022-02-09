@@ -15,7 +15,7 @@ import { useUserSearchContext } from '../../context/UserSearchContext';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { LocalUserType } from '../../types';
+import type { StreamChatType } from '../../types';
 import { Search } from '../../icons/Search';
 
 const styles = StyleSheet.create({
@@ -62,9 +62,9 @@ const styles = StyleSheet.create({
 type UserSearchResultsProps = {
   groupedAlphabetically?: boolean;
   removeOnPressOnly?: boolean;
-  results?: UserResponse<LocalUserType>[];
+  results?: UserResponse<StreamChatType>[];
   showOnlineStatus?: boolean;
-  toggleSelectedUser?: (user: UserResponse<LocalUserType>) => void;
+  toggleSelectedUser?: (user: UserResponse<StreamChatType>) => void;
 };
 
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
@@ -84,7 +84,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   } = useUserSearchContext();
   const [sections, setSections] = useState<
     Array<{
-      data: UserResponse<LocalUserType>[];
+      data: UserResponse<StreamChatType>[];
       title: string;
     }>
   >([]);
@@ -109,7 +109,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   useEffect(() => {
     const newSections: {
       [key: string]: {
-        data: UserResponse<LocalUserType>[];
+        data: UserResponse<StreamChatType>[];
         title: string;
       };
     } = {};
