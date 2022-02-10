@@ -24,16 +24,16 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewUnreadCountProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
   maxUnreadCount: number;
   unread?: number;
 };
 
 export const ChannelPreviewUnreadCount = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewUnreadCountProps<StreamChatClient>,
+  props: ChannelPreviewUnreadCountProps<StreamChatGenerics>,
 ) => {
   const { maxUnreadCount, unread } = props;
   const {

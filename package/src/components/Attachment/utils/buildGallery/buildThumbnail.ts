@@ -10,7 +10,7 @@ import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 
 export function buildThumbnail<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   height,
   image,
@@ -18,7 +18,7 @@ export function buildThumbnail<
   width,
 }: {
   height: number;
-  image: Attachment<StreamChatClient>;
+  image: Attachment<StreamChatGenerics>;
   width: number;
   resizeMode?: ImageResizeMode;
 }): Thumbnail {

@@ -69,10 +69,10 @@ export type TouchableHandlerPayload = {
 };
 
 export type MessageTouchableHandlerPayload<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
-  message?: MessageType<StreamChatClient>;
+  message?: MessageType<StreamChatGenerics>;
 };
 
 export type MessageActionHandlers = {
@@ -88,17 +88,17 @@ export type MessageActionHandlers = {
 };
 
 export type MessagePropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  ChannelContextValue<StreamChatClient>,
+  ChannelContextValue<StreamChatGenerics>,
   'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
 > &
-  Pick<ChatContextValue<StreamChatClient>, 'client' | 'mutedUsers'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<Omit<MessageContextValue<StreamChatClient>, 'groupStyles' | 'message'>> &
-  Pick<MessageContextValue<StreamChatClient>, 'groupStyles' | 'message'> &
+  Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
   Pick<
-    MessagesContextValue<StreamChatClient>,
+    MessagesContextValue<StreamChatGenerics>,
     | 'dismissKeyboardOnMessageTouch'
     | 'forceAlignMessages'
     | 'handleBlock'
@@ -127,11 +127,11 @@ export type MessagePropsWithContext<
     | 'supportedReactions'
     | 'updateMessage'
   > &
-  Pick<MessageOverlayContextValue<StreamChatClient>, 'setData'> &
+  Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
-  Pick<ThreadContextValue<StreamChatClient>, 'openThread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
-    messagesContext: MessagesContextValue<StreamChatClient>;
+    messagesContext: MessagesContextValue<StreamChatGenerics>;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -153,7 +153,7 @@ export type MessagePropsWithContext<
      * @param message Message object which was long pressed
      * @param event   Event object for onLongPress event
      **/
-    onLongPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatClient>>) => void;
+    onLongPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
 
     /**
      * You can call methods available on the Message
@@ -166,14 +166,14 @@ export type MessagePropsWithContext<
      * @param message Message object which was long pressed
      * @param event   Event object for onLongPress event
      * */
-    onPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatClient>>) => void;
-    onPressIn?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatClient>>) => void;
+    onPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
+    onPressIn?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: MessageType<StreamChatClient>) => void;
+    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
   };
@@ -184,9 +184,9 @@ export type MessagePropsWithContext<
  * each individual Message component.
  */
 const MessageWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePropsWithContext<StreamChatClient>,
+  props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const isMessageTypeDeleted = props.message.type === 'deleted';
 
@@ -273,7 +273,7 @@ const MessageWithContext = <
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: MessageType<StreamChatClient>) => {
+  const onPressQuotedMessage = (quotedMessage: MessageType<StreamChatGenerics>) => {
     if (!goToMessage) return;
 
     goToMessage(quotedMessage.id);
@@ -285,7 +285,7 @@ const MessageWithContext = <
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
-    const quotedMessage = message.quoted_message as MessageType<StreamChatClient>;
+    const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
@@ -331,15 +331,15 @@ const MessageWithContext = <
             return acc;
           },
           {
-            files: [] as Attachment<StreamChatClient>[],
-            images: [] as Attachment<StreamChatClient>[],
-            other: [] as Attachment<StreamChatClient>[],
+            files: [] as Attachment<StreamChatGenerics>[],
+            images: [] as Attachment<StreamChatGenerics>[],
+            other: [] as Attachment<StreamChatGenerics>[],
           },
         )
       : {
-          files: [] as Attachment<StreamChatClient>[],
-          images: [] as Attachment<StreamChatClient>[],
-          other: [] as Attachment<StreamChatClient>[],
+          files: [] as Attachment<StreamChatGenerics>[],
+          images: [] as Attachment<StreamChatGenerics>[],
+          other: [] as Attachment<StreamChatGenerics>[],
         };
 
   /**
@@ -674,9 +674,9 @@ const MessageWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessagePropsWithContext<StreamChatClient>,
-  nextProps: MessagePropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessagePropsWithContext<StreamChatGenerics>,
+  nextProps: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     goToMessage: prevGoToMessage,
@@ -791,9 +791,9 @@ const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultSt
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>> &
-  Pick<MessagePropsWithContext<StreamChatClient>, 'groupStyles' | 'message'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+  Pick<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -802,22 +802,22 @@ export type MessageProps<
  * @example ./Message.md
  */
 export const Message = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageProps<StreamChatClient>,
+  props: MessageProps<StreamChatGenerics>,
 ) => {
   const { channel, disabled, enforceUniqueReaction, members } =
-    useChannelContext<StreamChatClient>();
-  const { client, mutedUsers } = useChatContext<StreamChatClient>();
+    useChannelContext<StreamChatGenerics>();
+  const { client, mutedUsers } = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<StreamChatClient>();
-  const messagesContext = useMessagesContext<StreamChatClient>();
+  const { setData } = useMessageOverlayContext<StreamChatGenerics>();
+  const messagesContext = useMessagesContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
-  const { openThread } = useThreadContext<StreamChatClient>();
+  const { openThread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   return (
-    <MemoizedMessage<StreamChatClient>
+    <MemoizedMessage<StreamChatGenerics>
       {...messagesContext}
       {...{
         channel,

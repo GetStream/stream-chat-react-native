@@ -4,9 +4,9 @@ import { MessageStatusTypes } from '../../../utils/utils';
 import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  messages: MessageType<StreamChatClient>[],
+  messages: MessageType<StreamChatGenerics>[],
 ) => {
   /**
    * There are no status on dates so they will be skipped

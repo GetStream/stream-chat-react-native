@@ -15,11 +15,12 @@ const waitSeconds = (seconds: number) =>
     setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  filters: ChannelFilters<StreamChatClient>;
-  options: ChannelOptions;
-  sort: ChannelSort<StreamChatClient>;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    filters: ChannelFilters<StreamChatGenerics>;
+    options: ChannelOptions;
+    sort: ChannelSort<StreamChatGenerics>;
+  };
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
@@ -32,14 +33,14 @@ type QueryType = 'reload' | 'refresh' | 'loadChannels';
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
 export const usePaginatedChannels = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
-  const [channels, setChannels] = useState<Channel<StreamChatClient>[]>([]);
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
+  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();

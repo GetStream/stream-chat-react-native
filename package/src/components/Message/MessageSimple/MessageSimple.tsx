@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
 });
 
 export type MessageSimplePropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<StreamChatClient>,
+  MessageContextValue<StreamChatGenerics>,
   'alignment' | 'channel' | 'groupStyles' | 'hasReactions' | 'message'
 > &
   Pick<
-    MessagesContextValue<StreamChatClient>,
+    MessagesContextValue<StreamChatGenerics>,
     | 'enableMessageGroupingByUser'
     | 'MessageAvatar'
     | 'MessageContent'
@@ -36,9 +36,9 @@ export type MessageSimplePropsWithContext<
   >;
 
 const MessageSimpleWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageSimplePropsWithContext<StreamChatClient>,
+  props: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -95,9 +95,9 @@ const MessageSimpleWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageSimplePropsWithContext<StreamChatClient>,
-  nextProps: MessageSimplePropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageSimplePropsWithContext<StreamChatGenerics>,
+  nextProps: MessageSimplePropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     channel: prevChannel,
@@ -176,30 +176,30 @@ const MemoizedMessageSimple = React.memo(
 ) as typeof MessageSimpleWithContext;
 
 export type MessageSimpleProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageSimplePropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageSimplePropsWithContext<StreamChatGenerics>>;
 
 /**
  *
  * Message UI component
  */
 export const MessageSimple = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageSimpleProps<StreamChatClient>,
+  props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
-    useMessageContext<StreamChatClient>();
+    useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
     MessagePinnedHeader,
     ReactionList,
-  } = useMessagesContext<StreamChatClient>();
+  } = useMessagesContext<StreamChatGenerics>();
 
   return (
-    <MemoizedMessageSimple<StreamChatClient>
+    <MemoizedMessageSimple<StreamChatGenerics>
       {...{
         alignment,
         channel,

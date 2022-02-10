@@ -37,16 +37,16 @@ export const TranslationProvider: React.FC<{
 export const useTranslationContext = () => useContext(TranslationContext);
 
 export const withTranslationContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  Component: React.ComponentType<StreamChatClient>,
-): React.FC<Omit<StreamChatClient, keyof TranslationContextValue>> => {
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof TranslationContextValue>> => {
   const WithTranslationContextComponent = (
-    props: Omit<StreamChatClient, keyof TranslationContextValue>,
+    props: Omit<StreamChatGenerics, keyof TranslationContextValue>,
   ) => {
     const translationContext = useTranslationContext();
 
-    return <Component {...(props as StreamChatClient)} {...translationContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...translationContext} />;
   };
   WithTranslationContextComponent.displayName = `WithTranslationContext${getDisplayName(
     Component as React.ComponentType,

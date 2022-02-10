@@ -4,7 +4,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
 export type MessageActionsParams<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   blockUser: MessageActionType;
   copyMessage: MessageActionType;
@@ -22,14 +22,14 @@ export type MessageActionsParams<
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-} & Pick<MessageContextValue<StreamChatClient>, 'message' | 'isMyMessage'>;
+} & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = (param: MessageActionsParams<StreamChatClient>) => MessageActionType[];
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
 
 export const messageActions = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   blockUser,
   copyMessage,
@@ -47,7 +47,7 @@ export const messageActions = <
   retry,
   threadReply,
   unpinMessage,
-}: MessageActionsParams<StreamChatClient>) => {
+}: MessageActionsParams<StreamChatGenerics>) => {
   if (messageReactions) {
     return undefined;
   }

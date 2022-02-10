@@ -4,7 +4,7 @@ import type { MessagesContextValue } from '../../../contexts/messagesContext/Mes
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateMessagesContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTouchableProps,
   Attachment,
@@ -78,7 +78,7 @@ export const useCreateMessagesContext = <
   TypingIndicatorContainer,
   updateMessage,
   UrlPreview,
-}: MessagesContextValue<StreamChatClient> & {
+}: MessagesContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -89,7 +89,7 @@ export const useCreateMessagesContext = <
   const messageContentOrderValue = messageContentOrder.join();
   const supportedReactionsLength = supportedReactions.length;
 
-  const messagesContext: MessagesContextValue<StreamChatClient> = useMemo(
+  const messagesContext: MessagesContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTouchableProps,
       Attachment,

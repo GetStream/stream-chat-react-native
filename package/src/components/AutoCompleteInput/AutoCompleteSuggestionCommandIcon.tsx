@@ -18,11 +18,11 @@ const styles = StyleSheet.create({
 });
 
 export const AutoCompleteSuggestionCommandIcon = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   name,
 }: {
-  name: SuggestionCommand<StreamChatClient>['name'];
+  name: SuggestionCommand<StreamChatGenerics>['name'];
 }) => {
   const {
     theme: {

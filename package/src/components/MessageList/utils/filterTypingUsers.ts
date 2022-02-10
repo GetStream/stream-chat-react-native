@@ -4,18 +4,18 @@ import type { TypingContextValue } from '../../../contexts/typingContext/TypingC
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 type FilterTypingUsersParams<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<TypingContextValue<StreamChatClient>, 'typing'> &
-  Pick<ChatContextValue<StreamChatClient>, 'client'> &
-  Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<TypingContextValue<StreamChatGenerics>, 'typing'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>;
 
 export const filterTypingUsers = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   client,
   thread,
   typing,
-}: FilterTypingUsersParams<StreamChatClient>) => {
+}: FilterTypingUsersParams<StreamChatGenerics>) => {
   const nonSelfUsers: string[] = [];
 
   if (!client || !client.user || !typing) return nonSelfUsers;

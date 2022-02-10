@@ -3,11 +3,11 @@ import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadC
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type GetDateSeparatorsParams<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   messages:
-    | PaginatedMessageListContextValue<StreamChatClient>['messages']
-    | ThreadContextValue<StreamChatClient>['threadMessages'];
+    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
+    | ThreadContextValue<StreamChatGenerics>['threadMessages'];
   hideDateSeparators?: boolean;
   userId?: string;
 };
@@ -17,9 +17,9 @@ export type DateSeparators = {
 };
 
 export const getDateSeparators = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  params: GetDateSeparatorsParams<StreamChatClient>,
+  params: GetDateSeparatorsParams<StreamChatGenerics>,
 ) => {
   const { hideDateSeparators, messages, userId } = params;
   const dateSeparators: DateSeparators = {};

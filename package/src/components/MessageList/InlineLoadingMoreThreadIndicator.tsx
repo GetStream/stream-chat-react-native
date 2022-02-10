@@ -55,9 +55,9 @@ const MemoizedInlineLoadingMoreThreadIndicator = React.memo(
 ) as typeof InlineLoadingMoreThreadIndicatorWithContext;
 
 export const InlineLoadingMoreThreadIndicator = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { threadLoadingMore } = useThreadContext<StreamChatClient>();
+  const { threadLoadingMore } = useThreadContext<StreamChatGenerics>();
 
   return <MemoizedInlineLoadingMoreThreadIndicator threadLoadingMore={threadLoadingMore} />;
 };

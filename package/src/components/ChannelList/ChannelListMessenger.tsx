@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelListMessengerPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
-  ChannelsContextValue<StreamChatClient>,
+  ChannelsContextValue<StreamChatGenerics>,
   | 'hasNextPage'
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
@@ -40,11 +40,11 @@ export type ChannelListMessengerPropsWithContext<
 >;
 
 const StatusIndicator = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { isOnline } = useChatContext<StreamChatClient>();
+  const { isOnline } = useChatContext<StreamChatGenerics>();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext<StreamChatClient>();
+    useChannelsContext<StreamChatGenerics>();
 
   if (loadingChannels) return null;
 
@@ -65,23 +65,23 @@ const StatusIndicator = <
 };
 
 const renderItem = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   item,
 }: {
-  item: Channel<StreamChatClient>;
-}) => <ChannelPreview<StreamChatClient> channel={item} />;
+  item: Channel<StreamChatGenerics>;
+}) => <ChannelPreview<StreamChatGenerics> channel={item} />;
 
 const keyExtractor = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  item: Channel<StreamChatClient>,
+  item: Channel<StreamChatGenerics>,
 ) => item.cid;
 
 const ChannelListMessengerWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelListMessengerPropsWithContext<StreamChatClient>,
+  props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalFlatListProps,
@@ -172,14 +172,14 @@ const ChannelListMessengerWithContext = <
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
-      <StatusIndicator<StreamChatClient> />
+      <StatusIndicator<StreamChatGenerics> />
     </>
   );
 };
 
 export type ChannelListMessengerProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<ChannelListMessengerPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ChannelListMessengerPropsWithContext<StreamChatGenerics>>;
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation. It
@@ -188,9 +188,9 @@ export type ChannelListMessengerProps<
  * @example ./ChannelListMessenger.md
  */
 export const ChannelListMessenger = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelListMessengerProps<StreamChatClient>,
+  props: ChannelListMessengerProps<StreamChatGenerics>,
 ) => {
   const {
     additionalFlatListProps,
@@ -210,7 +210,7 @@ export const ChannelListMessenger = <
     refreshList,
     reloadList,
     setFlatListRef,
-  } = useChannelsContext<StreamChatClient>();
+  } = useChannelsContext<StreamChatGenerics>();
 
   return (
     <ChannelListMessengerWithContext

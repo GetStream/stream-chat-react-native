@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
 });
 
 export type InputButtonsProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<InputButtonsWithContextProps<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<InputButtonsWithContextProps<StreamChatGenerics>>;
 
 export type InputButtonsWithContextProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<StreamChatClient>,
+  MessageInputContextValue<StreamChatGenerics>,
   | 'AttachButton'
   | 'CommandsButton'
   | 'giphyActive'
@@ -38,9 +38,9 @@ export type InputButtonsWithContextProps<
 >;
 
 export const InputButtonsWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsWithContextProps<StreamChatClient>,
+  props: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -88,9 +88,9 @@ export const InputButtonsWithContext = <
     </>
   );
 };
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: InputButtonsWithContextProps<StreamChatClient>,
-  nextProps: InputButtonsWithContextProps<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: InputButtonsWithContextProps<StreamChatGenerics>,
+  nextProps: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     giphyActive: prevGiphyActive,
@@ -149,9 +149,9 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsProps<StreamChatClient>,
+  props: InputButtonsProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -167,7 +167,7 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-  } = useMessageInputContext<StreamChatClient>();
+  } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedInputButtonsWithContext

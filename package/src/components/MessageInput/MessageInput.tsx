@@ -99,10 +99,10 @@ const styles = StyleSheet.create({
 });
 
 type MessageInputPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatClient>, 'disabled' | 'members' | 'watchers'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
   Pick<
-    MessageInputContextValue<StreamChatClient>,
+    MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'asyncUploads'
@@ -136,24 +136,24 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<StreamChatClient>, 'Reply'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
-    SuggestionsContextValue<StreamChatClient>,
+    SuggestionsContextValue<StreamChatGenerics>,
     | 'AutoCompleteSuggestionHeader'
     | 'AutoCompleteSuggestionItem'
     | 'AutoCompleteSuggestionList'
     | 'suggestions'
     | 'triggerType'
   > &
-  Pick<ThreadContextValue<StreamChatClient>, 'thread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
 
 const MessageInputWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputPropsWithContext<StreamChatClient>,
+  props: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps,
@@ -383,7 +383,7 @@ const MessageInputWithContext = <
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
-    const result: UserResponse<StreamChatClient>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (members && Object.values(members).length) {
       Object.values(members).forEach((member) => {
         if (member.user) {
@@ -399,7 +399,7 @@ const MessageInputWithContext = <
     const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
-    const uniqueUsers: { [key: string]: UserResponse<StreamChatClient> } = {};
+    const uniqueUsers: { [key: string]: UserResponse<StreamChatGenerics> } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
         uniqueUsers[user.id] = user;
@@ -411,7 +411,7 @@ const MessageInputWithContext = <
   };
 
   const getWatchers = () => {
-    const result: UserResponse<StreamChatClient>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (watchers && Object.values(watchers).length) {
       result.push(...Object.values(watchers));
     }
@@ -522,7 +522,7 @@ const MessageInputWithContext = <
                       <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
                     </View>
                   )}
-                  <AutoCompleteInput<StreamChatClient>
+                  <AutoCompleteInput<StreamChatGenerics>
                     additionalTextInputProps={additionalTextInputProps}
                     cooldownActive={!!cooldownRemainingSeconds}
                   />
@@ -590,9 +590,9 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageInputPropsWithContext<StreamChatClient>,
-  nextProps: MessageInputPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageInputPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
@@ -706,8 +706,8 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageInputPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageInputPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for message input
@@ -719,13 +719,13 @@ export type MessageInputProps<
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 export const MessageInput = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputProps<StreamChatClient>,
+  props: MessageInputProps<StreamChatGenerics>,
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled = false, members, watchers } = useChannelContext<StreamChatClient>();
+  const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -761,9 +761,9 @@ export const MessageInput = <
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-  } = useMessageInputContext<StreamChatClient>();
+  } = useMessageInputContext<StreamChatGenerics>();
 
-  const { Reply } = useMessagesContext<StreamChatClient>();
+  const { Reply } = useMessagesContext<StreamChatGenerics>();
 
   const {
     AutoCompleteSuggestionHeader,
@@ -771,9 +771,9 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<StreamChatClient>();
+  } = useSuggestionsContext<StreamChatGenerics>();
 
-  const { thread } = useThreadContext<StreamChatClient>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
   const { t } = useTranslationContext();
 

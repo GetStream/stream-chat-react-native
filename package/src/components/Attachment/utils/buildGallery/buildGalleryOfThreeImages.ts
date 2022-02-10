@@ -20,12 +20,12 @@ function moveToFront<T>(array: T[], item: T): T[] {
 }
 
 export function buildGalleryOfThreeImages<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   images,
   sizeConfig,
 }: {
-  images: Attachment<StreamChatClient>[];
+  images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   // Find the most ladscape and most portrait image.
@@ -55,9 +55,9 @@ export function buildGalleryOfThreeImages<
         landscapeImageAspectRatio: 1,
         portraitImageAspectRatio: 1,
       } as {
-        landscapeImage: Attachment<StreamChatClient>;
+        landscapeImage: Attachment<StreamChatGenerics>;
         landscapeImageAspectRatio: number;
-        portraitImage: Attachment<StreamChatClient>;
+        portraitImage: Attachment<StreamChatGenerics>;
         portraitImageAspectRatio: number;
       },
     );

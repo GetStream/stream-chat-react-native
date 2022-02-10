@@ -59,35 +59,35 @@ const styles = StyleSheet.create({
 });
 
 export type ImageGalleryHeaderCustomComponent<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
   hideOverlay,
   photo,
 }: {
   hideOverlay: () => void;
-  photo?: Photo<StreamChatClient>;
+  photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
 export type ImageGalleryHeaderCustomComponentProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  centerElement?: ImageGalleryHeaderCustomComponent<StreamChatClient>;
+  centerElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
   CloseIcon?: React.ReactElement;
-  leftElement?: ImageGalleryHeaderCustomComponent<StreamChatClient>;
-  rightElement?: ImageGalleryHeaderCustomComponent<StreamChatClient>;
+  leftElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
+  rightElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
 };
 
-type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryHeaderCustomComponentProps<StreamChatClient> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
     opacity: Animated.SharedValue<number>;
     visible: Animated.SharedValue<number>;
-    photo?: Photo<StreamChatClient>;
+    photo?: Photo<StreamChatGenerics>;
   };
 
 export const ImageGalleryHeader = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatClient>,
+  props: Props<StreamChatGenerics>,
 ) => {
   const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);

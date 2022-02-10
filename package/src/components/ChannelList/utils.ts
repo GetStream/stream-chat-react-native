@@ -3,18 +3,18 @@ import type { Channel, StreamChat } from 'stream-chat';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoveParameters<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  channels: Channel<StreamChatClient>[];
+  channels: Channel<StreamChatGenerics>[];
   cid: string;
 };
 
 export const moveChannelUp = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   cid,
   channels = [],
-}: MoveParameters<StreamChatClient>) => {
+}: MoveParameters<StreamChatGenerics>) => {
   // get channel from channels
   const index = channels.findIndex((c) => c.cid === cid);
   if (index <= 0) return channels;
@@ -27,20 +27,21 @@ export const moveChannelUp = <
   return [...channels];
 };
 
-type GetParameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    client: StreamChat<StreamChatClient>;
-    id: string;
-    type: string;
-  };
+type GetParameters<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  client: StreamChat<StreamChatGenerics>;
+  id: string;
+  type: string;
+};
 
 export const getChannel = async <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   client,
   id,
   type,
-}: GetParameters<StreamChatClient>) => {
+}: GetParameters<StreamChatGenerics>) => {
   const channel = client.channel(type, id);
   await channel.watch();
   return channel;

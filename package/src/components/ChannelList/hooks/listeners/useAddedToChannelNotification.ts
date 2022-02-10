@@ -9,29 +9,30 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
-  onAddedToChannel?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
-    event: Event<StreamChatClient>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    onAddedToChannel?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useAddedToChannelNotification = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onAddedToChannel,
   setChannels,
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = async (event: Event<StreamChatClient>) => {
+    const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onAddedToChannel === 'function') {
         onAddedToChannel(setChannels, event);
       } else {
         if (event.channel?.id && event.channel?.type) {
-          const channel = await getChannel<StreamChatClient>({
+          const channel = await getChannel<StreamChatGenerics>({
             client,
             id: event.channel.id,
             type: event.channel.type,

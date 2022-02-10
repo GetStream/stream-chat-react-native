@@ -4,7 +4,7 @@ import type { ChannelContextValue } from '../../../contexts/channelContext/Chann
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateChannelContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   disabled,
@@ -37,7 +37,7 @@ export const useCreateChannelContext = <
   threadList,
   watcherCount,
   watchers,
-}: ChannelContextValue<StreamChatClient>) => {
+}: ChannelContextValue<StreamChatGenerics>) => {
   const channelId = channel?.id;
   const lastReadTime = lastRead?.getTime();
   const membersLength = Object.keys(members).length;
@@ -46,7 +46,7 @@ export const useCreateChannelContext = <
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers.map(({ last_read }) => last_read.toISOString()).join();
 
-  const channelContext: ChannelContextValue<StreamChatClient> = useMemo(
+  const channelContext: ChannelContextValue<StreamChatGenerics> = useMemo(
     () => ({
       channel,
       disabled,

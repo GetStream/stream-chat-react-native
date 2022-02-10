@@ -29,9 +29,9 @@ type MessageFooterComponentProps = {
 };
 
 type MessageFooterPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<StreamChatClient>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'members'
   | 'message'
@@ -39,13 +39,16 @@ type MessageFooterPropsWithContext<
   | 'showMessageStatus'
   | 'lastGroupMessage'
 > &
-  Pick<MessagesContextValue<StreamChatClient>, 'deletedMessagesVisibilityType' | 'MessageStatus'> &
+  Pick<
+    MessagesContextValue<StreamChatGenerics>,
+    'deletedMessagesVisibilityType' | 'MessageStatus'
+  > &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageFooterPropsWithContext<StreamChatClient>,
+  props: MessageFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -138,9 +141,9 @@ const MessageFooterWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageFooterPropsWithContext<StreamChatClient>,
-  nextProps: MessageFooterPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageFooterPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -206,26 +209,26 @@ const MemoizedMessageFooter = React.memo(
 ) as typeof MessageFooterWithContext;
 
 export type MessageFooterProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Pick<ChannelContextValue<StreamChatClient>, 'members'>> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Pick<ChannelContextValue<StreamChatGenerics>, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;
-    message?: MessageType<StreamChatClient>;
-    MessageStatus?: React.ComponentType<MessageStatusProps<StreamChatClient>>;
-    otherAttachments?: Attachment<StreamChatClient>[];
+    message?: MessageType<StreamChatGenerics>;
+    MessageStatus?: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
+    otherAttachments?: Attachment<StreamChatGenerics>[];
     showMessageStatus?: boolean;
   };
 
 export const MessageFooter = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageFooterProps<StreamChatClient>,
+  props: MessageFooterProps<StreamChatGenerics>,
 ) => {
   const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
-    useMessageContext<StreamChatClient>();
+    useMessageContext<StreamChatGenerics>();
 
-  const { deletedMessagesVisibilityType, MessageStatus } = useMessagesContext<StreamChatClient>();
+  const { deletedMessagesVisibilityType, MessageStatus } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageFooter

@@ -4,7 +4,7 @@ import type { InputMessageInputContextValue } from '../../../contexts/messageInp
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateInputMessageInputContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
   AttachButton,
@@ -44,7 +44,7 @@ export const useCreateInputMessageInputContext = <
   setQuotedMessageState,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
-}: InputMessageInputContextValue<StreamChatClient> & {
+}: InputMessageInputContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
    */
@@ -57,7 +57,7 @@ export const useCreateInputMessageInputContext = <
       : quotedMessage.id
     : '';
 
-  const inputMessageInputContext: InputMessageInputContextValue<StreamChatClient> = useMemo(
+  const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
       AttachButton,

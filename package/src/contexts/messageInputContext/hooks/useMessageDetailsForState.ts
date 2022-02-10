@@ -6,15 +6,15 @@ import { generateRandomId } from '../../../utils/utils';
 import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  editing: MessageInputContextValue<StreamChatClient>['editing'],
+  editing: MessageInputContextValue<StreamChatGenerics>['editing'],
 ): editing is boolean => typeof editing === 'boolean';
 
 export const useMessageDetailsForState = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageInputContextValue<StreamChatClient>['editing'],
+  message: MessageInputContextValue<StreamChatGenerics>['editing'],
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
@@ -35,14 +35,14 @@ export const useMessageDetailsForState = <
     typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
 
   useEffect(() => {
-    if (!isEditingBoolean<StreamChatClient>(message) && Array.isArray(message?.mentioned_users)) {
+    if (!isEditingBoolean<StreamChatGenerics>(message) && Array.isArray(message?.mentioned_users)) {
       const mentionedUsers = message.mentioned_users.map((user) => user.id);
       setMentionedUsers(mentionedUsers);
     }
   }, [messageValue]);
 
   useEffect(() => {
-    if (message && !isEditingBoolean<StreamChatClient>(message)) {
+    if (message && !isEditingBoolean<StreamChatGenerics>(message)) {
       setText(message?.text || '');
       const newFileUploads = [];
       const newImageUploads = [];

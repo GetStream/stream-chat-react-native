@@ -81,9 +81,9 @@ const halfScreenHeight = vh(50);
 const DefaultMessageTextNumberOfLines = 5;
 
 export type MessageOverlayPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageOverlayContextValue<StreamChatClient>,
+  MessageOverlayContextValue<StreamChatGenerics>,
   | 'MessageActionList'
   | 'MessageActionListItem'
   | 'OverlayReactionList'
@@ -91,10 +91,10 @@ export type MessageOverlayPropsWithContext<
   | 'OverlayReactionsAvatar'
   | 'reset'
 > &
-  Omit<MessageOverlayData<StreamChatClient>, 'supportedReactions'> &
+  Omit<MessageOverlayData<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
   Pick<
-    OverlayProviderProps<StreamChatClient>,
+    OverlayProviderProps<StreamChatGenerics>,
     | 'error'
     | 'isMyMessage'
     | 'isThreadMessage'
@@ -108,9 +108,9 @@ export type MessageOverlayPropsWithContext<
   };
 
 const MessageOverlayWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageOverlayPropsWithContext<StreamChatClient>,
+  props: MessageOverlayPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -431,7 +431,7 @@ const MessageOverlayWithContext = <
                                           >
                                             <Reply
                                               quotedMessage={
-                                                message.quoted_message as ReplyProps<StreamChatClient>['quotedMessage']
+                                                message.quoted_message as ReplyProps<StreamChatGenerics>['quotedMessage']
                                               }
                                               styles={{
                                                 messageContainer: {
@@ -480,7 +480,7 @@ const MessageOverlayWithContext = <
                                     default:
                                       return otherAttachments?.length &&
                                         otherAttachments[0].actions ? null : (
-                                        <MessageTextContainer<StreamChatClient>
+                                        <MessageTextContainer<StreamChatGenerics>
                                           key={`message_text_container_${messageContentOrderIndex}`}
                                           message={message}
                                           messageOverlay
@@ -536,9 +536,9 @@ const MessageOverlayWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageOverlayPropsWithContext<StreamChatClient>,
-  nextProps: MessageOverlayPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageOverlayPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageOverlayPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -580,11 +580,11 @@ const MemoizedMessageOverlay = React.memo(
 ) as typeof MessageOverlayWithContext;
 
 export type MessageOverlayProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'>> &
-  Pick<MessageOverlayPropsWithContext<StreamChatClient>, 'overlayOpacity'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageOverlayPropsWithContext<StreamChatGenerics>, 'overlayOpacity'>> &
+  Pick<MessageOverlayPropsWithContext<StreamChatGenerics>, 'overlayOpacity'> &
   Pick<
-    MessageOverlayPropsWithContext<StreamChatClient>,
+    MessageOverlayPropsWithContext<StreamChatGenerics>,
     'isMyMessage' | 'error' | 'isThreadMessage' | 'message' | 'messageReactions'
   >;
 
@@ -592,9 +592,9 @@ export type MessageOverlayProps<
  * MessageOverlay - A high level component which implements all the logic required for a message overlay
  */
 export const MessageOverlay = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageOverlayProps<StreamChatClient>,
+  props: MessageOverlayProps<StreamChatGenerics>,
 ) => {
   const {
     data,
@@ -604,7 +604,7 @@ export const MessageOverlay = <
     OverlayReactions,
     OverlayReactionsAvatar,
     reset,
-  } = useMessageOverlayContext<StreamChatClient>();
+  } = useMessageOverlayContext<StreamChatGenerics>();
   const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {

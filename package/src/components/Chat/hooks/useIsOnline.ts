@@ -17,9 +17,9 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
  * You can't receive push notification until you have active websocket connection.
  */
 export const useIsOnline = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  client: StreamChat<StreamChatClient>,
+  client: StreamChat<StreamChatGenerics>,
   closeConnectionOnBackground = true,
 ) => {
   const [isOnline, setIsOnline] = useState(true);
@@ -48,7 +48,7 @@ export const useIsOnline = <
   useAppStateListener(onForeground, onBackground);
 
   useEffect(() => {
-    const handleChangedEvent = (event: StreamEvent<StreamChatClient>) => {
+    const handleChangedEvent = (event: StreamEvent<StreamChatGenerics>) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };

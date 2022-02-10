@@ -22,51 +22,51 @@ export type UseMessageListParams = {
 export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
 
 export type MessagesWithStylesReadByAndDateSeparator<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = MessageResponse<StreamChatClient> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = MessageResponse<StreamChatGenerics> & {
   groupStyles: GroupType[];
   readBy: boolean | number;
   dateSeparator?: Date;
 };
 
 export type MessageType<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > =
-  | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
-  | MessagesWithStylesReadByAndDateSeparator<StreamChatClient>;
+  | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
+  | MessagesWithStylesReadByAndDateSeparator<StreamChatGenerics>;
 
 // Type guards to check MessageType
 export const isMessageWithStylesReadByAndDateSeparator = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageType<StreamChatClient>,
-): message is MessagesWithStylesReadByAndDateSeparator<StreamChatClient> =>
-  (message as MessagesWithStylesReadByAndDateSeparator<StreamChatClient>).readBy !== undefined;
+  message: MessageType<StreamChatGenerics>,
+): message is MessagesWithStylesReadByAndDateSeparator<StreamChatGenerics> =>
+  (message as MessagesWithStylesReadByAndDateSeparator<StreamChatGenerics>).readBy !== undefined;
 
 export const useMessageList = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   params: UseMessageListParams,
 ) => {
   const { deletedMessagesVisibilityType, inverted, noGroupByUser, threadList } = params;
-  const { client } = useChatContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
   const { hideDateSeparators, maxTimeBetweenGroupedMessages, read } =
-    useChannelContext<StreamChatClient>();
-  const { messages } = usePaginatedMessageListContext<StreamChatClient>();
-  const { threadMessages } = useThreadContext<StreamChatClient>();
+    useChannelContext<StreamChatGenerics>();
+  const { messages } = usePaginatedMessageListContext<StreamChatGenerics>();
+  const { threadMessages } = useThreadContext<StreamChatGenerics>();
 
   const messageList = threadList ? threadMessages : messages;
-  const readList: ChannelContextValue<StreamChatClient>['read'] | undefined = threadList
+  const readList: ChannelContextValue<StreamChatGenerics>['read'] | undefined = threadList
     ? undefined
     : read;
 
-  const dateSeparators = getDateSeparators<StreamChatClient>({
+  const dateSeparators = getDateSeparators<StreamChatGenerics>({
     hideDateSeparators,
     messages: messageList,
     userId: client.userID,
   });
 
-  const messageGroupStyles = getGroupStyles<StreamChatClient>({
+  const messageGroupStyles = getGroupStyles<StreamChatGenerics>({
     dateSeparators,
     hideDateSeparators,
     maxTimeBetweenGroupedMessages,
@@ -101,5 +101,5 @@ export const useMessageList = <
     inverted
       ? messagesWithStylesReadByAndDateSeparator.reverse()
       : messagesWithStylesReadByAndDateSeparator
-  ) as MessageType<StreamChatClient>[];
+  ) as MessageType<StreamChatGenerics>[];
 };

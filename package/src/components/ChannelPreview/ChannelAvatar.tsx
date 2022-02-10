@@ -9,16 +9,16 @@ import { Avatar } from '../Avatar/Avatar';
 import { GroupAvatar } from '../Avatar/GroupAvatar';
 
 export type ChannelAvatarProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'>;
 
 /**
  * This UI component displays an avatar for a particular channel.
  */
 export const ChannelAvatar = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelAvatarProps<StreamChatClient>,
+  props: ChannelAvatarProps<StreamChatGenerics>,
 ) => {
   const { channel } = props;
 

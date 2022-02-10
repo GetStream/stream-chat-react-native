@@ -21,64 +21,64 @@ import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnC
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageOverlayData<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   alignment?: Alignment;
   clientId?: string;
-  files?: Attachment<StreamChatClient>[];
+  files?: Attachment<StreamChatGenerics>[];
   groupStyles?: GroupType[];
   handleReaction?: (reactionType: string) => Promise<void>;
-  images?: Attachment<StreamChatClient>[];
-  message?: MessageType<StreamChatClient>;
+  images?: Attachment<StreamChatGenerics>[];
+  message?: MessageType<StreamChatGenerics>;
   messageActions?: MessageActionType[];
-  messageContext?: MessageContextValue<StreamChatClient>;
+  messageContext?: MessageContextValue<StreamChatGenerics>;
   messageReactionTitle?: string;
-  messagesContext?: MessagesContextValue<StreamChatClient>;
+  messagesContext?: MessagesContextValue<StreamChatGenerics>;
   onlyEmojis?: boolean;
-  otherAttachments?: Attachment<StreamChatClient>[];
-  OverlayReactionList?: React.ComponentType<OverlayReactionListProps<StreamChatClient>>;
+  otherAttachments?: Attachment<StreamChatGenerics>[];
+  OverlayReactionList?: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
 };
 
 export type MessageOverlayContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
    * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
-  MessageActionList: React.ComponentType<MessageActionListProps<StreamChatClient>>;
-  MessageActionListItem: React.ComponentType<MessageActionListItemProps<StreamChatClient>>;
+  MessageActionList: React.ComponentType<MessageActionListProps<StreamChatGenerics>>;
+  MessageActionListItem: React.ComponentType<MessageActionListItemProps<StreamChatGenerics>>;
   /**
    * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *
    * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactionList.tsx)
    */
-  OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatClient>>;
+  OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   /**
    * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png), in overlay (which shows up on long press on message).
    *
    * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactions.tsx)
    */
-  OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatClient>>;
+  OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatGenerics>>;
   OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
   reset: () => void;
-  setData: React.Dispatch<React.SetStateAction<MessageOverlayData<StreamChatClient>>>;
-  data?: MessageOverlayData<StreamChatClient>;
+  setData: React.Dispatch<React.SetStateAction<MessageOverlayData<StreamChatGenerics>>>;
+  data?: MessageOverlayData<StreamChatGenerics>;
 };
 
 export const MessageOverlayContext = React.createContext({} as MessageOverlayContextValue);
 
 export const MessageOverlayProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value?: MessageOverlayContextValue<StreamChatClient>;
+  value?: MessageOverlayContextValue<StreamChatGenerics>;
 }>) => {
   const messageOverlayContext = useResettableState(value);
   return (
@@ -89,8 +89,9 @@ export const MessageOverlayProvider = <
 };
 
 export const useMessageOverlayContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() =>
+  useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if MessageOverlayContext
@@ -99,14 +100,14 @@ export const useMessageOverlayContext = <
  */
 export const withMessageOverlayContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageOverlayContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof MessageOverlayContextValue<StreamChatGenerics>>> => {
   const WithMessageOverlayContextComponent = (
-    props: Omit<P, keyof MessageOverlayContextValue<StreamChatClient>>,
+    props: Omit<P, keyof MessageOverlayContextValue<StreamChatGenerics>>,
   ) => {
-    const messageContext = useMessageOverlayContext<StreamChatClient>();
+    const messageContext = useMessageOverlayContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...messageContext} />;
   };

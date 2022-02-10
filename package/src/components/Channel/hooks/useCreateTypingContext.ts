@@ -4,13 +4,13 @@ import type { TypingContextValue } from '../../../contexts/typingContext/TypingC
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateTypingContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   typing,
-}: TypingContextValue<StreamChatClient>) => {
+}: TypingContextValue<StreamChatGenerics>) => {
   const typingValue = Object.keys(typing).join();
 
-  const typingContext: TypingContextValue<StreamChatClient> = useMemo(
+  const typingContext: TypingContextValue<StreamChatGenerics> = useMemo(
     () => ({
       typing,
     }),

@@ -102,8 +102,8 @@ export type Reaction = {
 };
 
 export type OverlayReactionsProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageOverlayContextValue<StreamChatClient>, 'OverlayReactionsAvatar'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageOverlayContextValue<StreamChatGenerics>, 'OverlayReactionsAvatar'> & {
   reactions: Reaction[];
   showScreen: Animated.SharedValue<number>;
   title: string;

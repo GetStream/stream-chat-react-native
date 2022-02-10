@@ -60,9 +60,9 @@ const Icon: React.FC<
 };
 
 export type ReactionListPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<StreamChatClient>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'message'
   | 'onLongPress'
@@ -72,7 +72,7 @@ export type ReactionListPropsWithContext<
   | 'reactions'
   | 'showMessageOverlay'
 > &
-  Pick<MessagesContextValue<StreamChatClient>, 'targetedMessage'> & {
+  Pick<MessagesContextValue<StreamChatGenerics>, 'targetedMessage'> & {
     messageContentWidth: number;
     supportedReactions: ReactionData[];
     fill?: string;
@@ -83,9 +83,9 @@ export type ReactionListPropsWithContext<
   };
 
 const ReactionListWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListPropsWithContext<StreamChatClient>,
+  props: ReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -276,9 +276,9 @@ const ReactionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ReactionListPropsWithContext<StreamChatClient>,
-  nextProps: ReactionListPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ReactionListPropsWithContext<StreamChatGenerics>,
+  nextProps: ReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     message: prevMessage,
@@ -322,17 +322,17 @@ const MemoizedReactionList = React.memo(
 ) as typeof ReactionListWithContext;
 
 export type ReactionListProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>> &
-  Pick<ReactionListPropsWithContext<StreamChatClient>, 'messageContentWidth'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<ReactionListPropsWithContext<StreamChatGenerics>, 'messageContentWidth'>> &
+  Pick<ReactionListPropsWithContext<StreamChatGenerics>, 'messageContentWidth'>;
 
 /**
  * ReactionList - A high level component which implements all the logic required for a message reaction list
  */
 export const ReactionList = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListProps<StreamChatClient>,
+  props: ReactionListProps<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -343,8 +343,8 @@ export const ReactionList = <
     preventPress,
     reactions,
     showMessageOverlay,
-  } = useMessageContext<StreamChatClient>();
-  const { supportedReactions, targetedMessage } = useMessagesContext<StreamChatClient>();
+  } = useMessageContext<StreamChatGenerics>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedReactionList

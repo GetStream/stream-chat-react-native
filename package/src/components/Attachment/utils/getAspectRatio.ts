@@ -9,8 +9,8 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
  * @returns {number}
  */
 export function getAspectRatio<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(image: Attachment<StreamChatClient>) {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(image: Attachment<StreamChatGenerics>) {
   if (image.type !== 'image') {
     throw new Error('getAspectRatio() can only be called on an image attachment');
   }

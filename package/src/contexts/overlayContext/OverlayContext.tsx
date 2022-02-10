@@ -27,7 +27,7 @@ export type OverlayContextValue = {
 export const OverlayContext = React.createContext<OverlayContextValue>({} as OverlayContextValue);
 
 export type OverlayProviderProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AttachmentPickerProps> &
   Partial<
     Pick<
@@ -41,10 +41,10 @@ export type OverlayProviderProps<
       | 'topInset'
     >
   > &
-  ImageGalleryCustomComponents<StreamChatClient> &
+  ImageGalleryCustomComponents<StreamChatGenerics> &
   Partial<
     Pick<
-      MessageOverlayContextValue<StreamChatClient>,
+      MessageOverlayContextValue<StreamChatGenerics>,
       | 'MessageActionList'
       | 'MessageActionListItem'
       | 'OverlayReactionList'
@@ -62,7 +62,7 @@ export type OverlayProviderProps<
     imageGalleryGridSnapPoints?: [string | number, string | number];
     isMyMessage?: boolean;
     isThreadMessage?: boolean;
-    message?: MessageType<StreamChatClient>;
+    message?: MessageType<StreamChatGenerics>;
     messageReactions?: boolean;
     messageTextNumberOfLines?: number;
     numberOfImageGalleryGridColumns?: number;
@@ -73,16 +73,16 @@ export type OverlayProviderProps<
 export const useOverlayContext = () => useContext(OverlayContext);
 
 export const withOverlayContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  Component: React.ComponentType<StreamChatClient>,
-): React.FC<Omit<StreamChatClient, keyof OverlayContextValue>> => {
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof OverlayContextValue>> => {
   const WithOverlayContextComponent = (
-    props: Omit<StreamChatClient, keyof OverlayContextValue>,
+    props: Omit<StreamChatGenerics, keyof OverlayContextValue>,
   ) => {
     const overlayContext = useOverlayContext();
 
-    return <Component {...(props as StreamChatClient)} {...overlayContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...overlayContext} />;
   };
   WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
     Component as React.ComponentType,
