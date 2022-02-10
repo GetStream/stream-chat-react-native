@@ -252,7 +252,13 @@ export const renderText = <
   };
 
   const list: ReactNodeOutput = (node, output, state) => (
-    <ListOutput node={node} output={output} state={state} styles={styles} />
+    <ListOutput
+      key={`list-${state.key}`}
+      node={node}
+      output={output}
+      state={state}
+      styles={styles}
+    />
   );
 
   const customRules = {
