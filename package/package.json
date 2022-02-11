@@ -80,7 +80,7 @@
     "path": "0.12.7",
     "react-art": "^17.0.2",
     "react-native-markdown-package": "1.8.1",
-    "stream-chat": "5.4.0"
+    "stream-chat": "6.0.0"
   },
   "peerDependencies": {
     "react-native-svg": "^12.1.0"
