@@ -1,0 +1,23 @@
+{
+  "name": "stream-chat-expo-web",
+  "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
+  "version": "0.0.1",
+  "author": {
+    "company": "Stream.io Inc",
+    "name": "Stream.io Inc"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "src/index.js",
+  "types": "types/index.d.ts",
+  "dependencies": {
+    "stream-chat-react-native-core": "3.10.2"
+  },
+  "peerDependencies": {
+    "expo": "^41.0.1",
+    "expo-sharing": "^9.1.2"
+  },
+  "scripts": {
+    "prepack": " cp ../../README.md .",
+    "postpack": "rm README.md"
+  }
+}

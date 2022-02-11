@@ -155,12 +155,13 @@ registerNativeHandlers({
             // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
             // This we can't rely on them as it is, and we need to use Image.getSize
             // to get accurate size.
-            const getSize = () => new Promise((resolve) => {
-              Image.getSize(photo.uri, (width, height) => {
-                resolve({height, width});
+            const getSize = () =>
+              new Promise((resolve) => {
+                Image.getSize(photo.uri, (width, height) => {
+                  resolve({ height, width });
+                });
               });
-            });
-    
+
             try {
               const { height, width } = await getSize();
               size.height = height;
@@ -175,12 +176,12 @@ registerNativeHandlers({
               width: photo.width,
             };
           }
-    
+
           return {
             cancelled: false,
             source: 'camera',
             uri: photo.uri,
-            ...size
+            ...size,
           };
         }
       }
