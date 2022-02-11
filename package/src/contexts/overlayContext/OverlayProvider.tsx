@@ -59,9 +59,9 @@ import {
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<OverlayProviderProps<StreamChatClient>>,
+  props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
@@ -198,10 +198,10 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={translators}>
       <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<StreamChatClient>>
+        <MessageOverlayProvider<StreamChatGenerics>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              <ChannelsStateProvider<StreamChatClient>>{children}</ChannelsStateProvider>
+              <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}
@@ -210,7 +210,7 @@ export const OverlayProvider = <
                   <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                 </Animated.View>
                 {overlay === 'message' && (
-                  <MessageOverlay<StreamChatClient>
+                  <MessageOverlay<StreamChatGenerics>
                     MessageActionList={MessageActionList}
                     MessageActionListItem={MessageActionListItem}
                     messageTextNumberOfLines={messageTextNumberOfLines}
@@ -222,7 +222,7 @@ export const OverlayProvider = <
                   />
                 )}
                 {overlay === 'gallery' && (
-                  <ImageGallery<StreamChatClient>
+                  <ImageGallery<StreamChatGenerics>
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                     imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}

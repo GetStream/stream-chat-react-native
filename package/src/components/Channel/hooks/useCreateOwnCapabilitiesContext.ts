@@ -10,12 +10,12 @@ import {
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateOwnCapabilitiesContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   overrideCapabilities,
 }: {
-  channel: Channel<StreamChatClient>;
+  channel: Channel<StreamChatGenerics>;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
   const overrideCapabilitiesStr = overrideCapabilities

@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 export const TypingIndicator = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const {
     theme: {
@@ -32,7 +32,7 @@ export const TypingIndicator = <
       typingIndicator: { container, text },
     },
   } = useTheme();
-  const typingString = useTypingString<StreamChatClient>();
+  const typingString = useTypingString<StreamChatGenerics>();
 
   return (
     <View

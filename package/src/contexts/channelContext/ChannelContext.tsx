@@ -8,7 +8,7 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Instance of channel object from stream-chat package.
@@ -32,7 +32,7 @@ export type ChannelContextValue<
    *
    * @overrideType Channel
    */
-  channel: Channel<StreamChatClient>;
+  channel: Channel<StreamChatGenerics>;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
@@ -106,12 +106,12 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  members: ChannelState<StreamChatClient>['members'];
+  members: ChannelState<StreamChatGenerics>['members'];
   /**
    * Custom network down indicator to override the Stream default
    */
   NetworkDownIndicator: React.ComponentType;
-  read: ChannelState<StreamChatClient>['read'];
+  read: ChannelState<StreamChatGenerics>['read'];
   reloadChannel: () => Promise<void>;
   /**
    * When true, messagelist will be scrolled to first unread message, when opened.
@@ -142,7 +142,7 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers: ChannelState<StreamChatClient>['watchers'];
+  watchers: ChannelState<StreamChatGenerics>['watchers'];
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
   isChannelActive?: boolean;
@@ -164,18 +164,18 @@ export type ChannelContextValue<
    */
   targetedMessage?: string;
   threadList?: boolean;
-  watcherCount?: ChannelState<StreamChatClient>['watcher_count'];
+  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
 };
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 
 export const ChannelProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelContextValue<StreamChatClient>;
+  value: ChannelContextValue<StreamChatGenerics>;
 }>) => (
   <ChannelContext.Provider value={value as unknown as ChannelContextValue}>
     {children}
@@ -183,8 +183,8 @@ export const ChannelProvider = <
 );
 
 export const useChannelContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -193,14 +193,14 @@ export const useChannelContext = <
  */
 export const withChannelContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
   const WithChannelContextComponent = (
-    props: Omit<P, keyof ChannelContextValue<StreamChatClient>>,
+    props: Omit<P, keyof ChannelContextValue<StreamChatGenerics>>,
   ) => {
-    const channelContext = useChannelContext<StreamChatClient>();
+    const channelContext = useChannelContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...channelContext} />;
   };

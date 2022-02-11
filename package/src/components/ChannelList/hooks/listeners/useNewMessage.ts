@@ -7,24 +7,25 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { moveChannelUp } from '../../utils';
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  lockChannelOrder: boolean;
-  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    lockChannelOrder: boolean;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+  };
 
 export const useNewMessage = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   lockChannelOrder,
   setChannels,
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatClient>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       setChannels((channels) => {
         if (!lockChannelOrder && event.cid) {
-          return moveChannelUp<StreamChatClient>({
+          return moveChannelUp<StreamChatGenerics>({
             channels,
             cid: event.cid,
           });

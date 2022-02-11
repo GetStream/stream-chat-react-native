@@ -6,24 +6,25 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
-  onChannelDeleted?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
-    event: Event<StreamChatClient>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    onChannelDeleted?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useChannelDeleted = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onChannelDeleted,
   setChannels,
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatClient>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelDeleted === 'function') {
         onChannelDeleted(setChannels, event);
       } else {

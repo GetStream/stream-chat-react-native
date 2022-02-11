@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
 });
 
 export type MessageSystemProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: MessageType<StreamChatClient>;
+  message: MessageType<StreamChatGenerics>;
   /**
    * Formatter function for date object.
    *
@@ -55,9 +55,9 @@ export type MessageSystemProps<
  * in message list as (type) system message.
  */
 export const MessageSystem = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageSystemProps<StreamChatClient>,
+  props: MessageSystemProps<StreamChatGenerics>,
 ) => {
   const { formatDate, message, style } = props;
 

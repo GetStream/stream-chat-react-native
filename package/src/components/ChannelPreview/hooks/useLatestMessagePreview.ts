@@ -11,14 +11,17 @@ import {
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-type LatestMessage<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ReturnType<ChannelState<StreamChatClient>['formatMessage']> | MessageResponse<StreamChatClient>;
+type LatestMessage<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> =
+  | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
+  | MessageResponse<StreamChatGenerics>;
 
 export type LatestMessagePreview<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   created_at: string | number | Date;
-  messageObject: LatestMessage<StreamChatClient> | undefined;
+  messageObject: LatestMessage<StreamChatGenerics> | undefined;
   previews: {
     bold: boolean;
     text: string;
@@ -27,11 +30,11 @@ export type LatestMessagePreview<
 };
 
 const getLatestMessageDisplayText = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<StreamChatClient>,
-  client: StreamChat<StreamChatClient>,
-  message: LatestMessage<StreamChatClient> | undefined,
+  channel: Channel<StreamChatGenerics>,
+  client: StreamChat<StreamChatGenerics>,
+  message: LatestMessage<StreamChatGenerics> | undefined,
   t: (key: string) => string,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
@@ -97,9 +100,9 @@ const getLatestMessageDisplayText = <
 };
 
 const getLatestMessageDisplayDate = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: LatestMessage<StreamChatClient> | undefined,
+  message: LatestMessage<StreamChatGenerics> | undefined,
   tDateTimeParser: TDateTimeParser,
 ) => {
   const parserOutput = tDateTimeParser(message?.created_at);
@@ -119,11 +122,11 @@ const getLatestMessageDisplayDate = <
  * 2 = someone has read latest message which is the current user's message
  */
 const getLatestMessageReadStatus = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<StreamChatClient>,
-  client: StreamChat<StreamChatClient>,
-  message: LatestMessage<StreamChatClient> | undefined,
+  channel: Channel<StreamChatGenerics>,
+  client: StreamChat<StreamChatGenerics>,
+  message: LatestMessage<StreamChatGenerics> | undefined,
   readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
@@ -148,16 +151,16 @@ const getLatestMessageReadStatus = <
 };
 
 const getLatestMessagePreview = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(params: {
-  channel: Channel<StreamChatClient>;
-  client: StreamChat<StreamChatClient>;
+  channel: Channel<StreamChatGenerics>;
+  client: StreamChat<StreamChatGenerics>;
   readEvents: boolean;
   t: (key: string) => string;
   tDateTimeParser: TDateTimeParser;
   lastMessage?:
-    | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
-    | MessageResponse<StreamChatClient>;
+    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
+    | MessageResponse<StreamChatGenerics>;
 }) => {
   const { channel, client, lastMessage, readEvents, t, tDateTimeParser } = params;
 
@@ -194,15 +197,15 @@ const getLatestMessagePreview = <
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
  */
 export const useLatestMessagePreview = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<StreamChatClient>,
+  channel: Channel<StreamChatGenerics>,
   forceUpdate: number,
   lastMessage?:
-    | ReturnType<ChannelState<StreamChatClient>['formatMessage']>
-    | MessageResponse<StreamChatClient>,
+    | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
+    | MessageResponse<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
@@ -216,7 +219,7 @@ export const useLatestMessagePreview = <
 
   const [readEvents, setReadEvents] = useState(true);
   const [latestMessagePreview, setLatestMessagePreview] = useState<
-    LatestMessagePreview<StreamChatClient>
+    LatestMessagePreview<StreamChatGenerics>
   >({
     created_at: '',
     messageObject: undefined,

@@ -36,20 +36,20 @@ const styles = StyleSheet.create({
 });
 
 type ImageUploadPreviewPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<StreamChatClient>,
+  MessageInputContextValue<StreamChatGenerics>,
   'imageUploads' | 'removeImage' | 'uploadImage'
 >;
 
 export type ImageUploadPreviewProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<ImageUploadPreviewPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ImageUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
 const ImageUploadPreviewWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ImageUploadPreviewPropsWithContext<StreamChatClient>,
+  props: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { imageUploads, removeImage, uploadImage } = props;
 
@@ -118,9 +118,9 @@ const ImageUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ImageUploadPreviewPropsWithContext<StreamChatClient>,
-  nextProps: ImageUploadPreviewPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
+  nextProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { imageUploads: prevImageUploads } = prevProps;
   const { imageUploads: nextImageUploads } = nextProps;
@@ -142,11 +142,11 @@ const MemoizedImageUploadPreviewWithContext = React.memo(
  * UI Component to preview the images set for upload
  */
 export const ImageUploadPreview = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ImageUploadPreviewProps<StreamChatClient>,
+  props: ImageUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<StreamChatClient>();
+  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedImageUploadPreviewWithContext

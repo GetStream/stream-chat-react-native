@@ -32,7 +32,7 @@ import type { MessageActionType } from '../../MessageOverlay/MessageActionListIt
 import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
@@ -61,7 +61,7 @@ export const useMessageActions = <
   t,
   updateMessage,
 }: Pick<
-  MessagesContextValue<StreamChatClient>,
+  MessagesContextValue<StreamChatGenerics>,
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -81,13 +81,13 @@ export const useMessageActions = <
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<StreamChatClient>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<StreamChatClient>, 'client'> &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<OverlayContextValue, 'setOverlay'> &
-  Pick<ThreadContextValue<StreamChatClient>, 'openThread'> &
-  Pick<MessageContextValue<StreamChatClient>, 'message'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: MessageType<StreamChatClient>) => void;
+    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
   }) => {
   const {
     theme: {

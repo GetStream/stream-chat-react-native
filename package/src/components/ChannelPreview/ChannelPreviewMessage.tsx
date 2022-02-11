@@ -16,15 +16,15 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewMessageProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  latestMessagePreview: LatestMessagePreview<StreamChatClient>;
+  latestMessagePreview: LatestMessagePreview<StreamChatGenerics>;
 };
 
 export const ChannelPreviewMessage = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewMessageProps<StreamChatClient>,
+  props: ChannelPreviewMessageProps<StreamChatGenerics>,
 ) => {
   const { latestMessagePreview } = props;
 

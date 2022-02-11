@@ -20,8 +20,8 @@ function clamp(number: number, min: number, max: number) {
 }
 
 function getContainerSize<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({ image, sizeConfig }: { image: Attachment<StreamChatClient>; sizeConfig: GallerySizeConfig }) {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({ image, sizeConfig }: { image: Attachment<StreamChatGenerics>; sizeConfig: GallerySizeConfig }) {
   const { original_height: height, original_width: width } = image;
   const { gridHeight, gridWidth, maxHeight, maxWidth, minHeight, minWidth } = sizeConfig;
 
@@ -64,12 +64,12 @@ function getContainerSize<
 }
 
 export function buildGalleryOfSingleImage<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   image,
   sizeConfig,
 }: {
-  image: Attachment<StreamChatClient>;
+  image: Attachment<StreamChatGenerics>;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
   const container = getContainerSize({

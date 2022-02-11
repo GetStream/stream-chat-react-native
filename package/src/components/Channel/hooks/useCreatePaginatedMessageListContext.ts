@@ -4,7 +4,7 @@ import type { PaginatedMessageListContextValue } from '../../../contexts/paginat
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreatePaginatedMessageListContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelId,
   hasMore,
@@ -15,7 +15,7 @@ export const useCreatePaginatedMessageListContext = <
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
-}: PaginatedMessageListContextValue<StreamChatClient> & {
+}: PaginatedMessageListContextValue<StreamChatGenerics> & {
   channelId?: string;
 }) => {
   const messagesUpdated = messages
@@ -27,7 +27,7 @@ export const useCreatePaginatedMessageListContext = <
     )
     .join();
 
-  const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatClient> = useMemo(
+  const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({
       hasMore,
       loadingMore,

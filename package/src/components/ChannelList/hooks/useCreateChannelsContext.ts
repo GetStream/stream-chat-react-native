@@ -4,7 +4,7 @@ import type { ChannelsContextValue } from '../../../contexts/channelsContext/Cha
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateChannelsContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalFlatListProps,
   channels,
@@ -36,7 +36,7 @@ export const useCreateChannelsContext = <
   reloadList,
   setFlatListRef,
   Skeleton,
-}: ChannelsContextValue<StreamChatClient>) => {
+}: ChannelsContextValue<StreamChatGenerics>) => {
   const channelValueString = channels
     .map(
       (channel) =>
@@ -45,7 +45,7 @@ export const useCreateChannelsContext = <
           .join()}`,
     )
     .join();
-  const channelsContext: ChannelsContextValue<StreamChatClient> = useMemo(
+  const channelsContext: ChannelsContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalFlatListProps,
       channels,

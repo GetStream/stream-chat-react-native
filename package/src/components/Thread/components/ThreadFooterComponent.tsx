@@ -36,14 +36,14 @@ const styles = StyleSheet.create({
 });
 
 type ThreadFooterComponentPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessagesContextValue<StreamChatClient>, 'Message'> &
-  Pick<ThreadContextValue<StreamChatClient>, 'thread'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessagesContextValue<StreamChatGenerics>, 'Message'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>;
 
 const ThreadFooterComponentWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ThreadFooterComponentPropsWithContext<StreamChatClient>,
+  props: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { Message, thread } = props;
   const { t } = useTranslationContext();
@@ -103,9 +103,9 @@ const ThreadFooterComponentWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ThreadFooterComponentPropsWithContext<StreamChatClient>,
-  nextProps: ThreadFooterComponentPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
+  nextProps: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { thread: prevThread } = prevProps;
   const { thread: nextThread } = nextProps;
@@ -137,10 +137,10 @@ const MemoizedThreadFooter = React.memo(
 ) as typeof ThreadFooterComponentWithContext;
 
 export const ThreadFooterComponent = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { Message } = useMessagesContext<StreamChatClient>();
-  const { thread } = useThreadContext<StreamChatClient>();
+  const { Message } = useMessagesContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
   return (
     <MemoizedThreadFooter

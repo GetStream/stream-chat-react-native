@@ -29,13 +29,13 @@ const styles = StyleSheet.create({
 });
 
 export type MessageStatusPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatClient>, 'message' | 'threadList'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'threadList'>;
 
 const MessageStatusWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageStatusPropsWithContext<StreamChatClient>,
+  props: MessageStatusPropsWithContext<StreamChatGenerics>,
 ) => {
   const { message, threadList } = props;
 
@@ -91,9 +91,9 @@ const MessageStatusWithContext = <
   return null;
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageStatusPropsWithContext<StreamChatClient>,
-  nextProps: MessageStatusPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageStatusPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageStatusPropsWithContext<StreamChatGenerics>,
 ) => {
   const { message: prevMessage, threadList: prevThreadList } = prevProps;
   const { message: nextMessage, threadList: nextThreadList } = nextProps;
@@ -117,15 +117,15 @@ const MemoizedMessageStatus = React.memo(
 ) as typeof MessageStatusWithContext;
 
 export type MessageStatusProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessageStatusPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageStatusPropsWithContext<StreamChatGenerics>>;
 
 export const MessageStatus = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageStatusProps<StreamChatClient>,
+  props: MessageStatusProps<StreamChatGenerics>,
 ) => {
-  const { message, threadList } = useMessageContext<StreamChatClient>();
+  const { message, threadList } = useMessageContext<StreamChatGenerics>();
 
   return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };

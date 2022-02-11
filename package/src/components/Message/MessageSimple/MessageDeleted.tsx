@@ -47,16 +47,16 @@ type MessageDeletedComponentProps = {
 };
 
 type MessageDeletedPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'> &
-  Pick<MessagesContextValue<StreamChatClient>, 'MessageFooter'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'MessageFooter'> &
   Pick<TranslationContextValue, 't'> &
   MessageDeletedComponentProps;
 
 const MessageDeletedWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageDeletedPropsWithContext<StreamChatClient>,
+  props: MessageDeletedPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment, formattedDate, groupStyle, message, MessageFooter, noBorder, onLayout, t } =
     props;
@@ -103,7 +103,7 @@ const MessageDeletedWithContext = <
         ]}
         testID='message-content-wrapper'
       >
-        <MessageTextContainer<StreamChatClient>
+        <MessageTextContainer<StreamChatGenerics>
           markdownStyles={merge({ em: { color: grey } }, deletedText)}
           message={{ ...message, text: `_${t('Message deleted')}_` }}
         />
@@ -113,9 +113,9 @@ const MessageDeletedWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageDeletedPropsWithContext<StreamChatClient>,
-  nextProps: MessageDeletedPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageDeletedPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageDeletedPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -154,21 +154,21 @@ const MemoizedMessageDeleted = React.memo(
 ) as typeof MessageDeletedWithContext;
 
 export type MessageDeletedProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageDeletedComponentProps & {
   alignment?: Alignment;
-  message?: MessageType<StreamChatClient>;
-  MessageFooter?: React.ComponentType<MessageFooterProps<StreamChatClient>>;
+  message?: MessageType<StreamChatGenerics>;
+  MessageFooter?: React.ComponentType<MessageFooterProps<StreamChatGenerics>>;
 };
 
 export const MessageDeleted = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageDeletedProps<StreamChatClient>,
+  props: MessageDeletedProps<StreamChatGenerics>,
 ) => {
-  const { alignment, message } = useMessageContext<StreamChatClient>();
+  const { alignment, message } = useMessageContext<StreamChatGenerics>();
 
-  const { MessageFooter } = useMessagesContext<StreamChatClient>();
+  const { MessageFooter } = useMessagesContext<StreamChatGenerics>();
 
   const { t } = useTranslationContext();
 

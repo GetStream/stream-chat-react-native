@@ -21,16 +21,16 @@ export const KeyboardProvider: React.FC<{
 export const useKeyboardContext = () => useContext(KeyboardContext);
 
 export const withKeyboardContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  Component: React.ComponentType<StreamChatClient>,
-): React.FC<Omit<StreamChatClient, keyof KeyboardContextValue>> => {
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof KeyboardContextValue>> => {
   const WithKeyboardContextComponent = (
-    props: Omit<StreamChatClient, keyof KeyboardContextValue>,
+    props: Omit<StreamChatGenerics, keyof KeyboardContextValue>,
   ) => {
     const keyboardContext = useKeyboardContext();
 
-    return <Component {...(props as StreamChatClient)} {...keyboardContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...keyboardContext} />;
   };
   WithKeyboardContextComponent.displayName = `WithKeyboardContext${getDisplayName(
     Component as React.ComponentType,

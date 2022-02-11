@@ -4,13 +4,13 @@ import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadC
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const getReadStates = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   clientUserId: string | undefined,
   messages:
-    | PaginatedMessageListContextValue<StreamChatClient>['messages']
-    | ThreadContextValue<StreamChatClient>['threadMessages'],
-  read?: ChannelContextValue<StreamChatClient>['read'],
+    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
+    | ThreadContextValue<StreamChatGenerics>['threadMessages'],
+  read?: ChannelContextValue<StreamChatGenerics>['read'],
 ) => {
   const readData = messages.reduce((acc, cur) => {
     if (cur.id) {

@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentGroupPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatClient>, 'files'> &
-  Pick<MessagesContextValue<StreamChatClient>, 'Attachment'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'files'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Attachment'> & {
     /**
      * The unique id for the message with file attachments
      */
@@ -36,9 +36,9 @@ export type FileAttachmentGroupPropsWithContext<
   };
 
 const FileAttachmentGroupWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentGroupPropsWithContext<StreamChatClient>,
+  props: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
   const { Attachment, files, messageId, styles: stylesProp = {} } = props;
 
@@ -67,9 +67,9 @@ const FileAttachmentGroupWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: FileAttachmentGroupPropsWithContext<StreamChatClient>,
-  nextProps: FileAttachmentGroupPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
+  nextProps: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
   const { files: prevFiles } = prevProps;
   const { files: nextFiles } = nextProps;
@@ -85,20 +85,20 @@ const MemoizedFileAttachmentGroup = React.memo(
 ) as typeof FileAttachmentGroupWithContext;
 
 export type FileAttachmentGroupProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<FileAttachmentGroupPropsWithContext<StreamChatClient>, 'messageId'>> &
-  Pick<FileAttachmentGroupPropsWithContext<StreamChatClient>, 'messageId'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<FileAttachmentGroupPropsWithContext<StreamChatGenerics>, 'messageId'>> &
+  Pick<FileAttachmentGroupPropsWithContext<StreamChatGenerics>, 'messageId'>;
 
 export const FileAttachmentGroup = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentGroupProps<StreamChatClient>,
+  props: FileAttachmentGroupProps<StreamChatGenerics>,
 ) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext<StreamChatClient>();
+  const { files: contextFiles } = useMessageContext<StreamChatGenerics>();
 
-  const { Attachment = AttachmentDefault } = useMessagesContext<StreamChatClient>();
+  const { Attachment = AttachmentDefault } = useMessagesContext<StreamChatGenerics>();
 
   const files = propFiles || contextFiles;
 

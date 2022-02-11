@@ -5,7 +5,7 @@ import type { ThreadContextValue } from '../../threadContext/ThreadContext';
 import type { MessageInputContextValue } from '../MessageInputContext';
 
 export const useCreateMessageInputContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
   appendText,
@@ -90,8 +90,8 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
-}: MessageInputContextValue<StreamChatClient> &
-  Pick<ThreadContextValue<StreamChatClient>, 'thread'>) => {
+}: MessageInputContextValue<StreamChatGenerics> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
   const editingExists = !!editing;
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
@@ -103,7 +103,7 @@ export const useCreateMessageInputContext = <
     : '';
   const threadId = thread?.id;
 
-  const messageInputContext: MessageInputContextValue<StreamChatClient> = useMemo(
+  const messageInputContext: MessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
       appendText,

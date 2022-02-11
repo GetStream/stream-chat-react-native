@@ -62,14 +62,17 @@ const styles = StyleSheet.create({
 });
 
 type FileUploadPreviewPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatClient>, 'fileUploads' | 'removeFile' | 'uploadFile'> &
-  Pick<MessagesContextValue<StreamChatClient>, 'FileAttachmentIcon'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<
+  MessageInputContextValue<StreamChatGenerics>,
+  'fileUploads' | 'removeFile' | 'uploadFile'
+> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
 const FileUploadPreviewWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileUploadPreviewPropsWithContext<StreamChatClient>,
+  props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
@@ -198,9 +201,9 @@ const FileUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: FileUploadPreviewPropsWithContext<StreamChatClient>,
-  nextProps: FileUploadPreviewPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
+  nextProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { fileUploads: prevFileUploads } = prevProps;
   const { fileUploads: nextFileUploads } = nextProps;
@@ -219,20 +222,20 @@ const MemoizedFileUploadPreview = React.memo(
 ) as typeof FileUploadPreviewWithContext;
 
 export type FileUploadPreviewProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<FileUploadPreviewPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<FileUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
  */
 export const FileUploadPreview = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileUploadPreviewProps<StreamChatClient>,
+  props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatClient>();
-  const { FileAttachmentIcon } = useMessagesContext<StreamChatClient>();
+  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
+  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview

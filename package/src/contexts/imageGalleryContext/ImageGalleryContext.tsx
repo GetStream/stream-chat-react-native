@@ -5,11 +5,11 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ImageGalleryContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  images: MessageType<StreamChatClient>[];
+  images: MessageType<StreamChatGenerics>[];
   setImage: React.Dispatch<React.SetStateAction<{ messageId?: string; url?: string } | undefined>>;
-  setImages: React.Dispatch<React.SetStateAction<MessageType<StreamChatClient>[]>>;
+  setImages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
   image?: { messageId?: string; url?: string };
 };
 
@@ -18,11 +18,11 @@ export const ImageGalleryContext = React.createContext<ImageGalleryContextValue>
 );
 
 export const ImageGalleryProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
-  const [images, setImages] = useState<MessageType<StreamChatClient>[]>([]);
+  const [images, setImages] = useState<MessageType<StreamChatGenerics>[]>([]);
   const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 
   const imageGalleryContext = {
@@ -42,19 +42,19 @@ export const ImageGalleryProvider = <
 };
 
 export const useImageGalleryContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<StreamChatGenerics>;
 
 export const withImageGalleryContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
   const WithImageGalleryContextComponent = (
-    props: Omit<P, keyof ImageGalleryContextValue<StreamChatClient>>,
+    props: Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>,
   ) => {
-    const imageGalleryContext = useImageGalleryContext<StreamChatClient>();
+    const imageGalleryContext = useImageGalleryContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...imageGalleryContext} />;
   };

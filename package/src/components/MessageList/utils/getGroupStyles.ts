@@ -6,12 +6,12 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { GroupType } from '../hooks/useMessageList';
 
 export type GetGroupStylesParams<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   dateSeparators: DateSeparators;
   messages:
-    | PaginatedMessageListContextValue<StreamChatClient>['messages']
-    | ThreadContextValue<StreamChatClient>['threadMessages'];
+    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
+    | ThreadContextValue<StreamChatGenerics>['threadMessages'];
   hideDateSeparators?: boolean;
   maxTimeBetweenGroupedMessages?: number;
   noGroupByUser?: boolean;
@@ -19,9 +19,9 @@ export type GetGroupStylesParams<
 };
 
 export const getGroupStyles = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  params: GetGroupStylesParams<StreamChatClient>,
+  params: GetGroupStylesParams<StreamChatGenerics>,
 ) => {
   const {
     dateSeparators,

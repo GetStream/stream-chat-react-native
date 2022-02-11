@@ -13,15 +13,15 @@ import { SendUp } from '../../icons/SendUp';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type SendButtonPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatClient>, 'giphyActive' | 'sendMessage'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageInputContextValue<StreamChatGenerics>, 'giphyActive' | 'sendMessage'> & {
   /** Disables the button */ disabled: boolean;
 };
 
 const SendButtonWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: SendButtonPropsWithContext<StreamChatClient>,
+  props: SendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
@@ -45,9 +45,9 @@ const SendButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: SendButtonPropsWithContext<StreamChatClient>,
-  nextProps: SendButtonPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: SendButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: SendButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     disabled: prevDisabled,
@@ -78,18 +78,18 @@ const MemoizedSendButton = React.memo(
 ) as typeof SendButtonWithContext;
 
 export type SendButtonProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<SendButtonPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<SendButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
 export const SendButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: SendButtonProps<StreamChatClient>,
+  props: SendButtonProps<StreamChatGenerics>,
 ) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<StreamChatClient>();
+  const { giphyActive, sendMessage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedSendButton

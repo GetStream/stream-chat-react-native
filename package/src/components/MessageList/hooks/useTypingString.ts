@@ -7,12 +7,12 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { filterTypingUsers } from '../utils/filterTypingUsers';
 
 export const useTypingString = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { client } = useChatContext<StreamChatClient>();
-  const { thread } = useThreadContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
-  const { typing } = useTypingContext<StreamChatClient>();
+  const { typing } = useTypingContext<StreamChatGenerics>();
 
   const filteredTypingUsers = filterTypingUsers({ client, thread, typing });
 

@@ -5,7 +5,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { isMessageWithStylesReadByAndDateSeparator } from '../../MessageList/hooks/useMessageList';
 
 export const useCreateMessageContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   actionsEnabled,
   alignment,
@@ -42,7 +42,7 @@ export const useCreateMessageContext = <
   showMessageOverlay,
   showMessageStatus,
   threadList,
-}: MessageContextValue<StreamChatClient>) => {
+}: MessageContextValue<StreamChatGenerics>) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ own, type }) => `${own}${type}`).join();
   const latestReactions = message.latest_reactions ? message.latest_reactions : undefined;
@@ -56,7 +56,7 @@ export const useCreateMessageContext = <
 
   const quotedMessageDeletedValue = message.quoted_message?.deleted_at;
 
-  const messageContext: MessageContextValue<StreamChatClient> = useMemo(
+  const messageContext: MessageContextValue<StreamChatGenerics> = useMemo(
     () => ({
       actionsEnabled,
       alignment,

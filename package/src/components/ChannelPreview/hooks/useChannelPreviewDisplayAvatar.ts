@@ -7,10 +7,10 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const getChannelPreviewDisplayAvatar = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<StreamChatClient>,
-  client: StreamChat<StreamChatClient>,
+  channel: Channel<StreamChatGenerics>,
+  client: StreamChat<StreamChatGenerics>,
 ) => {
   const currentUserId = client?.user?.id;
   const channelId = channel?.id;
@@ -55,11 +55,11 @@ export const getChannelPreviewDisplayAvatar = <
  * @returns {object} e.g., { image: 'http://dummyurl.com/test.png', name: 'Uhtred Bebbanburg' }
  */
 export const useChannelPreviewDisplayAvatar = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<StreamChatClient>,
+  channel: Channel<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const channelData = channel?.data;
   const image = channelData?.image;

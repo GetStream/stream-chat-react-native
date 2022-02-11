@@ -12,16 +12,16 @@ import { CircleRight } from '../../icons/CircleRight';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoreOptionsButtonPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
 };
 
 const MoreOptionsButtonWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MoreOptionsButtonPropsWithContext<StreamChatClient>,
+  props: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled, handleOnPress } = props;
 
@@ -45,9 +45,9 @@ const MoreOptionsButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MoreOptionsButtonPropsWithContext<StreamChatClient>,
-  nextProps: MoreOptionsButtonPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled: prevDisabled, handleOnPress: prevHandleOnPress } = prevProps;
   const { disabled: nextDisabled, handleOnPress: nextHandleOnPress } = nextProps;
@@ -66,18 +66,18 @@ const MemoizedMoreOptionsButton = React.memo(
 ) as typeof MoreOptionsButtonWithContext;
 
 export type MoreOptionsButtonProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MoreOptionsButtonPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MoreOptionsButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for more options button in MessageInput component.
  */
 export const MoreOptionsButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MoreOptionsButtonProps<StreamChatClient>,
+  props: MoreOptionsButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatClient>();
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
 
   return <MemoizedMoreOptionsButton {...{ disabled }} {...props} />;
 };

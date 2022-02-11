@@ -20,13 +20,13 @@ const styles = StyleSheet.create({
 });
 
 export type MessageRepliesAvatarsProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'>;
 
 export const MessageRepliesAvatars = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageRepliesAvatarsProps<StreamChatClient>,
+  props: MessageRepliesAvatarsProps<StreamChatGenerics>,
 ) => {
   const { alignment, message } = props;
 

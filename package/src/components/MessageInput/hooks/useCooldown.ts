@@ -14,13 +14,13 @@ type Roles = Array<Role>;
  * for a Channel by setting an end time for
  **/
 export const useCooldown = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
   const [endsAt, setEndsAt] = useState(new Date());
 
-  const { client } = useChatContext<StreamChatClient>();
-  const { channel } = useChannelContext<StreamChatClient>();
-  const { cooldown } = (channel?.data || {}) as ChannelResponse<StreamChatClient>;
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { channel } = useChannelContext<StreamChatGenerics>();
+  const { cooldown } = (channel?.data || {}) as ChannelResponse<StreamChatGenerics>;
   const interval: number = cooldown ?? 0;
 
   /**

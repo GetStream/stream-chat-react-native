@@ -6,28 +6,29 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  refreshList: () => void;
-  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
-  setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
-  onChannelTruncated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
-    event: Event<StreamChatClient>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    refreshList: () => void;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
+    onChannelTruncated?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useChannelTruncated = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onChannelTruncated,
   refreshList,
   setChannels,
   setForceUpdate,
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatClient>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelTruncated === 'function') {
         onChannelTruncated(setChannels, event);
       }

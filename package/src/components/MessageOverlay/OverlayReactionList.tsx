@@ -89,9 +89,9 @@ const reactionData: ReactionData[] = [
 ];
 
 type ReactionButtonProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayReactionListPropsWithContext<StreamChatClient>,
+  OverlayReactionListPropsWithContext<StreamChatGenerics>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
 > & {
   Icon: React.FC<IconProps>;
@@ -102,9 +102,9 @@ type ReactionButtonProps<
 };
 
 export const ReactionButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionButtonProps<StreamChatClient>,
+  props: ReactionButtonProps<StreamChatGenerics>,
 ) => {
   const {
     handleReaction,
@@ -227,9 +227,12 @@ export const ReactionButton = <
 };
 
 export type OverlayReactionListPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageOverlayData<StreamChatClient>, 'alignment' | 'handleReaction' | 'messagesContext'> &
-  Pick<MessagesContextValue<StreamChatClient>, 'supportedReactions'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<
+  MessageOverlayData<StreamChatGenerics>,
+  'alignment' | 'handleReaction' | 'messagesContext'
+> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
     messageLayout: Animated.SharedValue<{
       x: number;
@@ -242,9 +245,9 @@ export type OverlayReactionListPropsWithContext<
   };
 
 const OverlayReactionListWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: OverlayReactionListPropsWithContext<StreamChatClient>,
+  props: OverlayReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -363,7 +366,7 @@ const OverlayReactionListWithContext = <
           ]}
         >
           {supportedReactions?.map(({ Icon, type }, index) => (
-            <ReactionButton<StreamChatClient>
+            <ReactionButton<StreamChatGenerics>
               handleReaction={handleReaction}
               Icon={Icon}
               index={index}
@@ -381,9 +384,9 @@ const OverlayReactionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: OverlayReactionListPropsWithContext<StreamChatClient>,
-  nextProps: OverlayReactionListPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: OverlayReactionListPropsWithContext<StreamChatGenerics>,
+  nextProps: OverlayReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment: prevAlignment, ownReactionTypes: prevOwnReactionTypes } = prevProps;
   const { alignment: nextAlignment, ownReactionTypes: nextOwnReactionTypes } = nextProps;
@@ -403,25 +406,28 @@ const MemoizedOverlayReactionList = React.memo(
 ) as typeof OverlayReactionListWithContext;
 
 export type OverlayReactionListProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
-  OverlayReactionListPropsWithContext<StreamChatClient>,
+  OverlayReactionListPropsWithContext<StreamChatGenerics>,
   'setOverlay' | 'supportedReactions'
 > &
   Partial<
-    Pick<OverlayReactionListPropsWithContext<StreamChatClient>, 'setOverlay' | 'supportedReactions'>
+    Pick<
+      OverlayReactionListPropsWithContext<StreamChatGenerics>,
+      'setOverlay' | 'supportedReactions'
+    >
   >;
 
 /**
  * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
  */
 export const OverlayReactionList = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: OverlayReactionListProps<StreamChatClient>,
+  props: OverlayReactionListProps<StreamChatGenerics>,
 ) => {
-  const { data } = useMessageOverlayContext<StreamChatClient>();
-  const { supportedReactions } = useMessagesContext<StreamChatClient>();
+  const { data } = useMessageOverlayContext<StreamChatGenerics>();
+  const { supportedReactions } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
 
   return (

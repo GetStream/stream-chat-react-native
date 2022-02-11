@@ -10,7 +10,7 @@ import { vw } from '../../../utils/utils';
 const maxCharacterLengthDefault = (vw(100) - 16) / 6;
 
 export const getChannelPreviewDisplayName = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelName,
   currentUserId,
@@ -20,7 +20,7 @@ export const getChannelPreviewDisplayName = <
   maxCharacterLength: number;
   channelName?: string;
   currentUserId?: string;
-  members?: Channel<StreamChatClient>['state']['members'];
+  members?: Channel<StreamChatGenerics>['state']['members'];
 }) => {
   if (channelName) return channelName;
 
@@ -49,12 +49,12 @@ export const getChannelPreviewDisplayName = <
 };
 
 export const useChannelPreviewDisplayName = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel?: Channel<StreamChatClient>,
+  channel?: Channel<StreamChatGenerics>,
   characterLength?: number,
 ) => {
-  const { client } = useChatContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const currentUserId = client.userID;
   const members = channel?.state.members;

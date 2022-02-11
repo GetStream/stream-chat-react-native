@@ -9,24 +9,25 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
 
-type Parameters<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>;
-  onMessageNew?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatClient>[]>>,
-    event: Event<StreamChatClient>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    onMessageNew?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useNewMessageNotification = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onMessageNew,
   setChannels,
-}: Parameters<StreamChatClient>) => {
-  const { client } = useChatContext<StreamChatClient>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = async (event: Event<StreamChatClient>) => {
+    const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, event);
       } else {

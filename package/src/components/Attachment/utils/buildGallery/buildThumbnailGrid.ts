@@ -134,7 +134,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
  * @return {GallerySizeAndThumbnailGrid}
  */
 export function buildThumbnailGrid<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   grid,
   images,
@@ -142,7 +142,7 @@ export function buildThumbnailGrid<
   sizeConfig,
 }: {
   grid: number[][];
-  images: Attachment<StreamChatClient>[];
+  images: Attachment<StreamChatGenerics>[];
   invertedDirections: boolean;
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {

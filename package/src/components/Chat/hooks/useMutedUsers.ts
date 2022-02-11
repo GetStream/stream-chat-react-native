@@ -5,14 +5,14 @@ import type { Event, Mute, StreamChat } from 'stream-chat';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useMutedUsers = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  client: StreamChat<StreamChatClient>,
+  client: StreamChat<StreamChatGenerics>,
 ) => {
-  const [mutedUsers, setMutedUsers] = useState<Mute<StreamChatClient>[]>(client.mutedUsers || []);
+  const [mutedUsers, setMutedUsers] = useState<Mute<StreamChatGenerics>[]>(client.mutedUsers || []);
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatClient>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       setMutedUsers((mutes) => event.me?.mutes || mutes || []);
     };
 

@@ -118,16 +118,16 @@ export const useAttachmentPickerContext = () =>
   useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
 
 export const withAttachmentPickerContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  Component: React.ComponentType<StreamChatClient>,
-): React.FC<Omit<StreamChatClient, keyof AttachmentPickerContextValue>> => {
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>> => {
   const WithAttachmentPickerContextComponent = (
-    props: Omit<StreamChatClient, keyof AttachmentPickerContextValue>,
+    props: Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>,
   ) => {
     const attachmentPickerContext = useAttachmentPickerContext();
 
-    return <Component {...(props as StreamChatClient)} {...attachmentPickerContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...attachmentPickerContext} />;
   };
   WithAttachmentPickerContextComponent.displayName = `WithAttachmentPickerContext${getDisplayName(
     Component as React.ComponentType,

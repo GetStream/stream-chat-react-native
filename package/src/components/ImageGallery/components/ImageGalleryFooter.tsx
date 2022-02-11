@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 });
 
 export type ImageGalleryFooterCustomComponent<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
   openGridView,
   photo,
@@ -57,33 +57,33 @@ export type ImageGalleryFooterCustomComponent<
   openGridView: () => void;
   share: () => Promise<void>;
   shareMenuOpen: boolean;
-  photo?: Photo<StreamChatClient>;
+  photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
 export type ImageGalleryFooterCustomComponentProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  centerElement?: ImageGalleryFooterCustomComponent<StreamChatClient>;
+  centerElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   GridIcon?: React.ReactElement;
-  leftElement?: ImageGalleryFooterCustomComponent<StreamChatClient>;
-  rightElement?: ImageGalleryFooterCustomComponent<StreamChatClient>;
+  leftElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
+  rightElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   ShareIcon?: React.ReactElement;
 };
 
-type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryFooterCustomComponentProps<StreamChatClient> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
     opacity: Animated.SharedValue<number>;
     openGridView: () => void;
-    photo: Photo<StreamChatClient>;
+    photo: Photo<StreamChatGenerics>;
     photoLength: number;
     selectedIndex: number;
     visible: Animated.SharedValue<number>;
   };
 
 export const ImageGalleryFooter = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatClient>,
+  props: Props<StreamChatGenerics>,
 ) => {
   const {
     centerElement,

@@ -47,10 +47,10 @@ const styles = StyleSheet.create({
 const maxWidth = vw(80) - 16 - 40;
 
 export type ChannelPreviewMessengerPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> &
   Pick<
-    ChannelsContextValue<StreamChatClient>,
+    ChannelsContextValue<StreamChatGenerics>,
     | 'maxUnreadCount'
     | 'onSelect'
     | 'PreviewAvatar'
@@ -79,7 +79,7 @@ export type ChannelPreviewMessengerPropsWithContext<
      *
      * @overrideType object
      */
-    latestMessagePreview: LatestMessagePreview<StreamChatClient>;
+    latestMessagePreview: LatestMessagePreview<StreamChatGenerics>;
     /**
      * Formatter function for date of latest message.
      * @param date Message date
@@ -95,9 +95,9 @@ export type ChannelPreviewMessengerPropsWithContext<
   };
 
 const ChannelPreviewMessengerWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
+  props: ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     channel,
@@ -168,15 +168,15 @@ const ChannelPreviewMessengerWithContext = <
 };
 
 export type ChannelPreviewMessengerProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Omit<
-    ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
+    ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
     'channel' | 'latestMessagePreview'
   >
 > &
   Pick<
-    ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
+    ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
     'channel' | 'latestMessagePreview'
   >;
 
@@ -189,9 +189,9 @@ const MemoizedChannelPreviewMessengerWithContext = React.memo(
  * from the ChannelPreview component.
  */
 export const ChannelPreviewMessenger = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewMessengerProps<StreamChatClient>,
+  props: ChannelPreviewMessengerProps<StreamChatGenerics>,
 ) => {
   const {
     maxUnreadCount,
@@ -202,7 +202,7 @@ export const ChannelPreviewMessenger = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
-  } = useChannelsContext<StreamChatClient>();
+  } = useChannelsContext<StreamChatGenerics>();
   return (
     <MemoizedChannelPreviewMessengerWithContext
       {...{

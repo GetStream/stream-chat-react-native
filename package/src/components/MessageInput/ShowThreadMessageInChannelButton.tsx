@@ -149,14 +149,14 @@ export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
 export const ShowThreadMessageInChannelButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {
   const { t } = useTranslationContext();
-  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatClient>();
+  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatGenerics>();
   const { sendThreadMessageInChannel, setSendThreadMessageInChannel } =
-    useMessageInputContext<StreamChatClient>();
+    useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedShowThreadMessageInChannelButton

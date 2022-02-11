@@ -47,17 +47,17 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<StreamChatClient>,
+  MessageContextValue<StreamChatGenerics>,
   'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<
-    MessagesContextValue<StreamChatClient>,
+    MessagesContextValue<StreamChatGenerics>,
     'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
   > & {
     /** The attachment to render */
-    attachment: Attachment<StreamChatClient>;
+    attachment: Attachment<StreamChatGenerics>;
     attachmentSize?: number;
     styles?: Partial<{
       container: StyleProp<ViewStyle>;
@@ -68,9 +68,9 @@ export type FileAttachmentPropsWithContext<
   };
 
 const FileAttachmentWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentPropsWithContext<StreamChatClient>,
+  props: FileAttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
@@ -145,21 +145,21 @@ const FileAttachmentWithContext = <
 };
 
 export type FileAttachmentProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>> &
-  Pick<FileAttachmentPropsWithContext<StreamChatClient>, 'attachment'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<FileAttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>> &
+  Pick<FileAttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
 
 export const FileAttachment = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentProps<StreamChatClient>,
+  props: FileAttachmentProps<StreamChatGenerics>,
 ) => {
-  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext<StreamChatClient>();
+  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
-  } = useMessagesContext<StreamChatClient>();
+  } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <FileAttachmentWithContext

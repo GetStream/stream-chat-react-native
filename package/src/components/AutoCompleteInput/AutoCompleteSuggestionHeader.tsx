@@ -10,8 +10,8 @@ import { Smile } from '../../icons/Smile';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type AutoCompleteSuggestionHeaderPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<SuggestionsContextValue<StreamChatClient>, 'triggerType' | 'queryText'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<SuggestionsContextValue<StreamChatGenerics>, 'triggerType' | 'queryText'>;
 
 const styles = StyleSheet.create({
   container: {
@@ -26,11 +26,11 @@ const styles = StyleSheet.create({
 });
 
 const AutoCompleteSuggestionHeaderWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   queryText,
   triggerType,
-}: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>) => {
+}: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatGenerics>) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -68,9 +68,9 @@ const AutoCompleteSuggestionHeaderWithContext = <
   }
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>,
-  nextProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatGenerics>,
+  nextProps: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { queryText: prevQueryText, triggerType: prevType } = prevProps;
   const { queryText: nextQueryText, triggerType: nextType } = nextProps;
@@ -89,13 +89,13 @@ const MemoizedAutoCompleteSuggestionHeader = React.memo(
 ) as typeof AutoCompleteSuggestionHeaderWithContext;
 
 export type AutoCompleteSuggestionHeaderProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = AutoCompleteSuggestionHeaderPropsWithContext<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = AutoCompleteSuggestionHeaderPropsWithContext<StreamChatGenerics>;
 
 export const AutoCompleteSuggestionHeader = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionHeaderProps<StreamChatClient>,
+  props: AutoCompleteSuggestionHeaderProps<StreamChatGenerics>,
 ) => <MemoizedAutoCompleteSuggestionHeader {...props} />;
 
 AutoCompleteSuggestionHeader.displayName =

@@ -67,12 +67,12 @@ const parse: ParseFunction = (capture, parse, state) => ({
 export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
-  Pick<MessageContextValue<StreamChatClient>, 'onLongPress' | 'onPress' | 'preventPress'>
+  Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
-  message: MessageType<StreamChatClient>;
+  message: MessageType<StreamChatGenerics>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   messageOverlay?: boolean;
@@ -82,9 +82,9 @@ export type RenderTextParams<
 };
 
 export const renderText = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  params: RenderTextParams<StreamChatClient>,
+  params: RenderTextParams<StreamChatGenerics>,
 ) => {
   const {
     colors,

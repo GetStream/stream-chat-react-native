@@ -22,17 +22,17 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewStatusProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  ChannelPreviewMessengerPropsWithContext<StreamChatClient>,
+  ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
   'latestMessagePreview' | 'formatLatestMessageDate'
 > &
-  Pick<ChannelPreviewProps<StreamChatClient>, 'channel'>;
+  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'>;
 
 export const ChannelPreviewStatus = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewStatusProps<StreamChatClient>,
+  props: ChannelPreviewStatusProps<StreamChatGenerics>,
 ) => {
   const { formatLatestMessageDate, latestMessagePreview } = props;
   const {

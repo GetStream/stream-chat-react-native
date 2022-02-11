@@ -16,20 +16,20 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type AutoCompleteSuggestionListComponentProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<SuggestionsContextValue, 'queryText' | 'triggerType'> & {
   active: boolean;
-  data: Suggestion<StreamChatClient>[];
-  onSelect: (item: Suggestion<StreamChatClient>) => void;
+  data: Suggestion<StreamChatGenerics>[];
+  onSelect: (item: Suggestion<StreamChatGenerics>) => void;
 };
 
 export type AutoCompleteSuggestionListPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  SuggestionsContextValue<StreamChatClient>,
+  SuggestionsContextValue<StreamChatGenerics>,
   'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'
 > &
-  AutoCompleteSuggestionListComponentProps<StreamChatClient>;
+  AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
   const { children, ...touchableOpacityProps } = props;
@@ -39,9 +39,9 @@ const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
 export const AutoCompleteSuggestionListWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionListPropsWithContext<StreamChatClient>,
+  props: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     active,
@@ -63,7 +63,7 @@ export const AutoCompleteSuggestionListWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatClient> }) => {
+  const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
       case 'mention':
         if (isSuggestionUser(item)) {
@@ -144,9 +144,9 @@ export const AutoCompleteSuggestionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AutoCompleteSuggestionListPropsWithContext<StreamChatClient>,
-  nextProps: AutoCompleteSuggestionListPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
+  nextProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     active: prevActive,
@@ -182,21 +182,21 @@ const MemoizedAutoCompleteSuggestionList = React.memo(
 ) as typeof AutoCompleteSuggestionListWithContext;
 
 export type AutoCompleteSuggestionListProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = AutoCompleteSuggestionListComponentProps<StreamChatClient> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = AutoCompleteSuggestionListComponentProps<StreamChatGenerics> & {
   AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
   AutoCompleteSuggestionItem?: React.ComponentType<
-    AutoCompleteSuggestionItemProps<StreamChatClient>
+    AutoCompleteSuggestionItemProps<StreamChatGenerics>
   >;
 };
 
 export const AutoCompleteSuggestionList = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionListProps<StreamChatClient>,
+  props: AutoCompleteSuggestionListProps<StreamChatGenerics>,
 ) => {
   const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
-    useSuggestionsContext<StreamChatClient>();
+    useSuggestionsContext<StreamChatGenerics>();
   return (
     <MemoizedAutoCompleteSuggestionList
       {...{ AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem }}

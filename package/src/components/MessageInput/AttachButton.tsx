@@ -13,17 +13,17 @@ import { Attach } from '../../icons/Attach';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type AttachButtonPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   selectedPicker?: 'images';
 };
 
 const AttachButtonWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachButtonPropsWithContext<StreamChatClient>,
+  props: AttachButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled, handleOnPress, selectedPicker } = props;
   const {
@@ -46,9 +46,9 @@ const AttachButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AttachButtonPropsWithContext<StreamChatClient>,
-  nextProps: AttachButtonPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AttachButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: AttachButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     disabled: prevDisabled,
@@ -79,18 +79,18 @@ const MemoizedAttachButton = React.memo(
 ) as typeof AttachButtonWithContext;
 
 export type AttachButtonProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AttachButtonPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<AttachButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
 export const AttachButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachButtonProps<StreamChatClient>,
+  props: AttachButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatClient>();
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
   const { selectedPicker } = useAttachmentPickerContext();
 
   return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;

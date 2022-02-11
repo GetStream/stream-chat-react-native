@@ -56,10 +56,10 @@ export type MessageActionType = {
 };
 
 export type MessageActionListItemProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = MessageActionType &
   Pick<
-    MessageOverlayPropsWithContext<StreamChatClient>,
+    MessageOverlayPropsWithContext<StreamChatGenerics>,
     'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageReactions'
   > & {
     index: number;
@@ -67,9 +67,9 @@ export type MessageActionListItemProps<
   };
 
 const MessageActionListItemWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListItemProps<StreamChatClient>,
+  props: MessageActionListItemProps<StreamChatGenerics>,
 ) => {
   const { action, actionType, icon, index, length, title, titleStyle } = props;
 
@@ -103,10 +103,10 @@ const MessageActionListItemWithContext = <
 };
 
 const messageActionIsEqual = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  prevProps: MessageActionListItemProps<StreamChatClient>,
-  nextProps: MessageActionListItemProps<StreamChatClient>,
+  prevProps: MessageActionListItemProps<StreamChatGenerics>,
+  nextProps: MessageActionListItemProps<StreamChatGenerics>,
 ) => prevProps.length === nextProps.length;
 
 export const MemoizedMessageActionListItem = React.memo(
@@ -118,7 +118,7 @@ export const MemoizedMessageActionListItem = React.memo(
  * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
  */
 export const MessageActionListItem = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListItemProps<StreamChatClient>,
+  props: MessageActionListItemProps<StreamChatGenerics>,
 ) => <MemoizedMessageActionListItem {...props} />;

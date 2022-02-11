@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageActionListPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayProviderProps<StreamChatClient>,
+  OverlayProviderProps<StreamChatGenerics>,
   | 'MessageActionListItem'
   | 'error'
   | 'isMyMessage'
@@ -46,14 +46,14 @@ export type MessageActionListPropsWithContext<
   | 'message'
   | 'messageReactions'
 > &
-  Pick<MessageOverlayData<StreamChatClient>, 'alignment' | 'messageActions'> & {
+  Pick<MessageOverlayData<StreamChatGenerics>, 'alignment' | 'messageActions'> & {
     showScreen: Animated.SharedValue<number>;
   };
 
 const MessageActionListWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListPropsWithContext<StreamChatClient>,
+  props: MessageActionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -125,9 +125,9 @@ const MessageActionListWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessageActionListPropsWithContext<StreamChatClient>,
-  nextProps: MessageActionListPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageActionListPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageActionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment: prevAlignment, messageActions: prevMessageActions } = prevProps;
   const { alignment: nextAlignment, messageActions: nextMessageActions } = nextProps;
@@ -147,10 +147,10 @@ const MemoizedMessageActionList = React.memo(
 ) as typeof MessageActionListWithContext;
 
 export type MessageActionListProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<Omit<MessageActionListPropsWithContext<StreamChatClient>, 'showScreen'>> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageActionListPropsWithContext<StreamChatGenerics>, 'showScreen'>> &
   Pick<
-    MessageActionListPropsWithContext<StreamChatClient>,
+    MessageActionListPropsWithContext<StreamChatGenerics>,
     'showScreen' | 'message' | 'isMyMessage' | 'error' | 'isThreadMessage' | 'messageReactions'
   >;
 
@@ -158,11 +158,11 @@ export type MessageActionListProps<
  * MessageActionList - A high level component which implements all the logic required for MessageActions
  */
 export const MessageActionList = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageActionListProps<StreamChatClient>,
+  props: MessageActionListProps<StreamChatGenerics>,
 ) => {
-  const { data } = useMessageOverlayContext<StreamChatClient>();
+  const { data } = useMessageOverlayContext<StreamChatGenerics>();
 
   const { alignment, messageActions } = data || {};
 

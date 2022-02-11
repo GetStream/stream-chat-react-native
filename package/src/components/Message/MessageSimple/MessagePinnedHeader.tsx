@@ -24,13 +24,13 @@ const styles = StyleSheet.create({
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type MessagePinnedHeaderPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageContextValue<StreamChatClient>, 'alignment' | 'message'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'>;
 
 const MessagePinnedHeaderWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
+  props: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment, message } = props;
   const {
@@ -62,9 +62,9 @@ const MessagePinnedHeaderWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
-  nextProps: MessagePinnedHeaderPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
+  nextProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { message: prevMessage } = prevProps;
   const { message: nextMessage } = nextProps;
@@ -84,15 +84,15 @@ const MemoizedMessagePinnedHeader = React.memo(
 ) as typeof MessagePinnedHeaderWithContext;
 
 export type MessagePinnedHeaderProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<MessagePinnedHeaderPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessagePinnedHeaderPropsWithContext<StreamChatGenerics>>;
 
 export const MessagePinnedHeader = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderProps<StreamChatClient>,
+  props: MessagePinnedHeaderProps<StreamChatGenerics>,
 ) => {
-  const { alignment, lastGroupMessage, message } = useMessageContext<StreamChatClient>();
+  const { alignment, lastGroupMessage, message } = useMessageContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessagePinnedHeader

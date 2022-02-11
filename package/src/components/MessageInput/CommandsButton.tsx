@@ -17,17 +17,17 @@ import { Lightning } from '../../icons/Lightning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type CommandsButtonPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelContextValue<StreamChatClient>, 'disabled'> &
-  Pick<SuggestionsContextValue<StreamChatClient>, 'suggestions'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> &
+  Pick<SuggestionsContextValue<StreamChatGenerics>, 'suggestions'> & {
     /** Function that opens commands selector */
     handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
   };
 
 const CommandsButtonWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: CommandsButtonPropsWithContext<StreamChatClient>,
+  props: CommandsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled, handleOnPress, suggestions } = props;
 
@@ -57,9 +57,9 @@ const CommandsButtonWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: CommandsButtonPropsWithContext<StreamChatClient>,
-  nextProps: CommandsButtonPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: CommandsButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: CommandsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled: prevDisabled, suggestions: prevSuggestions } = prevProps;
   const { disabled: nextDisabled, suggestions: nextSuggestions } = nextProps;
@@ -79,19 +79,19 @@ const MemoizedCommandsButton = React.memo(
 ) as typeof CommandsButtonWithContext;
 
 export type CommandsButtonProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<CommandsButtonPropsWithContext<StreamChatClient>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<CommandsButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for attach button in MessageInput component.
  */
 export const CommandsButton = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: CommandsButtonProps<StreamChatClient>,
+  props: CommandsButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatClient>();
-  const { suggestions } = useSuggestionsContext<StreamChatClient>();
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
+  const { suggestions } = useSuggestionsContext<StreamChatGenerics>();
 
   return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };

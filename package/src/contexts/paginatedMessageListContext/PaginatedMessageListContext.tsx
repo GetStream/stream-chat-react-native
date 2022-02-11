@@ -6,7 +6,7 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type PaginatedMessageListContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Has more messages to load
@@ -31,7 +31,7 @@ export type PaginatedMessageListContextValue<
   /**
    * Messages from client state
    */
-  messages: ChannelState<StreamChatClient>['messages'];
+  messages: ChannelState<StreamChatGenerics>['messages'];
   /**
    * Set loadingMore
    */
@@ -47,12 +47,12 @@ export const PaginatedMessageListContext = React.createContext(
 );
 
 export const PaginatedMessageListProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value?: PaginatedMessageListContextValue<StreamChatClient>;
+  value?: PaginatedMessageListContextValue<StreamChatGenerics>;
 }>) => (
   <PaginatedMessageListContext.Provider
     value={value as unknown as PaginatedMessageListContextValue}
@@ -62,11 +62,11 @@ export const PaginatedMessageListProvider = <
 );
 
 export const usePaginatedMessageListContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() =>
   useContext(
     PaginatedMessageListContext,
-  ) as unknown as PaginatedMessageListContextValue<StreamChatClient>;
+  ) as unknown as PaginatedMessageListContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if MessageListContextValue
@@ -75,14 +75,14 @@ export const usePaginatedMessageListContext = <
  */
 export const withPaginatedMessageListContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
   const WithPaginatedMessageListContextComponent = (
-    props: Omit<P, keyof PaginatedMessageListContextValue<StreamChatClient>>,
+    props: Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>,
   ) => {
-    const paginatedMessageListContext = usePaginatedMessageListContext<StreamChatClient>();
+    const paginatedMessageListContext = usePaginatedMessageListContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...paginatedMessageListContext} />;
   };

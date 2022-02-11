@@ -4,7 +4,7 @@ import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadC
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateThreadContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   allowThreadMessagesInChannel,
   closeThread,
@@ -16,7 +16,7 @@ export const useCreateThreadContext = <
   threadHasMore,
   threadLoadingMore,
   threadMessages,
-}: ThreadContextValue<StreamChatClient>) => {
+}: ThreadContextValue<StreamChatGenerics>) => {
   const threadId = thread?.id;
   const threadReplyCount = thread?.reply_count;
   const threadMessagesUpdated = threadMessages
@@ -28,7 +28,7 @@ export const useCreateThreadContext = <
     )
     .join();
 
-  const threadContext: ThreadContextValue<StreamChatClient> = useMemo(
+  const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
     () => ({
       allowThreadMessagesInChannel,
       closeThread,

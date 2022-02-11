@@ -10,12 +10,12 @@ type Parameters = {
 };
 
 export const useConnectionRecovered = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   refreshList,
   setForceUpdate,
 }: Parameters) => {
-  const { client } = useChatContext<StreamChatClient>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const refRefreshList = useRef(refreshList);
   refRefreshList.current = refreshList;

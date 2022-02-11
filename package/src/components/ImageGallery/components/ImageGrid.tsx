@@ -32,35 +32,37 @@ const styles = StyleSheet.create({
 });
 
 export type ImageGalleryGridImageComponent<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ({
   item,
 }: {
-  item: Photo<StreamChatClient> & {
+  item: Photo<StreamChatGenerics> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 }) => React.ReactElement | null;
 
 export type ImageGalleryGridImageComponents<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  avatarComponent?: ImageGalleryGridImageComponent<StreamChatClient>;
-  imageComponent?: ImageGalleryGridImageComponent<StreamChatClient>;
+  avatarComponent?: ImageGalleryGridImageComponent<StreamChatGenerics>;
+  imageComponent?: ImageGalleryGridImageComponent<StreamChatGenerics>;
 };
 
 export type GridImageItem<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Photo<StreamChatClient> &
-  ImageGalleryGridImageComponents<StreamChatClient> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Photo<StreamChatGenerics> &
+  ImageGalleryGridImageComponents<StreamChatGenerics> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 
-const GridImage = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>({
+const GridImage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   item,
 }: {
-  item: GridImageItem<StreamChatClient>;
+  item: GridImageItem<StreamChatGenerics>;
 }) => {
   const {
     theme: {
@@ -106,17 +108,17 @@ const GridImage = <StreamChatClient extends DefaultStreamChatGenerics = DefaultS
 };
 
 const renderItem = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   item,
 }: {
-  item: GridImageItem<StreamChatClient>;
+  item: GridImageItem<StreamChatGenerics>;
 }) => <GridImage item={item} />;
 
-type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryGridImageComponents<StreamChatClient> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryGridImageComponents<StreamChatGenerics> & {
     closeGridView: () => void;
-    photos: Photo<StreamChatClient>[];
+    photos: Photo<StreamChatGenerics>[];
     resetVisibleValues: () => void;
     setImage: React.Dispatch<
       React.SetStateAction<
@@ -131,9 +133,9 @@ type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamCha
   };
 
 export const ImageGrid = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatClient>,
+  props: Props<StreamChatGenerics>,
 ) => {
   const {
     avatarComponent,
@@ -167,13 +169,13 @@ export const ImageGrid = <
   }));
 
   return (
-    <BottomSheetFlatList<GridImageItem<StreamChatClient>>
+    <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },
         contentContainer,
       ]}
-      data={imageGridItems as GridImageItem<StreamChatClient>[]}
+      data={imageGridItems as GridImageItem<StreamChatGenerics>[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}

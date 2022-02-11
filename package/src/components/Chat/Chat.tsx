@@ -25,8 +25,8 @@ import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
 
 export type ChatProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChatContextValue<StreamChatClient>, 'client'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChatContextValue<StreamChatGenerics>, 'client'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
    * To receive push notifications, its necessary that user doesn't have active
@@ -118,13 +118,13 @@ export type ChatProps<
 };
 
 const ChatWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChatProps<StreamChatClient>>,
+  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
   const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
-  const [channel, setChannel] = useState<Channel<StreamChatClient>>();
+  const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
@@ -138,7 +138,7 @@ const ChatWithContext = <
   /**
    * Setup connection event listeners
    */
-  const { connectionRecovering, isOnline } = useIsOnline<StreamChatClient>(
+  const { connectionRecovering, isOnline } = useIsOnline<StreamChatGenerics>(
     client,
     closeConnectionOnBackground,
   );
@@ -146,7 +146,7 @@ const ChatWithContext = <
   /**
    * Setup muted user listener
    */
-  const mutedUsers = useMutedUsers<StreamChatClient>(client);
+  const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
   useEffect(() => {
     if (client.setUserAgent) {
@@ -156,7 +156,7 @@ const ChatWithContext = <
     }
   }, []);
 
-  const setActiveChannel = (newChannel?: Channel<StreamChatClient>) => setChannel(newChannel);
+  const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   const chatContext = useCreateChatContext({
     channel,
@@ -170,7 +170,7 @@ const ChatWithContext = <
   if (loadingTranslators) return null;
 
   return (
-    <ChatProvider<StreamChatClient> value={chatContext}>
+    <ChatProvider<StreamChatGenerics> value={chatContext}>
       <TranslationProvider value={translators}>
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
@@ -200,9 +200,9 @@ const ChatWithContext = <
  * - Us (UserType) - custom User object extension
  */
 export const Chat = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChatProps<StreamChatClient>>,
+  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
   const { style } = useOverlayContext();
 

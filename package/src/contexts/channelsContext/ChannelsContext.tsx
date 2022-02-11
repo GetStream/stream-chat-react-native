@@ -22,7 +22,7 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelsContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
@@ -41,11 +41,11 @@ export type ChannelsContextValue<
    *
    * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
-  additionalFlatListProps: Partial<FlatListProps<Channel<StreamChatClient>>>;
+  additionalFlatListProps: Partial<FlatListProps<Channel<StreamChatGenerics>>>;
   /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
    */
-  channels: Channel<StreamChatClient>[];
+  channels: Channel<StreamChatGenerics>[];
   /**
    * Custom indicator to use when channel list is empty
    *
@@ -119,7 +119,7 @@ export type ChannelsContextValue<
    *
    * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channelpreviewmessenger)
    */
-  Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatClient>>;
+  Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatGenerics>>;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    */
@@ -138,7 +138,7 @@ export type ChannelsContextValue<
   //  *
   //  * @param channel A channel object
   //  */
-  // setActiveChannel?: (channel: Channel<StreamChatClient>) => void;
+  // setActiveChannel?: (channel: Channel<StreamChatGenerics>) => void;
   /**
    * Function to gain access to the inner FlatList ref
    *
@@ -151,7 +151,7 @@ export type ChannelsContextValue<
    *  }}
    * ```
    */
-  setFlatListRef: (ref: FlatList<Channel<StreamChatClient>> | null) => void;
+  setFlatListRef: (ref: FlatList<Channel<StreamChatGenerics>> | null) => void;
   /**
    * Custom UI component to display loading channel skeletons
    *
@@ -168,54 +168,54 @@ export type ChannelsContextValue<
    *
    * @param channel A channel object
    */
-  onSelect?: (channel: Channel<StreamChatClient>) => void;
+  onSelect?: (channel: Channel<StreamChatGenerics>) => void;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
-  PreviewAvatar?: React.ComponentType<ChannelAvatarProps<StreamChatClient>>;
+  PreviewAvatar?: React.ComponentType<ChannelAvatarProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview of latest message on channel.
    *
    * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
-  PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<StreamChatClient>>;
+  PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render muted status.
    *
    * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
    */
-  PreviewMutedStatus?: React.ComponentType<ChannelPreviewMutedStatusProps<StreamChatClient>>;
+  PreviewMutedStatus?: React.ComponentType<ChannelPreviewMutedStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
    */
-  PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps<StreamChatClient>>;
+  PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
-  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatClient>>;
+  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
-  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatClient>>;
+  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
 
 export const ChannelsProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelsContextValue<StreamChatClient>;
+  value: ChannelsContextValue<StreamChatGenerics>;
 }>) => (
   <ChannelsContext.Provider value={value as unknown as ChannelsContextValue}>
     {children}
@@ -223,8 +223,8 @@ export const ChannelsProvider = <
 );
 
 export const useChannelsContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -233,14 +233,14 @@ export const useChannelsContext = <
  */
 export const withChannelsContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelsContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof ChannelsContextValue<StreamChatGenerics>>> => {
   const WithChannelsContextComponent = (
-    props: Omit<P, keyof ChannelsContextValue<StreamChatClient>>,
+    props: Omit<P, keyof ChannelsContextValue<StreamChatGenerics>>,
   ) => {
-    const channelsContext = useChannelsContext<StreamChatClient>();
+    const channelsContext = useChannelsContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...channelsContext} />;
   };

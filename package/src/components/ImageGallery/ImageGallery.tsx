@@ -81,7 +81,7 @@ export enum IsSwiping {
 }
 
 export type ImageGalleryCustomComponents<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
@@ -115,15 +115,15 @@ export type ImageGalleryCustomComponents<
    * @overrideType object
    */
   imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps<StreamChatClient>;
-    grid?: ImageGalleryGridImageComponents<StreamChatClient>;
+    footer?: ImageGalleryFooterCustomComponentProps<StreamChatGenerics>;
+    grid?: ImageGalleryGridImageComponents<StreamChatGenerics>;
     gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps<StreamChatClient>;
+    header?: ImageGalleryHeaderCustomComponentProps<StreamChatGenerics>;
   };
 };
 
-type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryCustomComponents<StreamChatClient> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryCustomComponents<StreamChatGenerics> & {
     overlayOpacity: Animated.SharedValue<number>;
     visible: boolean;
     imageGalleryGridHandleHeight?: number;
@@ -135,9 +135,9 @@ type Props<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamCha
   };
 
 export const ImageGallery = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatClient>,
+  props: Props<StreamChatGenerics>,
 ) => {
   const {
     imageGalleryCustomComponents,
@@ -153,9 +153,9 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatClient>[]>([]);
+  const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
   const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<StreamChatClient>();
+  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>();
 
   /**
    * Height constants
@@ -331,7 +331,7 @@ export const ImageGallery = <
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = images.reduce((acc: Photo<StreamChatClient>[], cur) => {
+  const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
@@ -361,7 +361,7 @@ export const ImageGallery = <
       };
     });
 
-    return [...acc, ...attachmentPhotos] as Photo<StreamChatClient>[];
+    return [...acc, ...attachmentPhotos] as Photo<StreamChatGenerics>[];
   }, []);
 
   /**
@@ -1150,13 +1150,13 @@ export const ImageGallery = <
           </TapGestureHandler>
         </Animated.View>
       </TapGestureHandler>
-      <ImageGalleryHeader<StreamChatClient>
+      <ImageGalleryHeader<StreamChatGenerics>
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
-      <ImageGalleryFooter<StreamChatClient>
+      <ImageGalleryFooter<StreamChatGenerics>
         opacity={headerFooterOpacity}
         openGridView={openGridView}
         photo={photos[selectedIndex]}
@@ -1215,17 +1215,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  {
-    id: string;
-    uri: string;
-    channelId?: string;
-    created_at?: string | Date;
-    messageId?: string;
-    original_height?: number;
-    original_width?: number;
-    user?: UserResponse<StreamChatClient> | null;
-    user_id?: string;
-  };
+export type Photo<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  id: string;
+  uri: string;
+  channelId?: string;
+  created_at?: string | Date;
+  messageId?: string;
+  original_height?: number;
+  original_width?: number;
+  user?: UserResponse<StreamChatGenerics> | null;
+  user_id?: string;
+};
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

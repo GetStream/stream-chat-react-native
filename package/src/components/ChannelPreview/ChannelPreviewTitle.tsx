@@ -12,15 +12,15 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewTitleProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ChannelPreviewProps<StreamChatClient>, 'channel'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
   displayName: string;
 };
 
 export const ChannelPreviewTitle = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewTitleProps<StreamChatClient>,
+  props: ChannelPreviewTitleProps<StreamChatGenerics>,
 ) => {
   const { displayName } = props;
   const {

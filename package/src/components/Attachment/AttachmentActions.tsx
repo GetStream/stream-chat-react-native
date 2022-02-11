@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
 });
 
 export type AttachmentActionsPropsWithContext<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<Attachment<StreamChatClient>, 'actions'> &
-  Pick<MessageContextValue<StreamChatClient>, 'handleAction'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<Attachment<StreamChatGenerics>, 'actions'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'handleAction'> & {
     styles?: Partial<{
       actionButton: StyleProp<ViewStyle>;
       buttonText: StyleProp<TextStyle>;
@@ -45,9 +45,9 @@ export type AttachmentActionsPropsWithContext<
   };
 
 const AttachmentActionsWithContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentActionsPropsWithContext<StreamChatClient>,
+  props: AttachmentActionsPropsWithContext<StreamChatGenerics>,
 ) => {
   const { actions, handleAction, styles: stylesProp = {} } = props;
 
@@ -116,9 +116,9 @@ const AttachmentActionsWithContext = <
   );
 };
 
-const areEqual = <StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AttachmentActionsPropsWithContext<StreamChatClient>,
-  nextProps: AttachmentActionsPropsWithContext<StreamChatClient>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AttachmentActionsPropsWithContext<StreamChatGenerics>,
+  nextProps: AttachmentActionsPropsWithContext<StreamChatGenerics>,
 ) => {
   const { actions: prevActions } = prevProps;
   const { actions: nextActions } = nextProps;
@@ -134,20 +134,20 @@ const MemoizedAttachmentActions = React.memo(
 ) as typeof AttachmentActionsWithContext;
 
 export type AttachmentActionsProps<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Attachment<StreamChatClient> &
-  Partial<Pick<MessageContextValue<StreamChatClient>, 'handleAction'>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Attachment<StreamChatGenerics> &
+  Partial<Pick<MessageContextValue<StreamChatGenerics>, 'handleAction'>>;
 
 /**
  * AttachmentActions - The actions you can take on an attachment.
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  */
 export const AttachmentActions = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentActionsProps<StreamChatClient>,
+  props: AttachmentActionsProps<StreamChatGenerics>,
 ) => {
-  const { handleAction } = useMessageContext<StreamChatClient>();
+  const { handleAction } = useMessageContext<StreamChatGenerics>();
   return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
 };
 

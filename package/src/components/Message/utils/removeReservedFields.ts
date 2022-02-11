@@ -2,9 +2,9 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 export const removeReservedFields = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageType<StreamChatClient>,
+  message: MessageType<StreamChatGenerics>,
 ) => {
   const retryMessage = { ...message };
   const reserved = [

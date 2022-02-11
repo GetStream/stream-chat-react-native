@@ -55,9 +55,9 @@ const MemoizedInlineLoadingMoreRecentIndicator = React.memo(
 ) as typeof InlineLoadingMoreRecentIndicatorWithContext;
 
 export const InlineLoadingMoreRecentIndicator = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { loadingMoreRecent } = usePaginatedMessageListContext<StreamChatClient>();
+  const { loadingMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
 
   return <MemoizedInlineLoadingMoreRecentIndicator loadingMoreRecent={loadingMoreRecent} />;
 };

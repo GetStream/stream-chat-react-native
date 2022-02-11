@@ -7,29 +7,29 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ThreadContextValue<
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: MessageType<StreamChatClient>) => void;
+  openThread: (message: MessageType<StreamChatGenerics>) => void;
   reloadThread: () => void;
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
-  thread: MessageType<StreamChatClient> | null;
+  thread: MessageType<StreamChatGenerics> | null;
   threadHasMore: boolean;
   threadLoadingMore: boolean;
-  threadMessages: ChannelState<StreamChatClient>['threads'][string];
+  threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
 };
 
 export const ThreadContext = React.createContext({} as ThreadContextValue);
 
 export const ThreadProvider = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ThreadContextValue<StreamChatClient>;
+  value: ThreadContextValue<StreamChatGenerics>;
 }>) => (
   <ThreadContext.Provider value={value as unknown as ThreadContextValue}>
     {children}
@@ -37,8 +37,8 @@ export const ThreadProvider = <
 );
 
 export const useThreadContext = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ThreadContext) as unknown as ThreadContextValue<StreamChatClient>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ThreadContext) as unknown as ThreadContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if ThreadContext
@@ -47,14 +47,14 @@ export const useThreadContext = <
  */
 export const withThreadContext = <
   P extends UnknownType,
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ThreadContextValue<StreamChatClient>>> => {
+): React.FC<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
   const WithThreadContextComponent = (
-    props: Omit<P, keyof ThreadContextValue<StreamChatClient>>,
+    props: Omit<P, keyof ThreadContextValue<StreamChatGenerics>>,
   ) => {
-    const threadContext = useThreadContext<StreamChatClient>();
+    const threadContext = useThreadContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...threadContext} />;
   };

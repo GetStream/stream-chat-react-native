@@ -12,7 +12,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
-  StreamChatClient extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
@@ -25,7 +25,7 @@ export const useMessageActionHandlers = <
   supportedReactions,
   updateMessage,
 }: Pick<
-  MessagesContextValue<StreamChatClient>,
+  MessagesContextValue<StreamChatGenerics>,
   | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
@@ -33,10 +33,11 @@ export const useMessageActionHandlers = <
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<StreamChatClient>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<StreamChatClient>, 'client'> &
-  Pick<MessageContextValue<StreamChatClient>, 'message'>) => {
-  const handleResendMessage = () => retrySendMessage(message as MessageResponse<StreamChatClient>);
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'message'>) => {
+  const handleResendMessage = () =>
+    retrySendMessage(message as MessageResponse<StreamChatGenerics>);
 
   const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
@@ -133,7 +134,7 @@ export const useMessageActionHandlers = <
             messageId,
             {
               type: reactionType,
-            } as Reaction<StreamChatClient>,
+            } as Reaction<StreamChatGenerics>,
             { enforce_unique: enforceUniqueReaction },
           );
         }
