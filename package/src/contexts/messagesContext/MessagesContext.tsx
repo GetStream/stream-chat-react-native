@@ -517,7 +517,7 @@ export const useMessagesContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useMessagesContext hook was called outside of the MessagesContext provider. Make sure this hook is called within the MessageList's UI component. The errored call is located in the ${componentName} component.`,
+      `The useMessagesContext hook was called outside of the MessagesContext provider. Make sure this hook is called within a child of the MessagesProvider component within MessageList component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;

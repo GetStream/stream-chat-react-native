@@ -120,7 +120,7 @@ export const useAttachmentPickerContext = (componentName?: string) => {
 
   if (!contextValue) {
     console.warn(
-      `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+      `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as AttachmentPickerContextValue;

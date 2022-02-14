@@ -70,7 +70,7 @@ export const useTypingContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useTypingContext hook was called outside of the TypingContext provider. Make sure this hook is called within a child of the Channel component. The errored call is located in the ${componentName} component.`,
+      `The useTypingContext hook was called outside of the TypingContext provider. Make sure this hook is called within a child of the TypingProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>;

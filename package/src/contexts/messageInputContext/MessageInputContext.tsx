@@ -1137,7 +1137,7 @@ export const useMessageInputContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure this hook is called within the MessageInput's UI component. The errored call is located in the ${componentName} component.`,
+      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure this hook is called within a child of the MessageInputProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;

@@ -138,7 +138,7 @@ export const useSuggestionsContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure this hook is called within the AutoComplete's UI component. The errored call is located in the ${componentName} component.`,
+      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure this hook is called within a child of the SuggestionsProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as SuggestionsContextValue<Co, Us>;

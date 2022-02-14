@@ -113,7 +113,7 @@ export const useChatContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useChatContext hook was called outside the ChatContext Provider. Make sure this hook is called within a child of the Chat component. The errored call is located in the ${componentName} component.`,
+      `The useChatContext hook was called outside the ChatContext Provider. Make sure this hook is called within a child of the ChatProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;

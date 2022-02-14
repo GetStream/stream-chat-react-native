@@ -38,7 +38,7 @@ export const useTranslationContext = (componentName?: string) => {
 
   if (!contextValue) {
     console.warn(
-      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure this hook is called within a child of the TranslationProvider component within OverlayProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as TranslationContextValue;

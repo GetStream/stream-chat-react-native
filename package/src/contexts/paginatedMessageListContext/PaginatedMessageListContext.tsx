@@ -98,7 +98,7 @@ export const usePaginatedMessageListContext = <
 
   if (!contextValue) {
     console.warn(
-      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure this hook is called within the MessageList's UI component. The errored call is located in the ${componentName} component.`,
+      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure this hook is called within a child of the PaginatedMessageListProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;

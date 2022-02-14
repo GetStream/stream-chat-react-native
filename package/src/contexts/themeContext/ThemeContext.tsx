@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useContext, useMemo } from 'react';
 
 import merge from 'lodash/merge';
 
@@ -39,9 +39,11 @@ export const mergeThemes = (params: MergedThemesParams) => {
 
 export const ThemeContext = React.createContext<Theme | undefined>(undefined);
 
-export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
-  const { children, mergedStyle, style } = props;
-  const { theme } = useTheme();
+export const ThemeProvider: React.FC<
+  PropsWithChildren<ThemeProviderInputValue & Partial<ThemeContextValue>>
+> = (props) => {
+  const { children, mergedStyle, style, theme } = props;
+
   const modifiedTheme = useMemo(() => {
     if (mergedStyle) {
       return mergedStyle;
@@ -58,11 +60,9 @@ export const useTheme = (componentName?: string) => {
 
   if (!theme) {
     console.warn(
-      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure this hook is called within a child of the ThemeProvider component OverlayProvider component. The errored call is located in the ${componentName} component.`,
     );
-
     return {} as ThemeContextValue;
   }
-
   return { theme } as ThemeContextValue;
 };

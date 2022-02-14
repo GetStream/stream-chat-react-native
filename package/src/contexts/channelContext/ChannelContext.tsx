@@ -226,7 +226,7 @@ export const useChannelContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useChannelContext hook was called outside of the ChannelContext provider. Make sure this hook is called within the Channel's UI component. The errored call is located in the ${componentName} component.`,
+      `The useChannelContext hook was called outside of the ChannelContext provider. Make sure this hook is called within a child of the ChannelProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;

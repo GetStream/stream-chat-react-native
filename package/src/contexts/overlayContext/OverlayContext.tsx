@@ -89,7 +89,7 @@ export const useOverlayContext = (componentName?: string) => {
 
   if (!contextValue) {
     console.warn(
-      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called at the top level before the Stream Chat Component. The errored call is located in the ${componentName} component.`,
+      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as OverlayContextValue;

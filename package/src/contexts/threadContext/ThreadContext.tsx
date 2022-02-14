@@ -80,7 +80,7 @@ export const useThreadContext = <
 
   if (!contextValue) {
     console.warn(
-      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure this hook is called within the Thread's UI component. The errored call is located in the ${componentName} component.`,
+      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure this hook is called within a child of the ThreadProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
     return {} as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;

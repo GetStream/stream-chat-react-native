@@ -34,5 +34,15 @@ export const OwnCapabilitiesProvider = ({
   </OwnCapabilitiesContext.Provider>
 );
 
-export const useOwnCapabilitiesContext = () =>
-  useContext(OwnCapabilitiesContext) as unknown as OwnCapabilitiesContextValue;
+export const useOwnCapabilitiesContext = (componentName?: string) => {
+  const contextValue = useContext(OwnCapabilitiesContext);
+
+  if (!contextValue) {
+    console.warn(
+      `The useOwnCapabilitiesContext hook was called outside the Channel Component. Make sure this hook is called within a child of the OwnCapabilitiesProvider component within Channel Component. The errored call is located in the ${componentName} component.`,
+    );
+    return {} as OwnCapabilitiesContextValue;
+  }
+
+  return contextValue as OwnCapabilitiesContextValue;
+};
