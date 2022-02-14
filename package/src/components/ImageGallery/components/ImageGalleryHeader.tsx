@@ -15,6 +15,7 @@ import { useOverlayContext } from '../../../contexts/overlayContext/OverlayConte
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
+  TDateTimeParserOutput,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
@@ -104,16 +105,29 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
   const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
 
   /**
-   * .calendar is required on moment types, but in reality it
-   * is unavailable on first render. We therefore check if it
-   * is available and call it, otherwise we call .fromNow.
+   * .calendar and .fromNow can be initialized after the first render,
+   * and attempting to access them at that time will cause an error
+   * to be thrown.
+   *
+   * This falls back to null if neither exist.
    */
-  const date =
-    parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar
-        ? parsedDate.calendar()
-        : parsedDate.fromNow()
-      : null;
+  const getDateObject = (date: TDateTimeParserOutput | null) => {
+    if (date === null || !isDayOrMoment(date)) {
+      return null;
+    }
+
+    if (date.calendar) {
+      return date.calendar();
+    }
+
+    if (date.fromNow) {
+      return date.fromNow();
+    }
+
+    return null;
+  };
+
+  const date = getDateObject(parsedDate);
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,

@@ -86,7 +86,7 @@ const MessageFooterWithContext = <
 
   const {
     theme: {
-      colors: { grey },
+      colors: { grey, grey_dark },
       messageSimple: {
         content: { deletedMetaText, eyeIcon, messageUser, metaContainer, metaText },
       },
@@ -99,11 +99,11 @@ const MessageFooterWithContext = <
       <View style={metaContainer} testID='message-deleted'>
         {deletedMessagesVisibilityType === 'sender' && (
           <>
-            <Eye pathFill={isDeleted ? undefined : grey} {...eyeIcon} />
+            <Eye pathFill={grey_dark} {...eyeIcon} />
             <Text
               style={[
                 {
-                  color: grey,
+                  color: grey_dark,
                   textAlign: alignment,
                 },
                 metaText,
@@ -138,11 +138,11 @@ const MessageFooterWithContext = <
     <View style={metaContainer} testID='message-status-time'>
       {otherAttachments.length && otherAttachments[0].actions ? (
         <>
-          <Eye {...eyeIcon} />
+          <Eye pathFill={grey_dark} {...eyeIcon} />
           <Text
             style={[
               {
-                color: grey,
+                color: grey_dark,
                 textAlign: alignment,
               },
               metaText,
