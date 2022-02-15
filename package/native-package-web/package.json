@@ -1,7 +1,7 @@
 {
-  "name": "stream-chat-expo-web",
-  "description": "The official Expo SDK for Stream Chat, a service for building chat applications",
-  "version": "0.0.1",
+  "name": "stream-chat-react-native-web",
+  "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
+  "version": "3.10.2",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -10,17 +10,14 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
+    "es6-symbol": "^3.1.3",
     "stream-chat-react-native-core": "3.10.2"
   },
   "peerDependencies": {
-    "expo": "^41.0.1",
-    "expo-sharing": "^9.1.2"
+    "react-native": ">=0.60.0"
   },
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
-  },
-  "devDependencies": {
-    "@types/react": "^17.0.39"
   }
 }
