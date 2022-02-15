@@ -1,0 +1,49 @@
+{
+  "name": "StreamReactNativeWebApp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint .",
+    "web": "react-scripts start"
+  },
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "^17.0.2",
+    "react-native": "0.67.2",
+    "react-native-gesture-handler": "^2.2.0",
+    "react-native-reanimated": "^2.4.1",
+    "react-native-web": "^0.17.5",
+    "stream-chat-react-native-core": "link:../../package",
+    "stream-chat-react-native-web": "link:../../package/native-package-web"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/runtime": "^7.17.2",
+    "@react-native-community/eslint-config": "^3.0.1",
+    "eslint": "^8.9.0",
+    "metro-react-native-babel-preset": "^0.68.0",
+    "react-scripts": "^5.0.0",
+    "react-test-renderer": "17.0.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
