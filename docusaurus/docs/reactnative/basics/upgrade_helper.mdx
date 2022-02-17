@@ -203,14 +203,17 @@ prop as mentioned in [example](../guides/message_actions_customization.mdx#how-t
 
 ## Update The Dependencies
 
-Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
-can be safely removed.
+- Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
+  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
+  can be safely removed.
 
 ```sh
 yarn remove react-native-blur
 npx pod-install
 ```
+
+- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
+  please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
 
 ## Refactor Typescript Generics
 
@@ -235,7 +238,6 @@ const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
 ```
 
 Please refer to our typescript guide for details of [Generics](../customization/typescript.mdx#generics).
-
 
 ## Whats new in v4?
 
