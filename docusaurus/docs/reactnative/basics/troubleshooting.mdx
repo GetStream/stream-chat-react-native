@@ -250,7 +250,7 @@ dependencies {
 
 When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case. It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen. You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
 
-```tsx
+````tsx
 client.on('channel.deleted', (event) => {
   if (event.cid === channel.cid) {
     // add your action here
@@ -266,7 +266,7 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 
 ```tsx
 import 'react-native-gesture-handler';
-```
+````
 
 And for Android you additionally need to update `MainActivity.java` to override the method for creating the `ReactRootView`.
 
