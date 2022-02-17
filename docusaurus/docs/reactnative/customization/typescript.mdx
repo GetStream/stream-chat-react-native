@@ -42,7 +42,7 @@ type StreamChatType = {
 ```
 
 :::note
-`LocalAttachmentType`, `LocalChannelType` etc. are type deifinitions for their respective key as per your application types necessities.
+`LocalAttachmentType`, `LocalChannelType` etc. are type definitions for their respective key as per your application types necessities.
 
 Eg:
 
@@ -121,7 +121,7 @@ The [TypeScript Example App](https://github.com/GetStream/stream-chat-react-nati
 Core to understanding this usage is [how generics can be applied to JSX elements](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#generic-type-arguments-in-jsx-elements).
 
 In many cases the use of a single prop such as `client` or `channel` allows TypeScript to infer the generics on an element.
-In this case `StreamChatType` is inferred from `channel` and passed to the props type for a custom Attachment component.
+In this case `channelType` within `StreamChatType` is inferred from `channel` and passed to the props type for a custom Attachment component.
 
 <img src={inference} alt='TypeScript Inference' />
 
