@@ -21,7 +21,7 @@ In many cases TypeScript can use [inference](https://www.typescriptlang.org/docs
 
 It is important that the proper generics be applied to the `stream-chat-js` client when it is instantiated.
 The [documentation on `stream-chat-js` TypeScript](https://github.com/GetStream/stream-chat-js#typescript-v2xx) has examples of how this can be done in detail.
-The client takes seven generics that correspond to the seven customizable fields that currently exist in `stream-chat-js`.
+The client a generic type that defines seven customizable fields that currently exist in [`stream-chat-js`](https://github.com/GetStream/stream-chat-js#typescript-v2xx).
 
 ```tsx
 const client = StreamChat.getInstance<StreamChatType>('YOUR_API_KEY');
@@ -73,7 +73,7 @@ The seven customizable fields these generics extend are provided via `stream-cha
 6. [`Reaction`](https://github.com/GetStream/stream-chat-js/blob/0e29bea1e773f15599564b5174d4fabbd3bcb495/src/types.ts#L1854)
 7. [`User`](https://github.com/GetStream/stream-chat-js/blob/0e29bea1e773f15599564b5174d4fabbd3bcb495/src/types.ts#L2004)
 
-All seven generics contain defaults in the `stream-chat-react-native` repo that you can extend for custom data as per your types for the Channel, Message, etc.
+All seven generics contain defaults in the `stream-chat-react-native` repo that you can extend for custom data such as custom types for Channels, Messages, etc.
 
 ```tsx
 type DefaultAttachmentType = Record<string, unknown>;
@@ -89,8 +89,8 @@ type DefaultUserType = Record<string, unknown> & {
 };
 ```
 
-Additional fields on the defaults i.e. `image` are custom fields used by `stream-chat-react-native` already within the SDK.
-When wanting to set a subset of generics the preceding and interceding generics must also be set in order for the TypeScript compiler to correctly understand intent.
+Additional fields on the defaults, i.e. `image`, are custom fields used by `stream-chat-react-native` already within the SDK.
+When wanting to set a subset of generics, the preceding and interceding generics must also be set for the TypeScript compiler to understand intent correctly.
 
 ```tsx
 type StreamChatType = {
