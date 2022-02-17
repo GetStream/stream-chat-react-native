@@ -6178,8 +6178,9 @@ stream-buffers@~2.2.0:
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
 "stream-chat-expo@link:../../package/expo-package":
-  version "0.0.0"
-  uid ""
+  version "3.10.2"
+  dependencies:
+    stream-chat-react-native-core "3.10.2"
 
 stream-chat-react-native-core@3.10.2:
   version "3.10.2"
@@ -6200,8 +6201,20 @@ stream-chat-react-native-core@3.10.2:
     stream-chat "~3.13.1"
 
 "stream-chat-react-native-core@link:../../package":
-  version "0.0.0"
-  uid ""
+  version "3.10.2"
+  dependencies:
+    "@babel/runtime" "7.13.10"
+    "@gorhom/bottom-sheet" "4.1.5"
+    dayjs "1.10.5"
+    file-loader "6.2.0"
+    i18next "20.2.4"
+    lodash-es "4.17.21"
+    metro-react-native-babel-preset "0.66.0"
+    mime-types "^2.1.34"
+    path "0.12.7"
+    react-art "^17.0.2"
+    react-native-markdown-package "1.8.1"
+    stream-chat "6.0.0"
 
 stream-chat@6.0.0:
   version "6.0.0"
@@ -6556,9 +6569,9 @@ urix@^0.1.0:
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
 
 url-parse@^1.4.4:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.3.tgz#71c1303d38fb6639ade183c2992c8cc0686df862"
-  integrity sha512-IIORyIQD9rvj0A4CLWsHkBBJuNqWpFQe224b6j9t/ABmquIS0qDU2pY6kl6AuOrL5OkCXHMCFNe1jBcuAggjvQ==
+  version "1.5.7"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.7.tgz#00780f60dbdae90181f51ed85fb24109422c932a"
+  integrity sha512-HxWkieX+STA38EDk7CE9MEryFeHCKzgagxlGvsdS7WBImq9Mk+PGwiT56w82WI3aicwJA8REp42Cxo98c8FZMA==
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
