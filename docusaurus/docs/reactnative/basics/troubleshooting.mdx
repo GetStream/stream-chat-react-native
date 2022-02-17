@@ -246,12 +246,9 @@ dependencies {
 }
 ```
 
-## Blank screen on channel delete
+## Blank screen when channel gets delete
 
-When a channel is deleted, and you are active on that channel a blank screen appears by default in the SDK as we return `null` by checking the status of the event returned from the backend.
-A user can go back to the channel list and then the channel gets disappeared from the list. At the same time, an event is shared from the backend which could be listened to get the status of the deleted channel.
-
-Users can listen to the event and store the status of the deleted channel and thereby display the appropriate message in the UI.
+When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case. It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen. You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
 
 ```tsx
 client.on('channel.deleted', (event) => {
@@ -259,7 +256,6 @@ client.on('channel.deleted', (event) => {
     // add your action here
   }
 }),
-```
 
 ## Touchables not working
 
