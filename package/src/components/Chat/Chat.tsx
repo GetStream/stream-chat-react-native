@@ -20,28 +20,13 @@ import {
 import { useStreami18n } from '../../hooks/useStreami18n';
 
 import { SDK } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
 
 export type ChatProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChatContextValue<StreamChatGenerics>, 'client'> & {
   /**
    * When false, ws connection won't be disconnection upon backgrounding the app.
    * To receive push notifications, its necessary that user doesn't have active
@@ -133,19 +118,13 @@ export type ChatProps<
 };
 
 const ChatWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
   const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
-  const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
+  const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
@@ -159,7 +138,7 @@ const ChatWithContext = <
   /**
    * Setup connection event listeners
    */
-  const { connectionRecovering, isOnline } = useIsOnline<At, Ch, Co, Ev, Me, Re, Us>(
+  const { connectionRecovering, isOnline } = useIsOnline<StreamChatGenerics>(
     client,
     closeConnectionOnBackground,
   );
@@ -167,7 +146,7 @@ const ChatWithContext = <
   /**
    * Setup muted user listener
    */
-  const mutedUsers = useMutedUsers<At, Ch, Co, Ev, Me, Re, Us>(client);
+  const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
   useEffect(() => {
     if (client.setUserAgent) {
@@ -177,8 +156,7 @@ const ChatWithContext = <
     }
   }, []);
 
-  const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
-    setChannel(newChannel);
+  const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   const chatContext = useCreateChatContext({
     channel,
@@ -192,7 +170,7 @@ const ChatWithContext = <
   if (loadingTranslators) return null;
 
   return (
-    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
+    <ChatProvider<StreamChatGenerics> value={chatContext}>
       <TranslationProvider value={translators}>
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
@@ -222,15 +200,9 @@ const ChatWithContext = <
  * - Us (UserType) - custom User object extension
  */
 export const Chat = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
   const { style } = useOverlayContext();
 

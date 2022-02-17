@@ -11,15 +11,7 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 
 import type { ChannelSort } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -59,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
@@ -76,17 +68,7 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<
-    Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalEventType,
-      LocalReactionType,
-      LocalUserType
-    >
-  > | null>(null);
+  const scrollRef = useRef<FlatList<Channel<StreamChatGenerics>> | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -118,19 +100,7 @@ export const ChannelListScreen: React.FC = () => {
 
   if (!chatClient) return null;
 
-  const setScrollRef = (
-    ref: React.RefObject<FlatList<
-      Channel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalEventType,
-        LocalReactionType,
-        LocalUserType
-      >
-    > | null>,
-  ) => {
+  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
     scrollRef.current = ref;
   };
 
@@ -203,15 +173,7 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalReactionType,
-              LocalUserType
-            >
+            <ChannelList<StreamChatGenerics>
               additionalFlatListProps={{
                 getItemLayout: (_, index) => ({
                   index,
