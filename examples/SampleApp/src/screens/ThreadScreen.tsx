@@ -14,7 +14,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
 
-import type { StackNavigatorParamList, StreamChatType } from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,7 +29,7 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: ThreadContextValue<StreamChatType>['thread'];
+  thread: ThreadContextValue<StreamChatGenerics>['thread'];
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
@@ -63,7 +63,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
-      <Channel<StreamChatType>
+      <Channel<StreamChatGenerics>
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
@@ -72,7 +72,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       >
         <View style={styles.container}>
           <ThreadHeader thread={thread} />
-          <Thread<StreamChatType> />
+          <Thread<StreamChatGenerics> />
         </View>
       </Channel>
     </SafeAreaView>

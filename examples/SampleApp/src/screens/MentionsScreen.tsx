@@ -12,7 +12,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
 import { useAppContext } from '../context/AppContext';
-import type { StreamChatType } from '../types';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,7 +64,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList<MessageResponse<StreamChatType>> | null>(null);
+  const scrollRef = useRef<FlatList<MessageResponse<StreamChatGenerics>> | null>(null);
 
   useScrollToTop(scrollRef);
 

@@ -4,10 +4,10 @@ import { useAppContext } from '../context/AppContext';
 
 import type { Channel, MessageResponse } from 'stream-chat';
 
-import type { StreamChatType } from '../types';
+import type { StreamChatGenerics } from '../types';
 
 export const usePaginatedAttachments = (
-  channel: Channel<StreamChatType>,
+  channel: Channel<StreamChatGenerics>,
   attachmentType: string,
 ) => {
   const { chatClient } = useAppContext();
@@ -15,7 +15,7 @@ export const usePaginatedAttachments = (
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<MessageResponse<StreamChatType>[]>([]);
+  const [messages, setMessages] = useState<MessageResponse<StreamChatGenerics>[]>([]);
 
   const fetchAttachments = async () => {
     if (queryInProgress.current) {

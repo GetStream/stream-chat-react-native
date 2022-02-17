@@ -38,7 +38,7 @@ import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel, UserResponse } from 'stream-chat';
 
-import type { StackNavigatorParamList, StreamChatType } from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 import { Pin } from '../icons/Pin';
 
 const styles = StyleSheet.create({
@@ -179,7 +179,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const [textInputFocused, setTextInputFocused] = useState(false);
 
   const membersStatus = useChannelMembersStatus(channel);
-  const displayName = useChannelPreviewDisplayName<StreamChatType>(channel, 30);
+  const displayName = useChannelPreviewDisplayName<StreamChatGenerics>(channel, 30);
 
   const allMembersLength = allMembers.length;
   useEffect(() => {
@@ -368,7 +368,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   await channel.update({
                     ...channel.data,
                     name: groupName,
-                  } as Parameters<Channel<StreamChatType>['update']>[0]);
+                  } as Parameters<Channel<StreamChatGenerics>['update']>[0]);
                   if (textInputRef.current) {
                     textInputRef.current.blur();
                   }

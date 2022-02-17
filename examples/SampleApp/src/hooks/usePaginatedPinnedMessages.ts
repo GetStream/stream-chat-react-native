@@ -4,17 +4,17 @@ import { useAppContext } from '../context/AppContext';
 
 import type { Channel, MessageResponse } from 'stream-chat';
 
-import type { StreamChatType } from '../types';
+import type { StreamChatGenerics } from '../types';
 import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
-export const usePaginatedPinnedMessages = (channel: Channel<StreamChatType>) => {
+export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>) => {
   const { chatClient } = useAppContext();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse<StreamChatType>[]>([]);
+  const [messages, setMessages] = useState<MessageResponse<StreamChatGenerics>[]>([]);
 
   const fetchPinnedMessages = async () => {
     if (queryInProgress.current) {

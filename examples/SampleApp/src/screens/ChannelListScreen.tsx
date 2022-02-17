@@ -11,7 +11,7 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 
 import type { ChannelSort } from 'stream-chat';
 
-import type { StreamChatType } from '../types';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatType> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
@@ -68,7 +68,7 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<Channel<StreamChatType>> | null>(null);
+  const scrollRef = useRef<FlatList<Channel<StreamChatGenerics>> | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -100,7 +100,7 @@ export const ChannelListScreen: React.FC = () => {
 
   if (!chatClient) return null;
 
-  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatType>> | null>) => {
+  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
     scrollRef.current = ref;
   };
 
@@ -173,7 +173,7 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList<StreamChatType>
+            <ChannelList<StreamChatGenerics>
               additionalFlatListProps={{
                 getItemLayout: (_, index) => ({
                   index,

@@ -24,13 +24,13 @@ The [documentation on `stream-chat-js` TypeScript](https://github.com/GetStream/
 The client a generic type that defines seven customizable fields that currently exist in [`stream-chat-js`](https://github.com/GetStream/stream-chat-js#typescript-v2xx).
 
 ```tsx
-const client = StreamChat.getInstance<StreamChatType>('YOUR_API_KEY');
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
 ```
 
-where `StreamChatType` can be defined as a type with the seven generics that correspond to the seven customizable fields as follows:
+where `StreamChatGenerics` can be defined as a type with the seven generics that correspond to the seven customizable fields as follows:
 
 ```tsx
-type StreamChatType = {
+type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;
@@ -93,7 +93,7 @@ Additional fields on the defaults, i.e. `image`, are custom fields used by `stre
 When wanting to set a subset of generics, the preceding and interceding generics must also be set for the TypeScript compiler to understand intent correctly.
 
 ```tsx
-type StreamChatType = {
+type StreamChatGenerics = {
   attachmentType: DefaultAttachmentType;
   channelType: DefaultChannelType;
   commandType: DefaultCommandType;
@@ -105,7 +105,7 @@ type StreamChatType = {
 ```
 
 ```tsx
-const client = StreamChat.getInstance<StreamChatType>('YOUR_API_KEY');
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
 ```
 
 :::note
@@ -121,7 +121,7 @@ The [TypeScript Example App](https://github.com/GetStream/stream-chat-react-nati
 Core to understanding this usage is [how generics can be applied to JSX elements](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#generic-type-arguments-in-jsx-elements).
 
 In many cases the use of a single prop such as `client` or `channel` allows TypeScript to infer the generics on an element.
-In this case `channelType` within `StreamChatType` is inferred from `channel` and passed to the props type for a custom Attachment component.
+In this case `channelType` within `StreamChatGenerics` is inferred from `channel` and passed to the props type for a custom Attachment component.
 
 <img src={inference} alt='TypeScript Inference' />
 
@@ -130,7 +130,7 @@ In these cases the generics must be applied to the component directly.
 `MessageList` for instance could have the previous generics used on `client` applied to it in a similar manner.
 
 ```tsx
-<MessageList<StreamChatType>
+<MessageList<StreamChatGenerics>
   onThreadSelect={thread => {
     /** Set thread and navigate to thread screen */
   }}
@@ -147,7 +147,7 @@ Hooks, including those to access contexts, also require generics to be applied t
 `useChannelContext` for instance would have the previous generics applied to it to get a correctly typed return for `channel`.
 
 ```tsx
-const { channel } = useChannelContext<StreamChatType>();
+const { channel } = useChannelContext<StreamChatGenerics>();
 ```
 
 ## Partial inference
@@ -161,5 +161,5 @@ The lack of partial inference is particularly relevant if Higher Order Component
 The `withChannelContext` HOC accepts the generics similarly to the `useChannelContext` hook, but because partial inference is not supported the props for the wrapped component must also be explicitly provided.
 
 ```tsx {2}
-withChannelContext<MyComponentProps, StreamChatType>(MyComponent);
+withChannelContext<MyComponentProps, StreamChatGenerics>(MyComponent);
 ```

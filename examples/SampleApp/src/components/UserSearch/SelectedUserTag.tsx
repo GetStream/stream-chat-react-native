@@ -4,7 +4,7 @@ import { useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
 
-import type { StreamChatType } from '../../types';
+import type { StreamChatGenerics } from '../../types';
 
 const styles = StyleSheet.create({
   tagContainer: {
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 type SelectedUserTagProps = {
   index: number;
   onPress: () => void;
-  tag: UserResponse<StreamChatType>;
+  tag: UserResponse<StreamChatGenerics>;
   disabled?: boolean;
 };
 

@@ -16,7 +16,7 @@ export type LocalUserType = {
   image?: string;
 };
 
-export type StreamChatType = {
+export type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;
@@ -33,36 +33,36 @@ export type DrawerNavigatorParamList = {
 
 export type StackNavigatorParamList = {
   ChannelFilesScreen: {
-    channel: Channel<StreamChatType>;
+    channel: Channel<StreamChatGenerics>;
   };
   ChannelImagesScreen: {
-    channel: Channel<StreamChatType>;
+    channel: Channel<StreamChatGenerics>;
   };
   ChannelListScreen: undefined;
   ChannelPinnedMessagesScreen: {
-    channel: Channel<StreamChatType>;
+    channel: Channel<StreamChatGenerics>;
   };
   ChannelScreen: {
-    channel?: Channel<StreamChatType>;
+    channel?: Channel<StreamChatGenerics>;
     channelId?: string;
     messageId?: string;
   };
   ChatScreen: undefined;
   GroupChannelDetailsScreen: {
-    channel: Channel<StreamChatType>;
+    channel: Channel<StreamChatGenerics>;
   };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
   OneOnOneChannelDetailScreen: {
-    channel: Channel<StreamChatType>;
+    channel: Channel<StreamChatGenerics>;
   };
   SharedGroupsScreen: {
-    user: Immutable<UserResponse<StreamChatType>> | UserResponse<StreamChatType>;
+    user: Immutable<UserResponse<StreamChatGenerics>> | UserResponse<StreamChatGenerics>;
   };
   ThreadScreen: {
-    channel: Channel<StreamChatType>;
-    thread: ThreadContextValue<StreamChatType>['thread'];
+    channel: Channel<StreamChatGenerics>;
+    thread: ThreadContextValue<StreamChatGenerics>['thread'];
   };
 };
 

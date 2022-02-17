@@ -291,13 +291,13 @@ user won't be able to see a cropped image on UI. In this version, we render imag
 The Typescript generics can be simplified using a single Generic which can be passed to the component.
 
 ```tsx
-const client = StreamChat.getInstance<StreamChatType>('YOUR_API_KEY');
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
 ```
 
-where `StreamChatType` can be defined as;
+where `StreamChatGenerics` can be defined as;
 
 ```tsx
-type StreamChatType = {
+type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;

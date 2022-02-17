@@ -18,7 +18,7 @@ import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayConte
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type { StackNavigatorParamList, StreamChatType } from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -42,7 +42,9 @@ type ChannelListScreenNavigationProp = StackNavigationProp<
   'ChannelListScreen'
 >;
 
-export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatType>> = (props) => {
+export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGenerics>> = (
+  props,
+) => {
   const { channel } = props;
 
   const { setOverlay } = useAppOverlayContext();
@@ -51,7 +53,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatTyp
 
   const { data, setData } = useChannelInfoOverlayContext();
 
-  const { client } = useChatContext<StreamChatType>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 

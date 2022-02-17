@@ -4,14 +4,14 @@ import { StreamChat } from 'stream-chat';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { LoginConfig, StreamChatType } from '../types';
+import type { LoginConfig, StreamChatGenerics } from '../types';
 
 export const useChatClient = () => {
-  const [chatClient, setChatClient] = useState<StreamChat<StreamChatType> | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
-    const client = StreamChat.getInstance<StreamChatType>(config.apiKey, {
+    const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
       timeout: 6000,
     });
 

@@ -29,7 +29,11 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
 import type { StreamChat } from 'stream-chat';
 
-import type { StackNavigatorParamList, StreamChatType, UserSelectorParamList } from './src/types';
+import type {
+  StackNavigatorParamList,
+  StreamChatGenerics,
+  UserSelectorParamList,
+} from './src/types';
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
@@ -87,14 +91,14 @@ const DrawerNavigator: React.FC = () => (
 );
 
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<StreamChatType>;
+  chatClient: StreamChat<StreamChatGenerics>;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<StreamChatType> bottomInset={bottom} value={{ style: streamChatTheme }}>
-      <Chat<StreamChatType> client={chatClient}>
+    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <Chat<StreamChatGenerics> client={chatClient}>
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />

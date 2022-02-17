@@ -34,7 +34,7 @@ type LocalMessageType = Record<string, unknown>;
 type LocalReactionType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
 
-type StreamChatType = {
+type StreamChatGenerics = {
   attachmentType: LocalAttachmentType;
   channelType: LocalChannelType;
   commandType: LocalCommandType;
@@ -44,7 +44,7 @@ type StreamChatType = {
   userType: LocalUserType;
 };
 
-const chatClient = StreamChat.getInstance<StreamChatType>('q95x9hkbyd6p');
+const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 const user = {
@@ -56,7 +56,7 @@ const filters = {
   members: { $in: ['ron'] },
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatType> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
@@ -84,7 +84,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({ navigation }) => 
   return (
     <Chat client={chatClient} i18nInstance={streami18n}>
       <View style={{ height: '100%' }}>
-        <ChannelList<StreamChatType>
+        <ChannelList<StreamChatGenerics>
           filters={memoizedFilters}
           onSelect={(channel) => {
             setChannel(channel);
@@ -123,7 +123,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
       <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel channel={channel} keyboardVerticalOffset={headerHeight} thread={thread}>
           <View style={{ flex: 1 }}>
-            <MessageList<StreamChatType>
+            <MessageList<StreamChatGenerics>
               onThreadSelect={(thread) => {
                 setThread(thread);
                 if (channel?.id) {
@@ -165,7 +165,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation }) => {
               justifyContent: 'flex-start',
             }}
           >
-            <Thread<StreamChatType> onThreadDismount={() => setThread(null)} />
+            <Thread<StreamChatGenerics> onThreadDismount={() => setThread(null)} />
           </View>
         </Channel>
       </Chat>
@@ -181,12 +181,12 @@ type NavigationParamsList = ChannelRoute & ChannelListRoute & ThreadRoute;
 const Stack = createStackNavigator<NavigationParamsList>();
 
 type AppContextType = {
-  channel: ChannelType<StreamChatType> | undefined;
-  setChannel: React.Dispatch<React.SetStateAction<ChannelType<StreamChatType> | undefined>>;
+  channel: ChannelType<StreamChatGenerics> | undefined;
+  setChannel: React.Dispatch<React.SetStateAction<ChannelType<StreamChatGenerics> | undefined>>;
   setThread: React.Dispatch<
-    React.SetStateAction<ThreadContextValue<StreamChatType>['thread'] | undefined>
+    React.SetStateAction<ThreadContextValue<StreamChatGenerics>['thread'] | undefined>
   >;
-  thread: ThreadContextValue<StreamChatType>['thread'] | undefined;
+  thread: ThreadContextValue<StreamChatGenerics>['thread'] | undefined;
 };
 
 const AppContext = React.createContext({} as AppContextType);
@@ -196,9 +196,9 @@ const App = () => {
   const { bottom } = useSafeAreaInsets();
   const theme = useStreamChatTheme();
 
-  const [channel, setChannel] = useState<ChannelType<StreamChatType>>();
+  const [channel, setChannel] = useState<ChannelType<StreamChatGenerics>>();
   const [clientReady, setClientReady] = useState(false);
-  const [thread, setThread] = useState<ThreadContextValue<StreamChatType>['thread']>();
+  const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>();
 
   useEffect(() => {
     const setupClient = async () => {
@@ -221,7 +221,7 @@ const App = () => {
       }}
     >
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <OverlayProvider<StreamChatType>
+        <OverlayProvider<StreamChatGenerics>
           bottomInset={bottom}
           i18nInstance={streami18n}
           value={{ style: theme }}

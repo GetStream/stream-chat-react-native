@@ -8,7 +8,7 @@ import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
 import type { MessageResponse } from 'stream-chat';
 
-import type { StreamChatType } from '../../types';
+import type { StreamChatGenerics } from '../../types';
 
 const styles = StyleSheet.create({
   contentContainer: { flexGrow: 1 },
@@ -52,13 +52,13 @@ export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
   loading: boolean;
   loadMore: () => void;
-  messages: MessageResponse<StreamChatType>[] | undefined;
+  messages: MessageResponse<StreamChatGenerics>[] | undefined;
   refreshing?: boolean;
   refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
-  (props, scrollRef: React.Ref<FlatList<MessageResponse<StreamChatType>> | null>) => {
+  (props, scrollRef: React.Ref<FlatList<MessageResponse<StreamChatGenerics>> | null>) => {
     const {
       EmptySearchIndicator,
       loading,
