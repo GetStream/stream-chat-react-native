@@ -417,18 +417,19 @@ export type Theme = {
       moreImagesText: TextStyle;
     };
     giphy: {
+      buttonContainer: ViewStyle;
       cancel: TextStyle;
-      cancelContainer: ViewStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
+      giphyHeaderText: TextStyle;
+      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
-      giphyText: TextStyle;
+      giphyMaskText: TextStyle;
+      header: ViewStyle;
       selectionContainer: ViewStyle;
-      selector: ViewStyle;
       send: TextStyle;
-      sendContainer: ViewStyle;
-      shuffleButton: ViewStyle;
+      shuffle: TextStyle;
       title: TextStyle;
     };
     pinnedHeader: {
@@ -837,7 +838,7 @@ export const defaultTheme: Theme = {
       deletedContainer: {},
       deletedContainerInner: {},
       deletedMetaText: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
       },
       deletedText: {
         em: {
@@ -908,18 +909,19 @@ export const defaultTheme: Theme = {
       moreImagesText: {},
     },
     giphy: {
+      buttonContainer: {},
       cancel: {},
-      cancelContainer: {},
       container: {},
       giphy: {},
       giphyContainer: {},
+      giphyHeaderText: {},
+      giphyHeaderTitle: {},
       giphyMask: {},
-      giphyText: {},
+      giphyMaskText: {},
+      header: {},
       selectionContainer: {},
-      selector: {},
       send: {},
-      sendContainer: {},
-      shuffleButton: {},
+      shuffle: {},
       title: {},
     },
     pinnedHeader: {

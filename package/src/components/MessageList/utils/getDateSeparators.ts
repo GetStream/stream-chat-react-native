@@ -1,28 +1,13 @@
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type GetDateSeparatorsParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   messages:
-    | PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
+    | PaginatedMessageListContextValue<StreamChatGenerics>['messages']
+    | ThreadContextValue<StreamChatGenerics>['threadMessages'];
   hideDateSeparators?: boolean;
   userId?: string;
 };
@@ -32,15 +17,9 @@ export type DateSeparators = {
 };
 
 export const getDateSeparators = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  params: GetDateSeparatorsParams<At, Ch, Co, Ev, Me, Re, Us>,
+  params: GetDateSeparatorsParams<StreamChatGenerics>,
 ) => {
   const { hideDateSeparators, messages, userId } = params;
   const dateSeparators: DateSeparators = {};
