@@ -212,6 +212,31 @@ yarn remove react-native-blur
 npx pod-install
 ```
 
+## Refactor Typescript Generics
+
+Until now StreamChat client and Chat components accepted 7 different generics as provided in following example:
+
+```tsx
+const client = StreamChat.getInstance<
+  ChatAttachment,
+  ChatChannel,
+  CustomCommands,
+  ChatEvent,
+  UserMessage,
+  CustomReaction,
+  ChatUser
+>('YOUR_API_KEY', 'API_KEY_SECRET');
+```
+
+These 7 generics have been replaced now with 1 single generics for the sake of simplicity.
+
+```tsx
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
+```
+
+Please refer to our typescript guide for details of [Generics](../customization/typescript.mdx#generics).
+
+
 ## Whats new in v4?
 
 ### Optimized Image Attachments
@@ -288,7 +313,7 @@ user won't be able to see a cropped image on UI. In this version, we render imag
 
 ### Refactor Generics to a Single Generic
 
-The Typescript generics can be simplified using a single Generic which can be passed to the component.
+The Typescript generics have been simplified to a single generic instead of 7 different generics (as in previous versions of SDK) which should be passed to the component or StreamChat client.
 
 ```tsx
 const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
