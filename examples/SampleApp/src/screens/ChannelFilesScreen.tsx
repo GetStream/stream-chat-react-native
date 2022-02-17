@@ -17,7 +17,7 @@ import { File } from '../icons/File';
 import type { RouteProp } from '@react-navigation/native';
 import type { Attachment } from 'stream-chat';
 
-import type { LocalAttachmentType, StackNavigatorParamList } from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -90,7 +90,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 
   const [sections, setSections] = useState<
     Array<{
-      data: Attachment[];
+      data: Attachment<StreamChatGenerics>[];
       title: string;
     }>
   >([]);
@@ -99,7 +99,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     const newSections: Record<
       string,
       {
-        data: Attachment[];
+        data: Attachment<StreamChatGenerics>[];
         title: string;
       }
     > = {};
@@ -137,7 +137,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
-          <SectionList<Attachment<LocalAttachmentType>>
+          <SectionList<Attachment<StreamChatGenerics>>
             contentContainerStyle={styles.sectionContentContainer}
             ListEmptyComponent={EmptyListComponent}
             onEndReached={loadMore}

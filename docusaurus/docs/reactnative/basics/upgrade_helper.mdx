@@ -203,14 +203,41 @@ prop as mentioned in [example](../guides/message_actions_customization.mdx#how-t
 
 ## Update The Dependencies
 
-Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
-can be safely removed.
+- Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
+  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
+  can be safely removed.
 
 ```sh
 yarn remove react-native-blur
 npx pod-install
 ```
+
+- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
+  please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
+
+## Refactor Typescript Generics
+
+Until now StreamChat client and Chat components accepted 7 different generics as provided in following example:
+
+```tsx
+const client = StreamChat.getInstance<
+  ChatAttachment,
+  ChatChannel,
+  CustomCommands,
+  ChatEvent,
+  UserMessage,
+  CustomReaction,
+  ChatUser
+>('YOUR_API_KEY', 'API_KEY_SECRET');
+```
+
+These 7 generics have been replaced now with 1 single generics for the sake of simplicity.
+
+```tsx
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
+```
+
+Please refer to our typescript guide for details of [Generics](../customization/typescript.mdx#generics).
 
 ## Whats new in v4?
 
@@ -286,6 +313,52 @@ user won't be able to see a cropped image on UI. In this version, we render imag
 </TabItem>
 </Tabs>
 
+### Refactor Generics to a Single Generic
+
+The Typescript generics have been simplified to a single generic instead of 7 different generics (as in previous versions of SDK) which should be passed to the component or StreamChat client.
+
+```tsx
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
+```
+
+where `StreamChatGenerics` can be defined as;
+
+```tsx
+type StreamChatGenerics = {
+  attachmentType: LocalAttachmentType;
+  channelType: LocalChannelType;
+  commandType: LocalCommandType;
+  eventType: LocalEventType;
+  messageType: LocalMessageType;
+  reactionType: LocalReactionType;
+  userType: LocalUserType;
+};
+```
+
+:::note
+`LocalAttachmentType`, `LocalChannelType` etc. are type deifinitions for their respective key as per your application types necessities.
+
+Eg:
+
+```tsx
+type LocalAttachmentType = {
+  file_size?: number;
+  mime_type?: string;
+};
+type LocalChannelType = Record<string, unknown>;
+type LocalCommandType = string;
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalReactionType = Record<string, unknown>;
+type LocalUserType = {
+  image?: string;
+};
+```
+
+:::
+
+A seperate guide has been added to documentation for details of [Generics](../customization/typescript.mdx#generics)
+
 ### Slow Mode Feature
 
 Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cooldown interval.
@@ -344,14 +417,19 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
   }}
 ```
 
-### UI/UX Changes and Performance Improvements
+### Replaced next/prev Giphy Navigation With Shuffle
 
-- Images will be rendered
+Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
+api doesn't support pagination and it resulted into confusing user experience.
+
+### Dropped BlurView Package
 
 - Background for the overlay which opens up when user long-presses on a message, has been replaced with
   opacity based background instead of [BlurView](https://github.com/Kureev/react-native-blur) [#874](https://github.com/GetStream/stream-chat-react-native/pull/874)
   This dependency caused a lot of issues due to its underlying native [BlurView](https://github.com/Dimezis/BlurView) dependency.
   Thus we decided to get rid of this hurdle by dropping this peer dependency.
+
+### Performance Improvements
 
 - `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
   - Long press animation on message UI has been removed

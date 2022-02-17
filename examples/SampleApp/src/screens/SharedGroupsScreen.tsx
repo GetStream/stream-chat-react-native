@@ -18,16 +18,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,15 +54,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps<
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
->;
+type CustomPreviewProps = ChannelPreviewMessengerProps<StreamChatGenerics>;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useAppContext();
@@ -166,15 +149,7 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListMessengerProps<
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
->;
+type ListComponentProps = ChannelListMessengerProps<StreamChatGenerics>;
 
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.

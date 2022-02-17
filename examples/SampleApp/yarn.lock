@@ -7375,10 +7375,10 @@ stream-chat-react-native-core@3.10.2:
   version "0.0.0"
   uid ""
 
-stream-chat@^5.1.2:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-5.1.2.tgz#c55d3078505d957a6b0db18e3af25ebbec7b8746"
-  integrity sha512-Hqxj6iJdV10YG2hZXRhkVtVm6lEUuRK+AuTmtw639CTo3RokQiBTZ7+hYCqayhIFAX2Lrt6Drfqiol8lmcreag==
+stream-chat@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.0.0.tgz#39ec7cefc911a1cbb4debccce142222b05167f4d"
+  integrity sha512-zpzpiMsR2eTYS7UluimGwVcA4vsaP/GQtEUufwlZWhxS07GaSd9SCIDYbJlmdtV47TfiMDOcDKRrm50adkBlBQ==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"
