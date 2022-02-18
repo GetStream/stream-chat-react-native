@@ -18,11 +18,14 @@ import {
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
+import init from '../../init';
 
 import { SDK } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
+
+init();
 
 export type ChatProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -16,13 +16,13 @@
   "peerDependencies": {
     "@react-native-community/cameraroll": ">=4.0.1",
     "@react-native-community/netinfo": ">=2.0.7",
+    "@stream-io/flat-list-mvcp": "0.10.1",
     "react-native": ">=0.60.0",
     "react-native-document-picker": ">=3.2.0",
     "react-native-fs": ">=2.16.6",
     "react-native-haptic-feedback": ">=1.11.0",
     "react-native-image-crop-picker": ">=0.33.2",
     "react-native-image-resizer": ">=1.4.2",
-    "@stream-io/flat-list-mvcp": "0.10.1",
     "react-native-share": ">=4.1.0"
   },
   "scripts": {
