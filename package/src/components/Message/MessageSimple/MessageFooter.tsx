@@ -20,16 +20,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 type MessageFooterComponentProps = {
@@ -38,15 +29,9 @@ type MessageFooterComponentProps = {
 };
 
 type MessageFooterPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'members'
   | 'message'
@@ -55,21 +40,15 @@ type MessageFooterPropsWithContext<
   | 'lastGroupMessage'
 > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     'deletedMessagesVisibilityType' | 'MessageStatus'
   > &
   MessageFooterComponentProps;
 
 const MessageFooterWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -162,17 +141,9 @@ const MessageFooterWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageFooterPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageFooterPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment: prevAlignment,
@@ -238,39 +209,26 @@ const MemoizedMessageFooter = React.memo(
 ) as typeof MessageFooterWithContext;
 
 export type MessageFooterProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'members'>> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Pick<ChannelContextValue<StreamChatGenerics>, 'members'>> &
   MessageFooterComponentProps & {
     alignment?: Alignment;
     lastGroupMessage?: boolean;
-    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-    MessageStatus?: React.ComponentType<MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>>;
-    otherAttachments?: Attachment<At>[];
+    message?: MessageType<StreamChatGenerics>;
+    MessageStatus?: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
+    otherAttachments?: Attachment<StreamChatGenerics>[];
     showMessageStatus?: boolean;
   };
 
 export const MessageFooter = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageFooterProps<StreamChatGenerics>,
 ) => {
   const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<StreamChatGenerics>();
 
-  const { deletedMessagesVisibilityType, MessageStatus } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { deletedMessagesVisibilityType, MessageStatus } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageFooter

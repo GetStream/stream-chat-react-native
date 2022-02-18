@@ -30,14 +30,8 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import type { StreamChat } from 'stream-chat';
 
 import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
   StackNavigatorParamList,
+  StreamChatGenerics,
   UserSelectorParamList,
 } from './src/types';
 
@@ -97,43 +91,14 @@ const DrawerNavigator: React.FC = () => (
 );
 
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  chatClient: StreamChat<StreamChatGenerics>;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-      bottomInset={bottom}
-      value={{ style: streamChatTheme }}
-    >
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-        client={chatClient}
-      >
+    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <Chat<StreamChatGenerics> client={chatClient}>
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />

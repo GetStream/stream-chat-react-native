@@ -14,16 +14,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { GiphyIcon } from '../../icons';
 import { Lightning } from '../../icons/Lightning';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -102,31 +93,19 @@ const styles = StyleSheet.create({
 });
 
 export type GiphyPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
-    attachment: Attachment<At>;
+  Pick<MessagesContextValue<StreamChatGenerics>, 'additionalTouchableProps'> & {
+    attachment: Attachment<StreamChatGenerics>;
   };
 
 const GiphyWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GiphyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
@@ -282,17 +261,9 @@ const GiphyWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: GiphyPropsWithContext<StreamChatGenerics>,
+  nextProps: GiphyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
@@ -321,37 +292,25 @@ const areEqual = <
 const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWithContext;
 
 export type GiphyProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPressIn'> &
-    Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'>
+  Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPressIn'> &
+    Pick<MessagesContextValue<StreamChatGenerics>, 'additionalTouchableProps'>
 > & {
-  attachment: Attachment<At>;
+  attachment: Attachment<StreamChatGenerics>;
 };
 
 /**
  * UI component for card in attachments.
  */
 export const Giphy = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GiphyProps<StreamChatGenerics>,
 ) => {
   const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<StreamChatGenerics>();
+  const { additionalTouchableProps } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedGiphy

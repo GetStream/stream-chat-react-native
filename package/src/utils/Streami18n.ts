@@ -38,7 +38,7 @@ import 'dayjs/locale/tr';
  */
 import 'dayjs/locale/en';
 
-import type { UnknownType } from '../types/types';
+import type { DefaultStreamChatGenerics } from '../types/types';
 
 Dayjs.extend(updateLocale);
 
@@ -352,7 +352,7 @@ export class Streami18n {
 
   translations: {
     [key: string]: {
-      [key: string]: Partial<typeof enTranslations> | UnknownType;
+      [key: string]: Partial<typeof enTranslations> | DefaultStreamChatGenerics;
     };
   } = {
     en: { [defaultNS]: enTranslations },
@@ -585,7 +585,7 @@ export class Streami18n {
    */
   registerTranslation(
     language: string,
-    translation: Partial<typeof enTranslations> | UnknownType,
+    translation: Partial<typeof enTranslations> | DefaultStreamChatGenerics,
     customDayjsLocale?: Partial<ILocale>,
   ) {
     if (!translation) {
