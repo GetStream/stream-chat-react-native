@@ -2,26 +2,11 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { ChannelState } from 'stream-chat';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type PaginatedMessageListContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Has more messages to load
@@ -46,7 +31,7 @@ export type PaginatedMessageListContextValue<
   /**
    * Messages from client state
    */
-  messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
+  messages: ChannelState<StreamChatGenerics>['messages'];
   /**
    * Set loadingMore
    */
@@ -61,18 +46,12 @@ export const PaginatedMessageListContext =
   React.createContext<PaginatedMessageListContextValue | undefined>(undefined);
 
 export const PaginatedMessageListProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value?: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value?: PaginatedMessageListContextValue<StreamChatGenerics>;
 }>) => (
   <PaginatedMessageListContext.Provider
     value={value as unknown as PaginatedMessageListContextValue}
@@ -82,29 +61,23 @@ export const PaginatedMessageListProvider = <
 );
 
 export const usePaginatedMessageListContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   componentName?: string,
 ) => {
   const contextValue = useContext(
     PaginatedMessageListContext,
-  ) as unknown as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  ) as unknown as PaginatedMessageListContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
     console.warn(
       `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure this hook is called within a child of the PaginatedMessageListProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
-    return {} as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+    return {} as PaginatedMessageListContextValue<StreamChatGenerics>;
   }
 
-  return contextValue as PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  return contextValue as PaginatedMessageListContextValue<StreamChatGenerics>;
 };
 
 /**
@@ -114,21 +87,14 @@ export const usePaginatedMessageListContext = <
  */
 export const withPaginatedMessageListContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>> => {
   const WithPaginatedMessageListContextComponent = (
-    props: Omit<P, keyof PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof PaginatedMessageListContextValue<StreamChatGenerics>>,
   ) => {
-    const paginatedMessageListContext =
-      usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const paginatedMessageListContext = usePaginatedMessageListContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...paginatedMessageListContext} />;
   };

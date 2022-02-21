@@ -1,6 +1,6 @@
 import type { Attachment } from 'stream-chat';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 /**
  * Returns the aspect ratio of an image attachment.
@@ -8,9 +8,9 @@ import type { DefaultAttachmentType, UnknownType } from '../../../types/types';
  * @param image Image attachment.
  * @returns {number}
  */
-export function getAspectRatio<At extends UnknownType = DefaultAttachmentType>(
-  image: Attachment<At>,
-) {
+export function getAspectRatio<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(image: Attachment<StreamChatGenerics>) {
   if (image.type !== 'image') {
     throw new Error('getAspectRatio() can only be called on an image attachment');
   }

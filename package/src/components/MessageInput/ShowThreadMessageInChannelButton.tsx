@@ -13,16 +13,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { Check } from '../../icons';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   checkBox: {
@@ -158,29 +149,16 @@ export type ShowThreadMessageInChannelButtonProps =
   Partial<ShowThreadMessageInChannelButtonWithContextProps>;
 
 export const ShowThreadMessageInChannelButton = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {
   const { t } = useTranslationContext('ShowThreadMessageInChannelButton');
-  const { allowThreadMessagesInChannel } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>(
+  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatGenerics>(
     'ShowThreadMessageInChannelButton',
   );
-  const { sendThreadMessageInChannel, setSendThreadMessageInChannel } = useMessageInputContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >('ShowThreadMessageInChannelButton');
+  const { sendThreadMessageInChannel, setSendThreadMessageInChannel } =
+    useMessageInputContext<StreamChatGenerics>('ShowThreadMessageInChannelButton');
 
   return (
     <MemoizedShowThreadMessageInChannelButton

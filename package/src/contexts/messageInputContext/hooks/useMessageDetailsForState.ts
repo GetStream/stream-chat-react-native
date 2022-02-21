@@ -1,41 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { generateRandomId } from '../../../utils/utils';
 
 import type { FileUpload, ImageUpload, MessageInputContextValue } from '../MessageInputContext';
 
 export const isEditingBoolean = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  editing: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
+  editing: MessageInputContextValue<StreamChatGenerics>['editing'],
 ): editing is boolean => typeof editing === 'boolean';
 
 export const useMessageDetailsForState = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
+  message: MessageInputContextValue<StreamChatGenerics>['editing'],
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
@@ -56,17 +35,14 @@ export const useMessageDetailsForState = <
     typeof message === 'boolean' ? '' : `${message.id}${message.text}${message.updated_at}`;
 
   useEffect(() => {
-    if (
-      !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
-      Array.isArray(message?.mentioned_users)
-    ) {
+    if (!isEditingBoolean<StreamChatGenerics>(message) && Array.isArray(message?.mentioned_users)) {
       const mentionedUsers = message.mentioned_users.map((user) => user.id);
       setMentionedUsers(mentionedUsers);
     }
   }, [messageValue]);
 
   useEffect(() => {
-    if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
+    if (message && !isEditingBoolean<StreamChatGenerics>(message)) {
       setText(message?.text || '');
       const newFileUploads = [];
       const newImageUploads = [];

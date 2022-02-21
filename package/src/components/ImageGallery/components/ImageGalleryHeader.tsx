@@ -20,7 +20,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
-import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -58,29 +58,37 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryHeaderCustomComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryHeaderCustomComponent<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ({
   hideOverlay,
   photo,
 }: {
   hideOverlay: () => void;
-  photo?: Photo<Us>;
+  photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryHeaderCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
-  centerElement?: ImageGalleryHeaderCustomComponent<Us>;
+export type ImageGalleryHeaderCustomComponentProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  centerElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
   CloseIcon?: React.ReactElement;
-  leftElement?: ImageGalleryHeaderCustomComponent<Us>;
-  rightElement?: ImageGalleryHeaderCustomComponent<Us>;
+  leftElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
+  rightElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
 };
 
-type Props<Us extends UnknownType = DefaultUserType> =
-  ImageGalleryHeaderCustomComponentProps<Us> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
     opacity: Animated.SharedValue<number>;
     visible: Animated.SharedValue<number>;
-    photo?: Photo<Us>;
+    photo?: Photo<StreamChatGenerics>;
   };
 
-export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGalleryHeader = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: Props<StreamChatGenerics>,
+) => {
   const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);
   const {

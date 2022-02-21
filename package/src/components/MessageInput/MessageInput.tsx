@@ -32,16 +32,7 @@ import {
 import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { Asset } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -108,16 +99,10 @@ const styles = StyleSheet.create({
 });
 
 type MessageInputPropsWithContext<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled' | 'members' | 'watchers'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
   Pick<
-    MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'asyncUploads'
@@ -151,30 +136,24 @@ type MessageInputPropsWithContext<
     | 'removeImage'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
-    SuggestionsContextValue<Co, Us>,
+    SuggestionsContextValue<StreamChatGenerics>,
     | 'AutoCompleteSuggestionHeader'
     | 'AutoCompleteSuggestionItem'
     | 'AutoCompleteSuggestionList'
     | 'suggestions'
     | 'triggerType'
   > &
-  Pick<ThreadContextValue, 'thread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
 
 const MessageInputWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps,
@@ -404,7 +383,7 @@ const MessageInputWithContext = <
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
-    const result: UserResponse<Us>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (members && Object.values(members).length) {
       Object.values(members).forEach((member) => {
         if (member.user) {
@@ -420,7 +399,7 @@ const MessageInputWithContext = <
     const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
-    const uniqueUsers: { [key: string]: UserResponse<Us> } = {};
+    const uniqueUsers: { [key: string]: UserResponse<StreamChatGenerics> } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
         uniqueUsers[user.id] = user;
@@ -432,7 +411,7 @@ const MessageInputWithContext = <
   };
 
   const getWatchers = () => {
-    const result: UserResponse<Us>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (watchers && Object.values(watchers).length) {
       result.push(...Object.values(watchers));
     }
@@ -543,7 +522,7 @@ const MessageInputWithContext = <
                       <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
                     </View>
                   )}
-                  <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
+                  <AutoCompleteInput<StreamChatGenerics>
                     additionalTextInputProps={additionalTextInputProps}
                     cooldownActive={!!cooldownRemainingSeconds}
                   />
@@ -611,17 +590,9 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageInputPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
@@ -735,14 +706,8 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageInputPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for message input
@@ -754,15 +719,9 @@ export type MessageInputProps<
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 export const MessageInput = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageInputProps<StreamChatGenerics>,
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -770,7 +729,7 @@ export const MessageInput = <
     disabled = false,
     members,
     watchers,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
+  } = useChannelContext<StreamChatGenerics>('MessageInput');
 
   const {
     additionalTextInputProps,
@@ -806,9 +765,9 @@ export const MessageInput = <
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
+  } = useMessageInputContext<StreamChatGenerics>('MessageInput');
 
-  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
+  const { Reply } = useMessagesContext<StreamChatGenerics>('MessageInput');
 
   const {
     AutoCompleteSuggestionHeader,
@@ -816,9 +775,9 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<Co, Us>('MessageInput');
+  } = useSuggestionsContext<StreamChatGenerics>('MessageInput');
 
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>('MessageInput');
+  const { thread } = useThreadContext<StreamChatGenerics>('MessageInput');
 
   const { t } = useTranslationContext('MessageInput');
 

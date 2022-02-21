@@ -13,25 +13,23 @@ import {
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type AutoCompleteSuggestionListComponentProps<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<SuggestionsContextValue, 'queryText' | 'triggerType'> & {
   active: boolean;
-  data: Suggestion<Co, Us>[];
-  onSelect: (item: Suggestion<Co, Us>) => void;
+  data: Suggestion<StreamChatGenerics>[];
+  onSelect: (item: Suggestion<StreamChatGenerics>) => void;
 };
 
 export type AutoCompleteSuggestionListPropsWithContext<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  SuggestionsContextValue<Co, Us>,
+  SuggestionsContextValue<StreamChatGenerics>,
   'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem'
 > &
-  AutoCompleteSuggestionListComponentProps<Co, Us>;
+  AutoCompleteSuggestionListComponentProps<StreamChatGenerics>;
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
   const { children, ...touchableOpacityProps } = props;
@@ -41,10 +39,9 @@ const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
 SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
 export const AutoCompleteSuggestionListWithContext = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
+  props: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     active,
@@ -66,7 +63,7 @@ export const AutoCompleteSuggestionListWithContext = <
     },
   } = useTheme('AutoCompleteSuggestionList');
 
-  const renderItem = ({ index, item }: { index: number; item: Suggestion<Co, Us> }) => {
+  const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
       case 'mention':
         if (isSuggestionUser(item)) {
@@ -147,9 +144,9 @@ export const AutoCompleteSuggestionListWithContext = <
   );
 };
 
-const areEqual = <Co extends string = DefaultCommandType, Us extends UnknownType = DefaultUserType>(
-  prevProps: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
-  nextProps: AutoCompleteSuggestionListPropsWithContext<Co, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
+  nextProps: AutoCompleteSuggestionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     active: prevActive,
@@ -185,23 +182,21 @@ const MemoizedAutoCompleteSuggestionList = React.memo(
 ) as typeof AutoCompleteSuggestionListWithContext;
 
 export type AutoCompleteSuggestionListProps<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = AutoCompleteSuggestionListComponentProps<Co, Us> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = AutoCompleteSuggestionListComponentProps<StreamChatGenerics> & {
   AutoCompleteSuggestionHeader?: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem?: React.ComponentType<AutoCompleteSuggestionItemProps<Co, Us>>;
+  AutoCompleteSuggestionItem?: React.ComponentType<
+    AutoCompleteSuggestionItemProps<StreamChatGenerics>
+  >;
 };
 
 export const AutoCompleteSuggestionList = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteSuggestionListProps<Co, Us>,
+  props: AutoCompleteSuggestionListProps<StreamChatGenerics>,
 ) => {
-  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } = useSuggestionsContext<
-    Co,
-    Us
-  >('AutoCompleteSuggestionList');
+  const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
+    useSuggestionsContext<StreamChatGenerics>('AutoCompleteSuggestionList');
 
   return (
     <MemoizedAutoCompleteSuggestionList

@@ -4,16 +4,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { usePaginatedMessageListContext } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -64,15 +55,9 @@ const MemoizedInlineLoadingMoreIndicator = React.memo(
 ) as typeof InlineLoadingMoreIndicatorWithContext;
 
 export const InlineLoadingMoreIndicator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { loadingMore } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>(
+  const { loadingMore } = usePaginatedMessageListContext<StreamChatGenerics>(
     'InlineLoadingMoreIndicator',
   );
 

@@ -23,16 +23,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
 const GalleryImage: React.FC<
@@ -78,16 +69,10 @@ const styles = StyleSheet.create({
 });
 
 export type GalleryPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ImageGalleryContextValue, 'setImage' | 'setImages'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
   Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageContextValue<StreamChatGenerics>,
     | 'alignment'
     | 'groupStyles'
     | 'images'
@@ -98,7 +83,7 @@ export type GalleryPropsWithContext<
     | 'threadList'
   > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
@@ -116,19 +101,13 @@ export type GalleryPropsWithContext<
      *
      * TODO: Fix circular dependencies of imports
      */
-    message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    message?: MessageType<StreamChatGenerics>;
   };
 
 const GalleryWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GalleryPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
@@ -331,17 +310,9 @@ const GalleryWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: GalleryPropsWithContext<StreamChatGenerics>,
+  nextProps: GalleryPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     groupStyles: prevGroupStyles,
@@ -381,28 +352,16 @@ const areEqual = <
 const MemoizedGallery = React.memo(GalleryWithContext, areEqual) as typeof GalleryWithContext;
 
 export type GalleryProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<GalleryPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI component for card in attachments.
  */
 export const Gallery = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GalleryProps<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps: propAdditionalTouchableProps,
@@ -419,7 +378,8 @@ export const Gallery = <
     threadList: propThreadList,
   } = props;
 
-  const { setImage: contextSetImage, setImages } = useImageGalleryContext('Gallery');
+  const { setImage: contextSetImage, setImages } =
+    useImageGalleryContext<StreamChatGenerics>('Gallery');
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -430,11 +390,11 @@ export const Gallery = <
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     threadList: contextThreadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('Gallery');
+  } = useMessageContext<StreamChatGenerics>('Gallery');
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('Gallery');
+  } = useMessagesContext<StreamChatGenerics>('Gallery');
   const { setOverlay: contextSetOverlay } = useOverlayContext('Gallery');
 
   const images = propImages || contextImages;

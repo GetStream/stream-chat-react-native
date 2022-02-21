@@ -6,16 +6,7 @@ import type { ChannelPreviewProps } from './ChannelPreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Mute } from '../../icons';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   iconStyle: {
@@ -24,14 +15,8 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewMutedStatusProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
   muted: boolean;
 };
 
@@ -39,15 +24,9 @@ export type ChannelPreviewMutedStatusProps<
  * This UI component displays an avatar for a particular channel.
  */
 export const ChannelPreviewMutedStatus = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewMutedStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelPreviewMutedStatusProps<StreamChatGenerics>,
 ) => {
   const { muted } = props;
 

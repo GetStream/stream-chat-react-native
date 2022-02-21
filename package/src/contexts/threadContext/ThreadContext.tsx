@@ -3,54 +3,33 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { ChannelState } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ThreadContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  openThread: (message: MessageType<StreamChatGenerics>) => void;
   reloadThread: () => void;
   setThreadLoadingMore: React.Dispatch<React.SetStateAction<boolean>>;
-  thread: MessageType<At, Ch, Co, Ev, Me, Re, Us> | null;
+  thread: MessageType<StreamChatGenerics> | null;
   threadHasMore: boolean;
   threadLoadingMore: boolean;
-  threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
+  threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
 };
 
 export const ThreadContext = React.createContext<ThreadContextValue | undefined>(undefined);
 
 export const ThreadProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ThreadContextValue<StreamChatGenerics>;
 }>) => (
   <ThreadContext.Provider value={value as unknown as ThreadContextValue}>
     {children}
@@ -58,35 +37,23 @@ export const ThreadProvider = <
 );
 
 export const useThreadContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   componentName?: string,
 ) => {
-  const contextValue = useContext(ThreadContext) as unknown as ThreadContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  const contextValue = useContext(
+    ThreadContext,
+  ) as unknown as ThreadContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
     console.warn(
       `The useThreadContext hook was called outside of the ThreadContext provider. Make sure this hook is called within a child of the ThreadProvider component within Channel component. The errored call is located in the ${componentName} component.`,
     );
 
-    return {} as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+    return {} as ThreadContextValue<StreamChatGenerics>;
   }
 
-  return contextValue as ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  return contextValue as ThreadContextValue<StreamChatGenerics>;
 };
 /**
  * Typescript currently does not support partial inference so if ThreadContext
@@ -95,20 +62,14 @@ export const useThreadContext = <
  */
 export const withThreadContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof ThreadContextValue<StreamChatGenerics>>> => {
   const WithThreadContextComponent = (
-    props: Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof ThreadContextValue<StreamChatGenerics>>,
   ) => {
-    const threadContext = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const threadContext = useThreadContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...threadContext} />;
   };

@@ -8,41 +8,20 @@ import {
 import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
 });
 
 export type InputButtonsProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<InputButtonsWithContextProps<StreamChatGenerics>>;
 
 export type InputButtonsWithContextProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageInputContextValue<StreamChatGenerics>,
   | 'AttachButton'
   | 'CommandsButton'
   | 'giphyActive'
@@ -59,15 +38,9 @@ export type InputButtonsWithContextProps<
 >;
 
 export const InputButtonsWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -115,17 +88,9 @@ export const InputButtonsWithContext = <
     </>
   );
 };
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: InputButtonsWithContextProps<StreamChatGenerics>,
+  nextProps: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     giphyActive: prevGiphyActive,
@@ -184,15 +149,9 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: InputButtonsProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -208,7 +167,7 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>('InputButtons');
+  } = useMessageInputContext<StreamChatGenerics>('InputButtons');
 
   return (
     <MemoizedInputButtonsWithContext

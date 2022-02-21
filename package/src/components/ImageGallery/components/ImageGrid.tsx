@@ -4,7 +4,7 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 import { Avatar } from '../../Avatar/Avatar';
 
@@ -31,30 +31,38 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryGridImageComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryGridImageComponent<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ({
   item,
 }: {
-  item: Photo<Us> & {
+  item: Photo<StreamChatGenerics> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 }) => React.ReactElement | null;
 
-export type ImageGalleryGridImageComponents<Us extends UnknownType = DefaultUserType> = {
-  avatarComponent?: ImageGalleryGridImageComponent<Us>;
-  imageComponent?: ImageGalleryGridImageComponent<Us>;
+export type ImageGalleryGridImageComponents<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  avatarComponent?: ImageGalleryGridImageComponent<StreamChatGenerics>;
+  imageComponent?: ImageGalleryGridImageComponent<StreamChatGenerics>;
 };
 
-export type GridImageItem<Us extends DefaultUserType = DefaultUserType> = Photo<Us> &
-  ImageGalleryGridImageComponents<Us> & {
+export type GridImageItem<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Photo<StreamChatGenerics> &
+  ImageGalleryGridImageComponents<StreamChatGenerics> & {
     selectAndClose: () => void;
     numberOfImageGalleryGridColumns?: number;
   };
 
-const GridImage = <Us extends DefaultUserType = DefaultUserType>({
+const GridImage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   item,
 }: {
-  item: GridImageItem<Us>;
+  item: GridImageItem<StreamChatGenerics>;
 }) => {
   const {
     theme: {
@@ -99,29 +107,36 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
   );
 };
 
-const renderItem = <Us extends UnknownType = DefaultUserType>({
+const renderItem = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   item,
 }: {
-  item: GridImageItem<Us>;
+  item: GridImageItem<StreamChatGenerics>;
 }) => <GridImage item={item} />;
 
-type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryGridImageComponents<Us> & {
-  closeGridView: () => void;
-  photos: Photo<Us>[];
-  resetVisibleValues: () => void;
-  setImage: React.Dispatch<
-    React.SetStateAction<
-      | {
-          messageId?: string | undefined;
-          url?: string | undefined;
-        }
-      | undefined
-    >
-  >;
-  numberOfImageGalleryGridColumns?: number;
-};
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryGridImageComponents<StreamChatGenerics> & {
+    closeGridView: () => void;
+    photos: Photo<StreamChatGenerics>[];
+    resetVisibleValues: () => void;
+    setImage: React.Dispatch<
+      React.SetStateAction<
+        | {
+            messageId?: string | undefined;
+            url?: string | undefined;
+          }
+        | undefined
+      >
+    >;
+    numberOfImageGalleryGridColumns?: number;
+  };
 
-export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGrid = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: Props<StreamChatGenerics>,
+) => {
   const {
     avatarComponent,
     closeGridView,
@@ -154,13 +169,13 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(props: Props
   }));
 
   return (
-    <BottomSheetFlatList
+    <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },
         contentContainer,
       ]}
-      data={imageGridItems as GridImageItem<UnknownType>[]}
+      data={imageGridItems as GridImageItem<StreamChatGenerics>[]}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}
       renderItem={renderItem}

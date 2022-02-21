@@ -6,55 +6,33 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import { getChannel } from '../../utils';
 
-type Parameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
-  onChannelVisible?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
-    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    onChannelVisible?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useChannelVisible = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onChannelVisible,
   setChannels,
-}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = async (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = async (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelVisible === 'function') {
         onChannelVisible(setChannels, event);
       } else {
         if (event.channel_id && event.channel_type) {
-          const channel = await getChannel<At, Ch, Co, Ev, Me, Re, Us>({
+          const channel = await getChannel<StreamChatGenerics>({
             client,
             id: event.channel_id,
             type: event.channel_type,

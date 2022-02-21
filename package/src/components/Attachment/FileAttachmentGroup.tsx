@@ -13,16 +13,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -31,15 +22,9 @@ const styles = StyleSheet.create({
 });
 
 export type FileAttachmentGroupPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'files'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Attachment'> & {
     /**
      * The unique id for the message with file attachments
      */
@@ -51,15 +36,9 @@ export type FileAttachmentGroupPropsWithContext<
   };
 
 const FileAttachmentGroupWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
   const { Attachment, files, messageId, styles: stylesProp = {} } = props;
 
@@ -88,17 +67,9 @@ const FileAttachmentGroupWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
+  nextProps: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
   const { files: prevFiles } = prevProps;
   const { files: nextFiles } = nextProps;
@@ -114,34 +85,21 @@ const MemoizedFileAttachmentGroup = React.memo(
 ) as typeof FileAttachmentGroupWithContext;
 
 export type FileAttachmentGroupProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageId'>> &
-  Pick<FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageId'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<FileAttachmentGroupPropsWithContext<StreamChatGenerics>, 'messageId'>> &
+  Pick<FileAttachmentGroupPropsWithContext<StreamChatGenerics>, 'messageId'>;
 
 export const FileAttachmentGroup = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileAttachmentGroupProps<StreamChatGenerics>,
 ) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachmentGroup');
+  const { files: contextFiles } = useMessageContext<StreamChatGenerics>('FileAttachmentGroup');
 
   const { Attachment = AttachmentDefault } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>('FileAttachmentGroup');
+    useMessagesContext<StreamChatGenerics>('FileAttachmentGroup');
 
   const files = propFiles || contextFiles;
 

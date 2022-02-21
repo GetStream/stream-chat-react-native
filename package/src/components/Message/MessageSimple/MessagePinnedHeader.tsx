@@ -21,37 +21,16 @@ const styles = StyleSheet.create({
   label: {},
 });
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export type MessagePinnedHeaderPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'alignment' | 'message'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageContextValue<StreamChatGenerics>, 'alignment' | 'message'>;
 
 const MessagePinnedHeaderWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment, message } = props;
   const {
@@ -83,17 +62,9 @@ const MessagePinnedHeaderWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
+  nextProps: MessagePinnedHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { message: prevMessage } = prevProps;
   const { message: nextMessage } = nextProps;
@@ -113,28 +84,16 @@ const MemoizedMessagePinnedHeader = React.memo(
 ) as typeof MessagePinnedHeaderWithContext;
 
 export type MessagePinnedHeaderProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
-> = Partial<MessagePinnedHeaderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessagePinnedHeaderPropsWithContext<StreamChatGenerics>>;
 
 export const MessagePinnedHeader = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePinnedHeaderProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePinnedHeaderProps<StreamChatGenerics>,
 ) => {
   const { alignment, lastGroupMessage, message } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>('MessagePinnedHeader');
+    useMessageContext<StreamChatGenerics>('MessagePinnedHeader');
 
   return (
     <MemoizedMessagePinnedHeader
