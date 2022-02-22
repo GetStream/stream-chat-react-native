@@ -1094,7 +1094,7 @@ export const useMessageInputContext = <
 
   if (!contextValue) {
     console.error(
-      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
+      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );
 
     return {} as MessageInputContextValue<StreamChatGenerics>;

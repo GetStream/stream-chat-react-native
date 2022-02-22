@@ -45,7 +45,7 @@ export const useThreadContext = <
 
   if (!contextValue) {
     console.error(
-      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
+      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );
 
     return {} as ThreadContextValue<StreamChatGenerics>;
