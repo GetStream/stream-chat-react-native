@@ -12,7 +12,7 @@ export const ImageSelectorIcon: React.FC<Props> = ({ selectedPicker }) => {
     theme: {
       colors: { accent_blue, grey },
     },
-  } = useTheme('ImageSelectorIcon');
+  } = useTheme();
 
   return <Picture pathFill={selectedPicker === 'images' ? accent_blue : grey} />;
 };

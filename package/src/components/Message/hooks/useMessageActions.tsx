@@ -93,7 +93,7 @@ export const useMessageActions = <
     theme: {
       colors: { accent_blue, accent_red, grey },
     },
-  } = useTheme('useMessageActions');
+  } = useTheme();
   const {
     handleDeleteMessage,
     handleEditMessage,

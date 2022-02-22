@@ -28,16 +28,14 @@ export const TypingProvider = <
 
 export const useTypingContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     TypingContext,
   ) as unknown as TypingContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useTypingContext hook was called outside of the TypingContext provider. Make sure this hook is called within a child of the TypingProvider component within Channel component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useTypingContext hook was called outside of the TypingContext provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
     );
 
     return {} as TypingContextValue<StreamChatGenerics>;

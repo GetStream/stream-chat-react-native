@@ -147,7 +147,7 @@ const GalleryWithContext = <
         },
       },
     },
-  } = useTheme('Gallery');
+  } = useTheme();
 
   const sizeConfig = {
     gridHeight,
@@ -378,8 +378,7 @@ export const Gallery = <
     threadList: propThreadList,
   } = props;
 
-  const { setImage: contextSetImage, setImages } =
-    useImageGalleryContext<StreamChatGenerics>('Gallery');
+  const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -390,12 +389,12 @@ export const Gallery = <
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     threadList: contextThreadList,
-  } = useMessageContext<StreamChatGenerics>('Gallery');
+  } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
-  } = useMessagesContext<StreamChatGenerics>('Gallery');
-  const { setOverlay: contextSetOverlay } = useOverlayContext('Gallery');
+  } = useMessagesContext<StreamChatGenerics>();
+  const { setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
 

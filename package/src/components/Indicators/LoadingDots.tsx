@@ -20,7 +20,7 @@ export const LoadingDots: React.FC<Props> = (props) => {
     theme: {
       loadingDots: { container, spacing },
     },
-  } = useTheme('LoadingDots');
+  } = useTheme();
 
   const halfSpacing = spacingProp ? spacingProp / 2 : spacing / 2;
   const offsetLength = duration / numberOfDots;

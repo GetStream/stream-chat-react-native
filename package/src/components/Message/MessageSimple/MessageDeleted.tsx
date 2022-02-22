@@ -73,7 +73,7 @@ const MessageDeletedWithContext = <
         },
       },
     },
-  } = useTheme('MessageDeleted');
+  } = useTheme();
 
   return (
     <View
@@ -166,11 +166,11 @@ export const MessageDeleted = <
 >(
   props: MessageDeletedProps<StreamChatGenerics>,
 ) => {
-  const { alignment, message } = useMessageContext<StreamChatGenerics>('MessageDeleted');
+  const { alignment, message } = useMessageContext<StreamChatGenerics>();
 
-  const { MessageFooter } = useMessagesContext<StreamChatGenerics>('MessageDeleted');
+  const { MessageFooter } = useMessagesContext<StreamChatGenerics>();
 
-  const { t } = useTranslationContext('MessageDeleted');
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedMessageDeleted

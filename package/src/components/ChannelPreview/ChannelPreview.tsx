@@ -110,8 +110,8 @@ export const ChannelPreview = <
 >(
   props: ChannelPreviewProps<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>('ChannelPreview');
-  const { Preview } = useChannelsContext<StreamChatGenerics>('ChannelPreview');
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { Preview } = useChannelsContext<StreamChatGenerics>();
 
   return <ChannelPreviewWithContext {...{ client, Preview }} {...props} />;
 };

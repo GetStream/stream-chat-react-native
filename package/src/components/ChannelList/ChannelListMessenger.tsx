@@ -42,9 +42,9 @@ export type ChannelListMessengerPropsWithContext<
 const StatusIndicator = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { isOnline } = useChatContext<StreamChatGenerics>('ChannelListMessenger');
+  const { isOnline } = useChatContext<StreamChatGenerics>();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext<StreamChatGenerics>('ChannelListMessenger');
+    useChannelsContext<StreamChatGenerics>();
 
   if (loadingChannels) return null;
 
@@ -108,7 +108,7 @@ const ChannelListMessengerWithContext = <
       channelListMessenger: { flatList, flatListContent },
       colors: { white_snow },
     },
-  } = useTheme('ChannelListMessenger');
+  } = useTheme();
 
   /**
    * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
@@ -210,7 +210,7 @@ export const ChannelListMessenger = <
     refreshList,
     reloadList,
     setFlatListRef,
-  } = useChannelsContext<StreamChatGenerics>('ChannelListMessenger');
+  } = useChannelsContext<StreamChatGenerics>();
 
   return (
     <ChannelListMessengerWithContext

@@ -19,7 +19,7 @@ export type InlineLoadingMoreThreadIndicatorPropsWithContext = {
 
 export const InlineLoadingMoreThreadIndicatorWithContext: React.FC<InlineLoadingMoreThreadIndicatorPropsWithContext> =
   ({ threadLoadingMore }) => {
-    const { theme } = useTheme('InlineLoadingMoreThreadIndicator');
+    const { theme } = useTheme();
 
     const {
       colors: { accent_blue },
@@ -57,9 +57,7 @@ const MemoizedInlineLoadingMoreThreadIndicator = React.memo(
 export const InlineLoadingMoreThreadIndicator = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { threadLoadingMore } = useThreadContext<StreamChatGenerics>(
-    'InlineLoadingMoreThreadIndicator',
-  );
+  const { threadLoadingMore } = useThreadContext<StreamChatGenerics>();
 
   return <MemoizedInlineLoadingMoreThreadIndicator threadLoadingMore={threadLoadingMore} />;
 };

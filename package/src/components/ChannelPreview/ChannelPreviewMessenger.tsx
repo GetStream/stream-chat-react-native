@@ -119,7 +119,7 @@ const ChannelPreviewMessengerWithContext = <
       channelPreview: { container, contentContainer, row, title },
       colors: { border, white_snow },
     },
-  } = useTheme('ChannelPreviewMessenger');
+  } = useTheme();
 
   const displayName = useChannelPreviewDisplayName(
     channel,
@@ -202,7 +202,7 @@ export const ChannelPreviewMessenger = <
     PreviewStatus,
     PreviewTitle,
     PreviewUnreadCount,
-  } = useChannelsContext<StreamChatGenerics>('ChannelPreviewMessenger');
+  } = useChannelsContext<StreamChatGenerics>();
   return (
     <MemoizedChannelPreviewMessengerWithContext
       {...{

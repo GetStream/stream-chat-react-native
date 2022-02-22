@@ -48,7 +48,7 @@ const FileAttachmentGroupWithContext = <
         fileAttachmentGroup: { container },
       },
     },
-  } = useTheme('FileAttachmentGroup');
+  } = useTheme();
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
@@ -96,10 +96,9 @@ export const FileAttachmentGroup = <
 ) => {
   const { files: propFiles, messageId } = props;
 
-  const { files: contextFiles } = useMessageContext<StreamChatGenerics>('FileAttachmentGroup');
+  const { files: contextFiles } = useMessageContext<StreamChatGenerics>();
 
-  const { Attachment = AttachmentDefault } =
-    useMessagesContext<StreamChatGenerics>('FileAttachmentGroup');
+  const { Attachment = AttachmentDefault } = useMessagesContext<StreamChatGenerics>();
 
   const files = propFiles || contextFiles;
 

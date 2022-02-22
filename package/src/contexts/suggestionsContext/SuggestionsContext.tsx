@@ -131,16 +131,14 @@ export const SuggestionsProvider = <
 
 export const useSuggestionsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     SuggestionsContext,
   ) as unknown as SuggestionsContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure this hook is called within a child of the SuggestionsProvider component within Channel component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
     );
 
     return {} as SuggestionsContextValue<StreamChatGenerics>;

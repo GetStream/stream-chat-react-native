@@ -33,7 +33,7 @@ export const ChannelPreviewMessage = <
       channelPreview: { message },
       colors: { grey },
     },
-  } = useTheme('ChannelPreviewMessage');
+  } = useTheme();
 
   return (
     <Text numberOfLines={1} style={[styles.message, { color: grey }, message]}>

@@ -60,7 +60,7 @@ const ImageUploadPreviewWithContext = <
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
-  } = useTheme('ImageUploadPreview');
+  } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => (
     <View
@@ -146,8 +146,7 @@ export const ImageUploadPreview = <
 >(
   props: ImageUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { imageUploads, removeImage, uploadImage } =
-    useMessageInputContext<StreamChatGenerics>('ImageUploadPreview');
+  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedImageUploadPreviewWithContext

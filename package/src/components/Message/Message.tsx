@@ -252,7 +252,7 @@ const MessageWithContext = <
       colors: { bg_gradient_start, targetedMessageBackground },
       messageSimple: { targetedMessageUnderlay },
     },
-  } = useTheme('Message');
+  } = useTheme();
 
   const actionsEnabled =
     message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
@@ -807,14 +807,14 @@ export const Message = <
   props: MessageProps<StreamChatGenerics>,
 ) => {
   const { channel, disabled, enforceUniqueReaction, members } =
-    useChannelContext<StreamChatGenerics>('Message');
-  const { client, mutedUsers } = useChatContext<StreamChatGenerics>('Message');
+    useChannelContext<StreamChatGenerics>();
+  const { client, mutedUsers } = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<StreamChatGenerics>('Message');
-  const messagesContext = useMessagesContext<StreamChatGenerics>('Message');
-  const { setOverlay } = useOverlayContext('Message');
-  const { openThread } = useThreadContext<StreamChatGenerics>('Message');
-  const { t } = useTranslationContext('Message');
+  const { setData } = useMessageOverlayContext<StreamChatGenerics>();
+  const messagesContext = useMessagesContext<StreamChatGenerics>();
+  const { setOverlay } = useOverlayContext();
+  const { openThread } = useThreadContext<StreamChatGenerics>();
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedMessage<StreamChatGenerics>

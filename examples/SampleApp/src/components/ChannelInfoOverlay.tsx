@@ -116,7 +116,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     theme: {
       colors: { accent_red, black, border, grey, white },
     },
-  } = useTheme('ChannelInfoOverlay');
+  } = useTheme();
 
   const offsetY = useSharedValue(0);
   const translateY = useSharedValue(0);

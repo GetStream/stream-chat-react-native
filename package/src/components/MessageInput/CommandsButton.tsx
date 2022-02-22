@@ -36,7 +36,7 @@ const CommandsButtonWithContext = <
       colors: { accent_blue, grey },
       messageInput: { commandsButton },
     },
-  } = useTheme('CommandsButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -90,8 +90,8 @@ export const CommandsButton = <
 >(
   props: CommandsButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatGenerics>('CommandsButton');
-  const { suggestions } = useSuggestionsContext<StreamChatGenerics>('CommandsButton');
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
+  const { suggestions } = useSuggestionsContext<StreamChatGenerics>();
 
   return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };

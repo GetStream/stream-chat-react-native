@@ -152,10 +152,10 @@ export const ImageGallery = <
       colors: { white_snow },
       imageGallery: { backgroundColor },
     },
-  } = useTheme('ImageGallery');
+  } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
-  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext('ImageGallery');
-  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>('ImageGallery');
+  const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
+  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>();
 
   /**
    * Height constants

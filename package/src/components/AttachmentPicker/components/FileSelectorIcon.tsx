@@ -8,7 +8,7 @@ export const FileSelectorIcon: React.FC = () => {
     theme: {
       colors: { grey },
     },
-  } = useTheme('FileSelectorIcon');
+  } = useTheme();
 
   return <Folder pathFill={grey} />;
 };

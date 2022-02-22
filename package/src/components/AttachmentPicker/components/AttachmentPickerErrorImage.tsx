@@ -8,7 +8,7 @@ export const AttachmentPickerErrorImage: React.FC = () => {
     theme: {
       colors: { grey_gainsboro },
     },
-  } = useTheme('AttachmentPickerErrorImage');
+  } = useTheme();
 
   return <Picture height={140} pathFill={grey_gainsboro} width={140} />;
 };

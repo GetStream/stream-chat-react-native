@@ -114,8 +114,8 @@ export const ImageGalleryFooter = <
         },
       },
     },
-  } = useTheme('ImageGalleryFooter');
-  const { t } = useTranslationContext('ImageGalleryFooter');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({

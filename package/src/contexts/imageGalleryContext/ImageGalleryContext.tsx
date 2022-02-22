@@ -42,16 +42,14 @@ export const ImageGalleryProvider = <
 
 export const useImageGalleryContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     ImageGalleryContext,
   ) as unknown as ImageGalleryContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useImageGalleryContext hook was called outside the ImageGalleryContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useImageGalleryContext hook was called outside the ImageGalleryContext Provider. Make sure you have configured OverlayProvider component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider).`,
     );
 
     return {} as ImageGalleryContextValue<StreamChatGenerics>;

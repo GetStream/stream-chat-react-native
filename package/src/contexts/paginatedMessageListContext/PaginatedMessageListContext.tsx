@@ -62,16 +62,14 @@ export const PaginatedMessageListProvider = <
 
 export const usePaginatedMessageListContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     PaginatedMessageListContext,
   ) as unknown as PaginatedMessageListContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure this hook is called within a child of the PaginatedMessageListProvider component within Channel component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
     );
 
     return {} as PaginatedMessageListContextValue<StreamChatGenerics>;

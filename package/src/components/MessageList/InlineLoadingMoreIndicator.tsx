@@ -19,7 +19,7 @@ export type InlineLoadingMoreIndicatorPropsWithContext = {
 
 export const InlineLoadingMoreIndicatorWithContext: React.FC<InlineLoadingMoreIndicatorPropsWithContext> =
   ({ loadingMore }) => {
-    const { theme } = useTheme('InlineLoadingMoreIndicator');
+    const { theme } = useTheme();
 
     const {
       colors: { accent_blue },
@@ -57,9 +57,7 @@ const MemoizedInlineLoadingMoreIndicator = React.memo(
 export const InlineLoadingMoreIndicator = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { loadingMore } = usePaginatedMessageListContext<StreamChatGenerics>(
-    'InlineLoadingMoreIndicator',
-  );
+  const { loadingMore } = usePaginatedMessageListContext<StreamChatGenerics>();
 
   return <MemoizedInlineLoadingMoreIndicator loadingMore={loadingMore} />;
 };

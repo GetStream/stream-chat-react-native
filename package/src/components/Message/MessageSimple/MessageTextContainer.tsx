@@ -47,7 +47,7 @@ const MessageTextContainerWithContext = <
 >(
   props: MessageTextContainerPropsWithContext<StreamChatGenerics>,
 ) => {
-  const theme = useTheme('MessageTextContainer');
+  const theme = useTheme();
 
   const {
     markdownRules,
@@ -146,9 +146,8 @@ export const MessageTextContainer = <
   props: MessageTextContainerProps<StreamChatGenerics>,
 ) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
-    useMessageContext<StreamChatGenerics>('MessageTextContainer');
-  const { markdownRules, MessageText } =
-    useMessagesContext<StreamChatGenerics>('MessageTextContainer');
+    useMessageContext<StreamChatGenerics>();
+  const { markdownRules, MessageText } = useMessagesContext<StreamChatGenerics>();
   const { messageTextNumberOfLines } = props;
 
   return (

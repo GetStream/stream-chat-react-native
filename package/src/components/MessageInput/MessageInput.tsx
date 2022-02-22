@@ -229,7 +229,7 @@ const MessageInputWithContext = <
         suggestionsListContainer: { container: suggestionListContainer },
       },
     },
-  } = useTheme('MessageInput');
+  } = useTheme();
 
   const {
     attachmentPickerBottomSheetHeight,
@@ -239,7 +239,7 @@ const MessageInputWithContext = <
     selectedPicker,
     setMaxNumberOfFiles,
     setSelectedImages,
-  } = useAttachmentPickerContext('MessageInput');
+  } = useAttachmentPickerContext();
 
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
@@ -725,11 +725,7 @@ export const MessageInput = <
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const {
-    disabled = false,
-    members,
-    watchers,
-  } = useChannelContext<StreamChatGenerics>('MessageInput');
+  const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -765,9 +761,9 @@ export const MessageInput = <
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
-  } = useMessageInputContext<StreamChatGenerics>('MessageInput');
+  } = useMessageInputContext<StreamChatGenerics>();
 
-  const { Reply } = useMessagesContext<StreamChatGenerics>('MessageInput');
+  const { Reply } = useMessagesContext<StreamChatGenerics>();
 
   const {
     AutoCompleteSuggestionHeader,
@@ -775,11 +771,11 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<StreamChatGenerics>('MessageInput');
+  } = useSuggestionsContext<StreamChatGenerics>();
 
-  const { thread } = useThreadContext<StreamChatGenerics>('MessageInput');
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
-  const { t } = useTranslationContext('MessageInput');
+  const { t } = useTranslationContext();
 
   if (!ownCapabilities.sendMessage && SendMessageDisallowedIndicator) {
     return <SendMessageDisallowedIndicator />;

@@ -53,7 +53,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
 
   const { data, setData } = useChannelInfoOverlayContext();
 
-  const { client } = useChatContext<StreamChatGenerics>('ChannelPreview');
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
@@ -61,7 +61,7 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
     theme: {
       colors: { accent_red, white_smoke },
     },
-  } = useTheme('ChannelPreview');
+  } = useTheme();
 
   const otherMembers = channel
     ? Object.values(channel.state.members).filter((member) => member.user?.id !== data?.clientId)

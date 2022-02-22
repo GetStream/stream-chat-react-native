@@ -533,7 +533,7 @@ const ChannelWithContext = <
       channel: { selectChannel },
       colors: { black },
     },
-  } = useTheme('Channel');
+  } = useTheme();
   const [deleted, setDeleted] = useState(false);
   const [editing, setEditing] = useState<boolean | MessageType<StreamChatGenerics>>(false);
   const [error, setError] = useState<Error | boolean>(false);
@@ -1809,8 +1809,8 @@ export const Channel = <
 >(
   props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>('Channel');
-  const { t } = useTranslationContext('Channel');
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { t } = useTranslationContext();
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
 

@@ -86,7 +86,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     theme: {
       colors: { black, border, grey, white_snow },
     },
-  } = useTheme('ChannelFilesScreen');
+  } = useTheme();
 
   const [sections, setSections] = useState<
     Array<{
@@ -204,7 +204,7 @@ const EmptyListComponent = () => {
     theme: {
       colors: { black, grey, grey_gainsboro },
     },
-  } = useTheme('ChannelFilesScreen');
+  } = useTheme();
   return (
     <View style={styles.emptyContainer}>
       <File fill={grey_gainsboro} scale={6} />

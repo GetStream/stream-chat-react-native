@@ -31,7 +31,7 @@ export const TypingIndicator = <
       colors: { grey, white_snow },
       typingIndicator: { container, text },
     },
-  } = useTheme('TypingIndicator');
+  } = useTheme();
   const typingString = useTypingString<StreamChatGenerics>();
 
   return (

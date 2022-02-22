@@ -68,8 +68,8 @@ export const MessageSystem = <
         messageSystem: { container, dateText, line, text, textContainer },
       },
     },
-  } = useTheme('MessageSystem');
-  const { tDateTimeParser } = useTranslationContext('MessageSystem');
+  } = useTheme();
+  const { tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at;
   const parsedDate = tDateTimeParser(createdAt);

@@ -224,16 +224,14 @@ export const ChannelsProvider = <
 
 export const useChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     ChannelsContext,
   ) as unknown as ChannelsContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure this hook is called within a child of the ChannelList Provider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure you have configured ChannelList component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel-list).`,
     );
 
     return {} as ChannelsContextValue<StreamChatGenerics>;

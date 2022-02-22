@@ -38,10 +38,10 @@ const MessagePinnedHeaderWithContext = <
       colors: { grey },
       messageSimple: { pinnedHeader },
     },
-  } = useTheme('MessagePinnedHeader');
+  } = useTheme();
   const { container, label } = pinnedHeader;
-  const { t } = useTranslationContext('MessagePinnedHeader');
-  const { client } = useChatContext('MessagePinnedHeader');
+  const { t } = useTranslationContext();
+  const { client } = useChatContext();
   return (
     <View
       style={[
@@ -92,8 +92,7 @@ export const MessagePinnedHeader = <
 >(
   props: MessagePinnedHeaderProps<StreamChatGenerics>,
 ) => {
-  const { alignment, lastGroupMessage, message } =
-    useMessageContext<StreamChatGenerics>('MessagePinnedHeader');
+  const { alignment, lastGroupMessage, message } = useMessageContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessagePinnedHeader

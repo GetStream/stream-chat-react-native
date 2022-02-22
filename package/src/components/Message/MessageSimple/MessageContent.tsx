@@ -154,7 +154,7 @@ const MessageContentWithContext = <
         reactionList: { radius, reactionSize },
       },
     },
-  } = useTheme('MessageContent');
+  } = useTheme();
 
   const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
     if (!message.created_at) return '';
@@ -513,7 +513,7 @@ export const MessageContent = <
     preventPress,
     showMessageStatus,
     threadList,
-  } = useMessageContext<StreamChatGenerics>('MessageContent');
+  } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps,
     Attachment,
@@ -526,8 +526,8 @@ export const MessageContent = <
     MessageReplies,
     MessageStatus,
     Reply,
-  } = useMessagesContext<StreamChatGenerics>('MessageContent');
-  const { t, tDateTimeParser } = useTranslationContext('MessageContent');
+  } = useMessagesContext<StreamChatGenerics>();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   return (
     <MemoizedMessageContent<StreamChatGenerics>

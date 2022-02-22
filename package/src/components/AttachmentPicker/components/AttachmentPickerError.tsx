@@ -49,10 +49,10 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (prop
       attachmentPicker: { errorButtonText, errorContainer, errorText },
       colors: { accent_blue, grey, white_smoke },
     },
-  } = useTheme('AttachmentPickerBottomError');
-  const { t } = useTranslationContext('AttachmentPickerError');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
-  const { closePicker, setSelectedPicker } = useAttachmentPickerContext('AttachmentPickerError');
+  const { closePicker, setSelectedPicker } = useAttachmentPickerContext();
 
   const openSettings = async () => {
     try {

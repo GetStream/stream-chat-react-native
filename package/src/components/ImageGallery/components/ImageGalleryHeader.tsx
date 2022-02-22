@@ -106,9 +106,9 @@ export const ImageGalleryHeader = <
         },
       },
     },
-  } = useTheme('ImageGalleryHeader');
-  const { t, tDateTimeParser } = useTranslationContext('ImageGalleryHeader');
-  const { setOverlay, translucentStatusBar } = useOverlayContext('ImageGalleryHeader');
+  } = useTheme();
+  const { t, tDateTimeParser } = useTranslationContext();
+  const { setOverlay, translucentStatusBar } = useOverlayContext();
 
   const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
 

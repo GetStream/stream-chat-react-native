@@ -56,8 +56,8 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
         grid: { handle, handleText },
       },
     },
-  } = useTheme('ImageGridHandle');
-  const { t } = useTranslationContext('ImageGridHandle');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   return (
     <View style={[styles.handle, { backgroundColor: white }, handle]}>

@@ -39,7 +39,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
     theme: {
       colors: { black, grey, white },
     },
-  } = useTheme('BottomTabs');
+  } = useTheme();
   const { bottom } = useSafeAreaInsets();
 
   const getTab = (key: string) => {

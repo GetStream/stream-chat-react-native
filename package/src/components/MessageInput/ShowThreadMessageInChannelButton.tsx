@@ -71,7 +71,7 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
           },
         },
       },
-    } = useTheme('ShowThreadMessageInChannelButton');
+    } = useTheme();
 
     if (!threadList || !allowThreadMessagesInChannel) {
       return null;
@@ -153,12 +153,10 @@ export const ShowThreadMessageInChannelButton = <
 >(
   props: ShowThreadMessageInChannelButtonProps,
 ) => {
-  const { t } = useTranslationContext('ShowThreadMessageInChannelButton');
-  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatGenerics>(
-    'ShowThreadMessageInChannelButton',
-  );
+  const { t } = useTranslationContext();
+  const { allowThreadMessagesInChannel } = useThreadContext<StreamChatGenerics>();
   const { sendThreadMessageInChannel, setSendThreadMessageInChannel } =
-    useMessageInputContext<StreamChatGenerics>('ShowThreadMessageInChannelButton');
+    useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedShowThreadMessageInChannelButton

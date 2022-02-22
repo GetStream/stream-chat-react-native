@@ -277,7 +277,7 @@ const MessageListWithContext = <
     TypingIndicatorContainer,
   } = props;
 
-  const { theme } = useTheme('MessageList');
+  const { theme } = useTheme();
 
   const {
     colors: { white_snow },
@@ -955,8 +955,7 @@ export const MessageList = <
 >(
   props: MessageListProps<StreamChatGenerics>,
 ) => {
-  const { closePicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext('MessageList');
+  const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
     channel,
     disabled,
@@ -975,9 +974,9 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-  } = useChannelContext<StreamChatGenerics>('MessageList');
-  const { client } = useChatContext<StreamChatGenerics>('MessageList');
-  const { setImages } = useImageGalleryContext<StreamChatGenerics>('MessageList');
+  } = useChannelContext<StreamChatGenerics>();
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { setImages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     DateHeader,
     deletedMessagesVisibilityType,
@@ -993,12 +992,11 @@ export const MessageList = <
     ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
-  } = useMessagesContext<StreamChatGenerics>('MessageList');
-  const { loadMore, loadMoreRecent } =
-    usePaginatedMessageListContext<StreamChatGenerics>('MessageList');
-  const { overlay } = useOverlayContext('MessageList');
-  const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>('MessageList');
-  const { t, tDateTimeParser } = useTranslationContext('MessageList');
+  } = useMessagesContext<StreamChatGenerics>();
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
+  const { overlay } = useOverlayContext();
+  const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   return (
     <MessageListWithContext

@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
 
 export const LoadingScreen: React.FC = () => {
   const colorScheme = useColorScheme();
-  const { theme } = useTheme('LoadingScreen');
+  const { theme } = useTheme();
 
   return (
     <View

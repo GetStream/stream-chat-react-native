@@ -155,7 +155,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         },
       },
     },
-  } = useTheme('OverlayReactions');
+  } = useTheme();
 
   const width = useWindowDimensions().width;
   const height = useWindowDimensions().height;

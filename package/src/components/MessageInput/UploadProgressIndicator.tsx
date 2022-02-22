@@ -73,7 +73,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
         uploadProgressIndicator: { container, overlay },
       },
     },
-  } = useTheme('UploadProgressIndicator');
+  } = useTheme();
 
   return !active ? (
     <View style={[styles.overflowHidden, style]} testID='inactive-upload-progress-indicator'>

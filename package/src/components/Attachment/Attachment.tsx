@@ -137,7 +137,7 @@ export const Attachment = <
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
     UrlPreview: ContextUrlPreview,
-  } = useMessagesContext<StreamChatGenerics>('Attachment');
+  } = useMessagesContext<StreamChatGenerics>();
 
   if (!attachment) {
     return null;

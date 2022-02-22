@@ -31,7 +31,7 @@ const AttachButtonWithContext = <
       colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
-  } = useTheme('AttachButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -90,8 +90,8 @@ export const AttachButton = <
 >(
   props: AttachButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatGenerics>('AttachButton');
-  const { selectedPicker } = useAttachmentPickerContext('AttachmentButton');
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
+  const { selectedPicker } = useAttachmentPickerContext();
 
   return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;
 };

@@ -30,7 +30,7 @@ const MoreOptionsButtonWithContext = <
       colors: { accent_blue },
       messageInput: { moreOptionsButton },
     },
-  } = useTheme('MoreOptionsButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -77,7 +77,7 @@ export const MoreOptionsButton = <
 >(
   props: MoreOptionsButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<StreamChatGenerics>('MoreOptionsButton');
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
 
   return <MemoizedMoreOptionsButton {...{ disabled }} {...props} />;
 };

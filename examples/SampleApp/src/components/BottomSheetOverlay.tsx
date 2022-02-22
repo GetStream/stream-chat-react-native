@@ -57,7 +57,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
     theme: {
       colors: { white },
     },
-  } = useTheme('BottomSheetOverlay');
+  } = useTheme();
 
   const offsetY = useSharedValue(0);
   const showScreen = useSharedValue(0);

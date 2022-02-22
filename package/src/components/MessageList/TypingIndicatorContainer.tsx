@@ -35,7 +35,7 @@ const TypingIndicatorContainerWithContext = <
     theme: {
       messageList: { typingIndicatorContainer },
     },
-  } = useTheme('TypingIndicatorContainer');
+  } = useTheme();
   const typingUsers = filterTypingUsers({ client, thread, typing });
 
   if (!typingUsers.length) {
@@ -58,9 +58,9 @@ export const TypingIndicatorContainer = <
 >(
   props: PropsWithChildren<TypingIndicatorContainerProps<StreamChatGenerics>>,
 ) => {
-  const { typing } = useTypingContext<StreamChatGenerics>('TypingIndicatorContainer');
-  const { client } = useChatContext<StreamChatGenerics>('TypingIndicatorContainer');
-  const { thread } = useThreadContext<StreamChatGenerics>('TypingIndicatorContainer');
+  const { typing } = useTypingContext<StreamChatGenerics>();
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
   return <TypingIndicatorContainerWithContext {...{ client, thread, typing }} {...props} />;
 };

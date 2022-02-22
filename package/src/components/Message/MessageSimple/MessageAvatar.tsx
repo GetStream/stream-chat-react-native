@@ -31,7 +31,7 @@ const MessageAvatarWithContext = <
         avatarWrapper: { container, leftAlign, rightAlign, spacer },
       },
     },
-  } = useTheme('MessageAvatar');
+  } = useTheme();
 
   const visible = typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
 
@@ -87,7 +87,7 @@ export const MessageAvatar = <
   props: MessageAvatarProps<StreamChatGenerics>,
 ) => {
   const { alignment, lastGroupMessage, message, showAvatar } =
-    useMessageContext<StreamChatGenerics>('MessageAvatar');
+    useMessageContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageAvatar

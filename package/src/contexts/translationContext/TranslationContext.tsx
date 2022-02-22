@@ -34,12 +34,12 @@ export const TranslationProvider: React.FC<{
   <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
 );
 
-export const useTranslationContext = (componentName?: string) => {
+export const useTranslationContext = () => {
   const contextValue = useContext(TranslationContext);
 
   if (!contextValue) {
-    console.warn(
-      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure this hook is called within a child of the TranslationProvider component within OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure you have configured OverlayProvider component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider)(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider).`,
     );
 
     return {} as TranslationContextValue;

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 });
 
 export const SendMessageDisallowedIndicator = () => {
-  const { t } = useTranslationContext('SendMessageDisallowedIndicator');
+  const { t } = useTranslationContext();
   const {
     theme: {
       colors: { border, grey_dark },
@@ -26,7 +26,7 @@ export const SendMessageDisallowedIndicator = () => {
         sendMessageDisallowedIndicator: { container, text },
       },
     },
-  } = useTheme('SendMessageDisallowedIndicator');
+  } = useTheme();
 
   return (
     <View

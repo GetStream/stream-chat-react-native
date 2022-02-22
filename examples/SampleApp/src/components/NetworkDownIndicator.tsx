@@ -23,7 +23,7 @@ export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = 
     theme: {
       colors: { black },
     },
-  } = useTheme('NetworkDownIndicator');
+  } = useTheme();
 
   return (
     <View style={styles.networkDownContainer} testID='network-down-indicator'>

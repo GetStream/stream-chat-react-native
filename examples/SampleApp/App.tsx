@@ -132,7 +132,7 @@ const UserSelector = () => {
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
-  const { overlay } = useOverlayContext('App');
+  const { overlay } = useOverlayContext();
 
   return (
     <Stack.Navigator initialRouteName='ChatScreen'>

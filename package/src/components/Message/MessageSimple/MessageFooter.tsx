@@ -70,8 +70,8 @@ const MessageFooterWithContext = <
         content: { deletedMetaText, eyeIcon, messageUser, metaContainer, metaText },
       },
     },
-  } = useTheme('MessageFooter');
-  const { t } = useTranslationContext('MessageFooter');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   if (isDeleted) {
     return (
@@ -226,10 +226,9 @@ export const MessageFooter = <
   props: MessageFooterProps<StreamChatGenerics>,
 ) => {
   const { alignment, lastGroupMessage, members, message, otherAttachments, showMessageStatus } =
-    useMessageContext<StreamChatGenerics>('MessageFooter');
+    useMessageContext<StreamChatGenerics>();
 
-  const { deletedMessagesVisibilityType, MessageStatus } =
-    useMessagesContext<StreamChatGenerics>('MessageFooter');
+  const { deletedMessagesVisibilityType, MessageStatus } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageFooter

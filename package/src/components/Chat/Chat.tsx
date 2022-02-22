@@ -207,7 +207,7 @@ export const Chat = <
 >(
   props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
-  const { style } = useOverlayContext('Chat');
+  const { style } = useOverlayContext();
 
   return <ChatWithContext {...{ style }} {...props} />;
 };

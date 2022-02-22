@@ -46,7 +46,7 @@ const MessageStatusWithContext = <
         status: { checkAllIcon, checkIcon, readByCount, statusContainer, timeIcon },
       },
     },
-  } = useTheme('MessageStatus');
+  } = useTheme();
 
   if (message.status === MessageStatusTypes.SENDING) {
     return (
@@ -125,7 +125,7 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<StreamChatGenerics>,
 ) => {
-  const { message, threadList } = useMessageContext<StreamChatGenerics>('MessageStatus');
+  const { message, threadList } = useMessageContext<StreamChatGenerics>();
 
   return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };

@@ -92,7 +92,7 @@ const FileAttachmentWithContext = <
         file: { container, details, fileSize, title },
       },
     },
-  } = useTheme('FileAttachment');
+  } = useTheme();
 
   const defaultOnPress = () => goToURL(attachment.asset_url);
 
@@ -154,13 +154,12 @@ export const FileAttachment = <
 >(
   props: FileAttachmentProps<StreamChatGenerics>,
 ) => {
-  const { onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<StreamChatGenerics>('FileAttachment');
+  const { onLongPress, onPress, onPressIn, preventPress } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     FileAttachmentIcon = FileIconDefault,
-  } = useMessagesContext<StreamChatGenerics>('FileAttachment');
+  } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <FileAttachmentWithContext

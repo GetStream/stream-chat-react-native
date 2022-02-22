@@ -392,7 +392,7 @@ export const FileIcon: React.FC<FileIconProps> = ({ mimeType, size }) => {
         file: { icon },
       },
     },
-  } = useTheme('FileIcon');
+  } = useTheme();
 
   const Icon = mimeTypeToIcon(mimeType);
 

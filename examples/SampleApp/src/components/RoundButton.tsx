@@ -36,7 +36,7 @@ export const RoundButton: React.FC<RoundButtonProps> = (props) => {
     theme: {
       colors: { black, icon_background },
     },
-  } = useTheme('RoundButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity

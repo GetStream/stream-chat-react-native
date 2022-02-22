@@ -68,7 +68,7 @@ const AttachmentActionsWithContext = <
         },
       },
     },
-  } = useTheme('AttachmentActions');
+  } = useTheme();
 
   return (
     <View style={[styles.container, container, stylesProp.container]} testID='attachment-actions'>
@@ -147,7 +147,7 @@ export const AttachmentActions = <
 >(
   props: AttachmentActionsProps<StreamChatGenerics>,
 ) => {
-  const { handleAction } = useMessageContext<StreamChatGenerics>('AttachmentActions');
+  const { handleAction } = useMessageContext<StreamChatGenerics>();
   return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
 };
 

@@ -66,15 +66,14 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { images, setImage, setImages } =
-    useImageGalleryContext<StreamChatGenerics>('ChannelImagesScreen');
-  const { setBlurType, setOverlay } = useOverlayContext('ChannelImagesScreen');
+  const { images, setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setBlurType, setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
     theme: {
       colors: { white },
     },
-  } = useTheme('ChannelImagesScreen');
+  } = useTheme();
 
   const channelImages = useRef(images);
 
@@ -214,7 +213,7 @@ const EmptyListComponent = () => {
     theme: {
       colors: { black, grey, grey_gainsboro },
     },
-  } = useTheme('ChannelImagesScreen');
+  } = useTheme();
   return (
     <View style={styles.emptyContainer}>
       <Picture fill={grey_gainsboro} scale={6} />

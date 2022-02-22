@@ -131,7 +131,7 @@ const ReactionListWithContext = <
       },
       screenPadding,
     },
-  } = useTheme('ReactionList');
+  } = useTheme();
 
   const width = useWindowDimensions().width;
 
@@ -343,9 +343,8 @@ export const ReactionList = <
     preventPress,
     reactions,
     showMessageOverlay,
-  } = useMessageContext<StreamChatGenerics>('ReactionList');
-  const { supportedReactions, targetedMessage } =
-    useMessagesContext<StreamChatGenerics>('ReactionList');
+  } = useMessageContext<StreamChatGenerics>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedReactionList

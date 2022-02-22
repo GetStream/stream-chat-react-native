@@ -119,7 +119,7 @@ const AutoCompleteInputWithContext = <
       colors: { black, grey },
       messageInput: { inputBox },
     },
-  } = useTheme('AutoCompleteInput');
+  } = useTheme();
 
   const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
@@ -475,7 +475,7 @@ export const AutoCompleteInput = <
 >(
   props: AutoCompleteInputProps<StreamChatGenerics>,
 ) => {
-  const { giphyEnabled } = useChannelContext<StreamChatGenerics>('AutoCompleteInput');
+  const { giphyEnabled } = useChannelContext<StreamChatGenerics>();
   const {
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
@@ -490,10 +490,10 @@ export const AutoCompleteInput = <
     setShowMoreOptions,
     text,
     triggerSettings,
-  } = useMessageInputContext<StreamChatGenerics>('AutoCompleteInput');
+  } = useMessageInputContext<StreamChatGenerics>();
   const { closeSuggestions, openSuggestions, updateSuggestions } =
-    useSuggestionsContext<StreamChatGenerics>('AutoCompleteInput');
-  const { t } = useTranslationContext('AutoCompleteInput');
+    useSuggestionsContext<StreamChatGenerics>();
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedAutoCompleteInput

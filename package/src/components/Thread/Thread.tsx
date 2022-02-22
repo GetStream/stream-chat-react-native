@@ -129,11 +129,11 @@ export const Thread = <
 >(
   props: ThreadProps<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<StreamChatGenerics>('Thread');
-  const { threadList } = useChannelContext<StreamChatGenerics>('Thread');
-  const { MessageList } = useMessagesContext<StreamChatGenerics>('Thread');
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { threadList } = useChannelContext<StreamChatGenerics>();
+  const { MessageList } = useMessagesContext<StreamChatGenerics>();
   const { closeThread, loadMoreThread, reloadThread, thread } =
-    useThreadContext<StreamChatGenerics>('Thread');
+    useThreadContext<StreamChatGenerics>();
 
   if (thread?.id && !threadList) {
     throw new Error(

@@ -46,7 +46,7 @@ const ThreadFooterComponentWithContext = <
   props: ThreadFooterComponentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { Message, thread } = props;
-  const { t } = useTranslationContext('ThreadFooterComponent');
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -55,7 +55,7 @@ const ThreadFooterComponentWithContext = <
         newThread: { backgroundGradientStart, backgroundGradientStop, text, ...newThread },
       },
     },
-  } = useTheme('ThreadFooterComponent');
+  } = useTheme();
 
   if (!thread) return null;
 
@@ -139,8 +139,8 @@ const MemoizedThreadFooter = React.memo(
 export const ThreadFooterComponent = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { Message } = useMessagesContext<StreamChatGenerics>('ThreadFooterComponent');
-  const { thread } = useThreadContext<StreamChatGenerics>('ThreadFooterComponent');
+  const { Message } = useMessagesContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
   return (
     <MemoizedThreadFooter

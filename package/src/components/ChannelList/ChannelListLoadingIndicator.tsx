@@ -16,8 +16,8 @@ export const ChannelListLoadingIndicator: React.FC = () => {
       channelListLoadingIndicator: { container },
       colors: { white_snow },
     },
-  } = useTheme('ChannelListLoadingIndicator');
-  const { numberOfSkeletons, Skeleton } = useChannelsContext('ChannelListLoadingIndicator');
+  } = useTheme();
+  const { numberOfSkeletons, Skeleton } = useChannelsContext();
 
   return (
     <View

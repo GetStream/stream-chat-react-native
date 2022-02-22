@@ -61,7 +61,7 @@ export const InputButtonsWithContext = <
     theme: {
       messageInput: { attachButtonContainer, commandsButtonContainer },
     },
-  } = useTheme('InputButtons');
+  } = useTheme();
 
   const ownCapabilities = useOwnCapabilitiesContext();
 
@@ -167,7 +167,7 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-  } = useMessageInputContext<StreamChatGenerics>('InputButtons');
+  } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedInputButtonsWithContext

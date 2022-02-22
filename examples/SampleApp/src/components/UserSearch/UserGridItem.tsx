@@ -53,7 +53,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
     theme: {
       colors: { black, white_snow },
     },
-  } = useTheme('UserGridItem');
+  } = useTheme();
   return (
     <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
       <Avatar

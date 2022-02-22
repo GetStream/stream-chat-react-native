@@ -31,7 +31,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
   queryText,
   triggerType,
 }: AutoCompleteSuggestionHeaderPropsWithContext<StreamChatGenerics>) => {
-  const { t } = useTranslationContext('AutoCompleteSuggestionHeader');
+  const { t } = useTranslationContext();
   const {
     theme: {
       colors: { accent_blue, grey },
@@ -41,7 +41,7 @@ const AutoCompleteSuggestionHeaderWithContext = <
         },
       },
     },
-  } = useTheme('AutoCompleteSuggestionHeader');
+  } = useTheme();
 
   if (triggerType === 'command') {
     return (

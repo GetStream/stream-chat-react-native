@@ -139,7 +139,7 @@ const Spacer = () => {
     theme: {
       colors: { grey_gainsboro },
     },
-  } = useTheme('GroupChannelDetailsScreen');
+  } = useTheme();
   return (
     <View
       style={[
@@ -162,12 +162,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
   const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
-  const { setBlurType, setOverlay } = useOverlayContext('GroupChannelDetailsScreen');
+  const { setBlurType, setOverlay } = useOverlayContext();
   const {
     theme: {
       colors: { accent_blue, accent_green, black, border, grey, white, white_smoke },
     },
-  } = useTheme('GroupChannelDetailsScreen');
+  } = useTheme();
 
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(

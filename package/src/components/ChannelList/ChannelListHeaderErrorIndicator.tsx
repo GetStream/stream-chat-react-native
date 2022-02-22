@@ -29,8 +29,8 @@ export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
       channelListHeaderErrorIndicator: { container, errorText },
       colors: { grey_dark, white },
     },
-  } = useTheme('ChannelListHeaderErrorIndicator');
-  const { t } = useTranslationContext('ChannelListHeaderErrorIndicator');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   return (
     <TouchableOpacity

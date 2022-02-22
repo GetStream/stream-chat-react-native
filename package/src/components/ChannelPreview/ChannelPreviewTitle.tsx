@@ -28,7 +28,7 @@ export const ChannelPreviewTitle = <
       channelPreview: { title },
       colors: { black },
     },
-  } = useTheme('ChannelPreviewTitle');
+  } = useTheme();
 
   return (
     <Text numberOfLines={1} style={[styles.title, { color: black }, title]}>

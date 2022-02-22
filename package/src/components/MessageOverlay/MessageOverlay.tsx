@@ -153,7 +153,7 @@ const MessageOverlayWithContext = <
     messageReactions,
   };
 
-  const { theme } = useTheme('MessageOverlay');
+  const { theme } = useTheme();
 
   const myMessageTheme = messagesContext?.myMessageTheme;
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
@@ -604,8 +604,8 @@ export const MessageOverlay = <
     OverlayReactions,
     OverlayReactionsAvatar,
     reset,
-  } = useMessageOverlayContext<StreamChatGenerics>('MessageOverlay');
-  const { overlay, setOverlay } = useOverlayContext('MessageOverlay');
+  } = useMessageOverlayContext<StreamChatGenerics>();
+  const { overlay, setOverlay } = useOverlayContext();
 
   const componentProps = {
     MessageActionList: props.MessageActionList || MessageActionList,

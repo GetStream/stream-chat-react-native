@@ -28,16 +28,15 @@ export const AttachmentSelectionBar: React.FC = () => {
     selectedPicker,
     setSelectedImages,
     setSelectedPicker,
-  } = useAttachmentPickerContext('AttachmentSelectionBar');
+  } = useAttachmentPickerContext();
 
-  const { compressImageQuality, hasFilePicker, imageUploads, pickFile } =
-    useMessageInputContext('AttachmentSelectionBar');
+  const { compressImageQuality, hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
 
   const {
     theme: {
       attachmentSelectionBar: { container, icon },
     },
-  } = useTheme('AttachmentSelectionBar');
+  } = useTheme();
 
   const setPicker = (selection: 'images') => {
     if (selectedPicker === selection) {

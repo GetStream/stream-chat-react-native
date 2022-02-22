@@ -28,7 +28,7 @@ export const RootPath: React.FC<RootPathProps> = (props) => {
     theme: {
       colors: { black },
     },
-  } = useTheme('RootPath');
+  } = useTheme();
 
   const { d, pathFill = black, pathOpacity } = props;
   return <Path clipRule='evenodd' d={d} fill={pathFill} fillRule='evenodd' opacity={pathOpacity} />;

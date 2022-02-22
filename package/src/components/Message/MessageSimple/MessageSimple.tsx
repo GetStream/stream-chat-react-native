@@ -57,7 +57,7 @@ const MessageSimpleWithContext = <
     theme: {
       messageSimple: { container },
     },
-  } = useTheme('MessageSimple');
+  } = useTheme();
 
   const [messageContentWidth, setMessageContentWidth] = useState(0);
 
@@ -189,14 +189,14 @@ export const MessageSimple = <
   props: MessageSimpleProps<StreamChatGenerics>,
 ) => {
   const { alignment, channel, groupStyles, hasReactions, message } =
-    useMessageContext<StreamChatGenerics>('MessageSimple');
+    useMessageContext<StreamChatGenerics>();
   const {
     enableMessageGroupingByUser,
     MessageAvatar,
     MessageContent,
     MessagePinnedHeader,
     ReactionList,
-  } = useMessagesContext<StreamChatGenerics>('MessageSimple');
+  } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedMessageSimple<StreamChatGenerics>

@@ -44,7 +44,7 @@ export const MessageRepliesAvatars = <
         },
       },
     },
-  } = useTheme('MessageRepliesAvatars');
+  } = useTheme();
 
   const avatars = message.thread_participants?.slice(-2) || [];
   const hasMoreThanOneReply = avatars.length > 1;

@@ -140,7 +140,7 @@ const GiphyWithContext = <
         },
       },
     },
-  } = useTheme('Giphy');
+  } = useTheme();
 
   const uri = image_url || thumb_url;
 
@@ -309,8 +309,8 @@ export const Giphy = <
   props: GiphyProps<StreamChatGenerics>,
 ) => {
   const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<StreamChatGenerics>('AttachmentActions');
-  const { additionalTouchableProps } = useMessagesContext<StreamChatGenerics>('AttachmentActions');
+    useMessageContext<StreamChatGenerics>();
+  const { additionalTouchableProps } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedGiphy

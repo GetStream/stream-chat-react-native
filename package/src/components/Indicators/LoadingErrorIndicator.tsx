@@ -35,7 +35,7 @@ const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
       colors: { accent_red },
       loadingErrorIndicator: { container, errorText },
     },
-  } = useTheme('LoadingErrorIndicator');
+  } = useTheme();
 
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
@@ -62,8 +62,8 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
       colors: { black },
       loadingErrorIndicator: { retryText },
     },
-  } = useTheme('LoadingErrorIndicator');
-  const { t } = useTranslationContext('LoadingErrorIndicator');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   switch (listType) {
     case 'channel':

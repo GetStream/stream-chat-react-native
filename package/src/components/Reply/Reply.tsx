@@ -100,7 +100,7 @@ const ReplyWithContext = <
         textContainer,
       },
     },
-  } = useTheme('Reply');
+  } = useTheme();
 
   if (typeof quotedMessage === 'boolean') return null;
 
@@ -267,18 +267,18 @@ export const Reply = <
 >(
   props: ReplyProps<StreamChatGenerics>,
 ) => {
-  const { message } = useMessageContext<StreamChatGenerics>('Reply');
+  const { message } = useMessageContext<StreamChatGenerics>();
 
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
-    useMessagesContext<StreamChatGenerics>('Reply');
+    useMessagesContext<StreamChatGenerics>();
 
-  const { editing, quotedMessage } = useMessageInputContext<StreamChatGenerics>('Reply');
+  const { editing, quotedMessage } = useMessageInputContext<StreamChatGenerics>();
 
   const quotedEditingMessage = (
     typeof editing !== 'boolean' ? editing?.quoted_message || false : false
   ) as MessageInputContextValue<StreamChatGenerics>['quotedMessage'];
 
-  const { t } = useTranslationContext('Reply');
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedReply

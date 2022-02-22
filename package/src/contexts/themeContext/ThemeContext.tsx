@@ -55,12 +55,12 @@ export const ThemeProvider: React.FC<
   return <ThemeContext.Provider value={modifiedTheme}>{children}</ThemeContext.Provider>;
 };
 
-export const useTheme = (componentName?: string) => {
+export const useTheme = () => {
   const theme = useContext(ThemeContext);
 
   if (!theme) {
-    console.warn(
-      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure this hook is called within a child of the ThemeProvider component OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure you have configured OverlayProvider component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider).`,
     );
     return {} as ThemeContextValue;
   }

@@ -78,7 +78,7 @@ const MessageActionListItemWithContext = <
       colors: { black, border },
       overlay: { messageActions },
     },
-  } = useTheme('MessageActionListItem');
+  } = useTheme();
 
   const { animatedStyle, onTap } = useMessageActionAnimation({ action });
 

@@ -71,7 +71,7 @@ export const AddMemberBottomSheet: React.FC = () => {
     theme: {
       colors: { accent_red, black, grey, grey_whisper, white, white_smoke },
     },
-  } = useTheme('AddMemberBottomSheet');
+  } = useTheme();
   const {
     clearText,
     loading: loadingResults,

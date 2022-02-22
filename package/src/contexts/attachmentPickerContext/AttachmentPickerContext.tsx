@@ -113,14 +113,14 @@ export const AttachmentPickerProvider = ({
   );
 };
 
-export const useAttachmentPickerContext = (componentName?: string) => {
+export const useAttachmentPickerContext = () => {
   const contextValue = useContext(
     AttachmentPickerContext,
   ) as unknown as AttachmentPickerContextValue;
 
   if (!contextValue) {
-    console.warn(
-      `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider).`,
     );
 
     return {} as AttachmentPickerContextValue;

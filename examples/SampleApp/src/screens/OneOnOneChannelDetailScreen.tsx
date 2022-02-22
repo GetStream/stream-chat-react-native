@@ -122,7 +122,7 @@ const Spacer = () => {
     theme: {
       colors: { grey_gainsboro },
     },
-  } = useTheme('NewGroupChannelAssignNameScreen');
+  } = useTheme();
   return (
     <View
       style={[
@@ -145,7 +145,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
     theme: {
       colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
     },
-  } = useTheme('NewGroupChannelAssignNameScreen');
+  } = useTheme();
   const { chatClient } = useAppContext();
   const { setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();

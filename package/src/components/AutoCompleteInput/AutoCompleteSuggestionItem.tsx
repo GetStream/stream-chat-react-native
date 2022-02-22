@@ -72,7 +72,7 @@ const AutoCompleteSuggestionItemWithContext = <
         },
       },
     },
-  } = useTheme('AutoCompleteSuggestionItem');
+  } = useTheme();
 
   if (triggerType === 'mention') {
     const { id, image, name, online } = itemProps as SuggestionUser<StreamChatGenerics>;

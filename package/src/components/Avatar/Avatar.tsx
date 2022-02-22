@@ -66,7 +66,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
       avatar: { container, image, presenceIndicator, presenceIndicatorContainer },
       colors: { accent_green, white },
     },
-  } = useTheme('Avatar');
+  } = useTheme();
 
   const [imageError, setImageError] = useState(false);
 

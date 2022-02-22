@@ -34,8 +34,8 @@ export const InlineDateSeparator: React.FC<InlineDateSeparatorProps> = ({ date }
       colors: { overlay, white },
       inlineDateSeparator: { container, text },
     },
-  } = useTheme('InlineDateSeparator');
-  const { tDateTimeParser } = useTranslationContext('InlineDateSeparator');
+  } = useTheme();
+  const { tDateTimeParser } = useTranslationContext();
 
   if (!date) {
     return null;

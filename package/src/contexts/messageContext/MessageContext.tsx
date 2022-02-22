@@ -114,16 +114,14 @@ export const MessageProvider = <
 
 export const useMessageContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     MessageContext,
   ) as unknown as MessageContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useMessageContext hook was called outside of the MessageContext provider. Make sure this hook is called within a child of the MessageProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useMessageContext hook was called outside of the MessageContext provider. Make sure you have configured MessageList component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list).`,
     );
 
     return {} as MessageContextValue<StreamChatGenerics>;

@@ -105,7 +105,7 @@ const MessageRepliesWithContext = <
         replies: { container, leftCurve, messageRepliesText, rightCurve },
       },
     },
-  } = useTheme('MessageReplies');
+  } = useTheme();
 
   if (threadList || !message.reply_count) return null;
 
@@ -244,9 +244,9 @@ export const MessageReplies = <
     onPressIn,
     preventPress,
     threadList,
-  } = useMessageContext<StreamChatGenerics>('MessageReplies');
-  const { MessageRepliesAvatars } = useMessagesContext<StreamChatGenerics>('MessageReplies');
-  const { t } = useTranslationContext('MessageReplies');
+  } = useMessageContext<StreamChatGenerics>();
+  const { MessageRepliesAvatars } = useMessagesContext<StreamChatGenerics>();
+  const { t } = useTranslationContext();
 
   return (
     <MemoizedMessageReplies

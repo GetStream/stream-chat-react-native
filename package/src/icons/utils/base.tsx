@@ -35,7 +35,7 @@ export const RootPath: React.FC<RootPathProps> = (props) => {
     theme: {
       colors: { black },
     },
-  } = useTheme('RootPath');
+  } = useTheme();
 
   const { d, pathFill = black, pathOpacity } = props;
   return (

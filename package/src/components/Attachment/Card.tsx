@@ -145,7 +145,7 @@ const CardWithContext = <
         },
       },
     },
-  } = useTheme('Card');
+  } = useTheme();
 
   const uri = image_url || thumb_url;
 
@@ -287,9 +287,9 @@ export const Card = <
   props: CardProps<StreamChatGenerics>,
 ) => {
   const { message, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<StreamChatGenerics>('Card');
+    useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, CardCover, CardFooter, CardHeader } =
-    useMessagesContext<StreamChatGenerics>('Card');
+    useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedCard

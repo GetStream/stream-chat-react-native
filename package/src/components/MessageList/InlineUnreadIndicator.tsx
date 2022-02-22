@@ -26,8 +26,8 @@ export const InlineUnreadIndicator: React.FC = () => {
         inlineUnreadIndicator: { container, text },
       },
     },
-  } = useTheme('InlineUnreadIndicator');
-  const { t } = useTranslationContext('InlineUnreadIndicator');
+  } = useTheme();
+  const { t } = useTranslationContext();
 
   return (
     <View style={[styles.container, container]}>

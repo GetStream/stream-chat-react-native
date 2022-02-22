@@ -94,7 +94,7 @@ const FileUploadPreviewWithContext = <
         },
       },
     },
-  } = useTheme('FileUploadPreview');
+  } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
     const indicatorType =
@@ -234,9 +234,8 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } =
-    useMessageInputContext<StreamChatGenerics>('FileUploadPreview');
-  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>('FileUploadPreview');
+  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
+  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview

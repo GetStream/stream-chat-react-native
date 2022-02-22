@@ -405,13 +405,13 @@ export const MessageInputProvider = <
   value: InputMessageInputContextValue<StreamChatGenerics>;
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
-    useAttachmentPickerContext('MessageInputContext');
-  const { client } = useChatContext<StreamChatGenerics>('MessageInputContext');
+    useAttachmentPickerContext();
+  const { client } = useChatContext<StreamChatGenerics>();
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>('MessageInputContext');
-  const { thread } = useThreadContext<StreamChatGenerics>('MessageInputContext');
-  const { t } = useTranslationContext('MessageInputContext');
+  const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
+  const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 
@@ -1087,16 +1087,14 @@ export const MessageInputProvider = <
 
 export const useMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  componentName?: string,
-) => {
+>() => {
   const contextValue = useContext(
     MessageInputContext,
   ) as unknown as MessageInputContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.warn(
-      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure this hook is called within a child of the MessageInputProvider component within Channel component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel).`,
     );
 
     return {} as MessageInputContextValue<StreamChatGenerics>;

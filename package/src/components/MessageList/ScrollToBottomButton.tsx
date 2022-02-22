@@ -71,7 +71,7 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props)
         },
       },
     },
-  } = useTheme('ScrollToBottomButton');
+  } = useTheme();
 
   if (!showNotification) return null;
 

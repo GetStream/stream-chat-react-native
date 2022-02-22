@@ -70,12 +70,12 @@ export type OverlayProviderProps<
     value?: Partial<OverlayContextValue>;
   };
 
-export const useOverlayContext = (componentName?: string) => {
+export const useOverlayContext = () => {
   const contextValue = useContext(OverlayContext);
 
   if (!contextValue) {
-    console.warn(
-      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure this hook is called within a child of the OverlayProvider component. The errored call is located in the ${componentName} component.`,
+    console.error(
+      `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider).`,
     );
 
     return {} as OverlayContextValue;

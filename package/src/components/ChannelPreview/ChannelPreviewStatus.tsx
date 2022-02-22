@@ -40,7 +40,7 @@ export const ChannelPreviewStatus = <
       channelPreview: { checkAllIcon, checkIcon, date },
       colors: { accent_blue, grey },
     },
-  } = useTheme('ChannelPreviewStatus');
+  } = useTheme();
 
   const created_at = latestMessagePreview.messageObject?.created_at;
   const latestMessageDate = created_at ? new Date(created_at) : new Date();

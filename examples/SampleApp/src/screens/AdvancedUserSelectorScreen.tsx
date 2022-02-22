@@ -66,7 +66,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
     theme: {
       colors: { accent_blue, accent_red, black, grey, white_smoke },
     },
-  } = useTheme('LabeledTextInput');
+  } = useTheme();
   const [borderColor, setBorderColor] = useState(white_smoke);
 
   const onFocus = () => {
@@ -141,7 +141,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
     theme: {
       colors: { button_background, button_text, grey_gainsboro, white_snow },
     },
-  } = useTheme('AdvancedUserSelectorScreen');
+  } = useTheme();
 
   const { loginUser } = useAppContext();
   const [apiKey, setApiKey] = useState('');

@@ -29,7 +29,7 @@ const SendButtonWithContext = <
       colors: { accent_blue, grey_gainsboro },
       messageInput: { sendButton },
     },
-  } = useTheme('SendButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -89,7 +89,7 @@ export const SendButton = <
 >(
   props: SendButtonProps<StreamChatGenerics>,
 ) => {
-  const { giphyActive, sendMessage } = useMessageInputContext<StreamChatGenerics>('SendButton');
+  const { giphyActive, sendMessage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedSendButton

@@ -61,7 +61,7 @@ export const AutoCompleteSuggestionListWithContext = <
         suggestionsListContainer: { flatlist },
       },
     },
-  } = useTheme('AutoCompleteSuggestionList');
+  } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: Suggestion<StreamChatGenerics> }) => {
     switch (triggerType) {
@@ -196,7 +196,7 @@ export const AutoCompleteSuggestionList = <
   props: AutoCompleteSuggestionListProps<StreamChatGenerics>,
 ) => {
   const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
-    useSuggestionsContext<StreamChatGenerics>('AutoCompleteSuggestionList');
+    useSuggestionsContext<StreamChatGenerics>();
 
   return (
     <MemoizedAutoCompleteSuggestionList

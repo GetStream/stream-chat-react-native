@@ -54,7 +54,7 @@ const SendButtonWithContext = <
       colors: { accent_blue, grey_gainsboro },
       messageInput: { sendButton },
     },
-  } = useTheme('NewDirectMessagingSendButton');
+  } = useTheme();
 
   return (
     <TouchableOpacity
@@ -125,11 +125,9 @@ export type SendButtonProps<
  */
 export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGenerics>) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } = useChannelContext<StreamChatGenerics>('NewDirectMessagingSendButton');
+  const { channel } = useChannelContext<StreamChatGenerics>();
 
-  const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>(
-    'NewDirectMessagingSendButton',
-  );
+  const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>();
 
   const sendMessage = async () => {
     if (!channel) return;

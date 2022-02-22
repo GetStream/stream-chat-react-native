@@ -57,7 +57,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
       attachmentPicker: { image, imageOverlay },
       colors: { overlay },
     },
-  } = useTheme('AttachmentPicker');
+  } = useTheme();
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
@@ -183,7 +183,7 @@ export const AttachmentPicker = React.forwardRef(
         attachmentPicker: { bottomSheetContentContainer },
         colors: { white },
       },
-    } = useTheme('AttachmentPicker');
+    } = useTheme();
     const {
       closePicker,
       maxNumberOfFiles,
@@ -192,7 +192,7 @@ export const AttachmentPicker = React.forwardRef(
       setSelectedImages,
       setSelectedPicker,
       topInset,
-    } = useAttachmentPickerContext('AttachmentPicker');
+    } = useAttachmentPickerContext();
 
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [endCursor, setEndCursor] = useState<string>();

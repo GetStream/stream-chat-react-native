@@ -79,7 +79,7 @@ const MessageActionListWithContext = <
     theme: {
       colors: { white_snow },
     },
-  } = useTheme('MessageActionList');
+  } = useTheme();
 
   const height = useSharedValue(0);
   const width = useSharedValue(0);
@@ -162,7 +162,7 @@ export const MessageActionList = <
 >(
   props: MessageActionListProps<StreamChatGenerics>,
 ) => {
-  const { data } = useMessageOverlayContext<StreamChatGenerics>('MessageActionList');
+  const { data } = useMessageOverlayContext<StreamChatGenerics>();
 
   const { alignment, messageActions } = data || {};
 
