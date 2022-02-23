@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { act, cleanup, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 
 import { useChannelsContext } from '../../../contexts/channelsContext/ChannelsContext';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
@@ -89,9 +90,11 @@ describe('ChannelList', () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ChannelList {...props} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
@@ -101,9 +104,11 @@ describe('ChannelList', () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ChannelList {...props} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => expect(getByTestId(testChannel1.channel.id)).toBeTruthy());
@@ -113,9 +118,11 @@ describe('ChannelList', () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId, rerender } = render(
-      <Chat client={chatClient}>
-        <ChannelList {...props} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -126,9 +133,11 @@ describe('ChannelList', () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel2])]);
 
     rerender(
-      <Chat client={chatClient}>
-        <ChannelList {...props} filters={{ dummyFilter: true }} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} filters={{ dummyFilter: true }} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -152,9 +161,11 @@ describe('ChannelList', () => {
     });
 
     const { getByTestId, rerender } = render(
-      <Chat client={chatClient}>
-        <ChannelList {...props} filters={staleFilter} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} filters={staleFilter} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     expect(spy).toHaveBeenCalledWith(
@@ -169,9 +180,11 @@ describe('ChannelList', () => {
     });
 
     rerender(
-      <Chat client={chatClient}>
-        <ChannelList {...props} filters={freshFilter} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} filters={freshFilter} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     expect(spy).toHaveBeenCalledWith(
@@ -194,9 +207,11 @@ describe('ChannelList', () => {
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <ChannelList {...props} onSelect={setActiveChannel} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChannelList {...props} onSelect={setActiveChannel} />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -226,9 +241,11 @@ describe('ChannelList', () => {
 
       it('should move channel to top of the list by default', async () => {
         const { getAllByRole, getByTestId, getByText } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
@@ -248,9 +265,11 @@ describe('ChannelList', () => {
 
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
         const { getAllByRole, getByTestId, getByText } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} lockChannelOrder={true} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} lockChannelOrder={true} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -281,9 +300,11 @@ describe('ChannelList', () => {
 
       it('should move a channel to top of the list by default', async () => {
         const { getAllByRole, getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
         await waitFor(() => {
           expect(getByTestId('channel-list')).toBeTruthy();
@@ -303,9 +324,11 @@ describe('ChannelList', () => {
       it('should call the `onMessageNew` function prop, if provided', async () => {
         const onMessageNew = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onMessageNew={onMessageNew} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onMessageNew={onMessageNew} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -330,9 +353,11 @@ describe('ChannelList', () => {
 
       it('should move a channel to top of the list by default', async () => {
         const { getAllByRole, getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -355,9 +380,11 @@ describe('ChannelList', () => {
       it('should call the `onAddedToChannel` function prop, if provided', async () => {
         const onAddedToChannel = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -379,9 +406,11 @@ describe('ChannelList', () => {
 
       it('should remove the channel from list by default', async () => {
         const { getAllByRole, getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -404,9 +433,11 @@ describe('ChannelList', () => {
       it('should call the `onRemovedFromChannel` function prop, if provided', async () => {
         const onRemovedFromChannel = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onRemovedFromChannel={onRemovedFromChannel} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -428,9 +459,11 @@ describe('ChannelList', () => {
 
       it('should update a channel in the list by default', async () => {
         const { getByTestId, getByText } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -452,9 +485,11 @@ describe('ChannelList', () => {
       it('should call the `onChannelUpdated` function prop, if provided', async () => {
         const onChannelUpdated = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -481,9 +516,11 @@ describe('ChannelList', () => {
 
       it('should remove a channel from the list by default', async () => {
         const { getAllByRole, getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -506,9 +543,11 @@ describe('ChannelList', () => {
       it('should call the `onChannelDeleted` function prop, if provided', async () => {
         const onChannelDeleted = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -530,9 +569,11 @@ describe('ChannelList', () => {
 
       it('should hide a channel from the list by default', async () => {
         const { getAllByRole, getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -555,9 +596,11 @@ describe('ChannelList', () => {
       it('should call the `onChannelHidden` function prop, if provided', async () => {
         const onChannelHidden = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onChannelHidden={onChannelHidden} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onChannelHidden={onChannelHidden} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -578,9 +621,11 @@ describe('ChannelList', () => {
         const recoverSpy = jest.spyOn(chatClient, 'on');
 
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -600,9 +645,11 @@ describe('ChannelList', () => {
         useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
         const onChannelTruncated = jest.fn();
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -624,9 +671,11 @@ describe('ChannelList', () => {
         const offlineUser = generateUser();
 
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {
@@ -654,9 +703,11 @@ describe('ChannelList', () => {
         const offlineUser = generateUser();
 
         const { getByTestId } = render(
-          <Chat client={chatClient}>
-            <ChannelList {...props} />
-          </Chat>,
+          <OverlayProvider>
+            <Chat client={chatClient}>
+              <ChannelList {...props} />
+            </Chat>
+          </OverlayProvider>,
         );
 
         await waitFor(() => {

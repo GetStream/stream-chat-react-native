@@ -97,11 +97,9 @@ export const useMessageOverlayContext = <
   ) as unknown as MessageOverlayContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.error(
+    throw new Error(
       `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
-
-    return {} as MessageOverlayContextValue<StreamChatGenerics>;
   }
 
   return contextValue as MessageOverlayContextValue<StreamChatGenerics>;

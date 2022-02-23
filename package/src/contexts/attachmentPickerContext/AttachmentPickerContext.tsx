@@ -119,11 +119,9 @@ export const useAttachmentPickerContext = () => {
   ) as unknown as AttachmentPickerContextValue;
 
   if (!contextValue) {
-    console.error(
+    throw new Error(
       `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
-
-    return {} as AttachmentPickerContextValue;
   }
 
   return contextValue as AttachmentPickerContextValue;

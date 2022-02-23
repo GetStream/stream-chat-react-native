@@ -5,6 +5,7 @@ import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext/ChannelsStateContext';
 
+import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
@@ -39,13 +40,15 @@ describe('MessageContent', () => {
 
     renderMessage = (options) =>
       render(
-        <ChannelsStateProvider>
-          <Chat client={chatClient}>
-            <Channel channel={channel}>
-              <Message groupStyles={['bottom']} {...options} />
-            </Channel>
-          </Chat>
-        </ChannelsStateProvider>,
+        <OverlayProvider>
+          <ChannelsStateProvider>
+            <Chat client={chatClient}>
+              <Channel channel={channel}>
+                <Message groupStyles={['bottom']} {...options} />
+              </Channel>
+            </Chat>
+          </ChannelsStateProvider>
+        </OverlayProvider>,
       );
   });
 
@@ -114,13 +117,15 @@ describe('MessageContent', () => {
     const ContextMessageHeader = (props) => <View {...props} testID='message-header' />;
 
     const { getByTestId } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} MessageHeader={ContextMessageHeader}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel} MessageHeader={ContextMessageHeader}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -136,13 +141,15 @@ describe('MessageContent', () => {
     const ContextMessageFooter = (props) => <View {...props} testID='message-footer' />;
 
     const { getByTestId } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} MessageFooter={ContextMessageFooter}>
-            <Message groupStyles={['bottom']} message={message} />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel} MessageFooter={ContextMessageFooter}>
+              <Message groupStyles={['bottom']} message={message} />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -218,13 +225,15 @@ describe('MessageContent', () => {
     };
 
     const { getByTestId } = render(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
-            <Message groupStyles={['bottom']} message={message} reactionsEnabled />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel} MessageContent={MessageContentWithMockedMessageContentWidth}>
+              <Message groupStyles={['bottom']} message={message} reactionsEnabled />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {

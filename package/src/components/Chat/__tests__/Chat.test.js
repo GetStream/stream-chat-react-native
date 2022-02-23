@@ -6,6 +6,7 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
@@ -29,9 +30,11 @@ describe('Chat', () => {
 
   it('renders children without crashing', async () => {
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <View testID='children' />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <View testID='children' />
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -43,13 +46,15 @@ describe('Chat', () => {
     setNetInfoFetchMock(netInfoFetch);
 
     render(
-      <Chat client={chatClient}>
-        <ChatContextConsumer
-          fn={(ctx) => {
-            context = ctx;
-          }}
-        ></ChatContextConsumer>
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChatContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ChatContextConsumer>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
@@ -66,13 +71,15 @@ describe('Chat', () => {
     let context;
 
     render(
-      <Chat client={chatClient}>
-        <ChatContextConsumer
-          fn={(ctx) => {
-            context = ctx;
-          }}
-        ></ChatContextConsumer>
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <ChatContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ChatContextConsumer>
+        </Chat>
+      </OverlayProvider>,
     );
 
     act(() => dispatchConnectionRecoveredEvent(chatClient));
@@ -85,13 +92,15 @@ describe('Chat', () => {
       let context;
 
       render(
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient}>
+            <ChatContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></ChatContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
 
       await waitFor(() => {
@@ -107,13 +116,15 @@ describe('Chat', () => {
       let context;
 
       render(
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient}>
+            <ChatContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></ChatContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
 
       const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
@@ -130,13 +141,15 @@ describe('Chat', () => {
       let context;
 
       render(
-        <Chat client={chatClient}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient}>
+            <TranslationContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></TranslationContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
 
       await waitFor(() => {
@@ -155,13 +168,15 @@ describe('Chat', () => {
       i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
 
       render(
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient} i18nInstance={i18nInstance}>
+            <TranslationContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></TranslationContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
 
       await waitFor(() => {
@@ -180,13 +195,15 @@ describe('Chat', () => {
       i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
 
       const { rerender } = render(
-        <Chat client={chatClient} i18nInstance={i18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient} i18nInstance={i18nInstance}>
+            <TranslationContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></TranslationContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
 
       await waitFor(() => {
@@ -200,13 +217,15 @@ describe('Chat', () => {
       newI18nInstance.tDateTimeParser = () => 'newtDateTimeParser';
 
       rerender(
-        <Chat client={chatClient} i18nInstance={newI18nInstance}>
-          <TranslationContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></TranslationContextConsumer>
-        </Chat>,
+        <OverlayProvider>
+          <Chat client={chatClient} i18nInstance={newI18nInstance}>
+            <TranslationContextConsumer
+              fn={(ctx) => {
+                context = ctx;
+              }}
+            ></TranslationContextConsumer>
+          </Chat>
+        </OverlayProvider>,
       );
       await waitFor(() => {
         expect(context.t).not.toBe(i18nInstance.t);

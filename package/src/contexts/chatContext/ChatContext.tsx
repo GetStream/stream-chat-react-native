@@ -75,11 +75,9 @@ export const useChatContext = <
   const contextValue = useContext(ChatContext) as unknown as ChatContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.error(
+    throw new Error(
       `The useChatContext hook was called outside the ChatContext Provider. Make sure you have configured Chat component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#chat`,
     );
-
-    return {} as ChatContextValue<StreamChatGenerics>;
   }
 
   return contextValue as ChatContextValue<StreamChatGenerics>;

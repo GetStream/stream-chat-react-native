@@ -7,6 +7,7 @@ import {
   useChannelsContext,
 } from '../../../contexts/channelsContext/ChannelsContext';
 import { ChatContext, ChatProvider } from '../../../contexts/chatContext/ChatContext';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { queryChannelsApi } from '../../../mock-builders/api/queryChannels';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -30,24 +31,26 @@ const ListMessenger = ({ error, loadingChannels, ...props }) => {
 };
 
 const Component = ({ error = false, loadingChannels = false }) => (
-  <Chat client={chatClient}>
-    <ChatContext.Consumer>
-      {(context) => (
-        <ChatProvider value={{ ...context, isOnline: true }}>
-          <ChannelList
-            filters={{
-              members: {
-                $in: ['vishal', 'neil'],
-              },
-            }}
-            List={(...props) => (
-              <ListMessenger {...props} error={error} loadingChannels={loadingChannels} />
-            )}
-          />
-        </ChatProvider>
-      )}
-    </ChatContext.Consumer>
-  </Chat>
+  <OverlayProvider>
+    <Chat client={chatClient}>
+      <ChatContext.Consumer>
+        {(context) => (
+          <ChatProvider value={{ ...context, isOnline: true }}>
+            <ChannelList
+              filters={{
+                members: {
+                  $in: ['vishal', 'neil'],
+                },
+              }}
+              List={(...props) => (
+                <ListMessenger {...props} error={error} loadingChannels={loadingChannels} />
+              )}
+            />
+          </ChatProvider>
+        )}
+      </ChatContext.Consumer>
+    </Chat>
+  </OverlayProvider>
 );
 
 describe('ChannelListMessenger', () => {

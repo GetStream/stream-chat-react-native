@@ -2,10 +2,13 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { generateImageUploadPreview } from '../../../mock-builders/generator/attachment';
 import { FileState } from '../../../utils/utils';
 
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 import { ImageUploadPreview } from '../ImageUploadPreview';
 
 describe('ImageUploadPreview', () => {
@@ -19,13 +22,19 @@ describe('ImageUploadPreview', () => {
     const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -47,16 +56,22 @@ describe('ImageUploadPreview', () => {
     });
 
     rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads.map((image, index) => ({
+                  ...image,
+                  id: `${index}`,
+                }))}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -76,13 +91,19 @@ describe('ImageUploadPreview', () => {
     const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -104,16 +125,22 @@ describe('ImageUploadPreview', () => {
     });
 
     rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads.map((image, index) => ({
+                  ...image,
+                  id: `${index}`,
+                }))}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -133,13 +160,19 @@ describe('ImageUploadPreview', () => {
     const uploadImage = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -168,16 +201,22 @@ describe('ImageUploadPreview', () => {
     });
 
     rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads.map((image, index) => ({
+                  ...image,
+                  id: `${index}`,
+                }))}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();
@@ -197,13 +236,19 @@ describe('ImageUploadPreview', () => {
     const uploadImage = jest.fn();
 
     const { queryAllByTestId, rerender, toJSON } = render(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -218,16 +263,22 @@ describe('ImageUploadPreview', () => {
     });
 
     rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <ImageUploadPreview
+                imageUploads={imageUploads.map((image, index) => ({
+                  ...image,
+                  id: `${index}`,
+                }))}
+                removeImage={removeImage}
+                uploadImage={uploadImage}
+              />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     const snapshot = toJSON();

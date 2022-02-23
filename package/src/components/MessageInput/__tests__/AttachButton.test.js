@@ -2,7 +2,10 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 import { AttachButton } from '../AttachButton';
 
 describe('AttachButton', () => {
@@ -10,9 +13,15 @@ describe('AttachButton', () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton handleOnPress={handleOnPress} />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <AttachButton handleOnPress={handleOnPress} />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -35,9 +44,15 @@ describe('AttachButton', () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton disabled handleOnPress={handleOnPress} />
-      </ThemeProvider>,
+      <OverlayProvider>
+        <ThemeProvider>
+          <Chat>
+            <Channel>
+              <AttachButton disabled handleOnPress={handleOnPress} />
+            </Channel>
+          </Chat>
+        </ThemeProvider>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {

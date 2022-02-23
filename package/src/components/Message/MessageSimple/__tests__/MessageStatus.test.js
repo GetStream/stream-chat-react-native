@@ -2,11 +2,14 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import { Streami18n } from '../../../../utils/Streami18n';
+import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
+import { MessageList } from '../../../MessageList/MessageList';
 import { MessageStatus } from '../MessageStatus';
 
 let chatClient;
@@ -26,9 +29,18 @@ describe('MessageStatus', () => {
     const message = generateMessage({ user });
 
     const { getByTestId } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={message.id} message={{ ...message, status: 'received' }} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <Channel>
+            <MessageList>
+              <MessageStatus
+                lastReceivedId={message.id}
+                message={{ ...message, status: 'received' }}
+              />
+            </MessageList>
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -41,9 +53,15 @@ describe('MessageStatus', () => {
     const message = generateMessage({ readBy: 2, user });
 
     const { getByTestId, getByText, rerender, toJSON } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={message.id} message={message} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <Channel>
+            <MessageList>
+              <MessageStatus lastReceivedId={message.id} message={message} />
+            </MessageList>
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -55,9 +73,15 @@ describe('MessageStatus', () => {
     const staticMessage = generateMessage({ readBy: 2, staticUser });
 
     rerender(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <Channel>
+            <MessageList>
+              <MessageStatus lastReceivedId={staticMessage.id} message={staticMessage} />
+            </MessageList>
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {
@@ -72,9 +96,15 @@ describe('MessageStatus', () => {
     const message = generateMessage({ user });
 
     const { getByTestId } = render(
-      <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus message={{ ...message, status: 'sending' }} />
-      </Chat>,
+      <OverlayProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <Channel>
+            <MessageList>
+              <MessageStatus message={{ ...message, status: 'sending' }} />
+            </MessageList>
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
     );
 
     await waitFor(() => {

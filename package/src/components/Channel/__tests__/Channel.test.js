@@ -11,6 +11,7 @@ import {
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
@@ -50,14 +51,16 @@ const messages = [generateMessage({ user })];
 
 const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
   render(
-    <ChannelsStateProvider>
-      <Chat client={chatClient}>
-        <Channel {...props}>
-          {props.children}
-          <CallbackEffectWithContext {...{ callback, context }} />
-        </Channel>
-      </Chat>
-    </ChannelsStateProvider>,
+    <OverlayProvider>
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel {...props}>
+            {props.children}
+            <CallbackEffectWithContext {...{ callback, context }} />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>
+    </OverlayProvider>,
   );
 
 describe('Channel', () => {
@@ -154,22 +157,24 @@ describe('Channel', () => {
     );
 
     rerender(
-      <ChannelsStateProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <CallbackEffectWithContext
-              callback={({ openThread, thread }) => {
-                if (!thread) {
-                  openThread(threadMessage);
-                } else {
-                  hasThread(thread.id);
-                }
-              }}
-              context={ThreadContext}
-            />
-          </Channel>
-        </Chat>
-      </ChannelsStateProvider>,
+      <OverlayProvider>
+        <ChannelsStateProvider>
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <CallbackEffectWithContext
+                callback={({ openThread, thread }) => {
+                  if (!thread) {
+                    openThread(threadMessage);
+                  } else {
+                    hasThread(thread.id);
+                  }
+                }}
+                context={ThreadContext}
+              />
+            </Channel>
+          </Chat>
+        </ChannelsStateProvider>
+      </OverlayProvider>,
     );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });

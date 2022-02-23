@@ -185,11 +185,9 @@ export const useChannelsStateContext = <
   ) as unknown as ChannelsStateContextValue<StreamChatGenerics>;
 
   if (!contextValue) {
-    console.error(
+    throw new Error(
       `The useChannelStateContext hook was called outside the ChannelStateContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
-
-    return {} as ChannelsStateContextValue<StreamChatGenerics>;
   }
 
   return contextValue as ChannelsStateContextValue<StreamChatGenerics>;

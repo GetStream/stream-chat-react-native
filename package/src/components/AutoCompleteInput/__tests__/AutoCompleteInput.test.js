@@ -2,6 +2,7 @@ import React from 'react';
 
 import { render, waitFor } from '@testing-library/react-native';
 
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
@@ -9,6 +10,7 @@ import { generateChannelResponse } from '../../../mock-builders/generator/channe
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { ACITriggerSettings } from '../../../utils/utils';
+import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
@@ -18,20 +20,24 @@ describe('AutoCompleteInput', () => {
   let channel;
 
   const getComponent = (props = {}) => (
-    <Chat client={chatClient}>
-      <SuggestionsProvider value={props}>
-        <AutoCompleteInput
-          giphyEnabled
-          onChange={jest.fn}
-          text={props.text}
-          triggerSettings={ACITriggerSettings({
-            channel,
-            onMentionSelectItem: jest.fn(),
-            t: jest.fn(),
-          })}
-        />
-      </SuggestionsProvider>
-    </Chat>
+    <OverlayProvider>
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <SuggestionsProvider value={props}>
+            <AutoCompleteInput
+              giphyEnabled
+              onChange={jest.fn}
+              text={props.text}
+              triggerSettings={ACITriggerSettings({
+                channel,
+                onMentionSelectItem: jest.fn(),
+                t: jest.fn(),
+              })}
+            />
+          </SuggestionsProvider>
+        </Channel>
+      </Chat>
+    </OverlayProvider>
   );
 
   const initializeChannel = async (c) => {

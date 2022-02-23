@@ -38,10 +38,9 @@ export const useOwnCapabilitiesContext = () => {
   const contextValue = useContext(OwnCapabilitiesContext);
 
   if (!contextValue) {
-    console.error(
+    throw new Error(
       `The useOwnCapabilitiesContext hook was called outside the Channel Component. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );
-    return {} as OwnCapabilitiesContextValue;
   }
 
   return contextValue as OwnCapabilitiesContextValue;
