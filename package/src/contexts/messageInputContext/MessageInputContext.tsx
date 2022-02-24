@@ -641,8 +641,6 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
-          original_height: image.height,
-          original_width: image.width,
           type: 'image',
         } as Attachment<StreamChatGenerics>);
       }
