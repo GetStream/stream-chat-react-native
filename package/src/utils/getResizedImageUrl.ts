@@ -25,21 +25,35 @@ export function getResizedImageUrl({
   url,
   width,
 }: GetResizedImageUrlParams) {
-  // Check if url belongs to cloudfront CDN
-  const isResizableUrl = url.includes('.stream-io-cdn.com');
-  if (!isResizableUrl || (!height && !width)) return url;
+  try {
+    const parsedUrl = new URL(url);
 
-  const parsedUrl = new URL(url);
+    const originalHeight = parsedUrl.searchParams.get('oh');
+    const originalWidth = parsedUrl.searchParams.get('ow');
 
-  if (height) {
-    parsedUrl.searchParams.set('h', `${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`);
+    // If url is not from new cloudfront CDN (which offers fast image resizing), then return the url as it is.
+    // Check for oh and ow parameters in the url, is just to differentiate between old and new CDN.
+    // In case of old CDN we don't want to do any kind of resizing.
+    const isResizableUrl = url.includes('.stream-io-cdn.com') && originalHeight && originalWidth;
+
+    if (!isResizableUrl || (!height && !width)) return url;
+
+    if (height) {
+      parsedUrl.searchParams.set('h', `${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`);
+    }
+
+    if (width) {
+      parsedUrl.searchParams.set('w', `${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`);
+    }
+
+    parsedUrl.searchParams.set('resize', `${resize}`);
+
+    return parsedUrl.toString();
+  } catch (error) {
+    // There is some issue with the url.
+    // Simply return the original url, there is no need to break the app for this.
+    console.warn(error);
+
+    return url;
   }
-
-  if (width) {
-    parsedUrl.searchParams.set('w', `${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`);
-  }
-
-  parsedUrl.searchParams.set('resize', `${resize}`);
-
-  return parsedUrl.toString();
 }
