@@ -17,14 +17,20 @@ are the officially recommended collection of packages that brings React Native s
 - Push notifications are sent only for new messages.
 - Only channel members receive push messages.
 - Members receive push notifications regardless of their online status.
-- Replies inside a thread are only sent to users that are part of that thread:
-- They posted at least one message
-- They were mentioned
+- Replies inside a [thread](https://getstream.io/chat/docs/javascript/threads/?language=javascript) are only sent to users that are part of that thread:
+  - They posted at least one message
+  - They were mentioned
 - Messages from muted users are not sent.
 - Messages are sent to all registered devices for a user (up to 25) .
 - Up to 100 members of a channel will receive push notifications.
-- skip_push is marked as false, as described here.
+- skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
 - push_notifications is enabled (default) on the channel type for message is sent.
+
+:::note
+
+- If you would like get push notifications only when users are offline, please contact to support.
+- Push notifications require membership. Watching a channel isn't enough.
+  :::
 
 ## Firebase Setup
 
@@ -50,9 +56,9 @@ Follow the steps mentioned on Firebase documentation setup Firebase.
 
 These credentials are the [private key file](https://firebase.google.com/docs/admin/setup#:~:text=To%20generate%20a%20private%20key%20file%20for%20your%20service%20account%3A) for your service account, in firebase console. To generate a private key file for your service account:
 
-  - In the Firebase console, open Settings > Service Accounts.
-  - Click Generate New Private Key, then confirm by clicking Generate Key.
-  - Securely store the JSON file containing the key.
+- In the Firebase console, open Settings > Service Accounts.
+- Click Generate New Private Key, then confirm by clicking Generate Key.
+- Securely store the JSON file containing the key.
 
 This JSON file contains the credentials which needs to be uploaded to Stream server as explained in next step.
 
@@ -78,15 +84,15 @@ You can also enable firebase notifications and upload the firebase credentials u
 
 ```js
 const client = StreamChat.getInstance('api_key', 'api_secret');
-client.updateAppSettings({ 
-  push_config: { 
-    version: 'v2' 
-  }, 
-  firebase_config: { 
-    credentials_json: fs.readFileSync( 
-      './firebase-credentials.json', 
-      'utf-8', 
-    ), 
+client.updateAppSettings({
+  push_config: {
+    version: 'v2'
+  },
+  firebase_config: {
+    credentials_json: fs.readFileSync(
+      './firebase-credentials.json',
+      'utf-8',
+    ),
  });
 ```
 
@@ -167,12 +173,27 @@ const styles = StyleSheet.create({
 
 ## Display Notification To User
 
-Push notifications are delivered as data payloads that the SDK can use to convert into the same data types that are received when working with the APIs.
+Push notifications are delivered as data payloads that the applications can use to convert into the same data types that are received when working with the APIs.
 
 When a message received by the Chat API, according to the delivery rules, it kicks a job that sends a regular data message (as below) to configured push providers on your app.
 According to the battery and the online status of the device, push providers deliver this payload to the actual devices.
 
-hen a device receives the payload, you can generate a local notification on device. For this purpose you can use [Notifee](https://notifee.app/), which is a A feature rich notifications library for React Native.
+This is the main payload that will be sent to device:
+
+```json
+{
+  "sender": "stream.chat",
+  "type": "message.new",
+  "version": "v2",
+  "message_id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
+  "id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
+  "channel_type": "messaging",
+  "channel_id": "company-chat",
+  "cid": "messaging:company-chat"
+}
+```
+
+When a device receives this payload, you can generate a local notification on device. For this purpose you can use [Notifee](https://notifee.app/), which is a A feature rich notifications library for React Native.
 
 ### When App Is In Foreground
 
@@ -209,7 +230,7 @@ useEffect(() => {
 }, []);
 ```
 
-### When App Is In Background or In Quite State
+### When App Is In Background or In Quit State
 
 When the application is in a background or quit state, the onMessage handler will not be called when receiving messages.
 Instead, you need to setup a background callback handler via the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
@@ -225,15 +246,18 @@ import messaging from '@react-native-firebase/messaging';
 
 // Register background handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const client = new StreamChat('api_key')
+  const client = new StreamChat('api_key');
 
   // You can also provide tokenProvider instead of static token - await client._setToken({ id: userId }, tokenProvider)
-  client._setToken({
-    id: 'user_id'
-  }, 'user_token')
+  client._setToken(
+    {
+      id: 'user_id',
+    },
+    'user_token',
+  );
 
   const message = await client.getMessage(remoteMessage.data.id);
-  
+
   notifee.displayNotification({
     title: message.message.text,
     body: JSON.stringify(remoteMessage),
@@ -265,9 +289,9 @@ AppRegistry.registerComponent('app', () => HeadlessCheck);
 ## Interact with Push Notification
 
 When a user interacts with your notification by pressing on it, the default behavior on iOS is to open the application.
-For Android, you need to explicitly define a `pressAction` with atleast an `id`, when you call `notifee.displayNotification()` to [open the application](https://notifee.app/react-native/docs/android/interaction#opening-the-application).
+For Android, you need to explicitly define a `pressAction` with at least an `id`, when you call `notifee.displayNotification()` to [open the application](https://notifee.app/react-native/docs/android/interaction#opening-the-application).
 
-But for practical application, you generally may want to navigate to navigate to specific channel upon press.
+But for practical application, you generally may want to navigate to specific channel upon press.
 For this purpose [Notifee](https://notifee.app/react-native/docs/events) provides set of [event handlers](https://notifee.app/react-native/docs/events) which can be used to build UX as required.
 
 ### When App Is In Foreground
@@ -280,12 +304,14 @@ An application is deemed in the "foreground" under the following situations:
 :::note
 
 **iOS**: onForegroundEvent will be executed in following scenarios
-  - App is already open, and user presses the notification.
-  - App is in background and user presses the notification to bring the app to foreground.
 
-**Android**: onForegroundEvent will be executed in following scenarios
-  - App is already open, and user presses the notification.
-:::
+- App is already open, and a user presses the notification.
+- App is in the background and if a user presses the notification to bring the app to foreground.
+
+**Android**: onForegroundEvent will be executed in the following scenarios:
+
+- App is already open, and a user presses the notification.
+  :::
 
 ```jsx
 import { useEffect } from 'react';
@@ -300,7 +326,7 @@ function App() {
           console.log('User dismissed notification', detail.notification);
           break;
         case EventType.PRESS:
-          navigateToChannelScreen(detail.notification.data.channel_id)
+          navigateToChannelScreen(detail.notification.data.channel_id);
           break;
       }
     });
@@ -323,11 +349,13 @@ Only a single background event handler can be registered. To register your handl
 :::note
 
 **iOS**: onBackgroundEvent will be executed in following scenarios
-  - App is currently in quit state and user pressed the notification to open the app.
+
+- App is currently in quit state and user pressed the notification to open the app.
 
 **Android**: onBackgroundEvent will be executed in following scenarios
-  - App is in background and user presses the notification to bring the app to foreground.
-  - App is currently in quit state and user pressed the notification to open the app.
+
+- App is in background and user presses the notification to bring the app to foreground.
+- App is currently in quit state and user pressed the notification to open the app.
 
 :::
 
@@ -342,10 +370,9 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 
   // Check if the user opened the app by pressing the notification
   if (type === EventType.PRESS) {
-    
     // Since this function is outside the react context, you will need to somehow
     // communicate with your App context via some kind of event emitter-listener interface.
-    navigateToChannelScreen(detail.notification.data.channel_id)
+    navigateToChannelScreen(detail.notification.data.channel_id);
     // Remove the notification
     await notifee.cancelNotification(notification.id);
   }
@@ -354,10 +381,3 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 // Register main application
 AppRegistry.registerComponent('app', () => App);
 ```
-
-## Troubleshooting
-
-If you are having trouble receiving push notifications, please use our [Push Notification Test Application](https://github.com/GetStream/chat-push-test/tree/master/react-native) to check if you have setup Push Configuration correctly.
-Please follow the steps mentioned in [Readme](https://github.com/GetStream/chat-push-test/tree/master/react-native) for further instructions
-
-If you are still having trouble with Push Notifications, please contact [support@getstream.io](mailto:support@getstream.io)
