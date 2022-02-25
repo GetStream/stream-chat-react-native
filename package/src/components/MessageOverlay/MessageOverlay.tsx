@@ -159,7 +159,6 @@ const MessageOverlayWithContext = <
   const wrapMessageInTheme = clientId === message?.user?.id && !!myMessageTheme;
 
   const [myMessageThemeString, setMyMessageThemeString] = useState(JSON.stringify(myMessageTheme));
-  const [, setReactionListHeight] = useState(0);
 
   useEffect(() => {
     if (myMessageTheme) {
@@ -360,7 +359,6 @@ const MessageOverlayWithContext = <
                               ownReactionTypes={
                                 message?.own_reactions?.map((reaction) => reaction.type) || []
                               }
-                              setReactionListHeight={setReactionListHeight}
                               showScreen={showScreen}
                             />
                           ) : null}
