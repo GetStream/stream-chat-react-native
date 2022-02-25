@@ -194,7 +194,8 @@ This is the main payload that will be sent to device:
 }
 ```
 
-When a device receives this payload, you can generate a local notification on device. For this purpose you can use [Notifee](https://notifee.app/), which is a A feature rich notifications library for React Native.
+When a device receives this payload, you can request the relevent message details by calling `chatClient.getMessage()` api and generate a local notification on device.
+For this purpose you can use [Notifee](https://notifee.app/), which is a A feature rich notifications library for React Native.
 
 ### When App Is In Foreground
 
@@ -213,7 +214,7 @@ import notifee from '@notifee/react-native';
 
 useEffect(() => {
   const unsubscribe = messaging().onMessage(async remoteMessage => {
-    const message = await client.getMessage(remoteMessage.data.id);
+    const message = await chatClient.getMessage(remoteMessage.data.id);
 
     await notifee.displayNotification({
       title: message.message.text,
@@ -244,10 +245,11 @@ For more details about headless state of application, please read the documentat
 // index.js
 import { AppRegistry } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { StreamChat } from 'stream-chat';
 
 // Register background handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const client = new StreamChat('api_key');
+  const client = StreamChat.getInstance('api_key');
 
   // You can also provide tokenProvider instead of static token - await client._setToken({ id: userId }, tokenProvider)
   client._setToken(
