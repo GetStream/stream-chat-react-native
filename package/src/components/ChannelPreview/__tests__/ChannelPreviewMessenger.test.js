@@ -1,18 +1,17 @@
 import React from 'react';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
 
-import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
-
-import { Chat } from '../../Chat/Chat';
-
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Chat } from '../../Chat/Chat';
+import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();
@@ -59,7 +58,7 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should call setActiveChannel on click', async () => {
     const onSelect = jest.fn();
-    await initializeChannel(generateChannel());
+    await initializeChannel(generateChannelResponse());
 
     const { getByTestId } = render(
       getComponent({
@@ -80,7 +79,7 @@ describe('ChannelPreviewMessenger', () => {
   it('should render name of channel', async () => {
     const channelName = Date.now().toString();
     await initializeChannel(
-      generateChannel({
+      generateChannelResponse({
         channel: {
           name: channelName,
         },
@@ -96,7 +95,7 @@ describe('ChannelPreviewMessenger', () => {
     const m3 = generateMember();
 
     await initializeChannel(
-      generateChannel({
+      generateChannelResponse({
         members: [m1, m2, m3],
       }),
     );
@@ -109,7 +108,7 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
     const message = generateMessage();
-    await initializeChannel(generateChannel());
+    await initializeChannel(generateChannelResponse());
 
     const { queryByText } = render(
       getComponent({

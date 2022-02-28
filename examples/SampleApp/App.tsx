@@ -5,7 +5,6 @@ import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
-
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -15,6 +14,7 @@ import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorSc
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
+import { ChannelPinnedMessagesScreen } from './src/screens/ChannelPinnedMessagesScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { LoadingScreen } from './src/screens/LoadingScreen';
@@ -30,18 +30,13 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import type { StreamChat } from 'stream-chat';
 
 import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
   StackNavigatorParamList,
+  StreamChatGenerics,
   UserSelectorParamList,
 } from './src/types';
 
 LogBox.ignoreAllLogs(true);
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
 
 const Drawer = createDrawerNavigator();
@@ -81,62 +76,29 @@ const App = () => {
   );
 };
 
-const DrawerNavigator: React.FC = () => {
-  const { overlay } = useOverlayContext();
-
-  return (
-    <Drawer.Navigator
-      drawerContent={(props) => <MenuDrawer {...props} />}
-      drawerStyle={{
-        width: 300,
-      }}
-      screenOptions={{
-        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
-      }}
-    >
-      <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
-    </Drawer.Navigator>
-  );
-};
+const DrawerNavigator: React.FC = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <MenuDrawer {...props} />}
+    drawerStyle={{
+      width: 300,
+    }}
+    screenOptions={{
+      gestureEnabled: true,
+    }}
+  >
+    <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
+  </Drawer.Navigator>
+);
 
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  chatClient: StreamChat<StreamChatGenerics>;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-      bottomInset={bottom}
-      value={{ style: streamChatTheme }}
-    >
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-        client={chatClient}
-      >
+    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <Chat<StreamChatGenerics> client={chatClient}>
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />
@@ -218,6 +180,11 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ChannelFilesScreen}
         name='ChannelFilesScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ChannelPinnedMessagesScreen}
+        name='ChannelPinnedMessagesScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen

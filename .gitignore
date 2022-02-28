@@ -1,3 +1,5 @@
 node_modules
 NEXT_RELEASE_CHANGELOG.md
+artifacts
+e2e/.env
 *.log

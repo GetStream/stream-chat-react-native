@@ -4,41 +4,59 @@ sidebar_position: 5
 title: Customize Message Input
 ---
 
-import nativeAttachmentPickerStep1 from '../assets/guides/message-input-customization/native_attachment_picker_step_1.png'
-import nativeAttachmentPickerStep2 from '../assets/guides/message-input-customization/native_attachment_picker_step_2.png'
+import nativeAttachmentPickerStep1 from '../assets/guides/message-input-customization/native_attachment_picker_step_1.png';
+import nativeAttachmentPickerStep2 from '../assets/guides/message-input-customization/native_attachment_picker_step_2.png';
 
-We provide the `MessageInput` container out of the box in a fixed configuration with many customizable features. Similar to other components it accesses most customizations via context, specially the `MessageInputContext` which is instantiated in `Channel`, using props available on `Channel` component. 
-To customize the entire Input UI part of MessageInput component, you can add a custom UI component as `Input` prop on Channel component.
+We provide the `MessageInput` container out of the box in a fixed configuration with many customizable features. Like other components, it accesses most customizations via contexts, especially the `MessageInputContext`, instantiated in the `Channel` component using its props.
+To customize the entire Input UI part of the `MessageInput` component, you can add a custom UI component as `Input` prop on the `Channel` component.
 
 ## Changing layout of MessageInput
 
-Let's take a look at a simple example with following requirements:
+Let's take a look at an example with the following requirements:
 
-- Stretch input box to full width
-- Button to send a message, open attachment picker and open commands picker -  below input box
-- Disable the send button, in case of empty input box.
+- Stretch the input field to full width
+- Button to send a message, to open an attachment picker, and to open a commands picker below the input field
+- Disable the send button when the input field is empty
 
 <table>
   <tr>
-    <td align='bottom' width="33%"><img src='https://user-images.githubusercontent.com/11586388/117057833-32553080-ad1e-11eb-87bb-9b48b197ffd6.png'/></td>
-    <td align='center' width="33%"><img src='https://user-images.githubusercontent.com/11586388/117057190-7136b680-ad1d-11eb-8949-66ffba518883.png'/></td>
-    <td align='center' width="33%"><img src='https://user-images.githubusercontent.com/11586388/117057179-6f6cf300-ad1d-11eb-8c0f-994577448957.png'/></td>
+    <td align='bottom' width='33%'>
+      <img src='https://user-images.githubusercontent.com/11586388/117057833-32553080-ad1e-11eb-87bb-9b48b197ffd6.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://user-images.githubusercontent.com/11586388/117057190-7136b680-ad1d-11eb-8949-66ffba518883.png' />
+    </td>
+    <td align='center' width='33%'>
+      <img src='https://user-images.githubusercontent.com/11586388/117057179-6f6cf300-ad1d-11eb-8c0f-994577448957.png' />
+    </td>
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'><strong>Disabled Send Button</strong></td>
-    <td align='center'><strong>Attached Image</strong></td>
-    <td align='center'><strong>Enabled Send Button</strong></td>
+    <td align='center'>
+      <strong>Disabled Send Button</strong>
+    </td>
+    <td align='center'>
+      <strong>Attached Image</strong>
+    </td>
+    <td align='center'>
+      <strong>Enabled Send Button</strong>
+    </td>
   </tr>
 </table>
 
-
 ```jsx
-import { Channel, Chat, ImageUploadPreview, OverlayProvider, AutoCompleteInput, useMessageInputContext } from 'stream-chat-react-native';
+import {
+  Channel,
+  Chat,
+  ImageUploadPreview,
+  OverlayProvider,
+  AutoCompleteInput,
+  useMessageInputContext,
+} from 'stream-chat-react-native';
 
 const client = StreamChat.getInstance('api_key');
 
-const CustomInput = (props) => {
+const CustomInput = props => {
   const { sendMessage, text, toggleAttachmentPicker, openCommandsPicker } = useMessageInputContext();
 
   return (
@@ -49,12 +67,12 @@ const CustomInput = (props) => {
         <AutoCompleteInput />
       </View>
       <View style={[styles.fullWidth, styles.row]}>
-        <Button title="Attach" onPress={toggleAttachmentPicker} />
-        <Button title="Commands" onPress={openCommandsPicker} />
-        <Button title="Send" onPress={sendMessage} disabled={!text} />
+        <Button title='Attach' onPress={toggleAttachmentPicker} />
+        <Button title='Commands' onPress={openCommandsPicker} />
+        <Button title='Send' onPress={sendMessage} disabled={!text} />
       </View>
     </View>
-  )
+  );
 };
 
 export const ChannelScreen = ({ channel }) => {
@@ -64,13 +82,11 @@ export const ChannelScreen = ({ channel }) => {
     <OverlayProvider>
       <Chat client={client}>
         {channel ? (
-          <Channel
-            channel={channel}
-            Input={CustomInput}>
+          <Channel channel={channel} Input={CustomInput}>
             {/** App components */}
           </Channel>
         ) : (
-          <ChannelList onSelect={setChannel}/>
+          <ChannelList onSelect={setChannel} />
         )}
       </Chat>
     </OverlayProvider>
@@ -84,7 +100,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   inputContainer: {
     height: 40,
@@ -100,32 +116,23 @@ The code above would render the red `View` and not `null` as the props take prec
 :::
 
 ```tsx
-<Channel
-  channel={channel}
-  Input={() => null}
-  keyboardVerticalOffset={headerHeight}
-  Message={CustomMessageComponent}
->
+<Channel channel={channel} Input={() => null} keyboardVerticalOffset={headerHeight} Message={CustomMessageComponent}>
   <View style={{ flex: 1 }}>
     <MessageList />
-    <MessageInput
-      Input={() => <View style={{ height: 40, backgroundColor: 'red' }} />}
-    />
+    <MessageInput Input={() => <View style={{ height: 40, backgroundColor: 'red' }} />} />
   </View>
 </Channel>
 ```
 
+You can modify `MessageInput` in a wide variety of ways. The type definitions for the props give an insight into the available options.
+You can replace the `Input` in its entirety, as in the example above, or create your own `MessageInput` component using the provided hooks to access context.
 
-You can modify `MessageInput` in a large variety of ways. The type definitions for the props give clear insight into all of the options.
-You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
-
-
-**NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
+**NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed to the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly, this can be done using this prop.
 
 ## Customizing nested components within MessageInput
 
-If you would like to only replace some internal UI component of `MessageInput`, you can do so by providing your own UI component for the default component which you want to replace, as a prop to `Channel` component.
-Following images show the prop names for replacing corresponding components. Within your own custom UI implementation, you can access all the stateful information via available contexts
+Suppose you would like to replace a specific internal UI component of `MessageInput`; in that case, you can provide your UI component for the default component you want to replace as a prop to the `Channel` component.
+The following images show the prop names for replacing corresponding components. Within your custom UI implementation, you can access all the stateful information via the available contexts.
 
 ![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/visualGuide/4.svg)
 
@@ -133,15 +140,27 @@ Following images show the prop names for replacing corresponding components. Wit
 
 ### Custom Send Button
 
-In following example, let's only replace a default `SendButton` with a custom implementation, without altering rest of layout of MessageInput
+In the following example, let's only replace a default `SendButton` with a custom implementation without altering the rest of the layout of `MessageInput`.
 
-- Default send button should be replaced with Boat Icon
-- This custom button should be disabled if user has not entered any text or attached any file
+- The Boat icon should replace the default send button
+- This custom button should be disabled if the user has not entered any text or attached any file
 
 <table>
   <tr>
-    <td align='center' width="33%"><img height="300" width="300" src='https://user-images.githubusercontent.com/11586388/117063428-1d2fd000-ad25-11eb-8483-78736ede4039.png'/></td>
-    <td align='center' width="33%"><img height="300" width="300" src='https://user-images.githubusercontent.com/11586388/117063424-1acd7600-ad25-11eb-9293-49528ea66e21.png'/></td>
+    <td align='center' width='33%'>
+      <img
+        height='300'
+        width='300'
+        src='https://user-images.githubusercontent.com/11586388/117063428-1d2fd000-ad25-11eb-8483-78736ede4039.png'
+      />
+    </td>
+    <td align='center' width='33%'>
+      <img
+        height='300'
+        width='300'
+        src='https://user-images.githubusercontent.com/11586388/117063424-1acd7600-ad25-11eb-9293-49528ea66e21.png'
+      />
+    </td>
   </tr>
   <tr></tr>
   <tr>
@@ -156,15 +175,10 @@ import { RootSvg, RootPath, Channel, useMessageInputContext } from 'stream-chat-
 
 const StreamButton = () => {
   const { sendMessage, text, imageUploads, fileUploads } = useMessageInputContext();
-  const isDisabled = !text &&
-    !imageUploads.length &&
-    !fileUploads.length;
+  const isDisabled = !text && !imageUploads.length && !fileUploads.length;
 
   return (
-    <TouchableOpacity
-      disabled={isDisabled}
-      onPress={sendMessage}
-    >
+    <TouchableOpacity disabled={isDisabled} onPress={sendMessage}>
       <RootSvg height={21} width={42} viewBox='0 0 42 21'>
         <RootPath
           d='M26.1491984,6.42806971 L38.9522984,5.52046971 C39.7973984,5.46056971 40.3294984,6.41296971 39.8353984,7.10116971 L30.8790984,19.5763697 C30.6912984,19.8379697 30.3888984,19.9931697 30.0667984,19.9931697 L9.98229842,19.9931697 C9.66069842,19.9931697 9.35869842,19.8384697 9.17069842,19.5773697 L0.190598415,7.10216971 C-0.304701585,6.41406971 0.227398415,5.46036971 1.07319842,5.52046971 L13.8372984,6.42816971 L19.2889984,0.333269706 C19.6884984,-0.113330294 20.3884984,-0.110730294 20.7846984,0.338969706 L26.1491984,6.42806971 Z M28.8303984,18.0152734 L20.5212984,14.9099734 L20.5212984,18.0152734 L28.8303984,18.0152734 Z M19.5212984,18.0152734 L19.5212984,14.9099734 L11.2121984,18.0152734 L19.5212984,18.0152734 Z M18.5624984,14.1681697 L10.0729984,17.3371697 L3.82739842,8.65556971 L18.5624984,14.1681697 Z M21.4627984,14.1681697 L29.9522984,17.3371697 L36.1978984,8.65556971 L21.4627984,14.1681697 Z M19.5292984,13.4435697 L19.5292984,2.99476971 L12.5878984,10.8305697 L19.5292984,13.4435697 Z M20.5212984,13.4435697 L20.5212984,2.99606971 L27.4627984,10.8305697 L20.5212984,13.4435697 Z M10.5522984,10.1082697 L12.1493984,8.31366971 L4.34669842,7.75446971 L10.5522984,10.1082697 Z M29.4148984,10.1082697 L27.8178984,8.31366971 L35.6205984,7.75446971 L29.4148984,10.1082697 Z'
@@ -172,21 +186,18 @@ const StreamButton = () => {
         />
       </RootSvg>
     </TouchableOpacity>
-  )
+  );
 };
 
 // In your App
 
-<Channel
-  channel={channel}
-  SendButton={StreamButton}
-/>
+<Channel channel={channel} SendButton={StreamButton} />;
 ```
 
 ## Storing image and file attachment to custom CDN
 
-When you select an image or file from image picker or file picker, it gets uploaded to Stream's CDN by default.
-But you can choose to upload attachments to your own CDN using following two props on Channel component:
+When you select an image or file from the image picker or file picker, it gets uploaded to Stream's CDN by default.
+You could, however, choose to upload attachments to your own CDN using the following two props on the Channel component:
 
 - [`doImageUploadRequest`](../core-components/channel.mdx#doimageuploadrequest): For images picked from image picker
 - [`doDocUploadRequest`](../core-components/channel.mdx#dodocuploadrequest): For files picked from file picker
@@ -212,14 +223,14 @@ But you can choose to upload attachments to your own CDN using following two pro
 
 :::note
 
-Usage of `chatClient?.sendFile` is optional in above examples. You may choose to use any HTTP client for uploading the file.
-But make sure to return a promise that is resolved to an object with the key `file` that is the url of the uploaded file.
+The usage of `chatClient?.sendFile` is optional in the examples above. You may choose to use any HTTP client for uploading the file.
+Make sure to return a promise that resolves to an object with the key `file` that is the URL of the uploaded file.
 
 For example:
 
 ```tsx
 {
-  file: 'https://us-east.stream-io-cdn.com/62344/images/a4f988f5-6a9c-47b0-aab9-7a27b74d7515.60D6041A-D012-4721-B794-19267B8F352B.jpg'
+  file: 'https://us-east.stream-io-cdn.com/62344/images/a4f988f5-6a9c-47b0-aab9-7a27b74d7515.60D6041A-D012-4721-B794-19267B8F352B.jpg';
 }
 ```
 
@@ -227,22 +238,24 @@ For example:
 
 ## Disabling File Uploads or Image Uploads
 
-There are three ways to disable file or image uploads from RN app:
+There are three ways to disable file or image uploads from a React Native app:
 
-### From Dashboard
-  
-  This is recommended option, if you want to allow neigher image or file uploads in your chat application. You can find a toggle to disable Uploads in Chat Overview page
+### From the Dashboard
 
-  ![](https://user-images.githubusercontent.com/11586388/117064212-308f6b00-ad26-11eb-8313-63931b3cac35.png)
+Disabling uploads from the Dashboard is the recommended option to disallow image and file uploads in your chat application. You can find a toggle to disable Uploads on the Chat Overview page.
 
-### On UI level
-  If you want to restrict uploads to either images or only files, you can do so by providing one of the following two props to Channel component:
-  - `hasFilePicker` (boolean)
-  - `hasImagePicker` (boolean)
+![](https://user-images.githubusercontent.com/11586388/117064212-308f6b00-ad26-11eb-8313-63931b3cac35.png)
 
-## Disable autocomplete feature on input (mentions and commands)
+### On the UI level
 
-The auto-complete trigger settings by default include `/`, `@`, and `:` for slash commands, mentions, and emojis respectively. These triggers are created by the exported function `ACITriggerSettings`, which takes `ACITriggerSettingsParams` and returns `TriggerSettings`. You can override this function to remove some or all of the trigger settings via the `autoCompleteTriggerSettings` prop on `Channel`. If you remove the slash commands it is suggested you also remove the commands button using the prop on `Channel` `hasCommands`. You can remove all of the commands by returning an empty object from the function given to `autoCompleteTriggerSettings`.
+If you want to restrict uploads to either only images or only files, you can do so by providing one of the following two props to the `Channel` component:
+
+- `hasFilePicker` (boolean)
+- `hasImagePicker` (boolean)
+
+## Disable autocomplete features on input (mentions and commands)
+
+By default, the autocomplete trigger settings include `/`, `@`, and `:` for slash commands, mentions, and emojis, respectively. These triggers are created by the exported function `ACITriggerSettings`, which takes `ACITriggerSettingsParams` and returns `TriggerSettings`. You can override this function to remove some or all of the trigger settings via the `autoCompleteTriggerSettings` prop on `Channel`. We suggest removing the commands button using the `hasCommands` prop on `Channel` if you remove the slash commands. You can remove all the commands by returning an empty object from the function given to `autoCompleteTriggerSettings`.
 
 ```tsx
 <Channel
@@ -264,27 +277,74 @@ Please make sure to memoize or pass static reference for this object. Please rea
 
 ```jsx
 const additionalTextInputProps = useMemo(() => {
-  selectionColor: 'pink'
+  selectionColor: 'pink';
 });
 
 // Render UI part
-<Channel
-  channel={channel}
-  additionalTextInputProps={additionalTextInputProps}
->
+<Channel channel={channel} additionalTextInputProps={additionalTextInputProps}>
   ...
-</Channel>
+</Channel>;
+```
+
+## Customizing the slow mode CooldownTimer
+
+### Modifying styles through the theme
+
+The default CooldownTimer can have it's styles altered through the theme, using the following keys:
+
+```jsx
+    <ThemeProvider style={{
+      {/* ... your other styles */}
+      messageInput: {
+        cooldownTimer: {
+          container: {
+            {/* ViewStyle values */}
+          },
+          text: {
+            {/* TextStyle values */}
+          }
+        }
+      }
+    }}>
+```
+
+### Creating a custom CooldownTimer
+
+If a channel has slow mode enabled, the send button will be disabled when a user has sent a message, and a countdown will be displayed in its place. The built-in CooldownTimer component is styled to look like the disabled variant of the built-in send button, but you can replace the CooldownTimer to fit it to your needs.
+
+To do so, first create your custom CooldownTimer component that accepts `{ seconds: number }` as a prop, which is the current amount of seconds left until the cooldown finishes.
+
+```jsx
+import { CooldownTimerProps } from 'stream-chat-react-native';
+
+const CustomCooldownTimer = ({ seconds }: CooldownTimerProps) => {
+  const isEven = seconds % 2 === 0;
+
+  console.log(`There is an ${isEven ? 'even' : 'odd'} amount of seconds left`);
+
+  return <Text>{seconds}</Text>;
+};
+```
+
+You will then have to add your CustomCooldownTimer component as a prop to the Channel component in your application.
+
+```jsx
+<Channel CooldownTimer={CustomCooldownTimer}>...</Channel>
 ```
 
 ## Replacing AttachmentPicker With Native Image Picker
 
-Attachment picker is rendered/displayed/opened inside of a bottom sheet by default.
+The attachment picker is rendered/displayed/opened inside of a bottom sheet by default.
 The default behavior can be easily replaced with the device's native image picker (as shown in screenshots below).
 
 <table>
   <tr>
-    <td align='center' width="33%"><img src={nativeAttachmentPickerStep1}/></td>
-    <td align='center' width="33%"><img src={nativeAttachmentPickerStep2}/></td>
+    <td align='center' width='33%'>
+      <img src={nativeAttachmentPickerStep1} />
+    </td>
+    <td align='center' width='33%'>
+      <img src={nativeAttachmentPickerStep2} />
+    </td>
   </tr>
   <tr></tr>
   <tr>
@@ -294,7 +354,7 @@ The default behavior can be easily replaced with the device's native image picke
 </table>
 
 Channel component receives a prop [AttachButton](../core-components/channel.mdx#attachbutton),
-which can be used to override the default attach button next to input box as following. This prop can be used to
+which can be used to override the default attach button next to the input field as follows. This prop can be used to
 override the default `onPress` handler for the `AttachButton` component.
 
 ```tsx
@@ -306,13 +366,12 @@ const CustomAttachButton = () => {
   };
 
   return <AttachButton handleOnPress={onPressHandler} />;
-}
+};
 
-<Channel AttachButton={CustomAttachButton} />
-
+<Channel AttachButton={CustomAttachButton} />;
 ```
 
-In order to make the `onPressHandler` open the actionsheet and show the options to choose attachments from Photo Library, Camera or Files,
+To make the `onPressHandler` open the action sheet and show the options to choose attachments from Photo Library, Camera, or Files,
 you can use [`@expo/react-native-action-sheet`](https://github.com/expo/react-native-action-sheet) package for the action sheet implemented in this example.
 
 ```sh
@@ -336,7 +395,7 @@ const CustomAttachButton = () => {
         destructiveButtonIndex: 3,
         options: ['Photo Library', 'Camera', 'Files', 'Cancel'],
       },
-      (buttonIndex) => {
+      buttonIndex => {
         switch (buttonIndex) {
           case 0:
             break;
@@ -356,7 +415,7 @@ const CustomAttachButton = () => {
 
 <ActionSheetProvider>
   <Channel AttachButton={CustomAttachButton} />
-</ActionSheetProvider>
+</ActionSheetProvider>;
 ```
 
 Now let's hook the relevant action handlers for buttons within actionsheet.
@@ -366,14 +425,10 @@ with upload previews ([`ImageUploadPreview`](../ui-components/image_upload_previ
 by using a function `uploadNewImage` provided by [`MessageInputContext`](../contexts/message_input_context.mdx#uploadnewimage).
 
 For file attachments, the SDK defaults to the native file picker. That can be reused by adding the `pickFile` function
-provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as action handler within actionsheet.
+provided by the [`MessageInputContext`](../contexts/message_input_context.mdx#pickfile) as an action handler within the action sheet.
 
 ```tsx {4,10,12-21,23-30,43,46,49}
-import {
-  AttachButton,
-  Channel,
-  useMessageInputContext
-} from 'stream-chat-react-native';
+import { AttachButton, Channel, useMessageInputContext } from 'stream-chat-react-native';
 import { ActionSheetProvider, useActionSheet } from '@expo/react-native-action-sheet';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -384,8 +439,8 @@ const CustomAttachButton = () => {
   const pickImageFromGallery = () =>
     ImagePicker.openPicker({
       multiple: true,
-    }).then((images) =>
-      images.forEach((image) =>
+    }).then(images =>
+      images.forEach(image =>
         uploadNewImage({
           uri: image.path,
         }),
@@ -395,7 +450,7 @@ const CustomAttachButton = () => {
   const pickImageFromCamera = () =>
     ImagePicker.openCamera({
       cropping: true,
-    }).then((image) =>
+    }).then(image =>
       uploadNewImage({
         uri: image.path,
       }),
@@ -409,7 +464,7 @@ const CustomAttachButton = () => {
         destructiveButtonIndex: 3,
         options: ['Photo Library', 'Camera', 'Files', 'Cancel'],
       },
-      (buttonIndex) => {
+      buttonIndex => {
         switch (buttonIndex) {
           case 0:
             pickImageFromGallery();
@@ -432,5 +487,5 @@ const CustomAttachButton = () => {
 
 <ActionSheetProvider>
   <Channel AttachButton={CustomAttachButton} />
-</ActionSheetProvider>
+</ActionSheetProvider>;
 ```

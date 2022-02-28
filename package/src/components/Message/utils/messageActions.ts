@@ -1,28 +1,37 @@
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
+import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
-import type { MessageAction } from '../../../contexts/messageOverlayContext/MessageOverlayContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+export type MessageActionsParams<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  blockUser: MessageActionType;
+  copyMessage: MessageActionType;
+  deleteMessage: MessageActionType;
+  dismissOverlay: () => void;
+  editMessage: MessageActionType;
+  error: boolean | Error;
+  flagMessage: MessageActionType;
+  isThreadMessage: boolean;
+  messageReactions: boolean;
+  muteUser: MessageActionType;
+  ownCapabilities: OwnCapabilitiesContextValue;
+  pinMessage: MessageActionType;
+  quotedReply: MessageActionType;
+  retry: MessageActionType;
+  threadReply: MessageActionType;
+  unpinMessage: MessageActionType;
+} & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
+
+export type MessageActionsProp<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
 
 export const messageActions = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   blockUser,
-  canModifyMessage,
   copyMessage,
   deleteMessage,
   editMessage,
@@ -32,52 +41,35 @@ export const messageActions = <
   isThreadMessage,
   message,
   messageReactions,
-  mutesEnabled,
-  muteUser,
-  quotedRepliesEnabled,
+  ownCapabilities,
+  pinMessage,
   quotedReply,
   retry,
-  threadRepliesEnabled,
   threadReply,
-}: {
-  blockUser: MessageAction | null;
-  canModifyMessage: boolean;
-  copyMessage: MessageAction | null;
-  deleteMessage: MessageAction | null;
-  editMessage: MessageAction | null;
-  error: boolean;
-  flagMessage: MessageAction | null;
-  isMyMessage: boolean;
-  isThreadMessage: boolean;
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  messageReactions: boolean;
-  muteUser: MessageAction | null;
-  quotedReply: MessageAction | null;
-  retry: MessageAction | null;
-  threadReply: MessageAction | null;
-  mutesEnabled?: boolean;
-  quotedRepliesEnabled?: boolean;
-  threadRepliesEnabled?: boolean;
-}): Array<MessageAction | null> | undefined => {
+  unpinMessage,
+}: MessageActionsParams<StreamChatGenerics>) => {
   if (messageReactions) {
     return undefined;
   }
 
-  const actions: Array<MessageAction | null> = [];
+  const actions: Array<MessageActionType | null> = [];
 
   if (error && isMyMessage) {
     actions.push(retry);
   }
 
-  if (quotedRepliesEnabled && !isThreadMessage && !error) {
+  if (ownCapabilities.quoteMessage && !isThreadMessage && !error) {
     actions.push(quotedReply);
   }
 
-  if (threadRepliesEnabled && !isThreadMessage && !error) {
+  if (ownCapabilities.sendReply && !isThreadMessage && !error) {
     actions.push(threadReply);
   }
 
-  if (canModifyMessage) {
+  if (
+    (isMyMessage && ownCapabilities.updateOwnMessage) ||
+    (!isMyMessage && ownCapabilities.updateAnyMessage)
+  ) {
     actions.push(editMessage);
   }
 
@@ -85,19 +77,26 @@ export const messageActions = <
     actions.push(copyMessage);
   }
 
-  if (mutesEnabled && !isMyMessage) {
-    actions.push(muteUser);
-  }
-
-  if (!isMyMessage) {
+  if (!isMyMessage && ownCapabilities.flagMessage) {
     actions.push(flagMessage);
   }
 
-  if (!isMyMessage && canModifyMessage) {
+  if (ownCapabilities.pinMessage && !message.pinned) {
+    actions.push(pinMessage);
+  }
+
+  if (ownCapabilities.pinMessage && message.pinned) {
+    actions.push(unpinMessage);
+  }
+
+  if (!isMyMessage && ownCapabilities.banChannelMembers) {
     actions.push(blockUser);
   }
 
-  if (canModifyMessage) {
+  if (
+    (isMyMessage && ownCapabilities.deleteOwnMessage) ||
+    (!isMyMessage && ownCapabilities.deleteAnyMessage)
+  ) {
     actions.push(deleteMessage);
   }
 

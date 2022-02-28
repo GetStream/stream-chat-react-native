@@ -3,7 +3,6 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import {
   FileUpload,
   MessageInputContextValue,
@@ -15,18 +14,10 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 
 const FILE_PREVIEW_HEIGHT = 60;
 
@@ -71,29 +62,17 @@ const styles = StyleSheet.create({
 });
 
 type FileUploadPreviewPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageInputContextValue<StreamChatGenerics>,
   'fileUploads' | 'removeFile' | 'uploadFile'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'FileAttachmentIcon'>;
+  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
 const FileUploadPreviewWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
@@ -102,7 +81,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper, overlay_dark },
+      colors: { black, grey, grey_whisper, overlay },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -182,7 +161,7 @@ const FileUploadPreviewWithContext = <
           onPress={() => {
             removeFile(item.id);
           }}
-          style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
+          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
           testID='remove-file-upload-preview'
         >
           <Close />
@@ -222,17 +201,9 @@ const FileUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
+  nextProps: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { fileUploads: prevFileUploads } = prevProps;
   const { fileUploads: nextFileUploads } = nextProps;
@@ -251,33 +222,20 @@ const MemoizedFileUploadPreview = React.memo(
 ) as typeof FileUploadPreviewWithContext;
 
 export type FileUploadPreviewProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<FileUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
  */
 export const FileUploadPreview = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } =
-    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { FileAttachmentIcon } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
+  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview

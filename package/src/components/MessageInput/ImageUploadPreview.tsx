@@ -10,18 +10,8 @@ import {
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
 
 const IMAGE_PREVIEW_SIZE = 100;
 
@@ -46,44 +36,26 @@ const styles = StyleSheet.create({
 });
 
 type ImageUploadPreviewPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageInputContextValue<StreamChatGenerics>,
   'imageUploads' | 'removeImage' | 'uploadImage'
 >;
 
 export type ImageUploadPreviewProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ImageUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
 const ImageUploadPreviewWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { imageUploads, removeImage, uploadImage } = props;
 
   const {
     theme: {
-      colors: { overlay_dark, white },
+      colors: { overlay, white },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
@@ -122,7 +94,7 @@ const ImageUploadPreviewWithContext = <
         onPress={() => {
           removeImage(item.id);
         }}
-        style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
+        style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
         testID='remove-image-upload-preview'
       >
         <Close pathFill={white} />
@@ -146,17 +118,9 @@ const ImageUploadPreviewWithContext = <
   ) : null;
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ImageUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
+  nextProps: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { imageUploads: prevImageUploads } = prevProps;
   const { imageUploads: nextImageUploads } = nextProps;
@@ -178,18 +142,11 @@ const MemoizedImageUploadPreviewWithContext = React.memo(
  * UI Component to preview the images set for upload
  */
 export const ImageUploadPreview = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ImageUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { imageUploads, removeImage, uploadImage } =
-    useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { imageUploads, removeImage, uploadImage } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedImageUploadPreviewWithContext

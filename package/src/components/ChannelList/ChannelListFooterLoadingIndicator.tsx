@@ -1,9 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Spinner } from '../Spinner/Spinner';
-
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Spinner } from '../Spinner/Spinner';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,7 +20,7 @@ export const ChannelListFooterLoadingIndicator: React.FC = () => {
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, container]} testID='channel-list-footer-loading-indicator'>
       <Spinner />
     </View>
   );

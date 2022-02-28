@@ -8,14 +8,7 @@ import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
 import type { MessageResponse } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../../types';
+import type { StreamChatGenerics } from '../../types';
 
 const styles = StyleSheet.create({
   contentContainer: { flexGrow: 1 },
@@ -59,34 +52,13 @@ export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
   loading: boolean;
   loadMore: () => void;
-  messages:
-    | MessageResponse<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >[]
-    | undefined;
-  refreshing: boolean;
-  refreshList: () => void;
+  messages: MessageResponse<StreamChatGenerics>[] | undefined;
+  refreshing?: boolean;
+  refreshList?: () => void;
   showResultCount?: boolean;
 };
 export const MessageSearchList: React.FC<MessageSearchListProps> = React.forwardRef(
-  (
-    props,
-    scrollRef: React.Ref<FlatList<
-      MessageResponse<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    > | null>,
-  ) => {
+  (props, scrollRef: React.Ref<FlatList<MessageResponse<StreamChatGenerics>> | null>) => {
     const {
       EmptySearchIndicator,
       loading,
@@ -152,7 +124,14 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = React.forward
               style={[styles.itemContainer, { borderBottomColor: border }]}
               testID='channel-preview-button'
             >
-              <Avatar image={item.user?.image} name={item.user?.name} size={40} />
+              <Avatar
+                channelId={item.channel?.id}
+                id={item.user?.id}
+                image={item.user?.image}
+                name={item.user?.name}
+                online={item?.user?.online}
+                size={40}
+              />
               <View style={styles.flex}>
                 <View style={styles.row}>
                   <Text numberOfLines={1} style={[styles.titleContainer, { color: black }]}>

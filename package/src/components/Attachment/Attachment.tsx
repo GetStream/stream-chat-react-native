@@ -1,58 +1,37 @@
 import React from 'react';
 
+import type { Attachment as AttachmentType } from 'stream-chat';
+
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { Card as CardDefault } from '../../components/Attachment/Card';
+import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../../components/Attachment/Giphy';
-import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
-import type { Attachment as AttachmentType } from 'stream-chat';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type ActionHandler = (name: string, value: string) => void;
 
 export type AttachmentPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessagesContextValue<StreamChatGenerics>,
   'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
 > & {
   /**
    * The attachment to render
    */
-  attachment: AttachmentType<At>;
+  attachment: AttachmentType<StreamChatGenerics>;
 };
 
 const AttachmentWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { attachment, AttachmentActions, Card, FileAttachment, Gallery, Giphy, UrlPreview } = props;
 
@@ -103,17 +82,9 @@ const AttachmentWithContext = <
   }
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
+  nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { attachment: prevAttachment } = prevProps;
   const { attachment: nextAttachment } = nextProps;
@@ -132,34 +103,22 @@ const MemoizedAttachment = React.memo(
 ) as typeof AttachmentWithContext;
 
 export type AttachmentProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
   >
 > &
-  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
+  Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
 
 /**
  * Attachment - The message attachment
  */
 export const Attachment = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentProps<StreamChatGenerics>,
 ) => {
   const {
     attachment,
@@ -178,7 +137,7 @@ export const Attachment = <
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
     UrlPreview: ContextUrlPreview,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatGenerics>();
 
   if (!attachment) {
     return null;

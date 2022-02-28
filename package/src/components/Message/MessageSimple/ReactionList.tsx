@@ -1,12 +1,6 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, useWindowDimensions, View, ViewStyle } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+
 import Svg, { Circle } from 'react-native-svg';
 
 import {
@@ -14,22 +8,16 @@ import {
   Reactions,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Unknown } from '../../../icons/Unknown';
 
 import type { IconProps } from '../../../icons/utils/base';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { ReactionData } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -64,80 +52,45 @@ const Icon: React.FC<
   const ReactionIcon =
     supportedReactions.find((reaction) => reaction.type === type)?.Icon || Unknown;
 
-  const scale = useSharedValue(0);
-
-  const showReaction = () => {
-    'worklet';
-    scale.value = withSequence(
-      withDelay(250, withTiming(0.5, { duration: 100 })),
-      withTiming(1.5, { duration: 400 }),
-      withTiming(1, { duration: 500 }),
-    );
-  };
-
-  useEffect(() => {
-    showReaction();
-  }, []);
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
-    <Animated.View style={animatedStyle}>
+    <View>
       <ReactionIcon height={size} pathFill={pathFill} style={style} width={size} />
-    </Animated.View>
+    </View>
   );
 };
 
 export type ReactionListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
+  | 'message'
   | 'onLongPress'
   | 'onPress'
   | 'onPressIn'
   | 'preventPress'
   | 'reactions'
   | 'showMessageOverlay'
-> & {
-  messageContentWidth: number;
-  supportedReactions: ReactionData[];
-  fill?: string;
-  radius?: number; // not recommended to change this
-  reactionSize?: number;
-  stroke?: string;
-  strokeSize?: number; // not recommended to change this
-};
+> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'targetedMessage'> & {
+    messageContentWidth: number;
+    supportedReactions: ReactionData[];
+    fill?: string;
+    radius?: number; // not recommended to change this
+    reactionSize?: number;
+    stroke?: string;
+    strokeSize?: number; // not recommended to change this
+  };
 
 const ReactionListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
     fill: propFill,
+    message,
     messageContentWidth,
     onLongPress,
     onPress,
@@ -150,11 +103,20 @@ const ReactionListWithContext = <
     stroke: propStroke,
     strokeSize: propStrokeSize,
     supportedReactions,
+    targetedMessage,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, white },
+      colors: {
+        accent_blue,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        targetedMessageBackground,
+        white,
+        white_snow,
+      },
       messageSimple: {
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
@@ -171,8 +133,6 @@ const ReactionListWithContext = <
     },
   } = useTheme();
 
-  const opacity = useSharedValue(0);
-
   const width = useWindowDimensions().width;
 
   const supportedReactionTypes = supportedReactions.map(
@@ -180,22 +140,6 @@ const ReactionListWithContext = <
   );
   const hasSupportedReactions = reactions.some((reaction) =>
     supportedReactionTypes.includes(reaction.type),
-  );
-
-  const showReactions = (show: boolean) => {
-    'worklet';
-    opacity.value = show ? withDelay(250, withTiming(1, { duration: 500 })) : 0;
-  };
-
-  useEffect(() => {
-    showReactions(hasSupportedReactions && messageContentWidth !== 0);
-  }, [hasSupportedReactions, messageContentWidth]);
-
-  const animatedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: opacity.value,
-    }),
-    [],
   );
 
   if (!hasSupportedReactions || messageContentWidth === 0) {
@@ -206,7 +150,8 @@ const ReactionListWithContext = <
   const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
-  const stroke = propStroke || white;
+  const highlighted = message.pinned || targetedMessage === message.id;
+  const stroke = propStroke || (highlighted ? targetedMessageBackground : white_snow);
   const strokeSize = propStrokeSize || themeStrokeSize;
 
   const x1 = alignmentLeft
@@ -232,34 +177,7 @@ const ReactionListWithContext = <
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
   return (
-    <TouchableOpacity
-      disabled={preventPress}
-      onLongPress={(event) => {
-        if (onLongPress) {
-          onLongPress({
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPress={(event) => {
-        if (onPress) {
-          onPress({
-            defaultHandler: () => showMessageOverlay(true),
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
-      onPressIn={(event) => {
-        if (onPressIn) {
-          onPressIn({
-            defaultHandler: () => showMessageOverlay(true),
-            emitter: 'reactionList',
-            event,
-          });
-        }
-      }}
+    <View
       style={[
         styles.container,
         {
@@ -271,20 +189,20 @@ const ReactionListWithContext = <
       testID='reaction-list'
     >
       {reactions.length ? (
-        <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
+        <View style={[StyleSheet.absoluteFill]}>
           <Svg>
             <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
             <Circle cx={x2} cy={y2} fill={stroke} r={radius * 2 + strokeSize * 3} />
             <Circle cx={x1} cy={y1} fill={fill} r={radius + strokeSize} />
             <Circle cx={x2} cy={y2} fill={fill} r={radius * 2 + strokeSize} />
-            <Circle cx={x1} cy={y1} fill={alignmentLeft ? fill : stroke} r={radius} />
-            <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
+            <Circle cx={x1} cy={y1} fill={alignmentLeft ? fill : white} r={radius} />
+            <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
           </Svg>
           <View
             style={[
               styles.reactionBubbleBackground,
               {
-                backgroundColor: alignmentLeft ? fill : stroke,
+                backgroundColor: alignmentLeft ? fill : white,
                 borderColor: fill,
                 borderRadius: reactionSize,
                 borderWidth: strokeSize,
@@ -297,14 +215,41 @@ const ReactionListWithContext = <
           />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
-              <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : stroke} r={radius * 2} />
+              <Circle cx={x2} cy={y2} fill={alignmentLeft ? fill : white} r={radius * 2} />
             </Svg>
           </View>
-          <View
+          <TouchableOpacity
+            disabled={preventPress}
+            onLongPress={(event) => {
+              if (onLongPress) {
+                onLongPress({
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
+            onPress={(event) => {
+              if (onPress) {
+                onPress({
+                  defaultHandler: () => showMessageOverlay(true),
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
+            onPressIn={(event) => {
+              if (onPressIn) {
+                onPressIn({
+                  defaultHandler: () => showMessageOverlay(true),
+                  emitter: 'reactionList',
+                  event,
+                });
+              }
+            }}
             style={[
               styles.reactionBubble,
               {
-                backgroundColor: alignmentLeft ? fill : stroke,
+                backgroundColor: alignmentLeft ? fill : white,
                 borderRadius: reactionSize - strokeSize * 2,
                 height: reactionSize - strokeSize * 2,
                 left: left + strokeSize,
@@ -324,30 +269,40 @@ const ReactionListWithContext = <
                 type={reaction.type}
               />
             ))}
-          </View>
-        </Animated.View>
+          </TouchableOpacity>
+        </View>
       ) : null}
-    </TouchableOpacity>
+    </View>
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ReactionListPropsWithContext<StreamChatGenerics>,
+  nextProps: ReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { messageContentWidth: prevMessageContentWidth, reactions: prevReactions } = prevProps;
-  const { messageContentWidth: nextMessageContentWidth, reactions: nextReactions } = nextProps;
+  const {
+    message: prevMessage,
+    messageContentWidth: prevMessageContentWidth,
+    reactions: prevReactions,
+    targetedMessage: prevTargetedMessage,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    messageContentWidth: nextMessageContentWidth,
+    reactions: nextReactions,
+    targetedMessage: nextTargetedMessage,
+  } = nextProps;
 
   const messageContentWidthEqual = prevMessageContentWidth === nextMessageContentWidth;
   if (!messageContentWidthEqual) return false;
+
+  const messagePinnedEqual = prevMessage.pinned === nextMessage.pinned;
+
+  if (!messagePinnedEqual) return false;
+
+  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+
+  if (!targetedMessageEqual) return false;
 
   const reactionsEqual =
     prevReactions.length === nextReactions.length &&
@@ -367,45 +322,35 @@ const MemoizedReactionList = React.memo(
 ) as typeof ReactionListWithContext;
 
 export type ReactionListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>> &
-  Pick<ReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'messageContentWidth'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<ReactionListPropsWithContext<StreamChatGenerics>, 'messageContentWidth'>> &
+  Pick<ReactionListPropsWithContext<StreamChatGenerics>, 'messageContentWidth'>;
 
 /**
  * ReactionList - A high level component which implements all the logic required for a message reaction list
  */
 export const ReactionList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReactionListProps<StreamChatGenerics>,
 ) => {
   const {
     alignment,
+    message,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
     reactions,
     showMessageOverlay,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<StreamChatGenerics>();
+  const { supportedReactions, targetedMessage } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedReactionList
       {...{
         alignment,
+        message,
         onLongPress,
         onPress,
         onPressIn,
@@ -413,6 +358,7 @@ export const ReactionList = <
         reactions,
         showMessageOverlay,
         supportedReactions,
+        targetedMessage,
       }}
       {...props}
     />

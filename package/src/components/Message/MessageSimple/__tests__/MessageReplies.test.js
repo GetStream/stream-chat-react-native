@@ -1,13 +1,13 @@
 import React from 'react';
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { MessageReplies } from '../MessageReplies';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateStaticUser, generateUser } from '../../../../mock-builders/generator/user';
+import { MessageReplies } from '../MessageReplies';
 import { MessageRepliesAvatars } from '../MessageRepliesAvatars';
 
 afterEach(cleanup);

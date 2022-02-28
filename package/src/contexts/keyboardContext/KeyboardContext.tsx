@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { Keyboard } from 'react-native';
 
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
-
-import type { UnknownType } from '../../types/types';
 
 export type KeyboardContextValue = {
   dismissKeyboard: () => void;
@@ -21,14 +20,20 @@ export const KeyboardProvider: React.FC<{
 
 export const useKeyboardContext = () => useContext(KeyboardContext);
 
-export const withKeyboardContext = <P extends UnknownType>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof KeyboardContextValue>> => {
-  const WithKeyboardContextComponent = (props: Omit<P, keyof KeyboardContextValue>) => {
+export const withKeyboardContext = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof KeyboardContextValue>> => {
+  const WithKeyboardContextComponent = (
+    props: Omit<StreamChatGenerics, keyof KeyboardContextValue>,
+  ) => {
     const keyboardContext = useKeyboardContext();
 
-    return <Component {...(props as P)} {...keyboardContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...keyboardContext} />;
   };
-  WithKeyboardContextComponent.displayName = `WithKeyboardContext${getDisplayName(Component)}`;
+  WithKeyboardContextComponent.displayName = `WithKeyboardContext${getDisplayName(
+    Component as React.ComponentType,
+  )}`;
   return WithKeyboardContextComponent;
 };

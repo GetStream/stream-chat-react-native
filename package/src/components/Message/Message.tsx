@@ -1,35 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  Alert,
-  Clipboard,
-  GestureResponderEvent,
-  Image,
-  Keyboard,
-  PixelRatio,
-  Platform,
-  StyleProp,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
-import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
+
+import type { Attachment } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
+import { useMessageActions } from './hooks/useMessageActions';
 import { messageActions as defaultMessageActions } from './utils/messageActions';
-import { removeReservedFields } from './utils/removeReservedFields';
-
-import {
-  isMessageWithStylesReadByAndDateSeparator,
-  MessageType,
-} from '../MessageList/hooks/useMessageList';
 
 import {
   ChannelContextValue,
@@ -46,7 +23,6 @@ import {
   Reactions,
 } from '../../contexts/messageContext/MessageContext';
 import {
-  MessageAction,
   MessageOverlayContextValue,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
@@ -58,6 +34,7 @@ import {
   OverlayContextValue,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
@@ -65,48 +42,16 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import {
-  Copy,
-  CurveLineLeftUp,
-  Delete,
-  Edit,
-  MessageFlag,
-  Mute,
-  SendUp,
-  ThreadReply,
-  UserDelete,
-} from '../../icons';
 import { triggerHaptic } from '../../native';
-import { emojiRegex } from '../../utils/utils';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
 
-import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
+import {
+  isMessageWithStylesReadByAndDateSeparator,
+  MessageType,
+} from '../MessageList/hooks/useMessageList';
+import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-
-const prefetchImage = ({ height, url }: { height: number | string; url: string }) => {
-  if (url.includes('&h=%2A')) {
-    Image.prefetch(
-      url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`),
-    )
-      .catch(() => Image.prefetch(url))
-      .catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
-  } else {
-    Image.prefetch(url).catch(() => {
-      // do nothing, not a big deal that prefetch failed
-    });
-  }
-};
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?:
@@ -124,21 +69,16 @@ export type TouchableHandlerPayload = {
 };
 
 export type MessageTouchableHandlerPayload<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
-  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  message?: MessageType<StreamChatGenerics>;
 };
 
 export type MessageActionHandlers = {
   deleteMessage: () => Promise<void>;
   editMessage: () => void;
+  pinMessage: () => Promise<void>;
   quotedReply: () => void;
   resendMessage: () => Promise<void>;
   showMessageOverlay: () => void;
@@ -148,36 +88,18 @@ export type MessageActionHandlers = {
 };
 
 export type MessagePropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'channel'
-  | 'disabled'
-  | 'enforceUniqueReaction'
-  | 'isAdmin'
-  | 'isModerator'
-  | 'members'
-  | 'readEventsEnabled'
+  ChannelContextValue<StreamChatGenerics>,
+  'channel' | 'disabled' | 'enforceUniqueReaction' | 'members'
 > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'mutedUsers'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client' | 'mutedUsers'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
-  Partial<Omit<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'> &
+  Partial<Omit<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'groupStyles' | 'message'> &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    | 'animatedLongPress'
-    | 'blockUser'
-    | 'copyMessage'
-    | 'deleteMessage'
+    MessagesContextValue<StreamChatGenerics>,
     | 'dismissKeyboardOnMessageTouch'
-    | 'editMessage'
-    | 'flagMessage'
     | 'forceAlignMessages'
     | 'handleBlock'
     | 'handleCopy'
@@ -185,6 +107,7 @@ export type MessagePropsWithContext<
     | 'handleEdit'
     | 'handleFlag'
     | 'handleMute'
+    | 'handlePinMessage'
     | 'handleQuotedReply'
     | 'handleReaction'
     | 'handleRetry'
@@ -192,37 +115,29 @@ export type MessagePropsWithContext<
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
-    | 'mutesEnabled'
-    | 'muteUser'
-    | 'onDoubleTapMessage'
     | 'onLongPressMessage'
     | 'onPressInMessage'
     | 'onPressMessage'
     | 'OverlayReactionList'
-    | 'quotedRepliesEnabled'
-    | 'quotedReply'
-    | 'reactionsEnabled'
     | 'removeMessage'
-    | 'retry'
     | 'retrySendMessage'
     | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
-    | 'threadRepliesEnabled'
-    | 'threadReply'
     | 'updateMessage'
   > &
-  Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
+  Pick<MessageOverlayContextValue<StreamChatGenerics>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
-    messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+    messagesContext: MessagesContextValue<StreamChatGenerics>;
     /**
      * Whether or not users are able to long press messages.
      */
     enableLongPress?: boolean;
     goToMessage?: (messageId: string) => void;
+    isTargetedMessage?: boolean;
     /**
      * Array of allowed actions or null on message, this can also be a function returning the array.
      * If all the actions need to be disabled an empty array should be provided as value of prop
@@ -238,9 +153,8 @@ export type MessagePropsWithContext<
      * @param message Message object which was long pressed
      * @param event   Event object for onLongPress event
      **/
-    onLongPress?: (
-      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
-    ) => void;
+    onLongPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
+
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
@@ -252,22 +166,16 @@ export type MessagePropsWithContext<
      * @param message Message object which was long pressed
      * @param event   Event object for onLongPress event
      * */
-    onPress?: (
-      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
-    ) => void;
-
-    onPressIn?: (
-      payload: Partial<MessageTouchableHandlerPayload<At, Ch, Co, Ev, Me, Re, Us>>,
-    ) => void;
+    onPress?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
+    onPressIn?: (payload: Partial<MessageTouchableHandlerPayload<StreamChatGenerics>>) => void;
     /**
      * Handler to open the thread on message. This is callback for touch event for replies button.
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
-    targetedMessage?: boolean;
   };
 
 /**
@@ -276,30 +184,20 @@ export type MessagePropsWithContext<
  * each individual Message component.
  */
 const MessageWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
+  const isMessageTypeDeleted = props.message.type === 'deleted';
+
   const {
-    animatedLongPress = Platform.OS === 'ios' && !props.message.deleted_at,
-    blockUser: blockUserProp,
     channel,
     client,
-    copyMessage: copyMessageProp,
-    deleteMessage: deleteMessageProp,
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
-    editMessage: editMessageProp,
     enableLongPress = true,
     enforceUniqueReaction,
-    flagMessage: flagMessageProp,
     forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
@@ -309,12 +207,11 @@ const MessageWithContext = <
     handleEdit,
     handleFlag,
     handleMute,
+    handlePinMessage,
     handleQuotedReply,
     handleReaction: handleReactionProp,
     handleRetry,
     handleThreadReply,
-    isAdmin,
-    isModerator,
     lastReceivedId,
     members,
     message,
@@ -322,9 +219,6 @@ const MessageWithContext = <
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
-    mutesEnabled,
-    muteUser: muteUserProp,
-    onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
     onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
@@ -335,12 +229,7 @@ const MessageWithContext = <
     openThread,
     OverlayReactionList,
     preventPress,
-    quotedRepliesEnabled,
-    reactionsEnabled,
-    readEventsEnabled,
     removeMessage,
-    quotedReply: quotedReplyProp,
-    retry: retryProp,
     retrySendMessage,
     selectReaction,
     setData,
@@ -353,67 +242,22 @@ const MessageWithContext = <
     style,
     supportedReactions,
     t,
-    targetedMessage,
+    isTargetedMessage,
     threadList = false,
-    threadRepliesEnabled,
-    threadReply: threadReplyProp,
     updateMessage,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, accent_red, bg_gradient_start, grey, targetedMessageBackground },
-      messageSimple: {
-        gallery: { halfSize, size },
-        targetedMessageUnderlay,
-      },
+      colors: { bg_gradient_start, targetedMessageBackground },
+      messageSimple: { targetedMessageUnderlay },
     },
   } = useTheme();
 
-  const doubleTapRef = useRef<TapGestureHandler>(null);
-  const pressActive = useSharedValue(false);
-  const scale = useSharedValue(1);
-
-  /**
-   * This is a cleanup effect to prevent the onLongPress
-   * handler from being called if the component has dismounted.
-   */
-  useEffect(
-    () => () => {
-      pressActive.value = false;
-      cancelAnimation(scale);
-    },
-    [],
-  );
-  const scaleStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    }),
-    [],
-  );
-  const targetedOpacity = useSharedValue(0);
-  const targetedStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: targetedOpacity.value,
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    targetedOpacity.value = withTiming(targetedMessage ? 1 : 0, {
-      duration: 1000,
-    });
-  }, [targetedMessage]);
-
-  const actionsEnabled = message.type === 'regular' && message.status === 'received';
+  const actionsEnabled =
+    message.type === 'regular' && message.status === MessageStatusTypes.RECEIVED;
 
   const isMyMessage = client && message && client.userID === message.user?.id;
-
-  const canModifyMessage = isMyMessage || isModerator || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -429,20 +273,19 @@ const MessageWithContext = <
     }
   };
 
-  const onPressQuotedMessage = (quotedMessage: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const onPressQuotedMessage = (quotedMessage: MessageType<StreamChatGenerics>) => {
     if (!goToMessage) return;
 
-    pressActive.value = false;
-    cancelAnimation(scale);
-    scale.value = withTiming(1, { duration: 100 });
     goToMessage(quotedMessage.id);
   };
 
-  const onPress = (error = message.type === 'error' || message.status === 'failed') => {
+  const errorOrFailed = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
+
+  const onPress = (error = errorOrFailed) => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
-    const quotedMessage = message.quoted_message as MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    const quotedMessage = message.quoted_message as MessageType<StreamChatGenerics>;
     if (error) {
       showMessageOverlay(false, true);
     } else if (quotedMessage) {
@@ -465,7 +308,7 @@ const MessageWithContext = <
    * clickable
    */
   const attachments =
-    !message.deleted_at && Array.isArray(message.attachments)
+    !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
             if (cur.type === 'file' || cur.type === 'video') {
@@ -488,47 +331,24 @@ const MessageWithContext = <
             return acc;
           },
           {
-            files: [] as Attachment<At>[],
-            images: [] as Attachment<At>[],
-            other: [] as Attachment<At>[],
+            files: [] as Attachment<StreamChatGenerics>[],
+            images: [] as Attachment<StreamChatGenerics>[],
+            other: [] as Attachment<StreamChatGenerics>[],
           },
         )
       : {
-          files: [] as Attachment<At>[],
-          images: [] as Attachment<At>[],
-          other: [] as Attachment<At>[],
+          files: [] as Attachment<StreamChatGenerics>[],
+          images: [] as Attachment<StreamChatGenerics>[],
+          other: [] as Attachment<StreamChatGenerics>[],
         };
 
   /**
    * Check if any actions to prevent long press
    */
   const hasAttachmentActions =
-    !message.deleted_at &&
+    !isMessageTypeDeleted &&
     Array.isArray(message.attachments) &&
     message.attachments.some((attachment) => attachment.actions && attachment.actions.length);
-
-  // prefetch images for Gallery component rendering
-  const attachmentImageLength = attachments.images.length;
-  useEffect(() => {
-    if (attachmentImageLength) {
-      attachments.images.slice(0, 4).forEach((image, index) => {
-        const url = image.image_url || image.thumb_url;
-        if (url) {
-          if (attachmentImageLength <= 2) {
-            prefetchImage({ height: size || 200, url });
-          } else if (attachmentImageLength === 3) {
-            if (index === 0) {
-              prefetchImage({ height: size || 200, url });
-            } else {
-              prefetchImage({ height: halfSize || 100, url });
-            }
-          } else {
-            prefetchImage({ height: halfSize || 100, url });
-          }
-        }
-      });
-    }
-  }, [attachmentImageLength]);
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     if (content === 'quoted_reply') {
@@ -565,10 +385,7 @@ const MessageWithContext = <
   };
 
   const hasReactions =
-    !!reactionsEnabled &&
-    !message.deleted_at &&
-    !!message.latest_reactions &&
-    message.latest_reactions.length > 0;
+    !isMessageTypeDeleted && !!message.latest_reactions && message.latest_reactions.length > 0;
 
   const clientId = client.userID;
 
@@ -590,306 +407,73 @@ const MessageWithContext = <
       }, [] as Reactions)
     : [];
 
-  const handleToggleReaction = async (reactionType: string) => {
-    const messageId = message.id;
-    const ownReaction = !!reactions.find(
-      (reaction) => reaction.own && reaction.type === reactionType,
-    );
+  const ownCapabilities = useOwnCapabilitiesContext();
 
-    // Change reaction in local state, make API call in background, revert to old message if fails
-    try {
-      if (channel && messageId) {
-        if (ownReaction) {
-          await channel.deleteReaction(messageId, reactionType);
-        } else {
-          await channel.sendReaction(
-            messageId,
-            {
-              type: reactionType,
-            } as Reaction<Re, Us>,
-            { enforce_unique: enforceUniqueReaction },
-          );
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const {
+    handleDeleteMessage,
+    handleEditMessage,
+    handleQuotedReplyMessage,
+    handleResendMessage,
+    handleToggleBanUser,
+    handleToggleMuteUser,
+    handleTogglePinMessage,
+    handleToggleReaction,
+  } = useMessageActionHandlers({
+    channel,
+    client,
+    enforceUniqueReaction,
+    message,
+    removeMessage,
+    retrySendMessage,
+    setEditingState,
+    setQuotedMessageState,
+    supportedReactions,
+    updateMessage,
+  });
 
-  const handleResendMessage = () =>
-    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-
-  const handleQuotedReplyMessage = () => {
-    setQuotedMessageState(message);
-  };
-
-  const isMuted = (client.mutedUsers || []).some(
-    (mute) => mute.user.id === client.userID && mute.target.id === message.user?.id,
-  );
-
-  const handleToggleMuteUser = async () => {
-    if (!message.user?.id) {
-      return;
-    }
-
-    if (isMuted) {
-      await client.unmuteUser(message.user.id);
-    } else {
-      await client.muteUser(message.user.id);
-    }
-  };
-
-  const handleDeleteMessage = async () => {
-    const data = await client.deleteMessage(message.id);
-    updateMessage(data.message);
-  };
-
-  const handleEditMessage = () => {
-    setEditingState(message);
-  };
-
-  const handleToggleBanUser = async () => {
-    const messageUser = message.user;
-    if (!messageUser) {
-      return;
-    }
-
-    if (messageUser.banned) {
-      await client.unbanUser(messageUser.id);
-    } else {
-      await client.banUser(messageUser.id);
-    }
-  };
-
-  const showMessageOverlay = async (
-    messageReactions = false,
-    error = message.type === 'error' || message.status === 'failed',
-  ) => {
+  const {
+    blockUser,
+    copyMessage,
+    deleteMessage,
+    editMessage,
+    flagMessage,
+    handleReaction,
+    muteUser,
+    pinMessage,
+    quotedReply,
+    retry,
+    threadReply,
+    unpinMessage,
+  } = useMessageActions({
+    channel,
+    client,
+    enforceUniqueReaction,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handlePinMessage,
+    handleQuotedReply,
+    handleReaction: handleReactionProp,
+    handleRetry,
+    handleThreadReply,
+    message,
+    onThreadSelect,
+    openThread,
+    removeMessage,
+    retrySendMessage,
+    selectReaction,
+    setEditingState,
+    setOverlay,
+    setQuotedMessageState,
+    supportedReactions,
+    t,
+    updateMessage,
+  });
+  const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
-
-    const blockUser = blockUserProp
-      ? blockUserProp(message)
-      : blockUserProp === null
-      ? null
-      : {
-          action: async () => {
-            setOverlay('none');
-            if (message.user?.id) {
-              if (handleBlock) {
-                handleBlock(message);
-              }
-
-              await handleToggleBanUser();
-            }
-          },
-          icon: <UserDelete pathFill={grey} />,
-          title: message.user?.banned ? t('Unblock User') : t('Block User'),
-        };
-
-    const copyMessage = copyMessageProp
-      ? copyMessageProp(message)
-      : copyMessageProp === null
-      ? null
-      : {
-          // using depreciated Clipboard from react-native until expo supports the community version or their own
-          action: () => {
-            setOverlay('none');
-            if (handleCopy) {
-              handleCopy(message);
-            }
-            Clipboard.setString(message.text || '');
-          },
-          icon: <Copy pathFill={grey} />,
-          title: t('Copy Message'),
-        };
-
-    const deleteMessage = deleteMessageProp
-      ? deleteMessageProp(message)
-      : deleteMessageProp === null
-      ? null
-      : {
-          action: () => {
-            setOverlay('alert');
-            if (message.id) {
-              Alert.alert(
-                t('Delete Message'),
-                t('Are you sure you want to permanently delete this message?'),
-                [
-                  { onPress: () => setOverlay('none'), text: t('Cancel') },
-                  {
-                    onPress: async () => {
-                      setOverlay('none');
-                      if (handleDelete) {
-                        handleDelete(message);
-                      }
-
-                      await handleDeleteMessage();
-                    },
-                    style: 'destructive',
-                    text: t('Delete'),
-                  },
-                ],
-                { cancelable: false },
-              );
-            }
-          },
-          icon: <Delete pathFill={accent_red} />,
-          title: t('Delete Message'),
-          titleStyle: { color: accent_red },
-        };
-
-    const editMessage = editMessageProp
-      ? editMessageProp(message)
-      : editMessageProp === null
-      ? null
-      : {
-          action: () => {
-            setOverlay('none');
-            if (handleEdit) {
-              handleEdit(message);
-            }
-            handleEditMessage();
-          },
-          icon: <Edit pathFill={grey} />,
-          title: t('Edit Message'),
-        };
-
-    const flagMessage = flagMessageProp
-      ? flagMessageProp(message)
-      : flagMessageProp === null
-      ? null
-      : {
-          action: () => {
-            setOverlay('alert');
-            if (message.id) {
-              Alert.alert(
-                t('Flag Message'),
-                t(
-                  'Do you want to send a copy of this message to a moderator for further investigation?',
-                ),
-                [
-                  { onPress: () => setOverlay('none'), text: t('Cancel') },
-                  {
-                    onPress: async () => {
-                      try {
-                        if (handleFlag) {
-                          handleFlag(message);
-                        }
-                        await client.flagMessage(message.id);
-                        Alert.alert(
-                          t('Message flagged'),
-                          t('The message has been reported to a moderator.'),
-                          [
-                            {
-                              onPress: () => setOverlay('none'),
-                              text: t('Dismiss'),
-                            },
-                          ],
-                        );
-                      } catch (err) {
-                        Alert.alert(
-                          t('Something went wrong'),
-                          t("The operation couldn't be completed."),
-                          [
-                            {
-                              onPress: () => setOverlay('none'),
-                              text: t('Dismiss'),
-                            },
-                          ],
-                        );
-                      }
-                    },
-                    text: t('Flag'),
-                  },
-                ],
-                { cancelable: false },
-              );
-            }
-          },
-          icon: <MessageFlag pathFill={grey} />,
-          title: t('Flag Message'),
-        };
-
-    const handleReaction = !error
-      ? selectReaction
-        ? selectReaction(message)
-        : async (reactionType: string) => {
-            if (handleReactionProp) {
-              handleReactionProp(message, reactionType);
-            }
-
-            await handleToggleReaction(reactionType);
-          }
-      : undefined;
-
-    const muteUser = muteUserProp
-      ? muteUserProp(message)
-      : muteUserProp === null
-      ? null
-      : {
-          action: async () => {
-            setOverlay('none');
-            if (message.user?.id) {
-              if (handleMute) {
-                handleMute(message);
-              }
-
-              await handleToggleMuteUser();
-            }
-          },
-          icon: <Mute pathFill={grey} />,
-          title: isMuted ? t('Unmute User') : t('Mute User'),
-        };
-
-    const quotedReply = quotedReplyProp
-      ? quotedReplyProp(message)
-      : quotedReplyProp === null
-      ? null
-      : {
-          action: () => {
-            setOverlay('none');
-            if (handleQuotedReply) {
-              handleQuotedReply(message);
-            }
-            handleQuotedReplyMessage();
-          },
-          icon: <CurveLineLeftUp pathFill={grey} />,
-          title: t('Reply'),
-        };
-
-    const retry = retryProp
-      ? retryProp(message)
-      : retryProp === null
-      ? null
-      : {
-          action: async () => {
-            setOverlay('none');
-            const messageWithoutReservedFields = removeReservedFields(message);
-            if (handleRetry) {
-              handleRetry(messageWithoutReservedFields);
-            }
-
-            await handleResendMessage();
-          },
-          icon: <SendUp pathFill={accent_blue} />,
-          title: t('Resend'),
-        };
-
-    const threadReply = threadReplyProp
-      ? threadReplyProp(message)
-      : threadReplyProp === null
-      ? null
-      : {
-          action: () => {
-            setOverlay('none');
-            if (handleThreadReply) {
-              handleThreadReply(message);
-            }
-            onOpenThread();
-          },
-          icon: <ThreadReply pathFill={grey} />,
-          title: t('Thread Reply'),
-        };
 
     const isThreadMessage = threadList || !!message.parent_id;
 
@@ -900,7 +484,6 @@ const MessageWithContext = <
         ? messageActionsProp
         : messageActionsProp({
             blockUser,
-            canModifyMessage,
             copyMessage,
             deleteMessage,
             dismissOverlay,
@@ -911,13 +494,13 @@ const MessageWithContext = <
             isThreadMessage,
             message,
             messageReactions,
-            mutesEnabled,
             muteUser,
-            quotedRepliesEnabled,
+            ownCapabilities,
+            pinMessage,
             quotedReply,
             retry,
-            threadRepliesEnabled,
             threadReply,
+            unpinMessage,
           });
 
     setData({
@@ -925,16 +508,17 @@ const MessageWithContext = <
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
-      handleReaction: reactionsEnabled ? handleReaction : undefined,
+      handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
       images: attachments.images,
       message,
-      messageActions: messageActions?.filter(Boolean) as MessageAction[] | undefined,
+      messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
       OverlayReactionList,
+      ownCapabilities,
       supportedReactions,
       threadList,
     });
@@ -945,6 +529,7 @@ const MessageWithContext = <
   const actionHandlers: MessageActionHandlers = {
     deleteMessage: handleDeleteMessage,
     editMessage: handleEditMessage,
+    pinMessage: handleTogglePinMessage,
     quotedReply: handleQuotedReplyMessage,
     resendMessage: handleResendMessage,
     showMessageOverlay,
@@ -974,19 +559,15 @@ const MessageWithContext = <
             event: payload?.event,
           })
       : enableLongPress
-      ? () => showMessageOverlay(false)
+      ? () => {
+          triggerHaptic('impactMedium');
+          showMessageOverlay(false);
+        }
       : () => null;
-
-  const onDoubleTapMessage = () => {
-    if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp({ actionHandlers, message });
-    }
-  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
-    canModifyMessage,
     channel,
     disabled,
     files: attachments.files,
@@ -1008,7 +589,7 @@ const MessageWithContext = <
     members,
     message,
     messageContentOrder,
-    onLongPress: !animatedLongPress ? onLongPressMessage : () => null,
+    onLongPress: onLongPressMessage,
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
@@ -1056,128 +637,70 @@ const MessageWithContext = <
     otherAttachments: attachments.other,
     preventPress,
     reactions,
-    readEventsEnabled,
     showAvatar,
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
   });
 
-  const onLongPressTouchable = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onFinish: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-      },
-      onStart: () => {
-        pressActive.value = true;
-        cancelAnimation(scale);
-        /**
-         * React native longPress active occurs on 370ms,
-         * to hijack this we must make sure the timing is
-         * longer, otherwise onPress will fire instead
-         */
-        scale.value = withSequence(
-          withTiming(1, { duration: 100 }),
-          withTiming(0.98, { duration: 400 }, () => {
-            if (pressActive.value) {
-              runOnJS(onLongPressMessage)();
-              runOnJS(triggerHaptic)('impactMedium');
-            }
-          }),
-          withTiming(1.02, { duration: 100 }),
-          withTiming(1.0, { duration: 300 }),
-        );
-      },
-    },
-    [onLongPressMessage],
-  );
+  if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
 
-  const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
-    {
-      onActive: () => {
-        pressActive.value = false;
-        cancelAnimation(scale);
-        scale.value = withTiming(1, { duration: 100 });
-        runOnJS(onDoubleTapMessage)();
-      },
-    },
-    [onDoubleTapMessage],
-  );
-
-  return message.deleted_at || messageContentOrder.length ? (
-    <TapGestureHandler
-      enabled={animatedLongPress && !preventPress}
-      maxDeltaX={8}
-      maxDurationMs={3000}
-      onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
-      waitFor={doubleTapRef}
+  return (
+    <View
+      style={[message.pinned && { backgroundColor: targetedMessageBackground }]}
+      testID='message-wrapper'
     >
-      <Animated.View testID='message-wrapper'>
-        <TapGestureHandler
-          enabled={!preventPress}
-          numberOfTaps={2}
-          onGestureEvent={onDoubleTap}
-          ref={doubleTapRef}
+      <View
+        style={[
+          style,
+          {
+            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
+          },
+        ]}
+      >
+        <View
+          style={[
+            isTargetedMessage
+              ? { backgroundColor: targetedMessageBackground, ...targetedMessageUnderlay }
+              : {},
+          ]}
         >
-          <Animated.View
-            style={[
-              style,
-              {
-                backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-              },
-              scaleStyle,
-            ]}
-          >
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFillObject,
-                targetedMessageUnderlay,
-                { backgroundColor: targetedMessageBackground },
-                targetedStyle,
-              ]}
-            />
-            <MessageProvider value={messageContext}>
-              <MessageSimple />
-            </MessageProvider>
-          </Animated.View>
-        </TapGestureHandler>
-      </Animated.View>
-    </TapGestureHandler>
-  ) : null;
+          <MessageProvider value={messageContext}>
+            <MessageSimple />
+          </MessageProvider>
+        </View>
+      </View>
+    </View>
+  );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessagePropsWithContext<StreamChatGenerics>,
+  nextProps: MessagePropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     goToMessage: prevGoToMessage,
+    isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
+    members: prevMembers,
     message: prevMessage,
     mutedUsers: prevMutedUsers,
     showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
-    targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
     goToMessage: nextGoToMessage,
+    isTargetedMessage: nextIsTargetedMessage,
     lastReceivedId: nextLastReceivedId,
+    members: nextMembers,
     message: nextMessage,
     mutedUsers: nextMutedUsers,
     showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
-    targetedMessage: nextTargetedMessage,
   } = nextProps;
+
+  const membersEqual = Object.keys(prevMembers).length === Object.keys(nextMembers).length;
+  if (!membersEqual) return false;
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
   if (!repliesEqual) return false;
@@ -1196,20 +719,27 @@ const areEqual = <
 
   if (goToMessageChangedAndMatters) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     (isMessageWithStylesReadByAndDateSeparator(prevMessage) && prevMessage.readBy) ===
       (isMessageWithStylesReadByAndDateSeparator(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at;
+    prevMessage.updated_at === nextMessage.updated_at &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 
@@ -1252,7 +782,7 @@ const areEqual = <
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
 
-  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+  const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
 
   return true;
@@ -1261,15 +791,9 @@ const areEqual = <
 const MemoizedMessage = React.memo(MessageWithContext, areEqual) as typeof MessageWithContext;
 
 export type MessageProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>> &
-  Pick<MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'groupStyles' | 'message'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>> &
+  Pick<MessagePropsWithContext<StreamChatGenerics>, 'groupStyles' | 'message'>;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -1278,35 +802,22 @@ export type MessageProps<
  * @example ./Message.md
  */
 export const Message = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageProps<StreamChatGenerics>,
 ) => {
-  const {
-    channel,
-    disabled,
-    enforceUniqueReaction,
-    isAdmin,
-    isModerator,
-    members,
-    readEventsEnabled,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client, mutedUsers } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { channel, disabled, enforceUniqueReaction, members } =
+    useChannelContext<StreamChatGenerics>();
+  const { client, mutedUsers } = useChatContext<StreamChatGenerics>();
   const { dismissKeyboard } = useKeyboardContext();
-  const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setData } = useMessageOverlayContext<StreamChatGenerics>();
+  const messagesContext = useMessagesContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
-  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { openThread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   return (
-    <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
+    <MemoizedMessage<StreamChatGenerics>
       {...messagesContext}
       {...{
         channel,
@@ -1314,13 +825,10 @@ export const Message = <
         disabled,
         dismissKeyboard,
         enforceUniqueReaction,
-        isAdmin,
-        isModerator,
         members,
         messagesContext,
         mutedUsers,
         openThread,
-        readEventsEnabled,
         setData,
         setOverlay,
         t,

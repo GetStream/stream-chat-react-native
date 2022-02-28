@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -19,7 +19,7 @@ import {
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
@@ -38,16 +38,8 @@ import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel, UserResponse } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import { Pin } from '../icons/Pin';
 
 const styles = StyleSheet.create({
   actionContainer: {
@@ -165,7 +157,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     params: { channel },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { setOverlay: setAppOverlay } = useAppOverlayContext();
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
@@ -187,15 +179,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const [textInputFocused, setTextInputFocused] = useState(false);
 
   const membersStatus = useChannelMembersStatus(channel);
-  const displayName = useChannelPreviewDisplayName<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >(channel, 30);
+  const displayName = useChannelPreviewDisplayName<StreamChatGenerics>(channel, 30);
 
   const allMembersLength = allMembers.length;
   useEffect(() => {
@@ -260,11 +244,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <ScreenHeader
         inSafeArea
-        RightContent={() => (
-          <RoundButton onPress={openAddMembersSheet}>
-            <AddUser fill={accent_blue} height={24} width={24} />
-          </RoundButton>
-        )}
+        RightContent={() =>
+          channelCreatorId === chatClient?.user?.id ? (
+            <RoundButton onPress={openAddMembersSheet}>
+              <AddUser fill={accent_blue} height={24} width={24} />
+            </RoundButton>
+          ) : null
+        }
         subtitleText={membersStatus}
         titleText={displayName}
       />
@@ -294,6 +280,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             >
               <View style={styles.memberRow}>
                 <Avatar
+                  channelId={channel.id}
+                  id={member.user?.id}
                   image={member.user?.image}
                   name={member.user?.name}
                   online={member.user?.online}
@@ -380,7 +368,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   await channel.update({
                     ...channel.data,
                     name: groupName,
-                  } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalReactionType, LocalUserType>['update']>[0]);
+                  } as Parameters<Channel<StreamChatGenerics>['update']>[0]);
                   if (textInputRef.current) {
                     textInputRef.current.blur();
                   }
@@ -428,6 +416,36 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 }}
                 value={muted}
               />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelPinnedMessagesScreen', {
+                channel,
+              });
+            }}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <Pin fill={grey} />
+              <Text
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
+              >
+                Pinned Messages
+              </Text>
+            </View>
+            <View>
+              <GoForward height={24} width={24} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity

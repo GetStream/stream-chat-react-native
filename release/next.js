@@ -10,11 +10,13 @@ configPromise.then((config) => {
       'master',
       {
         name: 'develop',
-        channel: 'next',
-        prerelease: 'next',
+        channel: 'beta',
+        prerelease: 'beta',
       },
     ],
   }).then((result) => {
+    // This logics avoid a overflow of next tags in github by removing the last
+    // tag before pushing the current one for each next release
     return (
       result &&
       result.nextRelease.gitTag &&
@@ -24,7 +26,7 @@ configPromise.then((config) => {
           result,
         }))
         .then(({ tagExists, result }) => {
-          if (tagExists && result.lastRelease && result.lastRelease.gitTag.includes('-next')) {
+          if (tagExists && result.lastRelease && result.lastRelease.gitTag.includes('-beta')) {
             return execa('git', ['push', '--delete', 'origin', result.lastRelease.gitTag]);
           }
         })

@@ -1,4 +1,5 @@
 import React from 'react';
+import type { GestureResponderEvent } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import {
@@ -8,42 +9,19 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { CircleRight } from '../../icons/CircleRight';
 
-import type { GestureResponderEvent } from 'react-native';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 type MoreOptionsButtonPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: ((event: GestureResponderEvent) => void) & (() => void);
 };
 
 const MoreOptionsButtonWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled, handleOnPress } = props;
 
@@ -67,17 +45,9 @@ const MoreOptionsButtonWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
+  nextProps: MoreOptionsButtonPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled: prevDisabled, handleOnPress: prevHandleOnPress } = prevProps;
   const { disabled: nextDisabled, handleOnPress: nextHandleOnPress } = nextProps;
@@ -96,30 +66,18 @@ const MemoizedMoreOptionsButton = React.memo(
 ) as typeof MoreOptionsButtonWithContext;
 
 export type MoreOptionsButtonProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MoreOptionsButtonPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for more options button in MessageInput component.
  */
 export const MoreOptionsButton = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MoreOptionsButtonProps<StreamChatGenerics>,
 ) => {
-  const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disabled = false } = useChannelContext<StreamChatGenerics>();
 
   return <MemoizedMoreOptionsButton {...{ disabled }} {...props} />;
 };

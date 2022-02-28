@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useTheme } from 'stream-chat-react-native';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { Contacts } from '../icons/Contacts';
@@ -22,6 +22,7 @@ import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
 import { Notification } from '../icons/Notification';
 import { Picture } from '../icons/Picture';
+import { Pin } from '../icons/Pin';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { RouteProp } from '@react-navigation/native';
@@ -145,7 +146,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
       colors: { accent_green, accent_red, black, border, grey, white, white_smoke },
     },
   } = useTheme();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const { setOverlay } = useAppOverlayContext();
   const { setData } = useBottomSheetOverlayContext();
 
@@ -344,6 +345,36 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
               }}
               value={muted}
             />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ChannelPinnedMessagesScreen', {
+              channel,
+            });
+          }}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: border,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Pin fill={grey} />
+            <Text
+              style={[
+                styles.itemText,
+                {
+                  color: black,
+                },
+              ]}
+            >
+              Pinned Messages
+            </Text>
+          </View>
+          <View>
+            <GoForward fill={grey} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity

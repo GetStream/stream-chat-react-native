@@ -1,19 +1,19 @@
 import React from 'react';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { ImageUploadPreview } from '../ImageUploadPreview';
-
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { generateImageUploadPreview } from '../../../mock-builders/generator/attachment';
 import { FileState } from '../../../utils/utils';
 
-import { generateImageUploadPreview } from '../../../mock-builders/generator/attachment';
+import { ImageUploadPreview } from '../ImageUploadPreview';
 
 describe('ImageUploadPreview', () => {
   it('should render ImageUploadPreview with all uploading images', async () => {
     const imageUploads = [
-      generateImageUploadPreview({ state: FileState.UPLOADING }),
-      generateImageUploadPreview({ state: FileState.UPLOADING }),
-      generateImageUploadPreview({ state: FileState.UPLOADING }),
+      generateImageUploadPreview({ id: 'image-upload-preview-1', state: FileState.UPLOADING }),
+      generateImageUploadPreview({ id: 'image-upload-preview-2', state: FileState.UPLOADING }),
+      generateImageUploadPreview({ id: 'image-upload-preview-3', state: FileState.UPLOADING }),
     ];
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
@@ -68,9 +68,9 @@ describe('ImageUploadPreview', () => {
 
   it('should render ImageUploadPreview with all uploaded images', async () => {
     const imageUploads = [
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-1', state: FileState.UPLOADED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-2', state: FileState.UPLOADED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-3', state: FileState.UPLOADED }),
     ];
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
@@ -125,9 +125,9 @@ describe('ImageUploadPreview', () => {
 
   it('should render ImageUploadPreview with all failed images', async () => {
     const imageUploads = [
-      generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
-      generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
-      generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-1', state: FileState.UPLOAD_FAILED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-2', state: FileState.UPLOAD_FAILED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-3', state: FileState.UPLOAD_FAILED }),
     ];
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
@@ -189,9 +189,9 @@ describe('ImageUploadPreview', () => {
 
   it('should render ImageUploadPreview with 1 uploading, 1 uploaded, and 1 failed image', async () => {
     const imageUploads = [
-      generateImageUploadPreview({ state: FileState.UPLOADING }),
-      generateImageUploadPreview({ state: FileState.UPLOADED }),
-      generateImageUploadPreview({ state: FileState.UPLOAD_FAILED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-1', state: FileState.UPLOADING }),
+      generateImageUploadPreview({ id: 'image-upload-preview-2', state: FileState.UPLOADED }),
+      generateImageUploadPreview({ id: 'image-upload-preview-3', state: FileState.UPLOAD_FAILED }),
     ];
     const removeImage = jest.fn();
     const uploadImage = jest.fn();

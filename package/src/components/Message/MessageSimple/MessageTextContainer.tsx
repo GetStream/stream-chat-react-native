@@ -14,64 +14,38 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },
 });
 
 export type MessageTextProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  renderText: (params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>) => JSX.Element | null;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = MessageTextContainerProps<StreamChatGenerics> & {
+  renderText: (params: RenderTextParams<StreamChatGenerics>) => JSX.Element | null;
   theme: { theme: Theme };
 };
 
 export type MessageTextContainerPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   'message' | 'onLongPress' | 'onlyEmojis' | 'onPress' | 'preventPress'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'markdownRules' | 'MessageText'> & {
+  Pick<MessagesContextValue<StreamChatGenerics>, 'markdownRules' | 'MessageText'> & {
     markdownStyles?: MarkdownStyle;
     messageOverlay?: boolean;
+    messageTextNumberOfLines?: number;
     styles?: Partial<{
       textContainer: StyleProp<ViewStyle>;
     }>;
   };
 
 const MessageTextContainerWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageTextContainerPropsWithContext<StreamChatGenerics>,
 ) => {
   const theme = useTheme();
 
@@ -81,6 +55,7 @@ const MessageTextContainerWithContext = <
     message,
     messageOverlay,
     MessageText,
+    messageTextNumberOfLines,
     onLongPress,
     onlyEmojis,
     onPress,
@@ -112,7 +87,7 @@ const MessageTextContainerWithContext = <
       {MessageText ? (
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
-        renderText<At, Ch, Co, Ev, Me, Re, Us>({
+        renderText<StreamChatGenerics>({
           colors,
           markdownRules,
           markdownStyles: {
@@ -121,6 +96,7 @@ const MessageTextContainerWithContext = <
           },
           message,
           messageOverlay,
+          messageTextNumberOfLines,
           onLongPress,
           onlyEmojis,
           onPress,
@@ -131,17 +107,9 @@ const MessageTextContainerWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
 ) => {
   const { message: prevMessage, onlyEmojis: prevOnlyEmojis } = prevProps;
   const { message: nextMessage, onlyEmojis: nextOnlyEmojis } = nextProps;
@@ -169,29 +137,18 @@ const MemoizedMessageTextContainer = React.memo(
 ) as typeof MessageTextContainerWithContext;
 
 export type MessageTextContainerProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageTextContainerPropsWithContext<StreamChatGenerics>>;
 
 export const MessageTextContainer = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageTextContainerProps<StreamChatGenerics>,
 ) => {
   const { message, onLongPress, onlyEmojis, onPress, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { markdownRules, MessageText } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessageContext<StreamChatGenerics>();
+  const { markdownRules, MessageText } = useMessagesContext<StreamChatGenerics>();
+  const { messageTextNumberOfLines } = props;
 
   return (
     <MemoizedMessageTextContainer
@@ -199,6 +156,7 @@ export const MessageTextContainer = <
         markdownRules,
         message,
         MessageText,
+        messageTextNumberOfLines,
         onLongPress,
         onlyEmojis,
         onPress,

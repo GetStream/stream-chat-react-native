@@ -1,9 +1,9 @@
 import React from 'react';
+
 import { render, waitFor } from '@testing-library/react-native';
 
-import { Avatar } from '../Avatar';
-
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { Avatar } from '../Avatar';
 
 describe('Avatar', () => {
   it('should render an image with no name and default size', async () => {
@@ -45,34 +45,6 @@ describe('Avatar', () => {
 
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
-    });
-  });
-
-  it('should render an avatar with a random image and no size', async () => {
-    const { queryByTestId } = render(
-      <ThemeProvider>
-        <Avatar name='Test User' />
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('avatar-image').props.source).toMatchObject({
-        uri: 'https://getstream.io/random_png/?name=T U&size=undefined',
-      });
-    });
-  });
-
-  it('should render an avatar with a random image and custom size', async () => {
-    const { queryByTestId } = render(
-      <ThemeProvider>
-        <Avatar name='Test User' size={20} />
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('avatar-image').props.source).toMatchObject({
-        uri: 'https://getstream.io/random_png/?name=T U&size=20',
-      });
     });
   });
 });

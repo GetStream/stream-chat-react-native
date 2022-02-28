@@ -1,22 +1,19 @@
 import React from 'react';
-import { PermissionsAndroid, Platform } from 'react-native';
-import { BlurView as RNBlurView } from '@react-native-community/blur';
-import CameraRoll from '@react-native-community/cameraroll';
-import NetInfo from '@react-native-community/netinfo';
-import { FlatList } from '@stream-io/flat-list-mvcp';
+import { Image, PermissionsAndroid, Platform } from 'react-native';
+
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
+
+import CameraRoll from '@react-native-community/cameraroll';
+import NetInfo from '@react-native-community/netinfo';
+import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
-  // eslint-disable-next-line react/display-name
-  BlurView: ({ blurAmount = 10, blurType = 'dark', style }) => (
-    <RNBlurView blurAmount={blurAmount} blurType={blurType} style={style} />
-  ),
   compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
     try {
       const { uri: compressedUri } = await ImageResizer.createResizedImage(
@@ -95,8 +92,11 @@ registerNativeHandlers({
       let unsubscribe;
       // For NetInfo >= 3.x.x
       if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
-        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
-          listener(isConnected);
+        unsubscribe = NetInfo.addEventListener(({ isConnected, isInternetReachable }) => {
+          // Initialize with truthy value when internetReachable is still loading
+          // if it resolves to false, listener is triggered with false value and network
+          // status is updated
+          listener(isInternetReachable === null ? isConnected : isConnected && isInternetReachable);
         });
         return unsubscribe;
       } else {
@@ -201,13 +201,41 @@ registerNativeHandlers({
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
     });
+
     if (photo.height && photo.width && photo.path) {
+      let size = {};
+      if (Platform.OS === 'android') {
+        // Height and width returned by ImagePicker are incorrect on Android.
+        // The issue is described in following github issue:
+        // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
+        // This we can't rely on them as it is, and we need to use Image.getSize
+        // to get accurate size.
+        const getSize = () => new Promise((resolve) => {
+          Image.getSize(photo.path, (width, height) => {
+            resolve({height, width});
+          });
+        });
+
+        try {
+          const { height, width } = await getSize();
+          size.height = height;
+          size.width = width;
+        } catch (e) {
+          // do nothing
+          console.warning('Error get image size of picture caputred from camera ', e);
+        }
+      } else {
+        size = {
+          height: photo.height,
+          width: photo.width,
+        };
+      }
+
       return {
         cancelled: false,
-        height: photo.height,
         source: 'camera',
         uri: photo.path,
-        width: photo.width,
+        ...size,
       };
     }
     return { cancelled: true };

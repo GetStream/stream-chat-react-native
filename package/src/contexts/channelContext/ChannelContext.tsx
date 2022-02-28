@@ -1,36 +1,38 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
 import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-
-export type ChannelConfig = {
-  readEventsEnabled?: boolean;
-  typingEventsEnabled?: boolean;
-};
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  /**
+   * Instance of channel object from stream-chat package.
+   *
+   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
+   *
+   * ```
+   * import { StreamChat, Channel } from 'stream-chat';
+   * import { Chat, Channel} from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key');
+   * await client.connectUser('user_id', 'user_token');
+   * const channel = client.channel('messaging', 'channel_id');
+   * await channel.watch();
+   *
+   * <Chat client={client}>
+   *  <Channel channel={channel}>
+   *  </Channel>
+   * </Chat>
+   * ```
+   *
+   * @overrideType Channel
+   */
+  channel: Channel<StreamChatGenerics>;
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
@@ -44,7 +46,7 @@ export type ChannelContextValue<
    * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
    */
   enforceUniqueReaction: boolean;
-  error: boolean;
+  error: boolean | Error;
   /**
    * When set to false, it will disable giphy command on MessageInput component.
    */
@@ -104,12 +106,12 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
+  members: ChannelState<StreamChatGenerics>['members'];
   /**
    * Custom network down indicator to override the Stream default
    */
   NetworkDownIndicator: React.ComponentType;
-  read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
+  read: ChannelState<StreamChatGenerics>['read'];
   reloadChannel: () => Promise<void>;
   /**
    * When true, messagelist will be scrolled to first unread message, when opened.
@@ -140,32 +142,10 @@ export type ChannelContextValue<
    * }
    * ```
    */
-  watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
-  /**
-   * Instance of channel object from stream-chat package.
-   *
-   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
-   *
-   * ```
-   * import { StreamChat, Channel } from 'stream-chat';
-   * import { Chat, Channel} from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key');
-   * await client.connectUser('user_id', 'user_token');
-   * const channel = client.channel('messaging', 'channel_id');
-   * await channel.watch();
-   *
-   * <Chat client={client}>
-   *  <Channel channel={channel}>
-   *  </Channel>
-   * </Chat>
-   * ```
-   *
-   * @overrideType Channel
-   */
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  watchers: ChannelState<StreamChatGenerics>['watchers'];
   disabled?: boolean;
   enableMessageGroupingByUser?: boolean;
+  isChannelActive?: boolean;
   lastRead?: Date;
   /**
    * Maximum time in milliseconds that should occur between messages
@@ -183,24 +163,19 @@ export type ChannelContextValue<
    * You will see a highlighted background for targetted message, when opened.
    */
   targetedMessage?: string;
-  watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
-} & ChannelConfig;
+  threadList?: boolean;
+  watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
+};
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 
 export const ChannelProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ChannelContextValue<StreamChatGenerics>;
 }>) => (
   <ChannelContext.Provider value={value as unknown as ChannelContextValue}>
     {children}
@@ -208,14 +183,8 @@ export const ChannelProvider = <
 );
 
 export const useChannelContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(ChannelContext) as unknown as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
@@ -224,20 +193,14 @@ export const useChannelContext = <
  */
 export const withChannelContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof ChannelContextValue<StreamChatGenerics>>> => {
   const WithChannelContextComponent = (
-    props: Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof ChannelContextValue<StreamChatGenerics>>,
   ) => {
-    const channelContext = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const channelContext = useChannelContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...channelContext} />;
   };

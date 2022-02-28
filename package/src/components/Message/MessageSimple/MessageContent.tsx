@@ -20,18 +20,8 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { Error } from '../../../icons';
-import { vw } from '../../../utils/utils';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageStatusTypes, vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -65,15 +55,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageContentPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'disabled'
   | 'goToMessage'
@@ -94,7 +78,7 @@ export type MessageContentPropsWithContext<
   | 'threadList'
 > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     | 'additionalTouchableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
@@ -106,9 +90,7 @@ export type MessageContentPropsWithContext<
     | 'MessageReplies'
     | 'MessageStatus'
     | 'onPressInMessage'
-    | 'quotedRepliesEnabled'
     | 'Reply'
-    | 'threadRepliesEnabled'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -118,15 +100,9 @@ export type MessageContentPropsWithContext<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
@@ -154,18 +130,16 @@ const MessageContentWithContext = <
     onPressIn,
     otherAttachments,
     preventPress,
-    quotedRepliesEnabled,
     Reply,
     setMessageContentWidth,
     showMessageStatus,
     tDateTimeParser,
     threadList,
-    threadRepliesEnabled,
   } = props;
 
   const {
     theme: {
-      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent },
+      colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -205,7 +179,7 @@ const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
@@ -213,7 +187,9 @@ const MessageContentWithContext = <
 
   const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
 
-  if (message.deleted_at) {
+  const isMessageTypeDeleted = message.type === 'deleted';
+
+  if (isMessageTypeDeleted) {
     return (
       <MessageDeleted
         formattedDate={getDateText(formatDate)}
@@ -234,7 +210,7 @@ const MessageContentWithContext = <
           : grey_gainsboro
         : blue_alice
       : alignment === 'left' || error
-      ? transparent
+      ? white
       : grey_gainsboro;
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
@@ -267,6 +243,7 @@ const MessageContentWithContext = <
           });
         }
       }}
+      testID='message-content'
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -283,7 +260,7 @@ const MessageContentWithContext = <
         <MessageHeader
           alignment={alignment}
           formattedDate={getDateText(formatDate)}
-          isDeleted={!!message.deleted_at}
+          isDeleted={!!isMessageTypeDeleted}
           lastGroupMessage={lastGroupMessage}
           members={members}
           message={message}
@@ -293,7 +270,7 @@ const MessageContentWithContext = <
         />
       )}
       <View onLayout={onLayout} style={wrapper}>
-        {hasThreadReplies && !threadList && threadRepliesEnabled && !noBorder && (
+        {hasThreadReplies && !threadList && !noBorder && (
           <View
             style={[
               styles.replyBorder,
@@ -333,8 +310,7 @@ const MessageContentWithContext = <
             switch (messageContentType) {
               case 'quoted_reply':
                 return (
-                  message.quoted_message &&
-                  quotedRepliesEnabled && (
+                  message.quoted_message && (
                     <View
                       key={`quoted_reply_${messageContentOrderIndex}`}
                       style={[styles.replyContainer, replyContainer]}
@@ -359,7 +335,7 @@ const MessageContentWithContext = <
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (
-                  <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                  <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
                 );
@@ -374,25 +350,15 @@ const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {threadRepliesEnabled && (
-        <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
-      )}
-      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!message.deleted_at} />
+      <MessageReplies noBorder={noBorder} repliesCurveColor={repliesCurveColor} />
+      <MessageFooter formattedDate={getDateText(formatDate)} isDeleted={!!isMessageTypeDeleted} />
     </TouchableOpacity>
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageContentPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     goToMessage: prevGoToMessage,
@@ -448,18 +414,25 @@ const areEqual = <
     prevGroupStyles?.[0] === nextGroupStyles?.[0];
   if (!groupStylesEqual) return false;
 
+  const isPrevMessageTypeDeleted = prevMessage.type === 'deleted';
+  const isNextMessageTypeDeleted = nextMessage.type === 'deleted';
+
   const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
+    isPrevMessageTypeDeleted === isNextMessageTypeDeleted &&
     prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
 
+  const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
+  const isNextQuotedMessageTypeDeleted = nextMessage.quoted_message?.type === 'deleted';
+
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
-    prevMessage.quoted_message?.deleted_at === nextMessage.quoted_message?.deleted_at;
+    isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
 
   if (!quotedMessageEqual) return false;
 
@@ -508,31 +481,17 @@ const MemoizedMessageContent = React.memo(
 ) as typeof MessageContentWithContext;
 
 export type MessageContentProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<
-  Omit<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>
-> &
-  Pick<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>> &
+  Pick<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>;
 
 /**
  * Child of MessageSimple that displays a message's content
  */
 export const MessageContent = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageContentProps<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -554,7 +513,7 @@ export const MessageContent = <
     preventPress,
     showMessageStatus,
     threadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps,
     Attachment,
@@ -566,14 +525,12 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    quotedRepliesEnabled,
     Reply,
-    threadRepliesEnabled,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   return (
-    <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
+    <MemoizedMessageContent<StreamChatGenerics>
       {...{
         additionalTouchableProps,
         alignment,
@@ -602,13 +559,11 @@ export const MessageContent = <
         onPressIn,
         otherAttachments,
         preventPress,
-        quotedRepliesEnabled,
         Reply,
         showMessageStatus,
         t,
         tDateTimeParser,
         threadList,
-        threadRepliesEnabled,
       }}
       {...props}
     />

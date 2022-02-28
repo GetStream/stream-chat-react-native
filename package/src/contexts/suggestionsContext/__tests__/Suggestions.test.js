@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { SuggestionsProvider, useSuggestionsContext } from '../SuggestionsContext';
@@ -39,7 +40,6 @@ describe('SuggestionsProvider', () => {
     await waitFor(() => {
       expect(context).toBeInstanceOf(Object);
       expect(context.closeSuggestions).toBeInstanceOf(Function);
-      expect(typeof context.componentType).toBe('string');
       expect(context.openSuggestions).toBeInstanceOf(Function);
       expect(typeof context.suggestionsViewActive).toBe('boolean');
       expect(context.updateSuggestions).toBeInstanceOf(Function);

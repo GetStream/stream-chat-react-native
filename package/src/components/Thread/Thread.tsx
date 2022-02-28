@@ -2,10 +2,7 @@ import React, { useEffect } from 'react';
 
 import { ThreadFooterComponent } from './components/ThreadFooterComponent';
 
-import {
-  MessageInput as DefaultMessageInput,
-  MessageInputProps,
-} from '../MessageInput/MessageInput';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessagesContextValue,
@@ -13,43 +10,31 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import {
+  MessageInput as DefaultMessageInput,
+  MessageInputProps,
+} from '../MessageInput/MessageInput';
 import type { MessageListProps } from '../MessageList/MessageList';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-
 type ThreadPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'MessageList'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'MessageList'> &
   Pick<
-    ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    ThreadContextValue<StreamChatGenerics>,
     'closeThread' | 'loadMoreThread' | 'reloadThread' | 'thread'
   > & {
     /**
      * Additional props for underlying MessageInput component.
      * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messageinput
      * */
-    additionalMessageInputProps?: Partial<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>>;
+    additionalMessageInputProps?: Partial<MessageInputProps<StreamChatGenerics>>;
     /**
      * Additional props for underlying MessageList component.
      * Available props - https://getstream.github.io/stream-chat-react-native/v3/#messagelist
      * */
-    additionalMessageListProps?: Partial<MessageListProps<At, Ch, Co, Ev, Me, Re, Us>>;
+    additionalMessageListProps?: Partial<MessageListProps<StreamChatGenerics>>;
     /** Make input focus on mounting thread */
     autoFocus?: boolean;
     /** Closes thread on dismount, defaults to true */
@@ -60,7 +45,7 @@ type ThreadPropsWithContext<
      * **Customized MessageInput component to used within Thread instead of default MessageInput
      * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/v3/#messageinput)**
      */
-    MessageInput?: React.ComponentType<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>>;
+    MessageInput?: React.ComponentType<MessageInputProps<StreamChatGenerics>>;
     /**
      * Call custom function on closing thread if handling thread state elsewhere
      */
@@ -68,15 +53,9 @@ type ThreadPropsWithContext<
   };
 
 const ThreadWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ThreadPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalMessageInputProps,
@@ -123,7 +102,7 @@ const ThreadWithContext = <
         threadList
         {...additionalMessageListProps}
       />
-      <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
+      <MessageInput<StreamChatGenerics>
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
         threadList
         {...additionalMessageInputProps}
@@ -133,14 +112,8 @@ const ThreadWithContext = <
 };
 
 export type ThreadProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ThreadPropsWithContext<StreamChatGenerics>>;
 
 /**
  * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
@@ -152,23 +125,24 @@ export type ThreadProps<
  * - additionalMessageInputProps
  */
 export const Thread = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ThreadProps<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { MessageList } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { threadList } = useChannelContext<StreamChatGenerics>();
+  const { MessageList } = useMessagesContext<StreamChatGenerics>();
   const { closeThread, loadMoreThread, reloadThread, thread } =
-    useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useThreadContext<StreamChatGenerics>();
+
+  if (thread?.id && !threadList) {
+    throw new Error(
+      'Please add a threadList prop to your Channel component when rendering a thread list. Check our Channel documentation for more info: https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#threadlist',
+    );
+  }
 
   return (
-    <ThreadWithContext<At, Ch, Co, Ev, Me, Re, Us>
+    <ThreadWithContext<StreamChatGenerics>
       {...{
         client,
         closeThread,

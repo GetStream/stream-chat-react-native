@@ -1,44 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MessageInput should render MessageInput 1`] = `
-<View
-  keyboardVerticalOffset={86.5}
-  onLayout={[Function]}
-  style={
-    Object {
-      "paddingBottom": 0,
-    }
-  }
->
+Array [
   <View
+    keyboardVerticalOffset={86.5}
+    onLayout={[Function]}
     style={
       Object {
-        "height": "100%",
+        "paddingBottom": 0,
       }
     }
   >
     <View
-      onLayout={[Function]}
       style={
-        Array [
-          Object {
-            "borderTopWidth": 1,
-            "padding": 10,
-          },
-          Object {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#00000014",
-          },
-          Object {},
-        ]
+        Object {
+          "height": "100%",
+        }
       }
     >
       <View
+        onLayout={[Function]}
         style={
           Array [
             Object {
-              "alignItems": "flex-end",
-              "flexDirection": "row",
+              "borderTopWidth": 1,
+              "padding": 10,
+            },
+            Object {
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#00000014",
             },
             Object {},
           ]
@@ -48,9 +38,8 @@ exports[`MessageInput should render MessageInput 1`] = `
           style={
             Array [
               Object {
+                "alignItems": "flex-end",
                 "flexDirection": "row",
-                "paddingBottom": 10,
-                "paddingRight": 10,
               },
               Object {},
             ]
@@ -60,31 +49,26 @@ exports[`MessageInput should render MessageInput 1`] = `
             style={
               Array [
                 Object {
+                  "flexDirection": "row",
+                  "paddingBottom": 10,
                   "paddingRight": 10,
                 },
                 Object {},
               ]
             }
           >
-            <RNGestureHandlerButton
-              collapsable={false}
-              hitSlop={
-                Object {
-                  "bottom": 15,
-                  "left": 15,
-                  "right": 5,
-                  "top": 15,
-                }
+            <View
+              style={
+                Array [
+                  Object {
+                    "paddingRight": 10,
+                  },
+                  Object {},
+                ]
               }
-              onGestureEvent={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
-              onHandlerStateChange={[Function]}
-              rippleColor={0}
-              testID="attach-button"
             >
-              <View
-                accessible={true}
+              <RNGestureHandlerButton
+                collapsable={false}
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -93,79 +77,79 @@ exports[`MessageInput should render MessageInput 1`] = `
                     "top": 15,
                   }
                 }
-                style={
-                  Object {
-                    "opacity": 1,
-                  }
-                }
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                testID="attach-button"
               >
-                <RNSVGSvgView
-                  align="xMidYMid"
-                  bbHeight={24}
-                  bbWidth={24}
-                  focusable={false}
-                  height={24}
-                  meetOrSlice={0}
-                  minX={0}
-                  minY={0}
-                  pathFill="#005FFF"
-                  style={
-                    Array [
-                      Object {
-                        "backgroundColor": "transparent",
-                        "borderWidth": 0,
-                      },
-                      Object {
-                        "flex": 0,
-                        "height": 24,
-                        "width": 24,
-                      },
-                    ]
+                <View
+                  accessible={true}
+                  hitSlop={
+                    Object {
+                      "bottom": 15,
+                      "left": 15,
+                      "right": 5,
+                      "top": 15,
+                    }
                   }
-                  vbHeight={24}
-                  vbWidth={24}
-                  width={24}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
                 >
-                  <RNSVGGroup>
-                    <RNSVGPath
-                      clipRule={0}
-                      d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
-                      fill={4278214655}
-                      fillRule={0}
-                      propList={
-                        Array [
-                          "fill",
-                          "fillRule",
-                        ]
-                      }
-                    />
-                  </RNSVGGroup>
-                </RNSVGSvgView>
-              </View>
-            </RNGestureHandlerButton>
-          </View>
-          <View
-            style={Object {}}
-          >
-            <RNGestureHandlerButton
-              collapsable={false}
-              hitSlop={
-                Object {
-                  "bottom": 15,
-                  "left": 5,
-                  "right": 15,
-                  "top": 15,
-                }
-              }
-              onGestureEvent={[Function]}
-              onGestureHandlerEvent={[Function]}
-              onGestureHandlerStateChange={[Function]}
-              onHandlerStateChange={[Function]}
-              rippleColor={0}
-              testID="commands-button"
+                  <RNSVGSvgView
+                    align="xMidYMid"
+                    bbHeight={24}
+                    bbWidth={24}
+                    focusable={false}
+                    height={24}
+                    meetOrSlice={0}
+                    minX={0}
+                    minY={0}
+                    pathFill="#005FFF"
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "transparent",
+                          "borderWidth": 0,
+                        },
+                        Object {
+                          "flex": 0,
+                          "height": 24,
+                          "width": 24,
+                        },
+                      ]
+                    }
+                    vbHeight={24}
+                    vbWidth={24}
+                    width={24}
+                  >
+                    <RNSVGGroup>
+                      <RNSVGPath
+                        clipRule={0}
+                        d="M13.468 2.888a5.07 5.07 0 012.983.635 5.07 5.07 0 012.041 2.265c.45 1.01.546 2.254-.144 3.449l-4.5 7.794a3.232 3.232 0 01-1.427 1.294c-.757.342-1.696.367-2.671-.196-.975-.563-1.422-1.389-1.506-2.215a3.233 3.233 0 01.408-1.883l4-6.928a1 1 0 011.732 1l-4 6.928c-.087.15-.176.425-.15.682.02.196.105.447.516.684.41.237.671.185.85.105.236-.107.43-.32.516-.47l4.5-7.795c.31-.538.29-1.093.049-1.636a3.072 3.072 0 00-1.214-1.346 3.072 3.072 0 00-1.773-.378c-.591.062-1.082.322-1.392.86l-5 8.66c-.654 1.133-.286 3.3 1.964 4.598 2.25 1.3 4.31.535 4.964-.598l3.5-6.062a1 1 0 111.732 1l-3.5 6.062c-1.345 2.33-4.75 3.031-7.696 1.33-2.946-1.7-4.042-5-2.696-7.33l5-8.66c.69-1.195 1.815-1.733 2.914-1.85z"
+                        fill={4278214655}
+                        fillRule={0}
+                        propList={
+                          Array [
+                            "fill",
+                            "fillRule",
+                          ]
+                        }
+                      />
+                    </RNSVGGroup>
+                  </RNSVGSvgView>
+                </View>
+              </RNGestureHandlerButton>
+            </View>
+            <View
+              style={Object {}}
             >
-              <View
-                accessible={true}
+              <RNGestureHandlerButton
+                collapsable={false}
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -174,6 +158,162 @@ exports[`MessageInput should render MessageInput 1`] = `
                     "top": 15,
                   }
                 }
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                testID="commands-button"
+              >
+                <View
+                  accessible={true}
+                  hitSlop={
+                    Object {
+                      "bottom": 15,
+                      "left": 5,
+                      "right": 15,
+                      "top": 15,
+                    }
+                  }
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <RNSVGSvgView
+                    align="xMidYMid"
+                    bbHeight={24}
+                    bbWidth={24}
+                    focusable={false}
+                    height={24}
+                    meetOrSlice={0}
+                    minX={0}
+                    minY={0}
+                    pathFill="#7A7A7A"
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "transparent",
+                          "borderWidth": 0,
+                        },
+                        Object {
+                          "flex": 0,
+                          "height": 24,
+                          "width": 24,
+                        },
+                      ]
+                    }
+                    vbHeight={24}
+                    vbWidth={24}
+                    width={24}
+                  >
+                    <RNSVGGroup>
+                      <RNSVGPath
+                        clipRule={0}
+                        d="M11.636 4H16l-2.91 5.818H16L10.546 20l1.09-7.273H8L11.636 4z"
+                        fill={4286216826}
+                        fillRule={0}
+                        propList={
+                          Array [
+                            "fill",
+                            "fillRule",
+                          ]
+                        }
+                      />
+                    </RNSVGGroup>
+                  </RNSVGSvgView>
+                </View>
+              </RNGestureHandlerButton>
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "borderRadius": 20,
+                  "borderWidth": 1,
+                  "flex": 1,
+                },
+                Object {
+                  "borderColor": "#ECEBEB",
+                  "paddingVertical": 12,
+                },
+                Object {},
+              ]
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                  Object {
+                    "paddingLeft": 16,
+                    "paddingRight": 16,
+                  },
+                  Object {},
+                ]
+              }
+            >
+              <TextInput
+                allowFontScaling={true}
+                maxLength={5000}
+                multiline={true}
+                onBlur={[Function]}
+                onChangeText={[Function]}
+                onContentSizeChange={[Function]}
+                onSelectionChange={[Function]}
+                placeholder="Send a message"
+                placeholderTextColor="#7A7A7A"
+                rejectResponderTermination={true}
+                style={
+                  Array [
+                    Object {
+                      "flex": 1,
+                      "fontSize": 14,
+                      "includeFontPadding": false,
+                      "padding": 0,
+                      "paddingTop": 0,
+                      "textAlignVertical": "center",
+                    },
+                    Object {
+                      "color": "#000000",
+                      "maxHeight": 85,
+                    },
+                    Object {},
+                  ]
+                }
+                testID="auto-complete-text-input"
+                underlineColorAndroid="transparent"
+                value=""
+              />
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                },
+                Object {},
+              ]
+            }
+          >
+            <RNGestureHandlerButton
+              collapsable={false}
+              onGestureEvent={[Function]}
+              onGestureHandlerEvent={[Function]}
+              onGestureHandlerStateChange={[Function]}
+              onHandlerStateChange={[Function]}
+              rippleColor={0}
+              testID="send-button"
+            >
+              <View
+                accessible={true}
                 style={
                   Object {
                     "opacity": 1,
@@ -189,7 +329,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                   meetOrSlice={0}
                   minX={0}
                   minY={0}
-                  pathFill="#7A7A7A"
+                  pathFill="#DBDBDB"
                   style={
                     Array [
                       Object {
@@ -210,8 +350,8 @@ exports[`MessageInput should render MessageInput 1`] = `
                   <RNSVGGroup>
                     <RNSVGPath
                       clipRule={0}
-                      d="M11.636 4H16l-2.91 5.818H16L10.546 20l1.09-7.273H8L11.636 4z"
-                      fill={4286216826}
+                      d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
+                      fill={4292598747}
                       fillRule={0}
                       propList={
                         Array [
@@ -226,97 +366,64 @@ exports[`MessageInput should render MessageInput 1`] = `
             </RNGestureHandlerButton>
           </View>
         </View>
+      </View>
+      <View
+        style={
+          Array [
+            Object {
+              "backgroundColor": "#F2F2F2",
+              "height": 360,
+            },
+            Object {},
+          ]
+        }
+      >
         <View
           style={
             Array [
               Object {
-                "borderRadius": 20,
-                "borderWidth": 1,
-                "flex": 1,
-              },
-              Object {
-                "borderColor": "#ECEBEB",
-                "paddingVertical": 12,
+                "alignItems": "center",
+                "flexDirection": "row",
+                "paddingHorizontal": 6,
               },
               Object {},
+              Object {
+                "height": 52,
+              },
             ]
           }
         >
           <View
-            style={
-              Array [
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                },
-                Object {
-                  "paddingLeft": 16,
-                  "paddingRight": 16,
-                },
-                Object {},
-              ]
+            accessible={true}
+            focusable={true}
+            hitSlop={
+              Object {
+                "bottom": 15,
+                "top": 15,
+              }
             }
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "opacity": 1,
+              }
+            }
+            testID="upload-photo-touchable"
           >
-            <TextInput
-              allowFontScaling={true}
-              maxLength={5000}
-              multiline={true}
-              onBlur={[Function]}
-              onChangeText={[Function]}
-              onContentSizeChange={[Function]}
-              onSelectionChange={[Function]}
-              placeholder="Send a message"
-              placeholderTextColor="#7A7A7A"
-              rejectResponderTermination={true}
+            <View
               style={
                 Array [
                   Object {
-                    "flex": 1,
-                    "fontSize": 14,
-                    "includeFontPadding": false,
-                    "padding": 0,
-                    "paddingTop": 0,
-                    "textAlignVertical": "center",
-                  },
-                  Object {
-                    "color": "#000000",
-                    "maxHeight": 85,
+                    "marginHorizontal": 12,
                   },
                   Object {},
                 ]
-              }
-              testID="auto-complete-text-input"
-              underlineColorAndroid="transparent"
-              value=""
-            />
-          </View>
-        </View>
-        <View
-          style={
-            Array [
-              Object {
-                "paddingBottom": 10,
-                "paddingLeft": 10,
-              },
-              Object {},
-            ]
-          }
-        >
-          <RNGestureHandlerButton
-            collapsable={false}
-            onGestureEvent={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onHandlerStateChange={[Function]}
-            rippleColor={0}
-            testID="send-button"
-          >
-            <View
-              accessible={true}
-              style={
-                Object {
-                  "opacity": 1,
-                }
               }
             >
               <RNSVGSvgView
@@ -328,7 +435,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                 meetOrSlice={0}
                 minX={0}
                 minY={0}
-                pathFill="#DBDBDB"
+                pathFill="#005FFF"
                 style={
                   Array [
                     Object {
@@ -349,8 +456,20 @@ exports[`MessageInput should render MessageInput 1`] = `
                 <RNSVGGroup>
                   <RNSVGPath
                     clipRule={0}
-                    d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10zM8 11h4V8l4 4-4 4v-3H8v-2z"
-                    fill={4292598747}
+                    d="M2 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H5a3 3 0 01-3-3V8zm3-1a1 1 0 00-1 1v8a1 1 0 001 1h14a1 1 0 001-1V8a1 1 0 00-1-1H5z"
+                    fill={4278214655}
+                    fillRule={0}
+                    propList={
+                      Array [
+                        "fill",
+                        "fillRule",
+                      ]
+                    }
+                  />
+                  <RNSVGPath
+                    clipRule={0}
+                    d="M15.99 9a1 1 0 01.778.36l5 6a1 1 0 11-1.536 1.28l-4.216-5.059-3.235 4.044a1 1 0 01-1.381.175l-3.306-2.48-3.387 3.387a1 1 0 01-1.414-1.414l4-4A1 1 0 018.6 11.2l3.225 2.418 3.394-4.243A1 1 0 0115.99 9z"
+                    fill={4278214655}
                     fillRule={0}
                     propList={
                       Array [
@@ -362,140 +481,264 @@ exports[`MessageInput should render MessageInput 1`] = `
                 </RNSVGGroup>
               </RNSVGSvgView>
             </View>
-          </RNGestureHandlerButton>
+          </View>
+          <View
+            accessible={true}
+            focusable={true}
+            hitSlop={
+              Object {
+                "bottom": 15,
+                "top": 15,
+              }
+            }
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "opacity": 1,
+              }
+            }
+            testID="upload-file-touchable"
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "marginHorizontal": 12,
+                  },
+                  Object {},
+                ]
+              }
+            >
+              <RNSVGSvgView
+                align="xMidYMid"
+                bbHeight={24}
+                bbWidth={24}
+                focusable={false}
+                height={24}
+                meetOrSlice={0}
+                minX={0}
+                minY={0}
+                pathFill="#7A7A7A"
+                style={
+                  Array [
+                    Object {
+                      "backgroundColor": "transparent",
+                      "borderWidth": 0,
+                    },
+                    Object {
+                      "flex": 0,
+                      "height": 24,
+                      "width": 24,
+                    },
+                  ]
+                }
+                vbHeight={24}
+                vbWidth={24}
+                width={24}
+              >
+                <RNSVGGroup>
+                  <RNSVGPath
+                    clipRule={0}
+                    d="M21 5h-8.586l-2-2H3a1 1 0 00-1 1v16a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1zM4 19V7h16v12H4z"
+                    fill={4286216826}
+                    fillRule={0}
+                    propList={
+                      Array [
+                        "fill",
+                        "fillRule",
+                      ]
+                    }
+                  />
+                </RNSVGGroup>
+              </RNSVGSvgView>
+            </View>
+          </View>
+          <View
+            accessible={true}
+            focusable={true}
+            hitSlop={
+              Object {
+                "bottom": 15,
+                "top": 15,
+              }
+            }
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              Object {
+                "opacity": 1,
+              }
+            }
+            testID="take-photo-touchable"
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "marginHorizontal": 12,
+                  },
+                  Object {},
+                ]
+              }
+            >
+              <RNSVGSvgView
+                align="xMidYMid"
+                bbHeight={24}
+                bbWidth={24}
+                focusable={false}
+                height={24}
+                meetOrSlice={0}
+                minX={0}
+                minY={0}
+                pathFill="#7A7A7A"
+                style={
+                  Array [
+                    Object {
+                      "backgroundColor": "transparent",
+                      "borderWidth": 0,
+                    },
+                    Object {
+                      "flex": 0,
+                      "height": 24,
+                      "width": 24,
+                    },
+                  ]
+                }
+                vbHeight={24}
+                vbWidth={24}
+                width={24}
+              >
+                <RNSVGGroup>
+                  <RNSVGPath
+                    clipRule={0}
+                    d="M15 3H9L7 5H3a1 1 0 00-1 1v14a1 1 0 001 1h18a1 1 0 001-1V6a1 1 0 00-1-1h-4l-2-2zM7.828 7l2-2h4.344l2 2H20v12H4V7h3.828zM12 18a5.5 5.5 0 110-11 5.5 5.5 0 010 11zm3.5-5.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
+                    fill={4286216826}
+                    fillRule={0}
+                    propList={
+                      Array [
+                        "fill",
+                        "fillRule",
+                      ]
+                    }
+                  />
+                </RNSVGGroup>
+              </RNSVGSvgView>
+            </View>
+          </View>
         </View>
       </View>
     </View>
+  </View>,
+  <View
+    animatedStyle={
+      Object {
+        "value": Object {
+          "opacity": 0,
+        },
+      }
+    }
+    collapsable={false}
+    pointerEvents="none"
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "opacity": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  >
     <View
       style={
         Array [
           Object {
-            "backgroundColor": "#F2F2F2",
-            "height": 360,
+            "backgroundColor": "#000000CC",
           },
-          Object {},
-        ]
-      }
-    >
-      <View
-        style={
           Array [
             Object {
-              "alignItems": "center",
-              "flexDirection": "row",
-              "paddingHorizontal": 6,
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
             },
-            Object {},
             Object {
-              "height": 52,
+              "height": 1334,
+              "width": 750,
             },
-          ]
-        }
-      >
-        <View
-          accessible={true}
-          focusable={true}
-          hitSlop={
-            Object {
-              "bottom": 15,
-              "top": 15,
-            }
-          }
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "opacity": 1,
-            }
-          }
-          testID="upload-photo-touchable"
-        >
-          <View
-            style={
-              Array [
-                Object {
-                  "marginHorizontal": 12,
-                },
-                Object {},
-              ]
-            }
-          />
-        </View>
-        <View
-          accessible={true}
-          focusable={true}
-          hitSlop={
-            Object {
-              "bottom": 15,
-              "top": 15,
-            }
-          }
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "opacity": 1,
-            }
-          }
-          testID="upload-file-touchable"
-        >
-          <View
-            style={
-              Array [
-                Object {
-                  "marginHorizontal": 12,
-                },
-                Object {},
-              ]
-            }
-          />
-        </View>
-        <View
-          accessible={true}
-          focusable={true}
-          hitSlop={
-            Object {
-              "bottom": 15,
-              "top": 15,
-            }
-          }
-          onClick={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "opacity": 1,
-            }
-          }
-          testID="take-photo-touchable"
-        >
-          <View
-            style={
-              Array [
-                Object {
-                  "marginHorizontal": 12,
-                },
-                Object {},
-              ]
-            }
-          />
-        </View>
-      </View>
-    </View>
-  </View>
-</View>
+          ],
+        ]
+      }
+    />
+  </View>,
+  <View
+    containerHeight={1334}
+    enablePanDownToClose={true}
+    handleComponent={[Function]}
+    handleHeight={20}
+    index={-1}
+    onChange={[Function]}
+    snapPoints={
+      Array [
+        288,
+        1314,
+      ]
+    }
+  >
+    <RCTScrollView
+      contentContainerStyle={
+        Array [
+          Object {
+            "flexGrow": 1,
+          },
+          Object {
+            "backgroundColor": "#FFFFFF",
+          },
+          Object {},
+          Object {
+            "opacity": 1,
+          },
+        ]
+      }
+      data={Array []}
+      disableVirtualization={false}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      horizontal={false}
+      initialNumToRender={10}
+      keyExtractor={[Function]}
+      maxToRenderPerBatch={10}
+      onContentSizeChange={[Function]}
+      onEndReached={[Function]}
+      onEndReachedThreshold={2}
+      onLayout={[Function]}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      removeClippedSubviews={false}
+      renderItem={[Function]}
+      scrollEventThrottle={50}
+      stickyHeaderIndices={Array []}
+      updateCellsBatchingPeriod={50}
+      viewabilityConfigCallbackPairs={Array []}
+      windowSize={21}
+    >
+      <View />
+    </RCTScrollView>
+  </View>,
+]
 `;

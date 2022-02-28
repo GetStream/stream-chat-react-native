@@ -1,25 +1,10 @@
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
 
 export const removeReservedFields = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  message: MessageType<StreamChatGenerics>,
 ) => {
   const retryMessage = { ...message };
   const reserved = [

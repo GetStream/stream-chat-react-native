@@ -1,28 +1,29 @@
 import React, { useContext, useEffect } from 'react';
 import { View } from 'react-native';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { StreamChat } from 'stream-chat';
 
-import { Channel } from '../Channel';
-
-import { Attachment } from '../../Attachment/Attachment';
-import { Chat } from '../../Chat/Chat';
-
 import { ChannelContext, ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
 import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
+
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext/ThreadContext';
 
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchChannelDeletedEvent from '../../../mock-builders/event/channelDeleted';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Attachment } from '../../Attachment/Attachment';
+import { Chat } from '../../Chat/Chat';
+import { Channel } from '../Channel';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -49,18 +50,20 @@ const messages = [generateMessage({ user })];
 
 const renderComponent = (props = {}, callback = () => {}, context = ChannelContext) =>
   render(
-    <Chat client={chatClient}>
-      <Channel {...props}>
-        {props.children}
-        <CallbackEffectWithContext {...{ callback, context }} />
-      </Channel>
-    </Chat>,
+    <ChannelsStateProvider>
+      <Chat client={chatClient}>
+        <Channel {...props}>
+          {props.children}
+          <CallbackEffectWithContext {...{ callback, context }} />
+        </Channel>
+      </Chat>
+    </ChannelsStateProvider>,
   );
 
 describe('Channel', () => {
   beforeEach(async () => {
     const members = [generateMember({ user })];
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members,
       messages,
     });
@@ -151,20 +154,22 @@ describe('Channel', () => {
     );
 
     rerender(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <CallbackEffectWithContext
-            callback={({ openThread, thread }) => {
-              if (!thread) {
-                openThread(threadMessage);
-              } else {
-                hasThread(thread.id);
-              }
-            }}
-            context={ThreadContext}
-          />
-        </Channel>
-      </Chat>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <CallbackEffectWithContext
+              callback={({ openThread, thread }) => {
+                if (!thread) {
+                  openThread(threadMessage);
+                } else {
+                  hasThread(thread.id);
+                }
+              }}
+              context={ThreadContext}
+            />
+          </Channel>
+        </Chat>
+      </ChannelsStateProvider>,
     );
     await waitFor(() => expect(hasThread).toHaveBeenCalledWith(threadMessage.id));
   });
@@ -172,7 +177,7 @@ describe('Channel', () => {
   const queryChannelWithNewMessages = (newMessages) =>
     // generate new channel mock from existing channel with new messages added
     getOrCreateChannelApi(
-      generateChannel({
+      generateChannelResponse({
         channel: {
           config: channel.getConfig(),
           id: channel.id,

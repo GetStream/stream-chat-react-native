@@ -6,6 +6,9 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import i18n, { FallbackLng, TFunction } from 'i18next';
 
+import type moment from 'moment';
+
+import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
 import enTranslations from '../i18n/en.json';
 import frTranslations from '../i18n/fr.json';
 import hiTranslations from '../i18n/hi.json';
@@ -35,10 +38,7 @@ import 'dayjs/locale/tr';
  */
 import 'dayjs/locale/en';
 
-import type moment from 'moment';
-
-import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
-import type { UnknownType } from '../types/types';
+import type { DefaultStreamChatGenerics } from '../types/types';
 
 Dayjs.extend(updateLocale);
 
@@ -352,7 +352,7 @@ export class Streami18n {
 
   translations: {
     [key: string]: {
-      [key: string]: Partial<typeof enTranslations> | UnknownType;
+      [key: string]: Partial<typeof enTranslations> | DefaultStreamChatGenerics;
     };
   } = {
     en: { [defaultNS]: enTranslations },
@@ -585,7 +585,7 @@ export class Streami18n {
    */
   registerTranslation(
     language: string,
-    translation: Partial<typeof enTranslations> | UnknownType,
+    translation: Partial<typeof enTranslations> | DefaultStreamChatGenerics,
     customDayjsLocale?: Partial<ILocale>,
   ) {
     if (!translation) {

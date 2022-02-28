@@ -1,54 +1,31 @@
 import { useEffect } from 'react';
 
-import { moveChannelUp } from '../../utils';
+import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type { Channel, Event } from 'stream-chat';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { moveChannelUp } from '../../utils';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
-
-type Parameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  lockChannelOrder: boolean;
-  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    lockChannelOrder: boolean;
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+  };
 
 export const useNewMessage = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   lockChannelOrder,
   setChannels,
-}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       setChannels((channels) => {
         if (!lockChannelOrder && event.cid) {
-          return moveChannelUp<At, Ch, Co, Ev, Me, Re, Us>({
+          return moveChannelUp<StreamChatGenerics>({
             channels,
             cid: event.cid,
           });

@@ -6,6 +6,7 @@ export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
+export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
 export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
@@ -18,12 +19,9 @@ export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
 export * from './AttachmentPicker/components/ImageSelectorIcon';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
-export * from './AutoCompleteInput/CommandsHeader';
-export * from './AutoCompleteInput/CommandsItem';
-export * from './AutoCompleteInput/EmojisHeader';
-export * from './AutoCompleteInput/EmojisItem';
-export * from './AutoCompleteInput/MentionsItem';
-export * from './AutoCompleteInput/SuggestionsList';
+export * from './AutoCompleteInput/AutoCompleteSuggestionHeader';
+export * from './AutoCompleteInput/AutoCompleteSuggestionItem';
+export * from './AutoCompleteInput/AutoCompleteSuggestionList';
 
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
@@ -91,11 +89,14 @@ export * from './Indicators/LoadingIndicator';
 export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 
 export * from './Message/hooks/useCreateMessageContext';
+export * from './Message/hooks/useMessageActions';
+export * from './Message/hooks/useMessageActionHandlers';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
 export * from './Message/MessageSimple/MessageDeleted';
 export * from './Message/MessageSimple/MessageFooter';
+export * from './Message/MessageSimple/MessagePinnedHeader';
 export * from './Message/MessageSimple/MessageReplies';
 export * from './Message/MessageSimple/MessageRepliesAvatars';
 export * from './Message/MessageSimple/MessageSimple';
@@ -108,6 +109,7 @@ export * from './Message/utils/removeReservedFields';
 
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
+export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/InputButtons';
@@ -136,9 +138,13 @@ export * from './MessageList/utils/getGroupStyles';
 export * from './MessageList/utils/getLastReceivedMessage';
 export * from './MessageList/utils/getReadStates';
 
-export * from './MessageOverlay/MessageActions';
+export * from './MessageOverlay/hooks/useMessageActionAnimation';
+export * from './MessageOverlay/MessageActionList';
+export * from './MessageOverlay/MessageActionListItem';
 export * from './MessageOverlay/MessageOverlay';
+export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
+export * from './MessageOverlay/OverlayReactionsAvatar';
 export * from './MessageOverlay/OverlayReactionList';
 
 export * from './Reply/Reply';

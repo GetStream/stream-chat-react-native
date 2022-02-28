@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import {
@@ -15,19 +15,10 @@ import {
 } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,18 +54,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type CustomPreviewProps = ChannelPreviewMessengerProps<
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
->;
+type CustomPreviewProps = ChannelPreviewMessengerProps<StreamChatGenerics>;
 
 const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation();
   const {
@@ -119,9 +102,21 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
     >
       <View style={styles.groupContainer}>
         {displayAvatar.images ? (
-          <GroupAvatar images={displayAvatar.images} names={displayAvatar.names} size={40} />
+          <GroupAvatar
+            channelId={channel.id}
+            ids={displayAvatar.ids}
+            images={displayAvatar.images}
+            names={displayAvatar.names}
+            size={40}
+          />
         ) : (
-          <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
+          <Avatar
+            channelId={channel.id}
+            id={displayAvatar.id}
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={40}
+          />
         )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>
@@ -154,15 +149,7 @@ const EmptyListComponent = () => {
   );
 };
 
-type ListComponentProps = ChannelListMessengerProps<
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType
->;
+type ListComponentProps = ChannelListMessengerProps<StreamChatGenerics>;
 
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.
@@ -187,7 +174,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
     params: { user },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   if (!chatClient?.user) return null;
 

@@ -5,43 +5,23 @@ import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
+import { useOwnCapabilitiesContext } from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
 });
 
 export type InputButtonsProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<InputButtonsWithContextProps<StreamChatGenerics>>;
 
 export type InputButtonsWithContextProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageInputContextValue<StreamChatGenerics>,
   | 'AttachButton'
   | 'CommandsButton'
   | 'giphyActive'
@@ -55,19 +35,12 @@ export type InputButtonsWithContextProps<
   | 'showMoreOptions'
   | 'text'
   | 'toggleAttachmentPicker'
-  | 'uploadsEnabled'
 >;
 
 export const InputButtonsWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -82,7 +55,6 @@ export const InputButtonsWithContext = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-    uploadsEnabled,
   } = props;
 
   const {
@@ -90,6 +62,8 @@ export const InputButtonsWithContext = <
       messageInput: { attachButtonContainer, commandsButtonContainer },
     },
   } = useTheme();
+
+  const ownCapabilities = useOwnCapabilitiesContext();
 
   if (giphyActive) {
     return null;
@@ -99,7 +73,7 @@ export const InputButtonsWithContext = <
     <MoreOptionsButton handleOnPress={() => setShowMoreOptions(true)} />
   ) : (
     <>
-      {(hasImagePicker || hasFilePicker) && uploadsEnabled !== false && (
+      {(hasImagePicker || hasFilePicker) && ownCapabilities.uploadFile && (
         <View
           style={[hasCommands ? styles.attachButtonContainer : undefined, attachButtonContainer]}
         >
@@ -114,17 +88,9 @@ export const InputButtonsWithContext = <
     </>
   );
 };
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: InputButtonsWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: InputButtonsWithContextProps<StreamChatGenerics>,
+  nextProps: InputButtonsWithContextProps<StreamChatGenerics>,
 ) => {
   const {
     giphyActive: prevGiphyActive,
@@ -134,7 +100,6 @@ const areEqual = <
     selectedPicker: prevSelectedPicker,
     showMoreOptions: prevShowMoreOptions,
     text: prevText,
-    uploadsEnabled: prevUploadsEnabled,
   } = prevProps;
 
   const {
@@ -145,7 +110,6 @@ const areEqual = <
     selectedPicker: nextSelectedPicker,
     showMoreOptions: nextShowMoreOptions,
     text: nextText,
-    uploadsEnabled: nextUploadsEnabled,
   } = nextProps;
 
   if (prevHasImagePicker !== nextHasImagePicker) {
@@ -160,9 +124,6 @@ const areEqual = <
     return false;
   }
 
-  if (prevUploadsEnabled !== nextUploadsEnabled) {
-    return false;
-  }
   if (prevSelectedPicker !== nextSelectedPicker) {
     return false;
   }
@@ -188,15 +149,9 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: InputButtonsProps<StreamChatGenerics>,
 ) => {
   const {
     AttachButton,
@@ -212,8 +167,7 @@ export const InputButtons = <
     showMoreOptions,
     text,
     toggleAttachmentPicker,
-    uploadsEnabled,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageInputContext<StreamChatGenerics>();
 
   return (
     <MemoizedInputButtonsWithContext
@@ -231,7 +185,6 @@ export const InputButtons = <
         showMoreOptions,
         text,
         toggleAttachmentPicker,
-        uploadsEnabled,
       }}
       {...props}
     />

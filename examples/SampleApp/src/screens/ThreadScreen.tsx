@@ -14,16 +14,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import type { RouteProp } from '@react-navigation/native';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,15 +29,7 @@ type ThreadScreenProps = {
 };
 
 export type ThreadHeaderProps = {
-  thread: ThreadContextValue<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >['thread'];
+  thread: ThreadContextValue<StreamChatGenerics>['thread'];
 };
 
 const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
@@ -80,31 +63,16 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
-      <Channel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
+      <Channel<StreamChatGenerics>
         channel={channel}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
         thread={thread}
+        threadList
       >
         <View style={styles.container}>
           <ThreadHeader thread={thread} />
-          <Thread<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalReactionType,
-            LocalUserType
-          > />
+          <Thread<StreamChatGenerics> />
         </View>
       </Channel>
     </SafeAreaView>

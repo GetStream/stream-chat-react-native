@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Image, PixelRatio, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
@@ -69,18 +70,6 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
             : ''
         }`;
     if (imagesOrNames.length <= 2) {
-      Image.prefetch(
-        imageError
-          ? url
-          : url.replace(
-              'h=%2A',
-              `h=${PixelRatio.getPixelSizeForLayoutSize(
-                imagesOrNames.length <= 2 ? size : size / 2,
-              )}`,
-            ),
-      ).catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
       returnArray[0] = [
         ...(returnArray[0] || []),
         {
@@ -91,13 +80,6 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
         },
       ];
     } else {
-      Image.prefetch(
-        imageError
-          ? url
-          : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(size / 2)}`),
-      )?.catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
       if (index < 2) {
         returnArray[0] = [
           ...(returnArray[0] || []),
@@ -156,7 +138,11 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
                       : `${randomImageBaseUrl}${
                           name ? `?name=${getInitials(name)}&size=${height}` : ''
                         }`
-                    : url.replace('h=%2A', `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`),
+                    : getResizedImageUrl({
+                        height,
+                        url,
+                        width,
+                      }),
               }}
               style={[
                 image,

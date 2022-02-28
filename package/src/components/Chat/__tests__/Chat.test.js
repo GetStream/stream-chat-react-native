@@ -1,16 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { Chat } from '../Chat';
-
-import { Streami18n } from '../../../utils/Streami18n';
-
+import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
 import { getTestClient } from '../../../mock-builders/mock';
+import { Streami18n } from '../../../utils/Streami18n';
+import { Chat } from '../Chat';
 
 const ChatContextConsumer = ({ fn }) => {
   fn(useChatContext());
@@ -38,6 +39,8 @@ describe('Chat', () => {
 
   it('listens and updates state on a connection changed event', async () => {
     let context;
+    const netInfoFetch = jest.fn();
+    setNetInfoFetchMock(netInfoFetch);
 
     render(
       <Chat client={chatClient}>
@@ -49,15 +52,16 @@ describe('Chat', () => {
       </Chat>,
     );
 
+    await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
+
     const { connectionRecovering } = context;
-
     act(() => dispatchConnectionChangedEvent(chatClient));
-
     await waitFor(() => {
       expect(context.connectionRecovering).toStrictEqual(!connectionRecovering);
       expect(context.isOnline).toBeFalsy();
     });
   });
+
   it('listens and updates state on a connection recovered event', async () => {
     let context;
 

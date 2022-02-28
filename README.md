@@ -46,7 +46,7 @@ This repo includes 4 example apps. One made with Expo, one Native JavaScript cod
 
 - [Expo example](./examples/ExpoMessaging)
 - [Native example](./examples/NativeMessaging)
-- [Typescript example](./examples/TypescriptMessaging)
+- [Typescript example](./examples/TypeScriptMessaging)
 - [Fully featured messaging application](./examples/SampleApp)
 
 Besides, our team maintains a dedicated repository for fully-fledged sample applications and demos at [GetStream/react-native-samples](https://github.com/GetStream/react-native-samples). Please consider checking following sample applications:

@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import type { Channel as StreamChatChannel } from 'stream-chat';
 import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Channel,
   ChannelAvatar,
@@ -14,24 +13,16 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppContext } from '../context/AppContext';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { AppContext } from '../context/AppContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
-
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 
 const styles = StyleSheet.create({
@@ -49,15 +40,7 @@ export type ChannelScreenProps = {
 };
 
 export type ChannelHeaderProps = {
-  channel: StreamChatChannel<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  channel: StreamChatChannel<StreamChatGenerics>;
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
@@ -65,7 +48,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
   const { isOnline } = useChatContext();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
@@ -110,7 +93,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation();
   const { bottom } = useSafeAreaInsets();
   const {
@@ -119,31 +102,12 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<
-    | StreamChatChannel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    | undefined
-  >(channelFromProp);
+  const [channel, setChannel] = useState<StreamChatChannel<StreamChatGenerics> | undefined>(
+    channelFromProp,
+  );
 
   const [selectedThread, setSelectedThread] =
-    useState<
-      ThreadContextValue<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >['thread']
-    >();
+    useState<ThreadContextValue<StreamChatGenerics>['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
@@ -179,15 +143,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
-        <MessageList<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalReactionType,
-          LocalUserType
-        >
+        <MessageList<StreamChatGenerics>
           onThreadSelect={(thread) => {
             setSelectedThread(thread);
             navigation.navigate('ThreadScreen', {

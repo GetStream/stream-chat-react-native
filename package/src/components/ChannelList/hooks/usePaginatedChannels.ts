@@ -1,130 +1,155 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
+import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 
+import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRefContext/ActiveChannelsRefContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import type { Channel, ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { ONE_SECOND_IN_MS } from '../../../utils/date';
+import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
-
-const wait = (ms: number) =>
+const waitSeconds = (seconds: number) =>
   new Promise((resolve) => {
-    setTimeout(resolve, ms);
+    setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  filters: ChannelFilters<Ch, Co, Us>;
-  options: ChannelOptions;
-  sort: ChannelSort<Ch>;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    filters: ChannelFilters<StreamChatGenerics>;
+    options: ChannelOptions;
+    sort: ChannelSort<StreamChatGenerics>;
+  };
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
 };
 
+const MAX_NUMBER_OF_RETRIES = 3;
+const RETRY_INTERVAL_IN_MS = 5000;
+
+type QueryType = 'reload' | 'refresh' | 'loadChannels';
+export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
+
 export const usePaginatedChannels = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
-}: Parameters<Ch, Co, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
+  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
+  const activeChannels = useActiveChannelsRefContext();
 
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
-  const [loadingChannels, setLoadingChannels] = useState(false);
-  const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const isMounted = useIsMountedRef();
+  const isQueryingRef = useRef(false);
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>();
+  const isMountedRef = useIsMountedRef();
+  const filtersRef = useRef<typeof filters | null>(null);
+  const sortRef = useRef<typeof sort | null>(null);
+  const activeRequestId = useRef<number>(0);
 
-  const queryChannels = async (queryType = '', retryCount = 0): Promise<void> => {
-    if (!client || loadingChannels || loadingNextPage || refreshing || !isMounted.current) return;
+  const queryChannels: QueryChannels = async (
+    queryType: QueryType = 'loadChannels',
+    retryCount = 0,
+  ): Promise<void> => {
+    if (!client || !isMountedRef.current) return;
 
-    if (queryType === 'reload') {
-      setLoadingChannels(true);
-    } else if (queryType === 'refresh') {
-      setRefreshing(true);
-    } else if (!queryType) {
-      setLoadingNextPage(true);
+    const hasUpdatedData =
+      queryType === 'loadChannels' ||
+      [
+        JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
+        JSON.stringify(sortRef.current) !== JSON.stringify(sort),
+      ].some(Boolean);
+
+    const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
+
+    /**
+     * We don't need to make another call to query channels if we don't
+     * have new data for the query to include
+     * */
+    if (!hasUpdatedData) {
+      if (activeQueryType === null) return;
     }
+
+    filtersRef.current = filters;
+    sortRef.current = sort;
+    isQueryingRef.current = true;
+    setError(undefined);
+    activeRequestId.current++;
+    const currentRequestId = activeRequestId.current;
+    setActiveQueryType(queryType);
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : channels.length,
+      offset: queryType === 'loadChannels' ? channels.length : 0,
       ...options,
     };
 
     try {
-      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions);
+      const channelQueryResponse = await client.queryChannels(filters, sort, newOptions, {
+        skipInitialization: activeChannels.current,
+      });
 
-      if (!isMounted.current) return;
+      if (isQueryStale() || !isMountedRef.current) {
+        return;
+      }
 
       channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
 
       const newChannels =
-        queryType === 'reload' || queryType === 'refresh'
-          ? channelQueryResponse
-          : [...channels, ...channelQueryResponse];
+        queryType === 'loadChannels'
+          ? [...channels, ...channelQueryResponse]
+          : channelQueryResponse;
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
-      setError(false);
-    } catch (err) {
-      await wait(2000);
+      setError(undefined);
+      isQueryingRef.current = false;
+    } catch (err: unknown) {
+      isQueryingRef.current = false;
+      await waitSeconds(2);
 
-      if (!isMounted.current) return;
+      if (isQueryStale()) {
+        return;
+      }
 
-      if (retryCount === 3) {
-        setLoadingChannels(false);
-        setLoadingNextPage(false);
-        setRefreshing(false);
+      // querying.current check is needed in order to make sure the next query call doesnt flick an error
+      // state and then succeed (reconnect case)
+      if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
+        setActiveQueryType(null);
         console.warn(err);
-        return setError(true);
+        setError(
+          new Error(
+            `Maximum number of retries reached in queryChannels. Last error message is: ${err}`,
+          ),
+        );
+        return;
       }
 
       return queryChannels(queryType, retryCount + 1);
     }
 
-    setLoadingChannels(false);
-    setLoadingNextPage(false);
-    setRefreshing(false);
+    setActiveQueryType(null);
   };
 
   const loadNextPage = hasNextPage ? queryChannels : undefined;
+
   const refreshList = () => {
     const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
-    if (now - lastRefresh.current < 5000 && !error) {
+    if (now - lastRefresh.current < RETRY_INTERVAL_IN_MS && error === undefined) {
       return;
     }
 
     lastRefresh.current = Date.now();
     return queryChannels('refresh');
   };
+
   const reloadList = () => queryChannels('reload');
 
   /**
@@ -153,10 +178,10 @@ export const usePaginatedChannels = <
     channels,
     error,
     hasNextPage,
-    loadingChannels,
-    loadingNextPage,
+    loadingChannels: activeQueryType === 'reload',
+    loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
-    refreshing,
+    refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
     setChannels,

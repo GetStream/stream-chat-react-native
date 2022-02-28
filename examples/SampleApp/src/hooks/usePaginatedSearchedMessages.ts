@@ -1,48 +1,23 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 import type { MessageFilters, MessageResponse } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
+import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
 
-export const MESSAGE_SEARCH_LIMIT = 10;
 export const usePaginatedSearchedMessages = (
-  messageFilters:
-    | string
-    | MessageFilters<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      > = {},
+  messageFilters: string | MessageFilters<StreamChatGenerics> = {},
 ) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [messages, setMessages] =
-    useState<
-      MessageResponse<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >[]
-    >();
+  const [error, setError] = useState<Error | boolean>(false);
+  const [messages, setMessages] = useState<MessageResponse<StreamChatGenerics>[]>();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   const done = () => {
     queryInProgress.current = false;
@@ -87,7 +62,7 @@ export const usePaginatedSearchedMessages = (
         },
         messageFilters,
         {
-          limit: MESSAGE_SEARCH_LIMIT,
+          limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
         },
       );
@@ -116,13 +91,17 @@ export const usePaginatedSearchedMessages = (
         });
       }
 
-      if (newMessages.length < MESSAGE_SEARCH_LIMIT) {
+      if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;
       }
 
       offset.current = offset.current + messagesLength;
-    } catch (e) {
-      // do nothing;
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
+      }
     }
 
     done();
@@ -154,6 +133,7 @@ export const usePaginatedSearchedMessages = (
   };
 
   return {
+    error,
     loading,
     loadMore,
     messages,

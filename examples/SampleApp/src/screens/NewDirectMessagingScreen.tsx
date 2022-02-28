@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -15,23 +15,14 @@ import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel as StreamChatChannel } from 'stream-chat';
 
 import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -130,7 +121,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       colors: { accent_blue, black, border, grey, white },
     },
   } = useTheme();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   const {
     onChangeSearchText,
@@ -145,18 +136,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput | null>(null);
   const searchInputRef = useRef<TextInput>(null);
-  const currentChannel =
-    useRef<
-      StreamChatChannel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-    >();
+  const currentChannel = useRef<StreamChatChannel<StreamChatGenerics>>();
   const isDraft = useRef(true);
 
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
@@ -328,15 +308,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         },
       ]}
     >
-      <Channel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
+      <Channel<StreamChatGenerics>
         additionalTextInputProps={{
           onFocus: () => {
             setFocusOnMessageInput(true);
