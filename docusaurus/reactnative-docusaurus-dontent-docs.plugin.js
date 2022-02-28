@@ -10,7 +10,7 @@ module.exports = {
           },
           '3.x.x': {
             label: 'v3',
-            path: 'v4'
+            path: 'v3'
           }
         }
       }
