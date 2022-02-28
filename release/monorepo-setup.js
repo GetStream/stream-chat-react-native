@@ -21,6 +21,11 @@ async function filterCommits(path, regex, pluginConfig, commits) {
       return revertRegexSubject.test(commit.subject);
     })
     .map((commit) => {
+      console.log({
+        commit,
+        revertRegexBody,
+
+      })
       const [_, reverted] = commit.body.match(revertRegexBody);
       return reverted;
     });
