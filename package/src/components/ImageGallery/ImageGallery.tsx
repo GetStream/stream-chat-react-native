@@ -22,7 +22,6 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
-  interpolate,
   runOnJS,
   runOnUI,
   useAnimatedGestureHandler,
@@ -188,26 +187,12 @@ export const ImageGallery = <
   const animatedBottomSheetIndex = useSharedValue(0);
 
   /**
-   * Fade animation for screen, it is always rendered with pointerEvents
-   * set to none for fast opening
-   */
-  const showScreen = useSharedValue(0);
-  const fadeScreen = (show: boolean) => {
-    'worklet';
-    showScreen.value = withTiming(show ? 1 : 0, {
-      duration: 250,
-      easing: Easing.out(Easing.ease),
-    });
-  };
-
-  /**
    * Run the fade animation on visible change
    */
   useEffect(() => {
     if (visible) {
       Keyboard.dismiss();
     }
-    fadeScreen(visible);
   }, [visible]);
 
   /**
@@ -656,7 +641,6 @@ export const ImageGallery = <
                 easing: Easing.out(Easing.ease),
               },
               () => {
-                showScreen.value = 0;
                 runOnJS(setOverlay)('none');
               },
             );
@@ -1033,22 +1017,6 @@ export const ImageGallery = <
   );
 
   /**
-   * Show screen style as component is always rendered we hide it
-   * down and up and set opacity to 0 for good measure
-   */
-  const showScreenStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: interpolate(showScreen.value, [0, 0.01, 1], [0, 1, 1]),
-      transform: [
-        {
-          translateY: interpolate(showScreen.value, [0, 1], [screenHeight, 0]),
-        },
-      ],
-    }),
-    [],
-  );
-
-  /**
    * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
@@ -1071,7 +1039,7 @@ export const ImageGallery = <
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
+      style={[StyleSheet.absoluteFillObject]}
     >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
