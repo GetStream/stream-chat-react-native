@@ -218,7 +218,6 @@ export const OverlayProvider = <
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}
                     OverlayReactionsAvatar={OverlayReactionsAvatar}
-                    visible={overlay === 'message'}
                   />
                 )}
                 {overlay === 'gallery' && (
@@ -228,7 +227,6 @@ export const OverlayProvider = <
                     imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
                     numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
                     overlayOpacity={overlayOpacity}
-                    visible={overlay === 'gallery'}
                   />
                 )}
                 <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
