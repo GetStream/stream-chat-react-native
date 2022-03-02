@@ -45,7 +45,7 @@ You can choose whatever suits your needs best, theming, connection handling, and
 Having it higher in the _stack_ helps to ensure it is not unmounted at times when a connection is present.
 If `Chat` is unmounted with a connection present you may have to implement some connection handling functions yourself to ensure you reconnect when the app is, for instance, reopened from the background.
 The WebSocket connection closes on it's own approximately 15 seconds after the app is backgrounded.
-Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect [how Stream Chat handles Push Notifications](../guides/push_notifications.mdx).
+Not handling the connection on [`appState`](https://reactnative.dev/docs/appstate) changes will also effect [how Stream Chat handles Push Notifications](../guides/push_notifications_v2.mdx).
 
 :::
 

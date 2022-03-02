@@ -53,19 +53,6 @@ You can lighten the load for the JS thread by disabling some of the heavier feat
 These props are available in version >= v3.9.0
 :::
 
-### Image Viewer
-
-By default, when you open (press) an image attachment it opens the image in a full-screen image viewer.
-Within the viewer, you can keep swiping left to scroll through all the images that have been loaded within a channel so far.
-This creates quite a lot of extra work for the JS thread to keep track of image attachments loaded in a channel and pre-populating them in the viewer for smooth transitions.
-
-In v3.9.0, we introduced an alternate UX for the image viewer where image attachments are only loaded for the selected messages in a viewer.
-You can enable this alternate UX by setting the prop `legacyImageViewerSwipeBehaviour` to false on a Channel component.
-
-```tsx
-<Channel legacyImageViewerSwipeBehaviour={false} />
-```
-
 ### Sticky Date Header and Inline Date Separator
 
 By default, the MessageList component renders a sticky date header at the top of the list, and date separators between messages from different dates.
