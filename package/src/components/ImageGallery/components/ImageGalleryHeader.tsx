@@ -15,13 +15,13 @@ import { useOverlayContext } from '../../../contexts/overlayContext/OverlayConte
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
+  TDateTimeParserOutput,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
-
-import type { DefaultUserType, UnknownType } from '../../../types/types';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
   ? Animated.createAnimatedComponent(SafeAreaView)
@@ -58,29 +58,37 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryHeaderCustomComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryHeaderCustomComponent<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ({
   hideOverlay,
   photo,
 }: {
   hideOverlay: () => void;
-  photo?: Photo<Us>;
+  photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryHeaderCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
-  centerElement?: ImageGalleryHeaderCustomComponent<Us>;
+export type ImageGalleryHeaderCustomComponentProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  centerElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
   CloseIcon?: React.ReactElement;
-  leftElement?: ImageGalleryHeaderCustomComponent<Us>;
-  rightElement?: ImageGalleryHeaderCustomComponent<Us>;
+  leftElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
+  rightElement?: ImageGalleryHeaderCustomComponent<StreamChatGenerics>;
 };
 
-type Props<Us extends UnknownType = DefaultUserType> =
-  ImageGalleryHeaderCustomComponentProps<Us> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryHeaderCustomComponentProps<StreamChatGenerics> & {
     opacity: Animated.SharedValue<number>;
     visible: Animated.SharedValue<number>;
-    photo?: Photo<Us>;
+    photo?: Photo<StreamChatGenerics>;
   };
 
-export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGalleryHeader = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: Props<StreamChatGenerics>,
+) => {
   const { centerElement, CloseIcon, leftElement, opacity, photo, rightElement, visible } = props;
   const [height, setHeight] = useState(200);
   const {
@@ -105,16 +113,29 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(pro
   const parsedDate = photo ? tDateTimeParser(photo?.created_at) : null;
 
   /**
-   * .calendar is required on moment types, but in reality it
-   * is unavailable on first render. We therefore check if it
-   * is available and call it, otherwise we call .fromNow.
+   * .calendar and .fromNow can be initialized after the first render,
+   * and attempting to access them at that time will cause an error
+   * to be thrown.
+   *
+   * This falls back to null if neither exist.
    */
-  const date =
-    parsedDate && isDayOrMoment(parsedDate)
-      ? parsedDate.calendar
-        ? parsedDate.calendar()
-        : parsedDate.fromNow()
-      : null;
+  const getDateObject = (date: TDateTimeParserOutput | null) => {
+    if (date === null || !isDayOrMoment(date)) {
+      return null;
+    }
+
+    if (date.calendar) {
+      return date.calendar();
+    }
+
+    if (date.fromNow) {
+      return date.fromNow();
+    }
+
+    return null;
+  };
+
+  const date = getDateObject(parsedDate);
 
   const headerStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,

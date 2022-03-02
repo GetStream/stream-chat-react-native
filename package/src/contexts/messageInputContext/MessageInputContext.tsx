@@ -1,6 +1,10 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Keyboard } from 'react-native';
+
+import type { TextInput, TextInputProps } from 'react-native';
+
 import uniq from 'lodash/uniq';
+import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
@@ -16,13 +20,20 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
-import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
-import { useChatContext } from '../chatContext/ChatContext';
-import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
-import { useThreadContext } from '../threadContext/ThreadContext';
-import { getDisplayName } from '../utils/getDisplayName';
+import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
+import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
+import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
-
+import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
+import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
+import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
+import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
+import type { SendButtonProps } from '../../components/MessageInput/SendButton';
+import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -31,36 +42,13 @@ import {
   TriggerSettings,
   urlRegex,
 } from '../../utils/utils';
-
-import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-
+import { useAttachmentPickerContext } from '../attachmentPickerContext/AttachmentPickerContext';
+import { ChannelContextValue, useChannelContext } from '../channelContext/ChannelContext';
+import { useChatContext } from '../chatContext/ChatContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
-
-import type { TextInput, TextInputProps } from 'react-native';
-import { lookup } from 'mime-types';
-
-import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
-import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
-import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
-import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
-import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
-import type { InputButtonsProps } from '../../components/MessageInput/InputButtons';
-import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
-import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
-import type { SendButtonProps } from '../../components/MessageInput/SendButton';
-import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import { getDisplayName } from '../utils/getDisplayName';
 
 export type FileUpload = {
   file: {
@@ -80,19 +68,21 @@ export type ImageUpload = {
   };
   id: string;
   state: string;
+  height?: number;
   url?: string;
+  width?: number;
 };
 
-export type MentionAllAppUsersQuery<Us extends DefaultUserType> = {
-  filters?: UserFilters<Us>;
+export type MentionAllAppUsersQuery<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  filters?: UserFilters<StreamChatGenerics>;
   options?: UserOptions;
-  sort?: UserSort<Us>;
+  sort?: UserSort<StreamChatGenerics>;
 };
 
 export type LocalMessageInputContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   appendText: (newText: string) => void;
   asyncIds: string[];
@@ -153,7 +143,7 @@ export type LocalMessageInputContext<
   mentionedUsers: string[];
   numberOfUploads: number;
   onChange: (newText: string) => void;
-  onSelectItem: (item: UserResponse<Us>) => void;
+  onSelectItem: (item: UserResponse<StreamChatGenerics>) => void;
   openAttachmentPicker: () => void;
   openCommandsPicker: () => void;
   openFilePicker: () => void;
@@ -171,7 +161,7 @@ export type LocalMessageInputContext<
    * @param id string ID of image in `imageUploads` object in state of MessageInput
    */
   removeImage: (id: string) => void;
-  resetInput: (pendingAttachments?: Attachment<At>[]) => void;
+  resetInput: (pendingAttachments?: Attachment<StreamChatGenerics>[]) => void;
   selectedPicker: string | undefined;
   sending: React.MutableRefObject<boolean>;
   sendMessage: () => Promise<void>;
@@ -207,7 +197,7 @@ export type LocalMessageInputContext<
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
-  triggerSettings: TriggerSettings<Co, Us>;
+  triggerSettings: TriggerSettings<StreamChatGenerics>;
   updateMessage: () => Promise<void>;
   /** Function for attempting to upload a file */
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
@@ -223,20 +213,14 @@ export type LocalMessageInputContext<
 };
 
 export type InputMessageInputContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
    * Custom UI component for attach button.
    *
    * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
    */
-  AttachButton: React.ComponentType<AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
   /**
@@ -244,7 +228,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
    */
-  CommandsButton: React.ComponentType<CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  CommandsButton: React.ComponentType<CommandsButtonProps<StreamChatGenerics>>;
   /**
    * Custom UI component to display the remaining cooldown a user will have to wait before
    * being allowed to send another message. This component is displayed in place of the
@@ -253,13 +237,13 @@ export type InputMessageInputContextValue<
    * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
-  editing: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
+  editing: boolean | MessageType<StreamChatGenerics>;
+  editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
    */
-  FileUploadPreview: React.ComponentType<FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
@@ -270,7 +254,7 @@ export type InputMessageInputContextValue<
    * Custom UI component for ImageUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.tsx
    */
-  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
   /**
@@ -278,19 +262,19 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/v3/#moreoptionsbutton)
    */
-  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  quotedMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  quotedMessage: boolean | MessageType<StreamChatGenerics>;
   /**
    * Custom UI component for send button.
    *
    * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
    */
-  SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  SendButton: React.ComponentType<SendButtonProps<StreamChatGenerics>>;
   sendImageAsync: boolean;
-  sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
-  setQuotedMessageState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  sendMessage: (message: Partial<StreamMessage<StreamChatGenerics>>) => Promise<void>;
+  setQuotedMessageState: (message: MessageType<StreamChatGenerics>) => void;
   /**
    * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
    * When ticked, message will also be sent in parent channel.
@@ -316,8 +300,8 @@ export type InputMessageInputContextValue<
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
   autoCompleteTriggerSettings?: (
-    settings: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => TriggerSettings<Co, Us>;
+    settings: ACITriggerSettingsParams<StreamChatGenerics>,
+  ) => TriggerSettings<StreamChatGenerics>;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -340,7 +324,7 @@ export type InputMessageInputContextValue<
       type?: string;
       uri?: string;
     },
-    channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'],
+    channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
   /**
    * Override image upload request
@@ -355,7 +339,7 @@ export type InputMessageInputContextValue<
       name?: string;
       uri?: string;
     },
-    channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'],
+    channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
   /** Initial value to set on input */
   initialValue?: string;
@@ -364,9 +348,9 @@ export type InputMessageInputContextValue<
    * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
-    Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> &
-      InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us> & {
-        getUsers: () => UserResponse<Us>[];
+    Omit<MessageInputProps<StreamChatGenerics>, 'Input'> &
+      InputButtonsProps<StreamChatGenerics> & {
+        getUsers: () => UserResponse<StreamChatGenerics>[];
       }
   >;
   /**
@@ -384,11 +368,11 @@ export type InputMessageInputContextValue<
    * - openCommandsPicker
    * - toggleAttachmentPicker
    */
-  InputButtons?: React.ComponentType<InputButtonsProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  InputButtons?: React.ComponentType<InputButtonsProps<StreamChatGenerics>>;
   maxMessageLength?: number;
   mentionAllAppUsersEnabled?: boolean;
   /** Object containing filters/sort/options overrides for an @mention user query */
-  mentionAllAppUsersQuery?: MentionAllAppUsersQuery<Us>;
+  mentionAllAppUsersQuery?: MentionAllAppUsersQuery<StreamChatGenerics>;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
    */
@@ -405,39 +389,27 @@ export type InputMessageInputContextValue<
 };
 
 export type MessageInputContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = LocalMessageInputContext<At, Co, Us> &
-  Omit<InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'sendMessage'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = LocalMessageInputContext<StreamChatGenerics> &
+  Omit<InputMessageInputContextValue<StreamChatGenerics>, 'sendMessage'>;
 
 export const MessageInputContext = React.createContext({} as MessageInputContextValue);
 
 export const MessageInputProvider = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
 }: PropsWithChildren<{
-  value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: InputMessageInputContextValue<StreamChatGenerics>;
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatGenerics>();
   const channelCapabities = useOwnCapabilitiesContext();
 
-  const { channel, giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
@@ -465,9 +437,8 @@ export const MessageInputProvider = <
     setText,
     showMoreOptions,
     text,
-  } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(editing, initialValue);
-  const { endsAt: cooldownEndsAt, start: startCooldown } =
-    useCooldown<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageDetailsForState<StreamChatGenerics>(editing, initialValue);
+  const { endsAt: cooldownEndsAt, start: startCooldown } = useCooldown<StreamChatGenerics>();
 
   const threadId = thread?.id;
   useEffect(() => {
@@ -571,7 +542,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const onSelectItem = (item: UserResponse<Us>) => {
+  const onSelectItem = (item: UserResponse<StreamChatGenerics>) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
   };
 
@@ -611,7 +582,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const resetInput = (pendingAttachments: Attachment<At>[] = []) => {
+  const resetInput = (pendingAttachments: Attachment<StreamChatGenerics>[] = []) => {
     setFileUploads([]);
     setGiphyActive(false);
     setShowMoreOptions(true);
@@ -646,7 +617,7 @@ export const MessageInputProvider = <
       inputBoxRef.current.clear();
     }
 
-    const attachments = [] as Attachment<At>[];
+    const attachments = [] as Attachment<StreamChatGenerics>[];
     for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
@@ -671,7 +642,7 @@ export const MessageInputProvider = <
           fallback: image.file.name,
           image_url: image.url,
           type: 'image',
-        } as Attachment<At>);
+        } as Attachment<StreamChatGenerics>);
       }
     }
 
@@ -690,7 +661,7 @@ export const MessageInputProvider = <
             fallback: file.file.name,
             image_url: file.url,
             type: 'image',
-          } as Attachment<At>);
+          } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
@@ -698,7 +669,7 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'video',
-          } as Attachment<At>);
+          } as Attachment<StreamChatGenerics>);
         } else {
           attachments.push({
             asset_url: file.url,
@@ -706,7 +677,7 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'file',
-          } as Attachment<At>);
+          } as Attachment<StreamChatGenerics>);
         }
       }
     }
@@ -724,7 +695,7 @@ export const MessageInputProvider = <
         mentioned_users: mentionedUsers,
         quoted_message: undefined,
         text: prevText,
-      } as Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0];
+      } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0];
 
       // TODO: Remove this line and show an error when submit fails
       value.clearEditingState();
@@ -745,7 +716,7 @@ export const MessageInputProvider = <
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: prevText,
-        } as unknown as StreamMessage<At, Me, Us>);
+        } as unknown as StreamMessage<StreamChatGenerics>);
 
         value.clearQuotedMessageState();
         sending.current = false;
@@ -773,7 +744,7 @@ export const MessageInputProvider = <
           image_url: image.url,
           type: 'image',
         },
-      ] as StreamMessage<At, Me, Us>['attachments'];
+      ] as StreamMessage<StreamChatGenerics>['attachments'];
 
       startCooldown();
       try {
@@ -785,7 +756,7 @@ export const MessageInputProvider = <
             typeof value.quotedMessage === 'boolean' ? undefined : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
-        } as unknown as Partial<StreamMessage<At, Me, Us>>);
+        } as unknown as Partial<StreamMessage<StreamChatGenerics>>);
 
         setAsyncIds((prevAsyncIds) => prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1));
         setAsyncUploads((prevAsyncUploads) => {
@@ -814,12 +785,12 @@ export const MessageInputProvider = <
           client,
           onMentionSelectItem: onSelectItem,
         })
-      : ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+      : ACITriggerSettings<StreamChatGenerics>({
           channel,
           client,
           onMentionSelectItem: onSelectItem,
         })
-    : ({} as TriggerSettings<Co, Us>);
+    : ({} as TriggerSettings<StreamChatGenerics>);
 
   const updateMessage = async () => {
     try {
@@ -828,7 +799,7 @@ export const MessageInputProvider = <
           ...value.editing,
           quoted_message: undefined,
           text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
-        } as Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0]);
+        } as Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0]);
       }
 
       resetInput();
@@ -983,8 +954,10 @@ export const MessageInputProvider = <
             if (imageUpload.id === id) {
               return {
                 ...imageUpload,
+                height: file.height,
                 state: FileState.UPLOADED,
                 url: response.file,
+                width: file.width,
               };
             }
             return imageUpload;
@@ -1110,23 +1083,8 @@ export const MessageInputProvider = <
 };
 
 export const useMessageInputContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(MessageInputContext) as unknown as MessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(MessageInputContext) as unknown as MessageInputContextValue<StreamChatGenerics>;
 
 /**
  * Typescript currently does not support partial inference so if MessageInputContext
@@ -1135,20 +1093,14 @@ export const useMessageInputContext = <
  */
 export const withMessageInputContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>> => {
   const WithMessageInputContextComponent = (
-    props: Omit<P, keyof MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof MessageInputContextValue<StreamChatGenerics>>,
   ) => {
-    const messageInputContext = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const messageInputContext = useMessageInputContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...messageInputContext} />;
   };

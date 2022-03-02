@@ -1,22 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
+
+import type { StreamChat, Event as StreamEvent } from 'stream-chat';
+
 import { useAppStateListener } from '../../../hooks/useAppStateListener';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 import { NetInfo } from '../../../native';
 
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
-import type { StreamChat, Event as StreamEvent } from 'stream-chat';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 /**
  * Disconnect the websocket connection when app goes to background,
@@ -25,15 +17,9 @@ import type {
  * You can't receive push notification until you have active websocket connection.
  */
 export const useIsOnline = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  client: StreamChat<StreamChatGenerics>,
   closeConnectionOnBackground = true,
 ) => {
   const [isOnline, setIsOnline] = useState(true);
@@ -62,7 +48,7 @@ export const useIsOnline = <
   useAppStateListener(onForeground, onBackground);
 
   useEffect(() => {
-    const handleChangedEvent = (event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleChangedEvent = (event: StreamEvent<StreamChatGenerics>) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };

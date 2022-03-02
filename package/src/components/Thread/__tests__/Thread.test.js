@@ -1,26 +1,24 @@
 import React from 'react';
+
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { v5 as uuidv5 } from 'uuid';
 
-import { Thread } from '../Thread';
-
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
-
+import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { Streami18n } from '../../../utils/Streami18n';
-
+import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
+import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage, generateStaticMessage } from '../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { AttachmentPickerProvider } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
-import { ImageGalleryProvider } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { Streami18n } from '../../../utils/Streami18n';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { Thread } from '../Thread';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
@@ -37,7 +35,7 @@ describe('Thread', () => {
       generateMessage({ parent_id }),
     ];
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       messages: [thread, thread2],
     });
 
@@ -77,7 +75,7 @@ describe('Thread', () => {
       generateStaticMessage('Message6', { parent_id, user: user1 }, '2020-05-05T14:50:00.000Z'),
     ];
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       channel: {
         id: uuidv5('Channel', StreamReactNativeNamespace),
       },

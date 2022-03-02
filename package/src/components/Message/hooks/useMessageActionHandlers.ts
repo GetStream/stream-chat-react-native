@@ -2,52 +2,42 @@ import type { MessageResponse, Reaction } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
-import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import type { Reactions } from '../../../contexts/messageContext/MessageContext';
-
 import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+  MessageContextValue,
+  Reactions,
+} from '../../../contexts/messageContext/MessageContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
 
 export const useMessageActionHandlers = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
   enforceUniqueReaction,
   message,
+  removeMessage,
   retrySendMessage,
   setEditingState,
   setQuotedMessageState,
   supportedReactions,
   updateMessage,
 }: Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessagesContextValue<StreamChatGenerics>,
+  | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message'>) => {
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'message'>) => {
   const handleResendMessage = () =>
-    retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
+    retrySendMessage(message as MessageResponse<StreamChatGenerics>);
 
   const handleQuotedReplyMessage = () => {
     setQuotedMessageState(message);
@@ -58,8 +48,12 @@ export const useMessageActionHandlers = <
   );
 
   const handleDeleteMessage = async () => {
-    const data = await client.deleteMessage(message.id);
-    updateMessage(data.message);
+    if (message.status === MessageStatusTypes.FAILED) {
+      removeMessage(message);
+    } else {
+      const data = await client.deleteMessage(message.id);
+      updateMessage(data.message);
+    }
   };
 
   const handleToggleMuteUser = async () => {
@@ -140,7 +134,7 @@ export const useMessageActionHandlers = <
             messageId,
             {
               type: reactionType,
-            } as Reaction<Re, Us>,
+            } as Reaction<StreamChatGenerics>,
             { enforce_unique: enforceUniqueReaction },
           );
         }

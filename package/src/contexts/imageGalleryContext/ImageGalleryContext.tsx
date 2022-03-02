@@ -1,31 +1,15 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-
 export type ImageGalleryContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  images: MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
+  images: MessageType<StreamChatGenerics>[];
   setImage: React.Dispatch<React.SetStateAction<{ messageId?: string; url?: string } | undefined>>;
-  setImages: React.Dispatch<React.SetStateAction<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>>;
+  setImages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
   image?: { messageId?: string; url?: string };
 };
 
@@ -34,17 +18,11 @@ export const ImageGalleryContext = React.createContext<ImageGalleryContextValue>
 );
 
 export const ImageGalleryProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
-  const [images, setImages] = useState<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
+  const [images, setImages] = useState<MessageType<StreamChatGenerics>[]>([]);
   const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 
   const imageGalleryContext = {
@@ -64,40 +42,19 @@ export const ImageGalleryProvider = <
 };
 
 export const useImageGalleryContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ImageGalleryContext) as unknown as ImageGalleryContextValue<StreamChatGenerics>;
 
 export const withImageGalleryContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>> => {
   const WithImageGalleryContextComponent = (
-    props: Omit<P, keyof ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof ImageGalleryContextValue<StreamChatGenerics>>,
   ) => {
-    const imageGalleryContext = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const imageGalleryContext = useImageGalleryContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...imageGalleryContext} />;
   };

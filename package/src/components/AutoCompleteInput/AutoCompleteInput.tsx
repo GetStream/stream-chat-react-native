@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+
 import throttle from 'lodash/throttle';
 
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
-import type { Emoji } from '../../emoji-data/compiled';
 import {
   MessageInputContextValue,
   useMessageInputContext,
@@ -26,18 +26,10 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import type { Emoji } from '../../emoji-data/compiled';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { isCommandTrigger, isEmojiTrigger, isMentionTrigger } from '../../utils/utils';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
 import type { Trigger } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -57,16 +49,10 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 const isCommand = (text: string) => text[0] === '/' && text.split(' ').length <= 1;
 
 type AutoCompleteInputPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'giphyEnabled'> &
   Pick<
-    MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'autoCompleteSuggestionsLimit'
     | 'giphyActive'
@@ -82,7 +68,7 @@ type AutoCompleteInputPropsWithContext<
     | 'triggerSettings'
   > &
   Pick<
-    SuggestionsContextValue<Co, Us>,
+    SuggestionsContextValue<StreamChatGenerics>,
     'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
   > &
   Pick<TranslationContextValue, 't'> & {
@@ -94,25 +80,13 @@ type AutoCompleteInputPropsWithContext<
   };
 
 export type AutoCompleteInputProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<AutoCompleteInputPropsWithContext<StreamChatGenerics>>;
 
 const AutoCompleteInputWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AutoCompleteInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps,
@@ -184,7 +158,7 @@ const AutoCompleteInputWithContext = <
       const triggerSetting = triggerSettings[trigger];
       if (triggerSetting) {
         await triggerSetting.dataProvider(
-          query as SuggestionUser<Us>['name'],
+          query as SuggestionUser<StreamChatGenerics>['name'],
           text,
           (data, queryCallback) => {
             if (query === queryCallback) {
@@ -206,7 +180,7 @@ const AutoCompleteInputWithContext = <
       const triggerSetting = triggerSettings[trigger];
       if (triggerSetting) {
         await triggerSetting.dataProvider(
-          query as SuggestionCommand<Co>['name'],
+          query as SuggestionCommand<StreamChatGenerics>['name'],
           text,
           (data, queryCallback) => {
             if (query !== queryCallback) {
@@ -254,7 +228,7 @@ const AutoCompleteInputWithContext = <
     item,
     trigger,
   }: {
-    item: Suggestion<Co, Us>;
+    item: Suggestion<StreamChatGenerics>;
     trigger: Trigger;
   }) => {
     if (!trigger || !triggerSettings[trigger]) {
@@ -459,17 +433,9 @@ const AutoCompleteInputWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AutoCompleteInputPropsWithContext<StreamChatGenerics>,
+  nextProps: AutoCompleteInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     cooldownActive: prevCooldownActive,
@@ -505,17 +471,11 @@ const MemoizedAutoCompleteInput = React.memo(
 ) as typeof AutoCompleteInputWithContext;
 
 export const AutoCompleteInput = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AutoCompleteInputProps<StreamChatGenerics>,
 ) => {
-  const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { giphyEnabled } = useChannelContext<StreamChatGenerics>();
   const {
     additionalTextInputProps,
     autoCompleteSuggestionsLimit,
@@ -530,8 +490,9 @@ export const AutoCompleteInput = <
     setShowMoreOptions,
     text,
     triggerSettings,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { closeSuggestions, openSuggestions, updateSuggestions } = useSuggestionsContext<Co, Us>();
+  } = useMessageInputContext<StreamChatGenerics>();
+  const { closeSuggestions, openSuggestions, updateSuggestions } =
+    useSuggestionsContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   return (

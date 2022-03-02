@@ -8,6 +8,8 @@ import {
   ViewToken,
 } from 'react-native';
 
+import type { Channel as StreamChannel } from 'stream-chat';
+
 import {
   isMessageWithStylesReadByAndDateSeparator,
   MessageType,
@@ -43,26 +45,15 @@ import {
   PaginatedMessageListContextValue,
   usePaginatedMessageListContext,
 } from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import {
   isDayOrMoment,
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Channel as StreamChannel } from 'stream-chat';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   container: {
@@ -96,15 +87,9 @@ const styles = StyleSheet.create({
 });
 
 const keyExtractor = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  item: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  item: MessageType<StreamChatGenerics>,
 ) =>
   item.id ||
   (item.created_at
@@ -118,16 +103,10 @@ const flatListViewabilityConfig = {
 };
 
 type MessageListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<AttachmentPickerContextValue, 'closePicker' | 'selectedPicker' | 'setSelectedPicker'> &
   Pick<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    ChannelContextValue<StreamChatGenerics>,
     | 'channel'
     | 'disabled'
     | 'EmptyStateIndicator'
@@ -143,15 +122,12 @@ type MessageListPropsWithContext<
     | 'StickyHeader'
     | 'targetedMessage'
   > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
-  Pick<
-    PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'loadMore' | 'loadMoreRecent'
-  > &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
+  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImages'> &
+  Pick<PaginatedMessageListContextValue<StreamChatGenerics>, 'loadMore' | 'loadMoreRecent'> &
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     | 'deletedMessagesVisibilityType'
     | 'DateHeader'
     | 'disableTypingIndicator'
@@ -167,7 +143,7 @@ type MessageListPropsWithContext<
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'loadMoreThread' | 'thread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'loadMoreThread' | 'thread'> &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     /**
      * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
@@ -183,7 +159,7 @@ type MessageListPropsWithContext<
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
      */
-    additionalFlatListProps?: Partial<FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>>;
+    additionalFlatListProps?: Partial<FlatListProps<MessageType<StreamChatGenerics>>>;
     /**
      * UI component for footer of message list. By default message list will use `InlineLoadingMoreIndicator`
      * as FooterComponent. If you want to implement your own inline loading indicator, you can access `loadingMore`
@@ -213,7 +189,7 @@ type MessageListPropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']) => void;
+    onThreadSelect?: (message: ThreadContextValue<StreamChatGenerics>['thread']) => void;
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -225,7 +201,7 @@ type MessageListPropsWithContext<
      *  }}
      * ```
      */
-    setFlatListRef?: (ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null) => void;
+    setFlatListRef?: (ref: FlatListType<MessageType<StreamChatGenerics>> | null) => void;
     /**
      * Boolean whether or not the Messages in the MessageList are part of a Thread
      **/
@@ -242,15 +218,9 @@ type MessageListPropsWithContext<
  * [TranslationContext](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 const MessageListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageListPropsWithContext<StreamChatGenerics>,
 ) => {
   const LoadingMoreIndicator = props.threadList
     ? InlineLoadingMoreThreadIndicator
@@ -319,7 +289,7 @@ const MessageListWithContext = <
     [myMessageTheme, theme],
   );
 
-  const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+  const messageList = useMessageList<StreamChatGenerics>({
     deletedMessagesVisibilityType,
     inverted,
     noGroupByUser,
@@ -332,7 +302,7 @@ const MessageListWithContext = <
    * We need topMessage and channelLastRead values to set the initial scroll position.
    * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
    */
-  const topMessageBeforeUpdate = useRef<MessageType<At, Ch, Co, Ev, Me, Re, Us>>();
+  const topMessageBeforeUpdate = useRef<MessageType<StreamChatGenerics>>();
   const topMessageAfterUpdate = messageList[messageList.length - 1];
 
   const [autoscrollToTop, setAutoscrollToTop] = useState(false);
@@ -347,7 +317,7 @@ const MessageListWithContext = <
   const onStartReachedInPromise = useRef<Promise<void> | null>(null);
   const onEndReachedInPromise = useRef<Promise<void> | null>(null);
 
-  const flatListRef = useRef<FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null>(null);
+  const flatListRef = useRef<FlatListType<MessageType<StreamChatGenerics>> | null>(null);
 
   const initialScrollSet = useRef<boolean>(false);
   const channelResyncScrollSet = useRef<boolean>(true);
@@ -366,8 +336,8 @@ const MessageListWithContext = <
   const channelLastRead = useRef(getLastReadSafely());
 
   const isUnreadMessage = (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
-    lastRead?: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
+    message: MessageType<StreamChatGenerics> | undefined,
+    lastRead?: ReturnType<StreamChannel<StreamChatGenerics>['lastRead']>,
   ) => message && lastRead && message.created_at && lastRead < message.created_at;
 
   /**
@@ -396,7 +366,7 @@ const MessageListWithContext = <
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
       const lastItem = viewableItems.pop() as {
-        item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+        item: MessageType<StreamChatGenerics>;
       };
 
       const isMessageTypeDeleted = lastItem.item.type === 'deleted';
@@ -551,7 +521,7 @@ const MessageListWithContext = <
     item: message,
   }: {
     index: number;
-    item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+    item: MessageType<StreamChatGenerics>;
   }) => {
     if (!channel || !channel.initialized) return null;
 
@@ -862,7 +832,7 @@ const MessageListWithContext = <
       isListActive &&
       ((threadList && thread) || (!threadList && !thread))
     ) {
-      setImages(messagesWithImages as MessageType<At, Ch, Co, Ev, Me, Re, Us>[]);
+      setImages(messagesWithImages as MessageType<StreamChatGenerics>[]);
     }
   }, [
     imageString,
@@ -893,7 +863,7 @@ const MessageListWithContext = <
   const onScrollBeginDrag = () => !hasMoved && selectedPicker && setHasMoved(true);
   const onScrollEndDrag = () => hasMoved && selectedPicker && setHasMoved(false);
 
-  const refCallback = (ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>>) => {
+  const refCallback = (ref: FlatListType<MessageType<StreamChatGenerics>>) => {
     flatListRef.current = ref;
 
     if (setFlatListRef) {
@@ -977,25 +947,13 @@ const MessageListWithContext = <
 };
 
 export type MessageListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageListPropsWithContext<StreamChatGenerics>>;
 
 export const MessageList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageListProps<StreamChatGenerics>,
 ) => {
   const { closePicker, selectedPicker, setSelectedPicker } = useAttachmentPickerContext();
   const {
@@ -1016,9 +974,9 @@ export const MessageList = <
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useChannelContext<StreamChatGenerics>();
+  const { client } = useChatContext<StreamChatGenerics>();
+  const { setImages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     DateHeader,
     deletedMessagesVisibilityType,
@@ -1034,10 +992,10 @@ export const MessageList = <
     ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatGenerics>();
+  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
-  const { loadMoreThread, thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   return (

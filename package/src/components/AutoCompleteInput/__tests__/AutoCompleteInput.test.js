@@ -1,18 +1,16 @@
 import React from 'react';
+
 import { render, waitFor } from '@testing-library/react-native';
-
-import { AutoCompleteInput } from '../AutoCompleteInput';
-
-import { Chat } from '../../Chat/Chat';
-
-import { ACITriggerSettings } from '../../../utils/utils';
 
 import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ACITriggerSettings } from '../../../utils/utils';
+import { Chat } from '../../Chat/Chat';
+import { AutoCompleteInput } from '../AutoCompleteInput';
 
 describe('AutoCompleteInput', () => {
   const clientUser = generateUser();
@@ -58,7 +56,7 @@ describe('AutoCompleteInput', () => {
       openSuggestions: jest.fn(),
     };
 
-    await initializeChannel(generateChannel());
+    await initializeChannel(generateChannelResponse());
 
     const { queryByTestId, rerender } = render(getComponent(props));
 

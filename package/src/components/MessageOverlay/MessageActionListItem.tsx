@@ -2,8 +2,11 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
 import { useMessageActionAnimation } from './hooks/useMessageActionAnimation';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vw } from '../../utils/utils';
 import type { MessageOverlayPropsWithContext } from '../MessageOverlay/MessageOverlay';
 
@@ -52,16 +55,22 @@ export type MessageActionType = {
   titleStyle?: StyleProp<TextStyle>;
 };
 
-export type MessageActionListItemProps = MessageActionType &
+export type MessageActionListItemProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = MessageActionType &
   Pick<
-    MessageOverlayPropsWithContext,
+    MessageOverlayPropsWithContext<StreamChatGenerics>,
     'error' | 'isMyMessage' | 'isThreadMessage' | 'message' | 'messageReactions'
   > & {
     index: number;
     length: number;
   };
 
-const MessageActionListItemWithContext = (props: MessageActionListItemProps) => {
+const MessageActionListItemWithContext = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: MessageActionListItemProps<StreamChatGenerics>,
+) => {
   const { action, actionType, icon, index, length, title, titleStyle } = props;
 
   const {
@@ -93,9 +102,11 @@ const MessageActionListItemWithContext = (props: MessageActionListItemProps) => 
   );
 };
 
-const messageActionIsEqual = (
-  prevProps: MessageActionListItemProps,
-  nextProps: MessageActionListItemProps,
+const messageActionIsEqual = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  prevProps: MessageActionListItemProps<StreamChatGenerics>,
+  nextProps: MessageActionListItemProps<StreamChatGenerics>,
 ) => prevProps.length === nextProps.length;
 
 export const MemoizedMessageActionListItem = React.memo(
@@ -106,6 +117,8 @@ export const MemoizedMessageActionListItem = React.memo(
 /**
  * MessageActionListItem - A high-level component that implements all the logic required for a `MessageAction` in a `MessageActionList`
  */
-export const MessageActionListItem = (props: MessageActionListItemProps) => (
-  <MemoizedMessageActionListItem {...props} />
-);
+export const MessageActionListItem = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: MessageActionListItemProps<StreamChatGenerics>,
+) => <MemoizedMessageActionListItem {...props} />;

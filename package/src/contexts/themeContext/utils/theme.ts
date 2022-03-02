@@ -1,9 +1,8 @@
-import { vh } from '../../../utils/utils';
-
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, Color, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
+import { vh } from '../../../utils/utils';
 
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
@@ -134,6 +133,11 @@ export type Theme = {
     date: TextStyle;
     message: TextStyle & {
       fontWeight: TextStyle['fontWeight'];
+    };
+    mutedStatus: {
+      height: number;
+      iconStyle: ViewStyle;
+      width: number;
     };
     row: ViewStyle;
     title: TextStyle;
@@ -401,27 +405,31 @@ export type Theme = {
     gallery: {
       galleryContainer: ViewStyle;
       galleryItemColumn: ViewStyle;
-      halfSize: ViewStyle['height'];
+      gridHeight: number;
+      gridWidth: number;
       image: ImageStyle;
       imageContainer: ViewStyle;
+      maxHeight: number;
+      maxWidth: number;
+      minHeight: number;
+      minWidth: number;
       moreImagesContainer: ViewStyle;
       moreImagesText: TextStyle;
-      size: ViewStyle['height'];
-      width: ViewStyle['width'];
     };
     giphy: {
+      buttonContainer: ViewStyle;
       cancel: TextStyle;
-      cancelContainer: ViewStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
+      giphyHeaderText: TextStyle;
+      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
-      giphyText: TextStyle;
+      giphyMaskText: TextStyle;
+      header: ViewStyle;
       selectionContainer: ViewStyle;
-      selector: ViewStyle;
       send: TextStyle;
-      sendContainer: ViewStyle;
-      shuffleButton: ViewStyle;
+      shuffle: TextStyle;
       title: TextStyle;
     };
     pinnedHeader: {
@@ -584,6 +592,11 @@ export const defaultTheme: Theme = {
     date: {},
     message: {
       fontWeight: '400',
+    },
+    mutedStatus: {
+      height: 20,
+      iconStyle: {},
+      width: 20,
     },
     row: {},
     title: {},
@@ -825,7 +838,7 @@ export const defaultTheme: Theme = {
       deletedContainer: {},
       deletedContainerInner: {},
       deletedMetaText: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
       },
       deletedText: {
         em: {
@@ -884,27 +897,31 @@ export const defaultTheme: Theme = {
     gallery: {
       galleryContainer: {},
       galleryItemColumn: {},
-      halfSize: 100,
+      gridHeight: 195,
+      gridWidth: 256,
       image: {},
       imageContainer: {},
+      maxHeight: 300,
+      maxWidth: 256,
+      minHeight: 100,
+      minWidth: 170,
       moreImagesContainer: {},
       moreImagesText: {},
-      size: 200,
-      width: 250,
     },
     giphy: {
+      buttonContainer: {},
       cancel: {},
-      cancelContainer: {},
       container: {},
       giphy: {},
       giphyContainer: {},
+      giphyHeaderText: {},
+      giphyHeaderTitle: {},
       giphyMask: {},
-      giphyText: {},
+      giphyMaskText: {},
+      header: {},
       selectionContainer: {},
-      selector: {},
       send: {},
-      sendContainer: {},
-      shuffleButton: {},
+      shuffle: {},
       title: {},
     },
     pinnedHeader: {

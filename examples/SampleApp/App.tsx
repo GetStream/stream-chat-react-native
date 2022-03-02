@@ -30,14 +30,8 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import type { StreamChat } from 'stream-chat';
 
 import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
   StackNavigatorParamList,
+  StreamChatGenerics,
   UserSelectorParamList,
 } from './src/types';
 
@@ -82,62 +76,29 @@ const App = () => {
   );
 };
 
-const DrawerNavigator: React.FC = () => {
-  const { overlay } = useOverlayContext();
-
-  return (
-    <Drawer.Navigator
-      drawerContent={(props) => <MenuDrawer {...props} />}
-      drawerStyle={{
-        width: 300,
-      }}
-      screenOptions={{
-        gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
-      }}
-    >
-      <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
-    </Drawer.Navigator>
-  );
-};
+const DrawerNavigator: React.FC = () => (
+  <Drawer.Navigator
+    drawerContent={(props) => <MenuDrawer {...props} />}
+    drawerStyle={{
+      width: 300,
+    }}
+    screenOptions={{
+      gestureEnabled: true,
+    }}
+  >
+    <Drawer.Screen component={HomeScreen} name='HomeScreen' options={{ headerShown: false }} />
+  </Drawer.Navigator>
+);
 
 const DrawerNavigatorWrapper: React.FC<{
-  chatClient: StreamChat<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >;
+  chatClient: StreamChat<StreamChatGenerics>;
 }> = ({ chatClient }) => {
   const { bottom } = useSafeAreaInsets();
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-      bottomInset={bottom}
-      value={{ style: streamChatTheme }}
-    >
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >
-        client={chatClient}
-      >
+    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
+      <Chat<StreamChatGenerics> client={chatClient}>
         <AppOverlayProvider>
           <UserSearchProvider>
             <DrawerNavigator />

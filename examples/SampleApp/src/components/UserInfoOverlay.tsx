@@ -44,12 +44,12 @@ import type {
   LocalReactionType,
   LocalUserType,
 } from '../types';
+import { useAppContext } from '../context/AppContext';
+import { UserResponse } from 'stream-chat';
 
 dayjs.extend(relativeTime);
 
 const avatarSize = 64;
-
-const permissions = ['admin', 'moderator'];
 
 const styles = StyleSheet.create({
   avatarPresenceIndicator: {
@@ -114,7 +114,7 @@ export type UserInfoOverlayProps = {
 
 export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
-
+  const { chatClient } = useAppContext();
   const { overlay, setOverlay } = useAppOverlayContext();
   const { client } = useChatContext<
     LocalAttachmentType,
@@ -242,13 +242,10 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
     return null;
   }
 
-  const memberModifiable = permissions.every(
-    (permission) => (member.role || '').toLowerCase() !== permission,
-  );
-  const modifyingPermissions =
-    (permissions.some((permission) => (self.role || '').toLowerCase() === permission) &&
-      memberModifiable) ||
-    memberModifiable;
+  if (!channel) return null;
+
+  const channelCreatorId =
+    channel.data && (channel.data.created_by_id || (channel.data.created_by as UserResponse)?.id);
 
   return (
     <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
@@ -388,7 +385,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
                           <Text style={[styles.rowText, { color: black }]}>Message</Text>
                         </View>
                       </TapGestureHandler>
-                      {modifyingPermissions ? (
+                      {channelCreatorId === chatClient?.user?.id ? (
                         <TapGestureHandler
                           onHandlerStateChange={({ nativeEvent: { state } }) => {
                             if (state === State.END) {

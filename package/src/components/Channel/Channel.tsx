@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text, View } from 'react-native';
+
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import {
@@ -15,15 +16,64 @@ import {
   Message as StreamMessage,
 } from 'stream-chat';
 
-import { useAppStateListener } from '../../hooks/useAppStateListener';
 import { useCreateChannelContext } from './hooks/useCreateChannelContext';
+
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
+
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
+
+import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
 import { useCreatePaginatedMessageListContext } from './hooks/useCreatePaginatedMessageListContext';
+
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+
 import { useCreateTypingContext } from './hooks/useCreateTypingContext';
+
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
+import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
+import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
+import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
+import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
+import {
+  InputMessageInputContextValue,
+  MessageInputProvider,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessagesContextValue,
+  MessagesProvider,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
+  OwnCapabilitiesContextValue,
+  OwnCapabilitiesProvider,
+} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
+import {
+  PaginatedMessageListContextValue,
+  PaginatedMessageListProvider,
+} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
+import {
+  SuggestionsContextValue,
+  SuggestionsProvider,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
+import { TypingProvider } from '../../contexts/typingContext/TypingContext';
+import { useAppStateListener } from '../../hooks/useAppStateListener';
+
+import {
+  LOLReaction,
+  LoveReaction,
+  ThumbsDownReaction,
+  ThumbsUpReaction,
+  WutReaction,
+} from '../../icons';
+import { FlatList as FlatListDefault } from '../../native';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { Card as CardDefault } from '../Attachment/Card';
@@ -32,13 +82,15 @@ import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
+import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
+import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
+import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import {
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
-import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -63,73 +115,17 @@ import { SendMessageDisallowedIndicator as SendMessageDisallowedIndicatorDefault
 import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import type { MessageType } from '../MessageList/hooks/useMessageList';
 import { InlineDateSeparator as InlineDateSeparatorDefault } from '../MessageList/InlineDateSeparator';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
+import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
-import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
-import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
-import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
-
-import { ChannelContextValue, ChannelProvider } from '../../contexts/channelContext/ChannelContext';
-import { useChannelState } from '../../contexts/channelsStateContext/useChannelState';
-import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
-import {
-  InputMessageInputContextValue,
-  MessageInputProvider,
-} from '../../contexts/messageInputContext/MessageInputContext';
-import {
-  MessagesContextValue,
-  MessagesProvider,
-} from '../../contexts/messagesContext/MessagesContext';
-import {
-  PaginatedMessageListContextValue,
-  PaginatedMessageListProvider,
-} from '../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import {
-  SuggestionsContextValue,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ThreadContextValue, ThreadProvider } from '../../contexts/threadContext/ThreadContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
-import { TypingProvider } from '../../contexts/typingContext/TypingContext';
-import {
-  LOLReaction,
-  LoveReaction,
-  ThumbsDownReaction,
-  ThumbsUpReaction,
-  WutReaction,
-} from '../../icons';
-import { FlatList as FlatListDefault } from '../../native';
-import { generateRandomId, ReactionData } from '../../utils/utils';
-
-import type { MessageType } from '../MessageList/hooks/useMessageList';
-import type { UseChannelStateValue } from '../../contexts/channelsStateContext/useChannelState';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-import { useCreateOwnCapabilitiesContext } from './hooks/useCreateOwnCapabilitiesContext';
-import {
-  OwnCapabilitiesContextValue,
-  OwnCapabilitiesProvider,
-} from '../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -182,17 +178,11 @@ const debounceOptions = {
 const unreadMessagesOnInitialLoadLimit = 2;
 
 export type ChannelPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'channel'> &
   Partial<
     Pick<
-      ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      ChannelContextValue<StreamChatGenerics>,
       | 'EmptyStateIndicator'
       | 'enableMessageGroupingByUser'
       | 'enforceUniqueReaction'
@@ -205,30 +195,30 @@ export type ChannelPropsWithContext<
       | 'StickyHeader'
     >
   > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Partial<
     Omit<
-      InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      InputMessageInputContextValue<StreamChatGenerics>,
       'quotedMessage' | 'editing' | 'clearEditingState' | 'clearQuotedMessageState' | 'sendMessage'
     >
   > &
   Partial<
     Pick<
-      SuggestionsContextValue<Co, Us>,
+      SuggestionsContextValue<StreamChatGenerics>,
       'AutoCompleteSuggestionHeader' | 'AutoCompleteSuggestionItem' | 'AutoCompleteSuggestionList'
     >
   > &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
-      PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      PaginatedMessageListContextValue<StreamChatGenerics>,
       'messages' | 'loadingMore' | 'loadingMoreRecent'
     >
   > &
-  UseChannelStateValue<At, Ch, Co, Ev, Me, Re, Us> &
+  UseChannelStateValue<StreamChatGenerics> &
   Partial<
     Pick<
-      MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      MessagesContextValue<StreamChatGenerics>,
       | 'additionalTouchableProps'
       | 'Attachment'
       | 'AttachmentActions'
@@ -295,7 +285,7 @@ export type ChannelPropsWithContext<
     >
   > &
   Partial<
-    Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'allowThreadMessagesInChannel' | 'thread'>
+    Pick<ThreadContextValue<StreamChatGenerics>, 'allowThreadMessagesInChannel' | 'thread'>
   > & {
     shouldSyncChannel: boolean;
     /**
@@ -319,7 +309,7 @@ export type ChannelPropsWithContext<
      * Overrides the Stream default mark channel read request (Advanced usage only)
      * @param channel Channel object
      */
-    doMarkReadRequest?: (channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+    doMarkReadRequest?: (channel: ChannelType<StreamChatGenerics>) => void;
     /**
      * Overrides the Stream default send message request (Advanced usage only)
      * @param channelId
@@ -327,8 +317,8 @@ export type ChannelPropsWithContext<
      */
     doSendMessageRequest?: (
       channelId: string,
-      messageData: StreamMessage<At, Me, Us>,
-    ) => Promise<SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>>;
+      messageData: StreamMessage<StreamChatGenerics>,
+    ) => Promise<SendMessageAPIResponse<StreamChatGenerics>>;
     /**
      * Overrides the Stream default update message request (Advanced usage only)
      * @param channelId
@@ -336,8 +326,8 @@ export type ChannelPropsWithContext<
      */
     doUpdateMessageRequest?: (
       channelId: string,
-      updatedMessage: Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0],
-    ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+      updatedMessage: Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0],
+    ) => ReturnType<StreamChat<StreamChatGenerics>['updateMessage']>;
     /**
      * E.g. Once unread count exceeds 255, display unread count as 255+ instead of actual count.
      * Also 255 is the limit per Stream chat channel for unread count.
@@ -385,15 +375,9 @@ export type ChannelPropsWithContext<
   };
 
 const ChannelWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChannelPropsWithContext<StreamChatGenerics>>,
 ) => {
   const {
     additionalKeyboardAvoidingViewProps,
@@ -551,18 +535,17 @@ const ChannelWithContext = <
     },
   } = useTheme();
   const [deleted, setDeleted] = useState(false);
-  const [editing, setEditing] = useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
+  const [editing, setEditing] = useState<boolean | MessageType<StreamChatGenerics>>(false);
   const [error, setError] = useState<Error | boolean>(false);
   const [hasMore, setHasMore] = useState(true);
-  const [lastRead, setLastRead] =
-    useState<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>();
+  const [lastRead, setLastRead] = useState<ChannelContextValue<StreamChatGenerics>['lastRead']>();
   const [loading, setLoading] = useState(!channel?.state.messages.length);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [quotedMessage, setQuotedMessage] =
-    useState<boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>>(false);
-  const [thread, setThread] = useState<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']>(
+    useState<boolean | MessageType<StreamChatGenerics>>(false);
+  const [thread, setThread] = useState<ThreadContextValue<StreamChatGenerics>['thread']>(
     threadProps || null,
   );
   const [threadHasMore, setThreadHasMore] = useState(true);
@@ -627,15 +610,10 @@ const ChannelWithContext = <
 
   const handleAppBackground = useCallback(() => {
     if (channel) {
-      channel.sendEvent({ parent_id: thread?.id, type: 'typing.stop' } as StreamEvent<
-        At,
-        Ch,
-        Co,
-        Ev,
-        Me,
-        Re,
-        Us
-      >);
+      channel.sendEvent({
+        parent_id: thread?.id,
+        type: 'typing.stop',
+      } as StreamEvent<StreamChatGenerics>);
     }
   }, [thread?.id, channelId]);
 
@@ -655,7 +633,7 @@ const ChannelWithContext = <
   /**
    * CHANNEL METHODS
    */
-  const markRead: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['markRead'] = useRef(
+  const markRead: ChannelContextValue<StreamChatGenerics>['markRead'] = useRef(
     throttle(
       () => {
         if (!channel || channel?.disconnected || !clientChannelConfig?.read_events) {
@@ -742,7 +720,7 @@ const ChannelWithContext = <
     }
   };
 
-  const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
+  const handleEvent: EventHandler<StreamChatGenerics> = (event) => {
     if (shouldSyncChannel) {
       if (thread) {
         const updatedThreadMessages =
@@ -912,15 +890,11 @@ const ChannelWithContext = <
    * @param before Number of message to query before messageId
    * @param after Number of message to query after messageId
    */
-  const loadChannelAtMessage: ChannelContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['loadChannelAtMessage'] = ({ after = 2, before = 30, messageId }) =>
+  const loadChannelAtMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAtMessage'] = ({
+    after = 2,
+    before = 30,
+    messageId,
+  }) =>
     channelQueryCall(async () => {
       await queryAtMessage({ after, before, messageId });
 
@@ -1016,14 +990,16 @@ const ChannelWithContext = <
           created_at: message.created_at.toString(),
           pinned_at: message.pinned_at?.toString(),
           updated_at: message.updated_at?.toString(),
-        } as unknown as MessageResponse<At, Ch, Co, Me, Re, Us>);
+        } as unknown as MessageResponse<StreamChatGenerics>);
 
       const failedMessages = messages
-        .filter((message) => message.status === 'failed')
+        .filter((message) => message.status === MessageStatusTypes.FAILED)
         .map(parseMessage);
 
       const failedThreadMessages = thread
-        ? threadMessages.filter((message) => message.status === 'failed').map(parseMessage)
+        ? threadMessages
+            .filter((message) => message.status === MessageStatusTypes.FAILED)
+            .map(parseMessage)
         : [];
 
       const oldListTopMessageCreatedAt = oldListTopMessage.created_at;
@@ -1115,7 +1091,7 @@ const ChannelWithContext = <
     after = 10,
     before = 10,
     messageId,
-  }: Parameters<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadChannelAtMessage']>[0]) => {
+  }: Parameters<ChannelContextValue<StreamChatGenerics>['loadChannelAtMessage']>[0]) => {
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
@@ -1201,7 +1177,7 @@ const ChannelWithContext = <
    * MESSAGE METHODS
    */
 
-  const updateMessage: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'] = (
+  const updateMessage: MessagesContextValue<StreamChatGenerics>['updateMessage'] = (
     updatedMessage,
     extraState = {},
   ) => {
@@ -1217,8 +1193,8 @@ const ChannelWithContext = <
   };
 
   const replaceMessage = (
-    oldMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
-    newMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    oldMessage: MessageResponse<StreamChatGenerics>,
+    newMessage: MessageResponse<StreamChatGenerics>,
   ) => {
     if (channel) {
       channel.state.removeMessage(oldMessage);
@@ -1237,7 +1213,7 @@ const ChannelWithContext = <
     parent_id,
     text,
     ...extraFields
-  }: Partial<StreamMessage<At, Me, Us>>) => {
+  }: Partial<StreamMessage<StreamChatGenerics>>) => {
     const preview = {
       __html: text,
       attachments,
@@ -1250,7 +1226,7 @@ const ChannelWithContext = <
         })) || [],
       parent_id,
       reactions: [],
-      status: 'sending',
+      status: MessageStatusTypes.SENDING,
       text,
       type: 'regular',
       user: {
@@ -1258,7 +1234,7 @@ const ChannelWithContext = <
         ...client.user,
       },
       ...extraFields,
-    } as unknown as MessageResponse<At, Ch, Co, Me, Re, Us>;
+    } as unknown as MessageResponse<StreamChatGenerics>;
 
     /**
      * This is added to the message for local rendering prior to the message
@@ -1268,20 +1244,14 @@ const ChannelWithContext = <
     if (preview.quoted_message_id) {
       const quotedMessage = messages.find((message) => message.id === preview.quoted_message_id);
 
-      preview.quoted_message = quotedMessage as MessageResponse<
-        At,
-        Ch,
-        Co,
-        Me,
-        Re,
-        Us
-      >['quoted_message'];
+      preview.quoted_message =
+        quotedMessage as MessageResponse<StreamChatGenerics>['quoted_message'];
     }
     return preview;
   };
 
   const sendMessageRequest = async (
-    message: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    message: MessageResponse<StreamChatGenerics>,
     retrying?: boolean,
   ) => {
     const {
@@ -1318,10 +1288,10 @@ const ChannelWithContext = <
       parent_id,
       text,
       ...extraFields,
-    } as StreamMessage<At, Me, Us>;
+    } as StreamMessage<StreamChatGenerics>;
 
     try {
-      let messageResponse = {} as SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>;
+      let messageResponse = {} as SendMessageAPIResponse<StreamChatGenerics>;
 
       if (doSendMessageRequest) {
         messageResponse = await doSendMessageRequest(channel?.cid || '', messageData);
@@ -1329,7 +1299,7 @@ const ChannelWithContext = <
         messageResponse = await channel.sendMessage(messageData);
       }
       if (messageResponse.message) {
-        messageResponse.message.status = 'received';
+        messageResponse.message.status = MessageStatusTypes.RECEIVED;
         if (retrying) {
           replaceMessage(message, messageResponse.message);
         } else {
@@ -1338,52 +1308,51 @@ const ChannelWithContext = <
       }
     } catch (err) {
       console.log(err);
-      message.status = 'failed';
+      message.status = MessageStatusTypes.FAILED;
       updateMessage(message);
     }
   };
 
-  const sendMessage: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['sendMessage'] =
-    async (message) => {
-      if (channel?.state?.filterErrorMessages) {
-        channel.state.filterErrorMessages();
-      }
+  const sendMessage: InputMessageInputContextValue<StreamChatGenerics>['sendMessage'] = async (
+    message,
+  ) => {
+    if (channel?.state?.filterErrorMessages) {
+      channel.state.filterErrorMessages();
+    }
 
-      const messagePreview = createMessagePreview({
-        ...message,
-        attachments: message.attachments || [],
-      });
+    const messagePreview = createMessagePreview({
+      ...message,
+      attachments: message.attachments || [],
+    });
 
-      if (!channel?.state.isUpToDate) {
-        await reloadChannel();
-      }
+    if (!channel?.state.isUpToDate) {
+      await reloadChannel();
+    }
 
-      updateMessage(messagePreview, {
-        commands: [],
-        messageInput: '',
-      });
+    updateMessage(messagePreview, {
+      commands: [],
+      messageInput: '',
+    });
 
-      await sendMessageRequest(messagePreview);
+    await sendMessageRequest(messagePreview);
+  };
+
+  const retrySendMessage: MessagesContextValue<StreamChatGenerics>['retrySendMessage'] = async (
+    message,
+  ) => {
+    const statusPendingMessage = {
+      ...message,
+      status: MessageStatusTypes.SENDING,
     };
 
-  const retrySendMessage: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['retrySendMessage'] =
-    async (message) => {
-      const statusPendingMessage = {
-        ...message,
-        status: 'sending',
-      };
-
-      updateMessage(statusPendingMessage);
-      await sendMessageRequest(statusPendingMessage, true);
-    };
+    updateMessage(statusPendingMessage);
+    await sendMessageRequest(statusPendingMessage, true);
+  };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreFinished = useRef(
     debounce(
-      (
-        updatedHasMore: boolean,
-        newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-      ) => {
+      (updatedHasMore: boolean, newMessages: ChannelState<StreamChatGenerics>['messages']) => {
         setLoadingMore(false);
         setError(false);
         setHasMore(updatedHasMore);
@@ -1394,7 +1363,7 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const loadMore: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadMore'] = async (
+  const loadMore: PaginatedMessageListContextValue<StreamChatGenerics>['loadMore'] = async (
     limit = 20,
   ) => {
     if (loadingMore || hasMore === false) {
@@ -1408,7 +1377,7 @@ const ChannelWithContext = <
 
     const oldestMessage = messages && messages[0];
 
-    if (oldestMessage && oldestMessage.status !== 'received') {
+    if (oldestMessage && oldestMessage.status !== MessageStatusTypes.RECEIVED) {
       return setLoadingMore(false);
     }
 
@@ -1435,49 +1404,42 @@ const ChannelWithContext = <
     }
   };
 
-  const loadMoreRecent: PaginatedMessageListContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['loadMoreRecent'] = async (limit = 5) => {
-    if (channel?.state.isUpToDate) {
-      return;
-    }
-
-    setLoadingMoreRecent(true);
-
-    const recentMessage = messages[messages.length - 1];
-
-    if (recentMessage?.status !== 'received') {
-      setLoadingMoreRecent(false);
-      return;
-    }
-
-    try {
-      if (channel) {
-        await queryAfterMessage(recentMessage.id, limit);
-        loadMoreRecentFinished(channel.state.messages);
+  const loadMoreRecent: PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent'] =
+    async (limit = 5) => {
+      if (channel?.state.isUpToDate) {
+        return;
       }
-    } catch (err) {
-      console.warn('Message pagination request failed with error', err);
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
+
+      setLoadingMoreRecent(true);
+
+      const recentMessage = messages[messages.length - 1];
+
+      if (recentMessage?.status !== MessageStatusTypes.RECEIVED) {
+        setLoadingMoreRecent(false);
+        return;
       }
-      setLoadingMoreRecent(false);
-      throw err;
-    }
-  };
+
+      try {
+        if (channel) {
+          await queryAfterMessage(recentMessage.id, limit);
+          loadMoreRecentFinished(channel.state.messages);
+        }
+      } catch (err) {
+        console.warn('Message pagination request failed with error', err);
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
+        setLoadingMoreRecent(false);
+        throw err;
+      }
+    };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreRecentFinished = useRef(
     debounce(
-      (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
+      (newMessages: ChannelState<StreamChatGenerics>['messages']) => {
         setLoadingMoreRecent(false);
         setMessages(newMessages);
         setError(false);
@@ -1487,54 +1449,32 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const editMessage: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editMessage'] = (
+  const editMessage: InputMessageInputContextValue<StreamChatGenerics>['editMessage'] = (
     updatedMessage,
   ) =>
     doUpdateMessageRequest
       ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
       : client.updateMessage(updatedMessage);
 
-  const setEditingState: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['setEditingState'] = (
+  const setEditingState: MessagesContextValue<StreamChatGenerics>['setEditingState'] = (
     message,
   ) => {
     setEditing(message);
   };
 
-  const setQuotedMessageState: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['setQuotedMessageState'] = (message) => {
+  const setQuotedMessageState: MessagesContextValue<StreamChatGenerics>['setQuotedMessageState'] = (
+    message,
+  ) => {
     setQuotedMessage(message);
   };
 
-  const clearEditingState: InputMessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['clearEditingState'] = () => setEditing(false);
+  const clearEditingState: InputMessageInputContextValue<StreamChatGenerics>['clearEditingState'] =
+    () => setEditing(false);
 
-  const clearQuotedMessageState: InputMessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['clearQuotedMessageState'] = () => setQuotedMessage(false);
+  const clearQuotedMessageState: InputMessageInputContextValue<StreamChatGenerics>['clearQuotedMessageState'] =
+    () => setQuotedMessage(false);
 
-  const removeMessage: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['removeMessage'] = (
-    message,
-  ) => {
+  const removeMessage: MessagesContextValue<StreamChatGenerics>['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
       setMessages(channel.state.messages);
@@ -1547,24 +1487,23 @@ const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-  const openThread: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['openThread'] = (message) => {
+  const openThread: ThreadContextValue<StreamChatGenerics>['openThread'] = (message) => {
     const newThreadMessages = message?.id ? channel?.state?.threads[message.id] || [] : [];
     setThread(message);
     setThreadMessages(newThreadMessages);
   };
 
-  const closeThread: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['closeThread'] =
-    useCallback(() => {
-      setThread(null);
-      setThreadMessages([]);
-    }, [setThread, setThreadMessages]);
+  const closeThread: ThreadContextValue<StreamChatGenerics>['closeThread'] = useCallback(() => {
+    setThread(null);
+    setThreadMessages([]);
+  }, [setThread, setThreadMessages]);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
   const loadMoreThreadFinished = useRef(
     debounce(
       (
         newThreadHasMore: boolean,
-        updatedThreadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string],
+        updatedThreadMessages: ChannelState<StreamChatGenerics>['threads'][string],
       ) => {
         setThreadHasMore(newThreadHasMore);
         setThreadLoadingMore(false);
@@ -1575,47 +1514,46 @@ const ChannelWithContext = <
     ),
   ).current;
 
-  const loadMoreThread: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadMoreThread'] =
-    async () => {
-      if (threadLoadingMore || !thread?.id) {
-        return;
+  const loadMoreThread: ThreadContextValue<StreamChatGenerics>['loadMoreThread'] = async () => {
+    if (threadLoadingMore || !thread?.id) {
+      return;
+    }
+    setThreadLoadingMore(true);
+
+    try {
+      if (channel) {
+        const parentID = thread.id;
+
+        /**
+         * In the channel is re-initializing, then threads may get wiped out during the process
+         * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
+         * preserve the messages on active thread, so lets simply copy messages from UI state to
+         * `channel.state`.
+         */
+        channel.state.threads[parentID] = threadMessages;
+        const oldestMessageID = threadMessages?.[0]?.id;
+
+        const limit = 50;
+        const queryResponse = await channel.getReplies(parentID, {
+          id_lt: oldestMessageID,
+          limit,
+        });
+
+        const updatedHasMore = queryResponse.messages.length === limit;
+        const updatedThreadMessages = channel.state.threads[parentID] || [];
+        loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
       }
-      setThreadLoadingMore(true);
-
-      try {
-        if (channel) {
-          const parentID = thread.id;
-
-          /**
-           * In the channel is re-initializing, then threads may get wiped out during the process
-           * (check `addMessagesSorted` method on channel.state). In those cases, we still want to
-           * preserve the messages on active thread, so lets simply copy messages from UI state to
-           * `channel.state`.
-           */
-          channel.state.threads[parentID] = threadMessages;
-          const oldestMessageID = threadMessages?.[0]?.id;
-
-          const limit = 50;
-          const queryResponse = await channel.getReplies(parentID, {
-            id_lt: oldestMessageID,
-            limit,
-          });
-
-          const updatedHasMore = queryResponse.messages.length === limit;
-          const updatedThreadMessages = channel.state.threads[parentID] || [];
-          loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
-        }
-      } catch (err) {
-        console.warn('Message pagination request failed with error', err);
-        if (err instanceof Error) {
-          setError(err);
-        } else {
-          setError(true);
-        }
-        setThreadLoadingMore(false);
-        throw err;
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        setError(true);
       }
-    };
+      setThreadLoadingMore(false);
+      throw err;
+    }
+  };
 
   const ownCapabilitiesContext = useCreateOwnCapabilitiesContext({
     channel,
@@ -1832,16 +1770,14 @@ const ChannelWithContext = <
       keyboardVerticalOffset={keyboardVerticalOffset}
       {...additionalKeyboardAvoidingViewProps}
     >
-      <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
+      <ChannelProvider<StreamChatGenerics> value={channelContext}>
         <OwnCapabilitiesProvider value={ownCapabilitiesContext}>
-          <TypingProvider<At, Ch, Co, Ev, Me, Re, Us> value={typingContext}>
-            <PaginatedMessageListProvider<At, Ch, Co, Ev, Me, Re, Us> value={messageListContext}>
-              <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
-                <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-                  <SuggestionsProvider<Co, Us> value={suggestionsContext}>
-                    <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
-                      value={inputMessageInputContext}
-                    >
+          <TypingProvider<StreamChatGenerics> value={typingContext}>
+            <PaginatedMessageListProvider<StreamChatGenerics> value={messageListContext}>
+              <MessagesProvider<StreamChatGenerics> value={messagesContext}>
+                <ThreadProvider<StreamChatGenerics> value={threadContext}>
+                  <SuggestionsProvider<StreamChatGenerics> value={suggestionsContext}>
+                    <MessageInputProvider<StreamChatGenerics> value={inputMessageInputContext}>
                       <View style={{ height: '100%' }}>{children}</View>
                     </MessageInputProvider>
                   </SuggestionsProvider>
@@ -1856,15 +1792,9 @@ const ChannelWithContext = <
 };
 
 export type ChannelProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<Omit<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>> &
-  Pick<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>> &
+  Pick<ChannelPropsWithContext<StreamChatGenerics>, 'channel'>;
 
 /**
  *
@@ -1875,17 +1805,11 @@ export type ChannelProps<
  * @example ./Channel.md
  */
 export const Channel = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChannelProps<StreamChatGenerics>>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatGenerics>();
   const { t } = useTranslationContext();
 
   const shouldSyncChannel = props.thread?.id ? !!props.threadList : true;
@@ -1905,13 +1829,13 @@ export const Channel = <
     typing,
     watcherCount,
     watchers,
-  } = useChannelState<At, Ch, Co, Ev, Me, Re, Us>(
+  } = useChannelState<StreamChatGenerics>(
     props.channel,
     props.threadList ? props.thread?.id : undefined,
   );
 
   return (
-    <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
+    <ChannelWithContext<StreamChatGenerics>
       {...{
         client,
         t,

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
-import Dayjs from 'dayjs';
+
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -8,6 +8,27 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import type BottomSheet from '@gorhom/bottom-sheet';
+import Dayjs from 'dayjs';
+
+import { OverlayContext, OverlayProviderProps } from './OverlayContext';
+
+import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
+
+import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
+import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
+import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
+import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
+import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
+import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
+import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
+import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
+import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
+import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
+import { useStreami18n } from '../../hooks/useStreami18n';
+
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
@@ -16,35 +37,6 @@ import {
   TranslationContextValue,
   TranslationProvider,
 } from '../translationContext/TranslationContext';
-
-import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
-import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
-import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
-import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
-import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
-import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
-import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
-import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
-import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
-import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
-import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
-import { OverlayBackdrop } from '../../components/MessageOverlay/OverlayBackdrop';
-import { useStreami18n } from '../../hooks/useStreami18n';
-
-import type BottomSheet from '@gorhom/bottom-sheet';
-
-import { OverlayContext, OverlayProviderProps } from './OverlayContext';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
 
 /**
  * - The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
@@ -67,15 +59,9 @@ import type {
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
@@ -108,8 +94,8 @@ export const OverlayProvider = <
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
-      if (ref.current?.snapTo) {
-        ref.current.snapTo(0);
+      if (ref.current?.snapToIndex) {
+        ref.current.snapToIndex(0);
       } else {
         console.warn('bottom and top insets must be set for the image picker to work correctly');
       }
@@ -118,6 +104,7 @@ export const OverlayProvider = <
     translucentStatusBar,
     OverlayReactionList,
     OverlayReactions,
+    OverlayReactionsAvatar,
     value,
   } = props;
 
@@ -211,10 +198,10 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={translators}>
       <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+        <MessageOverlayProvider<StreamChatGenerics>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
             <ImageGalleryProvider>
-              <ChannelsStateProvider<At, Ch, Co, Ev, Me, Re, Us>>{children}</ChannelsStateProvider>
+              <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
               <ThemeProvider style={overlayContext.style}>
                 <Animated.View
                   pointerEvents={overlay === 'none' ? 'none' : 'auto'}
@@ -223,24 +210,27 @@ export const OverlayProvider = <
                   <OverlayBackdrop style={[StyleSheet.absoluteFill, { height, width }]} />
                 </Animated.View>
                 {overlay === 'message' && (
-                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  <MessageOverlay<StreamChatGenerics>
                     MessageActionList={MessageActionList}
                     MessageActionListItem={MessageActionListItem}
                     messageTextNumberOfLines={messageTextNumberOfLines}
                     overlayOpacity={overlayOpacity}
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}
+                    OverlayReactionsAvatar={OverlayReactionsAvatar}
                     visible={overlay === 'message'}
                   />
                 )}
-                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                  imageGalleryCustomComponents={imageGalleryCustomComponents}
-                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                  numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'gallery'}
-                />
+                {overlay === 'gallery' && (
+                  <ImageGallery<StreamChatGenerics>
+                    imageGalleryCustomComponents={imageGalleryCustomComponents}
+                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                    numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'gallery'}
+                  />
+                )}
                 <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />
               </ThemeProvider>
             </ImageGalleryProvider>

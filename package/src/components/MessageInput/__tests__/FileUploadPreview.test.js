@@ -1,23 +1,21 @@
 import React from 'react';
 import { View } from 'react-native';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { FileUploadPreview } from '../FileUploadPreview';
-
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
-
-import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { FileState } from '../../../utils/utils';
-
-import { generateUser } from '../../../mock-builders/generator/user';
-import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { FileState } from '../../../utils/utils';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { FileUploadPreview } from '../FileUploadPreview';
 
 function MockedFlatList(props) {
   const items = props.data.map((item, index) => {
@@ -39,7 +37,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -114,7 +112,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -191,7 +189,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });
@@ -273,7 +271,7 @@ describe('FileUploadPreview', () => {
 
     const user1 = generateUser();
 
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
     });

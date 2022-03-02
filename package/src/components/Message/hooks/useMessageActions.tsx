@@ -1,14 +1,16 @@
 import React from 'react';
 import { Alert, Clipboard } from 'react-native';
 
+import { useMessageActionHandlers } from './useMessageActionHandlers';
+
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { ChatContextValue } from '../../../contexts/chatContext/ChatContext';
-import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
-import { removeReservedFields } from '../utils/removeReservedFields';
+import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import {
   Copy,
   CurveLineLeftUp,
@@ -22,30 +24,15 @@ import {
   Unpin,
   UserDelete,
 } from '../../../icons';
-import type { OverlayContextValue } from '../../../contexts/overlayContext/OverlayContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageStatusTypes } from '../../../utils/utils';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
-import { useMessageActionHandlers } from './useMessageActionHandlers';
+import type { MessageType } from '../../MessageList/hooks/useMessageList';
+import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
+import { removeReservedFields } from '../utils/removeReservedFields';
 
 export const useMessageActions = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   client,
@@ -64,6 +51,7 @@ export const useMessageActions = <
   message,
   onThreadSelect,
   openThread,
+  removeMessage,
   retrySendMessage,
   selectReaction,
   setEditingState,
@@ -73,7 +61,7 @@ export const useMessageActions = <
   t,
   updateMessage,
 }: Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessagesContextValue<StreamChatGenerics>,
   | 'handleBlock'
   | 'handleCopy'
   | 'handleDelete'
@@ -85,6 +73,7 @@ export const useMessageActions = <
   | 'handleRetry'
   | 'handleReaction'
   | 'handleThreadReply'
+  | 'removeMessage'
   | 'retrySendMessage'
   | 'setEditingState'
   | 'setQuotedMessageState'
@@ -92,13 +81,13 @@ export const useMessageActions = <
   | 'supportedReactions'
   | 'updateMessage'
 > &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel' | 'enforceUniqueReaction'> &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'enforceUniqueReaction'> &
+  Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<OverlayContextValue, 'setOverlay'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'openThread'> &
+  Pick<MessageContextValue<StreamChatGenerics>, 'message'> &
   Pick<TranslationContextValue, 't'> & {
-    onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+    onThreadSelect?: (message: MessageType<StreamChatGenerics>) => void;
   }) => {
   const {
     theme: {
@@ -119,6 +108,7 @@ export const useMessageActions = <
     client,
     enforceUniqueReaction,
     message,
+    removeMessage,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -126,7 +116,7 @@ export const useMessageActions = <
     updateMessage,
   });
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const onOpenThread = () => {
     if (onThreadSelect) {

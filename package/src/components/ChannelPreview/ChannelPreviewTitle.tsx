@@ -1,47 +1,26 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
 import type { ChannelPreviewProps } from './ChannelPreview';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   title: { fontSize: 14, fontWeight: '700' },
 });
 
 export type ChannelPreviewTitleProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> & {
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
   displayName: string;
 };
 
 export const ChannelPreviewTitle = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewTitleProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelPreviewTitleProps<StreamChatGenerics>,
 ) => {
   const { displayName } = props;
   const {

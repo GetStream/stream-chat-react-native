@@ -3,10 +3,20 @@ id: upgrading-from-v3
 title: Upgrading from V3
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 import pinMessageAction from '../assets/basics/upgrading-from-v3/pin_message_action.png';
 import pinnedMessage from '../assets/basics/upgrading-from-v3/pinned_message.png';
 import scrollViewWarning from '../assets/basics/upgrading-from-v3/scroll_view_warning.png';
 import slowMode from '../assets/basics/upgrading-from-v3/slow_mode.gif';
+
+import galleryBefore1 from '../assets/basics/upgrading-from-v3/gallery_before_1.png';
+import galleryBefore2 from '../assets/basics/upgrading-from-v3/gallery_before_2.png';
+import galleryBefore3 from '../assets/basics/upgrading-from-v3/gallery_before_3.png';
+import galleryAfter1 from '../assets/basics/upgrading-from-v3/gallery_after_1.png';
+import galleryAfter2 from '../assets/basics/upgrading-from-v3/gallery_after_2.png';
+import galleryAfter3 from '../assets/basics/upgrading-from-v3/gallery_after_3.png';
 
 ## Add a required `threadList` prop
 
@@ -15,13 +25,8 @@ Add a `threadList` prop on `Channel` component which wraps the Thread component 
 (This change is only required if you use `Thread` component within your application. )
 
 ```tsx
-<Channel
-  channel={channel}
-  thread={thread}
-  threadList
->
-    <Thread />
-  </View>
+<Channel channel={channel} thread={thread} threadList>
+  <Thread />
 </Channel>
 ```
 
@@ -198,16 +203,168 @@ prop as mentioned in [example](../guides/message_actions_customization.mdx#how-t
 
 ## Update The Dependencies
 
-Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
-can be safely removed.
+- Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
+  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
+  can be safely removed.
 
 ```sh
 yarn remove react-native-blur
 npx pod-install
 ```
 
+- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
+  please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
+
+## Refactor Typescript Generics
+
+Until now StreamChat client and Chat components accepted 7 different generics as provided in following example:
+
+```tsx
+const client = StreamChat.getInstance<
+  ChatAttachment,
+  ChatChannel,
+  CustomCommands,
+  ChatEvent,
+  UserMessage,
+  CustomReaction,
+  ChatUser
+>('YOUR_API_KEY', 'API_KEY_SECRET');
+```
+
+These 7 generics have been replaced now with 1 single generics for the sake of simplicity.
+
+```tsx
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
+```
+
+Please refer to our typescript guide for details of [Generics](../customization/typescript.mdx#generics).
+
 ## Whats new in v4?
+
+### Optimized Image Attachments
+
+[Gallery](../ui-components/gallery.mdx) component has been revamped to be more performant and more responsive.
+Heavy images have been one of the crucial reasons previously for slow performance on low RAM devices. In this version of SDK,
+resized version of images (depending on DP ratio of device) will be requested from new CDN to avoid rendering heavy images on UI.
+
+Also previously all the image attachments used to be rendered in fixed size container, which was not ideal for portrait or landscape images since
+user won't be able to see a cropped image on UI. In this version, we render images in dynamic size container, depending on aspect ratio of image.
+
+:::note
+
+Resizing support on Stream's CDN (mentioned above) has not been released yet. But once available, you will be able to enable it for your organization
+without any changes to your code or SDK version.
+
+:::
+
+<Tabs
+  defaultValue='case1'
+  values={[
+    { label: 'Case 1', value: 'case1' },
+    { label: 'Case 2', value: 'case2' },
+    { label: 'Case 3', value: 'case3' },
+  ]}
+>
+<TabItem value='case1'>
+
+<table>
+  <tr>
+    <td align='center'>Before</td>
+    <td align='center'>After</td>
+  </tr>
+  <tr>
+    <td align='center' width='50%'>
+      <img src={galleryBefore1} />
+    </td>
+    <td align='center' width='50%'>
+      <img src={galleryAfter1} />
+    </td>
+  </tr>
+</table>
+
+</TabItem>
+<TabItem value='case2'>
+
+<table>
+  <tr>
+    <td align='center'>Before</td>
+    <td align='center'>After</td>
+  </tr>
+  <tr>
+    <td align='center' width='50%'>
+      <img src={galleryBefore2} />
+    </td>
+    <td align='center' width='50%'>
+      <img src={galleryAfter2} />
+    </td>
+  </tr>
+</table>
+
+</TabItem>
+<TabItem value='case3'>
+  <table>
+  <tr>
+    <td align='center'>Before</td>
+    <td align='center'>After</td>
+  </tr>
+  <tr>
+    <td align='center' width='50%'>
+      <img src={galleryBefore3} />
+    </td>
+    <td align='center' width='50%'>
+      <img src={galleryAfter3} />
+    </td>
+  </tr>
+  <tr></tr>
+</table>
+</TabItem>
+</Tabs>
+
+### Refactor Generics to a Single Generic
+
+The Typescript generics have been simplified to a single generic instead of 7 different generics (as in previous versions of SDK) which should be passed to the component or StreamChat client.
+
+```tsx
+const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
+```
+
+where `StreamChatGenerics` can be defined as;
+
+```tsx
+type StreamChatGenerics = {
+  attachmentType: LocalAttachmentType;
+  channelType: LocalChannelType;
+  commandType: LocalCommandType;
+  eventType: LocalEventType;
+  messageType: LocalMessageType;
+  reactionType: LocalReactionType;
+  userType: LocalUserType;
+};
+```
+
+:::note
+`LocalAttachmentType`, `LocalChannelType` etc. are type deifinitions for their respective key as per your application types necessities.
+
+Eg:
+
+```tsx
+type LocalAttachmentType = {
+  file_size?: number;
+  mime_type?: string;
+};
+type LocalChannelType = Record<string, unknown>;
+type LocalCommandType = string;
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalReactionType = Record<string, unknown>;
+type LocalUserType = {
+  image?: string;
+};
+```
+
+:::
+
+A seperate guide has been added to documentation for details of [Generics](../customization/typescript.mdx#generics)
 
 ### Slow Mode Feature
 
@@ -267,12 +424,19 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
   }}
 ```
 
-### UI/UX Changes and Performance Improvements
+### Replaced next/prev Giphy Navigation With Shuffle
+
+Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
+api doesn't support pagination and it resulted into confusing user experience.
+
+### Dropped BlurView Package
 
 - Background for the overlay which opens up when user long-presses on a message, has been replaced with
   opacity based background instead of [BlurView](https://github.com/Kureev/react-native-blur) [#874](https://github.com/GetStream/stream-chat-react-native/pull/874)
   This dependency caused a lot of issues due to its underlying native [BlurView](https://github.com/Dimezis/BlurView) dependency.
   Thus we decided to get rid of this hurdle by dropping this peer dependency.
+
+### Performance Improvements
 
 - `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
   - Long press animation on message UI has been removed
@@ -287,9 +451,9 @@ You can override these capabilities on UI level by providing [`overrideOwnCapabi
 
 Following two new props on `Channel` componenent allows customizing UI for autocomplete suggestions list:
 
-- `AutoCompleteSuggestionHeader`
-- `AutoCompleteSuggestionList`
-- `AutoCompleteSuggestionItem`
+- [`AutoCompleteSuggestionHeader`](../core-components/channel.mdx#autocompletesuggestionheader)
+- [`AutoCompleteSuggestionList`](../core-components/channel.mdx#autocompletesuggestionlist)
+- [`AutoCompleteSuggestionItem`](../core-components/channel.mdx#autocompletesuggestionitem)
 
 For details please read the docs on [Autocomplete Suggestions Customizations](../guides/auto_complete_suggestion_list_customizations.mdx)
 
@@ -297,8 +461,8 @@ For details please read the docs on [Autocomplete Suggestions Customizations](..
 
 Following two new props on `OverlayProvider` component allows customizing UI for message actions:
 
-- `MessageActionList`
-- `MessageActionListItem`
+- [`MessageActionList`](../core-components/overlay_provider.mdx#messageactionlist)
+- [`MessageActionListItem`](../core-components/overlay_provider.mdx#messageactionlistitem)
 
 Additionally styles of the message actions can be customized using following new theme keys:
 
@@ -329,6 +493,11 @@ This prop has following 4 possible values:
 - `sender`: The deleted messages in the channel will only be visible to sender.
 - `receiver`: The deleted messages in the channel will only be visible to receiver.
 
+#### Overlay Reactions User Avatar
+
+Avatar of users (shown in OverlayReactions component) who reacted to message, can now be customized
+using a prop on `OverlayProvide` component - [`OverlayReactionsAvatar`](../core-components/overlay_provider.mdx#overlayreactionsavatar).
+
 ### Fixes Issues
 
 #### Warning about Virtualized List wrapped inside ScrollView
@@ -346,3 +515,24 @@ You can customize the truncation length of message text by providing a prop [`me
 ```tsx
 <OverlayProvider messageTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
 ```
+
+#### ChannelList ignores updated filters if api call is in progress
+
+https://github.com/GetStream/stream-chat-react-native/issues/678
+
+If the screen which creates the filter prop for ChannelList quickly renders two or more
+different filters, only the first filter will be fetched, with the subsequent filters
+being discarded. This results in a stale ChannelList until it is manually refreshed.
+
+#### Failed messages can't be deleted
+
+Delete action on failed message would result in error previously, which has been fixed in this release.
+
+#### Mentioned users get removed after editing message
+
+https://github.com/GetStream/stream-chat-react-native/issues/1023
+
+#### Url parsing crashes the app when text contains special character
+
+Application would crash if the message text contains special character and someone
+replies to the message. This has been fixed in this release.

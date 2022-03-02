@@ -1,22 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import type { ChannelPreviewProps } from './ChannelPreview';
+
+import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Check, CheckAll } from '../../icons';
 
-import type { ChannelPreviewProps } from './ChannelPreview';
-import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 const styles = StyleSheet.create({
   date: {
@@ -30,29 +22,17 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelPreviewStatusProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  ChannelPreviewMessengerPropsWithContext<StreamChatGenerics>,
   'latestMessagePreview' | 'formatLatestMessageDate'
 > &
-  Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
+  Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'>;
 
 export const ChannelPreviewStatus = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelPreviewStatusProps<StreamChatGenerics>,
 ) => {
   const { formatLatestMessageDate, latestMessagePreview } = props;
   const {
