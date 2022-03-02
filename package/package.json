@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "3.10.2",
+  "version": "4.1.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -15,7 +15,12 @@
   "module": "lib/module/index.js",
   "react-native": "src/index.ts",
   "types": "lib/typescript/index.d.ts",
-  "files": ["src", "lib", "package.json", "README.md"],
+  "files": [
+    "src",
+    "lib",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "build": "rm -rf lib && yarn run --silent build-translations && bob build && yarn run --silent copy-translations && yarn run --silent lint-fix-translations",

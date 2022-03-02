@@ -50,7 +50,7 @@ export const usePaginatedChannels = <
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>();
   const isMountedRef = useIsMountedRef();
   const filtersRef = useRef<typeof filters | null>(null);
-  const sortRef = useRef<typeof filters | null>(null);
+  const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
 
   const queryChannels: QueryChannels = async (
@@ -59,14 +59,14 @@ export const usePaginatedChannels = <
   ): Promise<void> => {
     if (!client || !isMountedRef.current) return;
 
-    const hasUpdatedData = () =>
+    const hasUpdatedData =
+      queryType === 'loadChannels' ||
       [
         JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
         JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-        activeRequestId.current !== currentRequestId,
-      ].some(Boolean); // will return true if any element is truthy
+      ].some(Boolean);
 
-    const queryIsStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
+    const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
     /**
      * We don't need to make another call to query channels if we don't
@@ -77,6 +77,7 @@ export const usePaginatedChannels = <
     }
 
     filtersRef.current = filters;
+    sortRef.current = sort;
     isQueryingRef.current = true;
     setError(undefined);
     activeRequestId.current++;
@@ -94,7 +95,7 @@ export const usePaginatedChannels = <
         skipInitialization: activeChannels.current,
       });
 
-      if (queryIsStale() || !isMountedRef.current) {
+      if (isQueryStale() || !isMountedRef.current) {
         return;
       }
 
@@ -113,7 +114,7 @@ export const usePaginatedChannels = <
       isQueryingRef.current = false;
       await waitSeconds(2);
 
-      if (queryIsStale()) {
+      if (isQueryStale()) {
         return;
       }
 

@@ -97,7 +97,7 @@ describe('buildGallery', () => {
   it('thumbnail size should be smaller than the limits set by sizeConfig', () => {
     const bigImage = generateImageAttachment({
       image_url:
-        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&h=*&w=*&resize=*',
+        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&oh=200&ow=300&h=*&w=*&resize=*',
       original_height: 1200,
       original_width: 900,
     });
@@ -113,7 +113,7 @@ describe('buildGallery', () => {
 
     const smallImage = generateImageAttachment({
       image_url:
-        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&h=*&w=*&resize=*',
+        'https://us-east.stream-io-cdn.com/23kn4k2j3n4k2n3k4n23?sig=34k23n4k23nk423&h=*&w=*&resize=*&oh=200&ow=300',
       original_height: 30,
       original_width: 20,
     });
