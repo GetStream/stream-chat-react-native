@@ -16,7 +16,7 @@ then
       tag="latest"
 fi
 
-cd native-package
+cd package/native-package
 npm version --no-git-tag-version "$1"
 sed -e 's|"stream-chat-react-native-core": "[^"]*"|"stream-chat-react-native-core": "'"$1"'"|g' -i.bak package.json
 rm package.json.bak
