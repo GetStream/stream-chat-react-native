@@ -25,7 +25,3 @@ jobs:
         run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
         run: yarn test:unit
-      - name: Chonkbot
-        uses: tpbowden/chonkbot@v1.0.13
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}

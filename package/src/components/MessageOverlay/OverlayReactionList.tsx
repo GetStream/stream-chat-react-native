@@ -40,16 +40,7 @@ import {
 
 import { triggerHaptic } from '../../native';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
 const AnimatedCircle = Animated.createAnimatedComponent
@@ -98,15 +89,9 @@ const reactionData: ReactionData[] = [
 ];
 
 type ReactionButtonProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  OverlayReactionListPropsWithContext<StreamChatGenerics>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
 > & {
   Icon: React.FC<IconProps>;
@@ -117,15 +102,9 @@ type ReactionButtonProps<
 };
 
 export const ReactionButton = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReactionButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReactionButtonProps<StreamChatGenerics>,
 ) => {
   const {
     handleReaction,
@@ -248,39 +227,26 @@ export const ReactionButton = <
 };
 
 export type OverlayReactionListPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageOverlayData<StreamChatGenerics>,
   'alignment' | 'handleReaction' | 'messagesContext'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
     messageLayout: Animated.SharedValue<{
       x: number;
       y: number;
     }>;
     ownReactionTypes: string[];
-    setReactionListHeight: React.Dispatch<React.SetStateAction<number>>;
     showScreen: Animated.SharedValue<number>;
     fill?: FillProps['fill'];
   };
 
 const OverlayReactionListWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: OverlayReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -288,7 +254,6 @@ const OverlayReactionListWithContext = <
     handleReaction,
     messageLayout,
     ownReactionTypes,
-    setReactionListHeight,
     showScreen,
     setOverlay,
     supportedReactions = reactionData,
@@ -389,7 +354,6 @@ const OverlayReactionListWithContext = <
           }) => {
             reactionListLayout.value = { height, width: layoutWidth };
             reactionListHeight.value = height;
-            setReactionListHeight(height);
           }}
           style={[
             styles.reactionList,
@@ -399,7 +363,7 @@ const OverlayReactionListWithContext = <
           ]}
         >
           {supportedReactions?.map(({ Icon, type }, index) => (
-            <ReactionButton<At, Ch, Co, Ev, Me, Re, Us>
+            <ReactionButton<StreamChatGenerics>
               handleReaction={handleReaction}
               Icon={Icon}
               index={index}
@@ -417,17 +381,9 @@ const OverlayReactionListWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: OverlayReactionListPropsWithContext<StreamChatGenerics>,
+  nextProps: OverlayReactionListPropsWithContext<StreamChatGenerics>,
 ) => {
   const { alignment: prevAlignment, ownReactionTypes: prevOwnReactionTypes } = prevProps;
   const { alignment: nextAlignment, ownReactionTypes: nextOwnReactionTypes } = nextProps;
@@ -447,20 +403,14 @@ const MemoizedOverlayReactionList = React.memo(
 ) as typeof OverlayReactionListWithContext;
 
 export type OverlayReactionListProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
-  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  OverlayReactionListPropsWithContext<StreamChatGenerics>,
   'setOverlay' | 'supportedReactions'
 > &
   Partial<
     Pick<
-      OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+      OverlayReactionListPropsWithContext<StreamChatGenerics>,
       'setOverlay' | 'supportedReactions'
     >
   >;
@@ -469,18 +419,12 @@ export type OverlayReactionListProps<
  * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
  */
 export const OverlayReactionList = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: OverlayReactionListProps<StreamChatGenerics>,
 ) => {
-  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { data } = useMessageOverlayContext<StreamChatGenerics>();
+  const { supportedReactions } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
 
   return (

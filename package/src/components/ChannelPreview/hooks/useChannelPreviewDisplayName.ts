@@ -4,28 +4,13 @@ import type { Channel } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 
 const maxCharacterLengthDefault = (vw(100) - 16) / 6;
 
 export const getChannelPreviewDisplayName = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelName,
   currentUserId,
@@ -35,7 +20,7 @@ export const getChannelPreviewDisplayName = <
   maxCharacterLength: number;
   channelName?: string;
   currentUserId?: string;
-  members?: Channel<At, Ch, Co, Ev, Me, Re, Us>['state']['members'];
+  members?: Channel<StreamChatGenerics>['state']['members'];
 }) => {
   if (channelName) return channelName;
 
@@ -64,18 +49,12 @@ export const getChannelPreviewDisplayName = <
 };
 
 export const useChannelPreviewDisplayName = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  channel?: Channel<StreamChatGenerics>,
   characterLength?: number,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const currentUserId = client.userID;
   const members = channel?.state.members;

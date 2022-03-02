@@ -3,6 +3,7 @@ import { PixelRatio } from 'react-native';
 type GetResizedImageUrlParams = {
   url: string;
   height?: string | number;
+  resize?: 'clip' | 'crop' | 'fill' | 'scale';
   width?: string | number;
 };
 
@@ -18,26 +19,41 @@ type GetResizedImageUrlParams = {
  *
  * @returns {string} Url of the image with given height and width.
  */
-export function getResizedImageUrl({ height, url, width }: GetResizedImageUrlParams) {
-  const isResizableUrl = url.includes('&h=*') && url.includes('&w=*') && url.includes('&resize=*');
+export function getResizedImageUrl({
+  height,
+  resize = 'clip',
+  url,
+  width,
+}: GetResizedImageUrlParams) {
+  try {
+    const parsedUrl = new URL(url);
 
-  if (!isResizableUrl || (!height && !width)) return url;
+    const originalHeight = parsedUrl.searchParams.get('oh');
+    const originalWidth = parsedUrl.searchParams.get('ow');
 
-  let resizedUrl = url;
+    // If url is not from new cloudfront CDN (which offers fast image resizing), then return the url as it is.
+    // Check for oh and ow parameters in the url, is just to differentiate between old and new CDN.
+    // In case of old CDN we don't want to do any kind of resizing.
+    const isResizableUrl = url.includes('.stream-io-cdn.com') && originalHeight && originalWidth;
 
-  if (height) {
-    resizedUrl = resizedUrl.replace(
-      'h=*',
-      `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
-    );
+    if (!isResizableUrl || (!height && !width)) return url;
+
+    if (height) {
+      parsedUrl.searchParams.set('h', `${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`);
+    }
+
+    if (width) {
+      parsedUrl.searchParams.set('w', `${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`);
+    }
+
+    parsedUrl.searchParams.set('resize', `${resize}`);
+
+    return parsedUrl.toString();
+  } catch (error) {
+    // There is some issue with the url.
+    // Simply return the original url, there is no need to break the app for this.
+    console.warn(error);
+
+    return url;
   }
-
-  if (width) {
-    resizedUrl = resizedUrl.replace(
-      'w=*',
-      `w=${PixelRatio.getPixelSizeForLayoutSize(Number(width))}`,
-    );
-  }
-
-  return resizedUrl.replace('resize=*', `resize=clip`);
 }

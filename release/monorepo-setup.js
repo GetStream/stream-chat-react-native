@@ -9,7 +9,7 @@ const git = async (args, options = {}) => {
 };
 
 const revertRegexSubject = new RegExp('^Revert "(.*)"');
-const revertRegexBody = new RegExp('This reverts commit ([a-z0-9]*)');
+const revertRegexBody = new RegExp('This reverts commit ([a-z0-9]*)\.?');
 
 // This function hooks into semantic-release steps and filter out some commits
 // we dont want to include in the release checks/changelog
@@ -21,8 +21,12 @@ async function filterCommits(path, regex, pluginConfig, commits) {
       return revertRegexSubject.test(commit.subject);
     })
     .map((commit) => {
-      const [_, reverted] = commit.body.match(revertRegexBody);
-      return reverted;
+      const match = commit.body.match(revertRegexBody);
+      if (Array.isArray(match)) {
+        return match[1];
+      }
+
+      return commit.hash;
     });
 
   // Do the same as it did for revertedCommits, but instead of checking for

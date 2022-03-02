@@ -4,19 +4,21 @@ import type { Attachment } from 'stream-chat';
 
 import type { Thumbnail } from './types';
 
-import type { DefaultAttachmentType, UnknownType } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 import { getResizedImageUrl } from '../../../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../../../utils/getUrlOfImageAttachment';
 
-export function buildThumbnail<At extends UnknownType = DefaultAttachmentType>({
+export function buildThumbnail<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
   height,
   image,
   resizeMode,
   width,
 }: {
   height: number;
-  image: Attachment<At>;
+  image: Attachment<StreamChatGenerics>;
   width: number;
   resizeMode?: ImageResizeMode;
 }): Thumbnail {

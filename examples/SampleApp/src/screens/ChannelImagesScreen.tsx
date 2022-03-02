@@ -26,16 +26,7 @@ import { Picture } from '../icons/Picture';
 import type { RouteProp } from '@react-navigation/native';
 import type { Attachment } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const screen = Dimensions.get('screen').width;
 
@@ -75,15 +66,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { images, setImage, setImages } = useImageGalleryContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { images, setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
   const { setBlurType, setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
@@ -123,9 +106,9 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = messages.reduce((acc: Photo<LocalUserType>[], cur) => {
+  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
-      (cur.attachments as Attachment<LocalAttachmentType>[])?.filter(
+      (cur.attachments as Attachment<StreamChatGenerics>[])?.filter(
         (attachment) =>
           attachment.type === 'image' &&
           !attachment.title_link &&
@@ -164,7 +147,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
    */
   const imageString = messagesWithImages
     .map((message) =>
-      (message.attachments as Attachment<LocalAttachmentType>[])
+      (message.attachments as Attachment<StreamChatGenerics>[])
         .map((attachment) => attachment.image_url || attachment.thumb_url || '')
         .join(),
     )

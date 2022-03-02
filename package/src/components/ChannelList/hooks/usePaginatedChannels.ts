@@ -6,16 +6,7 @@ import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRef
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
@@ -24,15 +15,12 @@ const waitSeconds = (seconds: number) =>
     setTimeout(resolve, seconds * ONE_SECOND_IN_MS);
   });
 
-type Parameters<
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  filters: ChannelFilters<Ch, Co, Us>;
-  options: ChannelOptions;
-  sort: ChannelSort<Ch>;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    filters: ChannelFilters<StreamChatGenerics>;
+    options: ChannelOptions;
+    sort: ChannelSort<StreamChatGenerics>;
+  };
 
 const DEFAULT_OPTIONS = {
   message_limit: 10,
@@ -45,20 +33,14 @@ type QueryType = 'reload' | 'refresh' | 'loadChannels';
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
 export const usePaginatedChannels = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
-}: Parameters<Ch, Co, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const [channels, setChannels] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>([]);
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
+  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();
@@ -68,7 +50,7 @@ export const usePaginatedChannels = <
   const [activeQueryType, setActiveQueryType] = useState<QueryType | null>();
   const isMountedRef = useIsMountedRef();
   const filtersRef = useRef<typeof filters | null>(null);
-  const sortRef = useRef<typeof filters | null>(null);
+  const sortRef = useRef<typeof sort | null>(null);
   const activeRequestId = useRef<number>(0);
 
   const queryChannels: QueryChannels = async (
@@ -77,14 +59,14 @@ export const usePaginatedChannels = <
   ): Promise<void> => {
     if (!client || !isMountedRef.current) return;
 
-    const hasUpdatedData = () =>
+    const hasUpdatedData =
+      queryType === 'loadChannels' ||
       [
         JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
         JSON.stringify(sortRef.current) !== JSON.stringify(sort),
-        activeRequestId.current !== currentRequestId,
-      ].some(Boolean); // will return true if any element is truthy
+      ].some(Boolean);
 
-    const queryIsStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
+    const isQueryStale = () => !isMountedRef || activeRequestId.current !== currentRequestId;
 
     /**
      * We don't need to make another call to query channels if we don't
@@ -95,6 +77,7 @@ export const usePaginatedChannels = <
     }
 
     filtersRef.current = filters;
+    sortRef.current = sort;
     isQueryingRef.current = true;
     setError(undefined);
     activeRequestId.current++;
@@ -112,7 +95,7 @@ export const usePaginatedChannels = <
         skipInitialization: activeChannels.current,
       });
 
-      if (queryIsStale() || !isMountedRef.current) {
+      if (isQueryStale() || !isMountedRef.current) {
         return;
       }
 
@@ -131,7 +114,7 @@ export const usePaginatedChannels = <
       isQueryingRef.current = false;
       await waitSeconds(2);
 
-      if (queryIsStale()) {
+      if (isQueryStale()) {
         return;
       }
 
