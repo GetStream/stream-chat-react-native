@@ -104,7 +104,6 @@ export type MessageOverlayPropsWithContext<
     | 'overlayOpacity'
   > & {
     showScreen?: Animated.SharedValue<number>;
-    visible?: boolean;
   };
 
 const MessageOverlayWithContext = <
@@ -138,7 +137,6 @@ const MessageOverlayWithContext = <
     reset,
     setOverlay,
     threadList,
-    visible,
     isMyMessage,
     messageReactions,
     error,
@@ -223,11 +221,9 @@ const MessageOverlayWithContext = <
   };
 
   useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-    fadeScreen(!!visible);
-  }, [visible]);
+    Keyboard.dismiss();
+    fadeScreen(true);
+  }, []);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onActive: (evt) => {
@@ -324,7 +320,7 @@ const MessageOverlayWithContext = <
       <MessageProvider value={messageContext}>
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
-            pointerEvents={visible ? 'auto' : 'none'}
+            pointerEvents={'auto'}
             style={[StyleSheet.absoluteFillObject, containerStyle]}
           >
             <PanGestureHandler
@@ -542,17 +538,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     alignment: prevAlignment,
     message: prevMessage,
     messageReactionTitle: prevMessageReactionTitle,
-    visible: prevVisible,
   } = prevProps;
   const {
     alignment: nextAlignment,
     message: nextMessage,
     messageReactionTitle: nextMessageReactionTitle,
-    visible: nextVisible,
   } = nextProps;
-
-  const visibleEqual = prevVisible === nextVisible;
-  if (!visibleEqual) return false;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;

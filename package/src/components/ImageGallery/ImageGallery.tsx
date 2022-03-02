@@ -124,7 +124,6 @@ export type ImageGalleryCustomComponents<
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
     overlayOpacity: Animated.SharedValue<number>;
-    visible: boolean;
     imageGalleryGridHandleHeight?: number;
     /**
      * This should be
@@ -144,7 +143,6 @@ export const ImageGallery = <
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
-    visible,
   } = props;
   const {
     theme: {
@@ -190,10 +188,8 @@ export const ImageGallery = <
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-  }, [visible]);
+    Keyboard.dismiss();
+  }, []);
 
   /**
    * Image height from URL or default to full screen height
@@ -307,10 +303,8 @@ export const ImageGallery = <
   };
 
   useEffect(() => {
-    if (!visible) {
-      resetVisibleValues();
-    }
-  }, [visible]);
+    resetVisibleValues();
+  }, []);
 
   /**
    * Photos array created from all currently available
@@ -1002,7 +996,7 @@ export const ImageGallery = <
         },
       ],
     }),
-    [visible],
+    [],
   );
 
   /**
@@ -1037,10 +1031,7 @@ export const ImageGallery = <
   };
 
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={[StyleSheet.absoluteFillObject]}
-    >
+    <Animated.View pointerEvents={'auto'} style={[StyleSheet.absoluteFillObject]}>
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
         minPointers={1}
