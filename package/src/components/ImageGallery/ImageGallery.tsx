@@ -150,7 +150,7 @@ export const ImageGallery = <
   const {
     theme: {
       colors: { white_snow },
-      imageGallery: { backgroundColor },
+      imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
@@ -1111,6 +1111,7 @@ export const ImageGallery = <
                         style={[
                           styles.animatedContainer,
                           pagerStyle,
+                          pager,
                           {
                             transform: [
                               { scaleX: -1 }, // Also only here for opening, wrong direction when not included
@@ -1132,11 +1133,14 @@ export const ImageGallery = <
                             screenHeight={screenHeight}
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
-                            style={{
-                              height: screenHeight * 8,
-                              marginRight: MARGIN,
-                              width: screenWidth * 8,
-                            }}
+                            style={[
+                              {
+                                height: screenHeight * 8,
+                                marginRight: MARGIN,
+                                width: screenWidth * 8,
+                              },
+                              slide,
+                            ]}
                             translateX={translateX}
                             translateY={translateY}
                           />
