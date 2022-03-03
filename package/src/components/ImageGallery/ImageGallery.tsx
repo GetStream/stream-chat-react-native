@@ -22,7 +22,6 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
-  interpolate,
   runOnJS,
   runOnUI,
   useAnimatedGestureHandler,
@@ -125,7 +124,6 @@ export type ImageGalleryCustomComponents<
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
     overlayOpacity: Animated.SharedValue<number>;
-    visible: boolean;
     imageGalleryGridHandleHeight?: number;
     /**
      * This should be
@@ -145,12 +143,11 @@ export const ImageGallery = <
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
-    visible,
   } = props;
   const {
     theme: {
       colors: { white_snow },
-      imageGallery: { backgroundColor },
+      imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
@@ -191,10 +188,10 @@ export const ImageGallery = <
    * Fade animation for screen, it is always rendered with pointerEvents
    * set to none for fast opening
    */
-  const showScreen = useSharedValue(0);
-  const fadeScreen = (show: boolean) => {
+  const screenTranslateY = useSharedValue(screenHeight);
+  const showScreen = () => {
     'worklet';
-    showScreen.value = withTiming(show ? 1 : 0, {
+    screenTranslateY.value = withTiming(0, {
       duration: 250,
       easing: Easing.out(Easing.ease),
     });
@@ -204,11 +201,9 @@ export const ImageGallery = <
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-    fadeScreen(visible);
-  }, [visible]);
+    Keyboard.dismiss();
+    showScreen();
+  }, []);
 
   /**
    * Image height from URL or default to full screen height
@@ -304,28 +299,6 @@ export const ImageGallery = <
     scale.value = 1;
     offsetScale.value = 1;
   };
-
-  /**
-   * Reset all key values for visible
-   */
-  const resetVisibleValues = () => {
-    'worklet';
-    resetTouchValues();
-    resetMovementValues();
-    headerFooterVisible.value = 1;
-    offsetX.value = 0;
-    offsetY.value = 0;
-    adjustedFocalX.value = 0;
-    adjustedFocalY.value = 0;
-    tapX.value = 0;
-    tapY.value = 0;
-  };
-
-  useEffect(() => {
-    if (!visible) {
-      resetVisibleValues();
-    }
-  }, [visible]);
 
   /**
    * Photos array created from all currently available
@@ -656,7 +629,6 @@ export const ImageGallery = <
                 easing: Easing.out(Easing.ease),
               },
               () => {
-                showScreen.value = 0;
                 runOnJS(setOverlay)('none');
               },
             );
@@ -1018,7 +990,7 @@ export const ImageGallery = <
         },
       ],
     }),
-    [visible],
+    [],
   );
 
   /**
@@ -1038,10 +1010,9 @@ export const ImageGallery = <
    */
   const showScreenStyle = useAnimatedStyle<ViewStyle>(
     () => ({
-      opacity: interpolate(showScreen.value, [0, 0.01, 1], [0, 1, 1]),
       transform: [
         {
-          translateY: interpolate(showScreen.value, [0, 1], [screenHeight, 0]),
+          translateY: screenTranslateY.value,
         },
       ],
     }),
@@ -1067,12 +1038,8 @@ export const ImageGallery = <
       setGridPhotos(photos);
     }
   };
-
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
-    >
+    <Animated.View pointerEvents={'auto'} style={[StyleSheet.absoluteFillObject, showScreenStyle]}>
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
         minPointers={1}
@@ -1111,6 +1078,7 @@ export const ImageGallery = <
                         style={[
                           styles.animatedContainer,
                           pagerStyle,
+                          pager,
                           {
                             transform: [
                               { scaleX: -1 }, // Also only here for opening, wrong direction when not included
@@ -1132,11 +1100,14 @@ export const ImageGallery = <
                             screenHeight={screenHeight}
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
-                            style={{
-                              height: screenHeight * 8,
-                              marginRight: MARGIN,
-                              width: screenWidth * 8,
-                            }}
+                            style={[
+                              {
+                                height: screenHeight * 8,
+                                marginRight: MARGIN,
+                                width: screenWidth * 8,
+                              },
+                              slide,
+                            ]}
                             translateX={translateX}
                             translateY={translateY}
                           />
@@ -1190,7 +1161,6 @@ export const ImageGallery = <
             closeGridView={closeGridView}
             numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
             photos={gridPhotos}
-            resetVisibleValues={resetVisibleValues}
             setImage={setImage}
             {...imageGalleryCustomComponents?.grid}
           />

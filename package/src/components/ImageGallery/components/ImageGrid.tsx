@@ -119,7 +119,6 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
   ImageGalleryGridImageComponents<StreamChatGenerics> & {
     closeGridView: () => void;
     photos: Photo<StreamChatGenerics>[];
-    resetVisibleValues: () => void;
     setImage: React.Dispatch<
       React.SetStateAction<
         | {
@@ -143,7 +142,6 @@ export const ImageGrid = <
     imageComponent,
     numberOfImageGalleryGridColumns,
     photos,
-    resetVisibleValues,
     setImage,
   } = props;
 
@@ -162,7 +160,6 @@ export const ImageGrid = <
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      resetVisibleValues();
       setImage({ messageId: photo.messageId, url: photo.uri });
       closeGridView();
     },
