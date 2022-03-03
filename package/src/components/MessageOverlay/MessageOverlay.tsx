@@ -89,7 +89,6 @@ export type MessageOverlayPropsWithContext<
   | 'OverlayReactionList'
   | 'OverlayReactions'
   | 'OverlayReactionsAvatar'
-  | 'reset'
 > &
   Omit<MessageOverlayData<StreamChatGenerics>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> &
@@ -104,7 +103,6 @@ export type MessageOverlayPropsWithContext<
     | 'overlayOpacity'
   > & {
     showScreen?: Animated.SharedValue<number>;
-    visible?: boolean;
   };
 
 const MessageOverlayWithContext = <
@@ -135,10 +133,8 @@ const MessageOverlayWithContext = <
     OverlayReactionList = OverlayReactionListDefault,
     OverlayReactions = DefaultOverlayReactions,
     OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
-    reset,
     setOverlay,
     threadList,
-    visible,
     isMyMessage,
     messageReactions,
     error,
@@ -192,42 +188,26 @@ const MessageOverlayWithContext = <
   const scale = useSharedValue(1);
 
   const showScreen = useSharedValue(0);
-  const fadeScreen = (show: boolean) => {
+  const fadeScreen = () => {
     'worklet';
-    if (show) {
-      offsetY.value = 0;
-      translateY.value = 0;
-      scale.value = 1;
-    }
-    showScreen.value = show
-      ? withSpring(1, {
-          damping: 600,
-          mass: 0.5,
-          restDisplacementThreshold: 0.01,
-          restSpeedThreshold: 0.01,
-          stiffness: 200,
-          velocity: 32,
-        })
-      : withTiming(
-          0,
-          {
-            duration: 150,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            if (!show) {
-              runOnJS(reset)();
-            }
-          },
-        );
+
+    offsetY.value = 0;
+    translateY.value = 0;
+    scale.value = 1;
+    showScreen.value = withSpring(1, {
+      damping: 600,
+      mass: 0.5,
+      restDisplacementThreshold: 0.01,
+      restSpeedThreshold: 0.01,
+      stiffness: 200,
+      velocity: 32,
+    });
   };
 
   useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-    fadeScreen(!!visible);
-  }, [visible]);
+    Keyboard.dismiss();
+    fadeScreen();
+  }, []);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onActive: (evt) => {
@@ -324,7 +304,7 @@ const MessageOverlayWithContext = <
       <MessageProvider value={messageContext}>
         <ThemeProvider mergedStyle={wrapMessageInTheme ? modifiedTheme : theme}>
           <Animated.View
-            pointerEvents={visible ? 'auto' : 'none'}
+            pointerEvents={'auto'}
             style={[StyleSheet.absoluteFillObject, containerStyle]}
           >
             <PanGestureHandler
@@ -542,17 +522,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     alignment: prevAlignment,
     message: prevMessage,
     messageReactionTitle: prevMessageReactionTitle,
-    visible: prevVisible,
   } = prevProps;
   const {
     alignment: nextAlignment,
     message: nextMessage,
     messageReactionTitle: nextMessageReactionTitle,
-    visible: nextVisible,
   } = nextProps;
-
-  const visibleEqual = prevVisible === nextVisible;
-  if (!visibleEqual) return false;
 
   const alignmentEqual = prevAlignment === nextAlignment;
   if (!alignmentEqual) return false;
@@ -601,7 +576,6 @@ export const MessageOverlay = <
     OverlayReactionList,
     OverlayReactions,
     OverlayReactionsAvatar,
-    reset,
   } = useMessageOverlayContext<StreamChatGenerics>();
   const { overlay, setOverlay } = useOverlayContext();
 
@@ -618,7 +592,6 @@ export const MessageOverlay = <
     <MemoizedMessageOverlay
       {...{
         overlay,
-        reset,
         setOverlay,
       }}
       {...componentProps}
