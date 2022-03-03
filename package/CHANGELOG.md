@@ -1,5 +1,13 @@
 # Change Log
 
+### [4.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.0...v4.1.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* image gallery cleanup and fixing race condition ([4c53f33](https://github.com/GetStream/stream-chat-react-native/commit/4c53f3374a7ebe7e42f61473480acd7642de489d))
+* mark channel as read when messages length is less than visible screen ([2dd87b3](https://github.com/GetStream/stream-chat-react-native/commit/2dd87b340d4d5d66911c9306b58d8307e089ed33))
+
 ### [3.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.1...v3.10.2) (2021-11-23)
 
 
