@@ -250,12 +250,14 @@ dependencies {
 
 When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case. It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen. You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
 
-````tsx
+```tsx
 client.on('channel.deleted', (event) => {
   if (event.cid === channel.cid) {
     // add your action here
   }
 }),
+
+```
 
 ## Touchables not working
 
@@ -266,7 +268,7 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 
 ```tsx
 import 'react-native-gesture-handler';
-````
+```
 
 And for Android you additionally need to update `MainActivity.java` to override the method for creating the `ReactRootView`.
 
@@ -295,10 +297,25 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-## Custom touchable not working
+### Instructions for version >=2.0.0
+
+While you are on `react-native-gesture-handler` version >=2.0.0, do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC`. Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
+
+```tsx
+<GestureHandlerRootView style={{ flex: 1 }}>
+  <OverlayProvider>// Other underlying components</OverlayProvider>
+</GestureHandlerRootView>
+```
+
+Also, if your React Native version is (>=0.68) you will need a version of >=2.0.0 for `react-native-gesture-handler` for your app to build.
+
+## Custom Touchables not working
 
 If you find that a customization that includes a touchable is not working, or the wrong element is receiving the touch event, this is likely related to [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
-Your component may be being rendered inside of a gesture handler; nested gesture handlers and touchables need special treatment and can act differently on iOS & Android.
+The following could be the reasons behind the issues you might be facing:
+
+- Your component may be being rendered inside of a gesture handler.
+- Nested gesture handlers and touchables need special treatment and can act differently on iOS & Android. If you want Nested Touchables to work on Android you should add the prop `disallowInterruption` as mentioned [here](https://github.com/software-mansion/react-native-gesture-handler/issues/784#issuecomment-786471220).
 
 There are solutions available for almost all use cases so looking into your specific use case in relation to React Native Gesture Handler is suggested.
 The solution may require using a different touchable from React Native Gesture Handler and React Native depending on the platform.
