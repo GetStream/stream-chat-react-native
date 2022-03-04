@@ -73,9 +73,15 @@ export type ChannelPreviewMessengerPropsWithContext<
      *    bold: true,
      *    text: 'This is the message preview text'
      *  },
-     *  status: 0 | 1 | 2 // read states of latest message.
+     *  status: 0 | 1 | 2 // read states of the latest message.
      * }
      * ```
+     *
+     * The read status is either of the following:
+     *
+     * 0: The message was not sent by the current user
+     * 1: The message was sent by the current user and is unread
+     * 2: The message was sent by the current user and is read
      *
      * @overrideType object
      */
