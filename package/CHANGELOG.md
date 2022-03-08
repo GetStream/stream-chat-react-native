@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.1...v4.1.2) (2022-03-07)
+
+
+### Bug Fixes
+
+* export ownCapabilitiesContext from SDK ([e0a9f75](https://github.com/GetStream/stream-chat-react-native/commit/e0a9f757e431bd29310e8bfc16f4abf5fdca0ae2))
+
 ### [4.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.0...v4.1.1) (2022-03-03)
 
 
