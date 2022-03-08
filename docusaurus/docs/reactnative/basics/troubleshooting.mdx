@@ -262,6 +262,13 @@ client.on('channel.deleted', (event) => {
 ## Touchables not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
+
+:::note
+
+If your React Native version is (>=0.68) you will need a version of >=2.0.0 for `react-native-gesture-handler` for your app to build.
+
+:::
+
 Be sure to follow all needed [additional steps](https://docs.swmansion.com/react-native-gesture-handler/docs/) to complete the installation.
 
 This includes ensuring you import `react-native-gesture-handler` at the top of your app entry file.
@@ -270,7 +277,16 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 import 'react-native-gesture-handler';
 ```
 
-And for Android you additionally need to update `MainActivity.java` to override the method for creating the `ReactRootView`.
+Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
+
+```tsx
+<GestureHandlerRootView style={{ flex: 1 }}>
+  <OverlayProvider>// Other underlying components</OverlayProvider>
+</GestureHandlerRootView>
+```
+
+If you are using v1 of `react-native-gesture-handler` library, then you will need extra setup steps for Android.
+Update `MainActivity.java` to override the method for creating the `ReactRootView` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js).
 
 ```java {4-6,13-21}
 package com.swmansion.gesturehandler.react.example;
@@ -297,19 +313,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-### Instructions for version >=2.0.0
-
-While you are on `react-native-gesture-handler` version >=2.0.0, do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC`. Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
-
-```tsx
-<GestureHandlerRootView style={{ flex: 1 }}>
-  <OverlayProvider>// Other underlying components</OverlayProvider>
-</GestureHandlerRootView>
-```
-
-Also, if your React Native version is (>=0.68) you will need a version of >=2.0.0 for `react-native-gesture-handler` for your app to build.
-
-## Custom Touchables not working
+## Touchables Inside Custom Components Are Not Working
 
 If you find that a customization that includes a touchable is not working, or the wrong element is receiving the touch event, this is likely related to [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
 The following could be the reasons behind the issues you might be facing:
