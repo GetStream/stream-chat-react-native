@@ -26,7 +26,7 @@ jobs:
             yarn;
             cd ../../examples/SampleApp
             cd ios
-            pod update RCT-Folly --no-repo-update && pod install
+            pod install
       - name: Build and release Testflight QA
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
