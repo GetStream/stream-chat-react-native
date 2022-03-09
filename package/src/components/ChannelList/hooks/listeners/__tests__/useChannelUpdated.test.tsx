@@ -18,7 +18,7 @@ describe('useChannelUpdated', () => {
           send_messages: true,
         },
       },
-    } as Channel;
+    } as unknown as Channel;
 
     const mockEvent = {
       channel: {
