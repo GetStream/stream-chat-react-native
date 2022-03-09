@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Text } from 'react-native';
+
+import { act } from 'react-test-renderer';
+
 import { render, waitFor } from '@testing-library/react-native';
 import type { Channel, ChannelResponse, Event, StreamChat } from 'stream-chat';
+
 import { ChatContext, useChannelUpdated } from '../../../../../index';
-import { act } from 'react-test-renderer';
 
 describe('useChannelUpdated', () => {
   it("defaults to the channels own_capabilities if the event doesn't include it", async () => {
-    let eventHanler: (event: Event) => any;
+    let eventHanler: (event: Event) => void;
     const mockChannel = {
       cid: 'channeltype:123abc',
       data: {
@@ -25,10 +28,10 @@ describe('useChannelUpdated', () => {
     };
 
     const mockClient = {
-      on: jest.fn().mockImplementation((_eventName: string, handler: (event: Event) => any) => {
+      off: jest.fn(),
+      on: jest.fn().mockImplementation((_eventName: string, handler: (event: Event) => void) => {
         eventHanler = handler;
       }),
-      off: jest.fn(),
     } as unknown as StreamChat;
 
     const TestComponent = () => {
@@ -38,7 +41,9 @@ describe('useChannelUpdated', () => {
 
       if (
         channels[0].data?.own_capabilities &&
-        Object.keys(channels[0].data?.own_capabilities as any).includes('send_messages')
+        Object.keys(channels[0].data?.own_capabilities as { [key: string]: boolean }).includes(
+          'send_messages',
+        )
       ) {
         return <Text>Send messages enabled</Text>;
       }
