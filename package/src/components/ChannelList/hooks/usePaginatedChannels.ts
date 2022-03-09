@@ -61,6 +61,7 @@ export const usePaginatedChannels = <
 
     const hasUpdatedData =
       queryType === 'loadChannels' ||
+      queryType === 'refresh' ||
       [
         JSON.stringify(filtersRef.current) !== JSON.stringify(filters),
         JSON.stringify(sortRef.current) !== JSON.stringify(sort),
