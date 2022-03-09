@@ -19,10 +19,12 @@
     "bootstrap-ci": "yarn install --frozen-lockfile",
     "release": "FILTER_PATH='examples/SampleApp' TAG_FORMAT=$npm_package_name'@v${version}' node ../../release/prod",
     "release-next": "echo \"Skipping next release for SampleApp\"",
-    "test:unit": "echo \"Skipping unit tests for SampleApp\""
+    "test:unit": "echo \"Skipping unit tests for SampleApp\"",
+    "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
+    "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && yarn install && npx pod-install"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "1.15.6",
+    "@react-native-async-storage/async-storage": "1.15.17",
     "@react-native-community/cameraroll": "4.0.4",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-community/netinfo": "6.0.0",
