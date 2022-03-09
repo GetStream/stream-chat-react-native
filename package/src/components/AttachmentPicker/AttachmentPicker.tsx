@@ -248,13 +248,18 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker]);
 
     useEffect(() => {
-      if (Platform.OS === 'ios') {
-        Keyboard.addListener('keyboardWillShow', hideAttachmentPicker);
-      } else {
-        Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
-      }
+      const keyboardListener =
+        Platform.OS === 'ios'
+          ? Keyboard.addListener('keyboardWillShow', hideAttachmentPicker)
+          : Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
 
       return () => {
+        if (keyboardListener?.remove) {
+          keyboardListener.remove();
+          return;
+        }
+
+        // To keep compatibility with older versions of React Native, where `remove()` is not available
         if (Platform.OS === 'ios') {
           Keyboard.removeListener('keyboardWillShow', hideAttachmentPicker);
         } else {
