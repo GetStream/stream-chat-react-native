@@ -33,6 +33,7 @@ const SendButtonWithContext = <
 
   return (
     <TouchableOpacity
+      accessibilityLabel='send-button'
       disabled={disabled}
       onPress={disabled ? () => null : sendMessage}
       style={[sendButton]}

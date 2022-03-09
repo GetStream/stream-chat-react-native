@@ -132,7 +132,7 @@
     "react-native": "0.64.1",
     "react-native-builder-bob": "0.18.1",
     "react-native-fs": "2.18.0",
-    "react-native-gesture-handler": "1.10.3",
+    "react-native-gesture-handler": "2.3.0",
     "react-native-reanimated": "2.1.0",
     "react-native-svg": "12.1.1",
     "react-native-typescript-transformer": "1.2.13",

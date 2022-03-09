@@ -35,6 +35,7 @@ const AttachButtonWithContext = <
 
   return (
     <TouchableOpacity
+      accessibilityLabel='attach-button'
       disabled={disabled}
       hitSlop={{ bottom: 15, left: 15, right: 5, top: 15 }}
       onPress={disabled ? () => null : handleOnPress}

@@ -69,6 +69,9 @@ Array [
             >
               <RNGestureHandlerButton
                 collapsable={false}
+                exclusive={true}
+                handlerTag={1}
+                handlerType="NativeViewGestureHandler"
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -82,9 +85,9 @@ Array [
                 onGestureHandlerStateChange={[Function]}
                 onHandlerStateChange={[Function]}
                 rippleColor={0}
-                testID="attach-button"
               >
                 <View
+                  accessibilityLabel="attach-button"
                   accessible={true}
                   hitSlop={
                     Object {
@@ -150,6 +153,9 @@ Array [
             >
               <RNGestureHandlerButton
                 collapsable={false}
+                exclusive={true}
+                handlerTag={2}
+                handlerType="NativeViewGestureHandler"
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -163,7 +169,6 @@ Array [
                 onGestureHandlerStateChange={[Function]}
                 onHandlerStateChange={[Function]}
                 rippleColor={0}
-                testID="commands-button"
               >
                 <View
                   accessible={true}
@@ -305,14 +310,17 @@ Array [
           >
             <RNGestureHandlerButton
               collapsable={false}
+              exclusive={true}
+              handlerTag={3}
+              handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
               onGestureHandlerStateChange={[Function]}
               onHandlerStateChange={[Function]}
               rippleColor={0}
-              testID="send-button"
             >
               <View
+                accessibilityLabel="send-button"
                 accessible={true}
                 style={
                   Object {
@@ -394,6 +402,7 @@ Array [
           }
         >
           <View
+            accessibilityLabel="upload-photo-touchable"
             accessible={true}
             focusable={true}
             hitSlop={

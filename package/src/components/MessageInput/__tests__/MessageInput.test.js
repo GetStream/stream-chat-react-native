@@ -51,22 +51,22 @@ describe('MessageInput', () => {
     const closePicker = jest.fn();
     const attachmentValue = { closePicker, openPicker };
 
-    const { getByTestId, queryByTestId, queryByText, toJSON } = render(
+    const { getByA11yLabel, queryByA11yLabel, queryByTestId, queryByText, toJSON } = render(
       getComponent({ attachmentValue }),
     );
 
     await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
+      expect(queryByA11yLabel('attach-button')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('attach-button'));
+    fireEvent.press(getByA11yLabel('attach-button'));
 
     await waitFor(() => {
-      expect(queryByTestId('upload-photo-touchable')).toBeTruthy();
+      expect(queryByA11yLabel('upload-photo-touchable')).toBeTruthy();
       expect(queryByTestId('upload-file-touchable')).toBeTruthy();
       expect(queryByTestId('take-photo-touchable')).toBeTruthy();
       expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(queryByTestId('send-button')).toBeTruthy();
+      expect(queryByA11yLabel('send-button')).toBeTruthy();
       expect(queryByText('Editing Message')).toBeFalsy();
     });
 

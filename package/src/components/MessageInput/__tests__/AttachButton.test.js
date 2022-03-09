@@ -6,21 +6,23 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { AttachButton } from '../AttachButton';
 
 describe('AttachButton', () => {
+  const getComponent = (props = {}) => (
+    <ThemeProvider>
+      <AttachButton {...props} />
+    </ThemeProvider>
+  );
+
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton handleOnPress={handleOnPress} />
-      </ThemeProvider>,
-    );
+    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(getComponent({ handleOnPress }));
 
     await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
+      expect(queryByA11yLabel('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('attach-button'));
+    fireEvent.press(getByA11yLabel('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(1));
 
@@ -34,18 +36,16 @@ describe('AttachButton', () => {
   it('should render a disabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton disabled handleOnPress={handleOnPress} />
-      </ThemeProvider>,
+    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(
+      getComponent({ disabled: true, handleOnPress }),
     );
 
     await waitFor(() => {
-      expect(queryByTestId('attach-button')).toBeTruthy();
+      expect(queryByA11yLabel('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('attach-button'));
+    fireEvent.press(getByA11yLabel('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(0));
 

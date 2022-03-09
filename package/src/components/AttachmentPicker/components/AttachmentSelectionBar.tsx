@@ -65,6 +65,7 @@ export const AttachmentSelectionBar: React.FC = () => {
   return (
     <View style={[styles.container, container, { height: attachmentSelectionBarHeight ?? 52 }]}>
       <TouchableOpacity
+        accessibilityLabel='upload-photo-touchable'
         hitSlop={{ bottom: 15, top: 15 }}
         onPress={() => setPicker('images')}
         testID='upload-photo-touchable'
