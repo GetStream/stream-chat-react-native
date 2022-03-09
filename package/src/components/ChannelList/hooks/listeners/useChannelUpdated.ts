@@ -33,8 +33,14 @@ export const useChannelUpdated = <
             (channel) => channel.cid === (event.cid || event.channel?.cid),
           );
           if (index >= 0 && event.channel) {
-            channels[index].data = event.channel;
+            channels[index].data = {
+              ...event.channel,
+              hidden: event.channel?.hidden ?? channels[index].data?.hidden,
+              own_capabilities:
+                event.channel?.own_capabilities ?? channels[index].data?.own_capabilities,
+            };
           }
+
           return [...channels];
         });
       }
