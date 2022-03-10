@@ -335,7 +335,7 @@ describe('Own capabilities', () => {
   describe(`${allOwnCapabilities.sendLinks} capability`, () => {
     it(`should not allow sending links when "${allOwnCapabilities.sendLinks}" capability is disabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.sendMessage]);
-      const { queryByA11yLabel } = render(
+      const { queryByTestId } = render(
         getComponent({
           initialValue: 'Awesome repository https://github.com/GetStream/stream-chat-react-native',
         }),
@@ -344,7 +344,7 @@ describe('Own capabilities', () => {
       const sendMessage = jest.fn();
       channel.sendMessage = sendMessage;
       act(() => {
-        fireEvent(queryByA11yLabel('send-button'), 'onPress');
+        fireEvent(queryByTestId('send-button'), 'onPress');
       });
 
       await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
@@ -357,7 +357,7 @@ describe('Own capabilities', () => {
       allOwnCapabilities.sendLinks,
     ]);
     const mockFn = jest.fn();
-    const { queryByA11yLabel } = render(
+    const { queryByTestId } = render(
       getComponent({
         doSendMessageRequest: () => {
           mockFn();
@@ -368,7 +368,7 @@ describe('Own capabilities', () => {
     );
 
     act(() => {
-      fireEvent(queryByA11yLabel('send-button'), 'onPress');
+      fireEvent(queryByTestId('send-button'), 'onPress');
     });
 
     await waitFor(() => expect(mockFn).toHaveBeenCalledTimes(1));

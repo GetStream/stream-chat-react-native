@@ -18,16 +18,16 @@ describe('SendButton', () => {
   it('should render a non-editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByA11yLabel, queryAllByA11yLabel, toJSON } = render(
+    const { getByTestId, queryByTestId, toJSON } = render(
       getComponent({ editing: false, sendMessage }),
     );
 
     await waitFor(() => {
-      expect(queryAllByA11yLabel('send-button')).toBeTruthy();
+      expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('send-button'));
+    fireEvent.press(getByTestId('send-button'));
 
     await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
 
@@ -41,16 +41,16 @@ describe('SendButton', () => {
   it('should render a non-editing disabled SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(
+    const { getByTestId, queryByTestId, toJSON } = render(
       getComponent({ disabled: true, editing: false, sendMessage }),
     );
 
     await waitFor(() => {
-      expect(queryByA11yLabel('send-button')).toBeTruthy();
+      expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('send-button'));
+    fireEvent.press(getByTestId('send-button'));
 
     await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
 
@@ -64,16 +64,16 @@ describe('SendButton', () => {
   it('should render an editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(
+    const { getByTestId, queryByTestId, toJSON } = render(
       getComponent({ editing: true, sendMessage }),
     );
 
     await waitFor(() => {
-      expect(queryByA11yLabel('send-button')).toBeTruthy();
+      expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('send-button'));
+    fireEvent.press(getByTestId('send-button'));
 
     await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(1));
 
@@ -87,16 +87,16 @@ describe('SendButton', () => {
   it('should render an editing disabled SendButton', async () => {
     const sendMessage = jest.fn();
 
-    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(
+    const { getByTestId, queryByTestId, toJSON } = render(
       getComponent({ disabled: true, editing: true, sendMessage }),
     );
 
     await waitFor(() => {
-      expect(queryByA11yLabel('send-button')).toBeTruthy();
+      expect(queryByTestId('send-button')).toBeTruthy();
       expect(sendMessage).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('send-button'));
+    fireEvent.press(getByTestId('send-button'));
 
     await waitFor(() => expect(sendMessage).toHaveBeenCalledTimes(0));
 

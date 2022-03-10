@@ -11,9 +11,9 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
   onGestureHandlerStateChange={[Function]}
   onHandlerStateChange={[Function]}
   rippleColor={0}
+  testID="send-button"
 >
   <View
-    accessibilityLabel="send-button"
     accessible={true}
     style={
       Object {
@@ -78,9 +78,9 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
   onGestureHandlerStateChange={[Function]}
   onHandlerStateChange={[Function]}
   rippleColor={0}
+  testID="send-button"
 >
   <View
-    accessibilityLabel="send-button"
     accessible={true}
     style={
       Object {
@@ -145,9 +145,9 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
   onGestureHandlerStateChange={[Function]}
   onHandlerStateChange={[Function]}
   rippleColor={0}
+  testID="send-button"
 >
   <View
-    accessibilityLabel="send-button"
     accessible={true}
     style={
       Object {
@@ -212,9 +212,9 @@ exports[`SendButton should render an editing enabled SendButton 1`] = `
   onGestureHandlerStateChange={[Function]}
   onHandlerStateChange={[Function]}
   rippleColor={0}
+  testID="send-button"
 >
   <View
-    accessibilityLabel="send-button"
     accessible={true}
     style={
       Object {

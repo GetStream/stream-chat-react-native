@@ -15,14 +15,14 @@ describe('AttachButton', () => {
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(getComponent({ handleOnPress }));
+    const { getByTestId, queryByTestId, toJSON } = render(getComponent({ handleOnPress }));
 
     await waitFor(() => {
-      expect(queryByA11yLabel('attach-button')).toBeTruthy();
+      expect(queryByTestId('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('attach-button'));
+    fireEvent.press(getByTestId('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(1));
 
@@ -36,16 +36,16 @@ describe('AttachButton', () => {
   it('should render a disabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByA11yLabel, queryByA11yLabel, toJSON } = render(
+    const { getByTestId, queryByTestId, toJSON } = render(
       getComponent({ disabled: true, handleOnPress }),
     );
 
     await waitFor(() => {
-      expect(queryByA11yLabel('attach-button')).toBeTruthy();
+      expect(queryByTestId('attach-button')).toBeTruthy();
       expect(handleOnPress).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByA11yLabel('attach-button'));
+    fireEvent.press(getByTestId('attach-button'));
 
     await waitFor(() => expect(handleOnPress).toHaveBeenCalledTimes(0));
 

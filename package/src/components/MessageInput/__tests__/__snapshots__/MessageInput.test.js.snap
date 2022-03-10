@@ -85,9 +85,9 @@ Array [
                 onGestureHandlerStateChange={[Function]}
                 onHandlerStateChange={[Function]}
                 rippleColor={0}
+                testID="attach-button"
               >
                 <View
-                  accessibilityLabel="attach-button"
                   accessible={true}
                   hitSlop={
                     Object {
@@ -169,6 +169,7 @@ Array [
                 onGestureHandlerStateChange={[Function]}
                 onHandlerStateChange={[Function]}
                 rippleColor={0}
+                testID="commands-button"
               >
                 <View
                   accessible={true}
@@ -318,9 +319,9 @@ Array [
               onGestureHandlerStateChange={[Function]}
               onHandlerStateChange={[Function]}
               rippleColor={0}
+              testID="send-button"
             >
               <View
-                accessibilityLabel="send-button"
                 accessible={true}
                 style={
                   Object {
@@ -402,7 +403,6 @@ Array [
           }
         >
           <View
-            accessibilityLabel="upload-photo-touchable"
             accessible={true}
             focusable={true}
             hitSlop={
