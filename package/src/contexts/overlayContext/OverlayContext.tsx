@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import type Animated from 'react-native-reanimated';
 
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
@@ -53,7 +52,6 @@ export type OverlayProviderProps<
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> & {
-    overlayOpacity: Animated.SharedValue<number>;
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     error?: boolean | Error;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */

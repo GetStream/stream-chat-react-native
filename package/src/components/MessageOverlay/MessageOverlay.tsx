@@ -100,8 +100,8 @@ export type MessageOverlayPropsWithContext<
     | 'message'
     | 'messageReactions'
     | 'messageTextNumberOfLines'
-    | 'overlayOpacity'
   > & {
+    overlayOpacity: Animated.SharedValue<number>;
     showScreen?: Animated.SharedValue<number>;
   };
 
