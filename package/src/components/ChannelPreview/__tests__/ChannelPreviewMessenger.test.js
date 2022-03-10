@@ -60,15 +60,15 @@ describe('ChannelPreviewMessenger', () => {
     const onSelect = jest.fn();
     await initializeChannel(generateChannelResponse());
 
-    const { getByText } = render(
+    const { getByTestId } = render(
       getComponent({
         onSelect,
         watchers: {},
       }),
     );
 
-    await waitFor(() => getByText('This is the message preview text'));
-    fireEvent.press(getByText('This is the message preview text'));
+    await waitFor(() => getByTestId('channel-preview-button'));
+    fireEvent.press(getByTestId('channel-preview-button'));
 
     await waitFor(() => {
       // eslint-disable-next-line jest/prefer-called-with

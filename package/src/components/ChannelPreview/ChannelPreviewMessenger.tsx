@@ -136,7 +136,6 @@ const ChannelPreviewMessengerWithContext = <
 
   return (
     <TouchableOpacity
-      accessibilityLabel='channel-preview-button'
       onPress={() => {
         if (onSelect) {
           onSelect(channel);

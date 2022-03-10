@@ -83,197 +83,197 @@ describe('Own capabilities', () => {
   describe(`${allOwnCapabilities.sendReply} capability`, () => {
     it(`should render "Thread Reply" message action when ${allOwnCapabilities.sendReply} capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.sendReply]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage);
-      expect(!!queryByText('Thread Reply')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage);
+      expect(!!queryByTestId('threadReply-list-item')).toBeTruthy();
     });
 
     it('should not render "Thread Reply" message action when "send-reply" capability is disabled', async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage);
-      expect(!!queryByText('Thread Reply')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage);
+      expect(!!queryByTestId('threadReply-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.sendReply" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.sendReply]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage, {
         overrideOwnCapabilities: {
           sendReply: false,
         },
       });
-      expect(!!queryByText('Thread Reply')).toBeFalsy();
+      expect(!!queryByTestId('threadReply-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.banChannelMembers} capability`, () => {
     it(`should render "Block User" message action when ${allOwnCapabilities.banChannelMembers} capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Block User')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('blockUser-list-item')).toBeTruthy();
     });
 
     it(`should not render "Block User" message action when ${allOwnCapabilities.banChannelMembers} capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Block User')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('blockUser-list-item')).toBeFalsy();
     });
 
     it(`should override capability from "overrideOwnCapability.banChannelMembers" prop`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.banChannelMembers]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
         overrideOwnCapabilities: {
           banChannelMembers: false,
         },
       });
-      expect(!!queryByText('Block User')).toBeFalsy();
+      expect(!!queryByTestId('blockUser-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.deleteAnyMessage} capability`, () => {
     it(`should render "Delete Message" action for received message when "${allOwnCapabilities.deleteAnyMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities(['delete-any-message']);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Delete Message')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeTruthy();
     });
 
     it(`should not render "Delete Message" action for received message when "${allOwnCapabilities.deleteAnyMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Delete Message')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.deleteAnyMessage" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.deleteAnyMessage]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
         overrideOwnCapabilities: {
           deleteAnyMessage: false,
         },
       });
-      expect(!!queryByText('Delete')).toBeFalsy();
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.deleteOwnMessage} capability`, () => {
     it(`should render "Delete Message" action for sent message when "${allOwnCapabilities.deleteOwnMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.deleteOwnMessage]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage);
-      expect(!!queryByText('Delete Message')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage);
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeTruthy();
     });
 
     it(`should not render "Delete Message" action for sent message when "${allOwnCapabilities.deleteOwnMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage);
-      expect(!!queryByText('Delete Message')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage);
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.deleteOwnMessage" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.deleteOwnMessage]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(sentMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(sentMessage, {
         overrideOwnCapabilities: {
           deleteOwnMessage: false,
         },
       });
-      expect(!!queryByText('deleteMessage-list-item')).toBeFalsy();
+      expect(!!queryByTestId('deleteMessage-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.updateAnyMessage} capability`, () => {
     it(`should render "Edit Message" action for received message when "${allOwnCapabilities.updateAnyMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.updateAnyMessage]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Edit Message')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('editMessage-list-item')).toBeTruthy();
     });
 
     it(`should not render "Edit Message" action for received message when "${allOwnCapabilities.updateAnyMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Edit Message')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('editMessage-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.updateAnyMessage" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.updateAnyMessage]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
         overrideOwnCapabilities: {
           updateAnyMessage: false,
         },
       });
-      expect(!!queryByText('Edit Message')).toBeFalsy();
+      expect(!!queryByTestId('editMessage-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.flagMessage} capability`, () => {
     it(`should render "Flag Message" action for sent message when "${allOwnCapabilities.flagMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.flagMessage]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Flag Message')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('flagMessage-list-item')).toBeTruthy();
     });
 
     it(`should not render "Flag Message" action for sent message when "${allOwnCapabilities.flagMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Flag Message')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('flagMessage-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.deleteOwnMessage" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.flagMessage]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
         overrideOwnCapabilities: {
           flagMessage: false,
         },
       });
-      expect(!!queryByText('Flag Message')).toBeFalsy();
+      expect(!!queryByTestId('flagMessage-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.pinMessage} capability`, () => {
     it(`should render "Pin Message" action for sent message when "${allOwnCapabilities.pinMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.pinMessage]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Pin to Conversation')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('pinMessage-list-item')).toBeTruthy();
     });
 
     it(`should not render "Pin Message" action for sent message when "${allOwnCapabilities.pinMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Pin to Conversation')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('pinMessage-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.pinMessage" prop', async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.pinMessage]);
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage, {
         overrideOwnCapabilities: {
           pinMessage: false,
         },
       });
-      expect(!!queryByText('Pin to Conversation')).toBeFalsy();
+      expect(!!queryByTestId('pinMessage-list-item')).toBeFalsy();
     });
   });
 
   describe(`${allOwnCapabilities.quoteMessage} capability`, () => {
     it(`should render "Reply" action for sent message when "${allOwnCapabilities.quoteMessage}" capability is enabled`, async () => {
       await generateChannelWithCapabilities([allOwnCapabilities.quoteMessage]);
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Reply')).toBeTruthy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('quotedReply-list-item')).toBeTruthy();
     });
 
     it(`should not render "Reply" action for sent message when "${allOwnCapabilities.quoteMessage}" capability is disabled`, async () => {
       await generateChannelWithCapabilities();
 
-      const { queryByText } = await renderChannelAndOpenMessageActionsList(receivedMessage);
-      expect(!!queryByText('Reply')).toBeFalsy();
+      const { queryByTestId } = await renderChannelAndOpenMessageActionsList(receivedMessage);
+      expect(!!queryByTestId('quotedReply-list-item')).toBeFalsy();
     });
 
     it('should override capability from "overrideOwnCapability.quoteMessage" prop', async () => {
