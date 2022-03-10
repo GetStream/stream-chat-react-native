@@ -98,7 +98,7 @@ export type GiphyPropsWithContext<
   MessageContextValue<StreamChatGenerics>,
   'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'additionalTouchableProps'> & {
+  Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'> & {
     attachment: Attachment<StreamChatGenerics>;
   };
 
@@ -117,7 +117,7 @@ const GiphyWithContext = <
     preventPress,
   } = props;
 
-  const { actions, image_url, thumb_url, title, type } = attachment;
+  const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
 
   const {
     theme: {
@@ -142,7 +142,15 @@ const GiphyWithContext = <
     },
   } = useTheme();
 
-  const uri = image_url || thumb_url;
+  let uri = image_url || thumb_url;
+  const giphyDimensions: { height?: number; width?: number } = {};
+
+  if (type === 'giphy' && giphyData) {
+    const giphyVersionInfo = giphyData[props.giphyVersion];
+    uri = giphyVersionInfo.url;
+    giphyDimensions.height = parseFloat(giphyVersionInfo.height);
+    giphyDimensions.width = parseFloat(giphyVersionInfo.width);
+  }
 
   if (!uri) return null;
 
@@ -165,7 +173,7 @@ const GiphyWithContext = <
         <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.giphy, giphy]}
+          style={[styles.giphy, giphyDimensions, giphy]}
         />
       </View>
       <View>
@@ -246,7 +254,8 @@ const GiphyWithContext = <
         <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.giphy, giphy]}
+          style={[styles.giphy, giphyDimensions, giphy]}
+          testID='giphy-attachment-image'
         />
         <View style={[styles.giphyMask, giphyMask]}>
           <View style={[styles.giphyContainer, { backgroundColor: grey_dark }, giphyContainer]}>
@@ -267,9 +276,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
+    giphyVersion: prevGiphyVersion,
   } = prevProps;
   const {
     attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
+    giphyVersion: nextGiphyVersion,
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -277,6 +288,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const thumbUrlEqual = prevThumbUrl === nextThumbUrl;
   if (!thumbUrlEqual) return false;
+
+  const giphyVersionEqual = prevGiphyVersion === nextGiphyVersion;
+  if (!giphyVersionEqual) return false;
 
   const actionsEqual =
     Array.isArray(prevActions) === Array.isArray(nextActions) &&
@@ -295,7 +309,7 @@ export type GiphyProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPressIn'> &
-    Pick<MessagesContextValue<StreamChatGenerics>, 'additionalTouchableProps'>
+    Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'>
 > & {
   attachment: Attachment<StreamChatGenerics>;
 };
@@ -310,12 +324,13 @@ export const Giphy = <
 ) => {
   const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
-  const { additionalTouchableProps } = useMessagesContext<StreamChatGenerics>();
+  const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedGiphy
       {...{
         additionalTouchableProps,
+        giphyVersion,
         handleAction,
         onLongPress,
         onPress,
