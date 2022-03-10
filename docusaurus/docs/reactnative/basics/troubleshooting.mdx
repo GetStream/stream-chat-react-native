@@ -248,14 +248,17 @@ dependencies {
 
 ## Blank screen when channel gets delete
 
-When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case. It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen. You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
+When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case.
+It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen.
+You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
 
 ```tsx
-client.on('channel.deleted', (event) => {
+client.on('channel.deleted', event => {
   if (event.cid === channel.cid) {
     // add your action here
   }
-}),
+});
+```
 
 ```
 
