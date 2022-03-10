@@ -49,6 +49,7 @@ import FormatDate from '../common-content/core-components/channel/props/format_d
 import Gallery from '../common-content/core-components/channel/props/gallery.mdx';
 import Giphy from '../common-content/core-components/channel/props/giphy.mdx';
 import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx';
+import GiphyVersion from '../common-content/core-components/channel/props/giphy_version.mdx';
 import HandleBlock from '../common-content/core-components/channel/props/handle_block.mdx';
 import HandleCopy from '../common-content/core-components/channel/props/handle_copy.mdx';
 import HandleDelete from '../common-content/core-components/channel/props/handle_delete.mdx';
@@ -438,11 +439,7 @@ The max allowable is 255, which when reached displays as `255+`.
 
 ### giphyVersion
 
-The Giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values.
-
-| Type   | Default        |
-| ------ | -------------- |
-| string | 'fixed_height' |
+<GiphyVersion />
 
 ### handleBlock
 
