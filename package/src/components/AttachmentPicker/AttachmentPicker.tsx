@@ -248,14 +248,14 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker]);
 
     useEffect(() => {
-      const keyboardListener =
+      const keyboardSubscription =
         Platform.OS === 'ios'
           ? Keyboard.addListener('keyboardWillShow', hideAttachmentPicker)
           : Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
 
       return () => {
-        if (keyboardListener?.remove) {
-          keyboardListener.remove();
+        if (keyboardSubscription?.remove) {
+          keyboardSubscription.remove();
           return;
         }
 
