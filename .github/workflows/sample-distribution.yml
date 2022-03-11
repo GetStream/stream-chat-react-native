@@ -15,6 +15,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           working-directory: examples/SampleApp
+          bundler-cache: true
       - name: RN setup
         uses: nick-invision/retry@v2
         with:
