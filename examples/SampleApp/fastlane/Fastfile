@@ -114,7 +114,7 @@ platform :ios do
 
       commit_version_bump(
         message: "[fastlane][ios] Bump version [skip ci]",
-        xcodeproj: "SampleApp.xcodeproj",
+        xcodeproj: "./ios/SampleApp.xcodeproj"
         force: true # otherwise untracked files may crash the CI build
       )
 
