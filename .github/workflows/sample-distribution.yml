@@ -25,7 +25,13 @@ jobs:
             yarn && yarn bootstrap-ci;
             cd package/native-package
             yarn;
-            cd ../../examples/SampleApp
+      - name: iOS Pods setup
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: |
+            cd examples/SampleApp
             cd ios
             bundle exec pod install
       - name: Build and release Testflight QA
