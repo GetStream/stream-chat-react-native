@@ -83,8 +83,8 @@ platform :ios do
       }
 
       package = load_json(json_path: "./package.json")
-      increment_version_number(version_number: package["version"])
-      increment_build_number(xcodeproj: "SampleApp.xcodeproj")
+      increment_version_number(version_number: package["version"], xcodeproj: "./ios/SampleApp.xcodeproj")
+      increment_build_number(xcodeproj: "./ios/SampleApp.xcodeproj")
 
       gym(
           workspace: "./ios/SampleApp.xcworkspace",
