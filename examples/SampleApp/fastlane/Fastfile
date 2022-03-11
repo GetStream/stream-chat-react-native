@@ -51,7 +51,7 @@ platform :ios do
       match_me
 
         gym(
-            workspace: "./SampleApp.xcworkspace",
+            workspace: "./ios/SampleApp.xcworkspace",
             scheme: "SampleApp",
             export_method: "ad-hoc",
             export_options: "./fastlane/beta_gym_export_options.plist",
@@ -82,12 +82,12 @@ platform :ios do
         :PROVISIONING_PROFILE_SPECIFIER => "match AppStore io.getstream.reactnative.SampleApp"
       }
 
-      package = load_json(json_path: "../package.json")
+      package = load_json(json_path: "./package.json")
       increment_version_number(version_number: package["version"])
       increment_build_number(xcodeproj: "SampleApp.xcodeproj")
 
       gym(
-          workspace: "./SampleApp.xcworkspace",
+          workspace: "./ios/SampleApp.xcworkspace",
           scheme: "SampleApp",
           export_method: "app-store",
           export_options: "./fastlane/testflight_gym_export_options.plist",

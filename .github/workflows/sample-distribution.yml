@@ -26,7 +26,7 @@ jobs:
             yarn;
             cd ../../examples/SampleApp
             cd ios
-            pod install
+            bundle exec pod install
       - name: Build and release Testflight QA
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -35,7 +35,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
         run: |
-          cd examples/SampleApp/ios
+          cd examples/SampleApp
           bundle exec fastlane deploy_to_testflight_qa
 
   build_and_deploy_android_s3:
