@@ -9,7 +9,7 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "clean": "watchman watch-del-all && yarn cache clean && rm -rf ios/build && pod cache clean --all && rm -rf android/build && cd android && ./gradlew clean && cd -",
-    "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && yarn install && npx pod-install"
+    "clean-all": "yarn clean && rm -rf node_modules && rm -rf ios/Pods && rm -rf vendor && bundle install && yarn install && cd ios && bundle exec pod install && cd -"
   },
   "dependencies": {
     "@react-native-community/cameraroll": "4.0.4",
