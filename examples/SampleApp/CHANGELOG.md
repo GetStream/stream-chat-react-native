@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.0.2...sampleapp@v1.1.0) (2022-03-13)
+
+
+### Features
+
+* update example apps to react native 0.67 [CRNS-538] ([e99a8c1](https://github.com/GetStream/stream-chat-react-native/commit/e99a8c1d28ad12270cc1f3e7f5c8bcb3cfc30ca2))
+
+
+### Bug Fixes
+
+* overrideOwnCapabilities typescript issue ([a8010ef](https://github.com/GetStream/stream-chat-react-native/commit/a8010efe6d841d447c32bf7f1fe0e3ecab2761c3))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.0.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.0.1...sampleapp@v1.0.2) (2022-03-10)
 
 
