@@ -367,7 +367,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     newMessageStateUpdateThrottleInterval?: number;
-    overrideOwnCapabilities?: OwnCapabilitiesContextValue;
+    overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
