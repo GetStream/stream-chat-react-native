@@ -1,5 +1,14 @@
 # Change Log
 
+### [4.1.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.2...v4.1.3) (2022-03-10)
+
+
+### Bug Fixes
+
+* add missing own_capabilities field after channel.updated event [CRNS-537] ([0a27963](https://github.com/GetStream/stream-chat-react-native/commit/0a279637dbf0cc4474b0ffc3052f6df6cdbfacf1))
+* cleanup of keyboard listeners ([7f4d6f2](https://github.com/GetStream/stream-chat-react-native/commit/7f4d6f27e061c66a8f6631a3840a7a911650c423))
+* pull to refresh functionality [CRNS-536] ([df6e6df](https://github.com/GetStream/stream-chat-react-native/commit/df6e6df3b70a6c9f986723b9328c8a99def67511))
+
 ### [4.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.1...v4.1.2) (2022-03-07)
 
 

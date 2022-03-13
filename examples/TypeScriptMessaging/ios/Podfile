@@ -9,7 +9,7 @@ target 'TypeScriptMessaging' do
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => false
+    :hermes_enabled => true
   )
 
   target 'TypeScriptMessagingTests' do
@@ -24,5 +24,6 @@ target 'TypeScriptMessaging' do
   use_flipper!()
   post_install do |installer|
     react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
