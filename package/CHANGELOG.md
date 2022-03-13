@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.1.4](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.3...v4.1.4) (2022-03-13)
+
+
+### Bug Fixes
+
+* overrideOwnCapabilities typescript issue ([a8010ef](https://github.com/GetStream/stream-chat-react-native/commit/a8010efe6d841d447c32bf7f1fe0e3ecab2761c3))
+
 ### [4.1.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.2...v4.1.3) (2022-03-10)
 
 
