@@ -265,7 +265,7 @@ const GiphyWithContext = <
         <Image
           resizeMode='contain'
           source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.giphy, giphy]}
+          style={[styles.giphy, giphyDimensions, giphy]}
           testID='giphy-attachment-image'
         />
         <View style={[styles.giphyMask, giphyMask]}>
