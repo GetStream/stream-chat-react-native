@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -185,7 +185,14 @@ const MessageContentWithContext = <
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+  let noBorder = onlyEmojis && !message.quoted_message;
+  if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+      noBorder = false;
+    } else {
+      noBorder = true;
+    }
+  }
 
   const isMessageTypeDeleted = message.type === 'deleted';
 
@@ -200,18 +207,18 @@ const MessageContentWithContext = <
     );
   }
 
-  const backgroundColor =
-    onlyEmojis && !message.quoted_message
-      ? transparent
-      : otherAttachments.length
-      ? otherAttachments[0].type === 'giphy'
-        ? !message.quoted_message
-          ? transparent
-          : grey_gainsboro
-        : blue_alice
-      : alignment === 'left' || error
-      ? white
-      : grey_gainsboro;
+  let backgroundColor = grey_gainsboro;
+  if (onlyEmojis && !message.quoted_message) {
+    backgroundColor = transparent;
+  } else if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy') {
+      backgroundColor = message.quoted_message || isMyMessage ? grey_gainsboro : white;
+    } else {
+      backgroundColor = blue_alice;
+    }
+  } else if (alignment === 'left' || error) {
+    backgroundColor = white;
+  }
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
 
