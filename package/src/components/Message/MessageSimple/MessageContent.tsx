@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { MessageTextContainer } from './MessageTextContainer';
 

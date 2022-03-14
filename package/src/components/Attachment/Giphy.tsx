@@ -108,7 +108,7 @@ export type GiphyPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageContextValue<StreamChatGenerics>,
-  'handleAction' | 'isMyMessage' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
+  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'> & {
     attachment: Attachment<StreamChatGenerics>;
@@ -123,7 +123,6 @@ const GiphyWithContext = <
     additionalTouchableProps,
     attachment,
     handleAction,
-    isMyMessage,
     onLongPress,
     onPress,
     onPressIn,
@@ -340,7 +339,7 @@ export const Giphy = <
 >(
   props: GiphyProps<StreamChatGenerics>,
 ) => {
-  const { handleAction, isMyMessage, onLongPress, onPress, onPressIn, preventPress } =
+  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
 
@@ -350,7 +349,6 @@ export const Giphy = <
         additionalTouchableProps,
         giphyVersion,
         handleAction,
-        isMyMessage,
         onLongPress,
         onPress,
         onPressIn,
