@@ -177,11 +177,7 @@ export const ImageGalleryHeader = <
             centerElement({ hideOverlay, photo })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
-              <Text
-                accessibilityLabel={photo?.user?.name || t('Unknown User')}
-                accessible={true}
-                style={[styles.userName, { color: black }, usernameText]}
-              >
+              <Text style={[styles.userName, { color: black }, usernameText]}>
                 {photo?.user?.name || t('Unknown User')}
               </Text>
               {date && <Text style={[styles.date, { color: black }, dateText]}>{date}</Text>}

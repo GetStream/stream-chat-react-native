@@ -18,7 +18,7 @@ it('doesnt fail if fromNow is not available on first render', () => {
       sharedValueOpacity = useSharedValue(1);
       sharedValueVisible = useSharedValue(1);
     });
-    const { getAllByA11yLabel } = render(
+    const { getAllByText } = render(
       <ThemeProvider>
         <ImageGalleryHeader
           // @ts-ignore
@@ -32,7 +32,7 @@ it('doesnt fail if fromNow is not available on first render', () => {
         />
       </ThemeProvider>,
     );
-    expect(getAllByA11yLabel('Unknown User')).toBeTruthy();
+    expect(getAllByText('Unknown User')).toBeTruthy();
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(`Error encountered on first render of ImageGalleryHeader: ${error.message}`);
