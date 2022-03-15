@@ -238,6 +238,7 @@ export type ChannelPropsWithContext<
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
+      | 'giphyVersion'
       | 'handleBlock'
       | 'handleCopy'
       | 'handleDelete'
@@ -426,6 +427,7 @@ const ChannelWithContext = <
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
+    giphyVersion = 'fixed_height',
     globalUnreadCountLimit = 255,
     handleBlock,
     handleCopy,
@@ -1672,6 +1674,7 @@ const ChannelWithContext = <
     formatDate,
     Gallery,
     Giphy,
+    giphyVersion,
     handleBlock,
     handleCopy,
     handleDelete,

@@ -4,7 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
-import type { ChannelState, MessageResponse } from 'stream-chat';
+import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
@@ -107,7 +107,10 @@ export type MessagesContextValue<
    * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<StreamChatGenerics>>;
-
+  /**
+   * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
+   * */
+  giphyVersion: keyof NonNullable<Attachment['giphy']>;
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
