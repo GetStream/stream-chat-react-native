@@ -105,6 +105,9 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { EditingStateHeader as EditingStateHeaderDefault } from '../MessageInput/components/EditingStateHeader';
+import { GiphyCommandInput as GiphyCommandInputDefault } from '../MessageInput/components/GiphyCommandInput';
+import { ReplyStateHeader as ReplyStateHeaderDefault } from '../MessageInput/components/ReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
@@ -403,6 +406,7 @@ const ChannelWithContext = <
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     DateHeader = DateHeaderDefault,
+    EditingStateHeader = EditingStateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
@@ -426,6 +430,7 @@ const ChannelWithContext = <
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
+    GiphyCommandInput = GiphyCommandInputDefault,
     globalUnreadCountLimit = 255,
     handleBlock,
     handleCopy,
@@ -497,6 +502,7 @@ const ChannelWithContext = <
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
+    ReplyStateHeader = ReplyStateHeaderDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
@@ -1610,8 +1616,10 @@ const ChannelWithContext = <
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
+    EditingStateHeader,
     editMessage,
     FileUploadPreview,
+    GiphyCommandInput,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
@@ -1627,6 +1635,7 @@ const ChannelWithContext = <
     numberOfLines,
     onChangeText,
     quotedMessage,
+    ReplyStateHeader,
     SendButton,
     sendImageAsync,
     sendMessage,

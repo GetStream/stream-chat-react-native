@@ -22,6 +22,9 @@ import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageD
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { EditingStateHeaderProps } from '../../components/MessageInput/components/EditingStateHeader';
+import type { GiphyCommandInputProps } from '../../components/MessageInput/components/GiphyCommandInput';
+import type { ReplyStateHeaderProps } from '../../components/MessageInput/components/ReplyStateHeader';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
@@ -238,12 +241,15 @@ export type InputMessageInputContextValue<
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<StreamChatGenerics>;
+  EditingStateHeader: React.ComponentType<EditingStateHeaderProps<StreamChatGenerics>>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
+
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
+  GiphyCommandInput: React.ComponentType<GiphyCommandInputProps<StreamChatGenerics>>;
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
@@ -266,6 +272,7 @@ export type InputMessageInputContextValue<
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
   quotedMessage: boolean | MessageType<StreamChatGenerics>;
+  ReplyStateHeader: React.ComponentType<ReplyStateHeaderProps<StreamChatGenerics>>;
   /**
    * Custom UI component for send button.
    *
@@ -341,6 +348,7 @@ export type InputMessageInputContextValue<
     },
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
+
   /** Initial value to set on input */
   initialValue?: string;
   /**

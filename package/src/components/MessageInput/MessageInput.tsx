@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -29,7 +29,6 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { Asset } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -44,6 +43,8 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    paddingLeft: 16,
+    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'flex-end',
@@ -52,28 +53,6 @@ const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
     padding: 10,
-  },
-  editingBoxHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-  editingBoxHeaderTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  giphyContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    height: 24,
-    marginRight: 8,
-    paddingHorizontal: 8,
-  },
-  giphyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   inputBoxContainer: {
     borderRadius: 20,
@@ -112,9 +91,11 @@ type MessageInputPropsWithContext<
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
     | 'editing'
+    | 'EditingStateHeader'
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
+    | 'GiphyCommandInput'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
@@ -126,6 +107,7 @@ type MessageInputPropsWithContext<
     | 'numberOfUploads'
     | 'quotedMessage'
     | 'resetInput'
+    | 'ReplyStateHeader'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
@@ -167,9 +149,11 @@ const MessageInputWithContext = <
     CooldownTimer,
     disabled,
     editing,
+    EditingStateHeader,
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    GiphyCommandInput,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -183,6 +167,7 @@ const MessageInputWithContext = <
     quotedMessage,
     removeImage,
     Reply,
+    ReplyStateHeader,
     resetInput,
     SendButton,
     sending,
@@ -191,7 +176,6 @@ const MessageInputWithContext = <
     setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    t,
     thread,
     threadList,
     triggerType,
@@ -203,25 +187,12 @@ const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        black,
-        border,
-        grey,
-        grey_gainsboro,
-        grey_whisper,
-        white,
-        white_smoke,
-      },
+      colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
         autoCompleteInputContainer,
         composerContainer,
         container,
-        editingBoxHeader,
-        editingBoxHeaderTitle,
-        giphyContainer,
-        giphyText,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -434,32 +405,14 @@ const MessageInputWithContext = <
         }) => setHeight(newHeight)}
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
-        {(editing || quotedMessage) && (
-          <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-            {editing ? (
-              <Edit pathFill={grey_gainsboro} />
-            ) : (
-              <CurveLineLeftUp pathFill={grey_gainsboro} />
-            )}
-            <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-              {editing ? t('Editing Message') : t('Reply to Message')}
-            </Text>
-            <TouchableOpacity
-              disabled={disabled}
-              onPress={() => {
-                resetInput();
-                if (editing) {
-                  clearEditingState();
-                }
-                if (quotedMessage) {
-                  clearQuotedMessageState();
-                }
-              }}
-              testID='close-button'
-            >
-              <CircleClose pathFill={grey} />
-            </TouchableOpacity>
-          </View>
+        {editing && (
+          <EditingStateHeader clearEditingState={clearEditingState} resetInput={resetInput} />
+        )}
+        {quotedMessage && (
+          <ReplyStateHeader
+            clearQuotedMessageState={clearQuotedMessageState}
+            resetInput={resetInput}
+          />
         )}
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
@@ -500,45 +453,22 @@ const MessageInputWithContext = <
                   />
                 ) : null}
                 {fileUploads.length ? <FileUploadPreview /> : null}
-                <View
-                  style={[
-                    styles.autoCompleteInputContainer,
-                    {
-                      paddingLeft: giphyActive ? 8 : 16,
-                      paddingRight: giphyActive ? 10 : 16,
-                    },
-                    autoCompleteInputContainer,
-                  ]}
-                >
-                  {giphyActive && (
-                    <View
-                      style={[
-                        styles.giphyContainer,
-                        { backgroundColor: accent_blue },
-                        giphyContainer,
-                      ]}
-                    >
-                      <Lightning height={16} pathFill={white} width={16} />
-                      <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
-                    </View>
-                  )}
-                  <AutoCompleteInput<StreamChatGenerics>
+                {giphyActive ? (
+                  <GiphyCommandInput
                     additionalTextInputProps={additionalTextInputProps}
-                    cooldownActive={!!cooldownRemainingSeconds}
+                    cooldownEndsAt={cooldownEndsAt}
+                    disabled={disabled}
+                    setGiphyActive={setGiphyActive}
+                    setShowMoreOptions={setShowMoreOptions}
                   />
-                  {giphyActive && (
-                    <TouchableOpacity
-                      disabled={disabled}
-                      onPress={() => {
-                        setGiphyActive(false);
-                        setShowMoreOptions(true);
-                      }}
-                      testID='close-button'
-                    >
-                      <CircleClose height={20} pathFill={grey} width={20} />
-                    </TouchableOpacity>
-                  )}
-                </View>
+                ) : (
+                  <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+                    <AutoCompleteInput<StreamChatGenerics>
+                      additionalTextInputProps={additionalTextInputProps}
+                      cooldownActive={!!cooldownRemainingSeconds}
+                    />
+                  </View>
+                )}
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                 {cooldownRemainingSeconds ? (
@@ -737,9 +667,11 @@ export const MessageInput = <
     cooldownEndsAt,
     CooldownTimer,
     editing,
+    EditingStateHeader,
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    GiphyCommandInput,
     ImageUploadPreview,
     imageUploads,
     Input,
@@ -751,6 +683,7 @@ export const MessageInput = <
     numberOfUploads,
     quotedMessage,
     removeImage,
+    ReplyStateHeader,
     resetInput,
     SendButton,
     sending,
@@ -797,9 +730,11 @@ export const MessageInput = <
         CooldownTimer,
         disabled,
         editing,
+        EditingStateHeader,
         FileUploadPreview,
         fileUploads,
         giphyActive,
+        GiphyCommandInput,
         ImageUploadPreview,
         imageUploads,
         Input,
@@ -813,6 +748,7 @@ export const MessageInput = <
         quotedMessage,
         removeImage,
         Reply,
+        ReplyStateHeader,
         resetInput,
         SendButton,
         sending,

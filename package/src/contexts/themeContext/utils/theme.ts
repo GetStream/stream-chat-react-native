@@ -232,6 +232,10 @@ export type Theme = {
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
+    editingStateHeader: {
+      editingBoxHeader: ViewStyle;
+      editingBoxHeaderTitle: TextStyle;
+    };
     fileUploadPreview: {
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
@@ -241,8 +245,10 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
-    giphyContainer: ViewStyle;
-    giphyText: TextStyle;
+    giphyCommandInput: {
+      giphyContainer: ViewStyle;
+      giphyText: TextStyle;
+    };
     imageUploadPreview: {
       dismiss: ViewStyle;
       flatList: ViewStyle;
@@ -694,6 +700,10 @@ export const defaultTheme: Theme = {
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
+    editingStateHeader: {
+      editingBoxHeader: {},
+      editingBoxHeaderTitle: {},
+    },
     fileUploadPreview: {
       dismiss: {},
       fileContainer: {},
@@ -703,8 +713,10 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       flatList: {},
     },
-    giphyContainer: {},
-    giphyText: {},
+    giphyCommandInput: {
+      giphyContainer: {},
+      giphyText: {},
+    },
     imageUploadPreview: {
       dismiss: {},
       flatList: {},
