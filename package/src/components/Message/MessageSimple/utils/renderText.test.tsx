@@ -1,13 +1,14 @@
 import React from 'react';
 import { Text } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { render, waitFor, within } from '@testing-library/react-native';
 
 // @ts-ignore
 import { ASTNode, SingleASTNode } from 'simple-markdown';
 
 import { ListOutput, ListOutputProps } from './renderText';
-import type { ReactTestInstance } from 'react-test-renderer';
 
 describe('list', () => {
   const createNode = ({
