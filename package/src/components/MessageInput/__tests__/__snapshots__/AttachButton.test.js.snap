@@ -20,6 +20,7 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
 >
   <View
     accessible={true}
+    collapsable={false}
     hitSlop={
       Object {
         "bottom": 15,
@@ -100,6 +101,7 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
 >
   <View
     accessible={true}
+    collapsable={false}
     hitSlop={
       Object {
         "bottom": 15,

@@ -61,10 +61,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       }
     >
       <ActivityIndicator
-        animating={true}
         color="#F2F2F2"
-        hidesWhenStopped={true}
-        size="small"
         testID="upload-progress-indicator"
       />
     </View>
@@ -121,6 +118,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
   >
     <View
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
