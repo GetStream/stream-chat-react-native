@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     width: 270,
   },
   giphy: {
+    alignSelf: 'center',
     borderRadius: 2,
     height: 170,
     maxWidth: 270,
