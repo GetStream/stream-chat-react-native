@@ -69,6 +69,9 @@ Array [
             >
               <RNGestureHandlerButton
                 collapsable={false}
+                exclusive={true}
+                handlerTag={1}
+                handlerType="NativeViewGestureHandler"
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -151,6 +154,9 @@ Array [
             >
               <RNGestureHandlerButton
                 collapsable={false}
+                exclusive={true}
+                handlerTag={2}
+                handlerType="NativeViewGestureHandler"
                 hitSlop={
                   Object {
                     "bottom": 15,
@@ -304,6 +310,9 @@ Array [
           >
             <RNGestureHandlerButton
               collapsable={false}
+              exclusive={true}
+              handlerTag={3}
+              handlerType="NativeViewGestureHandler"
               onGestureEvent={[Function]}
               onGestureHandlerEvent={[Function]}
               onGestureHandlerStateChange={[Function]}

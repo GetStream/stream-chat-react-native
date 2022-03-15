@@ -35,15 +35,7 @@ import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { UserResponse } from 'stream-chat';
 
@@ -116,15 +108,7 @@ export const UserInfoOverlay = (props: UserInfoOverlayProps) => {
   const { overlayOpacity, visible } = props;
   const { chatClient } = useAppContext();
   const { overlay, setOverlay } = useAppOverlayContext();
-  const { client } = useChatContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { client } = useChatContext<StreamChatGenerics>();
   const { setData } = useBottomSheetOverlayContext();
   const { data, reset } = useUserInfoOverlayContext();
 

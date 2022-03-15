@@ -3,6 +3,9 @@
 exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  exclusive={true}
+  handlerTag={2}
+  handlerType="NativeViewGestureHandler"
   onGestureEvent={[Function]}
   onGestureHandlerEvent={[Function]}
   onGestureHandlerStateChange={[Function]}
@@ -68,6 +71,9 @@ exports[`SendButton should render a non-editing disabled SendButton 1`] = `
 exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  exclusive={true}
+  handlerTag={1}
+  handlerType="NativeViewGestureHandler"
   onGestureEvent={[Function]}
   onGestureHandlerEvent={[Function]}
   onGestureHandlerStateChange={[Function]}
@@ -133,6 +139,9 @@ exports[`SendButton should render a non-editing enabled SendButton 1`] = `
 exports[`SendButton should render an editing disabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  exclusive={true}
+  handlerTag={4}
+  handlerType="NativeViewGestureHandler"
   onGestureEvent={[Function]}
   onGestureHandlerEvent={[Function]}
   onGestureHandlerStateChange={[Function]}
@@ -198,6 +207,9 @@ exports[`SendButton should render an editing disabled SendButton 1`] = `
 exports[`SendButton should render an editing enabled SendButton 1`] = `
 <RNGestureHandlerButton
   collapsable={false}
+  exclusive={true}
+  handlerTag={3}
+  handlerType="NativeViewGestureHandler"
   onGestureEvent={[Function]}
   onGestureHandlerEvent={[Function]}
   onGestureHandlerStateChange={[Function]}
