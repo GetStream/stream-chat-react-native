@@ -212,7 +212,7 @@ const MessageContentWithContext = <
     backgroundColor = transparent;
   } else if (otherAttachments.length) {
     if (otherAttachments[0].type === 'giphy') {
-      backgroundColor = message.quoted_message || isMyMessage ? grey_gainsboro : white;
+      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
     } else {
       backgroundColor = blue_alice;
     }
