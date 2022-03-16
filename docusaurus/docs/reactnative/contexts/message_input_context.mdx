@@ -5,7 +5,6 @@ title: MessageInputContext
 
 import SelectedPicker from '../common-content/contexts/attachment-picker-context/selected_picker.mdx';
 
-import AdditionalTextInputProps from '../common-content/core-components/channel/props/additional_text_input_props.mdx';
 import AttachButton from '../common-content/core-components/channel/props/attach_button.mdx';
 import AutoCompleteSuggestionsLimit from '../common-content/core-components/channel/props/auto_complete_suggestions_limit.mdx';
 import AutoCompleteTriggerSettings from '../common-content/core-components/channel/props/auto_complete_trigger_settings.mdx';
@@ -34,10 +33,12 @@ import SendImageAsync from '../common-content/core-components/channel/props/send
 import ShowThreadMessageInChannelButton from '../common-content/core-components/channel/props/show_thread_message_in_channel_button.mdx';
 import Thread from '../common-content/core-components/channel/props/thread.mdx';
 import UploadProgressIndicator from '../common-content/core-components/channel/props/upload_progress_indicator.mdx';
+import AdditionalTextInputProps from '../common-content/contexts/message-input-context/additional_text_input_props.mdx';
 import AppendText from '../common-content/contexts/message-input-context/append_text.mdx';
 import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx';
 import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx';
 import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx';
+import CooldownEndsAt from '../common-content/contexts/message-input-context/cooldown_ends_at.mdx';
 import Editing from '../common-content/contexts/message-input-context/editing.mdx';
 import EditMessage from '../common-content/contexts/message-input-context/edit_message.mdx';
 import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx';
@@ -99,7 +100,7 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 
 ## Value
 
-### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#additionaltextinputprops)_ props</div> additionalTextInputProps {#additionaltextinputprops}
+### <div class="label description">_forwarded from [MessageInputContext](../contexts/message_input_context.mdx#additionaltextinputprops)_ props</div> additionalTextInputProps {#additionaltextinputprops}
 
 <AdditionalTextInputProps />
 
@@ -122,6 +123,10 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#compressimagequality)_ props</div> compressImageQuality {#compressimagequality}
 
 <CompressImageQuality />
+
+### cooldownEndsAt
+
+<CooldownEndsAt />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#dodocuploadrequest)_ props</div> doDocUploadRequest {#dodocuploadrequest}
 
