@@ -2,7 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
-import type { MessageInputContextValue } from '../../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { CircleClose, Lightning } from '../../../icons';
@@ -31,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type GiphyCommandInputPropsWithContext<
+export type InputGiphySearchPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
@@ -39,7 +42,7 @@ export type GiphyCommandInputPropsWithContext<
 > &
   Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'>;
 
-export const GiphyCommandInputWithContext = <
+export const InputGiphySearchWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
@@ -47,7 +50,7 @@ export const GiphyCommandInputWithContext = <
   disabled,
   setGiphyActive,
   setShowMoreOptions,
-}: GiphyCommandInputPropsWithContext<StreamChatGenerics>) => {
+}: InputGiphySearchPropsWithContext<StreamChatGenerics>) => {
   const { seconds: cooldownRemainingSeconds } = useCountdown(cooldownEndsAt);
 
   const {
@@ -86,8 +89,8 @@ export const GiphyCommandInputWithContext = <
 };
 
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: GiphyCommandInputPropsWithContext<StreamChatGenerics>,
-  nextProps: GiphyCommandInputPropsWithContext<StreamChatGenerics>,
+  prevProps: InputGiphySearchPropsWithContext<StreamChatGenerics>,
+  nextProps: InputGiphySearchPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled: prevDisabled } = prevProps;
   const { disabled: nextDisabled } = nextProps;
@@ -98,19 +101,29 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   return true;
 };
 
-const MemoizedGiphyCommandInput = React.memo(
-  GiphyCommandInputWithContext,
+const MemoizedInputGiphySearch = React.memo(
+  InputGiphySearchWithContext,
   areEqual,
-) as typeof GiphyCommandInputWithContext;
+) as typeof InputGiphySearchWithContext;
 
-export type GiphyCommandInputProps<
+export type InputGiphySearchProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = GiphyCommandInputPropsWithContext<StreamChatGenerics>;
+> = Partial<InputGiphySearchPropsWithContext<StreamChatGenerics>>;
 
-export const GiphyCommandInput = <
+export const InputGiphySearch = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GiphyCommandInputProps<StreamChatGenerics>,
-) => <MemoizedGiphyCommandInput {...props} />;
+  props: InputGiphySearchProps<StreamChatGenerics>,
+) => {
+  const { additionalTextInputProps, cooldownEndsAt, setGiphyActive, setShowMoreOptions } =
+    useMessageInputContext<StreamChatGenerics>();
 
-GiphyCommandInput.displayName = 'GiphyCommandInput{messageInput}';
+  return (
+    <MemoizedInputGiphySearch
+      {...{ additionalTextInputProps, cooldownEndsAt, setGiphyActive, setShowMoreOptions }}
+      {...props}
+    />
+  );
+};
+
+InputGiphySearch.displayName = 'InputGiphySearch{messageInput}';

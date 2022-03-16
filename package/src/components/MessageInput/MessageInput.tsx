@@ -91,23 +91,23 @@ type MessageInputPropsWithContext<
     | 'clearQuotedMessageState'
     | 'closeAttachmentPicker'
     | 'editing'
-    | 'EditingStateHeader'
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
-    | 'GiphyCommandInput'
     | 'ImageUploadPreview'
     | 'imageUploads'
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
+    | 'InputEditingStateHeader'
+    | 'InputGiphySearch'
+    | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
     | 'numberOfUploads'
     | 'quotedMessage'
     | 'resetInput'
-    | 'ReplyStateHeader'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
@@ -142,23 +142,22 @@ const MessageInputWithContext = <
     asyncIds,
     asyncUploads,
     AutoCompleteSuggestionList,
-    clearEditingState,
-    clearQuotedMessageState,
     closeAttachmentPicker,
     cooldownEndsAt,
     CooldownTimer,
     disabled,
     editing,
-    EditingStateHeader,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    GiphyCommandInput,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     members,
@@ -167,13 +166,10 @@ const MessageInputWithContext = <
     quotedMessage,
     removeImage,
     Reply,
-    ReplyStateHeader,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
-    setGiphyActive,
-    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
     thread,
@@ -405,15 +401,8 @@ const MessageInputWithContext = <
         }) => setHeight(newHeight)}
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
-        {editing && (
-          <EditingStateHeader clearEditingState={clearEditingState} resetInput={resetInput} />
-        )}
-        {quotedMessage && (
-          <ReplyStateHeader
-            clearQuotedMessageState={clearQuotedMessageState}
-            resetInput={resetInput}
-          />
-        )}
+        {editing && <InputEditingStateHeader />}
+        {quotedMessage && <InputReplyStateHeader />}
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -454,13 +443,7 @@ const MessageInputWithContext = <
                 ) : null}
                 {fileUploads.length ? <FileUploadPreview /> : null}
                 {giphyActive ? (
-                  <GiphyCommandInput
-                    additionalTextInputProps={additionalTextInputProps}
-                    cooldownEndsAt={cooldownEndsAt}
-                    disabled={disabled}
-                    setGiphyActive={setGiphyActive}
-                    setShowMoreOptions={setShowMoreOptions}
-                  />
+                  <InputGiphySearch />
                 ) : (
                   <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
                     <AutoCompleteInput<StreamChatGenerics>
@@ -667,23 +650,23 @@ export const MessageInput = <
     cooldownEndsAt,
     CooldownTimer,
     editing,
-    EditingStateHeader,
     FileUploadPreview,
     fileUploads,
     giphyActive,
-    GiphyCommandInput,
     ImageUploadPreview,
     imageUploads,
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
     removeImage,
-    ReplyStateHeader,
     resetInput,
     SendButton,
     sending,
@@ -730,16 +713,17 @@ export const MessageInput = <
         CooldownTimer,
         disabled,
         editing,
-        EditingStateHeader,
         FileUploadPreview,
         fileUploads,
         giphyActive,
-        GiphyCommandInput,
         ImageUploadPreview,
         imageUploads,
         Input,
         inputBoxRef,
         InputButtons,
+        InputEditingStateHeader,
+        InputGiphySearch,
+        InputReplyStateHeader,
         isValidMessage,
         maxNumberOfFiles,
         members,
@@ -748,7 +732,6 @@ export const MessageInput = <
         quotedMessage,
         removeImage,
         Reply,
-        ReplyStateHeader,
         resetInput,
         SendButton,
         sending,

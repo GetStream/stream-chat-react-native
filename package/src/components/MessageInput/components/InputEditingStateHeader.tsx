@@ -2,38 +2,41 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
-import type { MessageInputContextValue } from '../../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
-import { CircleClose, CurveLineLeftUp } from '../../../icons';
+import { CircleClose, Edit } from '../../../icons';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const styles = StyleSheet.create({
-  replyBoxHeader: {
+  editingBoxHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingBottom: 10,
   },
-  replyBoxHeaderTitle: {
+  editingBoxHeaderTitle: {
     fontSize: 14,
     fontWeight: 'bold',
   },
 });
 
-export type ReplyStateHeaderPropsWithContext<
+export type InputEditingStateHeaderPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<MessageInputContextValue<StreamChatGenerics>, 'clearQuotedMessageState' | 'resetInput'> &
+> = Pick<MessageInputContextValue<StreamChatGenerics>, 'clearEditingState' | 'resetInput'> &
   Pick<ChannelContextValue<StreamChatGenerics>, 'disabled'>;
 
-export const ReplyStateHeaderWithContext = <
+export const InputEditingStateHeaderWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  clearQuotedMessageState,
+  clearEditingState,
   disabled,
   resetInput,
-}: ReplyStateHeaderPropsWithContext<StreamChatGenerics>) => {
+}: InputEditingStateHeaderPropsWithContext<StreamChatGenerics>) => {
   const { t } = useTranslationContext();
   const {
     theme: {
@@ -45,16 +48,16 @@ export const ReplyStateHeaderWithContext = <
   } = useTheme();
 
   return (
-    <View style={[styles.replyBoxHeader, editingBoxHeader]}>
-      <CurveLineLeftUp pathFill={grey_gainsboro} />
-      <Text style={[styles.replyBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-        {t('Reply to Message')}
+    <View style={[styles.editingBoxHeader, editingBoxHeader]}>
+      <Edit pathFill={grey_gainsboro} />
+      <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
+        {t('Editing Message')}
       </Text>
       <TouchableOpacity
         disabled={disabled}
         onPress={() => {
           resetInput();
-          clearQuotedMessageState();
+          clearEditingState();
         }}
         testID='close-button'
       >
@@ -65,8 +68,8 @@ export const ReplyStateHeaderWithContext = <
 };
 
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: ReplyStateHeaderPropsWithContext<StreamChatGenerics>,
-  nextProps: ReplyStateHeaderPropsWithContext<StreamChatGenerics>,
+  prevProps: InputEditingStateHeaderPropsWithContext<StreamChatGenerics>,
+  nextProps: InputEditingStateHeaderPropsWithContext<StreamChatGenerics>,
 ) => {
   const { disabled: prevDisabled } = prevProps;
   const { disabled: nextDisabled } = nextProps;
@@ -77,19 +80,23 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   return true;
 };
 
-const MemoizedReplyStateHeader = React.memo(
-  ReplyStateHeaderWithContext,
+const MemoizedInputEditingStateHeader = React.memo(
+  InputEditingStateHeaderWithContext,
   areEqual,
-) as typeof ReplyStateHeaderWithContext;
+) as typeof InputEditingStateHeaderWithContext;
 
-export type ReplyStateHeaderProps<
+export type InputEditingStateHeaderProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = ReplyStateHeaderPropsWithContext<StreamChatGenerics>;
+> = Partial<InputEditingStateHeaderPropsWithContext<StreamChatGenerics>>;
 
-export const ReplyStateHeader = <
+export const InputEditingStateHeader = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReplyStateHeaderProps<StreamChatGenerics>,
-) => <MemoizedReplyStateHeader {...props} />;
+  props: InputEditingStateHeaderProps<StreamChatGenerics>,
+) => {
+  const { clearEditingState, resetInput } = useMessageInputContext<StreamChatGenerics>();
 
-ReplyStateHeader.displayName = 'ReplyStateHeader{messageInput}';
+  return <MemoizedInputEditingStateHeader {...{ clearEditingState, resetInput }} {...props} />;
+};
+
+InputEditingStateHeader.displayName = 'EditingStateHeader{messageInput}';

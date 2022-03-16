@@ -105,9 +105,9 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
-import { EditingStateHeader as EditingStateHeaderDefault } from '../MessageInput/components/EditingStateHeader';
-import { GiphyCommandInput as GiphyCommandInputDefault } from '../MessageInput/components/GiphyCommandInput';
-import { ReplyStateHeader as ReplyStateHeaderDefault } from '../MessageInput/components/ReplyStateHeader';
+import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
+import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
+import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
@@ -407,7 +407,6 @@ const ChannelWithContext = <
     compressImageQuality,
     CooldownTimer = CooldownTimerDefault,
     DateHeader = DateHeaderDefault,
-    EditingStateHeader = EditingStateHeaderDefault,
     deletedMessagesVisibilityType = 'always',
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
@@ -431,7 +430,6 @@ const ChannelWithContext = <
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
-    GiphyCommandInput = GiphyCommandInputDefault,
     giphyVersion = 'fixed_height',
     globalUnreadCountLimit = 255,
     handleBlock,
@@ -457,6 +455,9 @@ const ChannelWithContext = <
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
+    InputEditingStateHeader = InputEditingStateHeaderDefault,
+    InputGiphySearch = InputGiphyCommandInputDefault,
+    InputReplyStateHeader = InputReplyStateHeaderDefault,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -504,7 +505,6 @@ const ChannelWithContext = <
     ReactionList = ReactionListDefault,
     read,
     Reply = ReplyDefault,
-    ReplyStateHeader = ReplyStateHeaderDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     selectReaction,
     SendButton = SendButtonDefault,
@@ -1618,10 +1618,8 @@ const ChannelWithContext = <
     doDocUploadRequest,
     doImageUploadRequest,
     editing,
-    EditingStateHeader,
     editMessage,
     FileUploadPreview,
-    GiphyCommandInput,
     hasCommands,
     hasFilePicker,
     hasImagePicker,
@@ -1629,6 +1627,9 @@ const ChannelWithContext = <
     initialValue,
     Input,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
@@ -1637,7 +1638,6 @@ const ChannelWithContext = <
     numberOfLines,
     onChangeText,
     quotedMessage,
-    ReplyStateHeader,
     SendButton,
     sendImageAsync,
     sendMessage,

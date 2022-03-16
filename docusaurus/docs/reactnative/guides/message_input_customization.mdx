@@ -489,3 +489,53 @@ const CustomAttachButton = () => {
   <Channel AttachButton={CustomAttachButton} />
 </ActionSheetProvider>;
 ```
+
+## Creating a Custom Editing state Header in MessageInput
+
+To make a custom editing state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Editing state header component and pass it inside [InputEditingStateHeader](../core-components/channel.mdx#inputeditingstateheader) prop.
+
+```tsx
+import { Text } from 'react-native';
+import { Channel } from 'stream-chat-react-native';
+
+const CustomInputEditingStateHeader = () => <Text style={{ textAlign: 'center' }}>Edit Message</Text>;
+
+<Channel channel={channel} InputEditingStateHeader={CustomInputEditingStateHeader}>
+  {/* The underlying components */}
+</Channel>;
+```
+
+## Creating a Custom reply state Header in MessageInput
+
+To make a custom reply state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Reply state header component and pass it inside [InputReplyStateHeader](../core-components/channel.mdx#inputreplystateheader) prop.
+
+```tsx
+import { Text } from 'react-native';
+import { Channel } from 'stream-chat-react-native';
+
+const CustomInputReplyStateHeader = () => <Text style={{ textAlign: 'center' }}>Reply to Message</Text>;
+
+<Channel channel={channel} InputReplyStateHeader={CustomInputReplyStateHeader}>
+  {/* The underlying components */}
+</Channel>;
+```
+
+## Creating a custom giphy search input inside MessageInput
+
+To make a custom giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
+
+```tsx
+import { Text, View } from 'react-native';
+import { AutoCompleteInput, Channel } from 'stream-chat-react-native';
+
+const CustomInputGiphySearch = () => (
+  <View style={{ display: 'flex', flexDirection: 'row' }}>
+    <Text style={{ textAlign: 'center' }}>Giphy</Text>
+    <AutoCompleteInput />
+  </View>
+);
+
+<Channel channel={channel} InputGiphySearch={CustomInputGiphySearch}>
+  {/* The underlying components */}
+</Channel>;
+```
