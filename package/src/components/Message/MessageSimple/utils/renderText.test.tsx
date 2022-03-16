@@ -1,7 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import { render, waitFor } from '@testing-library/react-native';
+import type { ReactTestInstance } from 'react-test-renderer';
+
+import { render, waitFor, within } from '@testing-library/react-native';
 
 // @ts-ignore
 import { ASTNode, SingleASTNode } from 'simple-markdown';
@@ -31,40 +33,45 @@ describe('list', () => {
     </>
   );
 
-  it('renders numbered items', async () => {
+  it('renders numbered items', () => {
     const node = createNode({ amount: 3, ordered: true, start: 1 });
-    const { getByText } = render(<MockText node={node} output={mockOutput} state={{}} />);
-
-    await waitFor(() => expect(getByText('1. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('2. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('3. ')).toBeTruthy());
+    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = container.children as ReactTestInstance[];
+    textInstances.forEach(async (instance, index) => {
+      const text = `${index + node.start}. `; // 1. , 2. ...
+      await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
+    });
   });
 
-  it('renders numbered items from a start index', async () => {
+  it('renders numbered items from a start index', () => {
     const node = createNode({ amount: 3, ordered: true, start: 3 });
-    const { getByText } = render(<MockText node={node} output={mockOutput} state={{}} />);
-
-    await waitFor(() => expect(getByText('3. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('4. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('5. ')).toBeTruthy());
+    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = container.children as ReactTestInstance[];
+    textInstances.forEach(async (instance, index) => {
+      const text = `${index + node.start}. `; // 3. , 4. ...
+      await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
+    });
   });
 
-  it('does not throw an error if an item is empty', async () => {
+  it('does not throw an error if an item is empty', () => {
     const node = {
       ...createNode({ amount: 3, ordered: true }),
       items: ['Not empty', null, 'Not empty'],
     };
-    const { getByText } = render(<MockText node={node} output={mockOutput} state={{}} />);
-
-    await waitFor(() => expect(getByText('1. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('2. ')).toBeTruthy());
-    await waitFor(() => expect(getByText('3. ')).toBeTruthy());
+    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = container.children as ReactTestInstance[];
+    textInstances.forEach(async (instance, index) => {
+      const text = `${index + 1}. `; // 1. , 2. ...
+      await waitFor(() => expect(within(instance).getByText(text)).toBeTruthy());
+    });
   });
 
-  it('renders an unordered list', async () => {
+  it('renders an unordered list', () => {
     const node = createNode({ amount: 3 });
-    const { getAllByText } = render(<MockText node={node} output={mockOutput} state={{}} />);
-
-    await waitFor(() => expect(getAllByText('\u2022 ')).toHaveLength(3));
+    const { container } = render(<MockText node={node} output={mockOutput} state={{}} />);
+    const textInstances = container.children as ReactTestInstance[];
+    textInstances.forEach(async (instance) => {
+      await waitFor(() => expect(within(instance).getByText('\u2022 ')).toBeTruthy());
+    });
   });
 });
