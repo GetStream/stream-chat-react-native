@@ -6,14 +6,16 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { AttachButton } from '../AttachButton';
 
 describe('AttachButton', () => {
+  const getComponent = (props = {}) => (
+    <ThemeProvider>
+      <AttachButton {...props} />
+    </ThemeProvider>
+  );
+
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton handleOnPress={handleOnPress} />
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId, toJSON } = render(getComponent({ handleOnPress }));
 
     await waitFor(() => {
       expect(queryByTestId('attach-button')).toBeTruthy();
@@ -35,9 +37,7 @@ describe('AttachButton', () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <AttachButton disabled handleOnPress={handleOnPress} />
-      </ThemeProvider>,
+      getComponent({ disabled: true, handleOnPress }),
     );
 
     await waitFor(() => {
