@@ -1,5 +1,19 @@
 # Change Log
 
+## [4.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.4...v4.2.0) (2022-03-17)
+
+
+### Features
+
+* add giphy size customisation [CRNS-514] ([90c87da](https://github.com/GetStream/stream-chat-react-native/commit/90c87da095bd6f243613853091f11a9b6564632e))
+* update core to rn 0.67 [CRNS-539] ([46e9b37](https://github.com/GetStream/stream-chat-react-native/commit/46e9b3761021c0f6ddbe03f5afb81e3426877625))
+* upgrade react native gesture handler version to 2.3.1 ([f9eba70](https://github.com/GetStream/stream-chat-react-native/commit/f9eba70d5f961f2aed7f52eeb458b4ea6f18678e))
+
+
+### Bug Fixes
+
+* show background for Giphy on long press ([459a595](https://github.com/GetStream/stream-chat-react-native/commit/459a59522c7acb9d20b5e78809efc31084201257))
+
 ### [4.1.4](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.3...v4.1.4) (2022-03-13)
 
 
