@@ -20,7 +20,13 @@ export type AttachmentPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessagesContextValue<StreamChatGenerics>,
-  'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+  | 'AttachmentActions'
+  | 'Card'
+  | 'FileAttachment'
+  | 'Gallery'
+  | 'giphyVersion'
+  | 'Giphy'
+  | 'UrlPreview'
 > & {
   /**
    * The attachment to render
@@ -33,12 +39,21 @@ const AttachmentWithContext = <
 >(
   props: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment, AttachmentActions, Card, FileAttachment, Gallery, Giphy, UrlPreview } = props;
+  const {
+    attachment,
+    AttachmentActions,
+    Card,
+    FileAttachment,
+    Gallery,
+    Giphy,
+    giphyVersion,
+    UrlPreview,
+  } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    return <Giphy attachment={attachment} />;
+    return <Giphy attachment={attachment} giphyVersion={giphyVersion} />;
   }
 
   if (
@@ -107,7 +122,13 @@ export type AttachmentProps<
 > = Partial<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+    | 'AttachmentActions'
+    | 'Card'
+    | 'FileAttachment'
+    | 'Gallery'
+    | 'Giphy'
+    | 'giphyVersion'
+    | 'UrlPreview'
   >
 > &
   Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
@@ -127,6 +148,7 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
+    giphyVersion: PropGiphyVersion,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -136,6 +158,7 @@ export const Attachment = <
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
+    giphyVersion: ContextGiphyVersion,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -150,6 +173,7 @@ export const Attachment = <
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
+  const giphyVersion = PropGiphyVersion || ContextGiphyVersion;
 
   return (
     <MemoizedAttachment
@@ -160,6 +184,7 @@ export const Attachment = <
         FileAttachment,
         Gallery,
         Giphy,
+        giphyVersion,
         UrlPreview,
       }}
     />

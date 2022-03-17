@@ -34,6 +34,7 @@ import type {
   StreamChatGenerics,
   UserSelectorParamList,
 } from './src/types';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
@@ -97,15 +98,17 @@ const DrawerNavigatorWrapper: React.FC<{
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
-      <Chat<StreamChatGenerics> client={chatClient}>
-        <AppOverlayProvider>
-          <UserSearchProvider>
-            <DrawerNavigator />
-          </UserSearchProvider>
-        </AppOverlayProvider>
-      </Chat>
-    </OverlayProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
+        <Chat<StreamChatGenerics> client={chatClient}>
+          <AppOverlayProvider>
+            <UserSearchProvider>
+              <DrawerNavigator />
+            </UserSearchProvider>
+          </AppOverlayProvider>
+        </Chat>
+      </OverlayProvider>
+    </GestureHandlerRootView>
   );
 };
 

@@ -3,6 +3,7 @@
 exports[`ScrollToBottomButton should render the message notification and match snapshot 1`] = `
 <View
   accessible={true}
+  collapsable={false}
   focusable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}

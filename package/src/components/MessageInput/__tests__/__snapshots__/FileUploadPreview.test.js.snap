@@ -53,17 +53,13 @@ Array [
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         getItemLayout={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
         keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
@@ -81,9 +77,7 @@ Array [
             Object {},
           ]
         }
-        updateCellsBatchingPeriod={50}
         viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
       >
         <View>
           <View
@@ -320,10 +314,7 @@ Array [
                   }
                 >
                   <ActivityIndicator
-                    animating={true}
                     color="#F2F2F2"
-                    hidesWhenStopped={true}
-                    size="small"
                     testID="upload-progress-indicator"
                   />
                 </View>
@@ -331,6 +322,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -584,6 +576,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -873,6 +866,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   focusable={true}
                   onClick={[Function]}
                   onResponderGrant={[Function]}
@@ -942,6 +936,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -1085,17 +1080,13 @@ Array [
         ]
       }
       data={Array []}
-      disableVirtualization={false}
       getItem={[Function]}
       getItemCount={[Function]}
-      horizontal={false}
-      initialNumToRender={10}
       keyExtractor={[Function]}
-      maxToRenderPerBatch={10}
       onContentSizeChange={[Function]}
       onEndReached={[Function]}
-      onEndReachedThreshold={2}
       onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
       onMomentumScrollEnd={[Function]}
       onScroll={[Function]}
       onScrollBeginDrag={[Function]}
@@ -1104,9 +1095,7 @@ Array [
       renderItem={[Function]}
       scrollEventThrottle={50}
       stickyHeaderIndices={Array []}
-      updateCellsBatchingPeriod={50}
       viewabilityConfigCallbackPairs={Array []}
-      windowSize={21}
     >
       <View />
     </RCTScrollView>
@@ -1167,17 +1156,13 @@ Array [
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         getItemLayout={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
         keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
@@ -1195,9 +1180,7 @@ Array [
             Object {},
           ]
         }
-        updateCellsBatchingPeriod={50}
         viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
       >
         <View>
           <View
@@ -1422,6 +1405,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   focusable={true}
                   onClick={[Function]}
                   onResponderGrant={[Function]}
@@ -1491,6 +1475,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -1778,6 +1763,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   focusable={true}
                   onClick={[Function]}
                   onResponderGrant={[Function]}
@@ -1847,6 +1833,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -2136,6 +2123,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   focusable={true}
                   onClick={[Function]}
                   onResponderGrant={[Function]}
@@ -2205,6 +2193,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -2348,17 +2337,13 @@ Array [
         ]
       }
       data={Array []}
-      disableVirtualization={false}
       getItem={[Function]}
       getItemCount={[Function]}
-      horizontal={false}
-      initialNumToRender={10}
       keyExtractor={[Function]}
-      maxToRenderPerBatch={10}
       onContentSizeChange={[Function]}
       onEndReached={[Function]}
-      onEndReachedThreshold={2}
       onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
       onMomentumScrollEnd={[Function]}
       onScroll={[Function]}
       onScrollBeginDrag={[Function]}
@@ -2367,9 +2352,7 @@ Array [
       renderItem={[Function]}
       scrollEventThrottle={50}
       stickyHeaderIndices={Array []}
-      updateCellsBatchingPeriod={50}
       viewabilityConfigCallbackPairs={Array []}
-      windowSize={21}
     >
       <View />
     </RCTScrollView>
@@ -2430,17 +2413,13 @@ Array [
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         getItemLayout={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
         keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
@@ -2458,9 +2437,7 @@ Array [
             Object {},
           ]
         }
-        updateCellsBatchingPeriod={50}
         viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
       >
         <View>
           <View
@@ -2651,6 +2628,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -2904,6 +2882,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -3159,6 +3138,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -3302,17 +3282,13 @@ Array [
         ]
       }
       data={Array []}
-      disableVirtualization={false}
       getItem={[Function]}
       getItemCount={[Function]}
-      horizontal={false}
-      initialNumToRender={10}
       keyExtractor={[Function]}
-      maxToRenderPerBatch={10}
       onContentSizeChange={[Function]}
       onEndReached={[Function]}
-      onEndReachedThreshold={2}
       onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
       onMomentumScrollEnd={[Function]}
       onScroll={[Function]}
       onScrollBeginDrag={[Function]}
@@ -3321,9 +3297,7 @@ Array [
       renderItem={[Function]}
       scrollEventThrottle={50}
       stickyHeaderIndices={Array []}
-      updateCellsBatchingPeriod={50}
       viewabilityConfigCallbackPairs={Array []}
-      windowSize={21}
     >
       <View />
     </RCTScrollView>
@@ -3384,17 +3358,13 @@ Array [
             },
           ]
         }
-        disableVirtualization={false}
         getItem={[Function]}
         getItemCount={[Function]}
         getItemLayout={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
         keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
         onMomentumScrollEnd={[Function]}
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
@@ -3412,9 +3382,7 @@ Array [
             Object {},
           ]
         }
-        updateCellsBatchingPeriod={50}
         viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
       >
         <View>
           <View
@@ -3651,10 +3619,7 @@ Array [
                   }
                 >
                   <ActivityIndicator
-                    animating={true}
                     color="#F2F2F2"
-                    hidesWhenStopped={true}
-                    size="small"
                     testID="upload-progress-indicator"
                   />
                 </View>
@@ -3662,6 +3627,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -3961,10 +3927,7 @@ Array [
                   }
                 >
                   <ActivityIndicator
-                    animating={true}
                     color="#F2F2F2"
-                    hidesWhenStopped={true}
-                    size="small"
                     testID="upload-progress-indicator"
                   />
                 </View>
@@ -3972,6 +3935,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -4273,10 +4237,7 @@ Array [
                   }
                 >
                   <ActivityIndicator
-                    animating={true}
                     color="#F2F2F2"
-                    hidesWhenStopped={true}
-                    size="small"
                     testID="upload-progress-indicator"
                   />
                 </View>
@@ -4284,6 +4245,7 @@ Array [
             </View>
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -4427,17 +4389,13 @@ Array [
         ]
       }
       data={Array []}
-      disableVirtualization={false}
       getItem={[Function]}
       getItemCount={[Function]}
-      horizontal={false}
-      initialNumToRender={10}
       keyExtractor={[Function]}
-      maxToRenderPerBatch={10}
       onContentSizeChange={[Function]}
       onEndReached={[Function]}
-      onEndReachedThreshold={2}
       onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
       onMomentumScrollEnd={[Function]}
       onScroll={[Function]}
       onScrollBeginDrag={[Function]}
@@ -4446,9 +4404,7 @@ Array [
       renderItem={[Function]}
       scrollEventThrottle={50}
       stickyHeaderIndices={Array []}
-      updateCellsBatchingPeriod={50}
       viewabilityConfigCallbackPairs={Array []}
-      windowSize={21}
     >
       <View />
     </RCTScrollView>
