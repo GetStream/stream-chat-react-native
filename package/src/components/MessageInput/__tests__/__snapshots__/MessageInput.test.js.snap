@@ -89,6 +89,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   hitSlop={
                     Object {
                       "bottom": 15,
@@ -173,6 +174,7 @@ Array [
               >
                 <View
                   accessible={true}
+                  collapsable={false}
                   hitSlop={
                     Object {
                       "bottom": 15,
@@ -263,7 +265,6 @@ Array [
               }
             >
               <TextInput
-                allowFontScaling={true}
                 maxLength={5000}
                 multiline={true}
                 onBlur={[Function]}
@@ -272,7 +273,6 @@ Array [
                 onSelectionChange={[Function]}
                 placeholder="Send a message"
                 placeholderTextColor="#7A7A7A"
-                rejectResponderTermination={true}
                 style={
                   Array [
                     Object {
@@ -291,7 +291,6 @@ Array [
                   ]
                 }
                 testID="auto-complete-text-input"
-                underlineColorAndroid="transparent"
                 value=""
               />
             </View>
@@ -321,6 +320,7 @@ Array [
             >
               <View
                 accessible={true}
+                collapsable={false}
                 style={
                   Object {
                     "opacity": 1,
@@ -402,6 +402,7 @@ Array [
         >
           <View
             accessible={true}
+            collapsable={false}
             focusable={true}
             hitSlop={
               Object {
@@ -491,6 +492,7 @@ Array [
           </View>
           <View
             accessible={true}
+            collapsable={false}
             focusable={true}
             hitSlop={
               Object {
@@ -568,6 +570,7 @@ Array [
           </View>
           <View
             accessible={true}
+            collapsable={false}
             focusable={true}
             hitSlop={
               Object {
@@ -721,17 +724,13 @@ Array [
         ]
       }
       data={Array []}
-      disableVirtualization={false}
       getItem={[Function]}
       getItemCount={[Function]}
-      horizontal={false}
-      initialNumToRender={10}
       keyExtractor={[Function]}
-      maxToRenderPerBatch={10}
       onContentSizeChange={[Function]}
       onEndReached={[Function]}
-      onEndReachedThreshold={2}
       onLayout={[Function]}
+      onMomentumScrollBegin={[Function]}
       onMomentumScrollEnd={[Function]}
       onScroll={[Function]}
       onScrollBeginDrag={[Function]}
@@ -740,9 +739,7 @@ Array [
       renderItem={[Function]}
       scrollEventThrottle={50}
       stickyHeaderIndices={Array []}
-      updateCellsBatchingPeriod={50}
       viewabilityConfigCallbackPairs={Array []}
-      windowSize={21}
     >
       <View />
     </RCTScrollView>
