@@ -495,10 +495,24 @@ const CustomAttachButton = () => {
 To make a custom editing state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Editing state header component and pass it inside [InputEditingStateHeader](../core-components/channel.mdx#inputeditingstateheader) prop.
 
 ```tsx
-import { Text } from 'react-native';
-import { Channel } from 'stream-chat-react-native';
+import { Button, Text, View } from 'react-native';
+import { Channel, useMessageInputContext } from 'stream-chat-react-native';
 
-const CustomInputEditingStateHeader = () => <Text style={{ textAlign: 'center' }}>Edit Message</Text>;
+const CustomInputEditingStateHeader = () => {
+  const { clearEditingState, resetInput } = useMessageInputContext();
+  return (
+    <View>
+      <Text>Editing Header</Text>
+      <Button
+        onPress={() => {
+          clearEditingState();
+          resetInput();
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
 
 <Channel channel={channel} InputEditingStateHeader={CustomInputEditingStateHeader}>
   {/* The underlying components */}
@@ -510,10 +524,24 @@ const CustomInputEditingStateHeader = () => <Text style={{ textAlign: 'center' }
 To make a custom reply state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Reply state header component and pass it inside [InputReplyStateHeader](../core-components/channel.mdx#inputreplystateheader) prop.
 
 ```tsx
-import { Text } from 'react-native';
-import { Channel } from 'stream-chat-react-native';
+import { Button, Text, View } from 'react-native';
+import { Channel, useMessageInputContext } from 'stream-chat-react-native';
 
-const CustomInputReplyStateHeader = () => <Text style={{ textAlign: 'center' }}>Reply to Message</Text>;
+const CustomInputReplyStateHeader = () => {
+  const { clearQuotedMessageState, resetInput } = useMessageInputContext();
+  return (
+    <View>
+      <Text>Reply Header</Text>
+      <Button
+        onPress={() => {
+          clearQuotedMessageState();
+          resetInput();
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
 
 <Channel channel={channel} InputReplyStateHeader={CustomInputReplyStateHeader}>
   {/* The underlying components */}
@@ -525,15 +553,26 @@ const CustomInputReplyStateHeader = () => <Text style={{ textAlign: 'center' }}>
 To make a custom giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
 
 ```tsx
-import { Text, View } from 'react-native';
-import { AutoCompleteInput, Channel } from 'stream-chat-react-native';
+import { Button, Text, View } from 'react-native';
+import { AutoCompleteInput, Channel, useMessageInputContext } from 'stream-chat-react-native';
 
-const CustomInputGiphySearch = () => (
-  <View style={{ display: 'flex', flexDirection: 'row' }}>
-    <Text style={{ textAlign: 'center' }}>Giphy</Text>
-    <AutoCompleteInput />
-  </View>
-);
+const CustomInputGiphySearch = () => {
+  const { setGiphyActive, setShowMoreOptions } = useMessageInputContext();
+
+  return (
+    <View>
+      <Text style={{ textAlign: 'center' }}>Giphy</Text>
+      <AutoCompleteInput />
+      <Button
+        onPress={() => {
+          setGiphyActive(false);
+          setShowMoreOptions(true);
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
 
 <Channel channel={channel} InputGiphySearch={CustomInputGiphySearch}>
   {/* The underlying components */}
