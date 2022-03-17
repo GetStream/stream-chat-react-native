@@ -1,5 +1,23 @@
 # Change Log
 
+## [1.2.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.1.0...sampleapp@v1.2.0) (2022-03-17)
+
+
+### Features
+
+* upgrade react native gesture handler version to 2.3.1 ([f9eba70](https://github.com/GetStream/stream-chat-react-native/commit/f9eba70d5f961f2aed7f52eeb458b4ea6f18678e))
+
+
+### Bug Fixes
+
+* add TS single generic in UserInfoOverlay.tsx of SampleApp ([396edf2](https://github.com/GetStream/stream-chat-react-native/commit/396edf2f9a6b1512b49f52c2a5ff98247d5e8f7c))
+* manually update iOS version to 73 ([82c180f](https://github.com/GetStream/stream-chat-react-native/commit/82c180fee94ec520a9d55c2746f5806c551a95ce))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.0.2...sampleapp@v1.1.0) (2022-03-13)
 
 
