@@ -308,10 +308,11 @@ export const ImageGallery = <
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          getUrlOfImageAttachment(attachment),
+          (attachment.type === 'giphy' && attachment.thumb_url) ||
+          (attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            getUrlOfImageAttachment(attachment)),
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {
