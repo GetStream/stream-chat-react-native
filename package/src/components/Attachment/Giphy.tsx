@@ -138,7 +138,7 @@ const GiphyWithContext = <
   const {
     additionalTouchableProps,
     attachment,
-    giphyVersion = 'fixed_width_downsampled',
+    giphyVersion,
     handleAction,
     isMyMessage,
     message,
