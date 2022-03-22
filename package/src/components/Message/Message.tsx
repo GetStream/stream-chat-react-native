@@ -112,6 +112,8 @@ export type MessagePropsWithContext<
     | 'handleReaction'
     | 'handleRetry'
     | 'handleThreadReply'
+    | 'isAttachmentEqual'
+    | 'isMessageEqual'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
@@ -472,6 +474,7 @@ const MessageWithContext = <
     t,
     updateMessage,
   });
+
   const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
@@ -680,6 +683,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     goToMessage: prevGoToMessage,
+    isAttachmentEqual,
+    isMessageEqual,
     isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
@@ -729,7 +734,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at &&
     prevMessage.pinned === nextMessage.pinned;
 
   if (!messageEqual) return false;
@@ -752,12 +756,19 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     (Array.isArray(prevMessageAttachments) &&
       Array.isArray(nextMessageAttachments) &&
       prevMessageAttachments.length === nextMessageAttachments.length &&
-      prevMessageAttachments.every((attachment, index) =>
-        attachment.type === 'image'
-          ? attachment.image_url === nextMessageAttachments[index].image_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url
-          : attachment.type === nextMessageAttachments[index].type,
-      )) ||
+      prevMessageAttachments.every((attachment, index) => {
+        const attachmentKeysEqual =
+          attachment.type === 'image'
+            ? attachment.image_url === nextMessageAttachments[index].image_url &&
+              attachment.thumb_url === nextMessageAttachments[index].thumb_url
+            : attachment.type === nextMessageAttachments[index].type;
+
+        const customIsAttachmentEqual =
+          isAttachmentEqual &&
+          isAttachmentEqual(prevMessageAttachments[index], nextMessageAttachments[index]);
+
+        return attachmentKeysEqual && customIsAttachmentEqual;
+      })) ||
     prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 
@@ -784,6 +795,10 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
+
+  if (isMessageEqual) {
+    return isMessageEqual(prevMessage, nextMessage) ? true : false;
+  }
 
   return true;
 };

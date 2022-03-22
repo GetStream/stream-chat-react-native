@@ -87,10 +87,10 @@ const CustomGallery = ({ images, onPressIn }) => {
 }
 
 const CustomFileAttachment = ({ attachment }) => {
-  console.log(attachemnt.mime_type);
-  console.log(attachemnt.title);
-  console.log(attachemnt.file_size);
-  console.log(attachemnt.actions);
+  console.log(attachment.mime_type);
+  console.log(attachment.title);
+  console.log(attachment.file_size);
+  console.log(attachment.actions);
 
   return (/** Your custom UI */)
 }
@@ -333,4 +333,28 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+```
+
+## Memoization handler for custom attachment properties
+
+When we add a custom property to the attachment format, and the data is changed around that property, the component is not rerendered by default. This should be fixed by passing a custom handler to the prop [`isAttachmentEqual`](../core-components/channel.mdx#isattachmentequal) to [Channel](../core-components/channel.mdx) component.
+The logic should be implemented by the user by itself and must be similar to an equality check function we pass to a [React.memo](https://reactjs.org/docs/react-api.html#reactmemo) as a second argument.
+
+Eg: Suppose we add a `customField` property to the attachment object. We want to use the value of this field from the message object and have an update in the UI every time the property's value changes. We can do this by implementing a memoization handler for this field as below:
+
+```tsx
+import { Channel } from 'stream-chat-react-native';
+
+const isAttachmentEqualHandler = (prevProps,  nextProps) => {
+  const propsEqual = prevProps.customField === nextProps.customField;
+  if (!propsEqual) return false;
+  return true;
+};
+
+<Channel
+  ...
+  isAttachmentEqual={isAttachmentEqualHandler}
+>
+  {/* The underlying components */}
+</Channel>
 ```
