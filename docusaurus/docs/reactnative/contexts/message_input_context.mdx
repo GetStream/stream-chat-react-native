@@ -38,6 +38,7 @@ import AppendText from '../common-content/contexts/message-input-context/append_
 import ClearEditingState from '../common-content/contexts/message-input-context/clear_editing_state.mdx';
 import ClearQuotedMessageState from '../common-content/contexts/message-input-context/clear_quoted_message_state.mdx';
 import CloseAttachmentPicker from '../common-content/contexts/message-input-context/close_attachment_picker.mdx';
+import CooldownEndsAt from '../common-content/contexts/message-input-context/cooldown_ends_at.mdx';
 import Editing from '../common-content/contexts/message-input-context/editing.mdx';
 import EditMessage from '../common-content/contexts/message-input-context/edit_message.mdx';
 import FileUploads from '../common-content/contexts/message-input-context/file_uploads.mdx';
@@ -122,6 +123,10 @@ const { sendMessage, toggleAttachmentPicker } = useMessageInputContext();
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#compressimagequality)_ props</div> compressImageQuality {#compressimagequality}
 
 <CompressImageQuality />
+
+### cooldownEndsAt
+
+<CooldownEndsAt />
 
 ### <div class="label description">_forwarded from [Channel](../core-components/channel.mdx#dodocuploadrequest)_ props</div> doDocUploadRequest {#dodocuploadrequest}
 
