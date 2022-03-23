@@ -50,6 +50,7 @@
     "react-native-svg": "12.1.1",
     "stream-chat-react-native": "4.2.0",
     "stream-chat-react-native-core": "4.2.0"
+    
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
