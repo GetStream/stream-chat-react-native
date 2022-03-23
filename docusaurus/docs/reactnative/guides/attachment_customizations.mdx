@@ -345,9 +345,9 @@ Eg: Suppose we add a `customField` property to the attachment object. We want to
 ```tsx
 import { Channel } from 'stream-chat-react-native';
 
-const isAttachmentEqualHandler = (prevProps,  nextProps) => {
-  const propsEqual = prevProps.customField === nextProps.customField;
-  if (!propsEqual) return false;
+const isAttachmentEqualHandler = (prevAttachment,  nextAttachment) => {
+  const attachmentEqual = prevAttachment.customField === nextAttachment.customField;
+  if (!attachmentEqual) return false;
   return true;
 };
 

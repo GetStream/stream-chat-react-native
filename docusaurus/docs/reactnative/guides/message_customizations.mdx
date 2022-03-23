@@ -517,9 +517,9 @@ Eg: Suppose we add a `customField` property to the message object. We want to us
 ```tsx
 import { Channel } from 'stream-chat-react-native';
 
-const isMessageEqualHandler = (prevProps,  nextProps) => {
-  const propsEqual = prevProps.customField === nextProps.customField;
-  if (!propsEqual) return false;
+const isMessageEqualHandler = (prevMessage,  nextMessage) => {
+  const messageEqual = prevMessage.customField === nextMessage.customField;
+  if (!messageEqual) return false;
   return true;
 };
 

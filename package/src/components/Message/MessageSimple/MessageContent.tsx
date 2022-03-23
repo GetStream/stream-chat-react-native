@@ -455,10 +455,12 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
             attachment.thumb_url === nextMessageAttachments[index].thumb_url
           : attachment.type === nextMessageAttachments[index].type;
 
-      const customIsAttachmentEqual =
-        isAttachmentEqual && isAttachmentEqual(attachment, nextMessageAttachments[index]);
+      if (isAttachmentEqual)
+        return (
+          attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
+        );
 
-      return attachmentKeysEqual && customIsAttachmentEqual;
+      return attachmentKeysEqual;
     });
   if (!attachmentsEqual) return false;
 

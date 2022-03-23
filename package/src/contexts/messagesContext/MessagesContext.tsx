@@ -297,12 +297,12 @@ export type MessagesContextValue<
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   isAttachmentEqual?: (
-    prevProps: Attachment<StreamChatGenerics>,
-    nextProps: Attachment<StreamChatGenerics>,
+    prevAttachment: Attachment<StreamChatGenerics>,
+    nextAttachment: Attachment<StreamChatGenerics>,
   ) => boolean;
   isMessageEqual?: (
-    prevProps: MessageType<StreamChatGenerics>,
-    nextProps: MessageType<StreamChatGenerics>,
+    prevMessage: MessageType<StreamChatGenerics>,
+    nextMessage: MessageType<StreamChatGenerics>,
   ) => boolean;
   legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */

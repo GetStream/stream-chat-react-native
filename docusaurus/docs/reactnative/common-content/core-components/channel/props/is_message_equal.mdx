@@ -1,11 +1,10 @@
-Custom function which accepts previous and next attachment and return boolean according to user needs.
-This is useful to implement custom logic for memoization. This is helpful when using custom properties in attachment object.
+Function which returns true if passing nextMessage to render would return the same result as passing prevMessage to render, otherwise return false.
 
 | Type     |
 | -------- |
 | function |
 
-| Parameter | Description                     |
-| --------- | ------------------------------- |
-| prevProps | previous message to be compared |
-| nextProps | next message to be compared     |
+| Parameter   | Description                     |
+| ----------- | ------------------------------- |
+| prevMessage | previous message to be compared |
+| nextMessage | next message to be compared     |
