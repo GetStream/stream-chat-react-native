@@ -97,4 +97,11 @@ getstream.io
       scheme: 'https://',
     });
   });
+
+  it('does not parse a decimal number as a URL', () => {
+    const input = '123.456';
+    const result = parseLinksFromText(input);
+
+    expect(result).toHaveLength(0);
+  });
 });
