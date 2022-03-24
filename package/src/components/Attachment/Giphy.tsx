@@ -4,6 +4,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
@@ -11,6 +15,10 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { GiphyIcon } from '../../icons';
 import { Lightning } from '../../icons/Lightning';
@@ -107,13 +115,20 @@ const styles = StyleSheet.create({
 
 export type GiphyPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<
-  MessageContextValue<StreamChatGenerics>,
-  'handleAction' | 'isMyMessage' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
-> &
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+  Pick<
+    MessageContextValue<StreamChatGenerics>,
+    | 'handleAction'
+    | 'isMyMessage'
+    | 'message'
+    | 'onLongPress'
+    | 'onPress'
+    | 'onPressIn'
+    | 'preventPress'
+  > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'> & {
     attachment: Attachment<StreamChatGenerics>;
-  };
+  } & Pick<OverlayContextValue, 'setOverlay'>;
 
 const GiphyWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -123,12 +138,17 @@ const GiphyWithContext = <
   const {
     additionalTouchableProps,
     attachment,
+    giphyVersion,
     handleAction,
     isMyMessage,
+    message,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
+    setImage,
+    setImages,
+    setOverlay,
   } = props;
 
   const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
@@ -159,8 +179,14 @@ const GiphyWithContext = <
   let uri = image_url || thumb_url;
   const giphyDimensions: { height?: number; width?: number } = {};
 
+  const defaultOnPress = () => {
+    setImages([message]);
+    setImage({ messageId: message.id, url: uri });
+    setOverlay('gallery');
+  };
+
   if (type === 'giphy' && giphyData) {
-    const giphyVersionInfo = giphyData[props.giphyVersion];
+    const giphyVersionInfo = giphyData[giphyVersion];
     uri = giphyVersionInfo.url;
     giphyDimensions.height = parseFloat(giphyVersionInfo.height);
     giphyDimensions.width = parseFloat(giphyVersionInfo.width);
@@ -247,6 +273,7 @@ const GiphyWithContext = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            defaultHandler: defaultOnPress,
             emitter: 'giphy',
             event,
           });
@@ -337,10 +364,7 @@ const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWith
 
 export type GiphyProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<
-  Pick<MessageContextValue<StreamChatGenerics>, 'isMyMessage' | 'onLongPress' | 'onPressIn'> &
-    Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'>
-> & {
+> = Partial<GiphyPropsWithContext<StreamChatGenerics>> & {
   attachment: Attachment<StreamChatGenerics>;
 };
 
@@ -352,10 +376,11 @@ export const Giphy = <
 >(
   props: GiphyProps<StreamChatGenerics>,
 ) => {
-  const { handleAction, isMyMessage, onLongPress, onPress, onPressIn, preventPress } =
+  const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
-
+  const { setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setOverlay } = useOverlayContext();
   return (
     <MemoizedGiphy
       {...{
@@ -363,10 +388,14 @@ export const Giphy = <
         giphyVersion,
         handleAction,
         isMyMessage,
+        message,
         onLongPress,
         onPress,
         onPressIn,
         preventPress,
+        setImage,
+        setImages,
+        setOverlay,
       }}
       {...props}
     />
