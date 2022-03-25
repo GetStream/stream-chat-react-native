@@ -53,7 +53,10 @@ import {
 } from './components/ImageGridHandle';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayProviderProps,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -130,7 +133,7 @@ type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamC
      */
     imageGalleryGridSnapPoints?: [string | number, string | number];
     numberOfImageGalleryGridColumns?: number;
-  };
+  } & Pick<OverlayProviderProps<StreamChatGenerics>, 'giphyVersion'>;
 
 export const ImageGallery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -138,6 +141,7 @@ export const ImageGallery = <
   props: Props<StreamChatGenerics>,
 ) => {
   const {
+    giphyVersion,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
@@ -308,10 +312,11 @@ export const ImageGallery = <
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          getUrlOfImageAttachment(attachment),
+          (attachment.type === 'giphy' && attachment.giphy?.[giphyVersion]?.url) ||
+          (attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            getUrlOfImageAttachment(attachment)),
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {
