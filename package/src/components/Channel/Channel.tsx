@@ -365,6 +365,9 @@ export type ChannelPropsWithContext<
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
     maxMessageLength?: number;
+    /**
+     * Load the channel at a specified message instead of the most recent message.
+     */
     messageId?: string;
     newMessageStateUpdateThrottleInterval?: number;
     overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
@@ -555,11 +558,13 @@ const ChannelWithContext = <
 
   const [syncingChannel, setSyncingChannel] = useState(false);
 
-  const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
+  const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   const channelId = channel?.id || '';
+  // console.log({ cid: channel.cid, id: channel?.id });
   useEffect(() => {
     const initChannel = () => {
+      console.log('initChannel');
       if (!channel || !shouldSyncChannel) return;
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
@@ -568,12 +573,16 @@ const ChannelWithContext = <
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
       if (!channel.initialized) {
+        console.log('loadChannel -- not initialised');
         loadChannel();
         return;
       }
 
       if (messageId) {
-        loadChannelAtMessage({ messageId });
+        console.log('loadChannelAtMessage --', { messageId });
+        // TODO: scroll on load to the id
+        loadChannelAroundMessage({ messageId });
+        // loadChannelAtMessage({ messageId });
         return;
       }
 
@@ -581,8 +590,10 @@ const ChannelWithContext = <
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
+        console.log('initialScrollToFirstUnreadMessage --', { initialScrollToFirstUnreadMessage });
         loadChannelAtFirstUnreadMessage();
       } else {
+        console.log('just load it.. no unread etc');
         loadChannel();
       }
     };
@@ -781,7 +792,7 @@ const ChannelWithContext = <
   const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
     // Skips setting loading state when there are messages in the channel
-    setLoading(!channel?.state.messages.length);
+    // setLoading(!channel?.state.messages.length);
 
     try {
       await queryCall();
@@ -800,7 +811,7 @@ const ChannelWithContext = <
   };
 
   /**
-   * Loads channel at first unread channel.
+   * Loads channel at first unread message.
    */
   const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
@@ -811,6 +822,25 @@ const ChannelWithContext = <
     channel.state.setIsUpToDate(false);
 
     return channelQueryCall(async () => {
+      console.log('loadChannelAtFirstUnreadMessage');
+      setLoading(true);
+      const lastReadDate = channel.lastRead() || new Date(0);
+      await channel.query({
+        messages: {
+          created_at_around: lastReadDate,
+          limit: 25,
+        },
+      });
+      const firstUnreadMessage = channel.state.messages.find(
+        (m) => m.created_at.getTime() > lastReadDate.getTime(),
+      );
+      // scroll to the first unread message and highlight it
+      if (firstUnreadMessage?.id) {
+        channel.state.loadMessageIntoState(firstUnreadMessage.id);
+        setTargetedMessage(firstUnreadMessage.id);
+      }
+      setLoading(false);
+      return;
       /**
        * Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
        * Thus we need to handle these two cases separately.
@@ -886,6 +916,32 @@ const ChannelWithContext = <
   };
 
   /**
+   * Loads channel around a specific message
+   *
+   * @param messageId If undefined, channel will be loaded at most recent message.
+   */
+  const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
+    ({ messageId }) =>
+      channelQueryCall(async () => {
+        console.log('loadChannelAroundMessage', { messageId });
+        channel.state.setIsUpToDate(false);
+        console.log('setIsUpToDate: false');
+        // console.log('clear messages');
+        // setMessages([]); // to trigger loading state
+        setLoading(true);
+        if (messageId) {
+          await channel.state.loadMessageIntoState(messageId);
+          setTargetedMessage(messageId);
+        } else {
+          await channel.state.loadMessageIntoState('latest');
+          channel.state.setIsUpToDate(true);
+        }
+        setLoading(false);
+      });
+
+  /**
+   * @deprecated use loadChannelAroundMessage instead
+   *
    * Loads channel at specific message
    *
    * @param messageId If undefined, channel will be loaded at most recent message.
@@ -911,7 +967,10 @@ const ChannelWithContext = <
         await channel?.watch();
         channel?.state.setIsUpToDate(true);
       }
-
+      console.log('nothing to load!', {
+        initialized: channel?.initialized,
+        isUpToDate: !channel.state.isUpToDate,
+      });
       return;
     });
 
@@ -1061,7 +1120,9 @@ const ChannelWithContext = <
 
   const reloadChannel = () =>
     channelQueryCall(async () => {
-      await channel?.watch();
+      // await channel?.watch();
+      console.log('reload channel at the latest');
+      await channel.state.loadMessageIntoState('latest');
       channel?.state.setIsUpToDate(true);
     });
 
@@ -1083,6 +1144,7 @@ const ChannelWithContext = <
   };
 
   /**
+   * @deprecated
    * Makes a query to load messages at particular message id.
    *
    * @param messageId Targeted message id
@@ -1097,6 +1159,7 @@ const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
+    // equivalent to setMessages([]) ??
     setMessages([...channel.state.messages]);
     if (!messageId) {
       await channel.query({
@@ -1115,6 +1178,7 @@ const ChannelWithContext = <
   };
 
   /**
+   * @deprecated
    * Makes a query to load messages before particular message id.
    *
    * @param messageId Targeted message id
@@ -1135,6 +1199,7 @@ const ChannelWithContext = <
   };
 
   /**
+   * @deprecated
    * Makes a query to load messages later than particular message id.
    *
    * @param messageId Targeted message id
@@ -1387,6 +1452,7 @@ const ChannelWithContext = <
 
     try {
       if (channel) {
+        console.log('querying for more!!', { limit });
         const queryResponse = await channel.query({
           messages: { id_lt: oldestID, limit },
         });
@@ -1423,6 +1489,7 @@ const ChannelWithContext = <
 
       try {
         if (channel) {
+          console.log('querying for more, but after messageId!!', { limit });
           await queryAfterMessage(recentMessage.id, limit);
           loadMoreRecentFinished(channel.state.messages);
         }
@@ -1579,6 +1646,7 @@ const ChannelWithContext = <
     isModerator,
     isOwner,
     lastRead,
+    loadChannelAroundMessage,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
