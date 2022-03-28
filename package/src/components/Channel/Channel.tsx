@@ -817,12 +817,10 @@ const ChannelWithContext = <
     if (!channel) return;
     const unreadCount = channel.countUnread();
     if (unreadCount <= scrollToFirstUnreadThreshold) return;
-
-    channel.state.clearMessages();
-    channel.state.setIsUpToDate(false);
-
+    // temporarily clear existing messages so that messageList component gets a list change and does not scroll to any unread message first before loading completes
+    setMessages([]);
+    // query for messages around the last read date
     return channelQueryCall(async () => {
-      console.log('loadChannelAtFirstUnreadMessage');
       setLoading(true);
       const lastReadDate = channel.lastRead() || new Date(0);
       await channel.query({
@@ -831,14 +829,6 @@ const ChannelWithContext = <
           limit: 25,
         },
       });
-      const firstUnreadMessage = channel.state.messages.find(
-        (m) => m.created_at.getTime() > lastReadDate.getTime(),
-      );
-      // scroll to the first unread message and highlight it
-      if (firstUnreadMessage?.id) {
-        channel.state.loadMessageIntoState(firstUnreadMessage.id);
-        setTargetedMessage(firstUnreadMessage.id);
-      }
       setLoading(false);
       return;
       /**
@@ -924,8 +914,8 @@ const ChannelWithContext = <
     ({ messageId }) =>
       channelQueryCall(async () => {
         console.log('loadChannelAroundMessage', { messageId });
-        channel.state.setIsUpToDate(false);
-        console.log('setIsUpToDate: false');
+        // channel.state.setIsUpToDate(false);
+        // console.log('setIsUpToDate: false');
         // console.log('clear messages');
         // setMessages([]); // to trigger loading state
         setLoading(true);
@@ -1433,7 +1423,9 @@ const ChannelWithContext = <
   const loadMore: PaginatedMessageListContextValue<StreamChatGenerics>['loadMore'] = async (
     limit = 20,
   ) => {
+    console.log('loadMore', { hasMore, loadingMore });
     if (loadingMore || hasMore === false) {
+      console.log('skipped');
       return;
     }
     setLoadingMore(true);
