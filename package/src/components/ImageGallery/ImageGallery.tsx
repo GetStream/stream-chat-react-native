@@ -312,7 +312,10 @@ export const ImageGallery = <
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
-          (attachment.type === 'giphy' && attachment.giphy?.[giphyVersion]?.url) ||
+          (attachment.type === 'giphy' &&
+            (attachment.giphy?.[giphyVersion]?.url ||
+              attachment.thumb_url ||
+              attachment.image_url)) ||
           (attachment.type === 'image' &&
             !attachment.title_link &&
             !attachment.og_scrape_url &&
