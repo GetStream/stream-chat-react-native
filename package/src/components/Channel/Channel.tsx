@@ -558,13 +558,13 @@ const ChannelWithContext = <
 
   const [syncingChannel, setSyncingChannel] = useState(false);
 
+  const noMoreRecentMessages = useRef(false);
+
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
   const channelId = channel?.id || '';
-  // console.log({ cid: channel.cid, id: channel?.id });
   useEffect(() => {
     const initChannel = () => {
-      console.log('initChannel');
       if (!channel || !shouldSyncChannel) return;
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
@@ -573,16 +573,12 @@ const ChannelWithContext = <
        * If the channel is not initiated, then we need to do channel.watch, which is more expensive for backend than channel.query.
        */
       if (!channel.initialized) {
-        console.log('loadChannel -- not initialised');
         loadChannel();
         return;
       }
 
       if (messageId) {
-        console.log('loadChannelAtMessage --', { messageId });
-        // TODO: scroll on load to the id
         loadChannelAroundMessage({ messageId });
-        // loadChannelAtMessage({ messageId });
         return;
       }
 
@@ -590,10 +586,8 @@ const ChannelWithContext = <
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
-        console.log('initialScrollToFirstUnreadMessage --', { initialScrollToFirstUnreadMessage });
         loadChannelAtFirstUnreadMessage();
       } else {
-        console.log('just load it.. no unread etc');
         loadChannel();
       }
     };
@@ -789,11 +783,8 @@ const ChannelWithContext = <
     };
   }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
 
-  const channelQueryCall = async (queryCall: () => void = () => null) => {
+  const channelQueryCallRef = useRef(async (queryCall: () => void = () => null) => {
     setError(false);
-    // Skips setting loading state when there are messages in the channel
-    // setLoading(!channel?.state.messages.length);
-
     try {
       await queryCall();
       setLastRead(new Date());
@@ -808,7 +799,7 @@ const ChannelWithContext = <
       setLoading(false);
       setLastRead(new Date());
     }
-  };
+  });
 
   /**
    * Loads channel at first unread message.
@@ -820,7 +811,7 @@ const ChannelWithContext = <
     // temporarily clear existing messages so that messageList component gets a list change and does not scroll to any unread message first before loading completes
     setMessages([]);
     // query for messages around the last read date
-    return channelQueryCall(async () => {
+    return channelQueryCallRef.current(async () => {
       setLoading(true);
       const lastReadDate = channel.lastRead() || new Date(0);
       await channel.query({
@@ -830,78 +821,6 @@ const ChannelWithContext = <
         },
       });
       setLoading(false);
-      return;
-      /**
-       * Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
-       * Thus we need to handle these two cases separately.
-       */
-      if (unreadCount < globalUnreadCountLimit) {
-        /**
-         * We want to ensure that first unread message appears in the first window frame, when message list loads.
-         * If we assume that we have a exact count of unread messages, then first unread message is at offset = channel.countUnread().
-         * So we will query 2 messages after (and including) first unread message, and 30 messages before first unread
-         * message. So 2nd message in list is the first unread message. We can safely assume that 2nd message in list
-         * will be visible to user when list loads.
-         */
-        const offset = unreadCount - unreadMessagesOnInitialLoadLimit;
-        await query(offset, 30);
-
-        /**
-         * If the number of messages are not enough to fill the screen (we are making an assumption here that on overage 4 messages
-         * are enough to fill the screen), then we need to fetch some more messages on recent side.
-         */
-        if (
-          channel.state.messages.length &&
-          channel.state.messages.length <= scrollToFirstUnreadThreshold &&
-          !channel.state.isUpToDate
-        ) {
-          const mostRecentMessage = channel.state.messages[channel.state.messages.length - 1];
-          await queryAfterMessage(mostRecentMessage.id, 10 - channel.state.messages.length);
-        }
-      } else {
-        /**
-         * If the unread count is 255, then we don't have exact unread count anymore, to determine the offset for querying messages.
-         * In this case we are going to query messages using date params instead of offset-limit e.g., created_at_before_or_equal
-         * So we query 30 messages before the last time user read the channel - channel.lastRead()
-         */
-        await channel.query({
-          messages: {
-            created_at_before_or_equal: channel.lastRead() || new Date(0),
-            limit: 30,
-          },
-        });
-
-        /**
-         * If the number of messages are not enough to fill the screen (we are making an assumption here that on overage 4 messages
-         * are enough to fill the screen), then we need to fetch some more messages on recent side.
-         */
-        if (
-          channel.state.messages.length <= unreadMessagesOnInitialLoadLimit &&
-          !channel.state.isUpToDate
-        ) {
-          if (channel.state.messages.length > 0) {
-            const mostRecentMessage = channel.state.messages[channel.state.messages.length - 1];
-            await queryAfterMessage(mostRecentMessage.id, 5);
-          } else {
-            /**
-             * If we didn't get any messages, which means first unread message is the first ever message in channel.
-             * So simply fetch some messages after the lastRead datetime.
-             * We are keeping the limit as 10 here, as opposed to 30 in cases above. The reason being, we want the list
-             * to be scrolled upto first unread message. So in this case we will need the scroll to start at top of the list.
-             * React native provides a prop `initialScrollIndex` on FlatList, but it doesn't really work well
-             * especially for dynamic sized content. So when the list loads, we are just going to manually scroll
-             * to top of the list - flRef.current.scrollToEnd(). This autoscroll behavior is not great in general, but its less
-             * bad for scrolling up 10 messages than scrolling up 30 messages.
-             */
-            await channel.query({
-              messages: {
-                created_at_after: channel.lastRead() || new Date(0),
-                limit: 10,
-              },
-            });
-          }
-        }
-      }
     });
   };
 
@@ -912,12 +831,7 @@ const ChannelWithContext = <
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     ({ messageId }) =>
-      channelQueryCall(async () => {
-        console.log('loadChannelAroundMessage', { messageId });
-        // channel.state.setIsUpToDate(false);
-        // console.log('setIsUpToDate: false');
-        // console.log('clear messages');
-        // setMessages([]); // to trigger loading state
+      channelQueryCallRef.current(async () => {
         setLoading(true);
         if (messageId) {
           await channel.state.loadMessageIntoState(messageId);
@@ -943,7 +857,7 @@ const ChannelWithContext = <
     before = 30,
     messageId,
   }) =>
-    channelQueryCall(async () => {
+    channelQueryCallRef.current(async () => {
       await queryAtMessage({ after, before, messageId });
 
       if (messageId) {
@@ -952,7 +866,7 @@ const ChannelWithContext = <
     });
 
   const loadChannel = () =>
-    channelQueryCall(async () => {
+    channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
         channel?.state.setIsUpToDate(true);
@@ -1109,29 +1023,10 @@ const ChannelWithContext = <
   };
 
   const reloadChannel = () =>
-    channelQueryCall(async () => {
-      // await channel?.watch();
-      console.log('reload channel at the latest');
+    channelQueryCallRef.current(async () => {
       await channel.state.loadMessageIntoState('latest');
       channel?.state.setIsUpToDate(true);
     });
-
-  /**
-   * Makes a query to load messages in channel.
-   */
-  const query = async (offset = 0, limit = 30) => {
-    if (!channel) return;
-    channel.state.clearMessages();
-
-    await channel.query({
-      messages: {
-        limit,
-        offset,
-      },
-      watch: true,
-    });
-    channel.state.setIsUpToDate(offset === 0);
-  };
 
   /**
    * @deprecated
@@ -1149,7 +1044,6 @@ const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
-    // equivalent to setMessages([]) ??
     setMessages([...channel.state.messages]);
     if (!messageId) {
       await channel.query({
@@ -1423,9 +1317,7 @@ const ChannelWithContext = <
   const loadMore: PaginatedMessageListContextValue<StreamChatGenerics>['loadMore'] = async (
     limit = 20,
   ) => {
-    console.log('loadMore', { hasMore, loadingMore });
     if (loadingMore || hasMore === false) {
-      console.log('skipped');
       return;
     }
     setLoadingMore(true);
@@ -1444,7 +1336,6 @@ const ChannelWithContext = <
 
     try {
       if (channel) {
-        console.log('querying for more!!', { limit });
         const queryResponse = await channel.query({
           messages: { id_lt: oldestID, limit },
         });
@@ -1453,7 +1344,6 @@ const ChannelWithContext = <
         loadMoreFinished(updatedHasMore, channel.state.messages);
       }
     } catch (err) {
-      console.warn('Message pagination request failed with error', err);
       if (err instanceof Error) {
         setError(err);
       } else {
@@ -1466,7 +1356,7 @@ const ChannelWithContext = <
 
   const loadMoreRecent: PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent'] =
     async (limit = 5) => {
-      if (channel?.state.isUpToDate) {
+      if (noMoreRecentMessages.current) {
         return;
       }
 
@@ -1481,12 +1371,21 @@ const ChannelWithContext = <
 
       try {
         if (channel) {
-          console.log('querying for more, but after messageId!!', { limit });
-          await queryAfterMessage(recentMessage.id, limit);
+          const state = await channel.query({
+            messages: {
+              id_gte: recentMessage.id,
+              limit,
+            },
+            watch: true,
+          });
+          if (state.messages.length < limit) {
+            noMoreRecentMessages.current = true;
+          } else {
+            noMoreRecentMessages.current = false;
+          }
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
-        console.warn('Message pagination request failed with error', err);
         if (err instanceof Error) {
           setError(err);
         } else {
