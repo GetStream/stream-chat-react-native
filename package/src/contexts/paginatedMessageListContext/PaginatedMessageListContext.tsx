@@ -13,6 +13,10 @@ export type PaginatedMessageListContextValue<
    */
   hasMore: boolean;
   /**
+   * Flag to indicate that are no more recent messages to be loaded
+   */
+  hasNoMoreRecentMessagesToLoad: boolean;
+  /**
    * Is loading more messages
    */
   loadingMore: boolean;

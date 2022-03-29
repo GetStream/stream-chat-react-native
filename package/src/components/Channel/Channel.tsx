@@ -562,7 +562,7 @@ const ChannelWithContext = <
    * Flag to track if we know for sure that there are no more recent messages to load.
    * This is necessary to avoid unnecessary api calls to load recent messages on pagination.
    */
-  const noMoreRecentMessages = useRef(false);
+  const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(false);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
@@ -836,7 +836,7 @@ const ChannelWithContext = <
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     ({ messageId }) =>
       channelQueryCallRef.current(async () => {
-        noMoreRecentMessages.current = false; // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
+        setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
         setLoading(true);
         if (messageId) {
           await channel.state.loadMessageIntoState(messageId);
@@ -874,7 +874,7 @@ const ChannelWithContext = <
     channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
-        noMoreRecentMessages.current = true;
+        setHasNoMoreRecentMessagesToLoad(true);
         channel?.state.setIsUpToDate(true);
       }
       return;
@@ -993,7 +993,7 @@ const ChannelWithContext = <
         finalMessages = state.messages;
       }
 
-      noMoreRecentMessages.current = true;
+      setHasNoMoreRecentMessagesToLoad(true);
       channel.state.setIsUpToDate(true);
 
       channel.state.clearMessages();
@@ -1027,7 +1027,10 @@ const ChannelWithContext = <
 
   const reloadChannel = () =>
     channelQueryCallRef.current(async () => {
+      setLoading(true);
       await channel.state.loadMessageIntoState('latest');
+      setLoading(false);
+      setHasNoMoreRecentMessagesToLoad(true);
       channel?.state.setIsUpToDate(true);
     });
 
@@ -1359,7 +1362,7 @@ const ChannelWithContext = <
 
   const loadMoreRecent: PaginatedMessageListContextValue<StreamChatGenerics>['loadMoreRecent'] =
     async (limit = 5) => {
-      if (noMoreRecentMessages.current) {
+      if (hasNoMoreRecentMessagesToLoad) {
         return;
       }
 
@@ -1381,11 +1384,7 @@ const ChannelWithContext = <
             },
             watch: true,
           });
-          if (state.messages.length < limit) {
-            noMoreRecentMessages.current = true;
-          } else {
-            noMoreRecentMessages.current = false;
-          }
+          setHasNoMoreRecentMessagesToLoad(state.messages.length < limit);
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
@@ -1604,6 +1603,7 @@ const ChannelWithContext = <
   const messageListContext = useCreatePaginatedMessageListContext({
     channelId,
     hasMore,
+    hasNoMoreRecentMessagesToLoad,
     loadingMore: loadingMoreProp !== undefined ? loadingMoreProp : loadingMore,
     loadingMoreRecent:
       loadingMoreRecentProp !== undefined ? loadingMoreRecentProp : loadingMoreRecent,

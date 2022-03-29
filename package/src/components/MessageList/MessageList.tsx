@@ -126,7 +126,10 @@ type MessageListPropsWithContext<
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
   Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImages'> &
-  Pick<PaginatedMessageListContextValue<StreamChatGenerics>, 'loadMore' | 'loadMoreRecent'> &
+  Pick<
+    PaginatedMessageListContextValue<StreamChatGenerics>,
+    'hasNoMoreRecentMessagesToLoad' | 'loadMore' | 'loadMoreRecent'
+  > &
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
@@ -239,6 +242,7 @@ const MessageListWithContext = <
     EmptyStateIndicator,
     FlatList,
     FooterComponent = LoadingMoreIndicator,
+    hasNoMoreRecentMessagesToLoad,
     HeaderComponent = InlineLoadingMoreRecentIndicator,
     hideStickyDateHeader,
     initialScrollToFirstUnreadMessage,
@@ -359,29 +363,6 @@ const MessageListWithContext = <
   useEffect(() => {
     channelLastReadRef.current = channel?.initialized ? channel.lastRead() : undefined;
   }, [channel]);
-  /**
-   * If the top message in the list is unread, then we should scroll to top of the list.
-   * This is to handle the case when entire message list is unread.
-   * This scroll get set only on load, and never again.
-   */
-  // const setInitialScrollIfNeeded = () => {
-  //   // If the feature is disabled or initial scroll position is already set.
-  //   if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) {
-  //     initialScrollSet.current = true;
-  //     return;
-  //   }
-  //   if (isUnreadMessage(topMessageBeforeUpdate.current, channelLastRead.current)) {
-  //     if (flatListRef.current) {
-  //       console.log('scroll to end');
-  //       // flatListRef.current.scrollToEnd();
-  //     }
-  //     setTimeout(() => {
-  //       initialScrollSet.current = true;
-  //     }, 500);
-  //   } else if (!initialScrollSet.current) {
-  //     initialScrollSet.current = true;
-  //   }
-  // };
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
@@ -755,7 +736,7 @@ const MessageListWithContext = <
 
     // Show scrollToBottom button once scroll position goes beyond 300.
     const isScrollAtBottom = offset <= 300;
-    const showScrollToBottomButton = !isScrollAtBottom;
+    const showScrollToBottomButton = !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
 
     const shouldMarkRead =
       !threadList && offset <= 0 && channel?.state.isUpToDate && channel.countUnread() > 0;
@@ -772,7 +753,7 @@ const MessageListWithContext = <
   };
 
   const goToNewMessages = async () => {
-    if (!channel?.state.isUpToDate) {
+    if (!hasNoMoreRecentMessagesToLoad) {
       resetPaginationTrackersRef.current();
       await reloadChannel();
     } else if (flatListRef.current) {
@@ -845,7 +826,6 @@ const MessageListWithContext = <
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
    */
   useEffect(() => {
-    // console.log('!!! messageList change !!!', { len: messageList.length });
     if (scrollToDebounceTimeoutRef.current) clearTimeout(scrollToDebounceTimeoutRef.current);
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
       let messageIdToScroll = messageIdToScrollToRef.current; // goToMessage method might have requested to scroll to a message
@@ -1088,7 +1068,8 @@ export const MessageList = <
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<StreamChatGenerics>();
-  const { loadMore, loadMoreRecent } = usePaginatedMessageListContext<StreamChatGenerics>();
+  const { hasNoMoreRecentMessagesToLoad, loadMore, loadMoreRecent } =
+    usePaginatedMessageListContext<StreamChatGenerics>();
   const { overlay } = useOverlayContext();
   const { loadMoreThread, thread } = useThreadContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
@@ -1107,6 +1088,7 @@ export const MessageList = <
         enableMessageGroupingByUser,
         error,
         FlatList,
+        hasNoMoreRecentMessagesToLoad,
         hideStickyDateHeader,
         initialScrollToFirstUnreadMessage,
         InlineDateSeparator,
