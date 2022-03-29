@@ -755,7 +755,7 @@ const MessageListWithContext = <
 
     // Show scrollToBottom button once scroll position goes beyond 300.
     const isScrollAtBottom = offset <= 300;
-    const showScrollToBottomButton = !isScrollAtBottom || !channel?.state.isUpToDate;
+    const showScrollToBottomButton = !isScrollAtBottom;
 
     const shouldMarkRead =
       !threadList && offset <= 0 && channel?.state.isUpToDate && channel.countUnread() > 0;
@@ -764,11 +764,7 @@ const MessageListWithContext = <
       markRead();
     }
 
-    if (showScrollToBottomButton && !scrollToBottomButtonVisible) {
-      setScrollToBottomButtonVisible(true);
-    } else if (!showScrollToBottomButton && scrollToBottomButtonVisible) {
-      setScrollToBottomButtonVisible(false);
-    }
+    setScrollToBottomButtonVisible(showScrollToBottomButton);
 
     if (onListScroll) {
       onListScroll(event);
@@ -1017,7 +1013,6 @@ const MessageListWithContext = <
         testID='message-flat-list'
         viewabilityConfig={flatListViewabilityConfig}
         {...additionalFlatListProps}
-        initialNumToRender={25}
       />
       {!loading && (
         <>
