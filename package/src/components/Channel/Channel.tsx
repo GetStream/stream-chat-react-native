@@ -558,6 +558,10 @@ const ChannelWithContext = <
 
   const [syncingChannel, setSyncingChannel] = useState(false);
 
+  /**
+   * Flag to track if we know for sure that there are no more recent messages to load.
+   * This is necessary to avoid unnecessary api calls to load recent messages on pagination.
+   */
   const noMoreRecentMessages = useRef(false);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
@@ -832,6 +836,7 @@ const ChannelWithContext = <
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     ({ messageId }) =>
       channelQueryCallRef.current(async () => {
+        noMoreRecentMessages.current = false; // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
         setLoading(true);
         if (messageId) {
           await channel.state.loadMessageIntoState(messageId);
@@ -869,12 +874,9 @@ const ChannelWithContext = <
     channelQueryCallRef.current(async () => {
       if (!channel?.initialized || !channel.state.isUpToDate) {
         await channel?.watch();
+        noMoreRecentMessages.current = true;
         channel?.state.setIsUpToDate(true);
       }
-      console.log('nothing to load!', {
-        initialized: channel?.initialized,
-        isUpToDate: !channel.state.isUpToDate,
-      });
       return;
     });
 
@@ -991,6 +993,7 @@ const ChannelWithContext = <
         finalMessages = state.messages;
       }
 
+      noMoreRecentMessages.current = true;
       channel.state.setIsUpToDate(true);
 
       channel.state.clearMessages();
