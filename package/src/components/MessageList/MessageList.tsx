@@ -493,14 +493,14 @@ const MessageListWithContext = <
       }
     };
 
-    if (threadList || channel?.state.isUpToDate) {
+    if (threadList || hasNoMoreRecentMessagesToLoad) {
       scrollToBottomIfNeeded();
     } else if (!scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
     }
 
     if (
-      !channel?.state.isUpToDate &&
+      !hasNoMoreRecentMessagesToLoad &&
       flatListRef.current &&
       messageListLengthBeforeUpdate.current === 0 &&
       messageListLengthAfterUpdate < 10
@@ -517,12 +517,8 @@ const MessageListWithContext = <
   }, [messageListLengthAfterUpdate, topMessageAfterUpdate?.id]);
 
   useEffect(() => {
-    if (!channel?.state.isUpToDate && autoscrollToTop) {
-      setAutoscrollToTop(false);
-    } else if (channel?.state.isUpToDate && !autoscrollToTop) {
-      setAutoscrollToTop(true);
-    }
-  }, [messageListLengthAfterUpdate]);
+    setAutoscrollToTop(hasNoMoreRecentMessagesToLoad);
+  }, [messageList, hasNoMoreRecentMessagesToLoad]);
 
   const renderItem = ({
     index,
@@ -605,7 +601,6 @@ const MessageListWithContext = <
         )}
         {/* Adding indicator below the messages, since the list is inverted */}
         {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
-        <Text>{index}</Text>
       </>
     );
   };
@@ -739,7 +734,7 @@ const MessageListWithContext = <
     const showScrollToBottomButton = !isScrollAtBottom || !hasNoMoreRecentMessagesToLoad;
 
     const shouldMarkRead =
-      !threadList && offset <= 0 && channel?.state.isUpToDate && channel.countUnread() > 0;
+      !threadList && offset <= 0 && hasNoMoreRecentMessagesToLoad && channel.countUnread() > 0;
 
     if (shouldMarkRead) {
       markRead();
@@ -969,7 +964,7 @@ const MessageListWithContext = <
         contentContainerStyle={[styles.contentContainer, contentContainer]}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-        extraData={disabled || !channel?.state.isUpToDate}
+        extraData={disabled || !hasNoMoreRecentMessagesToLoad}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
