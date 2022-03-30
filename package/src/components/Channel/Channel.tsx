@@ -1388,6 +1388,7 @@ const ChannelWithContext = <
           loadMoreRecentFinished(channel.state.messages);
         }
       } catch (err) {
+        console.warn('Message pagination request failed with error', err);
         if (err instanceof Error) {
           setError(err);
         } else {
