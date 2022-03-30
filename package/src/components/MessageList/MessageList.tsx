@@ -408,7 +408,6 @@ const MessageListWithContext = <
       if (viewableItems && !hideStickyDateHeader) {
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
-      // setInitialScrollIfNeeded();
     },
   );
 
