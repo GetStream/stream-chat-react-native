@@ -171,12 +171,6 @@ const debounceOptions = {
   trailing: true,
 };
 
-/**
- * Number of unread messages to show in first frame, when channel loads at first
- * unread message. Only applicable if unread count > scrollToFirstUnreadThreshold.
- */
-const unreadMessagesOnInitialLoadLimit = 2;
-
 export type ChannelPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelContextValue<StreamChatGenerics>, 'channel'> &
@@ -330,11 +324,6 @@ export type ChannelPropsWithContext<
       updatedMessage: Parameters<StreamChat<StreamChatGenerics>['updateMessage']>[0],
     ) => ReturnType<StreamChat<StreamChatGenerics>['updateMessage']>;
     /**
-     * E.g. Once unread count exceeds 255, display unread count as 255+ instead of actual count.
-     * Also 255 is the limit per Stream chat channel for unread count.
-     */
-    globalUnreadCountLimit?: number;
-    /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
@@ -431,7 +420,6 @@ const ChannelWithContext = <
     Giphy = GiphyDefault,
     giphyEnabled,
     giphyVersion = 'fixed_height',
-    globalUnreadCountLimit = 255,
     handleBlock,
     handleCopy,
     handleDelete,
