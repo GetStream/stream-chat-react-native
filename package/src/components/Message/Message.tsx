@@ -113,7 +113,6 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
-    | 'isMessageEqual'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
@@ -684,7 +683,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     goToMessage: prevGoToMessage,
     isAttachmentEqual,
-    isMessageEqual,
     isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
@@ -734,7 +732,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.pinned === nextMessage.pinned &&
+    prevMessage.updated_at === nextMessage.updated_at;
 
   if (!messageEqual) return false;
 
@@ -796,10 +795,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const targetedMessageEqual = prevIsTargetedMessage === nextIsTargetedMessage;
   if (!targetedMessageEqual) return false;
-
-  if (isMessageEqual) {
-    return !!isMessageEqual(prevMessage, nextMessage);
-  }
 
   return true;
 };
