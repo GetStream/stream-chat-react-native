@@ -5,7 +5,6 @@ import {
   Platform,
   ScrollViewProps,
   StyleSheet,
-  Text,
   View,
   ViewToken,
 } from 'react-native';
