@@ -86,6 +86,12 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
+  const duration = videoDuration
+    ? videoDuration / 3600 >= 1
+      ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
+      : dayjs.duration(videoDuration, 'second').format('mm:ss')
+    : null;
+
   return (
     <TouchableOpacity onPress={onPress}>
       <ImageBackground
@@ -107,11 +113,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         {type === 'video' && (
           <View style={styles.videoView}>
             <Video height={20} pathFill={white} width={25} />
-            {videoDuration ? (
-              <Text style={styles.timeColor}>
-                {dayjs.duration(videoDuration, 'second').format('HH:mm:ss')}
-              </Text>
-            ) : null}
+            {videoDuration ? <Text style={styles.timeColor}>{duration}</Text> : null}
           </View>
         )}
       </ImageBackground>
