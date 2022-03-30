@@ -811,12 +811,6 @@ const MessageListWithContext = <
     [messageList],
   );
 
-  useEffect(() => {
-    if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
-      messageIdToScrollToRef.current = targetedMessage;
-    }
-  }, [targetedMessage]);
-
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
    * Note: This effect fires on every list change with a small debounce so that scrolling isnt abrupted by an immediate rerender
