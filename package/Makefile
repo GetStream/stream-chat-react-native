@@ -2,7 +2,7 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = ../examples
-NATIVE_EXAMPLES = NativeMessaging SampleApp TypeScriptMessaging
+NATIVE_EXAMPLES = SampleApp TypeScriptMessaging
 NATIVE_EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(NATIVE_EXAMPLES))
 NATIVE_EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(NATIVE_EXAMPLES_APPS))
 
