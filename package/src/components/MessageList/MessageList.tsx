@@ -334,6 +334,11 @@ const MessageListWithContext = <
   const channelResyncScrollSet = useRef<boolean>(true);
 
   /**
+   * The timeout id used to debounce our scrollToIndex calls on messageList updates
+   */
+  const scrollToDebounceTimeoutRef = useRef<NodeJS.Timeout>();
+
+  /**
    * If a messageId was requested to scroll to but was unloaded,
    * this flag keeps track of it to scroll to it after loading the message
    */
@@ -811,8 +816,6 @@ const MessageListWithContext = <
       messageIdToScrollToRef.current = targetedMessage;
     }
   }, [targetedMessage]);
-
-  const scrollToDebounceTimeoutRef = useRef<NodeJS.Timeout>();
 
   /**
    * Check if a messageId needs to be scrolled to after list loads, and scroll to it
