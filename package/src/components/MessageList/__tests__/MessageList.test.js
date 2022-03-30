@@ -38,7 +38,7 @@ describe('MessageList', () => {
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <MessageList />
+            <MessageList hasNoMoreRecentMessagesToLoad />
           </Channel>
         </Chat>
       </OverlayProvider>,
