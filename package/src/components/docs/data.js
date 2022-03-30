@@ -1,7 +1,6 @@
 /* global require */
-
-const StreamChat = require('stream-chat').StreamChat;
 const Dayjs = require('dayjs');
+const StreamChat = require('stream-chat').StreamChat;
 export const client = new StreamChat('qk4nn7rpcn75');
 
 client.connectUser(
@@ -18,8 +17,8 @@ export const channel = client.channel('messaging', 'general', {
 });
 
 export const channelContext = {
-  client,
   channel,
+  client,
 };
 
 export const translationContext = {
@@ -27,13 +26,13 @@ export const translationContext = {
   tDateTimeParser: (date) => Dayjs(date),
 };
 export const suggestionsContext = {
-  openSuggestions: () => {},
   closeSuggestions: () => {},
+  openSuggestions: () => {},
   setInputBoxContainerRef: () => {},
   updateSuggestions: () => {},
 };
 
-const filters = { type: 'team', example: 1 };
+const filters = { example: 1, type: 'team' };
 const sort = { last_message_at: -1 };
 
 export const channels = client.queryChannels(filters, sort, {
@@ -41,11 +40,14 @@ export const channels = client.queryChannels(filters, sort, {
 });
 
 export const message = {
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   attachments: [],
   command: '',
   created_at: '2019-01-25T00:18:59.675Z',
   html:
     '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   own_reactions: [
     {
       created_at: '2019-01-25T16:24:00.173967Z',
@@ -111,8 +113,8 @@ export const message = {
     },
   ],
   reply_count: 0,
+  status: 'received',
   text: 'Hey this is getstream message',
-  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   type: 'regular',
   updated_at: '2019-01-25T16:24:00.181Z',
   user: {
@@ -125,12 +127,11 @@ export const message = {
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  __html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
-  status: 'received',
 };
 
 export const messageWithImages = {
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   attachments: [
     {
       image_url:
@@ -164,6 +165,7 @@ export const messageWithImages = {
   command: '',
   created_at: '2019-01-25T00:18:59.675Z',
   html: '',
+  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   own_reactions: [
     {
       created_at: '2019-01-25T16:24:00.173967Z',
@@ -229,8 +231,8 @@ export const messageWithImages = {
     },
   ],
   reply_count: 0,
+  status: 'received',
   text: 'This message contains images',
-  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   type: 'regular',
   updated_at: '2019-01-25T16:24:00.181Z',
   user: {
@@ -243,12 +245,12 @@ export const messageWithImages = {
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  __html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
-  status: 'received',
+  
 };
 
 export const messageWithUrlPreview = {
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   attachments: [
     {
       image_url:
@@ -267,6 +269,7 @@ export const messageWithUrlPreview = {
   created_at: '2019-01-25T00:18:59.675Z',
   html:
     '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   own_reactions: [
     {
       created_at: '2019-01-25T16:24:00.173967Z',
@@ -332,8 +335,8 @@ export const messageWithUrlPreview = {
     },
   ],
   reply_count: 0,
+  status: 'received',
   text: 'https://unsplash.com/photos/lxuB4abGzXc',
-  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
   type: 'regular',
   updated_at: '2019-01-25T16:24:00.181Z',
   user: {
@@ -346,12 +349,11 @@ export const messageWithUrlPreview = {
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  __html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
-  status: 'received',
 };
 
 export const thread = {
+  __html:
+    '<p>this place looks amazing: <a href="https://unsplash.com/photos/f3hDGOHptrM" rel="nofollow">https://unsplash.com/photos/f3hDGOHptrM</a></p>\n',
   attachments: [
     {
       image_url:
@@ -370,12 +372,13 @@ export const thread = {
   created_at: '2019-01-25T21:25:45.306Z',
   html:
     '<p>this place looks amazing: <a href="https://unsplash.com/photos/f3hDGOHptrM" rel="nofollow">https://unsplash.com/photos/f3hDGOHptrM</a></p>\n',
+  id: 'thierry-ec4eac2b-1278-4f49-8b20-2ebcd76dace5',
   own_reactions: [],
   reaction_counts: null,
   reactions: [],
   reply_count: 2,
+  status: 'received',
   text: 'this place looks amazing: https://unsplash.com/photos/f3hDGOHptrM',
-  id: 'thierry-ec4eac2b-1278-4f49-8b20-2ebcd76dace5',
   type: 'regular',
   updated_at: '2019-01-25T21:25:45.306Z',
   user: {
@@ -385,24 +388,24 @@ export const thread = {
     role: 'user',
     updated_at: '2019-01-25T21:27:39.606466Z',
   },
-  __html:
-    '<p>this place looks amazing: <a href="https://unsplash.com/photos/f3hDGOHptrM" rel="nofollow">https://unsplash.com/photos/f3hDGOHptrM</a></p>\n',
-  status: 'received',
+  
 };
 
 export const threadMessages = [
   {
+    __html: '<p>whow, where is that?</p>\n',
     attachments: [],
     command: '',
     created_at: new Date('2019-01-25T21:26:06.346Z'),
     html: '<p>whow, where is that?</p>\n',
+    id: 'thierry-97a02ade-3a38-4400-9377-001c10fc2663',
     own_reactions: [],
     parent_id: '6312fb0b-0c94-4107-a036-376ac5ab650b',
     reaction_counts: null,
     reactions: [],
     reply_count: 0,
+    status: 'received',
     text: 'whow, where is that?',
-    id: 'thierry-97a02ade-3a38-4400-9377-001c10fc2663',
     type: 'reply',
     updated_at: '2019-01-25T21:26:06.346Z',
     user: {
@@ -415,21 +418,21 @@ export const threadMessages = [
       role: 'user',
       updated_at: '2019-01-25T21:27:39.606466Z',
     },
-    __html: '<p>whow, where is that?</p>\n',
-    status: 'received',
   },
   {
+    __html: '<p>it’s soo green, amazing</p>\n',
     attachments: [],
     command: '',
     created_at: new Date('2019-01-25T21:26:11.863Z'),
     html: '<p>it’s soo green, amazing</p>\n',
+    id: 'thierry-264fdc4d-03c5-4f93-b97c-cfe5612968aa',
     own_reactions: [],
     parent_id: '6312fb0b-0c94-4107-a036-376ac5ab650b',
     reaction_counts: null,
     reactions: [],
     reply_count: 0,
+    status: 'received',
     text: "it's soo green, amazing",
-    id: 'thierry-264fdc4d-03c5-4f93-b97c-cfe5612968aa',
     type: 'reply',
     updated_at: '2019-01-25T21:26:11.863Z',
     user: {
@@ -442,24 +445,24 @@ export const threadMessages = [
       role: 'user',
       updated_at: '2019-01-25T21:27:39.606466Z',
     },
-    __html: '<p>it’s soo green, amazing</p>\n',
-    status: 'received',
   },
 ];
 
 export const messages = [
   {
+    __html: '<p>whow, where is that?</p>\n',
     attachments: [],
     command: '',
     created_at: new Date('2019-01-25T21:26:06.346Z'),
     html: '<p>whow, where is that?</p>\n',
+    id: 'thierry-97a02ade-3a38-4400-9377-001c10fc2663',
     own_reactions: [],
     parent_id: '6312fb0b-0c94-4107-a036-376ac5ab650b',
     reaction_counts: null,
     reactions: [],
     reply_count: 0,
+    status: 'received',
     text: 'whow, where is that?',
-    id: 'thierry-97a02ade-3a38-4400-9377-001c10fc2663',
     type: 'reply',
     updated_at: '2019-01-25T21:26:06.346Z',
     user: {
@@ -472,21 +475,21 @@ export const messages = [
       role: 'user',
       updated_at: '2019-01-25T21:27:39.606466Z',
     },
-    __html: '<p>whow, where is that?</p>\n',
-    status: 'received',
   },
   {
+    __html: '<p>it’s soo green, amazing</p>\n',
     attachments: [],
     command: '',
     created_at: new Date('2019-01-25T21:26:11.863Z'),
     html: '<p>it’s soo green, amazing</p>\n',
+    id: 'thierry-264fdc4d-03c5-4f93-b97c-cfe5612968aa',
     own_reactions: [],
     parent_id: '6312fb0b-0c94-4107-a036-376ac5ab650b',
     reaction_counts: null,
     reactions: [],
     reply_count: 0,
+    status: 'received',
     text: "it's soo green, amazing",
-    id: 'thierry-264fdc4d-03c5-4f93-b97c-cfe5612968aa',
     type: 'reply',
     updated_at: '2019-01-25T21:26:11.863Z',
     user: {
@@ -499,8 +502,6 @@ export const messages = [
       role: 'user',
       updated_at: '2019-01-25T21:27:39.606466Z',
     },
-    __html: '<p>it’s soo green, amazing</p>\n',
-    status: 'received',
   },
 ];
 
@@ -516,12 +517,12 @@ export const users = [
 ];
 
 export const MessageMock = {
-  handleFlag: console.log,
-  handleMute: console.log,
-  handleEdit: console.log,
-  handleDelete: console.log,
   canDeleteMessage: () => true,
   canEditMessage: () => true,
+  handleDelete: console.log,
+  handleEdit: console.log,
+  handleFlag: console.log,
+  handleMute: console.log,
 };
 
 // Based on: https://javascript.info/promise-basics#example-loadscript

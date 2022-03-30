@@ -47,6 +47,7 @@ exports[`MessageReplies should render message replies 1`] = `
   </View>
   <View
     accessible={true}
+    collapsable={false}
     focusable={true}
     onClick={[Function]}
     onResponderGrant={[Function]}

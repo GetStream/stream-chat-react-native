@@ -1,31 +1,13 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { Channel } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
 
-export const useChannelMembersStatus = (
-  channel: Channel<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >,
-) => {
+export const useChannelMembersStatus = (channel: Channel<StreamChatGenerics>) => {
   const watchersCount = channel.state.watcher_count;
   const memberCount = channel?.data?.member_count;
 
@@ -50,7 +32,7 @@ export const useChannelMembersStatus = (
   };
 
   const [status, setStatus] = useState(getStatus());
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   useEffect(() => {
     setStatus(getStatus());

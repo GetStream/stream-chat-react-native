@@ -3,6 +3,8 @@ import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
 
+import type { Attachment } from 'stream-chat';
+
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
   MessageInputContextValue,
@@ -17,16 +19,8 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { emojiRegex } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
@@ -61,15 +55,9 @@ const styles = StyleSheet.create({
 });
 
 type ReplyPropsWithContext<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'quotedMessage'> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'FileAttachmentIcon' | 'MessageAvatar'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<MessageInputContextValue<StreamChatGenerics>, 'quotedMessage'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon' | 'MessageAvatar'> &
   Pick<TranslationContextValue, 't'> & {
     attachmentSize?: number;
     styles?: Partial<{
@@ -82,15 +70,9 @@ type ReplyPropsWithContext<
   };
 
 const ReplyWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReplyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     FileAttachmentIcon,
@@ -122,7 +104,7 @@ const ReplyWithContext = <
 
   if (typeof quotedMessage === 'boolean') return null;
 
-  const lastAttachment = quotedMessage.attachments?.slice(-1)[0];
+  const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
 
   const messageType = lastAttachment
     ? lastAttachment.type === 'file' ||
@@ -179,16 +161,25 @@ const ReplyWithContext = <
             <Image
               onError={() => setError(true)}
               source={{
-                uri:
-                  lastAttachment.image_url ||
-                  lastAttachment.thumb_url ||
-                  lastAttachment.og_scrape_url,
+                uri: getResizedImageUrl({
+                  height:
+                    stylesProp.imageAttachment?.height ||
+                    imageAttachment?.height ||
+                    styles.imageAttachment.height,
+                  url: (lastAttachment.image_url ||
+                    lastAttachment.thumb_url ||
+                    lastAttachment.og_scrape_url) as string,
+                  width:
+                    stylesProp.imageAttachment?.width ||
+                    imageAttachment?.width ||
+                    styles.imageAttachment.width,
+                }),
               }}
               style={[styles.imageAttachment, imageAttachment, stylesProp.imageAttachment]}
             />
           ) : null
         ) : null}
-        <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+        <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
             quotedMessage.deleted_at
               ? merge({ em: { color: grey } }, deletedText)
@@ -243,17 +234,9 @@ const ReplyWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ReplyPropsWithContext<StreamChatGenerics>,
+  nextProps: ReplyPropsWithContext<StreamChatGenerics>,
 ) => {
   const { quotedMessage: prevQuotedMessage } = prevProps;
   const { quotedMessage: nextQuotedMessage } = nextProps;
@@ -275,39 +258,27 @@ const areEqual = <
 const MemoizedReply = React.memo(ReplyWithContext, areEqual) as typeof ReplyWithContext;
 
 export type ReplyProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ReplyPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for reply
  */
 export const Reply = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ReplyProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ReplyProps<StreamChatGenerics>,
 ) => {
-  const { message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { message } = useMessageContext<StreamChatGenerics>();
 
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
-    useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useMessagesContext<StreamChatGenerics>();
 
-  const { editing, quotedMessage } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { editing, quotedMessage } = useMessageInputContext<StreamChatGenerics>();
 
   const quotedEditingMessage = (
     typeof editing !== 'boolean' ? editing?.quoted_message || false : false
-  ) as MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['quotedMessage'];
+  ) as MessageInputContextValue<StreamChatGenerics>['quotedMessage'];
 
   const { t } = useTranslationContext();
 
@@ -317,15 +288,7 @@ export const Reply = <
         FileAttachmentIcon,
         MessageAvatar,
         quotedMessage: message
-          ? (message.quoted_message as MessageInputContextValue<
-              At,
-              Ch,
-              Co,
-              Ev,
-              Me,
-              Re,
-              Us
-            >['quotedMessage'])
+          ? (message.quoted_message as MessageInputContextValue<StreamChatGenerics>['quotedMessage'])
           : quotedMessage || quotedEditingMessage,
         t,
       }}

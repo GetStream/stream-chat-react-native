@@ -107,7 +107,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
       ]
     }
   >
-    Grant and 1 more are typing
+    Arthur and 1 more are typing
   </Text>
 </View>
 `;

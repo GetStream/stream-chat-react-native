@@ -12,54 +12,48 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 
 export type ActionHandler = (name: string, value: string) => void;
 
 export type AttachmentPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+  MessagesContextValue<StreamChatGenerics>,
+  | 'AttachmentActions'
+  | 'Card'
+  | 'FileAttachment'
+  | 'Gallery'
+  | 'giphyVersion'
+  | 'Giphy'
+  | 'UrlPreview'
 > & {
   /**
    * The attachment to render
    */
-  attachment: AttachmentType<At>;
+  attachment: AttachmentType<StreamChatGenerics>;
 };
 
 const AttachmentWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment, AttachmentActions, Card, FileAttachment, Gallery, Giphy, UrlPreview } = props;
+  const {
+    attachment,
+    AttachmentActions,
+    Card,
+    FileAttachment,
+    Gallery,
+    Giphy,
+    giphyVersion,
+    UrlPreview,
+  } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    return <Giphy attachment={attachment} />;
+    return <Giphy attachment={attachment} giphyVersion={giphyVersion} />;
   }
 
   if (
@@ -103,17 +97,9 @@ const AttachmentWithContext = <
   }
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
+  nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const { attachment: prevAttachment } = prevProps;
   const { attachment: nextAttachment } = nextProps;
@@ -132,34 +118,28 @@ const MemoizedAttachment = React.memo(
 ) as typeof AttachmentWithContext;
 
 export type AttachmentProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+    MessagesContextValue<StreamChatGenerics>,
+    | 'AttachmentActions'
+    | 'Card'
+    | 'FileAttachment'
+    | 'Gallery'
+    | 'Giphy'
+    | 'giphyVersion'
+    | 'UrlPreview'
   >
 > &
-  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
+  Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
 
 /**
  * Attachment - The message attachment
  */
 export const Attachment = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: AttachmentProps<StreamChatGenerics>,
 ) => {
   const {
     attachment,
@@ -168,6 +148,7 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
+    giphyVersion: PropGiphyVersion,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -177,8 +158,9 @@ export const Attachment = <
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
+    giphyVersion: ContextGiphyVersion,
     UrlPreview: ContextUrlPreview,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatGenerics>();
 
   if (!attachment) {
     return null;
@@ -191,6 +173,7 @@ export const Attachment = <
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
+  const giphyVersion = PropGiphyVersion || ContextGiphyVersion;
 
   return (
     <MemoizedAttachment
@@ -201,6 +184,7 @@ export const Attachment = <
         FileAttachment,
         Gallery,
         Giphy,
+        giphyVersion,
         UrlPreview,
       }}
     />

@@ -22,7 +22,6 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
-  interpolate,
   runOnJS,
   runOnUI,
   useAnimatedGestureHandler,
@@ -33,7 +32,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import BottomSheet from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -54,19 +53,15 @@ import {
 } from './components/ImageGridHandle';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayProviderProps,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
+import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { vh, vw } from '../../utils/utils';
 
 const isAndroid = Platform.OS === 'android';
@@ -87,7 +82,9 @@ export enum IsSwiping {
   FALSE,
 }
 
-export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryCustomComponents<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
   /**
    * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#gallery-components).
    *
@@ -120,51 +117,46 @@ export type ImageGalleryCustomComponents<Us extends UnknownType = DefaultUserTyp
    * @overrideType object
    */
   imageGalleryCustomComponents?: {
-    footer?: ImageGalleryFooterCustomComponentProps<Us>;
-    grid?: ImageGalleryGridImageComponents<Us>;
+    footer?: ImageGalleryFooterCustomComponentProps<StreamChatGenerics>;
+    grid?: ImageGalleryGridImageComponents<StreamChatGenerics>;
     gridHandle?: ImageGalleryGridHandleCustomComponentProps;
-    header?: ImageGalleryHeaderCustomComponentProps<Us>;
+    header?: ImageGalleryHeaderCustomComponentProps<StreamChatGenerics>;
   };
 };
 
-type Props<Us extends UnknownType = DefaultUserType> = ImageGalleryCustomComponents<Us> & {
-  overlayOpacity: Animated.SharedValue<number>;
-  visible: boolean;
-  imageGalleryGridHandleHeight?: number;
-  /**
-   * This should be
-   */
-  imageGalleryGridSnapPoints?: [string | number, string | number];
-  numberOfImageGalleryGridColumns?: number;
-};
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryCustomComponents<StreamChatGenerics> & {
+    overlayOpacity: Animated.SharedValue<number>;
+    imageGalleryGridHandleHeight?: number;
+    /**
+     * This should be
+     */
+    imageGalleryGridSnapPoints?: [string | number, string | number];
+    numberOfImageGalleryGridColumns?: number;
+  } & Pick<OverlayProviderProps<StreamChatGenerics>, 'giphyVersion'>;
 
 export const ImageGallery = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<Us>,
+  props: Props<StreamChatGenerics>,
 ) => {
   const {
+    giphyVersion,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
     numberOfImageGalleryGridColumns,
     overlayOpacity,
-    visible,
   } = props;
   const {
     theme: {
       colors: { white_snow },
-      imageGallery: { backgroundColor },
+      imageGallery: { backgroundColor, pager, slide },
     },
   } = useTheme();
+  const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
   const { overlay, setOverlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>();
 
   /**
    * Height constants
@@ -183,15 +175,15 @@ export const ImageGallery = <
     : vh(100);
   const halfScreenHeight = screenHeight / 2;
   const quarterScreenHeight = screenHeight / 4;
-  const snapPoints = React.useMemo(() => [0, (screenHeight * 9) / 10], []);
+  const snapPoints = React.useMemo(() => [(screenHeight * 9) / 10], []);
 
   /**
-   * BottomSheet ref
+   * BottomSheetModal ref
    */
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   /**
-   * BottomSheet state
+   * BottomSheetModal state
    */
   const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
   const animatedBottomSheetIndex = useSharedValue(0);
@@ -200,10 +192,10 @@ export const ImageGallery = <
    * Fade animation for screen, it is always rendered with pointerEvents
    * set to none for fast opening
    */
-  const showScreen = useSharedValue(0);
-  const fadeScreen = (show: boolean) => {
+  const screenTranslateY = useSharedValue(screenHeight);
+  const showScreen = () => {
     'worklet';
-    showScreen.value = withTiming(show ? 1 : 0, {
+    screenTranslateY.value = withTiming(0, {
       duration: 250,
       easing: Easing.out(Easing.ease),
     });
@@ -213,11 +205,9 @@ export const ImageGallery = <
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    if (visible) {
-      Keyboard.dismiss();
-    }
-    fadeScreen(visible);
-  }, [visible]);
+    Keyboard.dismiss();
+    showScreen();
+  }, []);
 
   /**
    * Image height from URL or default to full screen height
@@ -315,52 +305,44 @@ export const ImageGallery = <
   };
 
   /**
-   * Reset all key values for visible
-   */
-  const resetVisibleValues = () => {
-    'worklet';
-    resetTouchValues();
-    resetMovementValues();
-    headerFooterVisible.value = 1;
-    offsetX.value = 0;
-    offsetY.value = 0;
-    adjustedFocalX.value = 0;
-    adjustedFocalY.value = 0;
-    tapX.value = 0;
-    tapY.value = 0;
-  };
-
-  useEffect(() => {
-    if (!visible) {
-      resetVisibleValues();
-    }
-  }, [visible]);
-
-  /**
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = images.reduce((acc: Photo<Us>[], cur) => {
+  const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
+          (attachment.type === 'giphy' &&
+            (attachment.giphy?.[giphyVersion]?.url ||
+              attachment.thumb_url ||
+              attachment.image_url)) ||
+          (attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            getUrlOfImageAttachment(attachment)),
       ) || [];
 
-    const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
-      channelId: cur.cid,
-      created_at: cur.created_at,
-      id: `photoId-${cur.id}-${attachmentImage.image_url || attachmentImage.thumb_url}`,
-      messageId: cur.id,
-      uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
-      user: cur.user,
-      user_id: cur.user_id,
-    }));
+    const attachmentPhotos = attachmentImages.map((a) => {
+      const imageUrl = getUrlOfImageAttachment(a) as string;
 
-    return [...acc, ...attachmentPhotos];
+      return {
+        channelId: cur.cid,
+        created_at: cur.created_at,
+        id: `photoId-${cur.id}-${imageUrl}`,
+        messageId: cur.id,
+        original_height: a.original_height,
+        original_width: a.original_width,
+        uri: getResizedImageUrl({
+          height: screenHeight,
+          url: imageUrl,
+          width: screenWidth,
+        }),
+        user: cur.user,
+        user_id: cur.user_id,
+      };
+    });
+
+    return [...acc, ...attachmentPhotos] as Photo<StreamChatGenerics>[];
   }, []);
 
   /**
@@ -401,8 +383,15 @@ export const ImageGallery = <
   const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(screenHeight);
-    if (photos[index.value]?.uri) {
-      Image.getSize(photos[index.value].uri, (width, height) => {
+    const photo = photos[index.value];
+    const height = photo?.original_height;
+    const width = photo?.original_width;
+
+    if (height && width) {
+      const imageHeight = Math.floor(height * (screenWidth / width));
+      setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+    } else if (photo?.uri) {
+      Image.getSize(photo.uri, (width, height) => {
         const imageHeight = Math.floor(height * (screenWidth / width));
         setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
       });
@@ -648,7 +637,6 @@ export const ImageGallery = <
                 easing: Easing.out(Easing.ease),
               },
               () => {
-                showScreen.value = 0;
                 runOnJS(setOverlay)('none');
               },
             );
@@ -1010,7 +998,7 @@ export const ImageGallery = <
         },
       ],
     }),
-    [visible],
+    [],
   );
 
   /**
@@ -1030,10 +1018,9 @@ export const ImageGallery = <
    */
   const showScreenStyle = useAnimatedStyle<ViewStyle>(
     () => ({
-      opacity: interpolate(showScreen.value, [0, 0.01, 1], [0, 1, 1]),
       transform: [
         {
-          translateY: interpolate(showScreen.value, [0, 1], [screenHeight, 0]),
+          translateY: screenTranslateY.value,
         },
       ],
     }),
@@ -1041,24 +1028,26 @@ export const ImageGallery = <
   );
 
   /**
-   * Functions to open and close BottomSheet with image grid
+   * Functions toclose BottomSheetModal with image grid
    */
   const closeGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
-    }
-  };
-  const openGridView = () => {
-    if (bottomSheetRef.current) {
-      bottomSheetRef.current.snapTo(1);
+    if (bottomSheetModalRef.current?.close) {
+      bottomSheetModalRef.current.close();
+      setGridPhotos([]);
     }
   };
 
+  /**
+   * Function to open BottomSheetModal with image grid
+   */
+  const openGridView = () => {
+    if (bottomSheetModalRef.current?.present) {
+      bottomSheetModalRef.current.present();
+      setGridPhotos(photos);
+    }
+  };
   return (
-    <Animated.View
-      pointerEvents={visible ? 'auto' : 'none'}
-      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
-    >
+    <Animated.View pointerEvents={'auto'} style={[StyleSheet.absoluteFillObject, showScreenStyle]}>
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
         minPointers={1}
@@ -1097,6 +1086,7 @@ export const ImageGallery = <
                         style={[
                           styles.animatedContainer,
                           pagerStyle,
+                          pager,
                           {
                             transform: [
                               { scaleX: -1 }, // Also only here for opening, wrong direction when not included
@@ -1118,11 +1108,14 @@ export const ImageGallery = <
                             screenHeight={screenHeight}
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
-                            style={{
-                              height: screenHeight * 8,
-                              marginRight: MARGIN,
-                              width: screenWidth * 8,
-                            }}
+                            style={[
+                              {
+                                height: screenHeight * 8,
+                                marginRight: MARGIN,
+                                width: screenWidth * 8,
+                              },
+                              slide,
+                            ]}
                             translateX={translateX}
                             translateY={translateY}
                           />
@@ -1136,13 +1129,13 @@ export const ImageGallery = <
           </TapGestureHandler>
         </Animated.View>
       </TapGestureHandler>
-      <ImageGalleryHeader<Us>
+      <ImageGalleryHeader<StreamChatGenerics>
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
-      <ImageGalleryFooter<Us>
+      <ImageGalleryFooter<StreamChatGenerics>
         opacity={headerFooterOpacity}
         openGridView={openGridView}
         photo={photos[selectedIndex]}
@@ -1156,30 +1149,31 @@ export const ImageGallery = <
         closeGridView={closeGridView}
         currentBottomSheetIndex={currentBottomSheetIndex}
       />
-      <BottomSheet
-        animatedIndex={animatedBottomSheetIndex}
-        containerHeight={fullScreenHeight}
-        handleComponent={() => (
-          <ImageGridHandle
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          animatedIndex={animatedBottomSheetIndex}
+          enablePanDownToClose={true}
+          handleComponent={() => (
+            <ImageGridHandle
+              closeGridView={closeGridView}
+              {...imageGalleryCustomComponents?.gridHandle}
+            />
+          )}
+          handleHeight={imageGalleryGridHandleHeight ?? 40}
+          index={0}
+          onChange={(index: number) => setCurrentBottomSheetIndex(index)}
+          ref={bottomSheetModalRef}
+          snapPoints={imageGalleryGridSnapPoints || snapPoints}
+        >
+          <ImageGrid
             closeGridView={closeGridView}
-            {...imageGalleryCustomComponents?.gridHandle}
+            numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+            photos={gridPhotos}
+            setImage={setImage}
+            {...imageGalleryCustomComponents?.grid}
           />
-        )}
-        handleHeight={imageGalleryGridHandleHeight ?? 40}
-        index={0}
-        onChange={(index: number) => setCurrentBottomSheetIndex(index)}
-        ref={bottomSheetRef}
-        snapPoints={imageGalleryGridSnapPoints || snapPoints}
-      >
-        <ImageGrid
-          closeGridView={closeGridView}
-          numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
-          photos={photos}
-          resetVisibleValues={resetVisibleValues}
-          setImage={setImage}
-          {...imageGalleryCustomComponents?.grid}
-        />
-      </BottomSheet>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </Animated.View>
   );
 };
@@ -1199,13 +1193,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo<Us extends UnknownType = DefaultUserType> = {
+export type Photo<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
   id: string;
   uri: string;
   channelId?: string;
   created_at?: string | Date;
   messageId?: string;
-  user?: UserResponse<Us> | null;
+  original_height?: number;
+  original_width?: number;
+  user?: UserResponse<StreamChatGenerics> | null;
   user_id?: string;
 };
 

@@ -2,44 +2,14 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
 
 export const isAddMemberBottomSheetData = (
   data: BottomSheetOverlayData,
-): data is Pick<
-  ChannelContextValue<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >,
-  'channel'
-> => 'channel' in data;
+): data is Pick<ChannelContextValue<StreamChatGenerics>, 'channel'> => 'channel' in data;
 
 export type BottomSheetOverlayData =
-  | Pick<
-      ChannelContextValue<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >,
-      'channel'
-    >
+  | Pick<ChannelContextValue<StreamChatGenerics>, 'channel'>
   | {
       onConfirm: () => void;
       title: string;

@@ -6,6 +6,7 @@ export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
+export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
 export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
@@ -143,6 +144,7 @@ export * from './MessageOverlay/MessageActionListItem';
 export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
+export * from './MessageOverlay/OverlayReactionsAvatar';
 export * from './MessageOverlay/OverlayReactionList';
 
 export * from './Reply/Reply';

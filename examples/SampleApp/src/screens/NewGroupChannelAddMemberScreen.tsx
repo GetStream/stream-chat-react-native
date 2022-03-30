@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -73,7 +73,7 @@ type Props = {
 };
 
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
 
   const {
     theme: {

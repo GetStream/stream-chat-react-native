@@ -4,49 +4,27 @@ import type { Channel, Event } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-type Parameters<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = {
-  setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>;
-  onChannelUpdated?: (
-    setChannels: React.Dispatch<React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>>,
-    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
-};
+type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  {
+    setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    onChannelUpdated?: (
+      setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
+      event: Event<StreamChatGenerics>,
+    ) => void;
+  };
 
 export const useChannelUpdated = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   onChannelUpdated,
   setChannels,
-}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+}: Parameters<StreamChatGenerics>) => {
+  const { client } = useChatContext<StreamChatGenerics>();
 
   useEffect(() => {
-    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<StreamChatGenerics>) => {
       if (typeof onChannelUpdated === 'function') {
         onChannelUpdated(setChannels, event);
       } else {
@@ -55,8 +33,14 @@ export const useChannelUpdated = <
             (channel) => channel.cid === (event.cid || event.channel?.cid),
           );
           if (index >= 0 && event.channel) {
-            channels[index].data = event.channel;
+            channels[index].data = {
+              ...event.channel,
+              hidden: event.channel?.hidden ?? channels[index].data?.hidden,
+              own_capabilities:
+                event.channel?.own_capabilities ?? channels[index].data?.own_capabilities,
+            };
           }
+
           return [...channels];
         });
       }

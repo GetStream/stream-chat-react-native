@@ -23,15 +23,7 @@ import {
 
 import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
 
-import {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import { StreamChatGenerics } from '../types';
 
 type NewDirectMessagingSendButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -131,37 +123,11 @@ export type SendButtonProps<
 /**
  * UI Component for send button in MessageInput component.
  */
-export const NewDirectMessagingSendButton = (
-  props: SendButtonProps<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >,
-) => {
+export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGenerics>) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } = useChannelContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { channel } = useChannelContext<StreamChatGenerics>();
 
-  const { giphyActive, text } = useMessageInputContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
+  const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>();
 
   const sendMessage = async () => {
     if (!channel) return;
@@ -178,15 +144,7 @@ export const NewDirectMessagingSendButton = (
   };
 
   return (
-    <MemoizedNewDirectMessagingSendButton<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
+    <MemoizedNewDirectMessagingSendButton<StreamChatGenerics>
       {...{ giphyActive, sendMessage }}
       {...props}
       {...{ disabled: props.disabled || false }}

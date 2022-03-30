@@ -1,25 +1,10 @@
 import { useMemo } from 'react';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreatePaginatedMessageListContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelId,
   hasMore,
@@ -30,7 +15,7 @@ export const useCreatePaginatedMessageListContext = <
   messages,
   setLoadingMore,
   setLoadingMoreRecent,
-}: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+}: PaginatedMessageListContextValue<StreamChatGenerics> & {
   channelId?: string;
 }) => {
   const messagesUpdated = messages
@@ -38,24 +23,23 @@ export const useCreatePaginatedMessageListContext = <
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
         `${deleted_at}${
           latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
-        }${reply_count}${status}${updated_at.toISOString()}`,
+        }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`,
     )
     .join();
 
-  const paginatedMessagesContext: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us> =
-    useMemo(
-      () => ({
-        hasMore,
-        loadingMore,
-        loadingMoreRecent,
-        loadMore,
-        loadMoreRecent,
-        messages,
-        setLoadingMore,
-        setLoadingMoreRecent,
-      }),
-      [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
-    );
+  const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
+    () => ({
+      hasMore,
+      loadingMore,
+      loadingMoreRecent,
+      loadMore,
+      loadMoreRecent,
+      messages,
+      setLoadingMore,
+      setLoadingMoreRecent,
+    }),
+    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
+  );
 
   return paginatedMessagesContext;
 };

@@ -12,6 +12,7 @@ import AttachmentPickerBottomSheetHeight from '../common-content/core-components
 import AttachmentPickerErrorButtonText from '../common-content/core-components/overlay-provider/props/attachment_picker_error_button_text.mdx';
 import AttachmentPickerErrorText from '../common-content/core-components/overlay-provider/props/attachment_picker_error_text.mdx';
 import AttachmentSelectionBarHeight from '../common-content/core-components/overlay-provider/props/attachment_selection_bar_height.mdx';
+import GiphyVersion from '../common-content/core-components/overlay-provider/props/giphy_version.mdx';
 import I18nInstance from '../common-content/core-components/overlay-provider/props/i18n_instance.mdx';
 import ImageGalleryCustomComponents from '../common-content/core-components/overlay-provider/props/image_gallery_custom_components.mdx';
 import ImageGalleryGridHandleHeight from '../common-content/core-components/overlay-provider/props/image_gallery_grid_handle_height.mdx';
@@ -32,6 +33,7 @@ import MessageActionList from '../common-content/core-components/overlay-provide
 import MessageActionListItem from '../common-content/core-components/overlay-provider/props/message_action_list_item.mdx';
 import OverlayReactionList from '../common-content/core-components/overlay-provider/props/overlay_reaction_list.mdx';
 import OverlayReactions from '../common-content/core-components/overlay-provider/props/overlay_reactions.mdx';
+import OverlayReactionsAvatar from '../common-content/core-components/overlay-provider/props/overlay_reactions_avatar.mdx';
 
 The `OverlayProvider` is the top level Stream Chat for React Native component and wraps all other components provided by the SDK.
 The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
@@ -152,6 +154,10 @@ This can also be set via the `setBottomInset` function provided by the `useAttac
 | ------ | ------- |
 | number | 0       |
 
+### giphyVersion
+
+<GiphyVersion />
+
 ### i18nInstance
 
 <I18nInstance />
@@ -246,3 +252,7 @@ This can also be set via the `setTopInset` function provided by the `useAttachme
 ### OverlayReactions
 
 <OverlayReactions />
+
+### OverlayReactionsAvatar
+
+<OverlayReactionsAvatar />

@@ -1,4 +1,4 @@
-import type { LiteralStringForUnion } from 'stream-chat';
+import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
 
 export type Asset = {
   filename: string;
@@ -24,20 +24,23 @@ export type DefaultAttachmentType = UnknownType & {
   mime_type?: string;
 };
 
-export type DefaultChannelType = UnknownType & {
+interface DefaultUserType extends UnknownType {
   image?: string;
-};
+}
 
-export type DefaultCommandType = LiteralStringForUnion;
-
-export type DefaultEventType = UnknownType;
-
-export type DefaultMessageType = UnknownType;
-
-export type DefaultReactionType = UnknownType;
-
-export type DefaultUserType = UnknownType & {
+interface DefaultChannelType extends UnknownType {
+  [key: string]: unknown;
   image?: string;
-};
+}
+
+export interface DefaultStreamChatGenerics extends ExtendableGenerics {
+  attachmentType: UnknownType;
+  channelType: DefaultChannelType;
+  commandType: LiteralStringForUnion;
+  eventType: UnknownType;
+  messageType: UnknownType;
+  reactionType: UnknownType;
+  userType: DefaultUserType;
+}
 
 export type UnknownType = Record<string, unknown>;

@@ -7,15 +7,19 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { SendButton } from '../SendButton';
 
 describe('SendButton', () => {
+  const getComponent = ({ editing, ...rest } = {}) => (
+    <ThemeProvider>
+      <MessagesProvider value={{ editing }}>
+        <SendButton {...rest} />
+      </MessagesProvider>
+    </ThemeProvider>
+  );
+
   it('should render a non-editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <MessagesProvider value={{ editing: false }}>
-          <SendButton sendMessage={sendMessage} />
-        </MessagesProvider>
-      </ThemeProvider>,
+      getComponent({ editing: false, sendMessage }),
     );
 
     await waitFor(() => {
@@ -38,11 +42,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <MessagesProvider value={{ editing: false }}>
-          <SendButton disabled sendMessage={sendMessage} />
-        </MessagesProvider>
-      </ThemeProvider>,
+      getComponent({ disabled: true, editing: false, sendMessage }),
     );
 
     await waitFor(() => {
@@ -65,11 +65,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <MessagesProvider value={{ editing: true }}>
-          <SendButton sendMessage={sendMessage} />
-        </MessagesProvider>
-      </ThemeProvider>,
+      getComponent({ editing: true, sendMessage }),
     );
 
     await waitFor(() => {
@@ -92,11 +88,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <MessagesProvider value={{ editing: true }}>
-          <SendButton disabled sendMessage={sendMessage} />
-        </MessagesProvider>
-      </ThemeProvider>,
+      getComponent({ disabled: true, editing: true, sendMessage }),
     );
 
     await waitFor(() => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -29,19 +29,8 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
-import type {
-  Asset,
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -53,6 +42,8 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    paddingLeft: 16,
+    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'flex-end',
@@ -61,28 +52,6 @@ const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
     padding: 10,
-  },
-  editingBoxHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-  editingBoxHeaderTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  giphyContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    height: 24,
-    marginRight: 8,
-    paddingHorizontal: 8,
-  },
-  giphyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   inputBoxContainer: {
     borderRadius: 20,
@@ -108,16 +77,10 @@ const styles = StyleSheet.create({
 });
 
 type MessageInputPropsWithContext<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled' | 'members' | 'watchers'> &
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ChannelContextValue<StreamChatGenerics>, 'disabled' | 'members' | 'watchers'> &
   Pick<
-    MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessageInputContextValue<StreamChatGenerics>,
     | 'additionalTextInputProps'
     | 'asyncIds'
     | 'asyncUploads'
@@ -135,6 +98,9 @@ type MessageInputPropsWithContext<
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
+    | 'InputEditingStateHeader'
+    | 'InputGiphySearch'
+    | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
@@ -153,38 +119,30 @@ type MessageInputPropsWithContext<
     | 'uploadNewFile'
     | 'uploadNewImage'
   > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
   Pick<
-    SuggestionsContextValue<Co, Us>,
+    SuggestionsContextValue<StreamChatGenerics>,
     | 'AutoCompleteSuggestionHeader'
     | 'AutoCompleteSuggestionItem'
     | 'AutoCompleteSuggestionList'
     | 'suggestions'
     | 'triggerType'
   > &
-  Pick<ThreadContextValue, 'thread'> &
+  Pick<ThreadContextValue<StreamChatGenerics>, 'thread'> &
   Pick<TranslationContextValue, 't'> & {
     threadList?: boolean;
   };
 
 const MessageInputWithContext = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps,
     asyncIds,
     asyncUploads,
     AutoCompleteSuggestionList,
-    clearEditingState,
-    clearQuotedMessageState,
     closeAttachmentPicker,
     cooldownEndsAt,
     CooldownTimer,
@@ -198,6 +156,9 @@ const MessageInputWithContext = <
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     members,
@@ -211,11 +172,8 @@ const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
-    setGiphyActive,
-    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    t,
     thread,
     threadList,
     triggerType,
@@ -228,25 +186,12 @@ const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        black,
-        border,
-        grey,
-        grey_gainsboro,
-        grey_whisper,
-        white,
-        white_smoke,
-      },
+      colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
         autoCompleteInputContainer,
         composerContainer,
         container,
-        editingBoxHeader,
-        editingBoxHeaderTitle,
-        giphyContainer,
-        giphyText,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -480,7 +425,7 @@ const MessageInputWithContext = <
   }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
-    const result: UserResponse<Us>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (members && Object.values(members).length) {
       Object.values(members).forEach((member) => {
         if (member.user) {
@@ -496,7 +441,7 @@ const MessageInputWithContext = <
     const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
-    const uniqueUsers: { [key: string]: UserResponse<Us> } = {};
+    const uniqueUsers: { [key: string]: UserResponse<StreamChatGenerics> } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
         uniqueUsers[user.id] = user;
@@ -508,7 +453,7 @@ const MessageInputWithContext = <
   };
 
   const getWatchers = () => {
-    const result: UserResponse<Us>[] = [];
+    const result: UserResponse<StreamChatGenerics>[] = [];
     if (watchers && Object.values(watchers).length) {
       result.push(...Object.values(watchers));
     }
@@ -531,33 +476,8 @@ const MessageInputWithContext = <
         }) => setHeight(newHeight)}
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
-        {(editing || quotedMessage) && (
-          <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-            {editing ? (
-              <Edit pathFill={grey_gainsboro} />
-            ) : (
-              <CurveLineLeftUp pathFill={grey_gainsboro} />
-            )}
-            <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-              {editing ? t('Editing Message') : t('Reply to Message')}
-            </Text>
-            <TouchableOpacity
-              disabled={disabled}
-              onPress={() => {
-                resetInput();
-                if (editing) {
-                  clearEditingState();
-                }
-                if (quotedMessage) {
-                  clearQuotedMessageState();
-                }
-              }}
-              testID='close-button'
-            >
-              <CircleClose pathFill={grey} />
-            </TouchableOpacity>
-          </View>
-        )}
+        {editing && <InputEditingStateHeader />}
+        {quotedMessage && <InputReplyStateHeader />}
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -597,45 +517,16 @@ const MessageInputWithContext = <
                   />
                 ) : null}
                 {fileUploads.length ? <FileUploadPreview /> : null}
-                <View
-                  style={[
-                    styles.autoCompleteInputContainer,
-                    {
-                      paddingLeft: giphyActive ? 8 : 16,
-                      paddingRight: giphyActive ? 10 : 16,
-                    },
-                    autoCompleteInputContainer,
-                  ]}
-                >
-                  {giphyActive && (
-                    <View
-                      style={[
-                        styles.giphyContainer,
-                        { backgroundColor: accent_blue },
-                        giphyContainer,
-                      ]}
-                    >
-                      <Lightning height={16} pathFill={white} width={16} />
-                      <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
-                    </View>
-                  )}
-                  <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
-                    additionalTextInputProps={additionalTextInputProps}
-                    cooldownActive={!!cooldownRemainingSeconds}
-                  />
-                  {giphyActive && (
-                    <TouchableOpacity
-                      disabled={disabled}
-                      onPress={() => {
-                        setGiphyActive(false);
-                        setShowMoreOptions(true);
-                      }}
-                      testID='close-button'
-                    >
-                      <CircleClose height={20} pathFill={grey} width={20} />
-                    </TouchableOpacity>
-                  )}
-                </View>
+                {giphyActive ? (
+                  <InputGiphySearch />
+                ) : (
+                  <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+                    <AutoCompleteInput<StreamChatGenerics>
+                      additionalTextInputProps={additionalTextInputProps}
+                      cooldownActive={!!cooldownRemainingSeconds}
+                    />
+                  </View>
+                )}
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                 {cooldownRemainingSeconds ? (
@@ -687,17 +578,9 @@ const MessageInputWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageInputPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageInputPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTextInputProps: prevAdditionalTextInputProps,
@@ -811,14 +694,8 @@ const MemoizedMessageInput = React.memo(
 ) as typeof MessageInputWithContext;
 
 export type MessageInputProps<
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<MessageInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<MessageInputPropsWithContext<StreamChatGenerics>>;
 
 /**
  * UI Component for message input
@@ -830,19 +707,13 @@ export type MessageInputProps<
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
  */
 export const MessageInput = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageInputProps<StreamChatGenerics>,
 ) => {
   const ownCapabilities = useOwnCapabilitiesContext();
 
-  const { disabled = false, members, watchers } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disabled = false, members, watchers } = useChannelContext<StreamChatGenerics>();
 
   const {
     additionalTextInputProps,
@@ -862,6 +733,9 @@ export const MessageInput = <
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
@@ -880,9 +754,9 @@ export const MessageInput = <
     ShowThreadMessageInChannelButton,
     uploadNewFile,
     uploadNewImage,
-  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageInputContext<StreamChatGenerics>();
 
-  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Reply } = useMessagesContext<StreamChatGenerics>();
 
   const {
     AutoCompleteSuggestionHeader,
@@ -890,9 +764,9 @@ export const MessageInput = <
     AutoCompleteSuggestionList,
     suggestions,
     triggerType,
-  } = useSuggestionsContext<Co, Us>();
+  } = useSuggestionsContext<StreamChatGenerics>();
 
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { thread } = useThreadContext<StreamChatGenerics>();
 
   const { t } = useTranslationContext();
 
@@ -924,6 +798,9 @@ export const MessageInput = <
         Input,
         inputBoxRef,
         InputButtons,
+        InputEditingStateHeader,
+        InputGiphySearch,
+        InputReplyStateHeader,
         isValidMessage,
         maxNumberOfFiles,
         members,

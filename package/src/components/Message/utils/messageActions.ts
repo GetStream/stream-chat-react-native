@@ -1,25 +1,10 @@
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type { OwnCapabilitiesContextValue } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageActionType } from '../../MessageOverlay/MessageActionListItem';
 
 export type MessageActionsParams<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   blockUser: MessageActionType;
   copyMessage: MessageActionType;
@@ -37,26 +22,14 @@ export type MessageActionsParams<
   retry: MessageActionType;
   threadReply: MessageActionType;
   unpinMessage: MessageActionType;
-} & Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'message' | 'isMyMessage'>;
+} & Pick<MessageContextValue<StreamChatGenerics>, 'message' | 'isMyMessage'>;
 
 export type MessageActionsProp<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = (param: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => MessageActionType[];
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = (param: MessageActionsParams<StreamChatGenerics>) => MessageActionType[];
 
 export const messageActions = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   blockUser,
   copyMessage,
@@ -74,7 +47,7 @@ export const messageActions = <
   retry,
   threadReply,
   unpinMessage,
-}: MessageActionsParams<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: MessageActionsParams<StreamChatGenerics>) => {
   if (messageReactions) {
     return undefined;
   }

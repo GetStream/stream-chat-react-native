@@ -27,17 +27,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
   horizontal={true}
-  initialNumToRender={10}
   keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
@@ -54,9 +51,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
       Object {},
     ]
   }
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
-  windowSize={21}
 >
   <View>
     <View
@@ -164,10 +159,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
               }
             >
               <ActivityIndicator
-                animating={true}
                 color="#F2F2F2"
-                hidesWhenStopped={true}
-                size="small"
                 testID="upload-progress-indicator"
               />
             </View>
@@ -175,6 +167,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -299,6 +292,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -459,6 +453,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -528,6 +523,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -624,17 +620,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
   horizontal={true}
-  initialNumToRender={10}
   keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
@@ -651,9 +644,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
       Object {},
     ]
   }
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
-  windowSize={21}
 >
   <View>
     <View
@@ -749,6 +740,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -818,6 +810,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -976,6 +969,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -1045,6 +1039,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -1205,6 +1200,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
           >
             <View
               accessible={true}
+              collapsable={false}
               focusable={true}
               onClick={[Function]}
               onResponderGrant={[Function]}
@@ -1274,6 +1270,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -1370,17 +1367,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
   horizontal={true}
-  initialNumToRender={10}
   keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
@@ -1397,9 +1391,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
       Object {},
     ]
   }
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
-  windowSize={21}
 >
   <View>
     <View
@@ -1461,6 +1453,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -1585,6 +1578,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -1711,6 +1705,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -1807,17 +1802,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
       },
     ]
   }
-  disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   getItemLayout={[Function]}
   horizontal={true}
-  initialNumToRender={10}
   keyExtractor={[Function]}
-  maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
-  onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
   onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
@@ -1834,9 +1826,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
       Object {},
     ]
   }
-  updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
-  windowSize={21}
 >
   <View>
     <View
@@ -1944,10 +1934,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               }
             >
               <ActivityIndicator
-                animating={true}
                 color="#F2F2F2"
-                hidesWhenStopped={true}
-                size="small"
                 testID="upload-progress-indicator"
               />
             </View>
@@ -1955,6 +1942,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -2125,10 +2113,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               }
             >
               <ActivityIndicator
-                animating={true}
                 color="#F2F2F2"
-                hidesWhenStopped={true}
-                size="small"
                 testID="upload-progress-indicator"
               />
             </View>
@@ -2136,6 +2121,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}
@@ -2308,10 +2294,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               }
             >
               <ActivityIndicator
-                animating={true}
                 color="#F2F2F2"
-                hidesWhenStopped={true}
-                size="small"
                 testID="upload-progress-indicator"
               />
             </View>
@@ -2319,6 +2302,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
         </View>
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
           onClick={[Function]}
           onResponderGrant={[Function]}

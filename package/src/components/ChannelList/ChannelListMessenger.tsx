@@ -12,16 +12,7 @@ import {
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 
 const styles = StyleSheet.create({
@@ -31,15 +22,9 @@ const styles = StyleSheet.create({
 });
 
 export type ChannelListMessengerPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Omit<
-  ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  ChannelsContextValue<StreamChatGenerics>,
   | 'hasNextPage'
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
@@ -55,17 +40,11 @@ export type ChannelListMessengerPropsWithContext<
 >;
 
 const StatusIndicator = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >() => {
-  const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { isOnline } = useChatContext<StreamChatGenerics>();
   const { error, HeaderErrorIndicator, HeaderNetworkDownIndicator, loadingChannels, refreshList } =
-    useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+    useChannelsContext<StreamChatGenerics>();
 
   if (loadingChannels) return null;
 
@@ -86,41 +65,23 @@ const StatusIndicator = <
 };
 
 const renderItem = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   item,
 }: {
-  item: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-}) => <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> channel={item} />;
+  item: Channel<StreamChatGenerics>;
+}) => <ChannelPreview<StreamChatGenerics> channel={item} />;
 
 const keyExtractor = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  item: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  item: Channel<StreamChatGenerics>,
 ) => item.cid;
 
 const ChannelListMessengerWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelListMessengerPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalFlatListProps,
@@ -203,7 +164,6 @@ const ChannelListMessengerWithContext = <
         ListHeaderComponent={ListFooterComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
-        // @ts-expect-error waiting for this merged PR to be released https://github.com/software-mansion/react-native-gesture-handler/pull/1394
         ref={setFlatListRef}
         refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}
@@ -211,20 +171,14 @@ const ChannelListMessengerWithContext = <
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
-      <StatusIndicator<At, Ch, Co, Ev, Me, Re, Us> />
+      <StatusIndicator<StreamChatGenerics> />
     </>
   );
 };
 
 export type ChannelListMessengerProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<ChannelListMessengerPropsWithContext<StreamChatGenerics>>;
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation. It
@@ -233,15 +187,9 @@ export type ChannelListMessengerProps<
  * @example ./ChannelListMessenger.md
  */
 export const ChannelListMessenger = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ChannelListMessengerProps<StreamChatGenerics>,
 ) => {
   const {
     additionalFlatListProps,
@@ -261,7 +209,7 @@ export const ChannelListMessenger = <
     refreshList,
     reloadList,
     setFlatListRef,
-  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useChannelsContext<StreamChatGenerics>();
 
   return (
     <ChannelListMessengerWithContext

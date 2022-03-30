@@ -4,16 +4,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ChannelState } from 'stream-chat';
 import type { ChannelContextValue } from 'stream-chat-react-native';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-  StackNavigatorParamList,
-} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -21,28 +12,9 @@ type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
 >;
 
 export type UserInfoOverlayData = Partial<
-  Pick<
-    ChannelContextValue<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >,
-    'channel'
-  >
+  Pick<ChannelContextValue<StreamChatGenerics>, 'channel'>
 > & {
-  member?: ChannelState<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >['members'][0];
+  member?: ChannelState<StreamChatGenerics>['members'][0];
   navigation?: GroupChannelDetailsScreenNavigationProp;
 };
 

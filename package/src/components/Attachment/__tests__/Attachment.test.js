@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { v4 as uuidv4 } from 'uuid';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -70,8 +71,52 @@ describe('Attachment', () => {
     });
   });
 
+  it('"giphy" attachment size should be customisable', async () => {
+    const attachment = generateGiphyAttachment();
+    attachment.giphy = {
+      fixed_height: {
+        height: '200',
+        url: 'https://media1.giphy.com/media/test/fixed_height.gif',
+        width: '375',
+      },
+      original: {
+        height: '256',
+        url: 'https://media1.giphy.com/media/test/original.gif',
+        width: '480',
+      },
+    };
+    const { getByTestId: getByTestIdFixedHeight } = render(
+      getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
+    );
+    const { getByTestId: getByTestIdOriginal } = render(
+      getAttachmentComponent({ attachment, giphyVersion: 'original' }),
+    );
+    await waitFor(() => {
+      const checkImageProps = (imageProps, specificSizedGiphyData) => {
+        let imageStyle = imageProps.style;
+        if (Array.isArray(imageStyle)) {
+          imageStyle = Object.assign({}, ...imageStyle);
+        }
+        expect(imageStyle.height).toBe(parseFloat(specificSizedGiphyData.height));
+        expect(imageStyle.width).toBe(parseFloat(specificSizedGiphyData.width));
+        expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
+      };
+      checkImageProps(
+        getByTestIdFixedHeight('giphy-attachment-image').props,
+        attachment.giphy.fixed_height,
+      );
+      checkImageProps(
+        getByTestIdOriginal('giphy-attachment-image').props,
+        attachment.giphy.original,
+      );
+    });
+  });
+
   it('should render UrlPreview component if attachment has title_link or og_scrape_url', async () => {
-    const attachment = generateImageAttachment();
+    const attachment = generateImageAttachment({
+      og_scrape_url: uuidv4(),
+      title_link: uuidv4(),
+    });
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -80,14 +125,11 @@ describe('Attachment', () => {
   });
 
   it('should render Gallery component if image does not have title_link or og_scrape_url', async () => {
-    const attachment = generateImageAttachment({
-      og_scrape_url: undefined,
-      title_link: undefined,
-    });
+    const attachment = generateImageAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
-      expect(getByTestId('image-multiple')).toBeTruthy();
+      expect(getByTestId('gallery-container')).toBeTruthy();
     });
   });
 

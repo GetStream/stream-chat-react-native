@@ -6,56 +6,58 @@ import type { AutoCompleteSuggestionHeaderProps } from '../../components/AutoCom
 import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionItem';
 import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { Emoji } from '../../emoji-data/compiled';
-import type { DefaultCommandType, DefaultUserType, UnknownType } from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type SuggestionComponentType = 'command' | 'emoji' | 'mention';
 
 export const isSuggestionCommand = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  suggestion: Suggestion<Co, Us>,
-): suggestion is SuggestionCommand<Co> => 'args' in suggestion;
+  suggestion: Suggestion<StreamChatGenerics>,
+): suggestion is SuggestionCommand<StreamChatGenerics> => 'args' in suggestion;
 
 export const isSuggestionEmoji = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  suggestion: Suggestion<Co, Us>,
+  suggestion: Suggestion<StreamChatGenerics>,
 ): suggestion is Emoji => 'unicode' in suggestion;
 
 export const isSuggestionUser = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  suggestion: Suggestion<Co, Us>,
-): suggestion is SuggestionUser<Us> => 'id' in suggestion;
+  suggestion: Suggestion<StreamChatGenerics>,
+): suggestion is SuggestionUser<StreamChatGenerics> => 'id' in suggestion;
 
 export type Suggestion<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
-> = Emoji | SuggestionCommand<Co> | SuggestionUser<Us>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Emoji | SuggestionCommand<StreamChatGenerics> | SuggestionUser<StreamChatGenerics>;
 
-export type SuggestionCommand<Co extends string = DefaultCommandType> = CommandResponse<Co>;
-export type SuggestionUser<Us extends UnknownType = DefaultUserType> = UserResponse<Us>;
+export type SuggestionCommand<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = CommandResponse<StreamChatGenerics>;
+export type SuggestionUser<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = UserResponse<StreamChatGenerics>;
 
 export type Suggestions<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  data: Suggestion<Co, Us>[];
-  onSelect: (item: Suggestion<Co, Us>) => void;
+  data: Suggestion<StreamChatGenerics>[];
+  onSelect: (item: Suggestion<StreamChatGenerics>) => void;
   queryText?: string;
 };
 
 export type SuggestionsContextValue<
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   AutoCompleteSuggestionHeader: React.ComponentType<AutoCompleteSuggestionHeaderProps>;
-  AutoCompleteSuggestionItem: React.ComponentType<AutoCompleteSuggestionItemProps<Co, Us>>;
-  AutoCompleteSuggestionList: React.ComponentType<AutoCompleteSuggestionListProps<Co, Us>>;
+  AutoCompleteSuggestionItem: React.ComponentType<
+    AutoCompleteSuggestionItemProps<StreamChatGenerics>
+  >;
+  AutoCompleteSuggestionList: React.ComponentType<
+    AutoCompleteSuggestionListProps<StreamChatGenerics>
+  >;
   /** Override handler for closing suggestions (mentions, command autocomplete etc) */
   closeSuggestions: () => void;
   /**
@@ -65,7 +67,7 @@ export type SuggestionsContextValue<
    * @overrideType Function
    */
   openSuggestions: (component: SuggestionComponentType) => Promise<void>;
-  suggestions: Suggestions<Co, Us>;
+  suggestions: Suggestions<StreamChatGenerics>;
   triggerType: SuggestionComponentType;
   /**
    * Override handler for updating suggestions (mentions, command autocomplete etc)
@@ -73,7 +75,7 @@ export type SuggestionsContextValue<
    * @param newSuggestions {Component|element} UI Component for suggestion item.
    * @overrideType Function
    */
-  updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
+  updateSuggestions: (newSuggestions: Suggestions<StreamChatGenerics>) => void;
   queryText?: string;
   suggestionsViewActive?: boolean;
 };
@@ -84,14 +86,13 @@ export const SuggestionsContext = React.createContext({} as SuggestionsContextVa
  * This provider component exposes the properties stored within the SuggestionsContext.
  */
 export const SuggestionsProvider = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
   value,
-}: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
+}: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<StreamChatGenerics>> }>) => {
   const [triggerType, setTriggerType] = useState<SuggestionComponentType | null>(null);
-  const [suggestions, setSuggestions] = useState<Suggestions<Co, Us>>();
+  const [suggestions, setSuggestions] = useState<Suggestions<StreamChatGenerics>>();
   const [suggestionsViewActive, setSuggestionsViewActive] = useState(false);
 
   const openSuggestions = (component: SuggestionComponentType) => {
@@ -99,7 +100,7 @@ export const SuggestionsProvider = <
     setSuggestionsViewActive(true);
   };
 
-  const updateSuggestions = (newSuggestions: Suggestions<Co, Us>) => {
+  const updateSuggestions = (newSuggestions: Suggestions<StreamChatGenerics>) => {
     setSuggestions(newSuggestions);
     setSuggestionsViewActive(!!triggerType);
   };
@@ -128,21 +129,19 @@ export const SuggestionsProvider = <
 };
 
 export const useSuggestionsContext = <
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
->() => useContext(SuggestionsContext) as unknown as SuggestionsContextValue<Co, Us>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(SuggestionsContext) as unknown as SuggestionsContextValue<StreamChatGenerics>;
 
 export const withSuggestionsContext = <
   P extends UnknownType,
-  Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof SuggestionsContextValue<Co, Us>>> => {
+): React.FC<Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>> => {
   const WithSuggestionsContextComponent = (
-    props: Omit<P, keyof SuggestionsContextValue<Co, Us>>,
+    props: Omit<P, keyof SuggestionsContextValue<StreamChatGenerics>>,
   ) => {
-    const suggestionsContext = useSuggestionsContext<Co, Us>();
+    const suggestionsContext = useSuggestionsContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...suggestionsContext} />;
   };

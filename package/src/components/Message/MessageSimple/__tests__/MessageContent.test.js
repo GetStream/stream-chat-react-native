@@ -7,7 +7,7 @@ import { ChannelsStateProvider } from '../../../../contexts/channelsStateContext
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { generateChannel } from '../../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateMember } from '../../../../mock-builders/generator/member';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateReaction } from '../../../../mock-builders/generator/reaction';
@@ -28,7 +28,7 @@ describe('MessageContent', () => {
 
   beforeEach(async () => {
     const members = [generateMember({ user })];
-    const mockedChannel = generateChannel({
+    const mockedChannel = generateChannelResponse({
       members,
       messages,
     });
@@ -167,21 +167,6 @@ describe('MessageContent', () => {
     });
   });
 
-  it('renders the Gallery when image attachments exist', async () => {
-    const user = generateUser();
-    const message = generateMessage({
-      attachments: [{ image_url: 'https://i.imgur.com/SLx06PP.png', type: 'image' }],
-      user,
-    });
-
-    const { getByTestId } = renderMessage({ message });
-
-    await waitFor(() => {
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('image-attachment-single')).toBeTruthy();
-    });
-  });
-
   it('renders the GalleryContainer when multiple image attachments exist', async () => {
     const user = generateUser();
     const message = generateMessage({
@@ -192,12 +177,11 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId, queryAllByTestId } = renderMessage({ message });
+    const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('image-multiple-container')).toBeTruthy();
-      expect(queryAllByTestId('image-multiple')).toHaveLength(2);
+      expect(getByTestId('gallery-container')).toBeTruthy();
     });
   });
 

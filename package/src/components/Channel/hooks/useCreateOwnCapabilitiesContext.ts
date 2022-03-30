@@ -7,35 +7,24 @@ import {
   OwnCapabilitiesContextValue,
   OwnCapability,
 } from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateOwnCapabilitiesContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
   overrideCapabilities,
 }: {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  channel: Channel<StreamChatGenerics>;
   overrideCapabilities?: Partial<OwnCapabilitiesContextValue>;
 }) => {
   const overrideCapabilitiesStr = overrideCapabilities
     ? JSON.stringify(Object.values(overrideCapabilities))
     : null;
+  const ownCapabilitiesStr = channel?.data?.own_capabilities
+    ? JSON.stringify(Object.values(channel?.data?.own_capabilities as Array<string>))
+    : null;
+
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
     const capabilities = (channel?.data?.own_capabilities || []) as Array<string>;
     const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
@@ -49,6 +38,7 @@ export const useCreateOwnCapabilitiesContext = <
     );
 
     return ownCapabilitiesContext;
-  }, [channel.id, overrideCapabilitiesStr]);
+  }, [channel.id, overrideCapabilitiesStr, ownCapabilitiesStr]);
+
   return ownCapabilitiesContext;
 };

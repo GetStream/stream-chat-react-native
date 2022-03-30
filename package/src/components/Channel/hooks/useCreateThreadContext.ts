@@ -1,25 +1,10 @@
 import { useMemo } from 'react';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 export const useCreateThreadContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   allowThreadMessagesInChannel,
   closeThread,
@@ -31,7 +16,7 @@ export const useCreateThreadContext = <
   threadHasMore,
   threadLoadingMore,
   threadMessages,
-}: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: ThreadContextValue<StreamChatGenerics>) => {
   const threadId = thread?.id;
   const threadReplyCount = thread?.reply_count;
   const threadMessagesUpdated = threadMessages
@@ -43,7 +28,7 @@ export const useCreateThreadContext = <
     )
     .join();
 
-  const threadContext: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
+  const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
     () => ({
       allowThreadMessagesInChannel,
       closeThread,

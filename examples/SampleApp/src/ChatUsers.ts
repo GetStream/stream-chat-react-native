@@ -1,5 +1,5 @@
 import { UserResponse } from 'stream-chat';
-import { LocalUserType } from './types';
+import { StreamChatGenerics } from './types';
 
 export const USER_TOKENS: Record<string, string> = {
   e2etest1:
@@ -21,7 +21,7 @@ export const USER_TOKENS: Record<string, string> = {
   vishal:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidmlzaGFsIn0.HOlVh-ZyQnjyuL20G-67RTgKufBuAH-I-gbEELFlass',
 };
-export const USERS: Record<string, UserResponse<LocalUserType>> = {
+export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
   neil: {
     id: 'neil',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U01173D1D5J-0dead6eea6ea-512',

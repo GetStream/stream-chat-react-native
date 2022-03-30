@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 
@@ -50,7 +50,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({ navigation }
     },
   } = useTheme();
 
-  const { chatClient, logout } = useContext(AppContext);
+  const { chatClient, logout } = useAppContext();
 
   if (!chatClient) return null;
 

@@ -4,6 +4,10 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
@@ -11,42 +15,41 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Left } from '../../icons/Left';
+import { GiphyIcon } from '../../icons';
 import { Lightning } from '../../icons/Lightning';
-import { Right } from '../../icons/Right';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const styles = StyleSheet.create({
+  actionsRow: {
+    flexDirection: 'row',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    flex: 1,
+    justifyContent: 'center',
+  },
   cancel: {
     fontSize: 14,
     fontWeight: '600',
     paddingVertical: 16,
   },
-  cancelContainer: {
-    alignItems: 'center',
-    borderRightWidth: 1,
-    flex: 1,
-    justifyContent: 'center',
-  },
   container: {
     overflow: 'hidden',
-    width: 256,
+    width: 270,
   },
   giphy: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    height: 140,
+    alignSelf: 'center',
+    borderRadius: 2,
+    height: 170,
+    maxWidth: 270,
+    width: 270,
   },
   giphyContainer: {
     alignItems: 'center',
@@ -56,36 +59,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 68,
   },
+  giphyHeaderText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  giphyHeaderTitle: {
+    fontSize: 14,
+  },
   giphyMask: {
     bottom: 8,
     left: 8,
     position: 'absolute',
   },
-  giphyText: { fontSize: 11, fontWeight: '600' },
-  margin: {
-    margin: 8,
+  giphyMaskText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
-  row: { flexDirection: 'row' },
-  selectionContainer: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: 'hidden',
-    width: 250,
-  },
-  selector: {
+  header: {
     alignItems: 'center',
-    borderBottomWidth: 1,
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 8,
-    paddingHorizontal: 8,
+    padding: 8,
+    width: '60%',
+  },
+  selectionContainer: {
+    borderBottomLeftRadius: 8,
+    borderWidth: 1,
+    overflow: 'hidden',
+    width: 272,
+  },
+  selectionImageContainer: {
+    alignSelf: 'center',
+    margin: 1,
   },
   send: {
     fontSize: 14,
     fontWeight: '600',
     paddingVertical: 16,
   },
-  sendContainer: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  shuffle: {
+    fontSize: 14,
+    fontWeight: '600',
+    paddingVertical: 16,
+  },
   shuffleButton: {
     alignItems: 'center',
     borderRadius: 16,
@@ -94,76 +111,86 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 32,
   },
-  title: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    fontWeight: '500',
-  },
 });
 
 export type GiphyPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleAction' | 'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
-> &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'> & {
-    attachment: Attachment<At>;
-  };
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+  Pick<
+    MessageContextValue<StreamChatGenerics>,
+    | 'handleAction'
+    | 'isMyMessage'
+    | 'message'
+    | 'onLongPress'
+    | 'onPress'
+    | 'onPressIn'
+    | 'preventPress'
+  > &
+  Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'> & {
+    attachment: Attachment<StreamChatGenerics>;
+  } & Pick<OverlayContextValue, 'setOverlay'>;
 
 const GiphyWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GiphyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
     attachment,
+    giphyVersion,
     handleAction,
+    isMyMessage,
+    message,
     onLongPress,
     onPress,
     onPressIn,
     preventPress,
+    setImage,
+    setImages,
+    setOverlay,
   } = props;
 
-  const { actions, image_url, thumb_url, title, type } = attachment;
+  const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
 
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, overlay, white },
+      colors: { accent_blue, black, grey, grey_dark, grey_gainsboro, label_bg_transparent, white },
       messageSimple: {
         giphy: {
+          buttonContainer,
           cancel,
-          cancelContainer,
           container,
           giphy,
           giphyContainer,
+          giphyHeaderText,
+          giphyHeaderTitle,
           giphyMask,
-          giphyText,
+          giphyMaskText,
+          header,
           selectionContainer,
-          selector,
           send,
-          sendContainer,
-          shuffleButton,
-          title: titleStyle,
+          shuffle,
         },
       },
     },
   } = useTheme();
 
-  const uri = image_url || thumb_url;
+  let uri = image_url || thumb_url;
+  const giphyDimensions: { height?: number; width?: number } = {};
+
+  const defaultOnPress = () => {
+    setImages([message]);
+    setImage({ messageId: message.id, url: uri });
+    setOverlay('gallery');
+  };
+
+  if (type === 'giphy' && giphyData) {
+    const giphyVersionInfo = giphyData[giphyVersion];
+    uri = giphyVersionInfo.url;
+    giphyDimensions.height = parseFloat(giphyVersionInfo.height);
+    giphyDimensions.width = parseFloat(giphyVersionInfo.width);
+  }
 
   if (!uri) return null;
 
@@ -175,51 +202,49 @@ const GiphyWithContext = <
         selectionContainer,
       ]}
     >
-      <View style={styles.margin}>
+      <View style={[styles.header, header]}>
+        <GiphyIcon />
+        <Text style={[styles.giphyHeaderText, giphyHeaderText]}>Giphy</Text>
+        <Text
+          style={[styles.giphyHeaderTitle, giphyHeaderTitle, { color: grey_dark }]}
+        >{`/giphy ${title}`}</Text>
+      </View>
+      <View style={styles.selectionImageContainer}>
         <Image
-          resizeMode='cover'
+          resizeMode='contain'
           source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.giphy, giphy]}
+          style={[styles.giphy, giphyDimensions, giphy]}
         />
-        <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
-            <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, { color: white }, giphyText]}>
-              {type?.toUpperCase()}
-            </Text>
-          </View>
-        </View>
       </View>
       <View>
-        <View style={[styles.selector, { borderBottomColor: border }, selector]}>
-          <TouchableOpacity
-            onPress={() => handleAction('image_action', 'shuffle')}
-            style={[styles.shuffleButton, { borderColor: border }, shuffleButton]}
-          >
-            <Left />
-          </TouchableOpacity>
-          <Text style={[styles.title, { color: black }, titleStyle]}>{`"${title}"`}</Text>
-          <TouchableOpacity
-            onPress={() => {
-              if (actions?.[1].name && actions?.[1].value && handleAction) {
-                handleAction(actions[1].name, actions[1].value);
-              }
-            }}
-            style={[styles.shuffleButton, shuffleButton]}
-          >
-            <Right />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
+        <View style={styles.actionsRow}>
           <TouchableOpacity
             onPress={() => {
               if (actions?.[2].name && actions?.[2].value && handleAction) {
                 handleAction(actions[2].name, actions[2].value);
               }
             }}
-            style={[styles.cancelContainer, { borderRightColor: border }, cancelContainer]}
+            style={[
+              styles.buttonContainer,
+              { borderColor: grey_gainsboro, borderRightWidth: 1 },
+              buttonContainer,
+            ]}
           >
             <Text style={[styles.cancel, { color: grey }, cancel]}>{actions?.[2].text}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              if (actions?.[1].name && actions?.[1].value && handleAction) {
+                handleAction(actions[1].name, actions[1].value);
+              }
+            }}
+            style={[
+              styles.buttonContainer,
+              { borderColor: grey_gainsboro, borderRightWidth: 1 },
+              buttonContainer,
+            ]}
+          >
+            <Text style={[styles.shuffle, { color: grey }, shuffle]}>{actions?.[1].text}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -227,7 +252,7 @@ const GiphyWithContext = <
                 handleAction(actions[0].name, actions[0].value);
               }
             }}
-            style={[styles.sendContainer, sendContainer]}
+            style={[styles.buttonContainer, { borderColor: grey_gainsboro }, buttonContainer]}
           >
             <Text style={[styles.send, { color: accent_blue }, send]}>{actions?.[0].text}</Text>
           </TouchableOpacity>
@@ -248,6 +273,7 @@ const GiphyWithContext = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            defaultHandler: defaultOnPress,
             emitter: 'giphy',
             event,
           });
@@ -261,20 +287,32 @@ const GiphyWithContext = <
           });
         }
       }}
-      style={[styles.container, container]}
       testID='giphy-attachment'
       {...additionalTouchableProps}
     >
-      <View>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isMyMessage ? grey_gainsboro : white },
+          container,
+        ]}
+      >
         <Image
-          resizeMode='cover'
+          resizeMode='contain'
           source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.giphy, giphy]}
+          style={[styles.giphy, giphyDimensions, giphy]}
+          testID='giphy-attachment-image'
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, { backgroundColor: overlay }, giphyContainer]}>
+          <View
+            style={[
+              styles.giphyContainer,
+              { backgroundColor: label_bg_transparent },
+              giphyContainer,
+            ]}
+          >
             <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, { color: white }, giphyText]}>
+            <Text style={[styles.giphyMaskText, { color: white }, giphyMaskText]}>
               {type?.toUpperCase()}
             </Text>
           </View>
@@ -284,23 +322,19 @@ const GiphyWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: GiphyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: GiphyPropsWithContext<StreamChatGenerics>,
+  nextProps: GiphyPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
+    giphyVersion: prevGiphyVersion,
+    isMyMessage: prevIsMyMessage,
   } = prevProps;
   const {
     attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
+    giphyVersion: nextGiphyVersion,
+    isMyMessage: nextIsMyMessage,
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -317,53 +351,51 @@ const areEqual = <
       prevActions === nextActions);
   if (!actionsEqual) return false;
 
+  const giphyVersionEqual = prevGiphyVersion === nextGiphyVersion;
+  if (!giphyVersionEqual) return false;
+
+  const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
+  if (!isMyMessageEqual) return false;
+
   return true;
 };
 
 const MemoizedGiphy = React.memo(GiphyWithContext, areEqual) as typeof GiphyWithContext;
 
 export type GiphyProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress' | 'onPressIn'> &
-    Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'additionalTouchableProps'>
-> & {
-  attachment: Attachment<At>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<GiphyPropsWithContext<StreamChatGenerics>> & {
+  attachment: Attachment<StreamChatGenerics>;
 };
 
 /**
  * UI component for card in attachments.
  */
 export const Giphy = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: GiphyProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: GiphyProps<StreamChatGenerics>,
 ) => {
-  const { handleAction, onLongPress, onPress, onPressIn, preventPress } =
-    useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { additionalTouchableProps } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-
+  const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
+    useMessageContext<StreamChatGenerics>();
+  const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
+  const { setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setOverlay } = useOverlayContext();
   return (
     <MemoizedGiphy
       {...{
         additionalTouchableProps,
+        giphyVersion,
         handleAction,
+        isMyMessage,
+        message,
         onLongPress,
         onPress,
         onPressIn,
         preventPress,
+        setImage,
+        setImages,
+        setOverlay,
       }}
       {...props}
     />

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
@@ -6,20 +6,12 @@ import { Channel } from 'stream-chat';
 import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { AppContext } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
 import type { ChannelSort } from 'stream-chat';
 
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -59,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
@@ -67,7 +59,7 @@ const options = {
 };
 
 export const ChannelListScreen: React.FC = () => {
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const navigation = useNavigation();
   const {
     theme: {
@@ -76,17 +68,7 @@ export const ChannelListScreen: React.FC = () => {
   } = useTheme();
 
   const searchInputRef = useRef<TextInput | null>(null);
-  const scrollRef = useRef<FlatList<
-    Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalEventType,
-      LocalReactionType,
-      LocalUserType
-    >
-  > | null>(null);
+  const scrollRef = useRef<FlatList<Channel<StreamChatGenerics>> | null>(null);
 
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -118,19 +100,7 @@ export const ChannelListScreen: React.FC = () => {
 
   if (!chatClient) return null;
 
-  const setScrollRef = (
-    ref: React.RefObject<FlatList<
-      Channel<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalEventType,
-        LocalReactionType,
-        LocalUserType
-      >
-    > | null>,
-  ) => {
+  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
     scrollRef.current = ref;
   };
 
@@ -203,15 +173,7 @@ export const ChannelListScreen: React.FC = () => {
         )}
         <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
-            <ChannelList<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalReactionType,
-              LocalUserType
-            >
+            <ChannelList<StreamChatGenerics>
               additionalFlatListProps={{
                 getItemLayout: (_, index) => ({
                   index,

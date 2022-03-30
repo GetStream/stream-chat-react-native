@@ -8,16 +8,7 @@ import React, {
   useRef,
 } from 'react';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
+import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { ActiveChannelsProvider } from '../activeChannelsRefContext/ActiveChannelsRefContext';
 
 import type { ChannelContextValue } from '../channelContext/ChannelContext';
@@ -27,60 +18,41 @@ import type { TypingContextValue } from '../typingContext/TypingContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type ChannelState<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  members: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members'];
-  messages: PaginatedMessageListContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages'];
-  read: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'];
+  members: ChannelContextValue<StreamChatGenerics>['members'];
+  messages: PaginatedMessageListContextValue<StreamChatGenerics>['messages'];
+  read: ChannelContextValue<StreamChatGenerics>['read'];
   subscriberCount: number;
-  threadMessages: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
-  typing: TypingContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing'];
-  watcherCount: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount'];
-  watchers: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
+  threadMessages: ThreadContextValue<StreamChatGenerics>['threadMessages'];
+  typing: TypingContextValue<StreamChatGenerics>['typing'];
+  watcherCount: ChannelContextValue<StreamChatGenerics>['watcherCount'];
+  watchers: ChannelContextValue<StreamChatGenerics>['watchers'];
 };
 
 type ChannelsState<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = { [cid: string]: ChannelState<At, Ch, Co, Ev, Me, Re, Us> };
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  [cid: string]: ChannelState<StreamChatGenerics>;
+};
 
 export type Keys = keyof ChannelState;
 
 export type Payload<
   Key extends Keys = Keys,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   cid: string;
   key: Key;
-  value: ChannelState<At, Ch, Co, Ev, Me, Re, Us>[Key];
+  value: ChannelState<StreamChatGenerics>[Key];
 };
 
 type SetStateAction<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = { payload: Payload<Keys, At, Ch, Co, Ev, Me, Re, Us>; type: 'SET_STATE' };
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  payload: Payload<Keys, StreamChatGenerics>;
+  type: 'SET_STATE';
+};
 
 type IncreaseSubscriberCountAction = {
   payload: { cid: string };
@@ -91,46 +63,24 @@ type DecreaseSubscriberCountAction = {
   type: 'DECREASE_SUBSCRIBER_COUNT';
 };
 
-type Action<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> =
-  | SetStateAction<At, Ch, Co, Ev, Me, Re, Us>
+type Action<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  | SetStateAction<StreamChatGenerics>
   | IncreaseSubscriberCountAction
   | DecreaseSubscriberCountAction;
 
 export type ChannelsStateContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   decreaseSubscriberCount: (value: { cid: string }) => void;
   increaseSubscriberCount: (value: { cid: string }) => void;
-  setState: (value: Payload<Keys, At, Ch, Co, Ev, Me, Re, Us>) => void;
-  state: ChannelsState<At, Ch, Co, Ev, Me, Re, Us>;
+  setState: (value: Payload<Keys, StreamChatGenerics>) => void;
+  state: ChannelsState<StreamChatGenerics>;
 };
 
-type Reducer<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = (
-  state: ChannelsState<At, Ch, Co, Ev, Me, Re, Us>,
-  action: Action<At, Ch, Co, Ev, Me, Re, Us>,
-) => ChannelsState<At, Ch, Co, Ev, Me, Re, Us>;
+type Reducer<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = (
+  state: ChannelsState<StreamChatGenerics>,
+  action: Action<StreamChatGenerics>,
+) => ChannelsState<StreamChatGenerics>;
 
 function reducer(state: ChannelsState, action: Action) {
   switch (action.type) {
@@ -192,21 +142,15 @@ const ChannelsStateContext = React.createContext({
 } as unknown as ChannelsStateContextValue);
 
 export const ChannelsStateProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(reducer as Reducer<At, Ch, Co, Ev, Me, Re, Us>, {});
+  const [state, dispatch] = useReducer(reducer as unknown as Reducer<StreamChatGenerics>, {});
 
-  const setState = useCallback((payload: Payload<Keys, At, Ch, Co, Ev, Me, Re, Us>) => {
+  const setState = useCallback((payload: Payload<Keys, StreamChatGenerics>) => {
     dispatch({ payload, type: 'SET_STATE' });
   }, []);
 
@@ -242,40 +186,19 @@ export const ChannelsStateProvider = <
 };
 
 export const useChannelsStateContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->() =>
-  useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<StreamChatGenerics>;
 
 export const withChannelsStateContext = <
   P extends UnknownType,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+): React.FC<Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>> => {
   const WithChannelsStateContextComponent = (
-    props: Omit<P, keyof ChannelsStateContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+    props: Omit<P, keyof ChannelsStateContextValue<StreamChatGenerics>>,
   ) => {
-    const channelsStateContext = useChannelsStateContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const channelsStateContext = useChannelsStateContext<StreamChatGenerics>();
 
     return <Component {...(props as P)} {...channelsStateContext} />;
   };

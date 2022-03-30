@@ -246,9 +246,30 @@ dependencies {
 }
 ```
 
+## Blank screen when channel gets delete
+
+When a channel is deleted, and if some user is active on that channel, a blank screen appears by default (as per the default logic) as we return `null` in this case.
+It might be confusing for end user to see a blank screen and appropriate UX would be to navigate back to channel list screen.
+You can implement such UX by listening to `channel.deleted` event on channel screen, and navigate to channel list screen with appropriate notification on app.
+
+```tsx
+client.on('channel.deleted', event => {
+  if (event.cid === channel.cid) {
+    // add your action here
+  }
+});
+```
+
 ## Touchables not working
 
 If you are having trouble with pressing, swiping, or otherwise interacting with components it is likely the result of [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/) not being properly setup.
+
+:::note
+
+If your React Native version is (>=0.68) you will need a version of >=2.0.0 for `react-native-gesture-handler` for your app to build.
+
+:::
+
 Be sure to follow all needed [additional steps](https://docs.swmansion.com/react-native-gesture-handler/docs/) to complete the installation.
 
 This includes ensuring you import `react-native-gesture-handler` at the top of your app entry file.
@@ -257,7 +278,16 @@ This includes ensuring you import `react-native-gesture-handler` at the top of y
 import 'react-native-gesture-handler';
 ```
 
-And for Android you additionally need to update `MainActivity.java` to override the method for creating the `ReactRootView`.
+Also do not forget to wrap your component tree(probably above `OverlayProvider`) with `<GestureHandlerRootView>` or `gestureHandlerRootHOC` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js). Not doing so, can cause unusual behaviour with the `MessageOverlay` and `Imagegallery` gestures.
+
+```tsx
+<GestureHandlerRootView style={{ flex: 1 }}>
+  <OverlayProvider>// Other underlying components</OverlayProvider>
+</GestureHandlerRootView>
+```
+
+If you are using v1 of `react-native-gesture-handler` library, then you will need extra setup steps for Android.
+Update `MainActivity.java` to override the method for creating the `ReactRootView` as mentioned in [RNGH Installation docs](https://docs.swmansion.com/react-native-gesture-handler/docs/installation#js).
 
 ```java {4-6,13-21}
 package com.swmansion.gesturehandler.react.example;
@@ -284,10 +314,13 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-## Custom touchable not working
+## Touchables Inside Custom Components Are Not Working
 
 If you find that a customization that includes a touchable is not working, or the wrong element is receiving the touch event, this is likely related to [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/).
-Your component may be being rendered inside of a gesture handler; nested gesture handlers and touchables need special treatment and can act differently on iOS & Android.
+The following could be the reasons behind the issues you might be facing:
+
+- Your component may be being rendered inside of a gesture handler.
+- Nested gesture handlers and touchables need special treatment and can act differently on iOS & Android. If you want Nested Touchables to work on Android you should add the prop `disallowInterruption` as mentioned [here](https://github.com/software-mansion/react-native-gesture-handler/issues/784#issuecomment-786471220).
 
 There are solutions available for almost all use cases so looking into your specific use case in relation to React Native Gesture Handler is suggested.
 The solution may require using a different touchable from React Native Gesture Handler and React Native depending on the platform.

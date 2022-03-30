@@ -1,5 +1,50 @@
 # Change Log
 
+## [4.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.4...v4.2.0) (2022-03-17)
+
+
+### Features
+
+* add giphy size customisation [CRNS-514] ([90c87da](https://github.com/GetStream/stream-chat-react-native/commit/90c87da095bd6f243613853091f11a9b6564632e))
+* update core to rn 0.67 [CRNS-539] ([46e9b37](https://github.com/GetStream/stream-chat-react-native/commit/46e9b3761021c0f6ddbe03f5afb81e3426877625))
+* upgrade react native gesture handler version to 2.3.1 ([f9eba70](https://github.com/GetStream/stream-chat-react-native/commit/f9eba70d5f961f2aed7f52eeb458b4ea6f18678e))
+
+
+### Bug Fixes
+
+* show background for Giphy on long press ([459a595](https://github.com/GetStream/stream-chat-react-native/commit/459a59522c7acb9d20b5e78809efc31084201257))
+
+### [4.1.4](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.3...v4.1.4) (2022-03-13)
+
+
+### Bug Fixes
+
+* overrideOwnCapabilities typescript issue ([a8010ef](https://github.com/GetStream/stream-chat-react-native/commit/a8010efe6d841d447c32bf7f1fe0e3ecab2761c3))
+
+### [4.1.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.2...v4.1.3) (2022-03-10)
+
+
+### Bug Fixes
+
+* add missing own_capabilities field after channel.updated event [CRNS-537] ([0a27963](https://github.com/GetStream/stream-chat-react-native/commit/0a279637dbf0cc4474b0ffc3052f6df6cdbfacf1))
+* cleanup of keyboard listeners ([7f4d6f2](https://github.com/GetStream/stream-chat-react-native/commit/7f4d6f27e061c66a8f6631a3840a7a911650c423))
+* pull to refresh functionality [CRNS-536] ([df6e6df](https://github.com/GetStream/stream-chat-react-native/commit/df6e6df3b70a6c9f986723b9328c8a99def67511))
+
+### [4.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.1...v4.1.2) (2022-03-07)
+
+
+### Bug Fixes
+
+* export ownCapabilitiesContext from SDK ([e0a9f75](https://github.com/GetStream/stream-chat-react-native/commit/e0a9f757e431bd29310e8bfc16f4abf5fdca0ae2))
+
+### [4.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.0...v4.1.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* image gallery cleanup and fixing race condition ([4c53f33](https://github.com/GetStream/stream-chat-react-native/commit/4c53f3374a7ebe7e42f61473480acd7642de489d))
+* mark channel as read when messages length is less than visible screen ([2dd87b3](https://github.com/GetStream/stream-chat-react-native/commit/2dd87b340d4d5d66911c9306b58d8307e089ed33))
+
 ### [3.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.1...v3.10.2) (2021-11-23)
 
 

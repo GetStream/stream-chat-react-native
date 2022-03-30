@@ -99,29 +99,56 @@ To be able to use the Stream Chat React Native SDK, a few dependencies must meet
 
 ### Additional Steps
 
-- `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
-- `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation).
-- `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
-- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
+For some of the packages listed below, there are additional steps required to setup the package:
+
+- `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation)
+
+  Add Reanimated's babel plugin to your babel.config.js:
+
+  ```js
+    module.exports = {
+        ...
+        plugins: [
+            ...
+            'react-native-reanimated/plugin',
+        ],
+    };
+  ```
+
 - `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
 
-:::info
+  RNGH requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
 
-`react-native-gesture-handler` requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
+  ```tsx
+  import 'react-native-gesture-handler';
+  import { AppRegistry } from 'react-native';
 
-<br />
+  import App from './App';
+  import { name as appName } from './app.json';
 
-```tsx
-import 'react-native-gesture-handler';
-import { AppRegistry } from 'react-native';
+  AppRegistry.registerComponent(appName, () => App);
+  ```
 
-import App from './App';
-import { name as appName } from './app.json';
+  Also wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHO`
 
-AppRegistry.registerComponent(appName, () => App);
-```
+  ```jsx
+  import { GestureHandlerRootView } from 'react-native-gesture-handler';
+  import { OverlayProvider } from 'stream-chat-react-native';
 
-:::
+  export default function App() {
+    return (
+      <GestureHandlerRootView>
+        <OverlayProvider>{/* Your app code goes here */}</OverlayProvider>
+      </GestureHandlerRootView>
+    );
+  }
+  ```
+
+  Please take a look at our Example Application for reference.
+
+- `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
+- `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
+- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 
 :::note
 

@@ -7,7 +7,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
-import type { DefaultUserType, UnknownType } from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent
@@ -46,7 +46,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ImageGalleryFooterCustomComponent<Us extends UnknownType = DefaultUserType> = ({
+export type ImageGalleryFooterCustomComponent<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ({
   openGridView,
   photo,
   share,
@@ -55,28 +57,34 @@ export type ImageGalleryFooterCustomComponent<Us extends UnknownType = DefaultUs
   openGridView: () => void;
   share: () => Promise<void>;
   shareMenuOpen: boolean;
-  photo?: Photo<Us>;
+  photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
-export type ImageGalleryFooterCustomComponentProps<Us extends UnknownType = DefaultUserType> = {
-  centerElement?: ImageGalleryFooterCustomComponent<Us>;
+export type ImageGalleryFooterCustomComponentProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  centerElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   GridIcon?: React.ReactElement;
-  leftElement?: ImageGalleryFooterCustomComponent<Us>;
-  rightElement?: ImageGalleryFooterCustomComponent<Us>;
+  leftElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
+  rightElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   ShareIcon?: React.ReactElement;
 };
 
-type Props<Us extends UnknownType = DefaultUserType> =
-  ImageGalleryFooterCustomComponentProps<Us> & {
+type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
+  ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
     opacity: Animated.SharedValue<number>;
     openGridView: () => void;
-    photo: Photo<Us>;
+    photo: Photo<StreamChatGenerics>;
     photoLength: number;
     selectedIndex: number;
     visible: Animated.SharedValue<number>;
   };
 
-export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(props: Props<Us>) => {
+export const ImageGalleryFooter = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: Props<StreamChatGenerics>,
+) => {
   const {
     centerElement,
     GridIcon,
@@ -125,9 +133,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(pro
     setShareMenuOpen(true);
     try {
       const localImage = await saveFile({
-        fileName: `${photo.user?.name || photo.user_id || 'ChatPhoto'}-${
-          photo.messageId
-        }-${selectedIndex}.jpg`,
+        fileName: `${photo.user?.id || 'ChatPhoto'}-${photo.messageId}-${selectedIndex}.jpg`,
         fromUrl: photo.uri,
       });
       await shareImage({ type: 'image/jpeg', url: localImage });

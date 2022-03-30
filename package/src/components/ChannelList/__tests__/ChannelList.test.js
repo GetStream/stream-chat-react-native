@@ -19,7 +19,7 @@ import dispatchNotificationMessageNewEvent from '../../../mock-builders/event/no
 import dispatchNotificationRemovedFromChannel from '../../../mock-builders/event/notificationRemovedFromChannel';
 import dispatchUserPresenceEvent from '../../../mock-builders/event/userPresence';
 import dispatchUserUpdatedEvent from '../../../mock-builders/event/userUpdated';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannel, generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -30,7 +30,7 @@ import { ChannelList } from '../ChannelList';
  * We are gonna use following custom UI components for preview and list.
  * If we use ChannelPreviewMessenger or ChannelPreviewLastMessage here, then changes
  * to those components might end up breaking tests for ChannelList, which will be quite painful
- * to debug then.
+ * to debug.
  */
 const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
   <View accessibilityRole='list-item' onPress={setActiveChannel} testID={channel.id}>
@@ -55,6 +55,15 @@ const ChannelListComponent = (props) => {
   );
 };
 
+class DeferredPromise {
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
 describe('ChannelList', () => {
   let chatClient;
   let testChannel1;
@@ -67,10 +76,11 @@ describe('ChannelList', () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     chatClient = await getTestClientWithUser({ id: 'dan' });
-    testChannel1 = generateChannel();
-    testChannel2 = generateChannel();
-    testChannel3 = generateChannel();
+    testChannel1 = generateChannelResponse();
+    testChannel2 = generateChannelResponse();
+    testChannel3 = generateChannelResponse();
   });
 
   afterEach(cleanup);
@@ -123,6 +133,59 @@ describe('ChannelList', () => {
 
     await waitFor(() => {
       expect(getByTestId(testChannel2.channel.id)).toBeTruthy();
+    });
+  });
+
+  it('should update if filters are updated while awaiting api call', async () => {
+    const deferredCallForStaleFilter = new DeferredPromise();
+    const deferredCallForFreshFilter = new DeferredPromise();
+    const staleFilter = { 'initial-filter': { a: { $gt: 'c' } } };
+    const freshFilter = { 'new-filter': { a: { $gt: 'c' } } };
+    const staleChannel = [generateChannel({ id: 'stale-channel' })];
+    const freshChannel = [generateChannel({ id: 'new-channel' })];
+    const spy = jest.spyOn(chatClient, 'queryChannels');
+    spy.mockImplementation((filters = {}) => {
+      if (Object.prototype.hasOwnProperty.call(filters, 'new-filter')) {
+        return deferredCallForFreshFilter.promise;
+      }
+      return deferredCallForStaleFilter.promise;
+    });
+
+    const { getByTestId, rerender } = render(
+      <Chat client={chatClient}>
+        <ChannelList {...props} filters={staleFilter} />
+      </Chat>,
+    );
+
+    expect(spy).toHaveBeenCalledWith(
+      staleFilter,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('channel-list')).toBeTruthy();
+    });
+
+    rerender(
+      <Chat client={chatClient}>
+        <ChannelList {...props} filters={freshFilter} />
+      </Chat>,
+    );
+
+    expect(spy).toHaveBeenCalledWith(
+      freshFilter,
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+    );
+
+    deferredCallForStaleFilter.resolve(staleChannel);
+    deferredCallForFreshFilter.resolve(freshChannel);
+    await waitFor(() => {
+      expect(getByTestId('channel-list')).toBeTruthy();
+      expect(getByTestId('new-channel')).toBeTruthy();
     });
   });
 
@@ -222,7 +285,6 @@ describe('ChannelList', () => {
             <ChannelList {...props} />
           </Chat>,
         );
-
         await waitFor(() => {
           expect(getByTestId('channel-list')).toBeTruthy();
         });
@@ -232,9 +294,7 @@ describe('ChannelList', () => {
         await waitFor(() => {
           expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
         });
-
         const items = getAllByRole('list-item');
-
         await waitFor(() => {
           expect(within(items[0]).getByTestId(testChannel3.channel.id)).toBeTruthy();
         });

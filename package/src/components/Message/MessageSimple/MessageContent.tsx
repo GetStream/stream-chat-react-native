@@ -20,17 +20,8 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import { Error } from '../../../icons';
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
-import { vw } from '../../../utils/utils';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { MessageStatusTypes, vw } from '../../../utils/utils';
 
 const styles = StyleSheet.create({
   containerInner: {
@@ -64,15 +55,9 @@ const styles = StyleSheet.create({
 });
 
 export type MessageContentPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  MessageContextValue<StreamChatGenerics>,
   | 'alignment'
   | 'disabled'
   | 'goToMessage'
@@ -93,7 +78,7 @@ export type MessageContentPropsWithContext<
   | 'threadList'
 > &
   Pick<
-    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagesContextValue<StreamChatGenerics>,
     | 'additionalTouchableProps'
     | 'Attachment'
     | 'FileAttachmentGroup'
@@ -115,15 +100,9 @@ export type MessageContentPropsWithContext<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContentWithContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     additionalTouchableProps,
@@ -200,13 +179,20 @@ const MessageContentWithContext = <
     setMessageContentWidth(width);
   };
 
-  const error = message.type === 'error' || message.status === 'failed';
+  const error = message.type === 'error' || message.status === MessageStatusTypes.FAILED;
 
   const groupStyle = `${alignment}_${groupStyles?.[0]?.toLowerCase?.()}`;
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+  let noBorder = onlyEmojis && !message.quoted_message;
+  if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+      noBorder = false;
+    } else {
+      noBorder = true;
+    }
+  }
 
   const isMessageTypeDeleted = message.type === 'deleted';
 
@@ -221,18 +207,18 @@ const MessageContentWithContext = <
     );
   }
 
-  const backgroundColor =
-    onlyEmojis && !message.quoted_message
-      ? transparent
-      : otherAttachments.length
-      ? otherAttachments[0].type === 'giphy'
-        ? !message.quoted_message
-          ? transparent
-          : grey_gainsboro
-        : blue_alice
-      : alignment === 'left' || error
-      ? white
-      : grey_gainsboro;
+  let backgroundColor = grey_gainsboro;
+  if (onlyEmojis && !message.quoted_message) {
+    backgroundColor = transparent;
+  } else if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy') {
+      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
+    } else {
+      backgroundColor = blue_alice;
+    }
+  } else if (alignment === 'left' || error) {
+    backgroundColor = white;
+  }
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
 
@@ -356,7 +342,7 @@ const MessageContentWithContext = <
               case 'text':
               default:
                 return otherAttachments.length && otherAttachments[0].actions ? null : (
-                  <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                  <MessageTextContainer<StreamChatGenerics>
                     key={`message_text_container_${messageContentOrderIndex}`}
                   />
                 );
@@ -377,17 +363,9 @@ const MessageContentWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
->(
-  prevProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: MessageContentPropsWithContext<StreamChatGenerics>,
+  nextProps: MessageContentPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     goToMessage: prevGoToMessage,
@@ -510,31 +488,17 @@ const MemoizedMessageContent = React.memo(
 ) as typeof MessageContentWithContext;
 
 export type MessageContentProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
-> = Partial<
-  Omit<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>
-> &
-  Pick<MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'setMessageContentWidth'>;
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Partial<Omit<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>> &
+  Pick<MessageContentPropsWithContext<StreamChatGenerics>, 'setMessageContentWidth'>;
 
 /**
  * Child of MessageSimple that displays a message's content
  */
 export const MessageContent = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageContentProps<StreamChatGenerics>,
 ) => {
   const {
     alignment,
@@ -556,7 +520,7 @@ export const MessageContent = <
     preventPress,
     showMessageStatus,
     threadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps,
     Attachment,
@@ -569,11 +533,11 @@ export const MessageContent = <
     MessageReplies,
     MessageStatus,
     Reply,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  } = useMessagesContext<StreamChatGenerics>();
   const { t, tDateTimeParser } = useTranslationContext();
 
   return (
-    <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
+    <MemoizedMessageContent<StreamChatGenerics>
       {...{
         additionalTouchableProps,
         alignment,

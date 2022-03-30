@@ -20,6 +20,7 @@ export const Colors = {
   grey_gainsboro: '#DBDBDB',
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
+  label_bg_transparent: '#00000033', // 33 = 20% opacity
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
@@ -134,6 +135,11 @@ export type Theme = {
     message: TextStyle & {
       fontWeight: TextStyle['fontWeight'];
     };
+    mutedStatus: {
+      height: number;
+      iconStyle: ViewStyle;
+      width: number;
+    };
     row: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
@@ -190,6 +196,8 @@ export type Theme = {
       usernameText: TextStyle;
     };
     backgroundColor?: string;
+    pager?: ViewStyle;
+    slide?: ImageStyle;
   };
   inlineDateSeparator: {
     container: ViewStyle;
@@ -225,6 +233,10 @@ export type Theme = {
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
+    editingStateHeader: {
+      editingBoxHeader: ViewStyle;
+      editingBoxHeaderTitle: TextStyle;
+    };
     fileUploadPreview: {
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
@@ -234,8 +246,10 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
-    giphyContainer: ViewStyle;
-    giphyText: TextStyle;
+    giphyCommandInput: {
+      giphyContainer: ViewStyle;
+      giphyText: TextStyle;
+    };
     imageUploadPreview: {
       dismiss: ViewStyle;
       flatList: ViewStyle;
@@ -400,27 +414,31 @@ export type Theme = {
     gallery: {
       galleryContainer: ViewStyle;
       galleryItemColumn: ViewStyle;
-      halfSize: ViewStyle['height'];
+      gridHeight: number;
+      gridWidth: number;
       image: ImageStyle;
       imageContainer: ViewStyle;
+      maxHeight: number;
+      maxWidth: number;
+      minHeight: number;
+      minWidth: number;
       moreImagesContainer: ViewStyle;
       moreImagesText: TextStyle;
-      size: ViewStyle['height'];
-      width: ViewStyle['width'];
     };
     giphy: {
+      buttonContainer: ViewStyle;
       cancel: TextStyle;
-      cancelContainer: ViewStyle;
       container: ViewStyle;
       giphy: ImageStyle;
       giphyContainer: ViewStyle;
+      giphyHeaderText: TextStyle;
+      giphyHeaderTitle: TextStyle;
       giphyMask: ViewStyle;
-      giphyText: TextStyle;
+      giphyMaskText: TextStyle;
+      header: ViewStyle;
       selectionContainer: ViewStyle;
-      selector: ViewStyle;
       send: TextStyle;
-      sendContainer: ViewStyle;
-      shuffleButton: ViewStyle;
+      shuffle: TextStyle;
       title: TextStyle;
     };
     pinnedHeader: {
@@ -584,6 +602,11 @@ export const defaultTheme: Theme = {
     message: {
       fontWeight: '400',
     },
+    mutedStatus: {
+      height: 20,
+      iconStyle: {},
+      width: 20,
+    },
     row: {},
     title: {},
     unreadContainer: {},
@@ -678,6 +701,10 @@ export const defaultTheme: Theme = {
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
+    editingStateHeader: {
+      editingBoxHeader: {},
+      editingBoxHeaderTitle: {},
+    },
     fileUploadPreview: {
       dismiss: {},
       fileContainer: {},
@@ -687,8 +714,10 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       flatList: {},
     },
-    giphyContainer: {},
-    giphyText: {},
+    giphyCommandInput: {
+      giphyContainer: {},
+      giphyText: {},
+    },
     imageUploadPreview: {
       dismiss: {},
       flatList: {},
@@ -824,7 +853,7 @@ export const defaultTheme: Theme = {
       deletedContainer: {},
       deletedContainerInner: {},
       deletedMetaText: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
       },
       deletedText: {
         em: {
@@ -883,27 +912,31 @@ export const defaultTheme: Theme = {
     gallery: {
       galleryContainer: {},
       galleryItemColumn: {},
-      halfSize: 100,
+      gridHeight: 195,
+      gridWidth: 256,
       image: {},
       imageContainer: {},
+      maxHeight: 300,
+      maxWidth: 256,
+      minHeight: 100,
+      minWidth: 170,
       moreImagesContainer: {},
       moreImagesText: {},
-      size: 200,
-      width: 250,
     },
     giphy: {
+      buttonContainer: {},
       cancel: {},
-      cancelContainer: {},
       container: {},
       giphy: {},
       giphyContainer: {},
+      giphyHeaderText: {},
+      giphyHeaderTitle: {},
       giphyMask: {},
-      giphyText: {},
+      giphyMaskText: {},
+      header: {},
       selectionContainer: {},
-      selector: {},
       send: {},
-      sendContainer: {},
-      shuffleButton: {},
+      shuffle: {},
       title: {},
     },
     pinnedHeader: {

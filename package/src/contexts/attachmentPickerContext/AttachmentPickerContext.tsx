@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import type { Asset, File, UnknownType } from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type AttachmentPickerIconProps = {
@@ -121,18 +121,20 @@ export const AttachmentPickerProvider = ({
 export const useAttachmentPickerContext = () =>
   useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
 
-export const withAttachmentPickerContext = <P extends UnknownType>(
-  Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof AttachmentPickerContextValue>> => {
+export const withAttachmentPickerContext = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  Component: React.ComponentType<StreamChatGenerics>,
+): React.FC<Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>> => {
   const WithAttachmentPickerContextComponent = (
-    props: Omit<P, keyof AttachmentPickerContextValue>,
+    props: Omit<StreamChatGenerics, keyof AttachmentPickerContextValue>,
   ) => {
     const attachmentPickerContext = useAttachmentPickerContext();
 
-    return <Component {...(props as P)} {...attachmentPickerContext} />;
+    return <Component {...(props as StreamChatGenerics)} {...attachmentPickerContext} />;
   };
   WithAttachmentPickerContextComponent.displayName = `WithAttachmentPickerContext${getDisplayName(
-    Component,
+    Component as React.ComponentType,
   )}`;
   return WithAttachmentPickerContextComponent;
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { AtMentions, useTheme } from 'stream-chat-react-native';
 import { MessageResponse } from 'stream-chat';
@@ -11,15 +11,8 @@ import { useScrollToTop } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
-import { AppContext } from '../context/AppContext';
-import type {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import { useAppContext } from '../context/AppContext';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,7 +54,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
       colors: { white_snow },
     },
   } = useTheme();
-  const { chatClient } = useContext(AppContext);
+  const { chatClient } = useAppContext();
   const messageFilters = useMemo(
     () => ({
       'mentioned_users.id': {
@@ -71,16 +64,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList<
-    MessageResponse<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >
-  > | null>(null);
+  const scrollRef = useRef<FlatList<MessageResponse<StreamChatGenerics>> | null>(null);
 
   useScrollToTop(scrollRef);
 

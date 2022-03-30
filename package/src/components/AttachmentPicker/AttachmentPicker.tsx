@@ -16,6 +16,8 @@ import BottomSheet, {
   BottomSheetHandleProps,
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { lookup } from 'mime-types';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
@@ -26,6 +28,8 @@ import { Video } from '../../icons';
 import { getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
+
+dayjs.extend(duration);
 
 const styles = StyleSheet.create({
   container: {
@@ -105,9 +109,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
             <Video height={20} pathFill={white} width={25} />
             {videoDuration ? (
               <Text style={styles.timeColor}>
-                {(videoDuration / 60).toFixed(0) +
-                  ':' +
-                  (videoDuration.toLocaleString().length < 2 ? `0${videoDuration}` : videoDuration)}
+                {dayjs.duration(videoDuration, 'second').format('HH:mm:ss')}
               </Text>
             ) : null}
           </View>
@@ -331,13 +333,18 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker]);
 
     useEffect(() => {
-      if (Platform.OS === 'ios') {
-        Keyboard.addListener('keyboardWillShow', hideAttachmentPicker);
-      } else {
-        Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
-      }
+      const keyboardSubscription =
+        Platform.OS === 'ios'
+          ? Keyboard.addListener('keyboardWillShow', hideAttachmentPicker)
+          : Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
 
       return () => {
+        if (keyboardSubscription?.remove) {
+          keyboardSubscription.remove();
+          return;
+        }
+
+        // To keep compatibility with older versions of React Native, where `remove()` is not available
         if (Platform.OS === 'ios') {
           Keyboard.removeListener('keyboardWillShow', hideAttachmentPicker);
         } else {
@@ -431,6 +438,7 @@ export const AttachmentPicker = React.forwardRef(
       <>
         <BottomSheet
           containerHeight={fullScreenHeight}
+          enablePanDownToClose={true}
           handleComponent={
             /**
              * using `null` here instead of `style={{ opacity: photoError ? 0 : 1 }}`

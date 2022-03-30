@@ -4,28 +4,13 @@ import type { Channel, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
 const getChannelPreviewDisplayPresence = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+  channel: Channel<StreamChatGenerics>,
+  client: StreamChat<StreamChatGenerics>,
 ) => {
   const currentUserId = client.userID;
 
@@ -47,17 +32,11 @@ const getChannelPreviewDisplayPresence = <
  * @returns {boolean} e.g., true
  */
 export const useChannelPreviewDisplayPresence = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType,
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  channel: Channel<StreamChatGenerics>,
 ) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<StreamChatGenerics>();
 
   const currentUserId = client.userID;
   const members = Object.values(channel.state.members).filter(

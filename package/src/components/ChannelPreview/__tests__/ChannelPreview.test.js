@@ -7,7 +7,7 @@ import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateCha
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
-import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
@@ -62,7 +62,7 @@ describe('ChannelPreview', () => {
     const message = generateMessage({
       user: clientUser,
     });
-    const c = generateChannel({
+    const c = generateChannelResponse({
       messages: [message],
     });
     await initializeChannel(c);
@@ -71,7 +71,7 @@ describe('ChannelPreview', () => {
   });
 
   it('should mark channel as read, when message.read event is received for current user', async () => {
-    const c = generateChannel();
+    const c = generateChannelResponse();
     await initializeChannel(c);
     channel.countUnread = () => 20;
 
@@ -91,7 +91,7 @@ describe('ChannelPreview', () => {
   });
 
   it('should update the lastest message on "message.new" event', async () => {
-    const c = generateChannel();
+    const c = generateChannelResponse();
     await initializeChannel(c);
 
     const { getByTestId } = render(getComponent());
@@ -112,7 +112,7 @@ describe('ChannelPreview', () => {
   });
 
   it('should update the unread count on "message.new" event', async () => {
-    const c = generateChannel();
+    const c = generateChannelResponse();
     await initializeChannel(c);
 
     const { getByTestId } = render(getComponent());
