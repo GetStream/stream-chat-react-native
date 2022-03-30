@@ -15,7 +15,7 @@
 
 ```bash
    cd stream-chat-react-native/package
-   make
+   make expo-example-deps
 ```
 - Move to the app directory
 
