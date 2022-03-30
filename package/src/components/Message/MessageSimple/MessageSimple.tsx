@@ -144,18 +144,21 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const channelEqual = prevChannel?.state.messages.length === nextChannel?.state.messages.length;
   if (!channelEqual) return false;
 
-  const prevAttachments = prevMessage.attachments;
-  const nextAttachments = nextMessage.attachments;
+  const prevMessageAttachments = prevMessage.attachments;
+  const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
-      ? prevAttachments.length === nextAttachments.length &&
-        prevAttachments.every(
-          (attachment, index) =>
-            attachment.image_url === nextAttachments[index].image_url &&
-            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextAttachments[index].thumb_url,
-        )
-      : prevAttachments === nextAttachments;
+    Array.isArray(prevMessageAttachments) &&
+    Array.isArray(nextMessageAttachments) &&
+    prevMessageAttachments.length === nextMessageAttachments.length &&
+    prevMessageAttachments.every((attachment, index) => {
+      const attachmentKeysEqual =
+        attachment.type === 'image'
+          ? attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url
+          : attachment.type === nextMessageAttachments[index].type;
+
+      return attachmentKeysEqual;
+    });
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =

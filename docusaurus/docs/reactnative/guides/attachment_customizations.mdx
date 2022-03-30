@@ -87,10 +87,10 @@ const CustomGallery = ({ images, onPressIn }) => {
 }
 
 const CustomFileAttachment = ({ attachment }) => {
-  console.log(attachemnt.mime_type);
-  console.log(attachemnt.title);
-  console.log(attachemnt.file_size);
-  console.log(attachemnt.actions);
+  console.log(attachment.mime_type);
+  console.log(attachment.title);
+  console.log(attachment.file_size);
+  console.log(attachment.actions);
 
   return (/** Your custom UI */)
 }
@@ -333,4 +333,53 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+```
+
+## Handling Custom Properties On Attachment
+
+Default UI components and context providers from the SDK are memoized for performance purpose, and will not trigger re-renders upon updates to
+custom properties on attachment. Please refer to [memoization guide](../customization/custom_components.mdx#equality) for reference.
+
+Eg: Suppose we add a `customField` property to the attachment object and use it the UI in custom `Card` component.
+
+```tsx
+<Channel
+  Card={attachment => {
+    return (
+      <View>
+        <Text>{attachment.customField}</Text>
+      </View>
+    );
+  }}
+/>
+```
+
+In this example, if you try to update `customField` on particular attachment from backend (or anywhere), you will not see it updated on UI until you refresh the chat.
+
+The reason being, the default memoization logic only checks for fixed set of properties on attachment, and doesn't check for custom properties.
+
+This can be solved by providing a function which checks for changes in custom properties which you may have been defined on attachment.
+
+```tsx
+import { Channel } from 'stream-chat-react-native';
+
+const isAttachmentEqualHandler = (prevAttachment, nextAttachment) => {
+  const attachmentEqual = prevAttachment.customField === nextAttachment.customField;
+  if (!attachmentEqual) return false;
+  return true;
+};
+
+<Channel
+  channel={channel}
+  isAttachmentEqual={isAttachmentEqualHandler}
+  Card={attachment => {
+    return (
+      <View>
+        <Text>{attachment.customField}</Text>
+      </View>
+    );
+  }}
+>
+  {/* The underlying components */}
+</Channel>;
 ```

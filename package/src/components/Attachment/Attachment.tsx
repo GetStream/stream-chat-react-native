@@ -26,6 +26,7 @@ export type AttachmentPropsWithContext<
   | 'Gallery'
   | 'giphyVersion'
   | 'Giphy'
+  | 'isAttachmentEqual'
   | 'UrlPreview'
 > & {
   /**
@@ -101,15 +102,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
   nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment: prevAttachment } = prevProps;
+  const { attachment: prevAttachment, isAttachmentEqual } = prevProps;
   const { attachment: nextAttachment } = nextProps;
 
   const attachmentEqual =
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url;
+  if (!attachmentEqual) return false;
 
-  return attachmentEqual;
+  if (isAttachmentEqual) {
+    return isAttachmentEqual(prevAttachment, nextAttachment);
+  }
+
+  return true;
 };
 
 const MemoizedAttachment = React.memo(
@@ -129,6 +135,7 @@ export type AttachmentProps<
     | 'Giphy'
     | 'giphyVersion'
     | 'UrlPreview'
+    | 'isAttachmentEqual'
   >
 > &
   Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
@@ -159,6 +166,7 @@ export const Attachment = <
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
     giphyVersion: ContextGiphyVersion,
+    isAttachmentEqual,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -185,6 +193,7 @@ export const Attachment = <
         Gallery,
         Giphy,
         giphyVersion,
+        isAttachmentEqual,
         UrlPreview,
       }}
     />
