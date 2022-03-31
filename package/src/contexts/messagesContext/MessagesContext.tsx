@@ -296,6 +296,11 @@ export type MessagesContextValue<
   handleRetry?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
   /** Handler to access when a thread reply action is invoked */
   handleThreadReply?: (message: MessageType<StreamChatGenerics>) => Promise<void>;
+  /** Handler to deal with custom memoization logic of Attachment */
+  isAttachmentEqual?: (
+    prevAttachment: Attachment<StreamChatGenerics>,
+    nextAttachment: Attachment<StreamChatGenerics>,
+  ) => boolean;
   legacyImageViewerSwipeBehaviour?: boolean;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;

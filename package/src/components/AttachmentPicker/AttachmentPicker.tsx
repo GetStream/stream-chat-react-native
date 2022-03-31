@@ -192,7 +192,7 @@ const renderImage = ({
             duration: asset.playableDuration,
             name: asset.filename,
             size: asset.fileSize,
-            type: 'video/mp4',
+            type: contentType,
             uri: asset.uri,
           },
         ];
