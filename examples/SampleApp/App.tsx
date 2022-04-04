@@ -9,6 +9,7 @@ import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
+import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
@@ -47,6 +48,7 @@ const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
+  usePushNotifications(chatClient, isConnecting);
 
   return (
     <SafeAreaProvider
