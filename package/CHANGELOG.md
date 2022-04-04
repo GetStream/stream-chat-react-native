@@ -1,5 +1,21 @@
 # Change Log
 
+## [4.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.2.0...v4.3.0) (2022-04-04)
+
+
+### Features
+
+* add isAttachmentEqual props around memoization of custom properties [CRNS - 290] ([cd51ee8](https://github.com/GetStream/stream-chat-react-native/commit/cd51ee89ab959cd3e38bbdbd5e949bc401b40ec4))
+* editing state header, reply state header and giphy input customization [CRNS - 535] ([4c1d67d](https://github.com/GetStream/stream-chat-react-native/commit/4c1d67d9a4e45050a45a402a53c2cf9b6fbc39b8))
+* open giphy in image viewer when pressed [CRNS - 540] ([3cc2e93](https://github.com/GetStream/stream-chat-react-native/commit/3cc2e939bb4f935e245e46006d4fb607f4cde47c))
+
+
+### Bug Fixes
+
+* handling the case of undefined updated_at on message ([bad1f45](https://github.com/GetStream/stream-chat-react-native/commit/bad1f45d1d6466532d8b5cbc4d2806221b639f03))
+* issues with opening old Giphy on ImageGallery ([7f21b6c](https://github.com/GetStream/stream-chat-react-native/commit/7f21b6c5c98dca210d8b77030c4442c644bb86a1))
+* re-render ownCapabilitiesContext when channel capabilities are u… ([9bbf25e](https://github.com/GetStream/stream-chat-react-native/commit/9bbf25e9237c1a0bf770bd194b67e0737046def8))
+
 ## [4.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.4...v4.2.0) (2022-03-17)
 
 
