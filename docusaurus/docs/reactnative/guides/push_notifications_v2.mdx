@@ -26,6 +26,7 @@ are the officially recommended collection of packages that brings React Native s
 - skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
 - push_notifications is enabled (default) on the channel type for message is sent.
 
+
 :::note
 
 - If you would like get push notifications only when users are offline, please contact to support.
@@ -385,3 +386,8 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 // Register main application
 AppRegistry.registerComponent('app', () => App);
 ```
+
+## Stream Chat Push and Expo
+
+Stream push notifications aren't supported on Expo. If you are using Expo and want push notifications, you can achieve this using [Webhooks](https://getstream.io/chat/docs/react-native/webhooks_overview/?language=javascript) and a third party push provider. See the following article for an [example](https://support.getstream.io/hc/en-us/articles/1500006478421-How-can-I-use-the-Stream-Webhook-to-send-customers-emails-based-on-Chat-events-).
+
