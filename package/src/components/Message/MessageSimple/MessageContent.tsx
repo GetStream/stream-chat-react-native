@@ -84,6 +84,7 @@ export type MessageContentPropsWithContext<
     | 'FileAttachmentGroup'
     | 'formatDate'
     | 'Gallery'
+    | 'isAttachmentEqual'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageDeleted'
@@ -371,6 +372,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
+    isAttachmentEqual,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
@@ -402,7 +404,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
-
   if (goToMessageChangedAndMatters) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
@@ -431,7 +432,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
-
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -440,21 +440,28 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
     isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
-
   if (!quotedMessageEqual) return false;
 
-  const prevAttachments = prevMessage.attachments;
-  const nextAttachments = nextMessage.attachments;
+  const prevMessageAttachments = prevMessage.attachments;
+  const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
-      ? prevAttachments.length === nextAttachments.length &&
-        prevAttachments.every(
-          (attachment, index) =>
-            attachment.image_url === nextAttachments[index].image_url &&
-            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextAttachments[index].thumb_url,
-        )
-      : prevAttachments === nextAttachments;
+    Array.isArray(prevMessageAttachments) &&
+    Array.isArray(nextMessageAttachments) &&
+    prevMessageAttachments.length === nextMessageAttachments.length &&
+    prevMessageAttachments.every((attachment, index) => {
+      const attachmentKeysEqual =
+        attachment.type === 'image'
+          ? attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url
+          : attachment.type === nextMessageAttachments[index].type;
+
+      if (isAttachmentEqual)
+        return (
+          attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
+        );
+
+      return attachmentKeysEqual;
+    });
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
@@ -527,6 +534,7 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    isAttachmentEqual,
     MessageDeleted,
     MessageFooter,
     MessageHeader,
@@ -549,6 +557,7 @@ export const MessageContent = <
         goToMessage,
         groupStyles,
         hasReactions,
+        isAttachmentEqual,
         isMyMessage,
         lastGroupMessage,
         lastReceivedId,

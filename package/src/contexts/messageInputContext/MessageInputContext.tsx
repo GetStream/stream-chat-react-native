@@ -22,6 +22,9 @@ import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageD
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
+import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
+import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
+import type { InputReplyStateHeaderProps } from '../../components/MessageInput/components/InputReplyStateHeader';
 import type { CooldownTimerProps } from '../../components/MessageInput/CooldownTimer';
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import { useCooldown } from '../../components/MessageInput/hooks/useCooldown';
@@ -239,11 +242,13 @@ export type InputMessageInputContextValue<
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<StreamChatGenerics>;
   editMessage: StreamChat<StreamChatGenerics>['updateMessage'];
+
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
+
   /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
   /** When false, FileSelectorIcon will be hidden */
@@ -255,6 +260,9 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.tsx
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<StreamChatGenerics>>;
+  InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps<StreamChatGenerics>>;
+  InputGiphySearch: React.ComponentType<InputGiphySearchProps<StreamChatGenerics>>;
+  InputReplyStateHeader: React.ComponentType<InputReplyStateHeaderProps<StreamChatGenerics>>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
   /**
@@ -341,6 +349,7 @@ export type InputMessageInputContextValue<
     },
     channel: ChannelContextValue<StreamChatGenerics>['channel'],
   ) => Promise<SendFileAPIResponse>;
+
   /** Initial value to set on input */
   initialValue?: string;
   /**
