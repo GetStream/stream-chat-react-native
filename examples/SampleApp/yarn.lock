@@ -1124,6 +1124,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notifee/react-native@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-5.0.3.tgz#a75ce53e1f78d11a54b5f13db77669ed1aa2053e"
+  integrity sha512-s8TgXFkaWAafRfCCaOoUPCEBSUufk7w4X98vzgRHFTUxQMaRTLp95I6TmShhlyYVK7de4no1h31Qu6UJOEFS9g==
+
 "@react-native-async-storage/async-storage@1.15.17":
   version "1.15.17"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.15.17.tgz#0dae263a52e476ffce871086f1fef5b8e44708eb"

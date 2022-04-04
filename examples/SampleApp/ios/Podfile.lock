@@ -508,6 +508,11 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
+  - RNNotifee (5.0.3):
+    - React-Core
+    - RNNotifee/NotifeeCore (= 5.0.3)
+  - RNNotifee/NotifeeCore (5.0.3):
+    - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
   - RNReanimated (2.3.3):
@@ -621,6 +626,7 @@ DEPENDENCIES:
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
+  - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -745,6 +751,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
+  RNNotifee:
+    :path: "../node_modules/@notifee/react-native"
   RNReactNativeHapticFeedback:
     :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
@@ -828,6 +836,7 @@ SPEC CHECKSUMS:
   RNFS: 3ab21fa6c56d65566d1fb26c2228e2b6132e5e32
   RNGestureHandler: 68f660f1080d3300936a67ce5c6879bd8f26ecc2
   RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
+  RNNotifee: 83b475b2fdf7e9191a39ebd591f153713930eb7d
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 3ad6ec4e147462206be9d1c925df10b6ea850b0e
   RNScreens: c277bfc4b5bb7c2fe977d19635df6f974f95dfd6
