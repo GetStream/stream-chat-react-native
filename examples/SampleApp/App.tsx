@@ -9,7 +9,6 @@ import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
-import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
@@ -38,7 +37,10 @@ import type {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 LogBox.ignoreAllLogs(true);
-LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+  "Seems like you're using an old API with gesture components, check out new Gestures system!",
+]);
 console.assert = () => null;
 
 const Drawer = createDrawerNavigator();
@@ -48,7 +50,6 @@ const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
-  usePushNotifications(chatClient, isConnecting);
 
   return (
     <SafeAreaProvider
