@@ -25,7 +25,7 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Video } from '../../icons';
-import { getPhotos } from '../../native';
+import { getLocalAssetUri, getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
@@ -120,16 +120,6 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     </TouchableOpacity>
   );
 };
-
-const fail = () => {
-  throw Error(
-    'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
-  );
-};
-
-type GetLocalAssetUri = (uriOrAssetId: string) => never;
-
-export const getLocalAssetUri: GetLocalAssetUri = fail;
 
 const renderImage = ({
   item,
