@@ -69,6 +69,7 @@ export * from './ThumbsUpReaction';
 export * from './Time';
 export * from './TXT';
 export * from './Unknown';
+export * from './Video';
 export * from './Unpin';
 export * from './User';
 export * from './UserAdd';
