@@ -24,7 +24,7 @@ export const useCreatePaginatedMessageListContext = <
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
         `${deleted_at}${
           latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
-        }${reply_count}${status}${updated_at.toISOString()}`,
+        }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`,
     )
     .join();
 
