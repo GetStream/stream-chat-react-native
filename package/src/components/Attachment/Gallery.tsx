@@ -75,7 +75,7 @@ export type GalleryPropsWithContext<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
     | 'groupStyles'
-    | 'images'
+    | 'imagesAndVideos'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
@@ -114,7 +114,7 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
-    images,
+    imagesAndVideos,
     legacyImageViewerSwipeBehaviour,
     message,
     onLongPress,
@@ -158,6 +158,8 @@ const GalleryWithContext = <
     minWidth,
   };
 
+  const images = imagesAndVideos.filter((file) => file.type === 'image') || [];
+
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
@@ -167,7 +169,7 @@ const GalleryWithContext = <
     [images.length],
   );
 
-  if (!images?.length) return null;
+  if (!imagesAndVideos?.length) return null;
   const messageText = message?.text;
   const messageId = message?.id;
   const numOfColumns = thumbnailGrid.length;
@@ -317,13 +319,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     groupStyles: prevGroupStyles,
     hasThreadReplies: prevHasThreadReplies,
-    images: prevImages,
+    imagesAndVideos: prevImagesAndVideos,
     message: prevMessage,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
     hasThreadReplies: nextHasThreadReplies,
-    images: nextImages,
+    imagesAndVideos: nextImagesAndVideos,
     message: nextMessage,
   } = nextProps;
 
@@ -338,11 +340,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   if (!hasThreadRepliesEqual) return false;
 
   const imagesEqual =
-    prevImages.length === nextImages.length &&
-    prevImages.every(
+    prevImagesAndVideos.length === nextImagesAndVideos.length &&
+    prevImagesAndVideos.every(
       (image, index) =>
-        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
-        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
+        getUrlWithoutParams(image.image_url) ===
+          getUrlWithoutParams(nextImagesAndVideos[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) ===
+          getUrlWithoutParams(nextImagesAndVideos[index].thumb_url),
     );
   if (!imagesEqual) return false;
 
@@ -368,7 +372,7 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
-    images: propImages,
+    imagesAndVideos: propImagesAndVideos,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -382,7 +386,7 @@ export const Gallery = <
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
-    images: contextImages,
+    imagesAndVideos: contextImagesAndVideos,
     message,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
@@ -396,9 +400,9 @@ export const Gallery = <
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
-  const images = propImages || contextImages;
+  const imagesAndVideos = propImagesAndVideos || contextImagesAndVideos;
 
-  if (!images.length) return null;
+  if (!imagesAndVideos.length) return null;
 
   const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
@@ -420,7 +424,7 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
-        images,
+        imagesAndVideos,
         legacyImageViewerSwipeBehaviour,
         message,
         onLongPress,
