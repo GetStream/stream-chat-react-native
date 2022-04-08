@@ -1,4 +1,4 @@
-Please check the `ChannelContextValue` in [ChannelContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/channelContext/ChannelContext.md), for consumable values.
+Please check the `ChannelContextValue` in [ChannelContext](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/channelContext/ChannelContext.md), for consumable values.
 Provider for this context exists in `Channel` component. And so, any child component of Channel
 can get access to context as following:
 
