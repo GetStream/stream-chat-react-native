@@ -81,7 +81,7 @@ export const OverlayProvider = <
       }
     },
     FileSelectorIcon = DefaultFileSelectorIcon,
-    giphyVersion = 'fixed_height',
+    giphyVersion,
     i18nInstance,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
