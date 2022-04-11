@@ -35,7 +35,6 @@ export function buildGallery<
   images: Attachment<StreamChatGenerics>[];
   sizeConfig: GallerySizeConfig;
 }): GallerySizeAndThumbnailGrid {
-  console.log(images);
   if (images.length === 1) {
     return buildGalleryOfSingleImage({
       image: images[0],

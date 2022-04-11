@@ -5,6 +5,8 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
+import { VideoThumbnail } from './VideoThumbnail';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { padding: 1 },
+  imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -158,15 +160,13 @@ const GalleryWithContext = <
     minWidth,
   };
 
-  const images = imagesAndVideos.filter((file) => file.type === 'image') || [];
-
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
-        images,
+        images: imagesAndVideos,
         sizeConfig,
       }),
-    [images.length],
+    [imagesAndVideos.length],
   );
 
   if (!imagesAndVideos?.length) return null;
@@ -220,7 +220,7 @@ const GalleryWithContext = <
                 <TouchableOpacity
                   activeOpacity={0.8}
                   disabled={preventPress}
-                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
+                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
                   onLongPress={(event) => {
                     if (onLongPress) {
                       onLongPress({
@@ -260,35 +260,39 @@ const GalleryWithContext = <
                   }-${colIndex}-item-${rowIndex}`}
                   {...additionalTouchableProps}
                 >
-                  <MemoizedGalleryImage
-                    resizeMode={resizeMode}
-                    style={[
-                      getGalleryImageBorderRadius({
-                        alignment,
-                        colIndex,
-                        groupStyles,
-                        hasThreadReplies,
-                        height,
-                        invertedDirections,
-                        messageText,
-                        numOfColumns,
-                        numOfRows,
-                        rowIndex,
-                        sizeConfig,
-                        threadList,
-                        width,
-                      }),
-                      image,
-                      {
-                        height: height - 1,
-                        width: width - 1,
-                      },
-                    ]}
-                    uri={url}
-                  />
+                  {url.includes('attachments') ? (
+                    <VideoThumbnail />
+                  ) : (
+                    <MemoizedGalleryImage
+                      resizeMode={resizeMode}
+                      style={[
+                        getGalleryImageBorderRadius({
+                          alignment,
+                          colIndex,
+                          groupStyles,
+                          hasThreadReplies,
+                          height,
+                          invertedDirections,
+                          messageText,
+                          numOfColumns,
+                          numOfRows,
+                          rowIndex,
+                          sizeConfig,
+                          threadList,
+                          width,
+                        }),
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                      uri={url}
+                    />
+                  )}
                   {colIndex === numOfColumns - 1 &&
                   rowIndex === numOfRows - 1 &&
-                  images.length > 4 ? (
+                  imagesAndVideos.length > 4 ? (
                     <View
                       style={[
                         StyleSheet.absoluteFillObject,
@@ -298,7 +302,7 @@ const GalleryWithContext = <
                       ]}
                     >
                       <Text style={[styles.moreImagesText, moreImagesText]}>
-                        {`+${images.length - 4}`}
+                        {`+${imagesAndVideos.length - 4}`}
                       </Text>
                     </View>
                   ) : null}

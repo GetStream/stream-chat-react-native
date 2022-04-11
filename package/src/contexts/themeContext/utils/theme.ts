@@ -474,6 +474,10 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageUnderlay: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
   };
   overlay: {
     container: ViewStyle;
@@ -980,6 +984,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageUnderlay: {},
+    videoThumbnail: {
+      container: {},
+      roundedView: {},
+    },
   },
   overlay: {
     container: {},

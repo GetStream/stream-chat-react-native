@@ -319,7 +319,8 @@ export const ImageGallery = <
           (attachment.type === 'image' &&
             !attachment.title_link &&
             !attachment.og_scrape_url &&
-            getUrlOfImageAttachment(attachment)),
+            getUrlOfImageAttachment(attachment)) ||
+          attachment.type === 'video',
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {
