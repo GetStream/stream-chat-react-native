@@ -18,7 +18,7 @@ import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
 
-describe('Message', () => {
+describe('isAttachmentEqualHandler', () => {
   let channel;
   let chatClient;
 
