@@ -6,7 +6,6 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 export const useCreateChatContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
-  appSettings,
   channel,
   client,
   connectionRecovering,
@@ -22,7 +21,6 @@ export const useCreateChatContext = <
 
   const chatContext: ChatContextValue<StreamChatGenerics> = useMemo(
     () => ({
-      appSettings,
       channel,
       client,
       connectionRecovering,

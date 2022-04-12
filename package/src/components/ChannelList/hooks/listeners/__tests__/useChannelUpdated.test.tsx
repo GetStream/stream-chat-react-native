@@ -55,7 +55,6 @@ describe('useChannelUpdated', () => {
       render(
         <ChatContext.Provider
           value={{
-            appSettings: null,
             client: mockClient,
             connectionRecovering: false,
             isOnline: true,
