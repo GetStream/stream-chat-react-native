@@ -1,5 +1,18 @@
 # Change Log
 
+### [4.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.3.0...v4.3.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* fixes the broken giphy "shuffle" behaviour ([16f139a](https://github.com/GetStream/stream-chat-react-native/commit/16f139ab609304193d3d19488bd5227d0078e17d))
+* typescript for "giphyVersion" prop on `OverlayProvider` component ([35c1c10](https://github.com/GetStream/stream-chat-react-native/commit/35c1c10889d30106002bcd0b7b2e55ca27fbcbcb))
+
+
+### Reverts
+
+* "feat: add appSettings to ChatContext" ([5d947a3](https://github.com/GetStream/stream-chat-react-native/commit/5d947a30222ef99c50d6568cff4f8770bf16a237))
+
 ## [4.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.2.0...v4.3.0) (2022-04-04)
 
 
