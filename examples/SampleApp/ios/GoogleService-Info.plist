@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>674907137625-i80ra3fun00124r7dv829je5ar596rs2.apps.googleusercontent.com</string>
+	<string>190151624402-l4s3ulr84bluts0oog3rte937sklrjls.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.674907137625-i80ra3fun00124r7dv829je5ar596rs2</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>674907137625-2scfo9a5cs074dced5vhm712ej6hhtpm.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.190151624402-l4s3ulr84bluts0oog3rte937sklrjls</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBTAsaKFUPLAJqfsLiz0yPUVzwrgJkOwSE</string>
+	<string>AIzaSyBSWlZpL7-3yYMu6QR0b2WiNaSuDmO8vbY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>674907137625</string>
+	<string>190151624402</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.getstream.reactnative.SampleApp.pushtest</string>
+	<string>io.getstream.reactnative.SampleApp</string>
 	<key>PROJECT_ID</key>
-	<string>stream-chat-internal</string>
+	<string>sample-app-v2-ui</string>
 	<key>STORAGE_BUCKET</key>
-	<string>stream-chat-internal.appspot.com</string>
+	<string>sample-app-v2-ui.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:674907137625:ios:0dda2f3e04f6607dd7f348</string>
+	<string>1:190151624402:ios:403df895972564bd658f0b</string>
 	<key>DATABASE_URL</key>
-	<string>https://stream-chat-internal.firebaseio.com</string>
+	<string>https://sample-app-v2-ui.firebaseio.com</string>
 </dict>
 </plist>
