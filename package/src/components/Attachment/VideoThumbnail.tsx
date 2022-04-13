@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons';
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const VideoThumbnail = () => {
+export const VideoThumbnail: React.FC<ViewProps> = (props) => {
   const {
     theme: {
       messageSimple: {
@@ -32,8 +32,9 @@ export const VideoThumbnail = () => {
       },
     },
   } = useTheme();
+  const { style, ...rest } = props;
   return (
-    <View style={[styles.container, container]}>
+    <View {...rest} style={[styles.container, container, style]}>
       <View style={[styles.roundedView, roundedView]}>
         <Play height={24} pathFill={'#000'} width={24} />
       </View>

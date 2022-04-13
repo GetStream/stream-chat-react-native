@@ -1,4 +1,5 @@
-import { FlatList as DefaultFlatList } from 'react-native';
+import type React from 'react';
+import { FlatList as DefaultFlatList, StyleProp, ViewStyle } from 'react-native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
@@ -104,6 +105,13 @@ export let triggerHaptic: TriggerHaptic = fail;
 
 export let SDK: string;
 
+type Video = React.ComponentType<{
+  style: StyleProp<ViewStyle>;
+  uri: string;
+}>;
+
+export let Video: Video = fail;
+
 type Handlers = {
   compressImage?: CompressImage;
   deleteFile?: DeleteFile;
@@ -117,6 +125,7 @@ type Handlers = {
   shareImage?: ShareImage;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
+  Video?: Video;
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
@@ -169,5 +178,9 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.triggerHaptic) {
     triggerHaptic = handlers.triggerHaptic;
+  }
+
+  if (handlers.Video) {
+    Video = handlers.Video;
   }
 };

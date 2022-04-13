@@ -37,6 +37,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
+import { GalleryVideo } from './components/AnimatedGalleryVideo';
 import {
   ImageGalleryFooter,
   ImageGalleryFooterCustomComponentProps,
@@ -333,6 +334,7 @@ export const ImageGallery = <
         messageId: cur.id,
         original_height: a.original_height,
         original_width: a.original_width,
+        type: a.type,
         uri: getResizedImageUrl({
           height: screenHeight,
           url: imageUrl,
@@ -392,10 +394,12 @@ export const ImageGallery = <
       const imageHeight = Math.floor(height * (screenWidth / width));
       setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
     } else if (photo?.uri) {
-      Image.getSize(photo.uri, (width, height) => {
-        const imageHeight = Math.floor(height * (screenWidth / width));
-        setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
-      });
+      if (photo.type === 'image') {
+        Image.getSize(photo.uri, (width, height) => {
+          const imageHeight = Math.floor(height * (screenWidth / width));
+          setCurrentImageHeight(imageHeight > screenHeight ? screenHeight : imageHeight);
+        });
+      }
     }
   }, [uriForCurrentImage]);
 
@@ -1098,29 +1102,46 @@ export const ImageGallery = <
                           },
                         ]}
                       >
-                        {photos.map((photo, i) => (
-                          <AnimatedGalleryImage
-                            index={i}
-                            key={`${photo.uri}-${i}`}
-                            offsetScale={offsetScale}
-                            photo={photo}
-                            previous={selectedIndex > i}
-                            scale={scale}
-                            screenHeight={screenHeight}
-                            selected={selectedIndex === i}
-                            shouldRender={Math.abs(selectedIndex - i) < 4}
-                            style={[
-                              {
-                                height: screenHeight * 8,
-                                marginRight: MARGIN,
-                                width: screenWidth * 8,
-                              },
-                              slide,
-                            ]}
-                            translateX={translateX}
-                            translateY={translateY}
-                          />
-                        ))}
+                        {photos.map((photo, i) =>
+                          photo.type === 'video' ? (
+                            <GalleryVideo
+                              index={i}
+                              key={`${photo.uri}-${i}`}
+                              shouldRender={Math.abs(selectedIndex - i) < 4}
+                              source={{ uri: photo.uri }}
+                              style={[
+                                {
+                                  height: screenHeight * 8,
+                                  marginRight: MARGIN,
+                                  width: screenWidth * 8,
+                                },
+                                slide,
+                              ]}
+                            />
+                          ) : (
+                            <AnimatedGalleryImage
+                              index={i}
+                              key={`${photo.uri}-${i}`}
+                              offsetScale={offsetScale}
+                              photo={photo}
+                              previous={selectedIndex > i}
+                              scale={scale}
+                              screenHeight={screenHeight}
+                              selected={selectedIndex === i}
+                              shouldRender={Math.abs(selectedIndex - i) < 4}
+                              style={[
+                                {
+                                  height: screenHeight * 8,
+                                  marginRight: MARGIN,
+                                  width: screenWidth * 8,
+                                },
+                                slide,
+                              ]}
+                              translateX={translateX}
+                              translateY={translateY}
+                            />
+                          ),
+                        )}
                       </Animated.View>
                     </Animated.View>
                   </PanGestureHandler>
@@ -1204,6 +1225,7 @@ export type Photo<
   messageId?: string;
   original_height?: number;
   original_width?: number;
+  type?: string;
   user?: UserResponse<StreamChatGenerics> | null;
   user_id?: string;
 };

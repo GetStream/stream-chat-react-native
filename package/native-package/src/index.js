@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Image, PermissionsAndroid, Platform } from 'react-native';
 
 import DocumentPicker from 'react-native-document-picker';
@@ -7,6 +7,8 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
+
+import Video from 'react-native-video';
 
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
@@ -210,11 +212,12 @@ registerNativeHandlers({
         // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
         // This we can't rely on them as it is, and we need to use Image.getSize
         // to get accurate size.
-        const getSize = () => new Promise((resolve) => {
-          Image.getSize(photo.path, (width, height) => {
-            resolve({height, width});
+        const getSize = () =>
+          new Promise((resolve) => {
+            Image.getSize(photo.path, (width, height) => {
+              resolve({ height, width });
+            });
           });
-        });
 
         try {
           const { height, width } = await getSize();
@@ -246,6 +249,18 @@ registerNativeHandlers({
       ignoreAndroidSystemSettings: false,
     });
   },
+  // eslint-disable-next-line react/display-name
+  Video: ({ style, uri }) => (
+    <Video
+      controls={true}
+      paused={false}
+      ref={(ref) => (videoPlayer = ref)}
+      source={{
+        uri,
+      }}
+      style={style}
+    />
+  ),
 });
 
 if (Platform.OS === 'android') {

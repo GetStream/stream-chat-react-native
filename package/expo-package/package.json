@@ -10,6 +10,7 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
+    "expo-av": "^10.2.1",
     "stream-chat-react-native-core": "4.3.0"
   },
   "peerDependencies": {

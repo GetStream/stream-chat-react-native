@@ -202,7 +202,7 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {rows.map(({ height, resizeMode, url, width }, rowIndex) => {
+            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
               const defaultOnPress = () => {
                 // Added if-else to keep the logic readable, instead of DRY.
                 // if - legacyImageViewerSwipeBehaviour is disabled
@@ -260,8 +260,31 @@ const GalleryWithContext = <
                   }-${colIndex}-item-${rowIndex}`}
                   {...additionalTouchableProps}
                 >
-                  {url.includes('attachments') ? (
-                    <VideoThumbnail />
+                  {type === 'video' ? (
+                    <VideoThumbnail
+                      style={[
+                        getGalleryImageBorderRadius({
+                          alignment,
+                          colIndex,
+                          groupStyles,
+                          hasThreadReplies,
+                          height,
+                          invertedDirections,
+                          messageText,
+                          numOfColumns,
+                          numOfRows,
+                          rowIndex,
+                          sizeConfig,
+                          threadList,
+                          width,
+                        }),
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                    />
                   ) : (
                     <MemoizedGalleryImage
                       resizeMode={resizeMode}
