@@ -18,6 +18,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
+// import { useChatContext } from 'src/contexts/chatContext/ChatContext';
 
 const FILE_PREVIEW_HEIGHT = 60;
 
@@ -65,7 +66,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'appSettings'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -74,10 +75,15 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
+  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile, appSettings, } = props;
 
+ 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
+
+
+
+
 
   const {
     theme: {
@@ -97,6 +103,13 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
+       const result = appSettings?.app?.file_upload_config?.blocked_file_extensions?.some(
+         (x) => x === item.file.type,
+       );
+    const theResult = appSettings?.app?.file_upload_config?.blocked_file_extensions;
+    console.log({ theResult });
+console.log({item});
+       console.log(`is it ready ${result}`);
     const indicatorType =
       item.state === FileState.UPLOADING
         ? ProgressIndicatorTypes.IN_PROGRESS
@@ -234,12 +247,13 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
+  const { fileUploads, removeFile, uploadFile, appSettings } =
+    useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
-      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile }}
+      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile, appSettings }}
       {...props}
     />
   );

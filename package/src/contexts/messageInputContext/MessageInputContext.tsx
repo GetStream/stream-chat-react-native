@@ -15,6 +15,7 @@ import {
   UserOptions,
   UserResponse,
   UserSort,
+  AppSettingsAPIResponse,
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
@@ -87,6 +88,7 @@ export type MentionAllAppUsersQuery<
 export type LocalMessageInputContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
   appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
@@ -414,7 +416,8 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { client, appSettings } = useChatContext<StreamChatGenerics>();
+  // console.log({setting: appSettings?.app});
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -880,6 +883,7 @@ export const MessageInputProvider = <
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
     const { file, id } = newImage || {};
+
     if (!file) {
       return;
     }
@@ -1002,6 +1006,9 @@ export const MessageInputProvider = <
   }) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
+    console.log(mimeType);
+    // const result  = appSettings?.app?.file_upload_config?.blocked_file_extensions?.some(x => x === file.name);
+    // console.log(appSettings?.app?.file_upload_config?.blocked_file_extensions);
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
@@ -1017,6 +1024,7 @@ export const MessageInputProvider = <
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+    // const mimeType = lookup(imag)
     const newImage = {
       file: image,
       id,
@@ -1080,6 +1088,7 @@ export const MessageInputProvider = <
     uploadNewImage,
     ...value,
     sendMessage, // overriding the originally passed in sendMessage
+    appSettings,
   });
 
   return (
