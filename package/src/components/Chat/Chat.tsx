@@ -132,6 +132,7 @@ const ChatWithContext = <
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
+    userLanguage: 'en',
   });
 
   /**
@@ -178,7 +179,7 @@ const ChatWithContext = <
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
-      <TranslationProvider value={translators}>
+      <TranslationProvider value={{ ...translators, userLanguage: client.user?.language || 'en' }}>
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
