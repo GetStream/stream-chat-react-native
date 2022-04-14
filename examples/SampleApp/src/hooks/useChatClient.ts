@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import notifee from '@notifee/react-native';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
@@ -11,27 +11,28 @@ import type { LoginConfig, StreamChatGenerics } from '../types';
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log('Authorization status:', authStatus);
-  } else {
-    // Go to app settings page, if the permissions were denied
+  const permissionAuthStatus = await messaging().hasPermission();
+  const isDenied = permissionAuthStatus === messaging.AuthorizationStatus.DENIED;
+  if (isDenied) {
+    // Go to app settings page, if the permissions were denied before
     Alert.alert(
       'Notification Permission',
       'Please provide notifications permission through Settings',
       [
         {
-          onPress: () => console.log('Push notifications ignored'),
+          onPress: () => console.log('Push notification permissions are ignored'),
           style: 'cancel',
           text: 'Cancel',
         },
         { onPress: () => Linking.openSettings(), text: 'OK' },
       ],
     );
+  } else {
+    const authStatus = await messaging().requestPermission();
+    const isEnabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    console.log('Permission Status', { authStatus, isEnabled });
   }
 };
 
@@ -58,17 +59,6 @@ export const useChatClient = () => {
       name: config.userName,
     };
 
-    // const user = {
-    //   id: 'santhosh',
-    //   image: config.userImage,
-    //   name: 'santhosh',
-    // };
-
-    // config.apiKey = 'xc75gj2eaw9j';
-    // config.userToken =
-    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic2FudGhvc2gifQ.f-6Bj3nYJ1XA5kEbKTs8B0WDcLl1VfsUqqhYAQnMfdI';
-    // config.userId = 'santhosh';
-
     await client.connectUser(user, config.userToken);
     await AsyncStore.setItem('@stream-rn-sampleapp-login-config', config);
 
@@ -85,24 +75,29 @@ export const useChatClient = () => {
       const fcmId = remoteMessage.data?.id;
       if (!fcmId) return;
       const message = await client.getMessage(fcmId);
-      const channelId = await notifee.createChannel({
-        id: 'default',
-        name: 'Default Channel',
-      });
+      // on iOS when on foreground no notifications are shown
+      // on Android when on foreground data only notifications are not shown
+      const isNotificationHidden = !remoteMessage.notification || Platform.OS === 'ios';
 
-      const authStatus = await messaging().hasPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-      if (!enabled) return;
+      if (isNotificationHidden && message.message.user?.name && message.message.text) {
+        const channelId = await notifee.createChannel({
+          id: 'default',
+          name: 'Default Channel',
+        });
+        const authStatus = await messaging().hasPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        if (!enabled) return;
 
-      await notifee.displayNotification({
-        android: {
-          channelId,
-        },
-        body: message.message.text,
-        title: message.message.user?.name,
-      });
+        await notifee.displayNotification({
+          android: {
+            channelId,
+          },
+          body: message.message.text,
+          title: 'New message from ' + message.message.user.name,
+        });
+      }
     });
 
     unsubscribePushListenersRef.current = () => {
@@ -120,7 +115,6 @@ export const useChatClient = () => {
       if (userId) {
         await loginUser({
           apiKey: 'yjrt5yxw77ev',
-          // apiKey: 'xc75gj2eaw9j',
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,
@@ -133,10 +127,6 @@ export const useChatClient = () => {
         );
 
         if (config) {
-          // config.apiKey = 'xc75gj2eaw9j';
-          // config.userToken =
-          //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic2FudGhvc2gifQ.f-6Bj3nYJ1XA5kEbKTs8B0WDcLl1VfsUqqhYAQnMfdI';
-          // config.userId = 'santhosh';
           await loginUser(config);
         }
       }
