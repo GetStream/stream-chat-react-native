@@ -74,9 +74,9 @@ registerNativeHandlers({
       }
       const results = await CameraRoll.getPhotos({
         after,
-        assetType: 'Photos',
+        assetType: 'All',
         first,
-        include: ['imageSize'],
+        include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
       });
       const assets = results.edges.map((edge) => ({
         ...edge.node.image,

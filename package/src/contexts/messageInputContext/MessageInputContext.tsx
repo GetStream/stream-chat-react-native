@@ -35,8 +35,8 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -54,12 +54,7 @@ import { useTranslationContext } from '../translationContext/TranslationContext'
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
+  file: File;
   id: string;
   state: string;
   url?: string;
@@ -206,13 +201,8 @@ export type LocalMessageInputContext<
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadNewFile: (file: File) => Promise<void>;
+  uploadNewImage: (image: Asset) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -994,19 +984,15 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewFile = async (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => {
+  const uploadNewFile = async (file: File) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
-    const newFile = {
+    const newFile: FileUpload = {
       file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,
     };
+
     await Promise.all([
       setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
@@ -1015,18 +1001,18 @@ export const MessageInputProvider = <
     uploadFile({ newFile });
   };
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = async (image: Asset) => {
     const id = generateRandomId();
-    const newImage = {
+    const newImage: ImageUpload = {
       file: image,
       id,
       state: FileState.UPLOADING,
     };
+
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
-
     uploadImage({ newImage });
   };
 

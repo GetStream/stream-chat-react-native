@@ -107,7 +107,9 @@ const ReplyWithContext = <
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
 
   const messageType = lastAttachment
-    ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'
+    ? lastAttachment.type === 'file' ||
+      lastAttachment.type === 'audio' ||
+      lastAttachment.type === 'video'
       ? 'file'
       : lastAttachment.type === 'image' &&
         !lastAttachment.title_link &&
