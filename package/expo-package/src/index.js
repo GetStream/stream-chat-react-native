@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRef } from 'react';
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
@@ -216,7 +217,30 @@ registerNativeHandlers({
     }
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ uri }) => <ExpoVideoPlayer source={{ uri }} />,
+  Video: ({ onLoad, onLoadStart, onPlaybackStatusUpdate, style, uri }) => {
+    let videoPlayerRef = useRef(null);
+    const mountVideo = (component) => {
+      videoPlayerRef = component;
+    };
+
+    return (
+      <ExpoVideoPlayer
+        downloadFirst={true}
+        onLoad={onLoad}
+        onLoadStart={onLoadStart}
+        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+        posterStyle={{ backgroundColor: 'black' }}
+        ref={mountVideo}
+        resizeMode='contain'
+        shouldPlay={true}
+        source={{
+          uri,
+        }}
+        style={[style]}
+        useNativeControls
+      />
+    );
+  },
 });
 
 export * from 'stream-chat-react-native-core';

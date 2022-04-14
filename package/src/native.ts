@@ -105,9 +105,26 @@ export let triggerHaptic: TriggerHaptic = fail;
 
 export let SDK: string;
 
+export type PlaybackStatus = {
+  didJustFinish: boolean;
+  error: string;
+  isBuffering: boolean;
+  isLoaded: boolean;
+  isLooping: boolean;
+  isPlaying: boolean;
+};
+
 type Video = React.ComponentType<{
-  style: StyleProp<ViewStyle>;
+  paused: boolean;
   uri: string;
+  onBuffer?: (props: { isBuffering: boolean }) => void;
+  onEnd?: () => void;
+  onLoad?: (payload: any) => void;
+  onLoadStart?: () => void;
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
+  onProgress?: (data: any) => void;
+  onReadyForDisplay?: () => void;
+  style?: StyleProp<ViewStyle>;
 }>;
 
 export let Video: Video = fail;

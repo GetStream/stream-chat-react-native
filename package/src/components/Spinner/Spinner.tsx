@@ -20,8 +20,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Spinner: React.FC = () => {
+export type SpinnerProps = {
+  height?: number;
+  width?: number;
+};
+
+export const Spinner: React.FC<SpinnerProps> = (props) => {
   const rotation = useSharedValue(0);
+  const { height, width } = props;
 
   const {
     theme: {
@@ -49,8 +55,8 @@ export const Spinner: React.FC = () => {
   }, []);
 
   return (
-    <Animated.View style={[styles.spinner, animatedStyle, spinner]}>
-      <Loading stopColor={accent_blue} />
+    <Animated.View style={[styles.spinner, animatedStyle, spinner, { height, width }]}>
+      <Loading height={height} stopColor={accent_blue} width={width} />
     </Animated.View>
   );
 };

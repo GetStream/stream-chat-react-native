@@ -250,17 +250,33 @@ registerNativeHandlers({
     });
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ style, uri }) => (
-    <Video
-      controls={true}
-      paused={false}
-      ref={(ref) => (videoPlayer = ref)}
-      source={{
-        uri,
-      }}
-      style={style}
-    />
-  ),
+  Video: ({ onBuffer, onEnd, onLoad, onLoadStart, onProgress, paused, style, uri }) => {
+    let videoPlayer = useRef(null);
+
+    return (
+      <Video
+        controls={true}
+        fullscreen={true}
+        onBuffer={onBuffer}
+        onEnd={onEnd}
+        onError={(error) => {
+          console.log(error);
+        }}
+        onLoad={(data) => {
+          onLoad(data);
+        }}
+        onProgress={onProgress}
+        paused={paused}
+        poster='https://wallpaperaccess.com/full/1754609.jpg'
+        posterResizeMode='cover'
+        ref={(ref) => (videoPlayer = ref)}
+        source={{
+          uri,
+        }}
+        style={style}
+      />
+    );
+  },
 });
 
 if (Platform.OS === 'android') {
