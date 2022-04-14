@@ -75,15 +75,10 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile, appSettings, } = props;
+  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
- 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
-
-
-
-
 
   const {
     theme: {
@@ -103,19 +98,16 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-       const result = appSettings?.app?.file_upload_config?.blocked_file_extensions?.some(
-         (x) => x === item.file.type,
-       );
-    const theResult = appSettings?.app?.file_upload_config?.blocked_file_extensions;
-    console.log({ theResult });
-console.log({item});
-       console.log(`is it ready ${result}`);
+
     const indicatorType =
       item.state === FileState.UPLOADING
         ? ProgressIndicatorTypes.IN_PROGRESS
         : item.state === FileState.UPLOAD_FAILED
         ? ProgressIndicatorTypes.RETRY
+        : item.state === FileState.NOT_SUPPORTED
+        ? ProgressIndicatorTypes.NOT_SUPPORTED
         : undefined;
+    // TODO: check for not supproted state
 
     return (
       <>

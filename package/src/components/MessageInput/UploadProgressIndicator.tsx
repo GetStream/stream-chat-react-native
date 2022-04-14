@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
+  Text
 } from 'react-native';
+// import { color } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Refresh } from '../../icons';
+import { Refresh,Flag } from '../../icons';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -60,7 +62,7 @@ export type UploadProgressIndicatorProps = {
   /** style */
   style?: StyleProp<ViewStyle>;
   /** Type of active indicator */
-  type?: 'in_progress' | 'retry';
+  type?: 'in_progress' | 'retry' | 'not_supported';
 };
 
 export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (props) => {
@@ -98,6 +100,17 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
               width={18}
             />
           </TouchableOpacity>
+        )}
+        {type === ProgressIndicatorTypes.NOT_SUPPORTED && (
+          <>
+            <Text style={{ color: 'black', textAlign: 'center' }}>File type not supported</Text>
+            <Flag
+              height={18}
+              pathFill={white_smoke}
+              testID='retry-upload-progress-indicator'
+              width={18}
+            />
+          </>
         )}
       </View>
     </View>

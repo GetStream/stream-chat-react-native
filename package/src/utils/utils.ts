@@ -36,14 +36,19 @@ export const FileState = Object.freeze({
   UPLOAD_FAILED: 'upload_failed',
   UPLOADED: 'uploaded',
   UPLOADING: 'uploading',
+  NOT_SUPPORTED:'not_supported',
+  // TODO: file not supported state here
 });
 
 export const ProgressIndicatorTypes: {
   IN_PROGRESS: 'in_progress';
   RETRY: 'retry';
+  NOT_SUPPORTED: 'not_supported';
+  // TODO: file not supported state here
 } = Object.freeze({
   IN_PROGRESS: 'in_progress',
   RETRY: 'retry',
+  NOT_SUPPORTED: 'not_supported',
 });
 
 export const MessageStatusTypes = {

@@ -417,7 +417,8 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client, appSettings } = useChatContext<StreamChatGenerics>();
-  // console.log({setting: appSettings?.app});
+  const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions;
+  // console.log(blockedFiles);
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -1006,9 +1007,11 @@ export const MessageInputProvider = <
   }) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
-    console.log(mimeType);
-    // const result  = appSettings?.app?.file_upload_config?.blocked_file_extensions?.some(x => x === file.name);
-    // console.log(appSettings?.app?.file_upload_config?.blocked_file_extensions);
+
+    // console.log(file.type);
+
+    const result = blockedFiles?.some((x) => file.name?.includes(x));
+
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
@@ -1019,23 +1022,38 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    uploadFile({ newFile });
+    if (result === true) {
+      newFile.state = FileState.NOT_SUPPORTED;
+    } else {
+      uploadFile({ newFile });
+    }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
-    // const mimeType = lookup(imag)
+
     const newImage = {
       file: image,
       id,
       state: FileState.UPLOADING,
     };
+    // check file type here
+
+    const result = blockedFiles?.some((x) => newImage.file.uri?.includes(x));
+
+    console.log({result});
+
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
+    // TODO: check file state here
+    if (result === true) {
+      newImage.state = FileState.NOT_SUPPORTED;
+    } else {
     uploadImage({ newImage });
+    }
   };
 
   const messageInputContext = useCreateMessageInputContext({

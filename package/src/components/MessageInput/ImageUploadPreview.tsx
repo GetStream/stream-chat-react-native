@@ -62,8 +62,16 @@ const ImageUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => (
-    <View
+  /**
+   * 
+   * I don't understand why switching from returning the component like this ()=>()
+   * to this ()=>{
+   *  return <></>;
+   *  }
+   * solved the problem of rendering the file not supported overlay
+   */
+  const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => {
+    return <View
       style={[
         styles.itemContainer,
         index === imageUploads.length - 1 ? { marginRight: 8 } : {},
@@ -81,6 +89,8 @@ const ImageUploadPreviewWithContext = <
             ? ProgressIndicatorTypes.IN_PROGRESS
             : item.state === FileState.UPLOAD_FAILED
             ? ProgressIndicatorTypes.RETRY
+            : item.state === FileState.NOT_SUPPORTED
+            ? ProgressIndicatorTypes.NOT_SUPPORTED
             : undefined
         }
       >
@@ -100,7 +110,7 @@ const ImageUploadPreviewWithContext = <
         <Close pathFill={white} />
       </TouchableOpacity>
     </View>
-  );
+  };
 
   return imageUploads.length > 0 ? (
     <FlatList
