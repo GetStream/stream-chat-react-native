@@ -1067,6 +1067,7 @@ export const MessageInputProvider = <
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+    console.log(image.uri);
 
     const newImage = {
       file: image,
@@ -1074,9 +1075,10 @@ export const MessageInputProvider = <
       state: FileState.UPLOADING,
     };
     const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
-    console.log({ blockedImage });
 
+    console.log({ blockedImage });
     console.log({ newImage });
+
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
@@ -1084,6 +1086,7 @@ export const MessageInputProvider = <
 
     if (blockedImage) {
       newImage.state = FileState.NOT_SUPPORTED;
+      return;
     } else {
       uploadImage({ newImage });
     }

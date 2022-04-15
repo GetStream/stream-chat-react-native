@@ -19,6 +19,7 @@ import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { Warning } from '../../icons';
 
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
+import { Warning } from '../../icons';
 // import { useChatContext } from 'src/contexts/chatContext/ChatContext';
 
 const FILE_PREVIEW_HEIGHT = 60;

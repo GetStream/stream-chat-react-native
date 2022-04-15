@@ -8,7 +8,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-// import { color } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Refresh } from '../../icons';
@@ -87,7 +86,6 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
       <View
         style={[
           type === ProgressIndicatorTypes.NOT_SUPPORTED ? styles.overflowHidden : styles.container,
-          ,
           { backgroundColor: overlayColor },
           container,
         ]}
