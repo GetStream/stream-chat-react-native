@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  NavigationContainerRef,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
+import messaging from '@react-native-firebase/messaging';
+import notifee, { EventType } from '@notifee/react-native';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { UserSearchProvider } from './src/context/UserSearchContext';
@@ -43,13 +50,52 @@ LogBox.ignoreLogs([
 ]);
 console.assert = () => null;
 
+// when a channel id is set here, the intial route is the channel screen
+const initialChannelIdGlobalRef = { current: '' };
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
+  const navigationContainerRef = useRef<NavigationContainerRef>(null);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
+
+  useEffect(() => {
+    const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+      // Notification caused app to open from background state
+      const channelId = remoteMessage.data?.channel_id;
+      if (channelId) {
+        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+      }
+    });
+    // handle notification clicks on foreground
+    const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
+      if (type === EventType.PRESS) {
+        // user has pressed the foreground notification
+        const channelId = detail.notification?.data?.channel_id;
+        if (channelId) {
+          navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+        }
+      }
+    });
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage) {
+          // Notification caused app to open from quit state
+          const channelId = remoteMessage.data?.channel_id;
+          if (channelId) {
+            initialChannelIdGlobalRef.current = channelId;
+          }
+        }
+      });
+    return () => {
+      unsubscribeOnNotificationOpen();
+      unsubscribeForegroundEvent();
+    };
+  }, []);
 
   return (
     <SafeAreaProvider
@@ -58,6 +104,7 @@ const App = () => {
       }}
     >
       <NavigationContainer
+        ref={navigationContainerRef}
         theme={{
           colors: {
             ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
@@ -141,10 +188,17 @@ const HomeScreen = () => {
   const { overlay } = useOverlayContext();
 
   return (
-    <Stack.Navigator initialRouteName='ChatScreen'>
+    <Stack.Navigator
+      initialRouteName={initialChannelIdGlobalRef.current ? 'ChannelScreen' : 'ChatScreen'}
+    >
       <Stack.Screen component={ChatScreen} name='ChatScreen' options={{ headerShown: false }} />
       <Stack.Screen
         component={ChannelScreen}
+        initialParams={
+          initialChannelIdGlobalRef.current
+            ? { channelId: initialChannelIdGlobalRef.current }
+            : undefined
+        }
         name='ChannelScreen'
         options={{
           gestureEnabled: Platform.OS === 'ios' && overlay === 'none',
