@@ -7,8 +7,7 @@ title: Push Notifications (V2)
 import chatOverviewPage from '../assets/guides/push-notifications-v2/chat_overview_page.png';
 import firebaseNotificationsToggle from '../assets/guides/push-notifications-v2/firebase_notifications_toggle.png';
 
-Easiest way to integrate push notifications in your Chat applications is using Firebase. [React Native Firebase](https://rnfirebase.io/) and [Notifee](https://notifee.app/)
-are the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
+Easiest way to integrate push notifications in your Chat applications is using Firebase. [React Native Firebase](https://rnfirebase.io/) is the officially recommended package to add Firebase to your apps. We also recommend the [Notifee](https://notifee.app/) library for customising push notifications and listening to user interaction events.
 
 ## Requirements
 
@@ -37,9 +36,9 @@ are the officially recommended collection of packages that brings React Native s
 
 Follow the steps mentioned on Firebase documentation setup Firebase.
 
-1. [Create a firebase project](https://firebase.google.com/docs/cloud-messaging/ios/client#create-firebase-project).
-2. Register your [Android](https://firebase.google.com/docs/cloud-messaging/android/client#register_your_app_with_firebase) and [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client#register-app) app with Firebase app.
-3. Download a Firebase configuration file for [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client) and [Android](https://firebase.google.com/docs/cloud-messaging/android/client#add_a_firebase_configuration_file).
+1. [Create a firebase project](https://console.firebase.google.com/).
+2. Register your [Android](https://firebase.google.com/docs/android/setup#register-app) app and [iOS](https://firebase.google.com/docs/ios/setup#register-app) app with the Firebase project.
+3. Upload your [APNs authentication key](https://firebase.google.com/docs/cloud-messaging/ios/client#upload_your_apns_authentication_key) to your Firebase project.
 4. Install React Native Firebase.
 
    ```sh
@@ -50,12 +49,14 @@ Follow the steps mentioned on Firebase documentation setup Firebase.
    yarn add @react-native-firebase/messaging
    ```
 
-5. [Setup Android credentials](https://rnfirebase.io/#2-android-setup).
-6. [Setup iOS credentials](https://rnfirebase.io/#3-ios-setup).
+5. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-android-setup).
+6. [Setup your iOS app with credentials and configure Firebase](https://rnfirebase.io/#3-ios-setup).
 
-## Get The Firebase Credentials
+## Get Google Service Account Credentials
 
-These credentials are the [private key file](https://firebase.google.com/docs/admin/setup#:~:text=To%20generate%20a%20private%20key%20file%20for%20your%20service%20account%3A) for your service account, in firebase console. To generate a private key file for your service account:
+Firebase projects support Google service accounts. Credentials obtained via this service account are used by Stream to call Firebase server APIs.
+
+These credentials are the [private key file](https://firebase.google.com/docs/admin/setup#:~:text=To%20generate%20a%20private%20key%20file%20for%20your%20service%20account%3A) for your service account, in Firebase console. To generate a private key file for your service account:
 
 - In the Firebase console, open Settings > Service Accounts.
 - Click Generate New Private Key, then confirm by clicking Generate Key.
@@ -65,7 +66,7 @@ This JSON file contains the credentials which needs to be uploaded to Stream ser
 
 ## Upload Firebase Credentials
 
-You can upload your firebase credentials either using dashboard or using the app settings api:
+You can upload your JSON file containg your Firebase credentials either using dashboard or using the app settings api:
 
 ### Using Dashboard
 
@@ -172,35 +173,150 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Display Notification To User
+## The Push Notification Message Payload
 
-Push notifications are delivered as data payloads that the applications can use to convert into the same data types that are received when working with the APIs.
-
-When a message received by the Chat API, according to the delivery rules, it kicks a job that sends a regular data message (as below) to configured push providers on your app.
+When a message is received by the Chat API, if the [requirements](#requirements) are met, it kicks a job to send a notification message to configured push providers on your app.
 According to the battery and the online status of the device, push providers deliver this payload to the actual devices.
 
-This is the main payload that will be sent to device:
+The delivered push notification message payload has a `notification` field and a `data` field. The `notification` field is handled by the Firebase SDK to display the message and `data` property should be handled by the app if needed. An example payload is below:
 
 ```json
 {
-  "sender": "stream.chat",
-  "type": "message.new",
-  "version": "v2",
-  "message_id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
-  "id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
-  "channel_type": "messaging",
-  "channel_id": "company-chat",
-  "cid": "messaging:company-chat"
+  "notification": {
+    "title": "Message from user",
+    "body": "Hello",
+  },
+   "data":{
+      "sender":"stream.chat",
+      "type":"message.new",
+      "version":"v2",
+      "id":"d152f6c1-8c8c-476d-bfd6-59c15c20548a",
+      "channel_type":"messaging",
+      "channel_id":"company-chat",
+      "cid":"messaging:company-chat"
+   },
+   // other fields..
 }
 ```
 
-When a device receives this payload, you can request the relevent message details by calling `chatClient.getMessage()` api and generate a local notification on device.
-For this purpose you can use [Notifee](https://notifee.app/), which is a A feature rich notifications library for React Native.
+## Listen to user interactions on the notification
 
-### When App Is In Foreground
+The `notification` field is picked up by the Firebase SDK to display the notification when the app is on background or quit state. When a user interacts with the notification by pressing on it, the default behavior is to open the application.
 
-To listen to messages in the foreground, call the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) method inside of your application code and display a notification to end user.
-Code executed via this handler has access to React context and is able to interact with your application (e.g. updating the state or UI).
+In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you could open a specific screen for example). The [React Native Firebase API](https://rnfirebase.io/messaging/notifications#handling-interaction) provides two APIs for handling interaction:
+
+- `getInitialNotification`: When the application is opened from a quit state.
+- `onNotificationOpenedApp`: When the application is running, but in the background.
+
+To handle both scenarios, the code can be executed during setup. For example, using [React Navigation](https://reactnavigation.org/) we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
+
+```js 
+import React, { useEffect, useState } from 'react';
+import messaging from '@react-native-firebase/messaging';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
+function App() {
+  const navigationContainerRef = useRef<NavigationContainerRef>(null);
+  const [initialChannelId, setInitialChannelId] = useState<string>()
+  useEffect(() => {
+    const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+      // Notification caused app to open from background state
+      const channelId = remoteMessage.data?.channel_id;
+      // The navigation logic, to navigate to relevant channel screen.
+      if (channelId) {
+        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+      }
+    });
+    // handle notification clicks on foreground
+    const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
+      if (type === EventType.PRESS) {
+        // user has pressed the foreground notification
+        const channelId = detail.notification?.data?.channel_id;
+        // The navigation logic, to navigate to relevant channel screen.
+        if (channelId) {
+          navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+        }
+      }
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // Notification caused app to open from quit state
+          const channelId = remoteMessage.data?.channel_id;
+          // Start the app with the relevant channel screen.
+          setInitialChannelId(channelId)
+        }
+    });
+    
+    return () => {
+      unsubscribeOnNotificationOpen();
+      unsubscribeForegroundEvent();
+    };
+  }, []);
+
+  return (
+    <NavigationContainer ref={navigationContainerRef}>
+      <Stack.Navigator initialRouteName={initialChannelId ? "ChannelScreen" : "Home"}>
+        <Stack.Screen name='Home' component={HomeScreen} />
+        <Stack.Screen name='ChannelListScreen' component={ChannelListScreen} />
+        <Stack.Screen name='ChannelScreen'
+          component={ChannelScreen}
+          initialParams={initialChannelId ? { channelId: initialChannelId } : undefined}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+### Listening to notifications on the background
+
+To listen to notifications on the background we can use the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
+
+:::caution
+
+This method works only on Android. On iOS, if a payload contains the `notification` it is expected to be handled on user interactions using the callbacks mentioned in the previous section. However, if we do want to customise the notification or set the badge number on iOS, we will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
+
+:::
+
+To setup a background handler, call the `setBackgroundMessageHandler` outside of your application logic as early as possible:
+
+```jsx
+// index.js
+import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { StreamChat } from 'stream-chat';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  const client = StreamChat.getInstance('api_key');
+
+  // You can also provide tokenProvider instead of static token 
+  // await client._setToken({ id: userId }, tokenProvider)
+  client._setToken(
+    {
+      id: 'user_id',
+    },
+    'user_token',
+  );
+  // handle the message
+  const message = await client.getMessage(remoteMessage.data.id);
+});
+
+function App() {
+  // Your application
+}
+
+AppRegistry.registerComponent('app', App);
+```
+
+## Display Notification In Foreground
+
+As mentioned before, the Firebase SDK automatically displays the message to the user using the `notification` property when the app is not on foreground. But if we do want to display the notification in the foreground, we can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (e.g. updating the state or UI).
 
 :::note
 
@@ -213,9 +329,17 @@ import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 
 useEffect(() => {
-  const unsubscribe = messaging().onMessage(async remoteMessage => {
+  // add listener to notifications received when on foreground
+  const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
     const message = await chatClient.getMessage(remoteMessage.data.id);
 
+    // create the android channel to send the notification to
+    const channelId = await notifee.createChannel({
+      id: 'chat-messages',
+      name: 'Chat Messages',
+    });
+
+    // display the notification
     await notifee.displayNotification({
       title: message.message.text,
       body: message.message.text,
@@ -224,164 +348,26 @@ useEffect(() => {
         pressAction: {
           id: 'default',
         },
+      body: message.message.text,
+      data: remoteMessage.data,
+      title: 'New message from ' + message.message.user.name,
       },
     });
   });
 
-  return unsubscribe;
+  // add listener to user interactions on foreground notifications
+  const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
+    if (type === EventType.PRESS) {
+      // user has pressed notification
+      const channelId = detail.notification?.data?.channel_id;
+      // navigate using the channel id using your app's navigation logic
+      navigateToChannelScreen(channelId)
+    }
+  })
+
+  return () => {
+    unsubscribeOnMessage();
+    unsubscribeForegroundEvent();
+  }
 }, []);
-```
-
-### When App Is In Background or In Quit State
-
-When the application is in a background or quit state, the onMessage handler will not be called when receiving messages.
-Instead, you need to setup a background callback handler via the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
-
-To setup a background handler, call the `setBackgroundMessageHandler` outside of your application logic as early as possible:
-
-For more details about headless state of application, please read the documentation of [RN Firebase](https://rnfirebase.io/messaging/usage#background-application-state)
-
-```jsx
-// index.js
-import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
-import { StreamChat } from 'stream-chat';
-
-// Register background handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const client = StreamChat.getInstance('api_key');
-
-  // You can also provide tokenProvider instead of static token - await client._setToken({ id: userId }, tokenProvider)
-  client._setToken(
-    {
-      id: 'user_id',
-    },
-    'user_token',
-  );
-
-  const message = await client.getMessage(remoteMessage.data.id);
-
-  notifee.displayNotification({
-    title: message.message.text,
-    body: JSON.stringify(remoteMessage),
-    android: {
-      channelId: 'msg',
-      pressAction: {
-        id: 'default',
-      },
-    },
-  });
-});
-
-function HeadlessCheck({ isHeadless }) {
-  if (isHeadless) {
-    // App has been launched in the background by iOS, ignore the UI rendering.
-    return null;
-  }
-
-  return <App />;
-}
-
-function App() {
-  // Your application
-}
-
-AppRegistry.registerComponent('app', () => HeadlessCheck);
-```
-
-## Interact with Push Notification
-
-When a user interacts with your notification by pressing on it, the default behavior on iOS is to open the application.
-For Android, you need to explicitly define a `pressAction` with at least an `id`, when you call `notifee.displayNotification()` to [open the application](https://notifee.app/react-native/docs/android/interaction#opening-the-application).
-
-But for practical application, you generally may want to navigate to specific channel upon press.
-For this purpose [Notifee](https://notifee.app/react-native/docs/events) provides set of [event handlers](https://notifee.app/react-native/docs/events) which can be used to build UX as required.
-
-### When App Is In Foreground
-
-An application is deemed in the "foreground" under the following situations:
-
-- The device is unlocked.
-- The application is running & is in view (foreground).
-
-:::note
-
-**iOS**: onForegroundEvent will be executed in following scenarios
-
-- App is already open, and a user presses the notification.
-- App is in the background and if a user presses the notification to bring the app to foreground.
-
-**Android**: onForegroundEvent will be executed in the following scenarios:
-
-- App is already open, and a user presses the notification.
-
-:::
-
-```jsx
-import { useEffect } from 'react';
-import notifee, { EventType } from '@notifee/react-native';
-
-function App() {
-  // Subscribe to events
-  useEffect(() => {
-    return notifee.onForegroundEvent(({ type, detail }) => {
-      switch (type) {
-        case EventType.DISMISSED:
-          console.log('User dismissed notification', detail.notification);
-          break;
-        case EventType.PRESS:
-          navigateToChannelScreen(detail.notification.data.channel_id);
-          break;
-      }
-    });
-  }, []);
-}
-```
-
-### When App Is In Background or Quit State
-
-An application is deemed in the "background" under the following situations:
-
-- The device is locked.
-- The application is running & is in not in view (minimized).
-- The application is killed/quit.
-
-Background tasks run without React context, meaning you cannot update your application UI. You can however perform logic to update a remote database, update local device storage or even display/update a notification with Notifee! An example of a background event would be handling a "Mark as read" action by updating your database and cancelling the notification.
-
-Only a single background event handler can be registered. To register your handler, the onBackgroundEvent method should be registered as early on in your project as possible (e.g. the index.js file):
-
-:::note
-
-**iOS**: onBackgroundEvent will be executed in following scenarios
-
-- App is currently in quit state and user pressed the notification to open the app.
-
-**Android**: onBackgroundEvent will be executed in following scenarios
-
-- App is in background and user presses the notification to bring the app to foreground.
-- App is currently in quit state and user pressed the notification to open the app.
-
-:::
-
-```jsx
-// index.js
-import { AppRegistry } from 'react-native';
-import notifee, { EventType } from '@notifee/react-native';
-import App from './App';
-
-notifee.onBackgroundEvent(async ({ type, detail }) => {
-  const { notification, pressAction } = detail;
-
-  // Check if the user opened the app by pressing the notification
-  if (type === EventType.PRESS) {
-    // Since this function is outside the react context, you will need to somehow
-    // communicate with your App context via some kind of event emitter-listener interface.
-    navigateToChannelScreen(detail.notification.data.channel_id);
-    // Remove the notification
-    await notifee.cancelNotification(notification.id);
-  }
-});
-
-// Register main application
-AppRegistry.registerComponent('app', () => App);
 ```
