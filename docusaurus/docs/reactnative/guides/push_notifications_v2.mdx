@@ -230,17 +230,6 @@ function App() {
         navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
       }
     });
-    // handle notification clicks on foreground
-    const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
-      if (type === EventType.PRESS) {
-        // user has pressed the foreground notification
-        const channelId = detail.notification?.data?.channel_id;
-        // The navigation logic, to navigate to relevant channel screen.
-        if (channelId) {
-          navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
-        }
-      }
-    });
 
     messaging()
       .getInitialNotification()
