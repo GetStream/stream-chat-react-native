@@ -558,7 +558,7 @@ const ChannelWithContext = <
    * Flag to track if we know for sure that there are no more recent messages to load.
    * This is necessary to avoid unnecessary api calls to load recent messages on pagination.
    */
-  const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(false);
+  const [hasNoMoreRecentMessagesToLoad, setHasNoMoreRecentMessagesToLoad] = useState(true);
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage();
 
