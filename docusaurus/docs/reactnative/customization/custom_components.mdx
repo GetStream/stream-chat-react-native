@@ -207,7 +207,7 @@ It also gives insight into what data the out of the box component is using, and 
 
 ### Equality
 
-It is import to consider equality when writing `areEqual` checks.
+It is important to consider equality when writing `areEqual` checks.
 Trying to compare two functions, objects, or arrays during a re-render cycle, unless they are themselves memoized or in another way referentially stable, will fail a shallow comparison.
 For this reason in the out of the box components it is often considered _when_ the component should re-render, and the equality checks are created based on that logic.
 

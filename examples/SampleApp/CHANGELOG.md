@@ -1,5 +1,24 @@
 # Change Log
 
+### [1.3.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.0...sampleapp@v1.3.1) (2022-04-12)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.3.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.2.0...sampleapp@v1.3.0) (2022-04-04)
+
+
+### Features
+
+* editing state header, reply state header and giphy input customization [CRNS - 535] ([4c1d67d](https://github.com/GetStream/stream-chat-react-native/commit/4c1d67d9a4e45050a45a402a53c2cf9b6fbc39b8))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.2.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.1.0...sampleapp@v1.2.0) (2022-03-17)
 
 
