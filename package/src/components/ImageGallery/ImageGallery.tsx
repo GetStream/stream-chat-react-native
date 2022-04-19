@@ -53,7 +53,10 @@ import {
 } from './components/ImageGridHandle';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayProviderProps,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -124,13 +127,13 @@ export type ImageGalleryCustomComponents<
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
     overlayOpacity: Animated.SharedValue<number>;
-    imageGalleryGridHandleHeight?: number;
-    /**
-     * This should be
-     */
-    imageGalleryGridSnapPoints?: [string | number, string | number];
-    numberOfImageGalleryGridColumns?: number;
-  };
+  } & Pick<
+      OverlayProviderProps<StreamChatGenerics>,
+      | 'giphyVersion'
+      | 'imageGalleryGridSnapPoints'
+      | 'imageGalleryGridHandleHeight'
+      | 'numberOfImageGalleryGridColumns'
+    >;
 
 export const ImageGallery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -138,6 +141,7 @@ export const ImageGallery = <
   props: Props<StreamChatGenerics>,
 ) => {
   const {
+    giphyVersion = 'fixed_height',
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
@@ -304,14 +308,19 @@ export const ImageGallery = <
    * Photos array created from all currently available
    * photo attachments
    */
+
   const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          getUrlOfImageAttachment(attachment),
+          (attachment.type === 'giphy' &&
+            (attachment.giphy?.[giphyVersion]?.url ||
+              attachment.thumb_url ||
+              attachment.image_url)) ||
+          (attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            getUrlOfImageAttachment(attachment)),
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {

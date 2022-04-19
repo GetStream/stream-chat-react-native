@@ -21,6 +21,10 @@ export const useCreateOwnCapabilitiesContext = <
   const overrideCapabilitiesStr = overrideCapabilities
     ? JSON.stringify(Object.values(overrideCapabilities))
     : null;
+  const ownCapabilitiesStr = channel?.data?.own_capabilities
+    ? JSON.stringify(Object.values(channel?.data?.own_capabilities as Array<string>))
+    : null;
+
   const ownCapabilitiesContext: OwnCapabilitiesContextValue = useMemo(() => {
     const capabilities = (channel?.data?.own_capabilities || []) as Array<string>;
     const ownCapabilitiesContext = Object.keys(allOwnCapabilities).reduce(
@@ -34,6 +38,7 @@ export const useCreateOwnCapabilitiesContext = <
     );
 
     return ownCapabilitiesContext;
-  }, [channel.id, overrideCapabilitiesStr]);
+  }, [channel.id, overrideCapabilitiesStr, ownCapabilitiesStr]);
+
   return ownCapabilitiesContext;
 };

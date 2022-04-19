@@ -112,6 +112,7 @@ export type MessagePropsWithContext<
     | 'handleReaction'
     | 'handleRetry'
     | 'handleThreadReply'
+    | 'isAttachmentEqual'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'
@@ -146,7 +147,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
      *
      * By default, we show the overlay with all the message actions on long press.
      *
@@ -159,7 +160,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
      *
      * By default, we will dismiss the keyboard on press.
      *
@@ -472,6 +473,7 @@ const MessageWithContext = <
     t,
     updateMessage,
   });
+
   const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
@@ -680,6 +682,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const {
     goToMessage: prevGoToMessage,
+    isAttachmentEqual,
     isTargetedMessage: prevIsTargetedMessage,
     lastReceivedId: prevLastReceivedId,
     members: prevMembers,
@@ -729,8 +732,8 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.updated_at === nextMessage.updated_at &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.pinned === nextMessage.pinned &&
+    prevMessage.updated_at === nextMessage.updated_at;
 
   if (!messageEqual) return false;
 
@@ -752,12 +755,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     (Array.isArray(prevMessageAttachments) &&
       Array.isArray(nextMessageAttachments) &&
       prevMessageAttachments.length === nextMessageAttachments.length &&
-      prevMessageAttachments.every((attachment, index) =>
-        attachment.type === 'image'
-          ? attachment.image_url === nextMessageAttachments[index].image_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url
-          : attachment.type === nextMessageAttachments[index].type,
-      )) ||
+      prevMessageAttachments.every((attachment, index) => {
+        const attachmentKeysEqual =
+          attachment.type === 'image'
+            ? attachment.image_url === nextMessageAttachments[index].image_url &&
+              attachment.thumb_url === nextMessageAttachments[index].thumb_url
+            : attachment.type === nextMessageAttachments[index].type;
+
+        if (isAttachmentEqual)
+          return (
+            attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
+          );
+
+        return attachmentKeysEqual;
+      })) ||
     prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 

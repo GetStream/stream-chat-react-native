@@ -1,10 +1,38 @@
 # Expo Chat example app
 
-Make sure node version is >= v10.13.0
+## How to run the app
+
+
+- Install the expo command line tool and other requirements as specified in the [expo official installation documentation](https://docs.expo.dev/get-started/installation/)
+
+- Clone the project
 
 ```bash
-   yarn global add expo-cli
    git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native/examples/ExpoMessaging
-   yarn && yarn start
 ```
+
+- Install dependencies
+
+```bash
+   cd stream-chat-react-native/package
+   make expo-example-deps
+```
+- Move to the app directory
+
+```bash
+   cd ../examples/ExpoMessaging 
+```
+
+- Run
+
+   - For iOS
+
+     ```bash
+     yarn ios
+     ```
+
+   - For android
+
+     ```bash
+     yarn android
+     ```

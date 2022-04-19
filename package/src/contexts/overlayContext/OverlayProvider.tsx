@@ -81,6 +81,7 @@ export const OverlayProvider = <
       }
     },
     FileSelectorIcon = DefaultFileSelectorIcon,
+    giphyVersion,
     i18nInstance,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
@@ -222,6 +223,7 @@ export const OverlayProvider = <
                 )}
                 {overlay === 'gallery' && (
                   <ImageGallery<StreamChatGenerics>
+                    giphyVersion={giphyVersion}
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                     imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}

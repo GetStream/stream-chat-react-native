@@ -21,20 +21,20 @@ export type AttachmentPickerContextValue = {
   /**
    * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
    */
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
   /**
    * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
    */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
    * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
    */
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**

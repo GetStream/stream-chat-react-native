@@ -105,6 +105,9 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
+import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
+import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
@@ -246,6 +249,7 @@ export type ChannelPropsWithContext<
       | 'handleThreadReply'
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
+      | 'isAttachmentEqual'
       | 'legacyImageViewerSwipeBehaviour'
       | 'markdownRules'
       | 'Message'
@@ -294,7 +298,7 @@ export type ChannelPropsWithContext<
     /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
-     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
      * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
      * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
@@ -330,7 +334,7 @@ export type ChannelPropsWithContext<
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      *
      * **Example:**
      *
@@ -443,6 +447,10 @@ const ChannelWithContext = <
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
+    InputEditingStateHeader = InputEditingStateHeaderDefault,
+    InputGiphySearch = InputGiphyCommandInputDefault,
+    InputReplyStateHeader = InputReplyStateHeaderDefault,
+    isAttachmentEqual,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -1571,6 +1579,9 @@ const ChannelWithContext = <
     initialValue,
     Input,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
@@ -1640,6 +1651,7 @@ const ChannelWithContext = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    isAttachmentEqual,
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
