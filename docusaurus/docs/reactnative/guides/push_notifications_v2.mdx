@@ -184,18 +184,18 @@ The delivered push notification message payload has a `notification` field and a
 {
   "notification": {
     "title": "Message from user",
-    "body": "Hello",
+    "body": "Hello"
   },
-   "data":{
-      "sender":"stream.chat",
-      "type":"message.new",
-      "version":"v2",
-      "id":"d152f6c1-8c8c-476d-bfd6-59c15c20548a",
-      "channel_type":"messaging",
-      "channel_id":"company-chat",
-      "cid":"messaging:company-chat"
-   },
-   // other fields..
+  "data": {
+    "sender": "stream.chat",
+    "type": "message.new",
+    "version": "v2",
+    "id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
+    "channel_type": "messaging",
+    "channel_id": "company-chat",
+    "cid": "messaging:company-chat"
+  }
+  // other fields..
 }
 ```
 
@@ -210,7 +210,7 @@ In many cases, it is useful to detect whether the application was opened by pres
 
 To handle both scenarios, the code can be executed during setup. For example, using [React Navigation](https://reactnavigation.org/) we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
 
-```js 
+```js
 import React, { useEffect, useState } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
@@ -241,7 +241,7 @@ function App() {
           setInitialChannelId(channelId)
         }
     });
-    
+
     return () => {
       unsubscribeOnNotificationOpen();
     };
@@ -283,7 +283,7 @@ import { StreamChat } from 'stream-chat';
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   const client = StreamChat.getInstance('api_key');
 
-  // You can also provide tokenProvider instead of static token 
+  // You can also provide tokenProvider instead of static token
   // await client._setToken({ id: userId }, tokenProvider)
   client._setToken(
     {
@@ -336,9 +336,9 @@ useEffect(() => {
         pressAction: {
           id: 'default',
         },
-      body: message.message.text,
-      data: remoteMessage.data,
-      title: 'New message from ' + message.message.user.name,
+        body: message.message.text,
+        data: remoteMessage.data,
+        title: 'New message from ' + message.message.user.name,
       },
     });
   });
@@ -349,13 +349,13 @@ useEffect(() => {
       // user has pressed notification
       const channelId = detail.notification?.data?.channel_id;
       // navigate using the channel id using your app's navigation logic
-      navigateToChannelScreen(channelId)
+      navigateToChannelScreen(channelId);
     }
-  })
+  });
 
   return () => {
     unsubscribeOnMessage();
     unsubscribeForegroundEvent();
-  }
+  };
 }, []);
 ```
