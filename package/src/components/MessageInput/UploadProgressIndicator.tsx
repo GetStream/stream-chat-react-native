@@ -7,12 +7,11 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  Text
 } from 'react-native';
 // import { color } from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Refresh,Flag } from '../../icons';
+import { Refresh } from '../../icons';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
 const styles = StyleSheet.create({
@@ -85,7 +84,14 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
     <View style={[styles.overflowHidden, style]} testID='active-upload-progress-indicator'>
       {children}
       <View style={[styles.overlay, { backgroundColor: overlayColor }, overlay]} />
-      <View style={[styles.container, { backgroundColor: overlayColor }, container]}>
+      <View
+        style={[
+          type === ProgressIndicatorTypes.NOT_SUPPORTED ? styles.overflowHidden : styles.container,
+          ,
+          { backgroundColor: overlayColor },
+          container,
+        ]}
+      >
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
           <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator color={white_smoke} testID='upload-progress-indicator' />
@@ -103,13 +109,13 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
         )}
         {type === ProgressIndicatorTypes.NOT_SUPPORTED && (
           <>
-            <Text style={{ color: 'black', textAlign: 'center' }}>File type not supported</Text>
+            {/* <Text style={{ color: 'black', textAlign: 'center' }}>File type not supported</Text>
             <Flag
               height={18}
               pathFill={white_smoke}
               testID='retry-upload-progress-indicator'
               width={18}
-            />
+            /> */}
           </>
         )}
       </View>

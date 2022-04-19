@@ -417,8 +417,7 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client, appSettings } = useChatContext<StreamChatGenerics>();
-  const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions;
-  // console.log(blockedFiles);
+
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -848,23 +847,43 @@ export const MessageInputProvider = <
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
-      console.warn(error);
+      // var errorType = typeof error;
+      console.log({ error });
+      
       if (!newFile) {
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       } else {
-        setFileUploads((prevFileUploads) =>
-          prevFileUploads.map((fileUpload) => {
-            if (fileUpload.id === id) {
-              return {
-                ...fileUpload,
-                state: FileState.UPLOAD_FAILED,
-              };
-            }
-            return fileUpload;
-          }),
-        );
+
+        if (error) {
+          setFileUploads((prevFileUploads) =>
+            prevFileUploads.map((fileUpload) => {
+              if (fileUpload.id === id) {
+                return {
+                  ...fileUpload,
+                  state: FileState.NOT_SUPPORTED,
+                };
+              }
+              return fileUpload;
+            }),
+          );
+        } else {
+          setFileUploads((prevFileUploads) =>
+            prevFileUploads.map((fileUpload) => {
+              if (fileUpload.id === id) {
+                return {
+                  ...fileUpload,
+                  state: FileState.UPLOAD_FAILED,
+                };
+              }
+              return fileUpload;
+            }),
+          );
+        }
+
+        
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       }
+
       return;
     }
 
@@ -979,8 +998,9 @@ export const MessageInputProvider = <
         );
       }
     } catch (error) {
-      console.warn(error);
+      console.log({error});
       if (newImage) {
+        
         setImageUploads((prevImageUploads) =>
           prevImageUploads.map((imageUpload) => {
             if (imageUpload.id === id) {
@@ -1008,9 +1028,7 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    // console.log(file.type);
 
-    const result = blockedFiles?.some((x) => file.name?.includes(x));
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -1022,11 +1040,8 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (result === true) {
-      newFile.state = FileState.NOT_SUPPORTED;
-    } else {
-      uploadFile({ newFile });
-    }
+    uploadFile({ newFile });
+
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
@@ -1039,21 +1054,16 @@ export const MessageInputProvider = <
     };
     // check file type here
 
-    const result = blockedFiles?.some((x) => newImage.file.uri?.includes(x));
 
-    console.log({result});
 
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    // TODO: check file state here
-    if (result === true) {
-      newImage.state = FileState.NOT_SUPPORTED;
-    } else {
     uploadImage({ newImage });
-    }
+    // TODO: check file state here
+   
   };
 
   const messageInputContext = useCreateMessageInputContext({

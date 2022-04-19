@@ -16,6 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+import { Warning } from '../../icons';
 
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 // import { useChatContext } from 'src/contexts/chatContext/ChatContext';
@@ -82,7 +83,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper, overlay },
+      colors: { black, grey, grey_whisper, overlay, accent_red },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -98,7 +99,6 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-
     const indicatorType =
       item.state === FileState.UPLOADING
         ? ProgressIndicatorTypes.IN_PROGRESS
@@ -155,9 +155,23 @@ const FileUploadPreviewWithContext = <
                 >
                   {item.file.name || ''}
                 </Text>
-                <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-                  {getFileSizeDisplayText(item.file.size)}
-                </Text>
+                {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+                  <View style={[{ flexDirection: 'row', paddingLeft: 10 }]}>
+                    <Warning height={20} pathFill={accent_red} testID='' width={20} />
+                    <Text
+                      style={{
+                        color: grey,
+                        fontSize: 13,
+                      }}
+                    >
+                      {'File type not supported'}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
+                    {getFileSizeDisplayText(item.file.size)}
+                  </Text>
+                )}
               </View>
             </View>
           </View>
