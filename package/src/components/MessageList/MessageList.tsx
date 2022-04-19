@@ -344,7 +344,7 @@ const MessageListWithContext = <
    */
   const messageIdToScrollToRef = useRef<string>();
   /**
-   * Last messageID that was scrolled to after loadinga new message list,
+   * Last messageID that was scrolled to after loading a new message list,
    * this flag keeps track of it so that we dont scroll to it again on target message set
    */
   const messageIdLastScrolledToRef = useRef<string>();
@@ -532,7 +532,7 @@ const MessageListWithContext = <
   }) => {
     if (!channel || !channel.initialized) return null;
 
-    const lastRead = channelLastReadRef.current;
+    const lastRead = channel.lastRead();
 
     const lastMessage = messageList?.[index + 1];
 
