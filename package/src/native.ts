@@ -97,23 +97,48 @@ export let SDK: string;
 
 export type PlaybackStatus = {
   didJustFinish: boolean;
+  durationMillis: number;
   error: string;
   isBuffering: boolean;
   isLoaded: boolean;
   isLooping: boolean;
   isPlaying: boolean;
+  positionMillis: number;
+};
+
+export type VideoProgressData = {
+  currentTime?: number;
+  playableDuration?: number;
+  seekableDuration?: number;
+};
+
+export type VideoPayloadData = {
+  audioTracks?: { index: number; language: string; title: string; type: string }[];
+  currentPosition?: number;
+  duration?: number;
+  naturalSize?: { height: number; orientation: 'portrait' | 'landscape'; width: number };
+  textTracks?: { index: number; language: string; title: string; type: string }[];
+  videoTracks?: {
+    bitrate: number;
+    codecs: string;
+    height: number;
+    trackId: number;
+    width: number;
+  }[];
 };
 
 type Video = React.ComponentType<{
   paused: boolean;
   uri: string;
+  videoRef: React.RefObject<typeof Video>;
   onBuffer?: (props: { isBuffering: boolean }) => void;
   onEnd?: () => void;
-  onLoad?: (payload: any) => void;
+  onLoad?: (payload: VideoPayloadData) => void;
   onLoadStart?: () => void;
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
-  onProgress?: (data: any) => void;
+  onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  resizeMode?: string;
   style?: StyleProp<ViewStyle>;
 }>;
 

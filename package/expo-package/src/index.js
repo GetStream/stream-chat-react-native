@@ -217,30 +217,18 @@ registerNativeHandlers({
     }
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ onLoad, onLoadStart, onPlaybackStatusUpdate, style, uri }) => {
-    let videoPlayerRef = useRef(null);
-    const mountVideo = (component) => {
-      videoPlayerRef = component;
-    };
-
-    return (
-      <ExpoVideoPlayer
-        downloadFirst={true}
-        onLoad={onLoad}
-        onLoadStart={onLoadStart}
-        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-        posterStyle={{ backgroundColor: 'black' }}
-        ref={mountVideo}
-        resizeMode='contain'
-        shouldPlay={true}
-        source={{
-          uri,
-        }}
-        style={[style]}
-        useNativeControls
-      />
-    );
-  },
+  Video: ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => (
+    <ExpoVideoPlayer
+      onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+      ref={videoRef}
+      resizeMode={resizeMode}
+      shouldPlay={!paused}
+      source={{
+        uri,
+      }}
+      style={[style]}
+    />
+  ),
 });
 
 export * from 'stream-chat-react-native-core';

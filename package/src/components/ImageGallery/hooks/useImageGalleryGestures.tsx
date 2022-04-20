@@ -396,7 +396,6 @@ export const useImageGalleryGestures = ({
           }
         }
       },
-
       onStart: () => {
         if (!isPinch.value) {
           /**

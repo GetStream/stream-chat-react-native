@@ -41,7 +41,6 @@ import {
   ImageGalleryHeaderCustomComponentProps,
 } from './components/ImageGalleryHeader';
 import { ImageGalleryOverlay } from './components/ImageGalleryOverlay';
-import { ImageGalleryVideoControl } from './components/ImageGalleryVideoControls';
 import { ImageGalleryGridImageComponents, ImageGrid } from './components/ImageGrid';
 import {
   ImageGalleryGridHandleCustomComponentProps,
@@ -56,7 +55,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Video } from '../../native';
+import type { Video, VideoPayloadData, VideoProgressData } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
@@ -437,16 +436,46 @@ export const ImageGallery = <
     }
   };
 
+  const videoRef = useRef<typeof Video>(null);
+
   const handleEnd = () => {
-    console.log('End');
+    setPaused(true);
+    setProgress(1);
   };
 
-  const handleLoad = (payload: any) => {
-    setDuration(payload.duration);
+  const handleLoad = (payload: VideoPayloadData) => {
+    if (payload.duration) setDuration(payload.duration);
   };
 
-  const handleProgress = (data: any) => {
-    setProgress(data.currentTime / duration);
+  const handleProgress = (data: VideoProgressData) => {
+    if (data.currentTime && data.seekableDuration) {
+      setProgress(data.currentTime / data.seekableDuration);
+    }
+  };
+
+  const handlePlayPause = () => {
+    // React Native Video for RN CLI has seek as an API to move to a particular location in the video
+    if (progress === 1 && videoRef.current && videoRef.current.seek) {
+      videoRef.current.seek(0);
+    }
+    // Expo AV for Expo has replayAsync as an API to move to a starting of the video
+    if (progress === 1 && videoRef.current && videoRef.current.replayAsync) {
+      videoRef.current.replayAsync();
+    }
+
+    setPaused((state) => !state);
+  };
+
+  const onProgressDrag = (progress: number) => {
+    // React Native Video for RN CLI has seek as an API to move to a particular location in the video
+    if (videoRef.current && videoRef.current.seek) {
+      videoRef.current.seek(progress);
+    }
+
+    // Expo AV for Expo has setPositionAsync as an API to move to a particular location of the video
+    if (videoRef.current && videoRef.current.setPositionAsync) {
+      videoRef.current.setPositionAsync(progress * 1000);
+    }
   };
 
   return (
@@ -502,19 +531,31 @@ export const ImageGallery = <
                       >
                         {photos.map((photo, i) =>
                           photo.type === 'video' ? (
-                            // <GalleryVideo
-                            //   key={`${photo.uri}-${i}`}
-                            //   screenHeight={screenHeight}
-                            //   shouldRender={Math.abs(selectedIndex - i) < 4}
-                            //   source={{ uri: photo.uri }}
-                            // />
-                            <Video
-                              onEnd={handleEnd}
-                              onLoad={handleLoad}
-                              onProgress={handleProgress}
+                            <GalleryVideo
+                              handleEnd={handleEnd}
+                              handleLoad={handleLoad}
+                              handleProgress={handleProgress}
+                              index={i}
+                              key={`${photo.uri}-${i}`}
+                              offsetScale={offsetScale}
                               paused={paused}
-                              style={[styles.videoPlayer]}
-                              uri={photo.uri}
+                              previous={selectedIndex > i}
+                              scale={scale}
+                              screenHeight={screenHeight}
+                              selected={selectedIndex === i}
+                              shouldRender={Math.abs(selectedIndex - i) < 4}
+                              source={{ uri: photo.uri }}
+                              style={[
+                                {
+                                  height: screenHeight * 8,
+                                  marginRight: MARGIN,
+                                  width: screenWidth * 8,
+                                },
+                                slide,
+                              ]}
+                              translateX={translateX}
+                              translateY={translateY}
+                              videoRef={videoRef}
                             />
                           ) : (
                             <AnimatedGalleryImage
@@ -557,19 +598,20 @@ export const ImageGallery = <
       />
 
       <ImageGalleryFooter<StreamChatGenerics>
+        duration={duration}
+        onPlayPause={handlePlayPause}
+        onProgressDrag={onProgressDrag}
         opacity={headerFooterOpacity}
         openGridView={openGridView}
+        paused={paused}
         photo={photos[selectedIndex]}
         photoLength={photoLength}
+        progress={progress}
         selectedIndex={selectedIndex}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.footer}
       />
-      <ImageGalleryVideoControl<StreamChatGenerics>
-        duration={duration}
-        opacity={headerFooterOpacity}
-        visible={headerFooterVisible}
-      />
+
       <ImageGalleryOverlay
         animatedBottomSheetIndex={animatedBottomSheetIndex}
         closeGridView={closeGridView}
@@ -616,10 +658,6 @@ const styles = StyleSheet.create({
   animatedContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  videoPlayer: {
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
   },
 });
 

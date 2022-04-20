@@ -195,6 +195,11 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
+    videoControl: {
+      durationTextStyle: TextStyle;
+      roundedView: ViewStyle;
+      videoContainer: ViewStyle;
+    };
     backgroundColor?: string;
     pager?: ViewStyle;
     slide?: ImageStyle;
@@ -669,6 +674,11 @@ export const defaultTheme: Theme = {
       leftContainer: {},
       rightContainer: {},
       usernameText: {},
+    },
+    videoControl: {
+      durationTextStyle: {},
+      roundedView: {},
+      videoContainer: {},
     },
   },
   inlineDateSeparator: {

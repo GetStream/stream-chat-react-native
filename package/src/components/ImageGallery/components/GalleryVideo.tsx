@@ -1,48 +1,85 @@
 import React, { useState } from 'react';
-import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
-import type { ImageStyle, StyleProp } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import type { StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { Spinner } from '../../../components/Spinner/Spinner';
-import { PlaybackStatus, Video } from '../../../native';
+import { PlaybackStatus, Video, VideoPayloadData, VideoProgressData } from '../../../native';
 
+import { vw } from '../../../utils/utils';
+
+const screenWidth = vw(100);
+const halfScreenWidth = vw(50);
 const oneEight = 1 / 8;
 
 type Props = {
+  handleEnd: () => void;
+  handleLoad: (payload: VideoPayloadData) => void;
+  handleProgress: (data: VideoProgressData) => void;
+  index: number;
+  offsetScale: Animated.SharedValue<number>;
+  paused: boolean;
+  previous: boolean;
+  scale: Animated.SharedValue<number>;
   screenHeight: number;
+  selected: boolean;
   shouldRender: boolean;
   source: { uri: string };
-  style?: StyleProp<ImageStyle>;
+  translateX: Animated.SharedValue<number>;
+  translateY: Animated.SharedValue<number>;
+  videoRef: React.RefObject<typeof Video>;
+  style?: StyleProp<ViewStyle>;
 };
 
 const styles = StyleSheet.create({
   activityIndicator: {
     alignItems: 'center',
-    bottom: 0,
     justifyContent: 'center',
-    left: 0,
-    opacity: 1,
     position: 'absolute',
-    right: 0,
-    top: 0,
   },
   videoPlayer: {
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    height: '100%',
+    width: '100%',
   },
 });
 
 export const GalleryVideo: React.FC<Props> = React.memo(
   (props) => {
-    const [opacity, setOpacity] = useState<number>(0);
-    const { shouldRender, source, style } = props;
+    const [opacity, setOpacity] = useState<number>(1);
+    const {
+      handleEnd,
+      handleLoad,
+      handleProgress,
+      index,
+      offsetScale,
+      paused,
+      previous,
+      scale,
+      screenHeight,
+      selected,
+      shouldRender,
+      source,
+      style,
+      translateX,
+      translateY,
+      videoRef,
+    } = props;
 
     const onLoadStart = () => {
       setOpacity(1);
     };
 
-    const onLoad = () => {
+    const onLoad = (payload: VideoPayloadData) => {
       setOpacity(0);
+      handleLoad(payload);
+    };
+
+    const onEnd = () => {
+      handleEnd();
+    };
+
+    const onProgress = (data: VideoProgressData) => {
+      handleProgress(data);
     };
 
     const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
@@ -56,13 +93,17 @@ export const GalleryVideo: React.FC<Props> = React.memo(
         setOpacity(1);
         if (playbackStatus.error) {
           console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
-          // Send Expo team the error on Slack or the forums so we can help you debug!
         }
       } else {
         // Update your UI for the loaded state
         setOpacity(0);
+        handleLoad({ duration: playbackStatus.durationMillis / 1000 });
         if (playbackStatus.isPlaying) {
           // Update your UI for the playing state
+          handleProgress({
+            currentTime: playbackStatus.positionMillis / 1000,
+            seekableDuration: playbackStatus.durationMillis / 1000,
+          });
         } else {
           // Update your UI for the paused state
         }
@@ -74,11 +115,37 @@ export const GalleryVideo: React.FC<Props> = React.memo(
 
         if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
           // The player has just finished playing and will stop. Maybe you want to play something else?
+          handleEnd();
         }
       }
     };
 
-    const animatedViewStyles = useAnimatedStyle<ViewStyle>(() => ({ transform: [{ scaleX: -1 }] }));
+    console.log(opacity);
+
+    const animatedViewStyles = useAnimatedStyle<ViewStyle>(() => {
+      const xScaleOffset = -7 * screenWidth * (0.5 + index);
+      const yScaleOffset = -screenHeight * 3.5;
+      return {
+        transform: [
+          {
+            translateX: selected
+              ? translateX.value + xScaleOffset
+              : scale.value < 1 || scale.value !== offsetScale.value
+              ? xScaleOffset
+              : previous
+              ? translateX.value - halfScreenWidth * (scale.value - 1) + xScaleOffset
+              : translateX.value + halfScreenWidth * (scale.value - 1) + xScaleOffset,
+          },
+          {
+            translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,
+          },
+          {
+            scale: selected ? scale.value / 8 : oneEight,
+          },
+          { scaleX: -1 },
+        ],
+      };
+    }, [previous, selected]);
 
     /**
      * An empty view is rendered for images not close to the currently
@@ -90,27 +157,55 @@ export const GalleryVideo: React.FC<Props> = React.memo(
     }
 
     return (
-      <Animated.View style={[animatedViewStyles]}>
-        <Video
-          onBuffer={onBuffer}
-          onLoad={onLoad}
-          onLoadStart={onLoadStart}
-          onPlaybackStatusUpdate={onPlayBackStatusUpdate}
-          style={styles.videoPlayer}
-          uri={source.uri}
-        />
-        <View style={[styles.activityIndicator, { opacity }]}>
+      <View>
+        <Animated.View
+          style={[
+            style,
+            animatedViewStyles,
+            {
+              transform: [
+                { scaleX: -1 },
+                { translateY: -screenHeight * 3.5 },
+                {
+                  translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
+                },
+                { scale: oneEight },
+              ],
+            },
+          ]}
+        >
+          <Video
+            onBuffer={onBuffer}
+            onEnd={onEnd}
+            onLoad={onLoad}
+            onLoadStart={onLoadStart}
+            onPlaybackStatusUpdate={onPlayBackStatusUpdate}
+            onProgress={onProgress}
+            paused={paused}
+            resizeMode='cover'
+            style={style}
+            uri={source.uri}
+            videoRef={videoRef}
+          />
+        </Animated.View>
+        <View
+          style={[styles.activityIndicator, { height: screenHeight, opacity, width: screenWidth }]}
+        >
           <Spinner height={40} width={40} />
         </View>
-      </Animated.View>
+      </View>
     );
   },
 
   (prevProps, nextProps) => {
     if (
+      prevProps.paused === nextProps.paused &&
       prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.source.uri === nextProps.source.uri &&
-      prevProps.screenHeight === nextProps.screenHeight
+      prevProps.screenHeight === nextProps.screenHeight &&
+      prevProps.selected === nextProps.selected &&
+      prevProps.previous === nextProps.previous &&
+      prevProps.index === nextProps.index
     ) {
       return true;
     }

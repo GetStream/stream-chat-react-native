@@ -45,6 +45,7 @@ export * from './MessageIcon';
 export * from './Mute';
 export * from './Notification';
 export * from './ODT';
+export * from './Pause';
 export * from './PDF';
 export * from './Picture';
 export * from './Pin';
