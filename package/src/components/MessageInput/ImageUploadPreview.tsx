@@ -76,7 +76,7 @@ const ImageUploadPreviewWithContext = <
         : item.state === FileState.NOT_SUPPORTED
         ? ProgressIndicatorTypes.NOT_SUPPORTED
         : undefined;
-
+    console.log({ indicatorType });
     return (
       <View
         style={[
@@ -104,7 +104,6 @@ const ImageUploadPreviewWithContext = <
             removeImage(item.id);
           }}
           style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-          testID='remove-image-upload-preview'
         >
           <Close pathFill={white} />
         </TouchableOpacity>
@@ -148,9 +147,7 @@ const ImageUploadPreviewWithContext = <
               </Text>
             </View>
           </View>
-        ) : (
-          null
-        )}
+        ) : null}
       </View>
     );
   };

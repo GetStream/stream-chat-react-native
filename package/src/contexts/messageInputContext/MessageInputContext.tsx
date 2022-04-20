@@ -417,6 +417,8 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { client, appSettings } = useChatContext<StreamChatGenerics>();
+  const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions ?? [];
+  const blockedImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -852,9 +854,6 @@ export const MessageInputProvider = <
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       } else {
         if (error instanceof Error) {
-          console.log(typeof error);
-          const regExcondition = /File extension \.\w{2,4} is not supported/;
-          console.log(regExcondition.test(error.message));
           if (regExcondition.test(error.message)) {
             setFileUploads((prevFileUploads) =>
               prevFileUploads.map((fileUpload) => {
@@ -1001,9 +1000,6 @@ export const MessageInputProvider = <
     } catch (error) {
       console.warn({ error });
       if (error instanceof Error) {
-        console.log(typeof error);
-        console.log(regExcondition.test(error.message));
-
         if (regExcondition.test(error.message)) {
           setImageUploads((prevImageUploads) =>
             prevImageUploads.map((imageUpload) => {
@@ -1046,36 +1042,54 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
+    const blockedFile = blockedFiles?.some((x) => file.name?.includes(x));
+
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,
     };
+
+    console.log({ blockedFile });
+    console.log({ newFile });
+
     await Promise.all([
       setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    uploadFile({ newFile });
+    if (blockedFile) {
+      newFile.state = FileState.NOT_SUPPORTED;
+    } else {
+      uploadFile({ newFile });
+    }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
-
+ 
     const newImage = {
       file: image,
       id,
       state: FileState.UPLOADING,
     };
-    // check file type here
+      const blockedImage = blockedImages?.some((x) => newImage.file.uri?.includes(x));
+      console.log({ blockedImage });
 
+
+    console.log({ newImage });
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    uploadImage({ newImage });
-    // TODO: check file state here
+
+
+    if (blockedImage) {
+      newImage.state = FileState.NOT_SUPPORTED;
+    } else {
+      uploadImage({ newImage });
+    }
   };
 
   const messageInputContext = useCreateMessageInputContext({
