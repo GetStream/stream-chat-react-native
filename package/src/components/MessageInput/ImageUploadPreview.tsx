@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -12,6 +12,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+import { Warning } from '../../icons';
 
 const IMAGE_PREVIEW_SIZE = 100;
 
@@ -32,6 +33,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: IMAGE_PREVIEW_SIZE,
     width: IMAGE_PREVIEW_SIZE,
+  },
+  fileSizeText: {
+    fontSize: 12,
+    paddingLeft: 10,
   },
 });
 
@@ -55,61 +60,99 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay, white },
+      colors: { overlay, white, accent_red },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
   } = useTheme();
 
-  /**
-   * 
-   * I don't understand why switching from returning the component like this ()=>()
-   * to this ()=>{
-   *  return <></>;
-   *  }
-   * solved the problem of rendering the file not supported overlay
-   */
   const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => {
-    return <View
-      style={[
-        styles.itemContainer,
-        index === imageUploads.length - 1 ? { marginRight: 8 } : {},
-        itemContainer,
-      ]}
-    >
-      <UploadProgressIndicator
-        action={() => {
-          uploadImage({ newImage: item });
-        }}
-        active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
-        style={styles.upload}
-        type={
-          item.state === FileState.UPLOADING
-            ? ProgressIndicatorTypes.IN_PROGRESS
-            : item.state === FileState.UPLOAD_FAILED
-            ? ProgressIndicatorTypes.RETRY
-            : item.state === FileState.NOT_SUPPORTED
-            ? ProgressIndicatorTypes.NOT_SUPPORTED
-            : undefined
-        }
+    const indicatorType =
+      item.state === FileState.UPLOADING
+        ? ProgressIndicatorTypes.IN_PROGRESS
+        : item.state === FileState.UPLOAD_FAILED
+        ? ProgressIndicatorTypes.RETRY
+        : item.state === FileState.NOT_SUPPORTED
+        ? ProgressIndicatorTypes.NOT_SUPPORTED
+        : undefined;
+
+    return (
+      <View
+        style={[
+          styles.itemContainer,
+          index === imageUploads.length - 1 ? { marginRight: 8 } : {},
+          itemContainer,
+        ]}
       >
-        <Image
-          resizeMode='cover'
-          source={{ uri: item.file.uri || item.url }}
-          style={[styles.upload, upload]}
-        />
-      </UploadProgressIndicator>
-      <TouchableOpacity
-        onPress={() => {
-          removeImage(item.id);
-        }}
-        style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-        testID='remove-image-upload-preview'
-      >
-        <Close pathFill={white} />
-      </TouchableOpacity>
-    </View>
+        <UploadProgressIndicator
+          action={() => {
+            uploadImage({ newImage: item });
+          }}
+          active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
+          style={styles.upload}
+          type={indicatorType}
+        >
+          <Image
+            resizeMode='cover'
+            source={{ uri: item.file.uri || item.url }}
+            style={[styles.upload, upload]}
+          />
+        </UploadProgressIndicator>
+        <TouchableOpacity
+          onPress={() => {
+            removeImage(item.id);
+          }}
+          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+          testID='remove-image-upload-preview'
+        >
+          <Close pathFill={white} />
+        </TouchableOpacity>
+        {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+          <View
+            style={[
+              {
+                borderRadius: 20,
+                position: 'absolute',
+                bottom: 8,
+                flexDirection: 'row',
+                backgroundColor: overlay,
+                marginLeft: 3,
+              },
+            ]}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Warning
+                style={{ borderRadius: 24, right: 0, top: 2, left: 8, bottom: 8 }}
+                height={17}
+                pathFill={accent_red}
+                testID=''
+                width={17}
+              />
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: 10,
+                  paddingRight: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {'   Not supported'}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          null
+        )}
+      </View>
+    );
   };
 
   return imageUploads.length > 0 ? (
