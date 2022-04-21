@@ -822,7 +822,21 @@ export const MessageInputProvider = <
     }
   };
 
-  const regExcondition = /File extension \.\w{2,4} is not supported/;
+  const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
+
+  const setFileUploadState =
+    (id: string, fileState: string, extraData?: Record<string, any>) =>
+    <UploadType extends { id: string }>(prevImageUploads: UploadType[]) =>
+      prevImageUploads.map((imageUpload) => {
+        if (imageUpload.id === id) {
+          return {
+            ...imageUpload,
+            ...extraData,
+            state: fileState,
+          };
+        }
+        return imageUpload;
+      });
 
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
     if (!newFile) {
@@ -830,17 +844,7 @@ export const MessageInputProvider = <
     }
     const { file, id } = newFile;
 
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => {
-        if (fileUpload.id === id) {
-          return {
-            ...fileUpload,
-            state: FileState.UPLOADING,
-          };
-        }
-        return fileUpload;
-      }),
-    );
+    setFileUploads(setFileUploadState(id, FileState.UPLOADING));
 
     let response = {} as SendFileAPIResponse;
     try {
@@ -855,50 +859,18 @@ export const MessageInputProvider = <
       } else {
         if (error instanceof Error) {
           if (regExcondition.test(error.message)) {
-            setFileUploads((prevFileUploads) =>
-              prevFileUploads.map((fileUpload) => {
-                if (fileUpload.id === id) {
-                  return {
-                    ...fileUpload,
-                    state: FileState.NOT_SUPPORTED,
-                  };
-                }
-                return fileUpload;
-              }),
-            );
+            setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
           } else {
-            setFileUploads((prevFileUploads) =>
-              prevFileUploads.map((fileUpload) => {
-                if (fileUpload.id === id) {
-                  return {
-                    ...fileUpload,
-                    state: FileState.UPLOAD_FAILED,
-                  };
-                }
-                return fileUpload;
-              }),
-            );
+            setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
           }
         }
-
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       }
 
       return;
     }
 
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => {
-        if (fileUpload.id === id) {
-          return {
-            ...fileUpload,
-            state: FileState.UPLOADED,
-            url: response.file,
-          };
-        }
-        return fileUpload;
-      }),
-    );
+    setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
   };
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
@@ -962,18 +934,7 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads((prevImageUploads) =>
-                prevImageUploads.map((imageUpload) => {
-                  if (imageUpload.id === id) {
-                    return {
-                      ...imageUpload,
-                      state: FileState.UPLOADED,
-                      url: res.file,
-                    };
-                  }
-                  return imageUpload;
-                }),
-              );
+              setImageUploads(setFileUploadState(id, FileState.UPLOADED, { url: res.file }));
             }
           });
         } else {
@@ -982,54 +943,24 @@ export const MessageInputProvider = <
       }
 
       if (Object.keys(response).length) {
-        setImageUploads((prevImageUploads) =>
-          prevImageUploads.map((imageUpload) => {
-            if (imageUpload.id === id) {
-              return {
-                ...imageUpload,
-                height: file.height,
-                state: FileState.UPLOADED,
-                url: response.file,
-                width: file.width,
-              };
-            }
-            return imageUpload;
+        setImageUploads(
+          setFileUploadState(id, FileState.UPLOADED, {
+            url: response.file,
+            width: file.width,
+            height: file.height,
           }),
         );
       }
     } catch (error) {
-      console.warn({ error });
-      if (error instanceof Error) {
-        if (regExcondition.test(error.message)) {
-          setImageUploads((prevImageUploads) =>
-            prevImageUploads.map((imageUpload) => {
-              if (imageUpload.id === id) {
-                return {
-                  ...imageUpload,
-                  state: FileState.NOT_SUPPORTED,
-                };
-              }
-              return imageUpload;
-            }),
-          );
-        } else {
-          setImageUploads((prevImageUploads) =>
-            prevImageUploads.map((imageUpload) => {
-              if (imageUpload.id === id) {
-                return {
-                  ...imageUpload,
-                  state: FileState.UPLOAD_FAILED,
-                };
-              }
-              return imageUpload;
-            }),
-          );
-        }
-      }
-
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
-      return;
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
+        }
+
+        return setImageUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+      }
     }
   };
 

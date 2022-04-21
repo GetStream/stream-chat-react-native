@@ -14,13 +14,10 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
+import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
-import { Warning } from '../../icons';
-
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
-import { Warning } from '../../icons';
-// import { useChatContext } from 'src/contexts/chatContext/ChatContext';
 
 const FILE_PREVIEW_HEIGHT = 60;
 
