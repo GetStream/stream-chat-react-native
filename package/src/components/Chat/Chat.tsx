@@ -5,6 +5,7 @@ import Dayjs from 'dayjs';
 
 import type { Channel } from 'stream-chat';
 
+import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
@@ -161,7 +162,10 @@ const ChatWithContext = <
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
+  const appSettings = useAppSettings(client, isOnline);
+
   const chatContext = useCreateChatContext({
+    appSettings,
     channel,
     client,
     connectionRecovering,
