@@ -78,6 +78,8 @@ export type ImageUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<ImageUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
+type ImageUploadPreviewItem = { index: number; item: ImageUpload };
+
 const ImageUploadPreviewWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -94,16 +96,25 @@ const ImageUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => {
-    const indicatorType =
-      item.state === FileState.UPLOADING
-        ? ProgressIndicatorTypes.IN_PROGRESS
-        : item.state === FileState.UPLOAD_FAILED
-        ? ProgressIndicatorTypes.RETRY
-        : item.state === FileState.NOT_SUPPORTED
-        ? ProgressIndicatorTypes.NOT_SUPPORTED
-        : undefined;
-    console.log({ indicatorType });
+  const getIndicatorTypeForFileState = (fileState: string) => {
+    const indicatorMap = {
+      [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
+      [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,
+      [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
+      [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
+      [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
+    };
+
+    if (Object.keys(indicatorMap).includes(fileState)) {
+      return indicatorMap[fileState];
+    }
+
+    return null;
+  };
+
+  const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
+    const indicatorType = getIndicatorTypeForFileState(item.state);
+
     return (
       <View
         style={[
@@ -116,7 +127,6 @@ const ImageUploadPreviewWithContext = <
           action={() => {
             uploadImage({ newImage: item });
           }}
-          active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
           style={styles.upload}
           type={indicatorType}
         >

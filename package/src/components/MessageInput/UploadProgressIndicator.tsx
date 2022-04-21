@@ -55,27 +55,25 @@ const styles = StyleSheet.create({
 export type UploadProgressIndicatorProps = {
   /** Action triggered when clicked indicator */
   action?: (event: GestureResponderEvent) => void;
-  /** Boolean status of upload progress */
-  active?: boolean;
   /** style */
   style?: StyleProp<ViewStyle>;
   /** Type of active indicator */
-  type?: 'in_progress' | 'retry' | 'not_supported';
+  type?: 'in_progress' | 'retry' | 'not_supported' | 'inactive' | null;
 };
 
 export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (props) => {
-  const { action, active, children, style, type } = props;
+  const { action, children, style, type } = props;
 
   const {
     theme: {
-      colors: { overlay: overlayColor, white_smoke },
+      colors: { overlay: overlayColor },
       messageInput: {
         uploadProgressIndicator: { container, overlay },
       },
     },
   } = useTheme();
 
-  return !active ? (
+  return type === ProgressIndicatorTypes.INACTIVE ? (
     <View style={[styles.overflowHidden, style]} testID='inactive-upload-progress-indicator'>
       {children}
     </View>
@@ -90,34 +88,43 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
           container,
         ]}
       >
-        {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <View style={styles.activityIndicatorContainer}>
-            <ActivityIndicator color={white_smoke} testID='upload-progress-indicator' />
-          </View>
-        )}
-        {type === ProgressIndicatorTypes.RETRY && (
-          <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
-            <Refresh
-              height={18}
-              pathFill={white_smoke}
-              testID='retry-upload-progress-indicator'
-              width={18}
-            />
-          </TouchableOpacity>
-        )}
-        {type === ProgressIndicatorTypes.NOT_SUPPORTED && (
-          <>
-            {/* <Text style={{ color: 'black', textAlign: 'center' }}>File type not supported</Text>
-            <Flag
-              height={18}
-              pathFill={white_smoke}
-              testID='retry-upload-progress-indicator'
-              width={18}
-            /> */}
-          </>
-        )}
+        {type === ProgressIndicatorTypes.IN_PROGRESS && <InProgressIndicator />}
+        {type === ProgressIndicatorTypes.RETRY && <RetryIndicator action={action} />}
       </View>
     </View>
+  );
+};
+
+const InProgressIndicator = () => {
+  const {
+    theme: {
+      colors: { white_smoke },
+    },
+  } = useTheme();
+
+  return (
+    <View style={styles.activityIndicatorContainer}>
+      <ActivityIndicator color={white_smoke} testID='upload-progress-indicator' />
+    </View>
+  );
+};
+
+const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>) => {
+  const {
+    theme: {
+      colors: { white_smoke },
+    },
+  } = useTheme();
+
+  return (
+    <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
+      <Refresh
+        height={18}
+        pathFill={white_smoke}
+        testID='retry-upload-progress-indicator'
+        width={18}
+      />
+    </TouchableOpacity>
   );
 };
 
