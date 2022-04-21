@@ -124,13 +124,13 @@ export type ImageGalleryCustomComponents<
 type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   ImageGalleryCustomComponents<StreamChatGenerics> & {
     overlayOpacity: Animated.SharedValue<number>;
-    imageGalleryGridHandleHeight?: number;
-    /**
-     * This should be
-     */
-    imageGalleryGridSnapPoints?: [string | number, string | number];
-    numberOfImageGalleryGridColumns?: number;
-  } & Pick<OverlayProviderProps<StreamChatGenerics>, 'giphyVersion'>;
+  } & Pick<
+      OverlayProviderProps<StreamChatGenerics>,
+      | 'giphyVersion'
+      | 'imageGalleryGridSnapPoints'
+      | 'imageGalleryGridHandleHeight'
+      | 'numberOfImageGalleryGridColumns'
+    >;
 
 export const ImageGallery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -138,7 +138,7 @@ export const ImageGallery = <
   props: Props<StreamChatGenerics>,
 ) => {
   const {
-    giphyVersion,
+    giphyVersion = 'fixed_height',
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
     imageGalleryGridSnapPoints,
@@ -247,6 +247,7 @@ export const ImageGallery = <
    * Photos array created from all currently available
    * photo attachments
    */
+
   const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
