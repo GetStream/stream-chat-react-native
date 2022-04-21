@@ -853,21 +853,16 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-    } catch (error) {
-      if (!newFile) {
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      } else {
-        if (error instanceof Error) {
-          if (regExcondition.test(error.message)) {
-            setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
-          } else {
-            setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
-          }
+    } catch (error: unknown) {
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
         }
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       }
 
-      return;
+      return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
     }
 
     setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
