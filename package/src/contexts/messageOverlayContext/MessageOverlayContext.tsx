@@ -48,20 +48,20 @@ export type MessageOverlayContextValue<
   /**
    * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
-   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/MessageActions.tsx)
    */
   MessageActionList: React.ComponentType<MessageActionListProps<StreamChatGenerics>>;
   MessageActionListItem: React.ComponentType<MessageActionListItemProps<StreamChatGenerics>>;
   /**
    * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactionList.tsx)
+   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/OverlayReactionList.tsx)
    */
   OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   /**
    * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png), in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactions.tsx)
+   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/OverlayReactions.tsx)
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatGenerics>>;
   OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;

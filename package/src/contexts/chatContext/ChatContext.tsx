@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
+import type { Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
