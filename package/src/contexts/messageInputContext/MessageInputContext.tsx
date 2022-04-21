@@ -88,7 +88,6 @@ export type MentionAllAppUsersQuery<
 export type LocalMessageInputContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  
   appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
@@ -1013,7 +1012,7 @@ export const MessageInputProvider = <
               return imageUpload;
             }),
           );
-        } else if (newImage) {
+        } else {
           setImageUploads((prevImageUploads) =>
             prevImageUploads.map((imageUpload) => {
               if (imageUpload.id === id) {
@@ -1043,7 +1042,7 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = blockedFiles?.some((x:string) => file.name?.includes(x));
+    const blockedFile = blockedFiles?.some((x: string) => file.name?.includes(x));
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -1068,23 +1067,20 @@ export const MessageInputProvider = <
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
- 
+
     const newImage = {
       file: image,
       id,
       state: FileState.UPLOADING,
     };
-      const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
-      console.log({ blockedImage });
-
+    const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
+    console.log({ blockedImage });
 
     console.log({ newImage });
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
-
-
 
     if (blockedImage) {
       newImage.state = FileState.NOT_SUPPORTED;
