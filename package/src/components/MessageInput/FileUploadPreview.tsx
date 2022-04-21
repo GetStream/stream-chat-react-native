@@ -61,6 +61,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
   },
+  unsupportedContainer: {
+    flexDirection: 'row',
+    paddingLeft: 10,
+  },
+  unsupportedText: {
+    fontSize: 13,
+  },
 });
 
 type FileUploadPreviewPropsWithContext<
@@ -107,7 +114,6 @@ const FileUploadPreviewWithContext = <
         : item.state === FileState.NOT_SUPPORTED
         ? ProgressIndicatorTypes.NOT_SUPPORTED
         : undefined;
-    // TODO: check for not supproted state
 
     return (
       <>
@@ -156,14 +162,9 @@ const FileUploadPreviewWithContext = <
                   {item.file.name || ''}
                 </Text>
                 {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-                  <View style={[{ flexDirection: 'row', paddingLeft: 10 }]}>
+                  <View style={[styles.unsupportedContainer]}>
                     <Warning height={20} pathFill={accent_red} testID='' width={20} />
-                    <Text
-                      style={{
-                        color: grey,
-                        fontSize: 13,
-                      }}
-                    >
+                    <Text style={[styles.unsupportedText, { color: grey }]}>
                       {'File type not supported'}
                     </Text>
                   </View>

@@ -38,6 +38,33 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingLeft: 10,
   },
+
+  unsupportedContainer: {
+    borderRadius: 20,
+    position: 'absolute',
+    bottom: 8,
+    flexDirection: 'row',
+    marginLeft: 3,
+  },
+  unsupportedView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  warningIconStyle: {
+    borderRadius: 24,
+    right: 0,
+    top: 2,
+    left: 8,
+    bottom: 8,
+  },
+  warningText: {
+    color: 'black',
+    fontSize: 10,
+    paddingRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 type ImageUploadPreviewPropsWithContext<
@@ -108,43 +135,16 @@ const ImageUploadPreviewWithContext = <
           <Close pathFill={white} />
         </TouchableOpacity>
         {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-          <View
-            style={[
-              {
-                borderRadius: 20,
-                position: 'absolute',
-                bottom: 8,
-                flexDirection: 'row',
-                backgroundColor: overlay,
-                marginLeft: 3,
-              },
-            ]}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
+          <View style={[styles.unsupportedContainer, { backgroundColor: overlay }]}>
+            <View style={styles.unsupportedView}>
               <Warning
-                style={{ borderRadius: 24, right: 0, top: 2, left: 8, bottom: 8 }}
+                style={styles.warningIconStyle}
                 height={17}
                 pathFill={accent_red}
                 testID=''
                 width={17}
               />
-              <Text
-                style={{
-                  color: 'black',
-                  fontSize: 10,
-                  paddingRight: 8,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'   Not supported'}
-              </Text>
+              <Text style={styles.warningText}>{'   Not supported'}</Text>
             </View>
           </View>
         ) : null}

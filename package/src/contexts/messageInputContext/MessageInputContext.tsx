@@ -1042,7 +1042,7 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = blockedFiles?.some((x) => file.name?.includes(x));
+    const blockedFile = blockedFiles?.some((x:string) => file.name?.includes(x));
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -1073,7 +1073,7 @@ export const MessageInputProvider = <
       id,
       state: FileState.UPLOADING,
     };
-      const blockedImage = blockedImages?.some((x) => newImage.file.uri?.includes(x));
+      const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
       console.log({ blockedImage });
 
 
