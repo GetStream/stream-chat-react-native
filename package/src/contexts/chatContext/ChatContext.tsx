@@ -11,7 +11,8 @@ export type ChatContextValue<
   /**
    * Object of application settings returned from Stream.
    * */
-  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
+    appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
+  
   /**
    * The StreamChat client object
    *

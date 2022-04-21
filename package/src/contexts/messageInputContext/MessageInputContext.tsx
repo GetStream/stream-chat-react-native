@@ -88,7 +88,7 @@ export type MentionAllAppUsersQuery<
 export type LocalMessageInputContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
+  
   appendText: (newText: string) => void;
   asyncIds: string[];
   asyncUploads: {
@@ -220,6 +220,7 @@ export type LocalMessageInputContext<
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
   /**
    * Custom UI component for attach button.
    *
