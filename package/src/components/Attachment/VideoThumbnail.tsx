@@ -24,7 +24,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export const VideoThumbnail: React.FC<ViewProps> = (props) => {
+export type VideoThumbnailProps = ViewProps;
+
+export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
     theme: {
       messageSimple: {

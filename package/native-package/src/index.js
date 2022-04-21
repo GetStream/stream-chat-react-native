@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Image, PermissionsAndroid, Platform } from 'react-native';
 
 import DocumentPicker from 'react-native-document-picker';

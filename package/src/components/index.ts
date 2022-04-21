@@ -6,6 +6,7 @@ export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
+export * from './Attachment/VideoThumbnail';
 export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';

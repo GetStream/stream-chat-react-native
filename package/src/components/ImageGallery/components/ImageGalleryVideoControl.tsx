@@ -3,19 +3,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
 
+import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
 import { ProgressControl } from './ProgressControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Pause, Play } from '../../../icons';
-
-export type ImageGalleryProps = {
-  duration: number;
-  onPlayPause: () => void;
-  onProgressDrag: (progress: number) => void;
-  paused: boolean;
-  progress: number;
-};
 
 const styles = StyleSheet.create({
   durationTextStyle: {
@@ -42,7 +35,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageGalleryVideoControl: React.FC<ImageGalleryProps> = React.memo(
+export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlProps> = React.memo(
   (props) => {
     const { duration, onPlayPause, onProgressDrag, paused, progress } = props;
 

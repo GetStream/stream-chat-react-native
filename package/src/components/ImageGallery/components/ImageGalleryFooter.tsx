@@ -84,6 +84,22 @@ export type ImageGalleryFooterCustomComponent<
   photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
+export type ImageGalleryFooterVideoControlProps = {
+  duration: number;
+  onPlayPause: () => void;
+  onProgressDrag: (progress: number) => void;
+  paused: boolean;
+  progress: number;
+};
+
+export type ImageGalleryFooterVideoControlComponent = ({
+  duration,
+  onPlayPause,
+  onProgressDrag,
+  paused,
+  progress,
+}: ImageGalleryFooterVideoControlProps) => React.ReactElement | null;
+
 export type ImageGalleryFooterCustomComponentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -92,6 +108,7 @@ export type ImageGalleryFooterCustomComponentProps<
   leftElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   rightElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   ShareIcon?: React.ReactElement;
+  videoControlElement?: ImageGalleryFooterVideoControlComponent;
 };
 
 type ImageGalleryFooterPropsWithContext<
@@ -131,6 +148,7 @@ export const ImageGalleryFooterWithContext = <
     rightElement,
     selectedIndex,
     ShareIcon,
+    videoControlElement,
     visible,
   } = props;
 
@@ -187,7 +205,9 @@ export const ImageGalleryFooterWithContext = <
       style={styles.wrapper}
     >
       <ReanimatedSafeAreaView style={[container, footerStyle]}>
-        {photo.type === 'video' && (
+        {photo.type === 'video' && videoControlElement ? (
+          videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
+        ) : (
           <ImageGalleryVideoControl
             duration={duration}
             onPlayPause={onPlayPause}

@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRef } from 'react';
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';

@@ -5,8 +5,6 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
-import { VideoThumbnail } from './VideoThumbnail';
-
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
@@ -86,7 +84,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
+    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour' | 'VideoThumbnail'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -127,6 +125,7 @@ const GalleryWithContext = <
     setImages,
     setOverlay,
     threadList,
+    VideoThumbnail,
   } = props;
 
   const {
@@ -407,6 +406,7 @@ export const Gallery = <
     setImage: propSetImage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
+    VideoThumbnail: PropVideoThumbnail,
   } = props;
 
   const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
@@ -424,6 +424,7 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
+    VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
@@ -442,6 +443,7 @@ export const Gallery = <
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
+  const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
 
   return (
     <MemoizedGallery
@@ -462,6 +464,7 @@ export const Gallery = <
         setImages,
         setOverlay,
         threadList,
+        VideoThumbnail,
       }}
     />
   );
