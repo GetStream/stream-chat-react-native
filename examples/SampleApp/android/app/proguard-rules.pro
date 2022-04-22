@@ -1,4 +1,3 @@
-# Fixes the issue with React native reanimated release build
 -keep class com.swmansion.reanimated.** { *; }
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
