@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   },
   giphyHeaderTitle: {
     fontSize: 14,
+    marginLeft: 8,
   },
   giphyMask: {
     bottom: 8,
@@ -84,7 +85,8 @@ const styles = StyleSheet.create({
     width: '60%',
   },
   selectionContainer: {
-    borderBottomLeftRadius: 8,
+    borderRadius: 16,
+    borderBottomRightRadius: 0,
     borderWidth: 1,
     overflow: 'hidden',
     width: 272,
