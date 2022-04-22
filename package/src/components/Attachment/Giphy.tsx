@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
     width: '60%',
   },
   selectionContainer: {
-    borderRadius: 16,
     borderBottomRightRadius: 0,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
     width: 272,
