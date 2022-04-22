@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 });
 
 const screenHeight = vh(100);
-const fullScreenHeight = Dimensions.get('screen').height;
+const fullScreenHeight = Dimensions.get('window').height;
 
 type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
@@ -333,14 +333,13 @@ export const AttachmentPicker = React.forwardRef(
     const snapPoints = useMemo(
       () => [
         attachmentPickerBottomSheetHeight ??
-          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
-        fullScreenHeight - topInset - handleHeight,
+          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment),
+        fullScreenHeight - topInset,
       ],
       [
         androidBottomBarHeightAdjustment,
         attachmentPickerBottomSheetHeight,
         fullScreenHeight,
-        handleHeight,
         screenHeight,
         topInset,
       ],
