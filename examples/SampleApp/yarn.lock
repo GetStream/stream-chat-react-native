@@ -6371,10 +6371,10 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-reanimated@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.4.0.tgz#660860f3c9d36dc09e80e784306591c67060f940"
-  integrity sha512-KogpQaRxFu2jgIEWRwoHaTQ2TQbHva49rJFnXtEdMZ5LJefVMFITiEwRuyjlD4ZWpstFiaP0mWkR6uuS2APutA==
+react-native-reanimated@2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.3.3.tgz#73de8ea495e59a091d848741e7037ac55d0235c4"
+  integrity sha512-uQofwsWUoKLY4QDgSdNbRxnqQDaQEPLLBNO9SP64JfQ2fDRJD5rjb4d3S29F0z9FqTnsWEwTL2Sl0spdx9xvHA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     "@types/invariant" "^2.2.35"
