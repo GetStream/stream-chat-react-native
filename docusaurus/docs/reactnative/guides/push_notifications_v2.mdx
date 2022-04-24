@@ -32,14 +32,19 @@ Easiest way to integrate push notifications in your Chat applications is using F
 
 :::
 
-## Firebase Setup
+## Firebase Project Setup
 
-Follow the steps mentioned on Firebase documentation setup Firebase.
+Follow the steps mentioned below to setup a Firebase project for your apps:
 
 1. [Create a firebase project](https://console.firebase.google.com/).
 2. Register your [Android](https://firebase.google.com/docs/android/setup#register-app) app and [iOS](https://firebase.google.com/docs/ios/setup#register-app) app with the Firebase project.
 3. Upload your [APNs authentication key](https://firebase.google.com/docs/cloud-messaging/ios/client#upload_your_apns_authentication_key) to your Firebase project.
-4. Install React Native Firebase.
+
+## App setup
+
+Follow the steps below to setup your apps with Firebase:
+
+1. Install React Native Firebase and its messaging module
 
    ```sh
    # Install & setup the app module
@@ -49,8 +54,12 @@ Follow the steps mentioned on Firebase documentation setup Firebase.
    yarn add @react-native-firebase/messaging
    ```
 
-5. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-android-setup).
-6. [Setup your iOS app with credentials and configure Firebase](https://rnfirebase.io/#3-ios-setup).
+2. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-android-setup).
+3. [Setup your iOS app with credentials and configure Firebase](https://rnfirebase.io/#3-ios-setup).
+
+### Expo
+
+For bare workflow all of the installation steps above will suffice. For custom managed workflow please see [the expo installation docs at React Native Firebase](https://rnfirebase.io/#expo). React Native Firebase cannot be used in the "Expo Go" app, because [it is not possible to include custom native code](https://docs.expo.dev/bare/using-expo-client/). If you are using "Expo Go" app and want push notifications, you can achieve this using [Webhooks](https://getstream.io/chat/docs/react-native/webhooks_overview/?language=javascript) and a third party push provider. See [this article](https://support.getstream.io/hc/en-us/articles/1500006478421-How-can-I-use-the-Stream-Webhook-to-send-customers-emails-based-on-Chat-events-) for an example.
 
 ## Get Google Service Account Credentials
 
