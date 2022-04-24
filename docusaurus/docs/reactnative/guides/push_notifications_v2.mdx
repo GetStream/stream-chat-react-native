@@ -184,17 +184,13 @@ const styles = StyleSheet.create({
 
 ## The Push Notification Message Payload
 
-When a message is received by the Chat API, if the [requirements](#requirements) are met, it kicks a job to send a notification message to configured push providers on your app.
-According to the battery and the online status of the device, push providers deliver this payload to the actual devices.
+When a message is received by the Chat API, if the [requirements](#requirements) are met, it kicks a job to send a notification message to Firebase.
+According to the [battery and the online status](https://firebase.google.com/docs/cloud-messaging/concept-options#lifetime) of the device, Firebase will deliver this payload to the actual devices.
 
-The delivered push notification message payload has a `notification` field and a `data` field. The `notification` field is handled by the Firebase SDK to display the message and `data` property should be handled by the app if needed. An example payload is below:
+The delivered push notification message payload depends upon the [push payload template](https://getstream.io/chat/docs/react/push_template/?language=javascript) that has been set for your app at Stream. The current template set is visible in the Dashboard and can be customised. The default payload template has different fields based on iOS or Android. The `notification` field is handled by the Firebase SDK to display the message and `data` property should be handled by the app if needed. The [device state and payload contents](https://rnfirebase.io/messaging/usage#notifications) determine whether a Notification will be displayed. On iOS, both `notification` and `data` is present. On Android, only `data` is present.  An example payload for iOS is below:
 
 ```json
 {
-  "notification": {
-    "title": "Message from user",
-    "body": "Hello"
-  },
   "data": {
     "sender": "stream.chat",
     "type": "message.new",
@@ -203,16 +199,90 @@ The delivered push notification message payload has a `notification` field and a
     "channel_type": "messaging",
     "channel_id": "company-chat",
     "cid": "messaging:company-chat"
-  }
+  },
+  // the notification field is present only on iOS by default and not on Android
+  "notification": {
+    "title": "Message from user",
+    "body": "Hello"
+  },
   // other fields..
 }
 ```
 
-## Listen to user interactions on the notification
+## Receiving Notifications when on background or quit state
 
-The `notification` field is picked up by the Firebase SDK to display the notification when the app is on background or quit state. When a user interacts with the notification by pressing on it, the default behavior is to open the application.
+### iOS
 
-In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you could open a specific screen for example). The [React Native Firebase API](https://rnfirebase.io/messaging/notifications#handling-interaction) provides two APIs for handling interaction:
+Since the `notification` field is present on iOS, it is automatically picked up by the Firebase SDK and the notification is displayed to the user when the app is not on foreground.
+
+:::info
+
+If we do want to customise the notification dynamically on the iOS app, say increment the badge number on every push for example, we will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
+
+:::
+### Android
+
+To listen to notifications on the background we can use the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
+
+:::caution
+
+This handler works only on Android. For this handler to work on iOS, the payload must be made `data` only. See [pushing background updates to your app](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app) part in the Apple iOS documentation.
+
+:::
+
+ When the handler is triggered we can display the notification on Android after retreiving the message. To setup a background handler, call the `setBackgroundMessageHandler` outside of your application logic as early as possible:
+
+```jsx
+// index.js
+import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { StreamChat } from 'stream-chat';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  const client = StreamChat.getInstance('api_key');
+
+  // You can also provide tokenProvider instead of static token
+  // await client._setToken({ id: userId }, tokenProvider)
+  client._setToken(
+    {
+      id: 'user_id',
+    },
+    'user_token',
+  );
+  // handle the message
+  const message = await client.getMessage(remoteMessage.data.id);
+
+  // create the android channel to send the notification to
+  const channelId = await notifee.createChannel({
+    id: 'chat-messages',
+    name: 'Chat Messages',
+  });
+
+  // display the notification
+  await notifee.displayNotification({
+    title: 'New message from ' + message.message.user.name,
+    body: message.message.text,
+    data: remoteMessage.data,
+    android: {
+      channelId,
+      // add a press action to open the app on press
+      pressAction: {
+        id: 'default',
+      }
+    }
+  });
+});
+
+function App() {
+  // Your application
+}
+
+AppRegistry.registerComponent('app', App);
+```
+
+### Listen to user interactions for background notifications
+
+When a user interacts with the notification by pressing on it, the default behavior is to open the application. In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you could open a specific screen for example). The [React Native Firebase API](https://rnfirebase.io/messaging/notifications#handling-interaction) provides two APIs for handling interaction:
 
 - `getInitialNotification`: When the application is opened from a quit state.
 - `onNotificationOpenedApp`: When the application is running, but in the background.
@@ -270,50 +340,74 @@ function App() {
   );
 }
 ```
+## Customising the delivered payload
 
-### Listening to notifications on the background
+Please see the [JavaScript SDK documentation](https://getstream.io/chat/docs/javascript/push_template/?language=javascript) about the variables present to configure the push template and the templating language used. Some of the common use-cases for customizing the template are given below.
 
-To listen to notifications on the background we can use the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
+### Add notification field to payload for Android
 
-:::caution
+To update the payload for Android to have notification payload also, we can add relevant fields to the `notification_template` using the JavaScript SDK like below:
 
-This method works only on Android. On iOS, if a payload contains the `notification` it is expected to be handled on user interactions using the callbacks mentioned in the previous section. However, if we do want to customise the notification or set the badge number on iOS, we will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+const notification_template = `{
+    "title": "New message from {{ sender.name }}",
+    "body": "{{ truncate message.text 2000 }}"
+    "click_action": "OPEN_ACTIVITY_1",
+    "sound": "default"
+}`;
 
-:::
-
-To setup a background handler, call the `setBackgroundMessageHandler` outside of your application logic as early as possible:
-
-```jsx
-// index.js
-import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
-import { StreamChat } from 'stream-chat';
-
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const client = StreamChat.getInstance('api_key');
-
-  // You can also provide tokenProvider instead of static token
-  // await client._setToken({ id: userId }, tokenProvider)
-  client._setToken(
-    {
-      id: 'user_id',
-    },
-    'user_token',
-  );
-  // handle the message
-  const message = await client.getMessage(remoteMessage.data.id);
-});
-
-function App() {
-  // Your application
-}
-
-AppRegistry.registerComponent('app', App);
+client.updateAppSettings({
+  firebase_config: {
+    notification_template,
+ });
 ```
 
-## Display Notification In Foreground
+The above configuration allows to align Android with iOS, by receiving the same notification payload, which makes it so that there is no need to display notifications using notifee. The `click_action` key is essential to make your app open on press. Also note that the action must be added to the launcher activity in your app's `AndroidManifest.xml`. See the example below where we add `OPEN_ACTIVITY_1` action to the launcher activity:
 
-As mentioned before, the Firebase SDK automatically displays the message to the user using the `notification` property when the app is not on foreground. But if we do want to display the notification in the foreground, we can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (e.g. updating the state or UI).
+```xml
+<activity
+  android:name=".MainActivity"
+  android:label="@string/app_name"
+  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+  android:launchMode="singleTask"
+  android:windowSoftInputMode="adjustResize"
+  android:exported="true">
+  <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+  </intent-filter>
+  <intent-filter>
+      <action android:name="OPEN_ACTIVITY_1" />
+      <category android:name="android.intent.category.DEFAULT" />
+  </intent-filter>
+</activity>
+```
+
+### Make iOS payload to be data only
+
+If iOS payload is also made data only, then the `setBackgroundMessageHandler` can be used to display notifications using notifee. This can be done using the JavaScript SDK like below:
+
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+const apn_template = `{
+  "aps": {
+      "content-available": 1
+  }
+}`;
+
+client.updateAppSettings({
+  firebase_config: {
+    apn_template,
+ });
+ ```
+
+ The `content-available` key is essential to inform iOS that it is a [silent background update](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification). Please note that iOS will consider background notifications as a [low priority](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app). Thus, the delivery of these notifications may be throttled.
+ ## Display Notification In Foreground
+
+As mentioned before, the Firebase SDK automatically displays the message to the user on iOS using the `notification` property when the app is not on foreground. And on Android, we can use [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method to display notifications on the background.
+
+However, if we do want to display the notification in the foreground, we can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (e.g. updating the state or UI).
 
 :::note
 
@@ -338,17 +432,15 @@ useEffect(() => {
 
     // display the notification
     await notifee.displayNotification({
-      title: message.message.text,
+      title: 'New message from ' + message.message.user.name,
       body: message.message.text,
+      data: remoteMessage.data,
       android: {
-        channelId: 'chat-messages',
+        channelId,
         pressAction: {
           id: 'default',
-        },
-        body: message.message.text,
-        data: remoteMessage.data,
-        title: 'New message from ' + message.message.user.name,
-      },
+        }
+      }
     });
   });
 
