@@ -549,7 +549,7 @@ PODS:
     - React-Core
   - RNSVG (12.1.1):
     - React
-  - TOCropViewController (2.6.0)
+  - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -842,7 +842,7 @@ SPEC CHECKSUMS:
   RNScreens: c277bfc4b5bb7c2fe977d19635df6f974f95dfd6
   RNShare: 755de6bac084428f8fd8fb54c376f126f40e560c
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
-  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 90dcd029e45d8a7c1ff059e8b3c6612ff409061a
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
