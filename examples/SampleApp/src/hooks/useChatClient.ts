@@ -17,6 +17,48 @@ const requestNotificationPermission = async () => {
   console.log('Permission Status', { authStatus, isEnabled });
 };
 
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+  const messageId = remoteMessage.data?.id;
+  if (!messageId) return;
+  const config = await AsyncStore.getItem<LoginConfig | null>(
+    '@stream-rn-sampleapp-login-config',
+    null,
+  );
+  if (!config) return;
+
+  const client = StreamChat.getInstance(config.apiKey);
+
+  const user = {
+    id: config.userId,
+    image: config.userImage,
+    name: config.userName,
+  };
+
+  // eslint-disable-next-line no-underscore-dangle
+  await client._setToken(user, config.userToken);
+  const message = await client.getMessage(messageId);
+
+  // create the android channel to send the notification to
+  const channelId = await notifee.createChannel({
+    id: 'chat-messages',
+    name: 'Chat Messages',
+  });
+
+  if (message.message.user?.name && message.message.text) {
+    await notifee.displayNotification({
+      android: {
+        channelId,
+        pressAction: {
+          id: 'default',
+        },
+      },
+      body: message.message.text,
+      data: remoteMessage.data,
+      title: 'New message from ' + message.message.user.name,
+    });
+  }
+});
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -72,6 +114,9 @@ export const useChatClient = () => {
           await notifee.displayNotification({
             android: {
               channelId,
+              pressAction: {
+                id: 'default',
+              },
             },
             body: message.message.text,
             data: remoteMessage.data,
