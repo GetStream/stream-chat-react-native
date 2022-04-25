@@ -1,12 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { LogBox, Platform, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-  NavigationContainerRef,
-} from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chat, OverlayProvider, ThemeProvider, useOverlayContext } from 'stream-chat-react-native';
@@ -42,6 +37,7 @@ import type {
   UserSelectorParamList,
 } from './src/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 
 LogBox.ignoreAllLogs(true);
 LogBox.ignoreLogs([
@@ -53,21 +49,31 @@ console.assert = () => null;
 // when a channel id is set here, the intial route is the channel screen
 const initialChannelIdGlobalRef = { current: '' };
 
+notifee.onBackgroundEvent(async ({ detail, type }) => {
+  // user press on notification detected while app was on background on Android
+  if (type === EventType.ACTION_PRESS) {
+    const channelId = detail.notification?.data?.channel_id;
+    if (channelId) {
+      navigateToChannel(channelId);
+    }
+    await Promise.resolve();
+  }
+});
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const { chatClient, isConnecting, loginUser, logout, switchUser } = useChatClient();
-  const navigationContainerRef = useRef<NavigationContainerRef>(null);
   const colorScheme = useColorScheme();
   const streamChatTheme = useStreamChatTheme();
 
   useEffect(() => {
     const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
-      // Notification caused app to open from background state
+      // Notification caused app to open from background state on iOS
       const channelId = remoteMessage.data?.channel_id;
       if (channelId) {
-        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+        navigateToChannel(channelId);
       }
     });
     // handle notification clicks on foreground
@@ -76,7 +82,16 @@ const App = () => {
         // user has pressed the foreground notification
         const channelId = detail.notification?.data?.channel_id;
         if (channelId) {
-          navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+          navigateToChannel(channelId);
+        }
+      }
+    });
+    notifee.getInitialNotification().then((initialNotification) => {
+      if (initialNotification) {
+        // Notification caused app to open from quit state on Android
+        const channelId = initialNotification.notification.data?.channel_id;
+        if (channelId) {
+          initialChannelIdGlobalRef.current = channelId;
         }
       }
     });
@@ -84,9 +99,10 @@ const App = () => {
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
-          // Notification caused app to open from quit state
+          // Notification caused app to open from quit state on iOS
           const channelId = remoteMessage.data?.channel_id;
           if (channelId) {
+            // this will make the app to start with the channel screen with this channel id
             initialChannelIdGlobalRef.current = channelId;
           }
         }
@@ -104,7 +120,7 @@ const App = () => {
       }}
     >
       <NavigationContainer
-        ref={navigationContainerRef}
+        ref={RootNavigationRef}
         theme={{
           colors: {
             ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
