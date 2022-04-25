@@ -40,10 +40,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { navigateToChannel, RootNavigationRef } from './src/utils/RootNavigation';
 
 LogBox.ignoreAllLogs(true);
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-  "Seems like you're using an old API with gesture components, check out new Gestures system!",
-]);
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 console.assert = () => null;
 
 // when a channel id is set here, the intial route is the channel screen
