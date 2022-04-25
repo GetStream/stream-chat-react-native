@@ -872,6 +872,8 @@ const ChannelWithContext = <
         await channel?.watch();
         setHasNoMoreRecentMessagesToLoad(true);
         channel?.state.setIsUpToDate(true);
+      } else {
+        await channel.state.loadMessageIntoState('latest');
       }
       return;
     });
