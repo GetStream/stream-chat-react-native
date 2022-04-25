@@ -354,10 +354,7 @@ export const AttachmentPicker = React.forwardRef(
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
-    const snapPoints = useMemo(
-      () => [initialSnapPoint, finalSnapPoint],
-      [initialSnapPoint, finalSnapPoint],
-    );
+    const snapPoints = [initialSnapPoint, finalSnapPoint];
 
     return (
       <>
