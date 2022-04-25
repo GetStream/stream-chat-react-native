@@ -51,7 +51,7 @@ const initialChannelIdGlobalRef = { current: '' };
 
 notifee.onBackgroundEvent(async ({ detail, type }) => {
   // user press on notification detected while app was on background on Android
-  if (type === EventType.ACTION_PRESS) {
+  if (type === EventType.PRESS) {
     const channelId = detail.notification?.data?.channel_id;
     if (channelId) {
       navigateToChannel(channelId);

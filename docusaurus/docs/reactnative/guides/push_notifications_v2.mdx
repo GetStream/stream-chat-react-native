@@ -308,8 +308,8 @@ const Stack = createStackNavigator();
 const navigationContainerRef = React.createRef<NavigationContainerRef>();
 
 notifee.onBackgroundEvent(async ({ detail, type }) => {
-  // user press on notification detected while app was on background on Android
-  if (type === EventType.ACTION_PRESS) {
+  if (type === EventType.PRESS) {
+    // user press on notification detected while app was on background on Android
     const channelId = detail.notification?.data?.channel_id;
     if (channelId) {
        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
@@ -331,12 +331,13 @@ function App() {
     });
 
     // Notification caused app to open from quit state on Android
-    notifee.getInitialNotification().then(remoteMessage => {
-        if (remoteMessage) {
-          const channelId = remoteMessage.data?.channel_id;
-          // Start the app with the relevant channel screen.
-          setInitialChannelId(channelId)
-        }
+    notifee.getInitialNotification().then(initialNotification => {
+      if (initialNotification) {
+        // Notification caused app to open from quit state on Android
+        const channelId = initialNotification.notification.data?.channel_id;
+        // Start the app with the relevant channel screen.
+        setInitialChannelId(channelId)
+      }
     });
 
     // Notification caused app to open from quit state on iOS
@@ -413,6 +414,21 @@ The above configuration allows to align Android with iOS, by receiving the same 
       <category android:name="android.intent.category.DEFAULT" />
   </intent-filter>
 </activity>
+```
+
+Also you must use `ACTION_PRESS` event from Notifee to handle the user press on background in Android like below:
+
+```js
+notifee.onBackgroundEvent(async ({ detail, type }) => {
+  if (type === EventType.ACTION_PRESS) {
+    // user press on notification detected while app was on background on Android
+    const channelId = detail.notification?.data?.channel_id;
+    if (channelId) {
+       navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+    }
+    await Promise.resolve();
+  }
+});
 ```
 
 ### Make iOS Payload To Be Data Only
