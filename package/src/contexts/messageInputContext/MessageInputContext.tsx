@@ -975,10 +975,7 @@ export const MessageInputProvider = <
       id,
       state: FileState.UPLOADING,
     };
-
-    console.log({ blockedFile });
-    console.log({ newFile });
-
+    
     await Promise.all([
       setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
