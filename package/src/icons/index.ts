@@ -74,8 +74,9 @@ export * from './User';
 export * from './UserAdd';
 export * from './UserDelete';
 export * from './UserMinus';
+export * from './Warning';
 export * from './WutReaction';
 export * from './XLS';
 export * from './XLSX';
 export * from './ZIP';
-export * from './Warning';
+

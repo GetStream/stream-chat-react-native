@@ -16,10 +16,14 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+import {  getIndicatorTypeForFileState, ProgressIndicatorTypes, UploadState } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+
+
 
 const FILE_PREVIEW_HEIGHT = 60;
+const WARNING_ICON_SIZE = 20;
 
 const styles = StyleSheet.create({
   dismiss: {
@@ -59,11 +63,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
   },
-  unsupportedContainer: {
+  unsupportedFile: {
     flexDirection: 'row',
     paddingLeft: 10,
   },
-  unsupportedText: {
+  unsupportedFileText: {
     fontSize: 13,
   },
 });
@@ -85,6 +89,7 @@ const FileUploadPreviewWithContext = <
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
+  const { t } = useTranslationContext();
 
   const {
     theme: {
@@ -103,15 +108,35 @@ const FileUploadPreviewWithContext = <
     },
   } = useTheme();
 
+
+    const renderUnsupportedItem = ({
+      indicatorType,
+      item,
+    }: {
+      indicatorType: 'not_supported' | 'retry' | 'inactive' | null;
+      item: FileUpload;
+    }) => {
+      indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+        <View style={[styles.unsupportedFile]}>
+          <Warning
+            height={WARNING_ICON_SIZE}
+            pathFill={accent_red}
+            testID=''
+            width={WARNING_ICON_SIZE}
+          />
+          <Text style={[styles.unsupportedFileText, { color: grey }]}>
+            {t('File type not supported')}
+          </Text>
+        </View>
+      ) : (
+        <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
+          {getFileSizeDisplayText(item.file.size)}
+        </Text>
+      );
+    };
+
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType =
-      item.state === FileState.UPLOADING
-        ? ProgressIndicatorTypes.IN_PROGRESS
-        : item.state === FileState.UPLOAD_FAILED
-        ? ProgressIndicatorTypes.RETRY
-        : item.state === FileState.NOT_SUPPORTED
-        ? ProgressIndicatorTypes.NOT_SUPPORTED
-        : undefined;
+   const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);
 
     return (
       <>
@@ -119,7 +144,6 @@ const FileUploadPreviewWithContext = <
           action={() => {
             uploadFile({ newFile: item });
           }}
-          active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
           style={styles.overlay}
           type={indicatorType}
         >
@@ -159,18 +183,7 @@ const FileUploadPreviewWithContext = <
                 >
                   {item.file.name || ''}
                 </Text>
-                {indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-                  <View style={[styles.unsupportedContainer]}>
-                    <Warning height={20} pathFill={accent_red} testID='' width={20} />
-                    <Text style={[styles.unsupportedText, { color: grey }]}>
-                      {'File type not supported'}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-                    {getFileSizeDisplayText(item.file.size)}
-                  </Text>
-                )}
+                {renderUnsupportedItem({indicatorType,item})}
               </View>
             </View>
           </View>

@@ -37,7 +37,6 @@ export const FileState = Object.freeze({
   UPLOADED: 'uploaded',
   UPLOADING: 'uploading',
   NOT_SUPPORTED: 'not_supported',
-  // TODO: file not supported state here
 });
 
 export const ProgressIndicatorTypes: {
@@ -56,6 +55,24 @@ export const MessageStatusTypes = {
   FAILED: 'failed',
   RECEIVED: 'received',
   SENDING: 'sending',
+};
+
+export type UploadState = 'upload_failed' | 'not_supported' | 'uploaded' | 'finished';
+
+export const getIndicatorTypeForFileState = (fileState: UploadState) => {
+  const indicatorMap = {
+    [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
+    [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,
+    [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
+    [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
+    [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
+  };
+
+  if (Object.keys(indicatorMap).includes(fileState)) {
+    return indicatorMap[fileState];
+  }
+
+  return null;
 };
 
 const defaultAutoCompleteSuggestionsLimit = 10;
