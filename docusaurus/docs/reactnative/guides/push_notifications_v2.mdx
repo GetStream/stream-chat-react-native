@@ -330,7 +330,6 @@ function App() {
       }
     });
 
-    // Notification caused app to open from quit state on Android
     notifee.getInitialNotification().then(initialNotification => {
       if (initialNotification) {
         // Notification caused app to open from quit state on Android
@@ -340,11 +339,11 @@ function App() {
       }
     });
 
-    // Notification caused app to open from quit state on iOS
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
+          // Notification caused app to open from quit state on iOS
           const channelId = remoteMessage.data?.channel_id;
           // Start the app with the relevant channel screen.
           setInitialChannelId(channelId)
@@ -424,7 +423,7 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
     // user press on notification detected while app was on background on Android
     const channelId = detail.notification?.data?.channel_id;
     if (channelId) {
-       navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+      navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
     }
     await Promise.resolve();
   }
