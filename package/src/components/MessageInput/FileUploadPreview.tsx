@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
+    bottom: 8,
+    left: 4,
     right: 0,
     top: 2,
-    left: 4,
-    bottom: 8,
   },
 });
 
@@ -148,7 +148,7 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state  );
+    const indicatorType = getIndicatorTypeForFileState(item.state);
 
     return (
       <>
@@ -285,7 +285,7 @@ export const FileUploadPreview = <
 
   return (
     <MemoizedFileUploadPreview
-      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile, appSettings }}
+      {...{ appSettings, FileAttachmentIcon, fileUploads, removeFile, uploadFile }}
       {...props}
     />
   );

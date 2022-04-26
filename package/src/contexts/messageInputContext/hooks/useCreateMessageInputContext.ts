@@ -111,6 +111,7 @@ export const useCreateMessageInputContext = <
     () => ({
       additionalTextInputProps,
       appendText,
+      appSettings,
       asyncIds,
       asyncUploads,
       AttachButton,
@@ -194,7 +195,6 @@ export const useCreateMessageInputContext = <
       uploadNewFile,
       uploadNewImage,
       UploadProgressIndicator,
-      appSettings,
     }),
     [
       cooldownEndsAt,

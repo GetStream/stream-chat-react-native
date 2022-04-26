@@ -29,47 +29,46 @@ const styles = StyleSheet.create({
     right: 8,
     top: 8,
   },
+  fileSizeText: {
+    fontSize: 12,
+    paddingLeft: 10,
+  },
   flatList: { paddingBottom: 12 },
   itemContainer: {
     flexDirection: 'row',
     height: IMAGE_PREVIEW_SIZE,
     marginLeft: 8,
   },
+  unsupportedImage: {
+    borderRadius: 20,
+    bottom: 8,
+    flexDirection: 'row',
+    marginLeft: 3,
+    position: 'absolute',
+  },
+  unsupportedView: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   upload: {
     borderRadius: 10,
     height: IMAGE_PREVIEW_SIZE,
     width: IMAGE_PREVIEW_SIZE,
   },
-  fileSizeText: {
-    fontSize: 12,
-    paddingLeft: 10,
-  },
-
-  unsupportedImage: {
-    borderRadius: 20,
-    position: 'absolute',
-    bottom: 8,
-    flexDirection: 'row',
-    marginLeft: 3,
-  },
-  unsupportedView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   warningIconStyle: {
     borderRadius: 24,
+    bottom: 8,
+    left: 4,
     right: 0,
     top: 2,
-    left: 4,
-    bottom: 8,
   },
   warningText: {
+    alignItems: 'center',
     color: 'black',
     fontSize: 10,
-    paddingRight: 8,
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingRight: 8,
   },
 });
 

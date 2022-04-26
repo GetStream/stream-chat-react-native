@@ -62,7 +62,7 @@ export type FileUpload = {
     uri?: string;
   };
   id: string;
-  state:  string;
+  state: string;
   url?: string;
 };
 
@@ -71,7 +71,7 @@ export type ImageUpload = {
     name?: string;
   };
   id: string;
-  state:  string;
+  state: string;
   height?: number;
   url?: string;
   width?: number;
@@ -940,9 +940,9 @@ export const MessageInputProvider = <
       if (Object.keys(response).length) {
         setImageUploads(
           setFileUploadState(id, FileState.UPLOADED, {
+            height: file.height,
             url: response.file,
             width: file.width,
-            height: file.height,
           }),
         );
       }
@@ -998,7 +998,7 @@ export const MessageInputProvider = <
       file: image,
       id,
       state: FileState.UPLOADING,
-    } ;
+    };
     const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
 
     console.log({ blockedImage });
@@ -1066,8 +1066,8 @@ export const MessageInputProvider = <
     uploadNewFile,
     uploadNewImage,
     ...value,
-    sendMessage, // overriding the originally passed in sendMessage
     appSettings,
+    sendMessage, // overriding the originally passed in sendMessage
   });
 
   return (
