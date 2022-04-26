@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, TranslationLanguages } from 'stream-chat';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
@@ -18,6 +18,7 @@ export const useChatClient = () => {
     const user = {
       id: config.userId,
       image: config.userImage,
+      language: 'es' as TranslationLanguages,
       name: config.userName,
     };
 

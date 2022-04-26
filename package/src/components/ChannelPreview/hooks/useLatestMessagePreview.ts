@@ -10,6 +10,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { useTranslatedMessage } from '../../Message/MessageSimple/MessageTextContainer';
 
 type LatestMessage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -181,7 +182,10 @@ const getLatestMessagePreview = <
       status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
     };
   }
+  // const message = lastMessage <==== works
+  // const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined; <==== culprit
   const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
+  console.log('message ', message.text);
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
@@ -241,6 +245,9 @@ export const useLatestMessagePreview = <
     readEvents,
   );
 
+  const text = useTranslatedMessage(lastMessage);
+  const translatedLastMessage = { ...message, text };
+
   useEffect(() => {
     if (channelConfigExists) {
       const read_events = channel.getConfig()?.read_events;
@@ -256,7 +263,7 @@ export const useLatestMessagePreview = <
         getLatestMessagePreview({
           channel,
           client,
-          lastMessage,
+          lastMessage: translatedLastMessage,
           readEvents,
           t,
           tDateTimeParser,

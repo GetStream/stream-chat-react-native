@@ -72,7 +72,8 @@ export type RenderTextParams<
   Pick<MessageContextValue<StreamChatGenerics>, 'onLongPress' | 'onPress' | 'preventPress'>
 > & {
   colors: typeof Colors;
-  message: MessageType<StreamChatGenerics>;
+  mentionedUsers?: Pick<MessageType, 'mentioned_users'>;
+  text: string;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   messageOverlay?: boolean;
@@ -90,7 +91,7 @@ export const renderText = <
     colors,
     markdownRules,
     markdownStyles,
-    message,
+    mentionedUsers,
     messageOverlay,
     messageTextNumberOfLines,
     onLink: onLinkParams,
@@ -98,11 +99,8 @@ export const renderText = <
     onlyEmojis,
     onPress: onPressParam,
     preventPress,
+    text,
   } = params;
-
-  // take the @ mentions and turn them into markdown?
-  // translate links
-  const { mentioned_users, text } = message;
 
   if (!text) return null;
 
@@ -191,8 +189,8 @@ export const renderText = <
     </Text>
   );
 
-  const mentionedUsers = Array.isArray(mentioned_users)
-    ? mentioned_users.reduce((acc, cur) => {
+  const mentionedUserNames = Array.isArray(mentionedUsers)
+    ? mentionedUsers.reduce((acc, cur) => {
         const userName = cur.name || cur.id || '';
         if (userName) {
           acc += `${acc.length ? '|' : ''}@${userName}`;
@@ -201,7 +199,7 @@ export const renderText = <
       }, '')
     : '';
 
-  const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
+  const regEx = new RegExp(`^\\B(${mentionedUserNames})`, 'g');
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
@@ -248,7 +246,7 @@ export const renderText = <
     // we have no react rendering support for reflinks
     reflink: { match: () => null },
     sublist: { react: list },
-    ...(mentionedUsers
+    ...(mentionedUserNames
       ? {
           mentions: {
             match,
@@ -262,7 +260,7 @@ export const renderText = <
 
   return (
     <Markdown
-      key={`${JSON.stringify(mentioned_users)}-${onlyEmojis}-${
+      key={`${JSON.stringify(mentionedUsers)}-${onlyEmojis}-${
         messageOverlay ? JSON.stringify(markdownStyles) : undefined
       }-${JSON.stringify(colors)}`}
       onLink={onLink}

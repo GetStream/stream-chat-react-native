@@ -1,5 +1,5 @@
 import type { Immutable } from 'seamless-immutable';
-import type { Channel, UserResponse } from 'stream-chat';
+import type { Channel, TranslationLanguages, UserResponse } from 'stream-chat';
 import type { ThreadContextValue } from 'stream-chat-react-native';
 import type { Theme } from '@react-navigation/native';
 
@@ -14,6 +14,7 @@ export type LocalMessageType = Record<string, unknown>;
 export type LocalReactionType = Record<string, unknown>;
 export type LocalUserType = {
   image?: string;
+  language?: TranslationLanguages;
 };
 
 export type StreamChatGenerics = {

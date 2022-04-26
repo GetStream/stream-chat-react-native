@@ -5,6 +5,7 @@ import Dayjs from 'dayjs';
 
 import type { Channel } from 'stream-chat';
 
+import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
@@ -131,6 +132,7 @@ const ChatWithContext = <
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
+    userLanguage: 'en',
   });
 
   /**
@@ -161,7 +163,10 @@ const ChatWithContext = <
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
+  const appSettings = useAppSettings(client, isOnline);
+
   const chatContext = useCreateChatContext({
+    appSettings,
     channel,
     client,
     connectionRecovering,
@@ -174,7 +179,7 @@ const ChatWithContext = <
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
-      <TranslationProvider value={translators}>
+      <TranslationProvider value={{ ...translators, userLanguage: client.user?.language || 'en' }}>
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
