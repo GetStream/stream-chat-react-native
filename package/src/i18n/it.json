@@ -61,5 +61,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Risposte",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Risposte alle Conversazione",
   "{{ user }} is typing": "{{ user }} sta scrivendo",
-  "🏙 Attachment...": "🏙 Allegato..."
+  "🏙 Attachment...": "🏙 Allegato...",
+  "Not supported": ""
 }

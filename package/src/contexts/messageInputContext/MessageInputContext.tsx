@@ -62,7 +62,7 @@ export type FileUpload = {
     uri?: string;
   };
   id: string;
-  state: FileState;
+  state:  string;
   url?: string;
 };
 
@@ -71,7 +71,7 @@ export type ImageUpload = {
     name?: string;
   };
   id: string;
-  state: FileState;
+  state:  string;
   height?: number;
   url?: string;
   width?: number;
@@ -947,9 +947,11 @@ export const MessageInputProvider = <
         );
       }
     } catch (error) {
+      console.log({ error });
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
       if (error instanceof Error) {
+        console.log(regExcondition.test(error.message));
         if (regExcondition.test(error.message)) {
           return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
         }
@@ -996,7 +998,7 @@ export const MessageInputProvider = <
       file: image,
       id,
       state: FileState.UPLOADING,
-    };
+    } ;
     const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
 
     console.log({ blockedImage });

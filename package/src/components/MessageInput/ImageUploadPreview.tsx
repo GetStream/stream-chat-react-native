@@ -20,7 +20,7 @@ import {
 } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
-const WARNING_ICON_SIZE = 14;
+const WARNING_ICON_SIZE = 16;
 
 const styles = StyleSheet.create({
   dismiss: {
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     right: 0,
     top: 2,
-    left: 8,
+    left: 4,
     bottom: 8,
   },
   warningText: {
@@ -92,23 +92,29 @@ const ImageUploadPreviewWithContext = <
   props: ImageUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const { imageUploads, removeImage, uploadImage } = props;
-  const { t } = useTranslationContext();
 
   const {
     theme: {
-      colors: { accent_red, overlay, white },
+      colors: { overlay, white },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
   } = useTheme();
 
-  const renderUnsupportedItem = ({
+  const UnsupportedImageTypeIndicator = ({
     indicatorType,
   }: {
     indicatorType: 'not_supported' | 'retry' | 'inactive' | null;
   }) => {
-    indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+    const {
+      theme: {
+        colors: { accent_red, overlay, white },
+      },
+    } = useTheme();
+
+    const { t } = useTranslationContext();
+    return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
       <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
         <View style={[styles.unsupportedView]}>
           <Warning
@@ -150,7 +156,7 @@ const ImageUploadPreviewWithContext = <
         >
           <Close pathFill={white} />
         </TouchableOpacity>
-        {renderUnsupportedItem({ indicatorType })}
+        <UnsupportedImageTypeIndicator indicatorType={indicatorType} />
       </View>
     );
   };

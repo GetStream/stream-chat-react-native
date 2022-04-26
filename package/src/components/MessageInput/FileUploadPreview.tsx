@@ -17,15 +17,11 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import {
-  getIndicatorTypeForFileState,
-  ProgressIndicatorTypes,
-  UploadState,
-} from '../../utils/utils';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 
 const FILE_PREVIEW_HEIGHT = 60;
-const WARNING_ICON_SIZE = 20;
+const WARNING_ICON_SIZE = 16;
 
 const styles = StyleSheet.create({
   dismiss: {
@@ -72,6 +68,13 @@ const styles = StyleSheet.create({
   unsupportedFileText: {
     fontSize: 13,
   },
+  warningIconStyle: {
+    borderRadius: 24,
+    right: 0,
+    top: 2,
+    left: 4,
+    bottom: 8,
+  },
 });
 
 const UnsupportedFileTypeIndicator = ({
@@ -93,7 +96,12 @@ const UnsupportedFileTypeIndicator = ({
   const { t } = useTranslationContext();
   return (indicatorType as unknown as string) === ProgressIndicatorTypes.NOT_SUPPORTED ? (
     <View style={[styles.unsupportedFile]}>
-      <Warning height={WARNING_ICON_SIZE} pathFill={accent_red} width={WARNING_ICON_SIZE} />
+      <Warning
+        height={WARNING_ICON_SIZE}
+        pathFill={accent_red}
+        style={styles.warningIconStyle}
+        width={WARNING_ICON_SIZE}
+      />
       <Text style={[styles.unsupportedFileText, { color: grey }]}>
         {t('File type not supported')}
       </Text>
@@ -140,7 +148,7 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state);
+    const indicatorType = getIndicatorTypeForFileState(item.state  );
 
     return (
       <>

@@ -61,5 +61,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Ответов",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Ответы в темах",
   "{{ user }} is typing": "{{ user }} пишет",
-  "🏙 Attachment...": "🏙 Вложение..."
+  "🏙 Attachment...": "🏙 Вложение...",
+  "Not supported": ""
 }

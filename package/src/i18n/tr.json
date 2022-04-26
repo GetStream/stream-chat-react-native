@@ -61,5 +61,6 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Cevaplar",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapları",
   "{{ user }} is typing": "{{ user }} yazıyor",
-  "🏙 Attachment...": "🏙 Ek..."
+  "🏙 Attachment...": "🏙 Ek...",
+  "Not supported": ""
 }
