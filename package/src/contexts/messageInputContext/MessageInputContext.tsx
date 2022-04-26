@@ -6,6 +6,7 @@ import type { TextInput, TextInputProps } from 'react-native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
+  AppSettingsAPIResponse,
   Attachment,
   logChatPromiseExecution,
   SendFileAPIResponse,
@@ -15,7 +16,6 @@ import {
   UserOptions,
   UserResponse,
   UserSort,
-  AppSettingsAPIResponse,
 } from 'stream-chat';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
@@ -416,7 +416,7 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { client, appSettings } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client } = useChatContext<StreamChatGenerics>();
   const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions ?? [];
   const blockedImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
   const channelCapabities = useOwnCapabilitiesContext();

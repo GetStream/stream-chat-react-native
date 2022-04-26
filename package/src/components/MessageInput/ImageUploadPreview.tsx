@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -9,11 +9,15 @@ import {
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Close } from '../../icons/Close';
-import type { DefaultStreamChatGenerics } from '../../types/types';
-import {  getIndicatorTypeForFileState, ProgressIndicatorTypes, UploadState } from '../../utils/utils';
-import { Warning } from '../../icons/Warning';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { Close } from '../../icons/Close';
+import { Warning } from '../../icons/Warning';
+import type { DefaultStreamChatGenerics } from '../../types/types';
+import {
+  getIndicatorTypeForFileState,
+  ProgressIndicatorTypes,
+  UploadState,
+} from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
 const WARNING_ICON_SIZE = 14;
@@ -92,33 +96,32 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay, white, accent_red },
+      colors: { accent_red, overlay, white },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
   } = useTheme();
 
-    const renderUnsupportedItem = ({
-      indicatorType,
-    }: {
-      indicatorType: 'not_supported' | 'retry' | 'inactive' | null;
-    }) => {
-      indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-        <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
-          <View style={[styles.unsupportedView]}>
-            <Warning
-              style={styles.warningIconStyle}
-              height={WARNING_ICON_SIZE}
-              pathFill={accent_red}
-              width={WARNING_ICON_SIZE}
-            />
-            <Text style={[styles.warningText, { color: white }]}>{t('Not supported')}</Text>
-          </View>
+  const renderUnsupportedItem = ({
+    indicatorType,
+  }: {
+    indicatorType: 'not_supported' | 'retry' | 'inactive' | null;
+  }) => {
+    indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+      <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
+        <View style={[styles.unsupportedView]}>
+          <Warning
+            height={WARNING_ICON_SIZE}
+            pathFill={accent_red}
+            style={styles.warningIconStyle}
+            width={WARNING_ICON_SIZE}
+          />
+          <Text style={[styles.warningText, { color: white }]}>{t('Not supported')}</Text>
         </View>
-      ) : null;
-    };
-
+      </View>
+    ) : null;
+  };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
     const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);

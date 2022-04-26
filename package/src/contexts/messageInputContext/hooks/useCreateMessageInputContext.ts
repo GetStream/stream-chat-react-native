@@ -9,6 +9,7 @@ export const useCreateMessageInputContext = <
 >({
   additionalTextInputProps,
   appendText,
+  appSettings,
   asyncIds,
   asyncUploads,
   AttachButton,
@@ -93,7 +94,6 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
-  appSettings,
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
   const editingExists = !!editing;

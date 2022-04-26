@@ -78,12 +78,12 @@ const UnsupportedFileTypeIndicator = ({
   indicatorType,
   item,
 }: {
-  indicatorType: 'not_supported' | 'retry' | 'inactive' | null;
+  indicatorType: Pick<FileUpload, 'state'>;
   item: FileUpload;
 }) => {
   const {
     theme: {
-      colors: { grey, accent_red },
+      colors: { accent_red, grey },
       messageInput: {
         fileUploadPreview: { fileSizeText },
       },
@@ -91,7 +91,7 @@ const UnsupportedFileTypeIndicator = ({
   } = useTheme();
 
   const { t } = useTranslationContext();
-  indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+  return (indicatorType as unknown as string) === ProgressIndicatorTypes.NOT_SUPPORTED ? (
     <View style={[styles.unsupportedFile]}>
       <Warning height={WARNING_ICON_SIZE} pathFill={accent_red} width={WARNING_ICON_SIZE} />
       <Text style={[styles.unsupportedFileText, { color: grey }]}>
@@ -125,14 +125,13 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper, overlay, accent_red },
+      colors: { black, grey_whisper, overlay },
       messageInput: {
         fileUploadPreview: {
           dismiss,
           fileContainer,
           fileContentContainer,
           filenameText,
-          fileSizeText,
           fileTextContainer,
           flatList,
         },
@@ -141,7 +140,7 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);
+    const indicatorType = getIndicatorTypeForFileState(item.state);
 
     return (
       <>
@@ -188,7 +187,9 @@ const FileUploadPreviewWithContext = <
                 >
                   {item.file.name || ''}
                 </Text>
-                {UnsupportedFileTypeIndicator({ indicatorType, item })}
+                {indicatorType !== null && (
+                  <UnsupportedFileTypeIndicator indicatorType={indicatorType} item={item} />
+                )}
               </View>
             </View>
           </View>
@@ -269,7 +270,7 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile, appSettings } =
+  const { appSettings, fileUploads, removeFile, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
