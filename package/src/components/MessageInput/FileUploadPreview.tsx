@@ -207,6 +207,7 @@ const FileUploadPreviewWithContext = <
             removeFile(item.id);
           }}
           style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+          testID='remove-file-upload-preview'
         >
           <Close />
         </TouchableOpacity>
