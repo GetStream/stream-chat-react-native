@@ -970,6 +970,7 @@ const MessageListWithContext = <
           autoscrollToTopThreshold: autoscrollToTop ? 10 : undefined,
           minIndexForVisible: 1,
         }}
+        maxToRenderPerBatch={30}
         onScroll={handleScroll}
         onScrollBeginDrag={onScrollBeginDrag}
         onScrollEndDrag={onScrollEndDrag}
