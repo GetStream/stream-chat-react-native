@@ -780,10 +780,13 @@ const MessageListWithContext = <
       // with a little delay to wait for scroll to offset to complete, we can then scroll to the index
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({
-          animated: true,
+          animated: false,
           index: info.index,
           viewPosition: 0.5, // try to place message in the center of the screen
         });
+        if (messageIdLastScrolledToRef.current) {
+          setTargetedMessage(messageIdLastScrolledToRef.current);
+        }
       }, 150);
     }
   });
