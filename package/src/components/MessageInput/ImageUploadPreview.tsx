@@ -147,6 +147,7 @@ const ImageUploadPreviewWithContext = <
             removeImage(item.id);
           }}
           style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+          testID='remove-image-upload-preview'
         >
           <Close pathFill={white} />
         </TouchableOpacity>

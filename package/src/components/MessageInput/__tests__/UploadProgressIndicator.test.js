@@ -14,7 +14,7 @@ describe('UploadProgressIndicator', () => {
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
-          type={ProgressIndicatorTypes.IN_PROGRESS}
+          type={ProgressIndicatorTypes.INACTIVE}
         ></UploadProgressIndicator>
       </ThemeProvider>,
     );
@@ -64,7 +64,6 @@ describe('UploadProgressIndicator', () => {
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
-          active
           type={ProgressIndicatorTypes.IN_PROGRESS}
         ></UploadProgressIndicator>
       </ThemeProvider>,
