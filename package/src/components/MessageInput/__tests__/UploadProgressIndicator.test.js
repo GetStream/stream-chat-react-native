@@ -32,31 +32,6 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an inactive RETRY UploadProgressIndicator', async () => {
-    const action = jest.fn();
-
-    const { queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.RETRY}
-        ></UploadProgressIndicator>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeTruthy();
-      expect(action).toHaveBeenCalledTimes(0);
-    });
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
-  });
-
   it('should render an active IN_PROGRESS UploadProgressIndicator', async () => {
     const action = jest.fn();
 
