@@ -7,6 +7,7 @@ export const useCreateInputMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   additionalTextInputProps,
+  appSettings,
   AttachButton,
   autoCompleteSuggestionsLimit,
   autoCompleteTriggerSettings,
@@ -63,6 +64,7 @@ export const useCreateInputMessageInputContext = <
   const inputMessageInputContext: InputMessageInputContextValue<StreamChatGenerics> = useMemo(
     () => ({
       additionalTextInputProps,
+      appSettings,
       AttachButton,
       autoCompleteSuggestionsLimit,
       autoCompleteTriggerSettings,

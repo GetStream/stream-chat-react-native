@@ -1606,8 +1606,9 @@ const ChannelWithContext = <
     watchers,
   });
 
-  const inputMessageInputContext = useCreateInputMessageInputContext({
+  const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
+    appSettings: null,
     AttachButton,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
