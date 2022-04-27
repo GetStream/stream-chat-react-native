@@ -57,9 +57,10 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-export type UploadState = 'upload_failed' | 'not_supported' | 'uploaded' | 'finished';
+export type UploadState = 'upload_failed' | 'not_supported' | 'uploaded' | 'finished' | 'uploading';
+export type ProgressIndicatorState = 'in_progress' | 'retry' | 'not_supported' | 'inactive' | null;
 
-export const getIndicatorTypeForFileState = (fileState: UploadState) => {
+export const getIndicatorTypeForFileState = (fileState: UploadState): ProgressIndicatorState => {
   const indicatorMap = {
     [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
     [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,

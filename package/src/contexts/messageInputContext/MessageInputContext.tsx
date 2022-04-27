@@ -825,7 +825,7 @@ export const MessageInputProvider = <
   const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
   const setFileUploadState =
-    (id: string, fileState: string, extraData?: Record<string, any>) =>
+    (id: string, fileState: string, extraData?: Record<string, unknown>) =>
     <UploadType extends { id: string }>(prevImageUploads: UploadType[]) =>
       prevImageUploads.map((imageUpload) => {
         if (imageUpload.id === id) {
