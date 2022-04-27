@@ -69,13 +69,20 @@ const styles = StyleSheet.create({
 
 const goToURL = (url?: string) => {
   if (!url) return;
-  Linking.canOpenURL(url).then((supported) => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URI: ${url}`);
+  else {
+    let finalUrl = url;
+    const pattern = new RegExp(/^.+\/\//);
+    if (!pattern.test(url)) {
+      finalUrl = 'http://' + url;
     }
-  });
+    Linking.canOpenURL(finalUrl).then((supported) => {
+      if (supported) {
+        Linking.openURL(finalUrl);
+      } else {
+        console.log(`Don't know how to open URI: ${finalUrl}`);
+      }
+    });
+  }
 };
 
 export type CardPropsWithContext<
