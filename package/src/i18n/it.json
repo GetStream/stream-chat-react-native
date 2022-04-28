@@ -62,6 +62,6 @@
   "{{ replyCount }} Thread Replies": "{{replyCount}} Risposte alle Conversazione",
   "{{ user }} is typing": "{{ user }} sta scrivendo",
   "🏙 Attachment...": "🏙 Allegato...",
-  "File type not supported": " Tipo di file non supportato",
-  "Not supported": " non supportato"
+  "File type not supported": "Tipo di file non supportato",
+  "Not supported": "non supportato"
 }

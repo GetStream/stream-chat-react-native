@@ -62,6 +62,6 @@
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapları",
   "{{ user }} is typing": "{{ user }} yazıyor",
   "🏙 Attachment...": "🏙 Ek...",
-  "File type not supported": " Dosya türü desteklenmiyor",
-  "Not supported": " Desteklenmiyor"
+  "File type not supported": "Dosya türü desteklenmiyor",
+  "Not supported": "Desteklenmiyor"
 }

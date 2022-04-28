@@ -975,21 +975,20 @@ export const MessageInputProvider = <
       state: FileState.UPLOADING,
     };
 
-    await Promise.all([
-      setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
-
     if (blockedFile) {
       newFile.state = FileState.NOT_SUPPORTED;
     } else {
+      await Promise.all([
+        setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+      ]);
+
       uploadFile({ newFile });
     }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
-    console.log(image.uri);
 
     const newImage = {
       file: image,
@@ -998,18 +997,14 @@ export const MessageInputProvider = <
     };
     const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
 
-    console.log({ blockedImage });
-    console.log({ newImage });
-
-    await Promise.all([
-      setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-    ]);
-
     if (blockedImage) {
       newImage.state = FileState.NOT_SUPPORTED;
-      return;
     } else {
+      await Promise.all([
+        setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+      ]);
+
       uploadImage({ newImage });
     }
   };

@@ -63,5 +63,5 @@
   "{{ user }} is typing": "{{ user }} is aan het typen",
   "🏙 Attachment...": "🏙 Bijlage...",
   "File type not supported": "Bestandstype niet ondersteund",
-  "Not supported": " niet ondersteund"
+  "Not supported": "niet ondersteund"
 }

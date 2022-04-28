@@ -35,6 +35,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   flatList: { paddingBottom: 12 },
+  iconContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   itemContainer: {
     flexDirection: 'row',
     height: IMAGE_PREVIEW_SIZE,
@@ -46,11 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 3,
     position: 'absolute',
-  },
-  unsupportedView: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
   },
   upload: {
     borderRadius: 10,
@@ -116,7 +116,7 @@ const ImageUploadPreviewWithContext = <
     const { t } = useTranslationContext();
     return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
       <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
-        <View style={[styles.unsupportedView]}>
+        <View style={[styles.iconContainer]}>
           <Warning
             height={WARNING_ICON_SIZE}
             pathFill={accent_red}
@@ -131,10 +131,10 @@ const ImageUploadPreviewWithContext = <
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
     const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);
-    const renderItemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
+    const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (
-      <View style={[styles.itemContainer, renderItemMarginForIndex, itemContainer]}>
+      <View style={[styles.itemContainer, itemMarginForIndex, itemContainer]}>
         <UploadProgressIndicator
           action={() => {
             uploadImage({ newImage: item });

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   unsupportedFileText: {
-    fontSize: 13,
+    fontSize: 16,
   },
   warningIconStyle: {
     borderRadius: 24,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const UnsupportedFileTypeIndicator = ({
+const UnsupportedFileTypeOrFileSizeIndicator = ({
   indicatorType,
   item,
 }: {
@@ -99,7 +99,7 @@ const UnsupportedFileTypeIndicator = ({
   } = useTheme();
 
   const { t } = useTranslationContext();
-  return (indicatorType as unknown as string) === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+  return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
     <View style={[styles.unsupportedFile]}>
       <Warning
         height={WARNING_ICON_SIZE}
@@ -201,7 +201,10 @@ const FileUploadPreviewWithContext = <
                   {item.file.name || ''}
                 </Text>
                 {indicatorType !== null && (
-                  <UnsupportedFileTypeIndicator indicatorType={indicatorType} item={item} />
+                  <UnsupportedFileTypeOrFileSizeIndicator
+                    indicatorType={indicatorType}
+                    item={item}
+                  />
                 )}
               </View>
             </View>
