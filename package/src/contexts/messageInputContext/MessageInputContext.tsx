@@ -947,11 +947,8 @@ export const MessageInputProvider = <
         );
       }
     } catch (error) {
-      console.log({ error });
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-
       if (error instanceof Error) {
-        console.log(regExcondition.test(error.message));
         if (regExcondition.test(error.message)) {
           return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
         }
