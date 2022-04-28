@@ -202,7 +202,7 @@ exports[`UploadProgressIndicator should render an inactive IN_PROGRESS UploadPro
 />
 `;
 
-exports[`UploadProgressIndicator should render an inactive RETRY UploadProgressIndicator 1`] = `
+exports[`UploadProgressIndicator should render an inactive UploadProgressIndicator 1`] = `
 <View
   style={
     Array [
