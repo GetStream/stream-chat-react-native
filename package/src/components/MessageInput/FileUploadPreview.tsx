@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   FileUpload,
   MessageInputContextValue,
@@ -75,10 +76,7 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    bottom: 8,
-    left: 4,
-    right: 0,
-    top: 2,
+    marginTop: 4,
   },
 });
 
@@ -122,7 +120,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'appSettings'
+  'fileUploads' | 'removeFile' | 'uploadFile'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -287,8 +285,8 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { appSettings, fileUploads, removeFile, uploadFile } =
-    useMessageInputContext<StreamChatGenerics>();
+  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
+  const { appSettings } = useChatContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (

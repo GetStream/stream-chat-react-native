@@ -32,14 +32,14 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an inactive UploadProgressIndicator', async () => {
+  it('should render an inactive retry UploadProgressIndicator', async () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
-          type={ProgressIndicatorTypes.INACTIVE}
+          type={ProgressIndicatorTypes.RETRY}
         ></UploadProgressIndicator>
       </ThemeProvider>,
     );

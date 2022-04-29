@@ -6,7 +6,6 @@ import type { TextInput, TextInputProps } from 'react-native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
-  AppSettingsAPIResponse,
   Attachment,
   logChatPromiseExecution,
   SendFileAPIResponse,
@@ -219,7 +218,6 @@ export type LocalMessageInputContext<
 export type InputMessageInputContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
   /**
    * Custom UI component for attach button.
    *
@@ -972,39 +970,35 @@ export const MessageInputProvider = <
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
-      state: FileState.UPLOADING,
+      state: blockedFile ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
     };
 
-    if (blockedFile) {
-      newFile.state = FileState.NOT_SUPPORTED;
-    } else {
-      await Promise.all([
-        setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-      ]);
+    await Promise.all([
+      setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+    ]);
 
+    if (!blockedFile) {
       uploadFile({ newFile });
     }
   };
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+    const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
 
     const newImage = {
       file: image,
       id,
-      state: FileState.UPLOADING,
+      state: blockedImage ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
     };
-    const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
 
-    if (blockedImage) {
-      newImage.state = FileState.NOT_SUPPORTED;
-    } else {
-      await Promise.all([
-        setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
-      ]);
+    await Promise.all([
+      setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+    ]);
 
+    if (!blockedImage) {
       uploadImage({ newImage });
     }
   };
@@ -1058,7 +1052,6 @@ export const MessageInputProvider = <
     uploadNewFile,
     uploadNewImage,
     ...value,
-    appSettings,
     sendMessage, // overriding the originally passed in sendMessage
   });
 

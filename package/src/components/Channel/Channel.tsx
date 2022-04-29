@@ -1608,7 +1608,6 @@ const ChannelWithContext = <
 
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
-    appSettings: null,
     AttachButton,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
