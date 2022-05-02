@@ -965,7 +965,9 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = blockedFiles?.some((x: string) => file.name?.includes(x));
+    const blockedFile = blockedFiles?.some((fileExtensionType: string) =>
+      file.name?.includes(fileExtensionType),
+    );
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -985,7 +987,9 @@ export const MessageInputProvider = <
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
-    const blockedImage = blockedImages?.some((x: string) => newImage.file.uri?.includes(x));
+    const blockedImage = blockedImages?.some((imageExtensionType: string) =>
+      newImage.file.uri?.includes(imageExtensionType),
+    );
 
     const newImage = {
       file: image,
