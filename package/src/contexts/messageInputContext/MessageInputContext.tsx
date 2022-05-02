@@ -867,6 +867,28 @@ export const MessageInputProvider = <
         return imageUpload;
       });
 
+  const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
+    if (isImageError) {
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
+        }
+
+        return setImageUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+      }
+    } else {
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
+        }
+      }
+      return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+    }
+  };
+
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
     if (!newFile) {
       return;
@@ -883,15 +905,7 @@ export const MessageInputProvider = <
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error: unknown) {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-
-      if (error instanceof Error) {
-        if (regExcondition.test(error.message)) {
-          return setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
-        }
-      }
-
-      return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+      handleFileOrImageUploadError(error, false, id);
     }
 
     setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
@@ -976,14 +990,7 @@ export const MessageInputProvider = <
         );
       }
     } catch (error) {
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      if (error instanceof Error) {
-        if (regExcondition.test(error.message)) {
-          return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
-        }
-
-        return setImageUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
-      }
+      handleFileOrImageUploadError(error, true, id);
     }
   };
 
