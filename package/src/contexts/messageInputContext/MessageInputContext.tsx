@@ -415,11 +415,38 @@ export const MessageInputProvider = <
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
   const { appSettings, client } = useChatContext<StreamChatGenerics>();
-  const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions ?? [];
-  const blockedMimeFiles = appSettings?.app?.file_upload_config?.blocked_mime_types ?? [];
 
-  const blockedImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
-  const blockedMimeImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
+  const getFileUploadConfig = (blockedFileOrMime: boolean) => {
+    const fileConfig = appSettings?.app?.file_upload_config;
+    if (fileConfig === null || fileConfig === undefined) {
+      return [];
+    } else {
+      if (blockedFileOrMime) {
+        return fileConfig.blocked_file_extensions;
+      } else {
+        return fileConfig.blocked_mime_types;
+      }
+    }
+  };
+
+  const getImageUploadConfig = (blockedImageOrMime: boolean) => {
+    const imageConfig = appSettings?.app?.image_upload_config;
+    if (imageConfig === null || imageConfig === undefined) {
+      return [];
+    } else {
+      if (blockedImageOrMime) {
+        return imageConfig.blocked_file_extensions;
+      } else {
+        return imageConfig.blocked_mime_types;
+      }
+    }
+  };
+
+  const blockedFiles = getFileUploadConfig(true);
+  const blockedMimeFiles = getFileUploadConfig(false);
+
+  const blockedImages = getImageUploadConfig(true);
+  const blockedMimeImages = getImageUploadConfig(false);
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -994,11 +1021,11 @@ export const MessageInputProvider = <
     const id = generateRandomId();
 
     const blockedMime = blockedMimeImages?.some((mimeType: string) =>
-      newImage.file.uri?.includes(mimeType),
+      image.uri?.includes(mimeType),
     );
 
     const blockedImage = blockedImages?.some((imageExtensionType: string) =>
-      newImage.file.uri?.includes(imageExtensionType),
+      image.uri?.includes(imageExtensionType),
     );
 
     const newImage = {
