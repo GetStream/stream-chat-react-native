@@ -7,7 +7,7 @@ import { ProgressIndicatorTypes } from '../../../utils/utils';
 import { UploadProgressIndicator } from '../UploadProgressIndicator';
 
 describe('UploadProgressIndicator', () => {
-  it('should render an inactive IN_PROGRESS UploadProgressIndicator', async () => {
+  it('should render an inactive UploadProgressIndicator', async () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
@@ -32,32 +32,7 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an inactive retry UploadProgressIndicator', async () => {
-    const action = jest.fn();
-
-    const { queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <UploadProgressIndicator
-          action={action}
-          type={ProgressIndicatorTypes.RETRY}
-        ></UploadProgressIndicator>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(queryByTestId('active-upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeTruthy();
-      expect(action).toHaveBeenCalledTimes(0);
-    });
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
-  });
-
-  it('should render an active IN_PROGRESS UploadProgressIndicator', async () => {
+  it('should render an active UploadProgressIndicator', async () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
@@ -72,8 +47,6 @@ describe('UploadProgressIndicator', () => {
     await waitFor(() => {
       expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
       expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
-      expect(queryByTestId('upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('retry-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
@@ -84,14 +57,65 @@ describe('UploadProgressIndicator', () => {
     });
   });
 
-  it('should render an active RETRY UploadProgressIndicator', async () => {
+  it('should render an active UploadProgressIndicator and not-supported indicator', async () => {
+    const action = jest.fn();
+
+    const { queryByTestId, toJSON } = render(
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          type={ProgressIndicatorTypes.NOT_SUPPORTED}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(queryByTestId('not-supported-upload-progress-indicator')).toBeTruthy();
+      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(action).toHaveBeenCalledTimes(0);
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  it('should render an active UploadProgressIndicator and in-progress indicator', async () => {
+    const action = jest.fn();
+
+    const { queryByTestId, toJSON } = render(
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
+      expect(queryByTestId('upload-progress-indicator')).toBeTruthy();
+      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(action).toHaveBeenCalledTimes(0);
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  it('should render an active UploadProgressIndicator and retry indicator', async () => {
     const action = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
       <ThemeProvider>
         <UploadProgressIndicator
           action={action}
-          active
           type={ProgressIndicatorTypes.RETRY}
         ></UploadProgressIndicator>
       </ThemeProvider>,
@@ -99,8 +123,8 @@ describe('UploadProgressIndicator', () => {
 
     await waitFor(() => {
       expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
-      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(queryByTestId('upload-progress-indicator')).toBeFalsy();
+      expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
       expect(queryByTestId('retry-upload-progress-indicator')).toBeTruthy();
       expect(action).toHaveBeenCalledTimes(0);
     });

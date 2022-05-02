@@ -1004,7 +1004,7 @@ export const MessageInputProvider = <
     const newImage = {
       file: image,
       id,
-      state: (blockedImage || blockedMime) ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
+      state: blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
     };
 
     await Promise.all([

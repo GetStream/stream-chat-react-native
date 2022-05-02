@@ -87,6 +87,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
           { backgroundColor: overlayColor },
           container,
         ]}
+        testID='not-supported-upload-progress-indicator'
       >
         {type === ProgressIndicatorTypes.IN_PROGRESS && <InProgressIndicator />}
         {type === ProgressIndicatorTypes.RETRY && <RetryIndicator action={action} />}
