@@ -416,7 +416,11 @@ export const MessageInputProvider = <
     useAttachmentPickerContext();
   const { appSettings, client } = useChatContext<StreamChatGenerics>();
   const blockedFiles = appSettings?.app?.file_upload_config?.blocked_file_extensions ?? [];
+  const blockedMimeFiles = appSettings?.app?.file_upload_config?.blocked_mime_types ?? [];
+
   const blockedImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
+  const blockedMimeImages = appSettings?.app?.image_upload_config?.blocked_file_extensions ?? [];
+
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -968,11 +972,12 @@ export const MessageInputProvider = <
     const blockedFile = blockedFiles?.some((fileExtensionType: string) =>
       file.name?.includes(fileExtensionType),
     );
+    const blockedMime = blockedMimeFiles?.some((mimeType: string) => file.name?.includes(mimeType));
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
-      state: blockedFile ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
+      state: blockedFile || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
     };
 
     await Promise.all([
@@ -987,6 +992,11 @@ export const MessageInputProvider = <
 
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
+
+    const blockedMime = blockedMimeImages?.some((mimeType: string) =>
+      newImage.file.uri?.includes(mimeType),
+    );
+
     const blockedImage = blockedImages?.some((imageExtensionType: string) =>
       newImage.file.uri?.includes(imageExtensionType),
     );
@@ -994,7 +1004,7 @@ export const MessageInputProvider = <
     const newImage = {
       file: image,
       id,
-      state: blockedImage ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
+      state: (blockedImage || blockedMime) ? FileState.NOT_SUPPORTED : FileState.UPLOADING,
     };
 
     await Promise.all([
