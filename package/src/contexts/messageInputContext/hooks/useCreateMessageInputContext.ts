@@ -9,7 +9,6 @@ export const useCreateMessageInputContext = <
 >({
   additionalTextInputProps,
   appendText,
-  appSettings,
   asyncIds,
   asyncUploads,
   AttachButton,
@@ -111,7 +110,6 @@ export const useCreateMessageInputContext = <
     () => ({
       additionalTextInputProps,
       appendText,
-      appSettings,
       asyncIds,
       asyncUploads,
       AttachButton,
