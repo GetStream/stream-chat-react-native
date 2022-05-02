@@ -198,7 +198,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -220,7 +219,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -323,7 +322,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -345,7 +343,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -555,7 +553,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -577,7 +574,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -843,7 +840,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -865,7 +861,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1073,7 +1069,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -1095,7 +1090,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1305,7 +1300,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -1327,7 +1321,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1488,7 +1482,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -1510,7 +1503,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1613,7 +1606,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -1635,7 +1627,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1740,7 +1732,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -1762,7 +1753,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -1978,7 +1969,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -2000,7 +1990,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -2158,7 +2148,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -2180,7 +2169,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
@@ -2340,7 +2329,6 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             meetOrSlice={0}
             minX={0}
             minY={0}
-            pathFill="#FFFFFF"
             style={
               Array [
                 Object {
@@ -2362,7 +2350,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
               <RNSVGPath
                 clipRule={0}
                 d="M7.05 7.05a1 1 0 000 1.414L10.586 12 7.05 15.536a1 1 0 101.414 1.414L12 13.414l3.536 3.536a1 1 0 001.414-1.414L13.414 12l3.536-3.536a1 1 0 00-1.414-1.414L12 10.586 8.464 7.05a1 1 0 00-1.414 0z"
-                fill={4294967295}
+                fill={4278190080}
                 fillRule={0}
                 propList={
                   Array [
