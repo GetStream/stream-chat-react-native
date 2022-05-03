@@ -1038,8 +1038,8 @@ export const MessageInputProvider = <
       image.uri?.includes(imageExtensionType),
     );
 
-     const isImageBlocked =
-       blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const isImageBlocked =
+      blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newImage = {
       file: image,
