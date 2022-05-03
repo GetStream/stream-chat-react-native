@@ -98,7 +98,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
 
   const { t } = useTranslationContext();
   return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
-    <View style={[styles.unsupportedFile]}>
+    <View style={styles.unsupportedFile}>
       <Warning
         height={WARNING_ICON_SIZE}
         pathFill={accent_red}
