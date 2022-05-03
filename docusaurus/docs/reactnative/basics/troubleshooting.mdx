@@ -327,17 +327,33 @@ The solution may require using a different touchable from React Native Gesture H
 
 ## Reanimated 2
 
-We rely on Reanimated 2 heavily for gesture based interactions and animations. It is vital you follow the [Reanimated 2 installation instructions](https://docs.swmansion.com/react-native-reanimated/docs/installation/) for the library to work properly.
+We rely on Reanimated 2 heavily for gesture based interactions and animations. It is vital you follow the [Reanimated 2 installation instructions](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/) for the library to work properly.
 
 ### Failed to create a worklet
 
-If you are encountering errors related to `Reanimated 2 failed to create a worklet` you must likely forgot to add the `react-native-reanimated/plugin` to your `babel.config.js` file.
+If you are encountering errors related to `Reanimated 2 failed to create a worklet` you must likely forgot to add the `react-native-reanimated/plugin` to your [project's babel config file](https://babeljs.io/docs/en/config-files). Below is an example of adding Reanimated's babel plugin to `babel.config.js`:
+
+```js
+  module.exports = {
+      ...
+      plugins: [
+          ...
+          'react-native-reanimated/plugin',
+      ],
+  };
+```
+
+:::caution
+
+Reanimated plugin has to be listed last.
+
+:::
 
 ### Blank screen on Android
 
-If you are encountering errors on Android and the screen is blank it is likely you forgot to finish the [Reanimated 2 Android setup](https://docs.swmansion.com/react-native-reanimated/docs/installation/#android).
+If you are encountering errors on Android and the screen is blank it is likely you forgot to finish the [Reanimated 2 Android setup](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/#android).
 
-Ensure Hermes is enabled in `android/app/build.gradle`
+Ensure Hermes is enabled in `android/app/build.gradle`:
 
 ```java
 project.ext.react = [
@@ -366,6 +382,15 @@ private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
   }
 };
 ...
+```
+
+### Android release bundle is crashing
+
+This is likely due to proguard removing reanimated 2 related classes. If you're using Proguard, make sure to add the rules below:
+
+```
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.facebook.react.turbomodule.** { *; }
 ```
 
 ## Project won't build on a MacBook with Apple M1
