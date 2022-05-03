@@ -416,37 +416,34 @@ export const MessageInputProvider = <
     useAttachmentPickerContext();
   const { appSettings, client } = useChatContext<StreamChatGenerics>();
 
-  const getFileUploadConfig = (blockedFileOrMime: boolean) => {
+  const getFileUploadConfig = () => {
     const fileConfig = appSettings?.app?.file_upload_config;
-    if (fileConfig === null || fileConfig === undefined) {
-      return [];
+    if (fileConfig !== null || fileConfig !== undefined) {
+      return fileConfig;
     } else {
-      if (blockedFileOrMime) {
-        return fileConfig.blocked_file_extensions;
-      } else {
-        return fileConfig.blocked_mime_types;
-      }
+      return {};
     }
   };
 
-  const getImageUploadConfig = (blockedImageOrMime: boolean) => {
+  const getBlockedFileExtenstionTypes = getFileUploadConfig()?.blocked_file_extensions;
+  const getBlockedFileeMimeTypes = getFileUploadConfig()?.blocked_mime_types;
+
+  const blockedFilesExtentionTypes = getBlockedFileExtenstionTypes;
+  const blockedMimeFiles = getBlockedFileeMimeTypes;
+
+  const getImageUploadConfig = () => {
     const imageConfig = appSettings?.app?.image_upload_config;
-    if (imageConfig === null || imageConfig === undefined) {
-      return [];
-    } else {
-      if (blockedImageOrMime) {
-        return imageConfig.blocked_file_extensions;
-      } else {
-        return imageConfig.blocked_mime_types;
-      }
+    if (imageConfig !== null || imageConfig !== undefined) {
+      return imageConfig;
     }
+    return {};
   };
 
-  const blockedFiles = getFileUploadConfig(true);
-  const blockedMimeFiles = getFileUploadConfig(false);
+  const getBlockedImageExtenstionTypes = getImageUploadConfig()?.blocked_file_extensions;
+  const getBlockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
 
-  const blockedImages = getImageUploadConfig(true);
-  const blockedMimeImages = getImageUploadConfig(false);
+  const blockedImagesExtentionTypes = getBlockedImageExtenstionTypes;
+  const blockedImagesMimeTypes = getBlockedImageMimeTypes;
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -1003,7 +1000,7 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = blockedFiles?.some((fileExtensionType: string) =>
+    const blockedFile = blockedFilesExtentionTypes?.some((fileExtensionType: string) =>
       file.name?.includes(fileExtensionType),
     );
     const blockedMime = blockedMimeFiles?.some((mimeType: string) => file.name?.includes(mimeType));
@@ -1030,11 +1027,11 @@ export const MessageInputProvider = <
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
-    const blockedMime = blockedMimeImages?.some((mimeType: string) =>
+    const blockedMime = blockedImagesMimeTypes?.some((mimeType: string) =>
       image.uri?.includes(mimeType),
     );
 
-    const blockedImage = blockedImages?.some((imageExtensionType: string) =>
+    const blockedImage = blockedImagesExtentionTypes?.some((imageExtensionType: string) =>
       image.uri?.includes(imageExtensionType),
     );
 
