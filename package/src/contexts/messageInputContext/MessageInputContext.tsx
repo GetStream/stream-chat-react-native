@@ -1005,13 +1005,12 @@ export const MessageInputProvider = <
     );
     const blockedMime = blockedMimeFiles?.some((mimeType: string) => file.name?.includes(mimeType));
 
-    const isFileBlocked =
-      blockedFile || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const fileState = blockedFile || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
       id,
-      state: isFileBlocked,
+      state: fileState,
     };
 
     await Promise.all([
@@ -1035,13 +1034,12 @@ export const MessageInputProvider = <
       image.uri?.includes(imageExtensionType),
     );
 
-    const isImageBlocked =
-      blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const imageState = blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newImage = {
       file: image,
       id,
-      state: isImageBlocked,
+      state: imageState,
     };
 
     await Promise.all([
