@@ -59,10 +59,8 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    bottom: 8,
-    left: 4,
-    right: 0,
-    top: 2,
+    marginLeft: 4,
+    marginTop: 4,
   },
   warningText: {
     alignItems: 'center',
