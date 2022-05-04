@@ -148,7 +148,7 @@ export const renderText = <
   };
 
   const onLink = (url: string) => {
-    const pattern = new RegExp(/^.+\/\//);
+    const pattern = new RegExp(/^\S+:\/\//);
     if (!pattern.test(url)) {
       url = 'http://' + url;
     }

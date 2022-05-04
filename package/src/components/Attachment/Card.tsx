@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Image,
   ImageStyle,
-  Linking,
   StyleProp,
   StyleSheet,
   Text,
@@ -13,6 +12,8 @@ import {
 } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
+
+import { useGoToURL } from './hooks/useGoToURL';
 
 import {
   MessageContextValue,
@@ -66,24 +67,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
-
-const goToURL = (url?: string) => {
-  if (!url) return;
-  else {
-    let finalUrl = url;
-    const pattern = new RegExp(/^.+\/\//);
-    if (!pattern.test(url)) {
-      finalUrl = 'http://' + url;
-    }
-    Linking.canOpenURL(finalUrl).then((supported) => {
-      if (supported) {
-        Linking.openURL(finalUrl);
-      } else {
-        console.log(`Don't know how to open URI: ${finalUrl}`);
-      }
-    });
-  }
-};
 
 export type CardPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -156,7 +139,9 @@ const CardWithContext = <
 
   const uri = image_url || thumb_url;
 
-  const defaultOnPress = () => goToURL(og_scrape_url || uri);
+  const [error, openURL] = useGoToURL(og_scrape_url || uri);
+
+  const defaultOnPress = () => !error && openURL && openURL();
 
   return (
     <TouchableOpacity
