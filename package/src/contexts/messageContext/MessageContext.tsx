@@ -3,7 +3,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import type { TouchableHandlerPayload } from '../../components/Message/Message';
+import type {
+  MessageTouchableHandlerPayload,
+  TouchableHandlerPayload,
+} from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
@@ -79,7 +82,7 @@ export type MessageContextValue<
    *
    * @param event   Event object for onPress event
    */
-  onPress: (payload: TouchableHandlerPayload) => void;
+  onPress: (payload: MessageTouchableHandlerPayload) => void;
   onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];

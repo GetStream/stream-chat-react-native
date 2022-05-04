@@ -1,7 +1,7 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -72,6 +72,7 @@ export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
+  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
   message?: MessageType<StreamChatGenerics>;
 };
 
@@ -598,6 +599,7 @@ const MessageWithContext = <
       onPressProp
         ? onPressProp({
             actionHandlers,
+            additionalInfo: payload.additionalInfo,
             defaultHandler: payload.defaultHandler || onPress,
             emitter: payload.emitter || 'message',
             event: payload.event,
@@ -606,6 +608,7 @@ const MessageWithContext = <
         : onPressMessageProp
         ? onPressMessageProp({
             actionHandlers,
+            additionalInfo: payload.additionalInfo,
             defaultHandler: payload.defaultHandler || onPress,
             emitter: payload.emitter || 'message',
             event: payload.event,

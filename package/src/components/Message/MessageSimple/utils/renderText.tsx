@@ -17,6 +17,8 @@ import {
   State,
 } from 'simple-markdown';
 
+import type { UserResponse } from 'stream-chat';
+
 import { parseLinksFromText } from './parseLinks';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
@@ -205,9 +207,15 @@ export const renderText = <
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
+    const userName = node.content[0]?.content.replace(/[|&;$%@"<>()+,]/g, '');
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
+          additionalInfo: {
+            user: mentioned_users?.find(
+              (user: UserResponse<StreamChatGenerics>) => userName === user.name,
+            ),
+          },
           emitter: 'textMention',
           event,
         });
