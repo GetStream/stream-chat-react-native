@@ -881,8 +881,8 @@ export const MessageInputProvider = <
         if (regExcondition.test(error.message)) {
           return setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
         }
+        return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
       }
-      return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
     }
   };
 
@@ -901,11 +901,10 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
+      setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);
     }
-
-    setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
   };
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
