@@ -13,4 +13,25 @@ You will have to handle these cases when overriding this function.
 
 | Parameter | Description                   |
 | --------- | ----------------------------- |
-| payload   | `{ actionHandlers, message }` |
+| payload   | `{ additionalInfo, actionHandlers, message }` |
+
+
+The `additionalInfo` prop is handy for getting information from certain click events.
+A good example of this is getting the user details when a textMention (eg @Enigma-I-am) is clicked.
+
+For example:
+
+```tsx
+    <Channel
+    onPressMessage={({ additionalInfo, emitter }) => {
+        if (emitter === 'textMention') {
+          console.log(additionalInfo.user);
+        }
+    }}
+    >
+```
+
+:::info
+
+The `additionalInfo` prop will change over time as we explore more usecases for different `emitter's`.
+
