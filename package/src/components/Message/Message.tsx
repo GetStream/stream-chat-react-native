@@ -52,20 +52,21 @@ import {
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
+export type Emitter =
+  | 'card'
+  | 'fileAttachment'
+  | 'gallery'
+  | 'giphy'
+  | 'message'
+  | 'messageContent'
+  | 'messageReplies'
+  | 'reactionList'
+  | 'textLink'
+  | 'textMention';
 
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
-  emitter?:
-    | 'card'
-    | 'fileAttachment'
-    | 'gallery'
-    | 'giphy'
-    | 'message'
-    | 'messageContent'
-    | 'messageReplies'
-    | 'reactionList'
-    | 'textLink'
-    | 'textMention';
+  emitter?: Emitter;
   event?: GestureResponderEvent;
 };
 
