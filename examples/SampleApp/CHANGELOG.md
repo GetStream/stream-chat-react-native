@@ -1,5 +1,24 @@
 # Change Log
 
+## [1.4.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.1...sampleapp@v1.4.0) (2022-04-27)
+
+
+### Features
+
+* clarify push v2 background handling on docs and add push v2 to sample app ([df9907c](https://github.com/GetStream/stream-chat-react-native/commit/df9907c4f484f992e5d13706a871c745f0174665))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.3.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.0...sampleapp@v1.3.1) (2022-04-12)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.3.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.2.0...sampleapp@v1.3.0) (2022-04-04)
 
 

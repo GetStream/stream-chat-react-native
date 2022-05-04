@@ -445,23 +445,22 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const prevMessageAttachments = prevMessage.attachments;
   const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    Array.isArray(prevMessageAttachments) &&
-    Array.isArray(nextMessageAttachments) &&
-    prevMessageAttachments.length === nextMessageAttachments.length &&
-    prevMessageAttachments.every((attachment, index) => {
-      const attachmentKeysEqual =
-        attachment.type === 'image'
-          ? attachment.image_url === nextMessageAttachments[index].image_url &&
-            attachment.thumb_url === nextMessageAttachments[index].thumb_url
-          : attachment.type === nextMessageAttachments[index].type;
+    Array.isArray(prevMessageAttachments) && Array.isArray(nextMessageAttachments)
+      ? prevMessageAttachments.length === nextMessageAttachments.length &&
+        prevMessageAttachments.every((attachment, index) => {
+          const attachmentKeysEqual =
+            attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.og_scrape_url === nextMessageAttachments[index].og_scrape_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url;
 
-      if (isAttachmentEqual)
-        return (
-          attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
-        );
+          if (isAttachmentEqual)
+            return (
+              attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
+            );
 
-      return attachmentKeysEqual;
-    });
+          return attachmentKeysEqual;
+        })
+      : prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
