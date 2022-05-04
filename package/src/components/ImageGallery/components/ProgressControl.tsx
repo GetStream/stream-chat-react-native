@@ -9,13 +9,14 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
+
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-type ProgressControlProps = {
-  duration: number;
-  onProgressDrag: (progress: number) => void;
-  progress: number;
-};
+type ProgressControlProps = Pick<
+  ImageGalleryFooterVideoControlProps,
+  'duration' | 'onPlayPause' | 'onProgressDrag' | 'progress'
+>;
 
 const width = 180;
 const height = 2;
@@ -41,7 +42,7 @@ const ProgressControlThumb = () => <View style={styles.progressControlThumbStyle
 
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {
-    const { duration, onProgressDrag, progress } = props;
+    const { duration, onPlayPause, onProgressDrag, progress } = props;
     const {
       theme: {
         colors: { grey_dark, white_snow },
@@ -76,8 +77,10 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
           translateX.value = state.value;
           const dragFinishLocationInSeconds = (state.value / width) * duration;
           runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
+          runOnJS(onPlayPause)();
         },
         onStart: () => {
+          runOnJS(onPlayPause)();
           cancelAnimation(translateX);
           state.value = translateX.value;
         },

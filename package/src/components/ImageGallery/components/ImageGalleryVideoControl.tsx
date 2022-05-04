@@ -75,7 +75,12 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         <Text style={[styles.durationTextStyle, durationTextStyle]}>
           {progressDuration ? progressDuration : '00:00'}
         </Text>
-        <ProgressControl duration={duration} onProgressDrag={onProgressDrag} progress={progress} />
+        <ProgressControl
+          duration={duration}
+          onPlayPause={onPlayPause}
+          onProgressDrag={onProgressDrag}
+          progress={progress}
+        />
         <Text style={[styles.durationTextStyle, durationTextStyle]}>
           {videoDuration ? videoDuration : '00:00'}
         </Text>

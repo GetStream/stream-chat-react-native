@@ -120,8 +120,6 @@ export const GalleryVideo: React.FC<Props> = React.memo(
       }
     };
 
-    console.log(opacity);
-
     const animatedViewStyles = useAnimatedStyle<ViewStyle>(() => {
       const xScaleOffset = -7 * screenWidth * (0.5 + index);
       const yScaleOffset = -screenHeight * 3.5;
