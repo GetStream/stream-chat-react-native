@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { mapMessages } from 'src/utils/utils';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
@@ -17,15 +18,9 @@ export const useCreatePaginatedMessageListContext = <
   setLoadingMoreRecent,
 }: PaginatedMessageListContextValue<StreamChatGenerics> & {
   channelId?: string;
-}) => {
-  const messagesUpdated = messages
-    .map(
-      ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
-        `${deleted_at}${
-          latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
-        }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`,
-    )
-    .join();
+  }) => {
+  
+  const messagesUpdated = messages.map((props) => mapMessages(props)).join();
 
   const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({

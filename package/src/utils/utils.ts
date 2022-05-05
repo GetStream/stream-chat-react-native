@@ -8,6 +8,7 @@ import type {
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
   CommandResponse,
+  FormatMessageResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -512,3 +513,16 @@ export const emojiRegex =
 
 export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
+
+export const mapMessages = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  deleted_at,
+  latest_reactions,
+  reply_count,
+  status,
+  updated_at,
+}: FormatMessageResponse<StreamChatGenerics>): string =>
+  `${deleted_at}${
+    latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
+  }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
