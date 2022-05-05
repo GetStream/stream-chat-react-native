@@ -31,6 +31,7 @@ describe('FileUploadPreview', () => {
       generateFileUploadPreview({ id: 'file-upload-id-1', state: FileState.UPLOADING }),
       generateFileUploadPreview({ id: 'file-upload-id-2', state: FileState.UPLOADING }),
       generateFileUploadPreview({ id: 'file-upload-id-3', state: FileState.UPLOADING }),
+      generateFileUploadPreview({ id: 'file-upload-id-4', state: FileState.UPLOADING }),
     ];
     const removeFile = jest.fn();
     const uploadFile = jest.fn();
