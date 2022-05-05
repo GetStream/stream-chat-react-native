@@ -127,10 +127,10 @@ export type VideoPayloadData = {
   }[];
 };
 
-type Video = React.ComponentType<{
+export type VideoType = {
   paused: boolean;
   uri: string;
-  videoRef: React.RefObject<typeof Video>;
+  videoRef: React.RefObject<VideoType>;
   onBuffer?: (props: { isBuffering: boolean }) => void;
   onEnd?: () => void;
   onLoad?: (payload: VideoPayloadData) => void;
@@ -138,11 +138,14 @@ type Video = React.ComponentType<{
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  replayAsync?: () => void;
   resizeMode?: string;
+  seek?: (progress: number) => void;
+  setPositionAsync?: (position: number) => void;
   style?: StyleProp<ViewStyle>;
-}>;
+};
 
-export let Video: Video = fail;
+export let Video: React.ComponentType<VideoType> = fail;
 
 type Handlers = {
   compressImage?: CompressImage;
@@ -157,7 +160,7 @@ type Handlers = {
   shareImage?: ShareImage;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
-  Video?: Video;
+  Video?: React.ComponentType<VideoType>;
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {

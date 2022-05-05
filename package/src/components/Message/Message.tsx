@@ -515,7 +515,7 @@ const MessageWithContext = <
       files: attachments.files,
       groupStyles,
       handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
-      images: attachments.images,
+      imagesAndVideos: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },

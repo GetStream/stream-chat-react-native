@@ -31,7 +31,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import type { UserResponse } from 'stream-chat';
 
 import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
-import { GalleryVideo } from './components/GalleryVideo';
+import { AnimatedGalleryVideo } from './components/AnimatedGalleryVideo';
 import {
   ImageGalleryFooter,
   ImageGalleryFooterCustomComponentProps,
@@ -55,7 +55,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { Video, VideoPayloadData, VideoProgressData } from '../../native';
+import type { VideoPayloadData, VideoProgressData, VideoType } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
@@ -437,7 +437,7 @@ export const ImageGallery = <
     }
   };
 
-  const videoRef = useRef<typeof Video>(null);
+  const videoRef = useRef<VideoType>(null);
 
   const handleEnd = () => {
     setPaused(true);
@@ -532,7 +532,7 @@ export const ImageGallery = <
                       >
                         {photos.map((photo, i) =>
                           photo.type === 'video' ? (
-                            <GalleryVideo
+                            <AnimatedGalleryVideo
                               handleEnd={handleEnd}
                               handleLoad={handleLoad}
                               handleProgress={handleProgress}

@@ -21,7 +21,6 @@ import {
   useAttachmentPickerContext,
   useOverlayContext,
 } from 'stream-chat-react-native';
-import Video from 'react-native-video';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

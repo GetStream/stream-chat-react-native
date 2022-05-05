@@ -22,10 +22,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  durationTextStyle: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
   imageCountText: {
     fontSize: 16,
     fontWeight: '600',
@@ -43,24 +39,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     marginRight: 8,
-  },
-  roundedView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    display: 'flex',
-    elevation: 2,
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
-  },
-  videoContainer: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(52, 52, 52, 0.1)',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
   },
   wrapper: {
     bottom: 0,

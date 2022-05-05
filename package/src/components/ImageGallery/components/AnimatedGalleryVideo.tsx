@@ -3,10 +3,16 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { Spinner } from '../../../components/Spinner/Spinner';
-import { PlaybackStatus, Video, VideoPayloadData, VideoProgressData } from '../../../native';
+import {
+  PlaybackStatus,
+  Video,
+  VideoPayloadData,
+  VideoProgressData,
+  VideoType,
+} from '../../../native';
 
 import { vw } from '../../../utils/utils';
+import { Spinner } from '../../Spinner/Spinner';
 
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
@@ -27,7 +33,7 @@ type Props = {
   source: { uri: string };
   translateX: Animated.SharedValue<number>;
   translateY: Animated.SharedValue<number>;
-  videoRef: React.RefObject<typeof Video>;
+  videoRef: React.RefObject<VideoType>;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -43,7 +49,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const GalleryVideo: React.FC<Props> = React.memo(
+export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
   (props) => {
     const [opacity, setOpacity] = useState<number>(1);
     const {
@@ -211,4 +217,4 @@ export const GalleryVideo: React.FC<Props> = React.memo(
   },
 );
 
-GalleryVideo.displayName = 'GalleryVideo';
+AnimatedGalleryVideo.displayName = 'AnimatedGalleryVideo';

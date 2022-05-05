@@ -75,6 +75,7 @@ export * from './Chat/hooks/useMutedUsers';
 
 export * from './ImageGallery/ImageGallery';
 export * from './ImageGallery/components/AnimatedGalleryImage';
+export * from './ImageGallery/components/AnimatedGalleryVideo';
 export * from './ImageGallery/components/ImageGalleryFooter';
 export * from './ImageGallery/components/ImageGalleryHeader';
 export * from './ImageGallery/components/ImageGalleryOverlay';
