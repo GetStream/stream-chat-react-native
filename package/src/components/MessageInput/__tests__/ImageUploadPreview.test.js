@@ -19,7 +19,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, rerender, toJSON, queryAllByText } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -78,7 +78,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, rerender, toJSON, queryAllByText } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -137,7 +137,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, rerender, toJSON, queryAllByText } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -215,7 +215,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { queryAllByTestId, rerender, toJSON, queryAllByText } = render(
+    const { queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -226,11 +226,14 @@ describe('ImageUploadPreview', () => {
     );
 
     await waitFor(() => {
+      expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
+        imageUploads.length,
+      );
       expect(queryAllByTestId('upload-progress-indicator')).toHaveLength(0);
       expect(queryAllByTestId('inactive-upload-progress-indicator')).toHaveLength(0);
       expect(queryAllByText('Not supported')).toHaveLength(imageUploads.length);
       expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(0);
-      
+
       expect(removeImage).toHaveBeenCalledTimes(0);
       expect(uploadImage).toHaveBeenCalledTimes(0);
     });
@@ -265,7 +268,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { queryAllByTestId, rerender, toJSON, queryAllByText } = render(
+    const { queryAllByTestId, queryAllByText, rerender, toJSON } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
