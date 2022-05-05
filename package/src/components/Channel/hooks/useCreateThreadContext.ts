@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { mapMessages } from 'src/utils/utils';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { mapMessages } from '../../../utils/utils';
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
