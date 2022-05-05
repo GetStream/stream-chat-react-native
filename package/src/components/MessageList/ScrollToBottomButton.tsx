@@ -63,7 +63,6 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props)
       colors: { accent_blue, black, white },
       messageList: {
         scrollToBottomButton: {
-          chevronColor,
           container,
           touchable,
           unreadCountNotificationContainer,
@@ -84,7 +83,7 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (props)
     >
       <View style={[styles.wrapper, wrapper]}>
         <View style={[styles.container, { backgroundColor: white, shadowColor: black }, container]}>
-          <Down pathFill={chevronColor ? chevronColor : black} />
+          <Down />
         </View>
         {!!unreadCount && (
           <View

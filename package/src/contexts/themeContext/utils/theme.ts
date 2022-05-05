@@ -334,7 +334,6 @@ export type Theme = {
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
       wrapper: ViewStyle;
-      chevronColor?: Color;
     };
     typingIndicatorContainer: ViewStyle;
   };

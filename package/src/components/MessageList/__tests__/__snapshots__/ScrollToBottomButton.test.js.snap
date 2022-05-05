@@ -68,7 +68,6 @@ exports[`ScrollToBottomButton should render the message notification and match s
         meetOrSlice={0}
         minX={0}
         minY={0}
-        pathFill="#000000"
         style={
           Array [
             Object {
