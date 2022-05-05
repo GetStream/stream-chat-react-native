@@ -1412,8 +1412,8 @@ Array [
     onChange={[Function]}
     snapPoints={
       Array [
-        288,
-        1314,
+        308,
+        1334,
       ]
     }
   >
@@ -3041,8 +3041,8 @@ Array [
     onChange={[Function]}
     snapPoints={
       Array [
-        288,
-        1314,
+        308,
+        1334,
       ]
     }
   >
@@ -5807,8 +5807,8 @@ Array [
     onChange={[Function]}
     snapPoints={
       Array [
-        288,
-        1314,
+        308,
+        1334,
       ]
     }
   >
@@ -6250,190 +6250,6 @@ Array [
               </RNSVGSvgView>
             </View>
           </View>
-<<<<<<< HEAD
-=======
-        </View>
-      </RCTScrollView>
-    </View>
-  </View>,
-  <View
-    animatedStyle={
-      Object {
-        "value": Object {
-          "opacity": 0,
-        },
-      }
-    }
-    collapsable={false}
-    pointerEvents="none"
-    style={
-      Object {
-        "bottom": 0,
-        "left": 0,
-        "opacity": 0,
-        "position": "absolute",
-        "right": 0,
-        "top": 0,
-      }
-    }
-  >
-    <View
-      style={
-        Array [
-          Object {
-            "backgroundColor": "#000000CC",
-          },
-          Array [
-            Object {
-              "bottom": 0,
-              "left": 0,
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            },
-            Object {
-              "height": 1334,
-              "width": 750,
-            },
-          ],
-        ]
-      }
-    />
-  </View>,
-  <View
-    containerHeight={1334}
-    enablePanDownToClose={true}
-    handleComponent={[Function]}
-    handleHeight={20}
-    index={-1}
-    onChange={[Function]}
-    snapPoints={
-      Array [
-        308,
-        1334,
-      ]
-    }
-  >
-    <RCTScrollView
-      contentContainerStyle={
-        Array [
-          Object {
-            "flexGrow": 1,
-          },
-          Object {
-            "backgroundColor": "#FFFFFF",
-          },
-          Object {},
-          Object {
-            "opacity": 1,
-          },
-        ]
-      }
-      data={Array []}
-      getItem={[Function]}
-      getItemCount={[Function]}
-      keyExtractor={[Function]}
-      onContentSizeChange={[Function]}
-      onEndReached={[Function]}
-      onLayout={[Function]}
-      onMomentumScrollBegin={[Function]}
-      onMomentumScrollEnd={[Function]}
-      onScroll={[Function]}
-      onScrollBeginDrag={[Function]}
-      onScrollEndDrag={[Function]}
-      removeClippedSubviews={false}
-      renderItem={[Function]}
-      scrollEventThrottle={50}
-      stickyHeaderIndices={Array []}
-      viewabilityConfigCallbackPairs={Array []}
-    >
-      <View />
-    </RCTScrollView>
-  </View>,
-]
-`;
-
-exports[`FileUploadPreview should render FileUploadPreview with all uploading files 1`] = `
-Array [
-  <View
-    keyboardVerticalOffset={86.5}
-    onLayout={[Function]}
-    style={
-      Object {
-        "paddingBottom": 0,
-      }
-    }
-  >
-    <View
-      style={
-        Object {
-          "height": "100%",
-        }
-      }
-    >
-      <RCTScrollView
-        data={
-          Array [
-            Object {
-              "file": Object {
-                "id": "file-upload-id-1",
-                "name": "dummy.pdf",
-                "state": "uploading",
-                "type": "file",
-              },
-              "id": "file-upload-id-1",
-              "state": "uploading",
-            },
-            Object {
-              "file": Object {
-                "id": "file-upload-id-2",
-                "name": "dummy.pdf",
-                "state": "uploading",
-                "type": "file",
-              },
-              "id": "file-upload-id-2",
-              "state": "uploading",
-            },
-            Object {
-              "file": Object {
-                "id": "file-upload-id-3",
-                "name": "dummy.pdf",
-                "state": "uploading",
-                "type": "file",
-              },
-              "id": "file-upload-id-3",
-              "state": "uploading",
-            },
-          ]
-        }
-        getItem={[Function]}
-        getItemCount={[Function]}
-        getItemLayout={[Function]}
-        keyExtractor={[Function]}
-        onContentSizeChange={[Function]}
-        onLayout={[Function]}
-        onMomentumScrollBegin={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        removeClippedSubviews={false}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-        style={
-          Array [
-            Object {
-              "marginBottom": 12,
-              "maxHeight": 166,
-            },
-            Object {},
-          ]
-        }
-        viewabilityConfigCallbackPairs={Array []}
-      >
-        <View>
->>>>>>> develop
           <View
             style={null}
           >
