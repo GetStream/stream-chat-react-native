@@ -9,7 +9,7 @@ import SetImages from '../common-content/contexts/image-gallery-context/set_imag
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
 import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
-import Images from '../common-content/contexts/message-context/images.mdx';
+import ImagesAndVideos from '../common-content/contexts/message-context/images_and_videos.mdx';
 import IsMyMessage from '../common-content/contexts/message-context/is_my_message.mdx';
 import LastGroupMessage from '../common-content/contexts/message-context/last_group_message.mdx';
 import MessageContentOrder from '../common-content/contexts/message-context/message_content_order.mdx';
@@ -26,6 +26,7 @@ import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.m
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
+import VideoThumbnail from '../common-content/core-components/channel/props/video_thumbnail.mdx';
 
 Component to render image attachments within the [`MessageList`](./message_list.mdx).
 
@@ -61,9 +62,9 @@ Weather current message has any thread replies or not. This boolean is used for 
 | ------- | ----------------------- |
 | boolean | `!!message.reply_count` |
 
-### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#images)_</div> images {#images}
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#imagesandvideos)_</div> imagesAndVideos {#imagesAndVideos}
 
-<Images />
+<ImagesAndVideos />
 
 ### <div class="label description">_overrides the value from [MessagesContext](../contexts/messages_context.mdx#legacyimageviewerswipebehaviour)_</div> legacyImageViewerSwipeBehaviour {#legacyimageviewerswipebehaviour}
 
@@ -124,3 +125,7 @@ If true, onPress handler will be disabled.
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
 
 <ThreadList />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/messages_context.mdx#videothumbnail)_</div> VideoThumbnail {#videoThumbnail}
+
+<VideoThumbnail />
