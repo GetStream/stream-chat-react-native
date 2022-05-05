@@ -514,7 +514,7 @@ export const emojiRegex =
 export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
 
-export const mapMessages = <
+export const getMessagesComparatorCallback = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
