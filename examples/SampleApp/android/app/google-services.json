@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "190151624402-ep0ciovldbiec8e3dcpjdqfmr6udf620.apps.googleusercontent.com",
+              "client_id": "190151624402-bnre78insijtguetkt2uogpgiplvmhe5.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "asda"
+                "bundle_id": "org.reactjs.native.example.SampleApp"
               }
             }
           ]
