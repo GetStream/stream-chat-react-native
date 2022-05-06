@@ -147,10 +147,16 @@ export const renderText = <
     },
   };
 
-  const onLink = (url: string) =>
-    onLinkParams
+  const onLink = (url: string) => {
+    const pattern = new RegExp(/^\S+:\/\//);
+    if (!pattern.test(url)) {
+      url = 'http://' + url;
+    }
+
+    return onLinkParams
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
+  };
 
   const link: ReactNodeOutput = (node, output, { ...state }) => {
     const onPress = (event: GestureResponderEvent) => {
