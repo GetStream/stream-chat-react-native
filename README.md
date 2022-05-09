@@ -42,10 +42,9 @@ For complete pricing details visit our [Chat Pricing Page](https://getstream.io/
 
 ## 🔮 Example Apps
 
-This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
+This repo includes 3 example apps. One made with Expo, two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
 - [Expo example](./examples/ExpoMessaging)
-- [Native example](./examples/NativeMessaging)
 - [Typescript example](./examples/TypeScriptMessaging)
 - [Fully featured messaging application](./examples/SampleApp)
 
