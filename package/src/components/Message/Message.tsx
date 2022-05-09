@@ -316,7 +316,6 @@ const MessageWithContext = <
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
             } else if (cur.type === 'video' && !cur.og_scrape_url) {
-              console.log(cur.asset_url);
               acc.images.push({ image_url: cur.asset_url, type: 'video' });
               acc.other = [];
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {

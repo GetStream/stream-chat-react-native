@@ -75,8 +75,6 @@ const GridImage = <
 
   const { numberOfImageGalleryGridColumns, selectAndClose, type, uri } = restItem;
 
-  console.log(restItem);
-
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
   if (imageComponent) {
