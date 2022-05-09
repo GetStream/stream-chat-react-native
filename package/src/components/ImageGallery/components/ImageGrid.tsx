@@ -1,12 +1,12 @@
 import React from 'react';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet';
 
+import { VideoThumbnail } from '../../../components/Attachment/VideoThumbnail';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
-import { Avatar } from '../../Avatar/Avatar';
 
 import type { Photo } from '../ImageGallery';
 
@@ -66,15 +66,16 @@ const GridImage = <
 }) => {
   const {
     theme: {
-      colors: { white },
       imageGallery: {
-        grid: { gridAvatar, gridAvatarWrapper, gridImage },
+        grid: { gridImage },
       },
     },
   } = useTheme();
-  const { avatarComponent, imageComponent, ...restItem } = item;
+  const { imageComponent, ...restItem } = item;
 
-  const { numberOfImageGalleryGridColumns, selectAndClose, uri, user } = restItem;
+  const { numberOfImageGalleryGridColumns, selectAndClose, type, uri } = restItem;
+
+  console.log(restItem);
 
   const size = vw(100) / (numberOfImageGalleryGridColumns || 3) - 2;
 
@@ -84,25 +85,13 @@ const GridImage = <
 
   return (
     <TouchableOpacity onPress={selectAndClose}>
-      <ImageBackground
-        source={{ uri }}
-        style={[styles.image, { height: size, width: size }, gridImage]}
-      >
-        {avatarComponent
-          ? avatarComponent({ item: restItem })
-          : !!user?.image && (
-              <Avatar
-                containerStyle={[
-                  styles.avatarImageWrapper,
-                  { backgroundColor: white },
-                  gridAvatarWrapper,
-                ]}
-                image={user.image}
-                imageStyle={gridAvatar}
-                size={22}
-              />
-            )}
-      </ImageBackground>
+      {type === 'video' ? (
+        <View style={[styles.image, { height: size, width: size }, gridImage]}>
+          <VideoThumbnail />
+        </View>
+      ) : (
+        <Image source={{ uri }} style={[styles.image, { height: size, width: size }]} />
+      )}
     </TouchableOpacity>
   );
 };

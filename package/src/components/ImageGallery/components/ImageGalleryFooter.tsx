@@ -183,17 +183,19 @@ export const ImageGalleryFooterWithContext = <
       style={styles.wrapper}
     >
       <ReanimatedSafeAreaView style={[container, footerStyle]}>
-        {photo.type === 'video' && videoControlElement ? (
-          videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
-        ) : (
-          <ImageGalleryVideoControl
-            duration={duration}
-            onPlayPause={onPlayPause}
-            onProgressDrag={onProgressDrag}
-            paused={paused}
-            progress={progress}
-          />
-        )}
+        {photo.type === 'video' ? (
+          videoControlElement ? (
+            videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
+          ) : (
+            <ImageGalleryVideoControl
+              duration={duration}
+              onPlayPause={onPlayPause}
+              onProgressDrag={onProgressDrag}
+              paused={paused}
+              progress={progress}
+            />
+          )
+        ) : null}
         <View style={[styles.innerContainer, innerContainer, { backgroundColor: 'white' }]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })

@@ -39,9 +39,7 @@ type Props = {
 
 const styles = StyleSheet.create({
   activityIndicator: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
+    alignSelf: 'center',
   },
   videoPlayer: {
     height: '100%',
@@ -161,43 +159,51 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
     }
 
     return (
-      <View>
+      <Animated.View
+        style={[
+          style,
+          animatedViewStyles,
+          {
+            transform: [
+              { scaleX: -1 },
+              { translateY: -screenHeight * 3.5 },
+              {
+                translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
+              },
+              { scale: oneEight },
+            ],
+          },
+        ]}
+      >
+        <Video
+          onBuffer={onBuffer}
+          onEnd={onEnd}
+          onLoad={onLoad}
+          onLoadStart={onLoadStart}
+          onPlaybackStatusUpdate={onPlayBackStatusUpdate}
+          onProgress={onProgress}
+          paused={paused}
+          resizeMode='cover'
+          style={style}
+          uri={source.uri}
+          videoRef={videoRef}
+        />
         <Animated.View
           style={[
-            style,
-            animatedViewStyles,
+            styles.activityIndicator,
             {
+              opacity,
               transform: [
                 { scaleX: -1 },
-                { translateY: -screenHeight * 3.5 },
-                {
-                  translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
-                },
-                { scale: oneEight },
+                { translateY: -screenHeight * 4 },
+                { scale: 1 / oneEight },
               ],
             },
           ]}
         >
-          <Video
-            onBuffer={onBuffer}
-            onEnd={onEnd}
-            onLoad={onLoad}
-            onLoadStart={onLoadStart}
-            onPlaybackStatusUpdate={onPlayBackStatusUpdate}
-            onProgress={onProgress}
-            paused={paused}
-            resizeMode='cover'
-            style={style}
-            uri={source.uri}
-            videoRef={videoRef}
-          />
-        </Animated.View>
-        <View
-          style={[styles.activityIndicator, { height: screenHeight, opacity, width: screenWidth }]}
-        >
           <Spinner height={40} width={40} />
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     );
   },
 

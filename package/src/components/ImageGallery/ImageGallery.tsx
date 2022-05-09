@@ -175,7 +175,10 @@ export const ImageGallery = <
     : vh(100);
   const halfScreenHeight = screenHeight / 2;
   const quarterScreenHeight = screenHeight / 4;
-  const snapPoints = React.useMemo(() => [(screenHeight * 9) / 10], []);
+  const snapPoints = React.useMemo(
+    () => [(screenHeight * 3) / 4, screenHeight - (imageGalleryGridHandleHeight ?? 40)],
+    [],
+  );
 
   /**
    * BottomSheetModal ref
@@ -312,6 +315,10 @@ export const ImageGallery = <
     const newIndex = photos.findIndex(
       (photo) => photo.messageId === image?.messageId && photo.uri === image?.url,
     );
+
+    if (photoLength > 1) {
+      setPaused(true);
+    }
 
     runOnUI(updatePosition)(newIndex);
   }, [image, photoLength]);
@@ -597,7 +604,6 @@ export const ImageGallery = <
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.header}
       />
-
       <ImageGalleryFooter<StreamChatGenerics>
         duration={duration}
         onPlayPause={handlePlayPause}
