@@ -425,11 +425,8 @@ export const MessageInputProvider = <
     }
   };
 
-  const getBlockedFileExtenstionTypes = getFileUploadConfig()?.blocked_file_extensions;
-  const getBlockedFileeMimeTypes = getFileUploadConfig()?.blocked_mime_types;
-
-  const blockedFilesExtentionTypes = getBlockedFileExtenstionTypes;
-  const blockedMimeFiles = getBlockedFileeMimeTypes;
+  const getBlockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
+  const getBlockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
 
   const getImageUploadConfig = () => {
     const imageConfig = appSettings?.app?.image_upload_config;
@@ -439,11 +436,8 @@ export const MessageInputProvider = <
     return {};
   };
 
-  const getBlockedImageExtenstionTypes = getImageUploadConfig()?.blocked_file_extensions;
+  const getBlockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
   const getBlockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
-
-  const blockedImagesExtentionTypes = getBlockedImageExtenstionTypes;
-  const blockedImagesMimeTypes = getBlockedImageMimeTypes;
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -999,10 +993,12 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = blockedFilesExtentionTypes?.some((fileExtensionType: string) =>
+    const blockedFile = getBlockedFileExtensionTypes?.some((fileExtensionType: string) =>
       file.name?.includes(fileExtensionType),
     );
-    const blockedMime = blockedMimeFiles?.some((mimeType: string) => file.name?.includes(mimeType));
+    const blockedMime = getBlockedFileMimeTypes?.some((mimeType: string) =>
+      file.name?.includes(mimeType),
+    );
 
     const fileState = blockedFile || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
@@ -1025,11 +1021,11 @@ export const MessageInputProvider = <
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
-    const blockedMime = blockedImagesMimeTypes?.some((mimeType: string) =>
+    const blockedMime = getBlockedImageMimeTypes?.some((mimeType: string) =>
       image.uri?.includes(mimeType),
     );
 
-    const blockedImage = blockedImagesExtentionTypes?.some((imageExtensionType: string) =>
+    const blockedImage = getBlockedImageExtensionTypes?.some((imageExtensionType: string) =>
       image.uri?.includes(imageExtensionType),
     );
 
