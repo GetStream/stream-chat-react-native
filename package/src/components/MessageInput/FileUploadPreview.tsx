@@ -18,10 +18,10 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
+  FileStateType,
   getIndicatorTypeForFileState,
   ProgressIndicatorState,
   ProgressIndicatorTypes,
-  UploadState,
 } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 
@@ -150,7 +150,7 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);
+    const indicatorType = getIndicatorTypeForFileState(item.state as FileStateType);
 
     return (
       <>

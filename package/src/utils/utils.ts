@@ -57,15 +57,16 @@ export const MessageStatusTypes = {
   SENDING: 'sending',
 };
 
-type ValueOf<T> = T[keyof T];
+export type ValueOf<T> = T[keyof T];
 
-type RequiredFileStates = Omit<typeof FileState, 'NO_FILE'>;
-type FileStateType = ValueOf<RequiredFileStates>;
+export type RequiredFileStates = Omit<typeof FileState, 'NO_FILE'>;
+export type FileStateType = ValueOf<RequiredFileStates>;
 
-type Progress = ValueOf<typeof ProgressIndicatorTypes>;
-type IndicatorStatesMap = Record<FileStateType, Progress>;
+export type Progress = ValueOf<typeof ProgressIndicatorTypes>;
+export type IndicatorStatesMap = Record<FileStateType, Progress>;
+export type ProgressIndicatorState = Progress | null;
 
-export const getIndicatorTypeForFileState = (fileState: FileStateType): Progress | null => {
+export const getIndicatorTypeForFileState = (fileState: FileStateType): ProgressIndicatorState => {
   const indicatorMap: IndicatorStatesMap = {
     [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
     [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,

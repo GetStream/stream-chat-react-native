@@ -14,10 +14,10 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
+  FileStateType,
   getIndicatorTypeForFileState,
   ProgressIndicatorState,
   ProgressIndicatorTypes,
-  UploadState,
 } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
@@ -128,7 +128,7 @@ const ImageUploadPreviewWithContext = <
   };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state as UploadState);
+    const indicatorType = getIndicatorTypeForFileState(item.state as FileStateType);
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (
