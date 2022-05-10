@@ -19,7 +19,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -47,25 +47,6 @@ describe('ImageUploadPreview', () => {
       expect(removeImage).toHaveBeenCalledTimes(1);
       expect(uploadImage).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render ImageUploadPreview with all uploaded images', async () => {
@@ -78,7 +59,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -106,25 +87,6 @@ describe('ImageUploadPreview', () => {
       expect(removeImage).toHaveBeenCalledTimes(1);
       expect(uploadImage).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render ImageUploadPreview with all failed images', async () => {
@@ -137,7 +99,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -172,25 +134,6 @@ describe('ImageUploadPreview', () => {
       expect(removeImage).toHaveBeenCalledTimes(1);
       expect(uploadImage).toHaveBeenCalledTimes(1);
     });
-
-    rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render ImageUploadPreview with all unsupported', async () => {
@@ -215,7 +158,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { queryAllByTestId, queryAllByText } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -237,25 +180,6 @@ describe('ImageUploadPreview', () => {
       expect(removeImage).toHaveBeenCalledTimes(0);
       expect(uploadImage).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render ImageUploadPreview with 1 uploading, 1 uploaded, and 1 failed image, and 1 unsupported', async () => {
@@ -268,7 +192,7 @@ describe('ImageUploadPreview', () => {
     const removeImage = jest.fn();
     const uploadImage = jest.fn();
 
-    const { queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { queryAllByTestId, queryAllByText } = render(
       <ThemeProvider>
         <ImageUploadPreview
           imageUploads={imageUploads}
@@ -285,25 +209,6 @@ describe('ImageUploadPreview', () => {
       expect(queryAllByText('Not supported')).toHaveLength(1);
       expect(removeImage).toHaveBeenCalledTimes(0);
       expect(uploadImage).toHaveBeenCalledTimes(0);
-    });
-
-    rerender(
-      <ThemeProvider>
-        <ImageUploadPreview
-          imageUploads={imageUploads.map((image, index) => ({
-            ...image,
-            id: `${index}`,
-          }))}
-          removeImage={removeImage}
-          uploadImage={uploadImage}
-        />
-      </ThemeProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
     });
   });
 });

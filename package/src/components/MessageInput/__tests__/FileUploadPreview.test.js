@@ -48,7 +48,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -78,29 +78,6 @@ describe('FileUploadPreview', () => {
       expect(removeFile).toHaveBeenCalledTimes(1);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads.map((file, index) => ({
-                ...file,
-                id: `${index}`,
-              }))}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render FileUploadPreview with all uploaded files', async () => {
@@ -125,7 +102,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -157,29 +134,6 @@ describe('FileUploadPreview', () => {
       expect(removeFile).toHaveBeenCalledTimes(1);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads.map((file, index) => ({
-                ...file,
-                id: `${index}`,
-              }))}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render FileUploadPreview with all failed files', async () => {
@@ -204,7 +158,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -241,29 +195,6 @@ describe('FileUploadPreview', () => {
       expect(removeFile).toHaveBeenCalledTimes(1);
       expect(uploadFile).toHaveBeenCalledTimes(1);
     });
-
-    rerender(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads.map((file, index) => ({
-                ...file,
-                id: `${index}`,
-              }))}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render FileUploadPreview with all unsupported files', async () => {
@@ -288,7 +219,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -318,29 +249,6 @@ describe('FileUploadPreview', () => {
       expect(removeFile).toHaveBeenCalledTimes(1);
       expect(uploadFile).toHaveBeenCalledTimes(0);
     });
-
-    rerender(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads.map((file, index) => ({
-                ...file,
-                id: `${index}`,
-              }))}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
-    });
   });
 
   it('should render FileUploadPreview with 1 uploading, 1 uploaded, and 1 failed file', async () => {
@@ -365,7 +273,7 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { queryAllByTestId, queryAllByText, rerender, toJSON } = render(
+    const { queryAllByTestId, queryAllByText } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel} FlatList={MockedFlatList}>
@@ -388,29 +296,6 @@ describe('FileUploadPreview', () => {
       expect(queryAllByText('File type not supported')).toHaveLength(1);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
-    });
-
-    rerender(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads.map((file, index) => ({
-                ...file,
-                id: `${index}`,
-              }))}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    const snapshot = toJSON();
-
-    await waitFor(() => {
-      expect(snapshot).toMatchSnapshot();
     });
   });
 });
