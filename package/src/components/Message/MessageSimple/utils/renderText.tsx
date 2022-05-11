@@ -207,7 +207,11 @@ export const renderText = <
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
-    const userName = node.content[0]?.content.replace(/[|&;$%@"<>()+,]/g, '');
+    /**
+     * node.content[0]?.replace(/@/g, '');
+     * removes @ character from userName to properly compare the string
+     */
+    const userName = node.content[0]?.content.replace(/@/g, '');
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
