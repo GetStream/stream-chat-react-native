@@ -20,7 +20,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
   FileStateType,
   getIndicatorTypeForFileState,
-  ProgressIndicatorState,
+  Progress,
   ProgressIndicatorTypes,
 } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
@@ -83,7 +83,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   indicatorType,
   item,
 }: {
-  indicatorType: ProgressIndicatorState;
+  indicatorType: Progress;
   item: FileUpload;
 }) => {
   const {

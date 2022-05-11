@@ -16,7 +16,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
   FileStateType,
   getIndicatorTypeForFileState,
-  ProgressIndicatorState,
+  Progress,
   ProgressIndicatorTypes,
 } from '../../utils/utils';
 
@@ -103,7 +103,7 @@ const ImageUploadPreviewWithContext = <
   const UnsupportedImageTypeIndicator = ({
     indicatorType,
   }: {
-    indicatorType: ProgressIndicatorState;
+    indicatorType: Progress | null;
   }) => {
     const {
       theme: {
