@@ -18,9 +18,8 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
-  FileStateType,
+  FileState,
   getIndicatorTypeForFileState,
-  Progress,
   ProgressIndicatorTypes,
 } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
@@ -83,7 +82,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
   indicatorType,
   item,
 }: {
-  indicatorType: Progress;
+  indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes];
   item: FileUpload;
 }) => {
   const {
@@ -150,7 +149,9 @@ const FileUploadPreviewWithContext = <
   } = useTheme();
 
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state as FileStateType);
+    const indicatorType = getIndicatorTypeForFileState(
+      item.state as typeof FileState[keyof typeof FileState],
+    );
 
     return (
       <>

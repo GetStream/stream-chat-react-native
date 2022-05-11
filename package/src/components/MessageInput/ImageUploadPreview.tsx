@@ -14,9 +14,8 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
-  FileStateType,
+  FileState,
   getIndicatorTypeForFileState,
-  Progress,
   ProgressIndicatorTypes,
 } from '../../utils/utils';
 
@@ -100,7 +99,11 @@ const ImageUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const UnsupportedImageTypeIndicator = ({ indicatorType }: { indicatorType: Progress | null }) => {
+  const UnsupportedImageTypeIndicator = ({
+    indicatorType,
+  }: {
+    indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes] | null;
+  }) => {
     const {
       theme: {
         colors: { accent_red, overlay, white },
@@ -124,7 +127,9 @@ const ImageUploadPreviewWithContext = <
   };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(item.state as FileStateType);
+    const indicatorType = getIndicatorTypeForFileState(
+      item.state as typeof FileState[keyof typeof FileState],
+    );
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (

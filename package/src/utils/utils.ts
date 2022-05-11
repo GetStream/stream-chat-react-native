@@ -32,7 +32,6 @@ export const FileState = Object.freeze({
   // while later is set on backend side
   // TODO: Unify both of them
   FINISHED: 'finished',
-  NO_FILE: 'no_file',
   NOT_SUPPORTED: 'not_supported',
   UPLOAD_FAILED: 'upload_failed',
   UPLOADED: 'uploaded',
@@ -58,14 +57,14 @@ export const MessageStatusTypes = {
 };
 
 type ValueOf<T> = T[keyof T];
+type Progress = ValueOf<typeof ProgressIndicatorTypes>;
+type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
 
-type RequiredFileStates = Omit<typeof FileState, 'NO_FILE'>;
-export type FileStateType = ValueOf<RequiredFileStates>;
 
-export type Progress = ValueOf<typeof ProgressIndicatorTypes>;
-type IndicatorStatesMap = Record<FileStateType, Progress>;
 
-export const getIndicatorTypeForFileState = (fileState: FileStateType): Progress | null => {
+export const getIndicatorTypeForFileState = (
+  fileState: typeof FileState[keyof typeof FileState],
+): Progress | null => {
   const indicatorMap: IndicatorStatesMap = {
     [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
     [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,
@@ -74,11 +73,7 @@ export const getIndicatorTypeForFileState = (fileState: FileStateType): Progress
     [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
   };
 
-  if (Object.keys(indicatorMap).includes(fileState)) {
-    return indicatorMap[fileState];
-  }
-
-  return null;
+  return indicatorMap[fileState];
 };
 
 const defaultAutoCompleteSuggestionsLimit = 10;
