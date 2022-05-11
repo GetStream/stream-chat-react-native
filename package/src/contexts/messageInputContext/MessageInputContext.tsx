@@ -425,8 +425,8 @@ export const MessageInputProvider = <
     }
   };
 
-  const getBlockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
-  const getBlockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
+  const blockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
+  const blockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
 
   const getImageUploadConfig = () => {
     const imageConfig = appSettings?.app?.image_upload_config;
@@ -436,8 +436,8 @@ export const MessageInputProvider = <
     return {};
   };
 
-  const getBlockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
-  const getBlockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
+  const blockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
+  const blockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
 
   const channelCapabities = useOwnCapabilitiesContext();
 
@@ -993,14 +993,14 @@ export const MessageInputProvider = <
     const id = generateRandomId();
     const mimeType = lookup(file.name);
 
-    const blockedFile = getBlockedFileExtensionTypes?.some((fileExtensionType: string) =>
+    const isBlockedFile = blockedFileExtensionTypes?.some((fileExtensionType: string) =>
       file.name?.includes(fileExtensionType),
     );
-    const blockedMime = getBlockedFileMimeTypes?.some((mimeType: string) =>
+    const isBlockedMime = blockedFileMimeTypes?.some((mimeType: string) =>
       file.name?.includes(mimeType),
     );
 
-    const fileState = blockedFile || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const fileState = isBlockedFile || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -1013,7 +1013,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!blockedFile) {
+    if (!isBlockedFile) {
       uploadFile({ newFile });
     }
   };
@@ -1021,15 +1021,15 @@ export const MessageInputProvider = <
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
-    const blockedMime = getBlockedImageMimeTypes?.some((mimeType: string) =>
+    const isBlockedMime = blockedImageMimeTypes?.some((mimeType: string) =>
       image.uri?.includes(mimeType),
     );
 
-    const blockedImage = getBlockedImageExtensionTypes?.some((imageExtensionType: string) =>
+    const isBlockedImage = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
       image.uri?.includes(imageExtensionType),
     );
 
-    const imageState = blockedImage || blockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const imageState = isBlockedImage || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newImage = {
       file: image,
@@ -1042,7 +1042,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!blockedImage) {
+    if (!isBlockedImage) {
       uploadImage({ newImage });
     }
   };
