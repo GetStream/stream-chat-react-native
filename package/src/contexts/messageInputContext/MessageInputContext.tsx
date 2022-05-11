@@ -62,7 +62,7 @@ export type FileUpload = {
     uri?: string;
   };
   id: string;
-  state: string;
+  state: typeof FileState[keyof typeof FileState];
   url?: string;
 };
 
@@ -71,7 +71,7 @@ export type ImageUpload = {
     name?: string;
   };
   id: string;
-  state: string;
+  state: typeof FileState[keyof typeof FileState];
   height?: number;
   url?: string;
   width?: number;
@@ -1008,7 +1008,7 @@ export const MessageInputProvider = <
       file: { ...file, type: mimeType || file?.type },
       id,
       state: fileState,
-    };
+    } as FileUpload;
 
     await Promise.all([
       setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
@@ -1038,7 +1038,7 @@ export const MessageInputProvider = <
       file: image,
       id,
       state: imageState,
-    };
+    } as ImageUpload;
 
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),

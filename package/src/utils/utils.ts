@@ -60,7 +60,13 @@ type ValueOf<T> = T[keyof T];
 type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
 
-
+enum _IndicatorState {
+  FINISHED = 'finished',
+  NOT_SUPPORTED = 'not_supported',
+  UPLOAD_FAILED = 'upload_failed',
+  UPLOADED = 'uploaded',
+  UPLOADING = 'uploading',
+}
 
 export const getIndicatorTypeForFileState = (
   fileState: typeof FileState[keyof typeof FileState],
@@ -75,6 +81,16 @@ export const getIndicatorTypeForFileState = (
 
   return indicatorMap[fileState];
 };
+
+// enum UserResponse {
+//   No = "0",
+//   Yes = "1",
+// }
+
+// function respond(recipient: string, message: UserResponse): void {
+// }
+
+// respond('Princess Caroline', UserResponse.Yes);
 
 const defaultAutoCompleteSuggestionsLimit = 10;
 const defaultMentionAllAppUsersQuery = {

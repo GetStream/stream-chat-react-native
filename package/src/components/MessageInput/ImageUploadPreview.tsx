@@ -14,7 +14,6 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import {
-  FileState,
   getIndicatorTypeForFileState,
   ProgressIndicatorTypes,
 } from '../../utils/utils';
@@ -128,7 +127,7 @@ const ImageUploadPreviewWithContext = <
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
     const indicatorType = getIndicatorTypeForFileState(
-      item.state as typeof FileState[keyof typeof FileState],
+      item.state,
     );
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
