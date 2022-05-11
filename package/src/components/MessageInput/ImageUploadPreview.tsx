@@ -100,11 +100,7 @@ const ImageUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const UnsupportedImageTypeIndicator = ({
-    indicatorType,
-  }: {
-    indicatorType: Progress | null;
-  }) => {
+  const UnsupportedImageTypeIndicator = ({ indicatorType }: { indicatorType: Progress | null }) => {
     const {
       theme: {
         colors: { accent_red, overlay, white },

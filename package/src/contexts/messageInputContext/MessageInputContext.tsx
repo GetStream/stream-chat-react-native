@@ -1000,7 +1000,8 @@ export const MessageInputProvider = <
       file.name?.includes(mimeType),
     );
 
-    const fileState = isBlockedFile || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const fileState =
+      isBlockedFile || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newFile = {
       file: { ...file, type: mimeType || file?.type },
@@ -1029,7 +1030,8 @@ export const MessageInputProvider = <
       image.uri?.includes(imageExtensionType),
     );
 
-    const imageState = isBlockedImage || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+    const imageState =
+      isBlockedImage || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
     const newImage = {
       file: image,

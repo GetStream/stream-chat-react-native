@@ -65,7 +65,6 @@ export type FileStateType = ValueOf<RequiredFileStates>;
 export type Progress = ValueOf<typeof ProgressIndicatorTypes>;
 type IndicatorStatesMap = Record<FileStateType, Progress>;
 
-
 export const getIndicatorTypeForFileState = (fileState: FileStateType): Progress | null => {
   const indicatorMap: IndicatorStatesMap = {
     [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
