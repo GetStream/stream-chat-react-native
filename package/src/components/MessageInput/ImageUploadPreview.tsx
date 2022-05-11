@@ -13,10 +13,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import {
-  getIndicatorTypeForFileState,
-  ProgressIndicatorTypes,
-} from '../../utils/utils';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
 const WARNING_ICON_SIZE = 16;
@@ -126,9 +123,7 @@ const ImageUploadPreviewWithContext = <
   };
 
   const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
-    const indicatorType = getIndicatorTypeForFileState(
-      item.state,
-    );
+    const indicatorType = getIndicatorTypeForFileState(item.state);
     const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
 
     return (

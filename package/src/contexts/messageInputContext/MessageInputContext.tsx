@@ -53,7 +53,6 @@ import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-
 export type FileUpload = {
   file: {
     name: string;
@@ -845,7 +844,7 @@ export const MessageInputProvider = <
 
   const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const setFileUploadState =
+  const mapFileUploadState =
     (id: string, fileState: string, extraData?: Record<string, unknown>) =>
     <UploadType extends { id: string }>(prevImageUploads: UploadType[]) =>
       prevImageUploads.map((imageUpload) => {
@@ -864,19 +863,19 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       if (error instanceof Error) {
         if (regExcondition.test(error.message)) {
-          return setImageUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
+          return setImageUploads(mapFileUploadState(id, FileState.NOT_SUPPORTED));
         }
 
-        return setImageUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+        return setImageUploads(mapFileUploadState(id, FileState.UPLOAD_FAILED));
       }
     } else {
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
       if (error instanceof Error) {
         if (regExcondition.test(error.message)) {
-          return setFileUploads(setFileUploadState(id, FileState.NOT_SUPPORTED));
+          return setFileUploads(mapFileUploadState(id, FileState.NOT_SUPPORTED));
         }
-        return setFileUploads(setFileUploadState(id, FileState.UPLOAD_FAILED));
+        return setFileUploads(mapFileUploadState(id, FileState.UPLOAD_FAILED));
       }
     }
   };
@@ -887,7 +886,7 @@ export const MessageInputProvider = <
     }
     const { file, id } = newFile;
 
-    setFileUploads(setFileUploadState(id, FileState.UPLOADING));
+    setFileUploads(mapFileUploadState(id, FileState.UPLOADING));
 
     let response = {} as SendFileAPIResponse;
     try {
@@ -896,7 +895,7 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-      setFileUploads(setFileUploadState(id, FileState.UPLOADED, { url: response.file }));
+      setFileUploads(mapFileUploadState(id, FileState.UPLOADED, { url: response.file }));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);
     }
@@ -963,7 +962,7 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads(setFileUploadState(id, FileState.UPLOADED, { url: res.file }));
+              setImageUploads(mapFileUploadState(id, FileState.UPLOADED, { url: res.file }));
             }
           });
         } else {
@@ -973,7 +972,7 @@ export const MessageInputProvider = <
 
       if (Object.keys(response).length) {
         setImageUploads(
-          setFileUploadState(id, FileState.UPLOADED, {
+          mapFileUploadState(id, FileState.UPLOADED, {
             height: file.height,
             url: response.file,
             width: file.width,
@@ -991,24 +990,24 @@ export const MessageInputProvider = <
     type?: string;
     uri?: string;
   }) => {
-    const id = generateRandomId();
-    const mimeType = lookup(file.name);
+    const id: string = generateRandomId();
+    const mimeType: string | boolean = lookup(file.name);
 
-    const isBlockedFile = blockedFileExtensionTypes?.some((fileExtensionType: string) =>
-      file.name?.includes(fileExtensionType),
+    const isBlockedFile: boolean | undefined = blockedFileExtensionTypes?.some(
+      (fileExtensionType: string) => file.name?.includes(fileExtensionType),
     );
-    const isBlockedMime = blockedFileMimeTypes?.some((mimeType: string) =>
+    const isBlockedMime: boolean | undefined = blockedFileMimeTypes?.some((mimeType: string) =>
       file.name?.includes(mimeType),
     );
 
     const fileState =
       isBlockedFile || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
-    const newFile = {
+    const newFile: FileUpload = {
       file: { ...file, type: mimeType || file?.type },
       id,
       state: fileState,
-    } as FileUpload;
+    };
 
     await Promise.all([
       setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
@@ -1034,11 +1033,11 @@ export const MessageInputProvider = <
     const imageState =
       isBlockedImage || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
 
-    const newImage = {
+    const newImage: ImageUpload = {
       file: image,
       id,
       state: imageState,
-    } as ImageUpload;
+    };
 
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
