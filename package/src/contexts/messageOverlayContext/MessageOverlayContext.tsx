@@ -28,7 +28,7 @@ export type MessageOverlayData<
   files?: Attachment<StreamChatGenerics>[];
   groupStyles?: GroupType[];
   handleReaction?: (reactionType: string) => Promise<void>;
-  images?: Attachment<StreamChatGenerics>[];
+  imagesAndVideos?: Attachment<StreamChatGenerics>[];
   message?: MessageType<StreamChatGenerics>;
   messageActions?: MessageActionType[];
   messageContext?: MessageContextValue<StreamChatGenerics>;

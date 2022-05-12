@@ -82,6 +82,7 @@ import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
+import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
@@ -287,6 +288,7 @@ export type ChannelPropsWithContext<
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
+      | 'VideoThumbnail'
     >
   > &
   Partial<
@@ -534,6 +536,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
+    VideoThumbnail = VideoThumbnailDefault,
     watcherCount,
     watchers,
   } = props;
@@ -1738,6 +1741,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer,
     updateMessage,
     UrlPreview,
+    VideoThumbnail,
   });
 
   const suggestionsContext = {

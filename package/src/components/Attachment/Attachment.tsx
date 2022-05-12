@@ -67,7 +67,7 @@ const AttachmentWithContext = <
   if (attachment.type === 'image') {
     return (
       <>
-        <Gallery images={[attachment]} />
+        <Gallery imagesAndVideos={[attachment]} />
         {hasAttachmentActions && (
           <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
         )}
@@ -78,13 +78,6 @@ const AttachmentWithContext = <
   if (attachment.type === 'file' || attachment.type === 'audio') {
     console.log(attachment.asset_url);
     return <FileAttachment attachment={attachment} />;
-  }
-
-  if (attachment.type === 'video' && attachment.asset_url) {
-    return (
-      // TODO: Put in video component
-      <FileAttachment attachment={attachment} />
-    );
   }
 
   if (hasAttachmentActions) {

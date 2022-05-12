@@ -44,8 +44,8 @@ export type MessageContextValue<
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
-  /** The images attached to a message */
-  images: Attachment<StreamChatGenerics>[];
+  /** The images and videos attached to a message */
+  imagesAndVideos: Attachment<StreamChatGenerics>[];
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */

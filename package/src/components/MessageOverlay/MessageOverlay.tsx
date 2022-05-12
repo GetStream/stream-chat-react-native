@@ -117,7 +117,7 @@ const MessageOverlayWithContext = <
     files,
     groupStyles,
     handleReaction,
-    images,
+    imagesAndVideos,
     message,
     messageActions,
     MessageActionList = DefaultMessageActionList,
@@ -447,7 +447,7 @@ const MessageOverlayWithContext = <
                                             alignment={alignment}
                                             groupStyles={groupStyles}
                                             hasThreadReplies={!!message?.reply_count}
-                                            images={images}
+                                            imagesAndVideos={imagesAndVideos}
                                             key={`gallery_${messageContentOrderIndex}`}
                                             message={message}
                                             threadList={threadList}

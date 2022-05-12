@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { padding: 1 },
+  imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -75,7 +75,7 @@ export type GalleryPropsWithContext<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
     | 'groupStyles'
-    | 'images'
+    | 'imagesAndVideos'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
@@ -84,7 +84,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
+    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour' | 'VideoThumbnail'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -114,7 +114,7 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
-    images,
+    imagesAndVideos,
     legacyImageViewerSwipeBehaviour,
     message,
     onLongPress,
@@ -125,6 +125,7 @@ const GalleryWithContext = <
     setImages,
     setOverlay,
     threadList,
+    VideoThumbnail,
   } = props;
 
   const {
@@ -161,13 +162,13 @@ const GalleryWithContext = <
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
-        images,
+        images: imagesAndVideos,
         sizeConfig,
       }),
-    [images.length],
+    [imagesAndVideos.length],
   );
 
-  if (!images?.length) return null;
+  if (!imagesAndVideos?.length) return null;
   const messageText = message?.text;
   const messageId = message?.id;
   const numOfColumns = thumbnailGrid.length;
@@ -200,7 +201,7 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {rows.map(({ height, resizeMode, url, width }, rowIndex) => {
+            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
               const defaultOnPress = () => {
                 // Added if-else to keep the logic readable, instead of DRY.
                 // if - legacyImageViewerSwipeBehaviour is disabled
@@ -218,7 +219,7 @@ const GalleryWithContext = <
                 <TouchableOpacity
                   activeOpacity={0.8}
                   disabled={preventPress}
-                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
+                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
                   onLongPress={(event) => {
                     if (onLongPress) {
                       onLongPress({
@@ -258,35 +259,62 @@ const GalleryWithContext = <
                   }-${colIndex}-item-${rowIndex}`}
                   {...additionalTouchableProps}
                 >
-                  <MemoizedGalleryImage
-                    resizeMode={resizeMode}
-                    style={[
-                      getGalleryImageBorderRadius({
-                        alignment,
-                        colIndex,
-                        groupStyles,
-                        hasThreadReplies,
-                        height,
-                        invertedDirections,
-                        messageText,
-                        numOfColumns,
-                        numOfRows,
-                        rowIndex,
-                        sizeConfig,
-                        threadList,
-                        width,
-                      }),
-                      image,
-                      {
-                        height: height - 1,
-                        width: width - 1,
-                      },
-                    ]}
-                    uri={url}
-                  />
+                  {type === 'video' ? (
+                    <VideoThumbnail
+                      style={[
+                        getGalleryImageBorderRadius({
+                          alignment,
+                          colIndex,
+                          groupStyles,
+                          hasThreadReplies,
+                          height,
+                          invertedDirections,
+                          messageText,
+                          numOfColumns,
+                          numOfRows,
+                          rowIndex,
+                          sizeConfig,
+                          threadList,
+                          width,
+                        }),
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <MemoizedGalleryImage
+                      resizeMode={resizeMode}
+                      style={[
+                        getGalleryImageBorderRadius({
+                          alignment,
+                          colIndex,
+                          groupStyles,
+                          hasThreadReplies,
+                          height,
+                          invertedDirections,
+                          messageText,
+                          numOfColumns,
+                          numOfRows,
+                          rowIndex,
+                          sizeConfig,
+                          threadList,
+                          width,
+                        }),
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                      uri={url}
+                    />
+                  )}
                   {colIndex === numOfColumns - 1 &&
                   rowIndex === numOfRows - 1 &&
-                  images.length > 4 ? (
+                  imagesAndVideos.length > 4 ? (
                     <View
                       style={[
                         StyleSheet.absoluteFillObject,
@@ -296,7 +324,7 @@ const GalleryWithContext = <
                       ]}
                     >
                       <Text style={[styles.moreImagesText, moreImagesText]}>
-                        {`+${images.length - 4}`}
+                        {`+${imagesAndVideos.length - 4}`}
                       </Text>
                     </View>
                   ) : null}
@@ -317,13 +345,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     groupStyles: prevGroupStyles,
     hasThreadReplies: prevHasThreadReplies,
-    images: prevImages,
+    imagesAndVideos: prevImagesAndVideos,
     message: prevMessage,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
     hasThreadReplies: nextHasThreadReplies,
-    images: nextImages,
+    imagesAndVideos: nextImagesAndVideos,
     message: nextMessage,
   } = nextProps;
 
@@ -338,11 +366,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   if (!hasThreadRepliesEqual) return false;
 
   const imagesEqual =
-    prevImages.length === nextImages.length &&
-    prevImages.every(
+    prevImagesAndVideos.length === nextImagesAndVideos.length &&
+    prevImagesAndVideos.every(
       (image, index) =>
-        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
-        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
+        getUrlWithoutParams(image.image_url) ===
+          getUrlWithoutParams(nextImagesAndVideos[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) ===
+          getUrlWithoutParams(nextImagesAndVideos[index].thumb_url),
     );
   if (!imagesEqual) return false;
 
@@ -368,7 +398,7 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
-    images: propImages,
+    imagesAndVideos: propImagesAndVideos,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -376,13 +406,14 @@ export const Gallery = <
     setImage: propSetImage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
+    VideoThumbnail: PropVideoThumbnail,
   } = props;
 
   const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
-    images: contextImages,
+    imagesAndVideos: contextImagesAndVideos,
     message,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
@@ -393,12 +424,13 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
+    VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
-  const images = propImages || contextImages;
+  const imagesAndVideos = propImagesAndVideos || contextImagesAndVideos;
 
-  if (!images.length) return null;
+  if (!imagesAndVideos.length) return null;
 
   const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
@@ -411,6 +443,7 @@ export const Gallery = <
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
+  const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
 
   return (
     <MemoizedGallery
@@ -420,7 +453,7 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
-        images,
+        imagesAndVideos,
         legacyImageViewerSwipeBehaviour,
         message,
         onLongPress,
@@ -431,6 +464,7 @@ export const Gallery = <
         setImages,
         setOverlay,
         threadList,
+        VideoThumbnail,
       }}
     />
   );
