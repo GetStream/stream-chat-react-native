@@ -41,6 +41,7 @@ import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
   FileState,
+  FileStateValue,
   generateRandomId,
   TriggerSettings,
   urlRegex,
@@ -61,7 +62,7 @@ export type FileUpload = {
     uri?: string;
   };
   id: string;
-  state: typeof FileState[keyof typeof FileState];
+  state: FileStateValue;
   url?: string;
 };
 
@@ -70,7 +71,7 @@ export type ImageUpload = {
     name?: string;
   };
   id: string;
-  state: typeof FileState[keyof typeof FileState];
+  state: FileStateValue;
   height?: number;
   url?: string;
   width?: number;
@@ -844,38 +845,44 @@ export const MessageInputProvider = <
 
   const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  const mapFileUploadState =
-    (id: string, fileState: string, extraData?: Record<string, unknown>) =>
-    <UploadType extends { id: string }>(prevImageUploads: UploadType[]) =>
-      prevImageUploads.map((imageUpload) => {
-        if (imageUpload.id === id) {
+  function getUploadSetStateAction<UploadType extends ImageUpload | FileUpload>(
+    id: string,
+    fileState: FileStateValue,
+    extraData: Partial<UploadType> = {},
+  ): React.SetStateAction<UploadType[]> {
+    const uploads: (prevUploads: UploadType[]) => UploadType[] = (prevUploads: UploadType[]) =>
+      prevUploads.map((prevUpload) => {
+        if (prevUpload.id === id) {
           return {
-            ...imageUpload,
+            ...prevUpload,
             ...extraData,
             state: fileState,
           };
         }
-        return imageUpload;
+        return prevUpload;
       });
+
+    return uploads;
+  }
 
   const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
     if (isImageError) {
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       if (error instanceof Error) {
         if (regExcondition.test(error.message)) {
-          return setImageUploads(mapFileUploadState(id, FileState.NOT_SUPPORTED));
+          return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
         }
 
-        return setImageUploads(mapFileUploadState(id, FileState.UPLOAD_FAILED));
+        return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
       }
     } else {
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
       if (error instanceof Error) {
         if (regExcondition.test(error.message)) {
-          return setFileUploads(mapFileUploadState(id, FileState.NOT_SUPPORTED));
+          return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
         }
-        return setFileUploads(mapFileUploadState(id, FileState.UPLOAD_FAILED));
+        return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
       }
     }
   };
@@ -886,16 +893,17 @@ export const MessageInputProvider = <
     }
     const { file, id } = newFile;
 
-    setFileUploads(mapFileUploadState(id, FileState.UPLOADING));
+    setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
 
-    let response = {} as SendFileAPIResponse;
+    let response: Partial<SendFileAPIResponse> = {};
     try {
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-      setFileUploads(mapFileUploadState(id, FileState.UPLOADED, { url: response.file }));
+      const extraData: Partial<FileUpload> = { url: response.file };
+      setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);
     }
@@ -962,7 +970,7 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads(mapFileUploadState(id, FileState.UPLOADED, { url: res.file }));
+              setImageUploads(getUploadSetStateAction(id, FileState.UPLOADED, { url: res.file }));
             }
           });
         } else {
@@ -972,7 +980,7 @@ export const MessageInputProvider = <
 
       if (Object.keys(response).length) {
         setImageUploads(
-          mapFileUploadState(id, FileState.UPLOADED, {
+          getUploadSetStateAction(id, FileState.UPLOADED, {
             height: file.height,
             url: response.file,
             width: file.width,
