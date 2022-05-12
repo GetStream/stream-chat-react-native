@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { AudioAttachmentUploadPreview } from './AudioAttachmentUploadPreview';
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import {
@@ -26,8 +27,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     height: 24,
     position: 'absolute',
-    right: 14,
-    top: 4,
+    right: 8,
+    top: 8,
     width: 24,
   },
   fileContainer: {
@@ -37,9 +38,15 @@ const styles = StyleSheet.create({
     height: FILE_PREVIEW_HEIGHT,
     justifyContent: 'space-between',
     marginBottom: 8,
-    padding: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
   },
   fileContentContainer: { flexDirection: 'row' },
+  fileIcon: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -81,7 +88,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey, grey_whisper, overlay },
+      colors: { black, grey_dark, grey_whisper, light_gray },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -104,6 +111,8 @@ const FileUploadPreviewWithContext = <
         ? ProgressIndicatorTypes.RETRY
         : undefined;
 
+    const lastIndexOfDot = item.file.name.lastIndexOf('.');
+
     return (
       <>
         <UploadProgressIndicator
@@ -114,58 +123,64 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          <View
-            style={[
-              styles.fileContainer,
-              index === fileUploads.length - 1
-                ? {
-                    marginBottom: 0,
-                  }
-                : {},
-              {
-                borderColor: grey_whisper,
-                width: flatListWidth - 16,
-              },
-              fileContainer,
-            ]}
-          >
-            <View style={[styles.fileContentContainer, fileContentContainer]}>
-              <FileAttachmentIcon mimeType={item.file.type} />
-              <View style={[styles.fileTextContainer, fileTextContainer]}>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.filenameText,
-                    {
-                      color: black,
-                      width:
-                        flatListWidth -
-                        16 - // 16 = horizontal padding
-                        40 - // 40 = file icon size
-                        24 - // 24 = close icon size
-                        24, // 24 = internal padding
-                    },
-                    filenameText,
-                  ]}
-                >
-                  {item.file.name || ''}
-                </Text>
-                <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-                  {getFileSizeDisplayText(item.file.size)}
-                </Text>
+          {item.file.type?.startsWith('audio/') ? (
+            <AudioAttachmentUploadPreview index={index} item={item} />
+          ) : (
+            <View
+              style={[
+                styles.fileContainer,
+                index === fileUploads.length - 1
+                  ? {
+                      marginBottom: 0,
+                    }
+                  : {},
+                {
+                  borderColor: grey_whisper,
+                  width: flatListWidth - 16,
+                },
+                fileContainer,
+              ]}
+            >
+              <View style={[styles.fileContentContainer, fileContentContainer]}>
+                <View style={styles.fileIcon}>
+                  <FileAttachmentIcon mimeType={item.file.type} />
+                </View>
+                <View style={[styles.fileTextContainer, fileTextContainer]}>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.filenameText,
+                      {
+                        color: black,
+                        width:
+                          flatListWidth -
+                          16 - // 16 = horizontal padding
+                          40 - // 40 = file icon size
+                          24 - // 24 = close icon size
+                          24, // 24 = internal padding
+                      },
+                      filenameText,
+                    ]}
+                  >
+                    {item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
+                  </Text>
+                  <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
+                    {getFileSizeDisplayText(item.file.size)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              removeFile(item.id);
+            }}
+            style={[styles.dismiss, { backgroundColor: light_gray }, dismiss]}
+            testID='remove-file-upload-preview'
+          >
+            <Close />
+          </TouchableOpacity>
         </UploadProgressIndicator>
-        <TouchableOpacity
-          onPress={() => {
-            removeFile(item.id);
-          }}
-          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-          testID='remove-file-upload-preview'
-        >
-          <Close />
-        </TouchableOpacity>
       </>
     );
   };

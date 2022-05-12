@@ -679,6 +679,14 @@ export const MessageInputProvider = <
             title: file.file.name,
             type: 'video',
           } as Attachment<StreamChatGenerics>);
+        } else if (file.file.type?.startsWith('audio/')) {
+          attachments.push({
+            asset_url: file.url,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'audio',
+          } as Attachment<StreamChatGenerics>);
         } else {
           attachments.push({
             asset_url: file.url,

@@ -102,7 +102,50 @@ type HapticFeedbackMethod =
 type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
+export type PlaybackStatus = {
+  didJustFinish: boolean;
+  durationMillis: number;
+  error: string;
+  isBuffering: boolean;
+  isLoaded: boolean;
+  isLooping: boolean;
+  isPlaying: boolean;
+  positionMillis: number;
+};
+
+export type AVPlaybackStatusToSet = {
+  isLooping: boolean;
+  isMuted: boolean;
+  positionMillis: number;
+  progressUpdateIntervalMillis: number;
+  rate: number;
+  shouldCorrectPitch: boolean;
+  shouldPlay: boolean;
+  volume: number;
+};
+
 export let SDK: string;
+
+export type SoundOptions = {
+  basePathOrCallback?: string;
+  callback?: () => void;
+  filenameOrFile?: string;
+  initialStatus?: Partial<AVPlaybackStatusToSet>;
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
+  source?: { uri: string };
+};
+
+export type SoundReturnType = {
+  getDuration: () => number;
+  isPlaying: () => boolean;
+  pauseAsync: () => void;
+  play: () => void;
+  playAsync: () => void;
+};
+
+export type SoundType = (options: SoundOptions) => SoundReturnType;
+
+export let Sound: SoundType = fail;
 
 type Handlers = {
   compressImage?: CompressImage;
@@ -115,6 +158,7 @@ type Handlers = {
   saveFile?: SaveFile;
   SDK?: string;
   shareImage?: ShareImage;
+  Sound?: SoundType;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
 };
@@ -161,6 +205,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.shareImage) {
     shareImage = handlers.shareImage;
+  }
+
+  if (handlers.Sound) {
+    Sound = handlers.Sound;
   }
 
   if (handlers.takePhoto) {

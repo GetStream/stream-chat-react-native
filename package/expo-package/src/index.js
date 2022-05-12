@@ -1,7 +1,7 @@
-import React from 'react';
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
+import { Audio } from 'expo-av';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
@@ -101,7 +101,6 @@ registerNativeHandlers({
   pickDocument: async ({ maxNumberOfFiles }) => {
     try {
       const { type, ...rest } = await DocumentPicker.getDocumentAsync();
-
       if (type === 'cancel') {
         return {
           cancelled: true,
@@ -135,6 +134,10 @@ registerNativeHandlers({
       throw new Error('Sharing failed or cancelled...');
     }
   },
+  Sound: async ({ source, initialStatus = {}, onPlaybackStatusUpdate }) => {
+    const { sound } = await Audio.Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate);
+    return sound;
+  },
   takePhoto: async ({ compressImageQuality = 1 }) => {
     try {
       const permissionCheck = await ImagePicker.getCameraPermissionsAsync();
@@ -155,12 +158,13 @@ registerNativeHandlers({
             // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
             // This we can't rely on them as it is, and we need to use Image.getSize
             // to get accurate size.
-            const getSize = () => new Promise((resolve) => {
-              Image.getSize(photo.uri, (width, height) => {
-                resolve({height, width});
+            const getSize = () =>
+              new Promise((resolve) => {
+                Image.getSize(photo.uri, (width, height) => {
+                  resolve({ height, width });
+                });
               });
-            });
-    
+
             try {
               const { height, width } = await getSize();
               size.height = height;
@@ -175,12 +179,12 @@ registerNativeHandlers({
               width: photo.width,
             };
           }
-    
+
           return {
             cancelled: false,
             source: 'camera',
             uri: photo.uri,
-            ...size
+            ...size,
           };
         }
       }
