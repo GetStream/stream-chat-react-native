@@ -13,6 +13,8 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Refresh } from '../../icons';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
+const REFRESH_ICON_SIZE = 18;
+
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
     alignItems: 'center',
@@ -120,10 +122,10 @@ const RetryIndicator = ({ action }: Pick<UploadProgressIndicatorProps, 'action'>
   return (
     <TouchableOpacity onPress={action} style={styles.retryButtonContainer}>
       <Refresh
-        height={18}
+        height={REFRESH_ICON_SIZE}
         pathFill={white_smoke}
         testID='retry-upload-progress-indicator'
-        width={18}
+        width={REFRESH_ICON_SIZE}
       />
     </TouchableOpacity>
   );
