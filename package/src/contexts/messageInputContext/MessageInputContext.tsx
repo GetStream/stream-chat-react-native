@@ -1001,15 +1001,17 @@ export const MessageInputProvider = <
     const id: string = generateRandomId();
     const mimeType: string | boolean = lookup(file.name);
 
-    const isBlockedFile: boolean | undefined = blockedFileExtensionTypes?.some(
+    const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
       (fileExtensionType: string) => file.name?.includes(fileExtensionType),
     );
-    const isBlockedMime: boolean | undefined = blockedFileMimeTypes?.some((mimeType: string) =>
-      file.name?.includes(mimeType),
+    const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
+      (mimeType: string) => file.name?.includes(mimeType),
     );
 
     const fileState =
-      isBlockedFile || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+      isBlockedFileExtension || isBlockedFileMimeType
+        ? FileState.NOT_SUPPORTED
+        : FileState.UPLOADING;
 
     const newFile: FileUpload = {
       file: { ...file, type: mimeType || file?.type },
@@ -1022,7 +1024,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedFile) {
+    if (!isBlockedFileExtension) {
       uploadFile({ newFile });
     }
   };
@@ -1030,16 +1032,18 @@ export const MessageInputProvider = <
   const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
 
-    const isBlockedMime = blockedImageMimeTypes?.some((mimeType: string) =>
+    const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
       image.uri?.includes(mimeType),
     );
 
-    const isBlockedImage = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
+    const isBlockedImageExtension = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
       image.uri?.includes(imageExtensionType),
     );
 
     const imageState =
-      isBlockedImage || isBlockedMime ? FileState.NOT_SUPPORTED : FileState.UPLOADING;
+      isBlockedImageExtension || isBlockedImageMimeType
+        ? FileState.NOT_SUPPORTED
+        : FileState.UPLOADING;
 
     const newImage: ImageUpload = {
       file: image,
@@ -1052,7 +1056,7 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    if (!isBlockedImage) {
+    if (!isBlockedImageExtension) {
       uploadImage({ newImage });
     }
   };
