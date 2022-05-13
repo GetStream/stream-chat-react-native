@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { PaginatedMessageListContextValue } from '../../../contexts/paginatedMessageListContext/PaginatedMessageListContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { compareMessages } from '../../../utils/utils';
+import { reduceMessagesToString } from '../../../utils/utils';
 
 export const useCreatePaginatedMessageListContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -19,7 +19,7 @@ export const useCreatePaginatedMessageListContext = <
 }: PaginatedMessageListContextValue<StreamChatGenerics> & {
   channelId?: string;
 }) => {
-  const messagesUpdated = compareMessages(messages);
+  const messagesStr = reduceMessagesToString(messages);
 
   const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({
@@ -32,7 +32,7 @@ export const useCreatePaginatedMessageListContext = <
       setLoadingMore,
       setLoadingMoreRecent,
     }),
-    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesUpdated],
+    [channelId, hasMore, loadingMoreRecent, loadingMore, messagesStr],
   );
 
   return paginatedMessagesContext;

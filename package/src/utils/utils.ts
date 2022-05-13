@@ -515,11 +515,11 @@ export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
 
 /**
- * Maps a message item to a formatted string
- * @param {FormatMessageResponse<StreamChatGenerics>} args - the message object being mapped
- * @returns {string} The mapped message string
+ * Stringifies a message object
+ * @param {FormatMessageResponse<StreamChatGenerics>} message - the message object to be stringified
+ * @returns {string} The stringified message
  */
-const mapMessage = <
+const stringifyMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
@@ -533,12 +533,12 @@ const mapMessage = <
   }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
 
 /**
- * Returns a string that enables to compare messages, meant to be used in useMemo or useEffect
+ * reduces a list of messages to strings that are used in useEffect & useMemo
  * @param {messages} messages - the array of messages to be compared
  * @returns {string} The mapped message string
  */
-export const compareMessages = <
+export const reduceMessagesToString = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   messages: FormatMessageResponse<StreamChatGenerics>[],
-): string => messages.map(mapMessage).join();
+): string => messages.map(stringifyMessage).join();
