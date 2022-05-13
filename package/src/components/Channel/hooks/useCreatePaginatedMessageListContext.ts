@@ -19,7 +19,7 @@ export const useCreatePaginatedMessageListContext = <
 }: PaginatedMessageListContextValue<StreamChatGenerics> & {
   channelId?: string;
 }) => {
-  const messagesUpdated = messages.map(compareMessages).join();
+  const messagesUpdated = compareMessages(messages);
 
   const paginatedMessagesContext: PaginatedMessageListContextValue<StreamChatGenerics> = useMemo(
     () => ({

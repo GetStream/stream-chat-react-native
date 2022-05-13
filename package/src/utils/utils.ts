@@ -514,7 +514,12 @@ export const emojiRegex =
 export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
 
-export const compareMessages = <
+/**
+ * Maps a message item to a formatted string
+ * @param {FormatMessageResponse<StreamChatGenerics>} args - the message object being mapped
+ * @returns {string} The mapped message string
+ */
+const mapMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   deleted_at,
@@ -526,3 +531,14 @@ export const compareMessages = <
   `${deleted_at}${
     latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
   }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
+
+/**
+ * Returns a string that enables to compare messages, meant to be used in useMemo or useEffect
+ * @param {messages} messages - the array of messages to be compared
+ * @returns {string} The mapped message string
+ */
+export const compareMessages = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: FormatMessageResponse<StreamChatGenerics>[],
+): string => messages.map(mapMessage).join();
