@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { getMessagesComparatorCallback } from '../../../utils/utils';
+import { compareMessages } from '../../../utils/utils';
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -20,7 +20,7 @@ export const useCreateThreadContext = <
 }: ThreadContextValue<StreamChatGenerics>) => {
   const threadId = thread?.id;
   const threadReplyCount = thread?.reply_count;
-  const threadMessagesUpdated = threadMessages.map(getMessagesComparatorCallback).join();
+  const threadMessagesUpdated = threadMessages.map(compareMessages).join();
 
   const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
     () => ({
