@@ -155,8 +155,6 @@ const renderImage = ({
       : dayjs.duration(videoDuration, 'second').format('mm:ss')
     : null;
 
-  console.log(typeof duration);
-
   const onPressImage = () => {
     if (selected) {
       setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));

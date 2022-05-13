@@ -220,11 +220,11 @@ registerNativeHandlers({
     }
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => (
+  Video: ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
     <ExpoVideoPlayer
       onPlaybackStatusUpdate={onPlaybackStatusUpdate}
       ref={videoRef}
-      resizeMode={resizeMode}
+      resizeMode='contain'
       shouldPlay={!paused}
       source={{
         uri,
