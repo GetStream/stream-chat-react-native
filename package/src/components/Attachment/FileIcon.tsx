@@ -19,6 +19,7 @@ import { SEVEN_Z } from '../../icons/SEVEN_Z';
 import { TAR } from '../../icons/TAR';
 import { TXT } from '../../icons/TXT';
 import type { IconProps } from '../../icons/utils/base';
+import { Video } from '../../icons/Video';
 import { XLS } from '../../icons/XLS';
 import { XLSX } from '../../icons/XLSX';
 import { ZIP } from '../../icons/ZIP';
@@ -320,6 +321,46 @@ const zipFileTypes = [
   'application/zip',
 ];
 
+const videoFileTypes = [
+  'video/3g2',
+  'video/3gp',
+  'video/aaf',
+  'video/asf',
+  'video/avchd',
+  'video/avi',
+  'video/drc',
+  'video/flv',
+  'video/m2v',
+  'video/m3u8',
+  'video/m4p',
+  'video/m4v',
+  'video/mkv',
+  'video/mng',
+  'video/mov',
+  'video/mp2',
+  'video/mp4',
+  'video/mpe',
+  'video/mpeg',
+  'video/mpg',
+  'video/mpv',
+  'video/mxf',
+  'video/nsv',
+  'video/ogg',
+  'video/ogv',
+  'video/qt',
+  'video/rm',
+  'video/rmvb',
+  'video/roq',
+  'video/svi',
+  'video/vob',
+  'video/webm',
+  'video/wmv',
+  'video/yuv',
+  'video/quicktime',
+  'video/webm',
+  'video/x-flv',
+];
+
 const mimeTypeToIconMap: Record<string, React.FC<IconProps>> = {
   'application/pdf': PDF, // .pdf
   'application/rtf': RTF, // .rtf
@@ -369,6 +410,10 @@ for (const type of tarFileTypes) {
 
 for (const type of zipFileTypes) {
   mimeTypeToIconMap[type] = ZIP;
+}
+
+for (const type of videoFileTypes) {
+  mimeTypeToIconMap[type] = Video;
 }
 
 function mimeTypeToIcon(mimeType?: string): React.FC<IconProps> {
