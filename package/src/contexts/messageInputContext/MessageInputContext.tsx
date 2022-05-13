@@ -664,6 +664,7 @@ export const MessageInputProvider = <
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
+            duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
             title: file.file.name,

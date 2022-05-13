@@ -24,8 +24,8 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Video } from '../../icons';
-import { getLocalAssetUri, getPhotos } from '../../native';
+import { Recorder } from '../../icons';
+import { getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
@@ -63,7 +63,7 @@ type AttachmentImageProps = {
   selected: boolean;
   type: 'image' | 'video';
   uri: string;
-  videoDuration: number | null;
+  videoDuration: string | null;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
@@ -86,12 +86,6 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const duration = videoDuration
-    ? videoDuration / 3600 >= 1
-      ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
-      : dayjs.duration(videoDuration, 'second').format('mm:ss')
-    : null;
-
   return (
     <TouchableOpacity onPress={onPress}>
       <ImageBackground
@@ -112,8 +106,8 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         )}
         {type === 'video' && (
           <View style={styles.videoView}>
-            <Video height={20} pathFill={white} width={25} />
-            {videoDuration ? <Text style={styles.timeColor}>{duration}</Text> : null}
+            <Recorder height={20} pathFill={white} width={25} />
+            {videoDuration ? <Text style={styles.timeColor}>{videoDuration}</Text> : null}
           </View>
         )}
       </ImageBackground>
@@ -144,16 +138,24 @@ const renderImage = ({
     setSelectedImages,
   } = item;
 
-  const localUri = asset.id
-    ? getLocalAssetUri(asset.id)
-    : asset.uri?.match(/assets-library/)
-    ? getLocalAssetUri(asset.uri)
-    : asset.uri;
-  const uri = asset.filename || localUri || '';
-  const filename = uri.replace(/^(file:\/\/|content:\/\/|assets-library:\/\/)/, '');
-  const contentType = lookup(filename) || 'multipart/form-data';
+  const contentType = lookup(asset.filename) || 'multipart/form-data';
 
-  const isImage = contentType.startsWith('image/');
+  const isImage = asset.filename
+    ? contentType.startsWith('image/')
+      ? 'image'
+      : 'video'
+    : asset.type === 'video'
+    ? 'video'
+    : 'image';
+  const videoDuration = asset.duration ? asset.duration : asset.playableDuration;
+
+  const duration = videoDuration
+    ? videoDuration / 3600 >= 1
+      ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
+      : dayjs.duration(videoDuration, 'second').format('mm:ss')
+    : null;
+
+  console.log(typeof duration);
 
   const onPressImage = () => {
     if (selected) {
@@ -179,10 +181,10 @@ const renderImage = ({
         return [
           ...files,
           {
-            duration: asset.playableDuration,
+            duration,
             name: asset.filename,
             size: asset.fileSize,
-            type: contentType,
+            type: 'video',
             uri: asset.uri,
           },
         ];
@@ -194,11 +196,11 @@ const renderImage = ({
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={isImage ? onPressImage : onPressVideo}
+      onPress={isImage === 'image' ? onPressImage : onPressVideo}
       selected={selected}
-      type={isImage ? 'image' : 'video'}
+      type={isImage}
       uri={asset.uri}
-      videoDuration={asset.playableDuration}
+      videoDuration={duration}
     />
   );
 };
