@@ -533,7 +533,7 @@ const stringifyMessage = <
   }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
 
 /**
- * reduces a list of messages to strings that are used in useEffect & useMemo
+ * Reduces a list of messages to strings that are used in useEffect & useMemo
  * @param {messages} messages - the array of messages to be compared
  * @returns {string} The mapped message string
  */
