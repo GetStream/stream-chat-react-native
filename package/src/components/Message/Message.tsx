@@ -598,27 +598,24 @@ const MessageWithContext = <
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
-      onPressProp
-        ? onPressProp({
-            actionHandlers,
-            additionalInfo: payload.additionalInfo,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : onPressMessageProp
-        ? onPressMessageProp({
-            actionHandlers,
-            additionalInfo: payload.additionalInfo,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : payload.defaultHandler
-        ? payload.defaultHandler()
-        : onPress();
+      const onPressArgs = {
+        actionHandlers,
+        additionalInfo: payload.additionalInfo,
+        defaultHandler: payload.defaultHandler || onPress,
+        emitter: payload.emitter || 'message',
+        event: payload.event,
+        message,
+      };
+
+      const handleOnPress = () => {
+        if (onPressProp) return onPressProp(onPressArgs);
+        if (onPressMessageProp) return onPressMessageProp(onPressArgs);
+        if (payload.defaultHandler) return payload.defaultHandler();
+
+        return onPress();
+      };
+
+      handleOnPress();
     },
     onPressIn:
       onPressInProp || onPressInMessageProp
