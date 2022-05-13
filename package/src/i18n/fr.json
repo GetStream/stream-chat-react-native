@@ -61,5 +61,7 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Réponses",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Réponses à la discussion",
   "{{ user }} is typing": "{{ user }} est en train d'écrire",
-  "🏙 Attachment...": "🏙 Pièce jointe..."
+  "🏙 Attachment...": "🏙 Pièce jointe...",
+  "File type not supported": "Le type de fichier n'est pas pris en charge",
+  "Not supported": "Non pris en charge"
 }
