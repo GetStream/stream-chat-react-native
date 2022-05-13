@@ -389,7 +389,7 @@ export type Theme = {
       eyeIcon: IconProps;
       /**
        * Available options for styling text:
-       * https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js
+       * https://github.com/andangrd/react-native-markdown-package/blob/main/styles.js
        */
       markdown: MarkdownStyle;
       messageUser: TextStyle;
