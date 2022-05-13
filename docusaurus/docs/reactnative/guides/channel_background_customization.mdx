@@ -4,15 +4,9 @@ sidebar_position: 13
 title: Channel Background Customization
 ---
 
-You can implement this customization in your existing app or create a new one by running the following
-
-```shell
-npx react-native init MyApp --template stream-chat-react-native-template
-```
-
 ## Basic Custom Background
 
-You can change the background statically by simply wrapping `MessageList` and `MessageInput` by using the `ImageBackground` component.
+You can change the background statically by wrapping `MessageList` and `MessageInput` by using the `ImageBackground` component.
 
 <img
   src='https://user-images.githubusercontent.com/25864161/167857632-c0bc9d67-0a84-4cf5-9d75-305e3bcd1f3d.png'
@@ -24,6 +18,14 @@ Also make sure you adjust the `theme` correctly.
 ```tsx
 import { Channel, MessageInput, MessageList, ThemeProvider } from 'stream-chat-react-native';
 import { ImageBackground } from 'react-native';
+
+export const theme = {
+  messageList: {
+    container: {
+      backgroundColor: 'transparent',
+    },
+  },
+};
 
 const IMAGE_URI =
   'https://images.unsplash.com/photo-1549125764-91425ca48850?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8NjF8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=800&q=60';
@@ -43,21 +45,13 @@ const ChannelScreen = ({ channel }) => (
     </Channel>
   </ThemeProvider>
 );
-
-export const theme = {
-  messageList: {
-    container: {
-      backgroundColor: 'transparent',
-    },
-  },
-};
 ```
 
 ---
 
 ## Custom Background With Selection Screen
 
-In this step, we will add a button that will navigate to a separate screen, where the user will be able to select his
+In this step, we will add a button that will navigate to a separate screen, where the user will be able to select their
 favorite background image for a specific channel.
 
 <table>
@@ -90,7 +84,7 @@ Follow the [installation steps](https://github.com/mrousavy/react-native-mmkv#in
 We will start by creating our `ChannelBackgroundView` component.
 This component will be in charge of rendering the custom background by retrieving it from our key-value store.
 We save an object to a key-value store to be scalable and future-proof.
-You'd might want to add other preferences later, such as dimming value, background color, etc.
+You might want to add other preferences later, such as dimming value, background color, etc.
 
 ```tsx
 import type { ViewProps } from 'react-native';
@@ -109,14 +103,14 @@ const ChannelBackgroundView = ({
   channelId: string;
 } & ViewProps) => {
   const [channelPreferences] = useMMKVObject<ChannelPreferences>(channelId);
-  let uri: string | undefined = channelPreferences?.imageUri || DEFAULT_BACKGROUND_URI;
+  const uri = channelPreferences?.imageUri || DEFAULT_BACKGROUND_URI;
 
   return <ImageBackground {...props} source={{ uri }} />;
 };
 ```
 
 We will then use it in our previously built `ChannelScreen`.
-Replace the static `ImageBackground` with `ChannelBackgroundView` and pass the `channelId`
+Replace the static `ImageBackground` with `ChannelBackgroundView` and pass the `channelId`.
 
 ```tsx
 const ChannelScreen = ({ channel }) => {
@@ -240,7 +234,7 @@ There are alternative approaches to achieve the same goal, for example by saving
 
 ### Add a configuration button
 
-We will add now a button that will take the user from the Channel screen to our new WallpaperOverview screen
+We will now add a button that will take the user from the Channel screen to our new WallpaperOverview screen.
 
 ```tsx
 import { useNavigation } from '@react-navigation/native';
@@ -293,7 +287,7 @@ export const theme = {
 
 ### Optional: Connect all screens by navigation
 
-If applicable to your use case, add our screens to a Navigation Stack by doing the following.
+If applicable to your use case, add our screens to a Navigation Stack by doing the following:
 
 ```tsx
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
