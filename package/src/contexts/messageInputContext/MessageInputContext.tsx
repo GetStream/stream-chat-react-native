@@ -845,11 +845,11 @@ export const MessageInputProvider = <
 
   const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
 
-  function getUploadSetStateAction<UploadType extends ImageUpload | FileUpload>(
+  const getUploadSetStateAction = <UploadType extends ImageUpload | FileUpload>(
     id: string,
     fileState: FileStateValue,
     extraData: Partial<UploadType> = {},
-  ): React.SetStateAction<UploadType[]> {
+  ): React.SetStateAction<UploadType[]> => {
     const uploads: (prevUploads: UploadType[]) => UploadType[] = (prevUploads: UploadType[]) =>
       prevUploads.map((prevUpload) => {
         if (prevUpload.id === id) {
@@ -863,7 +863,7 @@ export const MessageInputProvider = <
       });
 
     return uploads;
-  }
+  };
 
   const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
     if (isImageError) {
