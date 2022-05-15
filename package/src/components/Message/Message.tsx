@@ -61,7 +61,8 @@ export type Emitter =
   | 'messageContent'
   | 'messageReplies'
   | 'reactionList'
-  | 'textLink';
+  | 'textLink'
+  | 'textMention';
 
 export type TextMentionTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -631,22 +632,18 @@ const MessageWithContext = <
     onPressIn:
       onPressInProp || onPressInMessageProp
         ? (payload) => {
-            onPressInProp
-              ? onPressInProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                })
-              : onPressInMessageProp &&
-                onPressInMessageProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                });
+            const onPressInArgs = {
+              actionHandlers,
+              defaultHandler: payload.defaultHandler,
+              emitter: payload.emitter || 'message',
+              event: payload.event,
+              message,
+            };
+            const handleOnpressIn = () => {
+              if (onPressInProp) return onPressInProp(onPressInArgs);
+              if (onPressInMessageProp) return onPressInMessageProp(onPressInArgs);
+            };
+            handleOnpressIn();
           }
         : null,
     otherAttachments: attachments.other,

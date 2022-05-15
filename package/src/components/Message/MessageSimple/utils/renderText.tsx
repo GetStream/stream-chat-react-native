@@ -223,6 +223,7 @@ export const renderText = <
               (user: UserResponse<StreamChatGenerics>) => userName === user.name,
             ),
           },
+          emitter: 'textMention',
           event,
         });
       }
@@ -231,6 +232,7 @@ export const renderText = <
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
         onLongPressParam({
+          emitter: 'textMention',
           event,
         });
       }
