@@ -564,3 +564,10 @@ export const reduceMessagesToString = <
 >(
   messages: FormatMessageResponse<StreamChatGenerics>[],
 ): string => messages.map(stringifyMessage).join();
+
+/** RegEx for special characters in string*/
+const specialCharacterRegex = /[|&;$%@"<>()+,]/g;
+
+/**Function to replace special characters in a string with '' */
+export const replaceSpecialCharacters = (value: string): string =>
+  value.replace(specialCharacterRegex, '');

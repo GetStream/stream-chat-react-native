@@ -61,20 +61,31 @@ export type Emitter =
   | 'messageContent'
   | 'messageReplies'
   | 'reactionList'
-  | 'textLink'
-  | 'textMention';
+  | 'textLink';
+
+export type TextMentionTouchableHandlerPayload<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  emitter: 'textMention';
+  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
+};
 
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   emitter?: Emitter;
   event?: GestureResponderEvent;
-};
+} & (
+  | {
+      additionalInfo?: Record<string, unknown>;
+      emitter?: Emitter;
+    }
+  | TextMentionTouchableHandlerPayload
+);
 
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
-  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
   message?: MessageType<StreamChatGenerics>;
 };
 

@@ -24,6 +24,7 @@ import { parseLinksFromText } from './parseLinks';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import { replaceSpecialCharacters } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
@@ -213,11 +214,7 @@ export const renderText = <
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
-    /**
-     * node.content[0]?.replace(/@/g, '');
-     * removes @ character from userName to properly compare the string
-     */
-    const userName = node.content[0]?.content.replace(/@/g, '');
+    const userName = replaceSpecialCharacters(node.content[0]?.content);
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
@@ -226,7 +223,7 @@ export const renderText = <
               (user: UserResponse<StreamChatGenerics>) => userName === user.name,
             ),
           },
-          emitter: 'textMention',
+          defaultHandler: () => console.log('hello'),
           event,
         });
       }
@@ -235,7 +232,6 @@ export const renderText = <
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
         onLongPressParam({
-          emitter: 'textMention',
           event,
         });
       }
