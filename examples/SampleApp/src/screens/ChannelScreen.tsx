@@ -147,6 +147,11 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageId={messageId}
         NetworkDownIndicator={() => null}
+        onPressMessage={({ additionalInfo, emitter }) => {
+          if (emitter === 'textMention') {
+            console.log(additionalInfo?.user);
+          }
+        }}
         thread={selectedThread}
       >
         <ChannelHeader channel={channel} />

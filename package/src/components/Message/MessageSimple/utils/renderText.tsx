@@ -223,7 +223,6 @@ export const renderText = <
               (user: UserResponse<StreamChatGenerics>) => userName === user.name,
             ),
           },
-          defaultHandler: () => console.log('hello'),
           event,
         });
       }
