@@ -24,7 +24,6 @@ import { parseLinksFromText } from './parseLinks';
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
-import { replaceSpecialCharacters } from '../../../../utils/utils';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 const defaultMarkdownStyles: MarkdownStyle = {
@@ -214,7 +213,8 @@ export const renderText = <
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
-    const userName = replaceSpecialCharacters(node.content[0]?.content);
+    /**removes the @ prefix of username */
+    const userName = node.content[0]?.content?.substring(1);
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({

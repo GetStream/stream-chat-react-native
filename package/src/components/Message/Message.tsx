@@ -52,7 +52,7 @@ import {
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
-export type Emitter =
+export type TouchableEmitter =
   | 'card'
   | 'fileAttachment'
   | 'gallery'
@@ -61,8 +61,7 @@ export type Emitter =
   | 'messageContent'
   | 'messageReplies'
   | 'reactionList'
-  | 'textLink'
-  | 'textMention';
+  | 'textLink';
 
 export type TextMentionTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -73,12 +72,11 @@ export type TextMentionTouchableHandlerPayload<
 
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
-  emitter?: Emitter;
   event?: GestureResponderEvent;
 } & (
   | {
       additionalInfo?: Record<string, unknown>;
-      emitter?: Emitter;
+      emitter?: TouchableEmitter;
     }
   | TextMentionTouchableHandlerPayload
 );
