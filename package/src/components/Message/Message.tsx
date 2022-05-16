@@ -1,7 +1,7 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -52,21 +52,34 @@ import {
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
+export type TouchableEmitter =
+  | 'card'
+  | 'fileAttachment'
+  | 'gallery'
+  | 'giphy'
+  | 'message'
+  | 'messageContent'
+  | 'messageReplies'
+  | 'reactionList'
+  | 'textLink';
+
+export type TextMentionTouchableHandlerPayload<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  emitter: 'textMention';
+  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
+};
+
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
-  emitter?:
-    | 'card'
-    | 'fileAttachment'
-    | 'gallery'
-    | 'giphy'
-    | 'message'
-    | 'messageContent'
-    | 'messageReplies'
-    | 'reactionList'
-    | 'textLink'
-    | 'textMention';
   event?: GestureResponderEvent;
-};
+} & (
+  | {
+      additionalInfo?: Record<string, unknown>;
+      emitter?: TouchableEmitter;
+    }
+  | TextMentionTouchableHandlerPayload
+);
 
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -595,45 +608,40 @@ const MessageWithContext = <
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
-      onPressProp
-        ? onPressProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : onPressMessageProp
-        ? onPressMessageProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : payload.defaultHandler
-        ? payload.defaultHandler()
-        : onPress();
+      const onPressArgs = {
+        actionHandlers,
+        additionalInfo: payload.additionalInfo,
+        defaultHandler: payload.defaultHandler || onPress,
+        emitter: payload.emitter || 'message',
+        event: payload.event,
+        message,
+      };
+
+      const handleOnPress = () => {
+        if (onPressProp) return onPressProp(onPressArgs);
+        if (onPressMessageProp) return onPressMessageProp(onPressArgs);
+        if (payload.defaultHandler) return payload.defaultHandler();
+
+        return onPress();
+      };
+
+      handleOnPress();
     },
     onPressIn:
       onPressInProp || onPressInMessageProp
         ? (payload) => {
-            onPressInProp
-              ? onPressInProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                })
-              : onPressInMessageProp &&
-                onPressInMessageProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                });
+            const onPressInArgs = {
+              actionHandlers,
+              defaultHandler: payload.defaultHandler,
+              emitter: payload.emitter || 'message',
+              event: payload.event,
+              message,
+            };
+            const handleOnpressIn = () => {
+              if (onPressInProp) return onPressInProp(onPressInArgs);
+              if (onPressInMessageProp) return onPressInMessageProp(onPressInArgs);
+            };
+            handleOnpressIn();
           }
         : null,
     otherAttachments: attachments.other,
