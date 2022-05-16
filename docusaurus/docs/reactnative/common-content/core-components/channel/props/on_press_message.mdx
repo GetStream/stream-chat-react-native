@@ -24,8 +24,10 @@ For example:
     <Channel
     onPressMessage={({ additionalInfo, emitter }) => {
         if (emitter === 'textMention') {
-          console.log(additionalInfo.user);
+          console.log(additionalInfo?.user);
+          return;
         }
+        defaultHandler?.();
     }}
     >
 ```
