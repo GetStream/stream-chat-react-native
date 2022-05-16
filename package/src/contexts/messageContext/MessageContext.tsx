@@ -65,7 +65,7 @@ export type MessageContextValue<
    *
    * By default, we show the overlay with all the message actions on long press.
    *
-   * @param event   Event object for onLongPress event
+   * @param payload   Payload object for onLongPress event
    */
   onLongPress: (payload: TouchableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
@@ -80,7 +80,7 @@ export type MessageContextValue<
    *
    * By default, we will dismiss the keyboard on press.
    *
-   * @param event   Event object for onPress event
+   * @param payload   Payload object for onPress event
    */
   onPress: (payload: MessageTouchableHandlerPayload) => void;
   onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
