@@ -39,7 +39,10 @@ export const getChannelPreviewDisplayName = <
       }
     } else {
       const remainingMembers = originalArray.length - index;
-      returnString += `, +${remainingMembers}`;
+      if (!returnString) {
+        returnString = currentMemberName.slice(0, maxCharacterLength);
+      }
+      returnString += remainingMembers <= 1 ? `...` : `,... +${remainingMembers}`;
       originalArray.splice(1); // exit early
     }
     return returnString;
@@ -56,7 +59,7 @@ export const useChannelPreviewDisplayName = <
 ) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
-  const currentUserId = client.userID;
+  const currentUserId = client?.userID;
   const members = channel?.state.members;
   const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
