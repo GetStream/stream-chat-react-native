@@ -1,5 +1,18 @@
 # Change Log
 
+## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+* add theming support for the chevron icon in scroll to bottom button ([2a4bc9a](https://github.com/GetStream/stream-chat-react-native/commit/2a4bc9a647595aff0ea2f3e57718219d0b60f7e2))
+
+
+### Bug Fixes
+
+* url without http/s opening issue ([46da678](https://github.com/GetStream/stream-chat-react-native/commit/46da6787423f751f7e1de02d1d865b1e5fe8a07a))
+
 ### [4.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.3.0...v4.3.1) (2022-04-12)
 
 
