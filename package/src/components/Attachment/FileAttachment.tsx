@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Linking,
   StyleProp,
   StyleSheet,
   Text,
@@ -11,6 +10,8 @@ import {
 } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
+
+import { useGoToURL } from './hooks/useGoToURL';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
@@ -94,7 +95,9 @@ const FileAttachmentWithContext = <
     },
   } = useTheme();
 
-  const defaultOnPress = () => goToURL(attachment.asset_url);
+  const [error, openURL] = useGoToURL(attachment.asset_url);
+
+  const defaultOnPress = () => !error && openURL && openURL();
 
   return (
     <TouchableOpacity
@@ -188,17 +191,6 @@ export const getFileSizeDisplayText = (size?: number | string) => {
   }
 
   return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
-};
-
-export const goToURL = (url?: string) => {
-  if (!url) return;
-  Linking.canOpenURL(url).then((supported) => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URI: ${url}`);
-    }
-  });
 };
 
 FileAttachment.displayName = 'FileAttachment{messageSimple{file}}';
