@@ -29,21 +29,25 @@ export const getChannelPreviewDisplayName = <
 
   const name = otherMembers.slice(0).reduce((returnString, currentMember, index, originalArray) => {
     const returnStringLength = returnString.length;
-    const currentMemberName = currentMember.user?.name || currentMember.user?.id || 'Unknown User';
-    // a rough approximation of when the +Number shows up
-    if (returnStringLength + (currentMemberName.length + 3) < maxCharacterLength) {
-      if (returnStringLength) {
-        returnString += `, ${currentMemberName}`;
-      } else {
-        returnString = currentMemberName;
-      }
-    } else {
+    const currentMemberName: string =
+      currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+
+    const currentNamelessThanMax: boolean =
+      returnStringLength + (currentMemberName.length + 3) < maxCharacterLength;
+    const currentNamegreaterThanMax = !currentNamelessThanMax;
+
+    if (currentNamelessThanMax) {
+      returnStringLength
+        ? (returnString += `, ${currentMemberName}`)
+        : (returnString = currentMemberName);
+    }
+
+    if (currentNamegreaterThanMax) {
       const remainingMembers = originalArray.length - index;
-      if (!returnString) {
-        returnString = currentMemberName.slice(0, maxCharacterLength);
-      }
+      !returnString ? (returnString = currentMemberName.slice(0, maxCharacterLength)) : false;
+
       returnString += remainingMembers <= 1 ? `...` : `,... +${remainingMembers}`;
-      originalArray.splice(1); // exit early
+      originalArray.splice(1);
     }
     return returnString;
   }, '');
