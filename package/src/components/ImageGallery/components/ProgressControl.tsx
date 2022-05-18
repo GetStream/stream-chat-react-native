@@ -100,7 +100,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.duration === nextProps.duration && prevProps.progress === nextProps.duration)
+    if (prevProps.duration === nextProps.duration && prevProps.progress === nextProps.progress)
       return true;
     else return false;
   },
