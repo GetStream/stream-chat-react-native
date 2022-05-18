@@ -149,6 +149,8 @@ export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionsAvatar';
 export * from './MessageOverlay/OverlayReactionList';
 
+export * from './ProgressControl/ProgressControl';
+
 export * from './Reply/Reply';
 
 export * from './Spinner/Spinner';

@@ -4,11 +4,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import dayjs from 'dayjs';
 
 import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
-import { ProgressControl } from './ProgressControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Pause, Play } from '../../../icons';
+import { ProgressControl } from '../../ProgressControl/ProgressControl';
 
 const styles = StyleSheet.create({
   durationTextStyle: {
@@ -55,6 +55,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
+        colors: { white_snow },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -77,9 +78,11 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         </Text>
         <ProgressControl
           duration={duration}
+          filledColor={white_snow}
           onPlayPause={onPlayPause}
           onProgressDrag={onProgressDrag}
           progress={progress}
+          width={180}
         />
         <Text style={[styles.durationTextStyle, durationTextStyle]}>
           {videoDuration ? videoDuration : '00:00'}

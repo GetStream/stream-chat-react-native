@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -13,6 +13,7 @@ import {
 import { Pause, Play } from '../../icons';
 import { PlaybackStatus, Sound, SoundReturnType } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { ProgressControl } from '../ProgressControl/ProgressControl';
 
 dayjs.extend(duration);
 
@@ -37,6 +38,7 @@ const styles = StyleSheet.create({
   fileSizeText: {
     fontSize: 12,
     paddingLeft: 10,
+    paddingRight: 8,
   },
   fileTextContainer: {
     justifyContent: 'space-around',
@@ -84,7 +86,9 @@ const AudioAttachmentUploadPreviewWithContext = <
 ) => {
   const [paused, setPaused] = useState<boolean>(true);
   const [duration, setDuration] = useState<number>(0);
-  const [sound, setSound] = useState<SoundReturnType | null>(null);
+  const [currentDuration, setCurrentDuration] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const soundRef = useRef<SoundReturnType | null>(null);
   const { fileUploads, index, item } = props;
 
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
@@ -94,12 +98,18 @@ const AudioAttachmentUploadPreviewWithContext = <
         console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
       }
     } else {
-      setDuration(playbackStatus.durationMillis / 1000);
+      const { durationMillis, positionMillis } = playbackStatus;
+      console.log(durationMillis);
+      setCurrentDuration(durationMillis / 1000);
+      setDuration(durationMillis / 1000);
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
+        setCurrentDuration(positionMillis / 1000);
+        setProgress(positionMillis / durationMillis);
       } else {
         // Update your UI for the paused state
+        setCurrentDuration(positionMillis / 1000);
       }
 
       if (playbackStatus.isBuffering) {
@@ -109,6 +119,29 @@ const AudioAttachmentUploadPreviewWithContext = <
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
         // The player has just finished playing and will stop. Maybe you want to play something else?
         setPaused(true);
+        setProgress(1);
+      }
+    }
+  };
+
+  const handleProgressDrag = async (position: number) => {
+    setProgress(position / duration);
+    if (soundRef.current) {
+      await soundRef.current.setPositionAsync(position * 1000);
+    }
+  };
+
+  const handlePlayPause = async () => {
+    if (soundRef.current) {
+      if (progress === 1) {
+        soundRef.current.setPositionAsync(0);
+      }
+      if (paused) {
+        setPaused((state) => !state);
+        await soundRef.current.playAsync();
+      } else {
+        setPaused((state) => !state);
+        await soundRef.current.pauseAsync();
       }
     }
   };
@@ -116,20 +149,21 @@ const AudioAttachmentUploadPreviewWithContext = <
   useEffect(() => {
     const initiateSound = async () => {
       if (item && item.file && item.file.uri) {
-        const sound = await Sound({
+        soundRef.current = await Sound({
           initialStatus: {},
           onPlaybackStatusUpdate,
           source: { uri: item.file.uri },
         });
-        setSound(sound);
       }
     };
     initiateSound();
+
+    return () => soundRef.current?.stopAsync();
   }, []);
 
   const {
     theme: {
-      colors: { black, grey_dark, grey_whisper },
+      colors: { accent_blue, black, grey_dark, grey_whisper },
       messageInput: {
         fileUploadPreview: {
           fileContainer,
@@ -143,23 +177,11 @@ const AudioAttachmentUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const handlePlayPause = async () => {
-    if (sound) {
-      if (paused) {
-        setPaused(false);
-        await sound.playAsync();
-      } else {
-        setPaused(true);
-        await sound.pauseAsync();
-      }
-    }
-  };
-
-  const videoDuration = duration
-    ? duration / 3600 >= 1
-      ? dayjs.duration(duration, 'second').format('HH:mm:ss')
-      : dayjs.duration(duration, 'second').format('mm:ss')
-    : null;
+  const videoDuration = currentDuration
+    ? currentDuration / 3600 >= 1
+      ? dayjs.duration(currentDuration, 'second').format('HH:mm:ss')
+      : dayjs.duration(currentDuration, 'second').format('mm:ss')
+    : '00:00';
 
   const lastIndexOfDot = item.file.name.lastIndexOf('.');
 
@@ -205,9 +227,25 @@ const AudioAttachmentUploadPreviewWithContext = <
           >
             {item.file.name.slice(0, 12) + '...' + item.file.name.slice(lastIndexOfDot)}
           </Text>
-          <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
-            {videoDuration}
-          </Text>
+          <View
+            style={{
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
+            <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
+              {videoDuration}
+            </Text>
+            <ProgressControl
+              duration={duration}
+              filledColor={accent_blue}
+              onPlayPause={handlePlayPause}
+              onProgressDrag={handleProgressDrag}
+              progress={progress}
+              width={110}
+            />
+          </View>
         </View>
       </View>
     </View>

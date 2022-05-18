@@ -9,22 +9,22 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+type ProgressControlProps = {
+  duration: number;
+  filledColor: string;
+  onPlayPause: () => void;
+  onProgressDrag: (progress: number) => void;
+  progress: number;
+  width: number;
+};
 
-type ProgressControlProps = Pick<
-  ImageGalleryFooterVideoControlProps,
-  'duration' | 'onPlayPause' | 'onProgressDrag' | 'progress'
->;
-
-const width = 180;
 const height = 2;
 const styles = StyleSheet.create({
   containerStyle: {
     borderRadius: 50,
     height,
-    width,
   },
   innerStyle: {
     height,
@@ -32,9 +32,17 @@ const styles = StyleSheet.create({
   progressControlThumbStyle: {
     backgroundColor: '#fff',
     borderRadius: 5,
+    elevation: 6,
     height: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      height: 3,
+      width: 0,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
     top: -11,
-    width: 4,
+    width: 5,
   },
 });
 
@@ -42,10 +50,10 @@ const ProgressControlThumb = () => <View style={styles.progressControlThumbStyle
 
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {
-    const { duration, onPlayPause, onProgressDrag, progress } = props;
+    const { duration, filledColor, onPlayPause, onProgressDrag, progress, width } = props;
     const {
       theme: {
-        colors: { grey_dark, white_snow },
+        colors: { grey_dark },
       },
     } = useTheme();
 
@@ -58,7 +66,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     }, [progress]);
 
     const animatedStyles = useAnimatedStyle(() => ({
-      backgroundColor: white_snow,
+      backgroundColor: filledColor,
       width: state.value,
     }));
 
@@ -88,7 +96,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
       [duration],
     );
     return (
-      <View style={[styles.containerStyle, { backgroundColor: grey_dark }]}>
+      <View style={[styles.containerStyle, { backgroundColor: grey_dark, width }]}>
         <Animated.View style={[styles.innerStyle, animatedStyles]} />
 
         <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
@@ -100,7 +108,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    if (prevProps.duration === nextProps.duration && prevProps.progress === nextProps.duration)
+    if (prevProps.duration === nextProps.duration && prevProps.progress === nextProps.progress)
       return true;
     else return false;
   },

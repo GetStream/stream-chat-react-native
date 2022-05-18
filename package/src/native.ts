@@ -132,6 +132,8 @@ export type SoundReturnType = {
   pauseAsync: () => void;
   play: () => void;
   playAsync: () => void;
+  setPositionAsync: (millis: number) => void;
+  stopAsync: () => void;
 };
 
 export type SoundType = (options: SoundOptions) => SoundReturnType;

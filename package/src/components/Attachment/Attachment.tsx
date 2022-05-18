@@ -76,7 +76,6 @@ const AttachmentWithContext = <
   }
 
   if (attachment.type === 'file' || attachment.type === 'audio') {
-    console.log(attachment.asset_url);
     return <FileAttachment attachment={attachment} />;
   }
 
