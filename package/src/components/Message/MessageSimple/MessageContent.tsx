@@ -222,6 +222,19 @@ const MessageContentWithContext = <
   }
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
+  const isBorderBottomLeftRadius =
+    (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
+    (!hasThreadReplies || threadList);
+  const isBorderBottomRightRadius =
+    (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
+    (!hasThreadReplies || threadList);
+  const isBorderColor = isMyMessage && !error;
+  const isBorderTopLeftRadius =
+    (groupStyle === 'left_top' || groupStyle === 'left_single') &&
+    (!hasThreadReplies || threadList);
+  const isBorderTopRightRadius =
+    (groupStyle === 'right_top' || groupStyle === 'right_single') &&
+    (!hasThreadReplies || threadList);
 
   return (
     <TouchableOpacity
@@ -297,17 +310,11 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius:
-                (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: isMyMessage && !error ? backgroundColor : grey_whisper,
+              borderBottomLeftRadius: isBorderBottomLeftRadius ? borderRadiusS : borderRadiusL,
+              borderBottomRightRadius: isBorderBottomRightRadius ? borderRadiusS : borderRadiusL,
+              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              borderTopLeftRadius: isBorderTopLeftRadius ? borderRadiusS : borderRadiusL,
+              borderTopRightRadius: isBorderTopRightRadius ? borderRadiusS : borderRadiusL,
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
