@@ -21,7 +21,7 @@ export const getChannelPreviewDisplayName = <
   channelName?: string;
   currentUserId?: string;
   members?: Channel<StreamChatGenerics>['state']['members'];
-}) => {
+}): string => {
   if (channelName) return channelName;
 
   const channelMembers = Object.values(members || {});
@@ -31,7 +31,7 @@ export const getChannelPreviewDisplayName = <
     const returnStringLength = returnString.length;
     const currentMemberName = currentMember.user?.name || currentMember.user?.id || 'Unknown User';
     // a rough approximation of when the +Number shows up
-    if (returnStringLength + (currentMemberName.length + 2) < maxCharacterLength) {
+    if (returnStringLength + (currentMemberName.length + 3) < maxCharacterLength) {
       if (returnStringLength) {
         returnString += `, ${currentMemberName}`;
       } else {
@@ -47,7 +47,7 @@ export const getChannelPreviewDisplayName = <
     }
     return returnString;
   }, '');
-
+  console.log({ name });
   return name;
 };
 
@@ -64,7 +64,6 @@ export const useChannelPreviewDisplayName = <
   const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
   const maxCharacterLength = characterLength || maxCharacterLengthDefault;
-
   const [displayName, setDisplayName] = useState(
     getChannelPreviewDisplayName({
       channelName,
