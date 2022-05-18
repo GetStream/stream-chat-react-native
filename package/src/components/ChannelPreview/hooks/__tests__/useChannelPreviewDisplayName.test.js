@@ -4,6 +4,11 @@ import { Text } from 'react-native';
 import { render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import {
+  CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK,
+  CHANNEL_WITH_ONE_MEMBER_MOCK,
+  GROUP_CHANNEL_MOCK,
+} from '../../../../mock-builders/api/queryMembers';
 import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateUser } from '../../../../mock-builders/generator/user';
@@ -109,152 +114,26 @@ describe('useChannelPreviewDisplayName', () => {
     expect(displayName.length).toEqual(channelName.length);
   });
 
-  it('will return the a truncated channelName for a group channel', async () => {
-    const characterLength = 15;
-    const currentUserId = 'okechukwu nwagba';
-    const members = {
-      ben: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'ben',
-          name: 'ben',
-        },
-        user_id: 'ben',
-      },
-      nick: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'nick',
-          name: 'nick',
-        },
-        user_id: 'nick',
-      },
-      okey: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'okechukwu nwagba',
-          name: 'okechukwu nwagba',
-        },
-        user_id: 'okechukwu nwagba',
-      },
-      qatest1: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-28T09:08:43.274508Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'qatest1',
-          name: 'qatest1',
-        },
-        user_id: 'qatest1',
-      },
+  test.each([
+    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick,... +2'],
+    [15, CHANNEL_WITH_ONE_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nwagb...'],
+    [15, CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
+  ])(
+    'getChannelPreviewDisplayName(%i, %p, %s) result in %s',
+    async (characterLength, members, currentUserId, expected) => {
+      await initializeChannel(
+        generateChannelResponse({
+          channel: {},
+        }),
+      );
 
-      thierry: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'thierry',
-          name: 'thierry',
-        },
-        user_id: 'thierry',
-      },
-    };
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {},
-      }),
-    );
+      const displayName = getChannelPreviewDisplayName({
+        currentUserId,
+        maxCharacterLength: characterLength,
+        members,
+      });
 
-    const displayName = getChannelPreviewDisplayName({
-      currentUserId,
-      maxCharacterLength: characterLength,
-      members,
-    });
-
-    expect(displayName).toEqual('ben, nick,... +2');
-  });
-
-  it('will return the a truncated channelName', async () => {
-    const characterLength = 15;
-    const currentUserId = 'okechukwu nwagba';
-    const members = {
-      okey: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {
-          id: 'okechukwu nwagba martin',
-          name: 'okechukwu nwagba martin',
-        },
-        user_id: 'okechukwu nwagba martin',
-      },
-    };
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {},
-      }),
-    );
-
-    const displayName = getChannelPreviewDisplayName({
-      currentUserId,
-      maxCharacterLength: characterLength,
-      members,
-    });
-
-    expect(displayName).toEqual('okechukwu nwagb...');
-  });
-
-  it('will return Unknown User', async () => {
-    const characterLength = 15;
-    const currentUserId = 'okechukwu nwagba';
-    const members = {
-      okey: {
-        banned: false,
-        channel_role: 'channel_member',
-        created_at: '2021-01-27T11:54:34.173125Z',
-        role: 'member',
-        shadow_banned: false,
-        updated_at: '2021-02-12T12:12:35.862282Z',
-        user: {},
-        user_id: 'okechukwu nwagba martin',
-      },
-    };
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {},
-      }),
-    );
-
-    const displayName = getChannelPreviewDisplayName({
-      currentUserId,
-      maxCharacterLength: characterLength,
-      members,
-    });
-
-    expect(displayName).toEqual('Unknown User...');
-  });
+      expect(displayName).toEqual(expected);
+    },
+  );
 });

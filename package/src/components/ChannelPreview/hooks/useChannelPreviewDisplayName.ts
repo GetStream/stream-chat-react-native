@@ -47,7 +47,7 @@ export const getChannelPreviewDisplayName = <
     }
     return returnString;
   }, '');
-  console.log({ name });
+
   return name;
 };
 
