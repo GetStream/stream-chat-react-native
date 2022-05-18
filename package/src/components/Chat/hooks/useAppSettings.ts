@@ -27,7 +27,7 @@ export const useAppSettings = <
     }
 
     if (isOnline) {
-      getAppSettings();
+      // getAppSettings();
     }
 
     return () => {

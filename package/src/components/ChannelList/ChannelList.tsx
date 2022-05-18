@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
@@ -19,15 +19,18 @@ import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
+import { useSyncDatabase } from './hooks/listeners/useSyncDatabase';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { usePaginatedChannels } from './hooks/usePaginatedChannels';
+import { convertToQuery, usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import {
   ChannelsContextValue,
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { storeCidsForQuery } from '../../store/queries/storeCidsForQuery';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -241,7 +244,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-
+  const { enableOfflineSupport } = useChatContext();
   const {
     channels,
     error,
@@ -249,11 +252,13 @@ export const ChannelList = <
     loadingChannels,
     loadingNextPage,
     loadNextPage,
+    offlineChannelsActive,
     refreshing,
     refreshList,
     reloadList,
     setChannels,
   } = usePaginatedChannels<StreamChatGenerics>({
+    enableOfflineSupport,
     filters,
     options,
     sort,
@@ -285,6 +290,7 @@ export const ChannelList = <
   useChannelUpdated({
     onChannelUpdated,
     setChannels,
+    setForceUpdate,
   });
 
   useChannelVisible({
@@ -315,6 +321,24 @@ export const ChannelList = <
   useUserPresence({
     setChannels,
   });
+
+  useSyncDatabase({
+    enableOfflineSupport,
+  });
+
+  const channelIds = channels.map((c) => c.cid);
+  const channelIdsStr = channelIds.join('');
+
+  useEffect(() => {
+    if (offlineChannelsActive || !enableOfflineSupport) {
+      return;
+    }
+
+    storeCidsForQuery({
+      cids: channelIds,
+      filtersAndSort: convertToQuery(filters, sort),
+    });
+  }, [channelIdsStr, offlineChannelsActive]);
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,

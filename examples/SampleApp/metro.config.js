@@ -15,5 +15,7 @@ module.exports = {
     extraNodeModules,
     useWatchman: false,
   },
-  watchFolders: [projectRoot].concat(alternateRoots),
+  watchFolders: [projectRoot]
+    .concat(alternateRoots)
+    .concat(['/Users/vishalnarkhede/projects/stream-chat-js']),
 };

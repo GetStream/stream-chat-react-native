@@ -22,9 +22,11 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { SDK } from '../../native';
+import { initializeDatabase } from '../../store/utils/initializeDatabase';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
+import '../../store/utils/initDevMenu';
 
 init();
 
@@ -38,6 +40,7 @@ export type ChatProps<
    * app goes to background, and reconnect when app comes to foreground.
    */
   closeConnectionOnBackground?: boolean;
+  enableOfflineSupport?: boolean;
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
@@ -126,7 +129,14 @@ const ChatWithContext = <
 >(
   props: PropsWithChildren<ChatProps<StreamChatGenerics>>,
 ) => {
-  const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
+  const {
+    children,
+    client,
+    closeConnectionOnBackground = true,
+    enableOfflineSupport = false,
+    i18nInstance,
+    style,
+  } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -149,16 +159,18 @@ const ChatWithContext = <
 
   /**
    * Setup muted user listener
+   * TODO: reimplement
    */
   const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
   useEffect(() => {
-    if (client.setUserAgent) {
+    if (client?.setUserAgent) {
       client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
+      client.enableOfflineSupport = true;
     }
-  }, []);
+  }, [client]);
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
@@ -169,10 +181,15 @@ const ChatWithContext = <
     channel,
     client,
     connectionRecovering,
+    enableOfflineSupport,
     isOnline,
     mutedUsers,
     setActiveChannel,
   });
+
+  useEffect(() => {
+    initializeDatabase();
+  }, []);
 
   if (loadingTranslators) return null;
 

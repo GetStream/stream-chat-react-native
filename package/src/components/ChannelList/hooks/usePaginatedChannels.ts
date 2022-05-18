@@ -6,6 +6,7 @@ import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRef
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
+import { getChannels } from '../../../store/queries/getChannels';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
@@ -17,6 +18,7 @@ const waitSeconds = (seconds: number) =>
 
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
+    enableOfflineSupport: boolean;
     filters: ChannelFilters<StreamChatGenerics>;
     options: ChannelOptions;
     sort: ChannelSort<StreamChatGenerics>;
@@ -29,25 +31,36 @@ const DEFAULT_OPTIONS = {
 const MAX_NUMBER_OF_RETRIES = 3;
 const RETRY_INTERVAL_IN_MS = 5000;
 
-type QueryType = 'reload' | 'refresh' | 'loadChannels';
+type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
+
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
+
+export const convertToQuery = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  filters: ChannelFilters<StreamChatGenerics>,
+  sort: ChannelSort<StreamChatGenerics>,
+) => JSON.stringify(`${JSON.stringify(filters)}${JSON.stringify(sort)}`);
 
 export const usePaginatedChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  enableOfflineSupport,
   filters = {},
   options = DEFAULT_OPTIONS,
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
+
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
+  const [offlineChannelsActive, setOfflineChannelsActive] = useState<boolean>(true);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const lastRefresh = useRef(Date.now());
   const isQueryingRef = useRef(false);
-  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>();
+  const [activeQueryType, setActiveQueryType] = useState<QueryType | null>('queryLocalDB');
   const isMountedRef = useIsMountedRef();
   const filtersRef = useRef<typeof filters | null>(null);
   const sortRef = useRef<typeof sort | null>(null);
@@ -87,7 +100,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'loadChannels' ? channels.length : 0,
+      offset: queryType === 'loadChannels' && !offlineChannelsActive ? channels.length : 0,
       ...options,
     };
 
@@ -99,15 +112,13 @@ export const usePaginatedChannels = <
       if (isQueryStale() || !isMountedRef.current) {
         return;
       }
-
-      channelQueryResponse.forEach((channel) => channel.state.setIsUpToDate(true));
-
       const newChannels =
-        queryType === 'loadChannels'
+        queryType === 'loadChannels' && !offlineChannelsActive
           ? [...channels, ...channelQueryResponse]
           : channelQueryResponse;
 
       setChannels(newChannels);
+      setOfflineChannelsActive(false);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setError(undefined);
       isQueryingRef.current = false;
@@ -124,6 +135,7 @@ export const usePaginatedChannels = <
       if (retryCount === MAX_NUMBER_OF_RETRIES && !isQueryingRef.current) {
         setActiveQueryType(null);
         console.warn(err);
+
         setError(
           new Error(
             `Maximum number of retries reached in queryChannels. Last error message is: ${err}`,
@@ -172,16 +184,35 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    reloadList();
-  }, [filterStr, sortStr]);
+    if (client) {
+      if (enableOfflineSupport) {
+        try {
+          const channelsFromDB = getChannels<StreamChatGenerics>(convertToQuery(filters, sort));
+          setChannels(
+            client.hydrateActiveChannels(channelsFromDB, {
+              offlineMode: true,
+            }),
+          );
+        } catch (e) {
+          console.warn('Failed to get channels from database: ', e);
+        }
+      }
+
+      reloadList();
+    }
+  }, [filterStr, sortStr, client]);
 
   return {
     channels,
     error,
     hasNextPage,
-    loadingChannels: activeQueryType === 'reload',
+    loadingChannels:
+      activeQueryType === 'queryLocalDB'
+        ? true
+        : activeQueryType === 'reload' && channels.length === 0,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
+    offlineChannelsActive,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,

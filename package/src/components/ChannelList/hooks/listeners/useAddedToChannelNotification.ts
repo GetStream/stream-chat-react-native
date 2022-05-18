@@ -42,7 +42,7 @@ export const useAddedToChannelNotification = <
       }
     };
 
-    client.on('notification.added_to_channel', handleEvent);
-    return () => client.off('notification.added_to_channel', handleEvent);
+    const listener = client?.on('notification.added_to_channel', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

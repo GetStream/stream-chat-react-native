@@ -9,6 +9,7 @@ import type { DefaultStreamChatGenerics } from '../../../../types/types';
 type Parameters<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   {
     setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>;
+    setForceUpdate: React.Dispatch<React.SetStateAction<number>>,
     onChannelUpdated?: (
       setChannels: React.Dispatch<React.SetStateAction<Channel<StreamChatGenerics>[]>>,
       event: Event<StreamChatGenerics>,
@@ -20,6 +21,7 @@ export const useChannelUpdated = <
 >({
   onChannelUpdated,
   setChannels,
+  setForceUpdate,
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
 
@@ -43,10 +45,11 @@ export const useChannelUpdated = <
 
           return [...channels];
         });
+        setForceUpdate((count) => count + 1);
       }
     };
 
-    client.on('channel.updated', handleEvent);
-    return () => client.off('channel.updated', handleEvent);
+    const listener = client?.on('channel.updated', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

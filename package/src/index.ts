@@ -1,3 +1,5 @@
+import 'react-native-quick-sqlite';
+
 export * from './components';
 export * from './hooks';
 export { registerNativeHandlers, NetInfo } from './native';
@@ -19,4 +21,5 @@ export { default as nlTranslations } from './i18n/nl.json';
 export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 
+export { resetDatabase } from './store/utils/resetDatabase';
 export { version } from './version.json';

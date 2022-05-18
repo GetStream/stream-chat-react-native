@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
@@ -44,8 +45,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
     },
   } = useTheme();
 
-  const [imageError, setImageError] = useState(false);
-
+  const { imageError, setImageError } = useImageErrorHandler();
   /**
    * [
    *    [
@@ -115,49 +115,61 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
       ]}
       testID={testID || 'group-avatar'}
     >
-      {avatarImages.map((column, colIndex) => (
+      {imageError ? (
         <View
-          key={`avatar-column-${colIndex}`}
-          style={[
-            styles.flex,
-            {
-              flexDirection: imagesOrNames.length === 2 ? 'column' : 'row',
-            },
-          ]}
-        >
-          {column.map(({ height, name, url, width }, rowIndex) => (
-            <Image
-              accessibilityLabel={testID || 'avatar-image'}
-              key={`avatar-${url}-${rowIndex}`}
-              onError={() => setImageError(true)}
-              source={{
-                uri:
-                  imageError || url.includes(randomSvgBaseUrl)
-                    ? url.includes(streamCDN)
-                      ? url
-                      : `${randomImageBaseUrl}${
-                          name ? `?name=${getInitials(name)}&size=${height}` : ''
-                        }`
-                    : getResizedImageUrl({
+          style={{
+            backgroundColor: '#ececec',
+            borderRadius: size / 2,
+            height: size,
+            width: size,
+          }}
+        />
+      ) : (
+        avatarImages.map((column, colIndex) => (
+          <View
+            key={`avatar-column-${colIndex}`}
+            style={[
+              styles.flex,
+              {
+                flexDirection: imagesOrNames.length === 2 ? 'column' : 'row',
+              },
+            ]}
+          >
+            {column.map(({ height, name, url, width }, rowIndex) => (
+              <Image
+                accessibilityLabel={testID || 'avatar-image'}
+                key={`avatar-${url}-${rowIndex}`}
+                onError={() => setImageError(true)}
+                source={{
+                  uri:
+                    imageError || url.includes(randomSvgBaseUrl)
+                      ? url.includes(streamCDN)
+                        ? url
+                        : `${randomImageBaseUrl}${
+                            name ? `?name=${getInitials(name)}&size=${height}` : ''
+                          }`
+                      : getResizedImageUrl({
+                          height,
+                          url,
+                          width,
+                        }),
+                }}
+                style={[
+                  image,
+                  size
+                    ? {
+                        backgroundColor: '#ececec',
                         height,
-                        url,
                         width,
-                      }),
-              }}
-              style={[
-                image,
-                size
-                  ? {
-                      height,
-                      width,
-                    }
-                  : {},
-              ]}
-              testID={`group-avatar-image-${colIndex}-${rowIndex}`}
-            />
-          ))}
-        </View>
-      ))}
+                      }
+                    : {},
+                ]}
+                testID={`group-avatar-image-${colIndex}-${rowIndex}`}
+              />
+            ))}
+          </View>
+        ))
+      )}
     </View>
   );
 };

@@ -31,6 +31,9 @@ import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
 import type { StreamChat } from 'stream-chat';
 
+LogBox.ignoreLogs(["Seems like you're using an old API"]);
+LogBox.ignoreLogs(['Each child in a list should have a unique']);
+
 import type {
   StackNavigatorParamList,
   StreamChatGenerics,
@@ -127,7 +130,7 @@ const App = () => {
         }}
       >
         <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
-          {isConnecting ? (
+          {isConnecting && !chatClient ? (
             <LoadingScreen />
           ) : chatClient ? (
             <DrawerNavigatorWrapper chatClient={chatClient} />
@@ -163,7 +166,7 @@ const DrawerNavigatorWrapper: React.FC<{
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <OverlayProvider<StreamChatGenerics> bottomInset={bottom} value={{ style: streamChatTheme }}>
-        <Chat<StreamChatGenerics> client={chatClient}>
+        <Chat<StreamChatGenerics> client={chatClient} enableOfflineSupport>
           <AppOverlayProvider>
             <UserSearchProvider>
               <DrawerNavigator />

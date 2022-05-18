@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { buildGallery } from './utils/buildGallery/buildGallery';
@@ -6,6 +6,7 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -23,6 +24,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -32,10 +34,14 @@ const GalleryImage: React.FC<
   }
 > = (props) => {
   const { uri, ...rest } = props;
+  const { imageError, setImageError } = useImageErrorHandler();
+
+  if (imageError) return null;
 
   return (
     <Image
       {...rest}
+      onError={() => setImageError(true)}
       source={{
         uri: makeImageCompatibleUrl(uri),
       }}

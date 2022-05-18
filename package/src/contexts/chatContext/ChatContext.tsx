@@ -30,6 +30,7 @@ export type ChatContextValue<
    * */
   client: StreamChat<StreamChatGenerics>;
   connectionRecovering: boolean;
+  enableOfflineSupport: boolean;
   isOnline: boolean;
   mutedUsers: Mute<StreamChatGenerics>[];
   /**

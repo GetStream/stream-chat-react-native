@@ -39,7 +39,8 @@ const ChannelPreviewWithContext = <
     | undefined
   >(channel.state.messages[channel.state.messages.length - 1]);
   const [forceUpdate, setForceUpdate] = useState(0);
-  const [unread, setUnread] = useState(channel.countUnread());
+  // const [unread, setUnread] = useState(channel.countUnread());
+  const [unread, setUnread] = useState(0);
 
   const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
 
@@ -76,11 +77,16 @@ const ChannelPreviewWithContext = <
     channel.on('message.new', handleEvent);
     channel.on('message.updated', handleEvent);
     channel.on('message.deleted', handleEvent);
+    const listener = channel.on('channel.updated', () => {
+      console.log('from channel preview')
+      setForceUpdate(c => c + 1);
+    });
 
     return () => {
       channel.off('message.new', handleEvent);
       channel.off('message.updated', handleEvent);
       channel.off('message.deleted', handleEvent);
+      listener.unsubscribe();
     };
   }, []);
 

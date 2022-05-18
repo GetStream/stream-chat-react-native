@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -26,16 +27,21 @@ export const useConnectionRecovered = <
       setForceUpdate((count) => count + 1);
     };
 
-    const { unsubscribe: unsubscribeRecovered } = client.on('connection.recovered', handleEvent);
-    const { unsubscribe: unsubscribeChanged } = client.on('connection.changed', (event) => {
-      if (event.online) {
-        handleEvent();
-      }
-    });
+    let connectionRecoveredListener: ReturnType<StreamChat['on']>;
+    let connectionChangedListener: ReturnType<StreamChat['on']>;
+
+    if (client) {
+      connectionRecoveredListener = client.on('connection.recovered', handleEvent);
+      connectionChangedListener = client.on('connection.changed', (event) => {
+        if (event.online) {
+          handleEvent();
+        }
+      });
+    }
 
     return () => {
-      unsubscribeRecovered();
-      unsubscribeChanged();
+      connectionRecoveredListener?.unsubscribe?.();
+      connectionChangedListener?.unsubscribe?.();
     };
-  }, []);
+  }, [client]);
 };

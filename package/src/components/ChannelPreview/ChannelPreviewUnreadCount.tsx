@@ -6,6 +6,7 @@ import type { ChannelPreviewProps } from './ChannelPreview';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { PrimitiveAtom, useAtom } from 'jotai';
 
 const styles = StyleSheet.create({
   unreadContainer: {
@@ -27,7 +28,7 @@ export type ChannelPreviewUnreadCountProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<ChannelPreviewProps<StreamChatGenerics>, 'channel'> & {
   maxUnreadCount: number;
-  unread?: number;
+  unread: PrimitiveAtom<number>;
 };
 
 export const ChannelPreviewUnreadCount = <
@@ -35,7 +36,9 @@ export const ChannelPreviewUnreadCount = <
 >(
   props: ChannelPreviewUnreadCountProps<StreamChatGenerics>,
 ) => {
-  const { maxUnreadCount, unread } = props;
+  const { maxUnreadCount, unread: unreadAtom } = props;
+  const [unread] = unreadAtom ? useAtom(unreadAtom) : [0];
+
   const {
     theme: {
       channelPreview: { unreadContainer, unreadText },
