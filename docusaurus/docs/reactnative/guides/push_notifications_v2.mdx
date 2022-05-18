@@ -209,7 +209,11 @@ The delivered push notification message payload depends upon the [push payload t
   // other fields..
 }
 ```
+:::caution
 
+If you had migrated from push v1 to v2, the v1 template is copied to the notification field of the v2 template. In this case, the Firebase SDK will automatically display the message on Android too.
+
+:::
 ## Receiving Notifications When On Background Or Quit State
 
 ### iOS
