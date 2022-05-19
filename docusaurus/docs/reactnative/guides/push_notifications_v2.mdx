@@ -59,6 +59,7 @@ Follow the steps below to setup your apps with Firebase:
 4. Add the [Push Notifications Capability](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app) for your iOS app.
 
 ### Expo
+
 For bare workflow, all of the installation steps above will suffice. For custom managed workflow, please see [the expo installation docs at React Native Firebase](https://rnfirebase.io/#expo). React Native Firebase cannot be used in the "Expo Go" app because [it is not possible to include custom native code](https://docs.expo.dev/bare/using-expo-client/). If you are using "Expo Go" app and want notifications, you can achieve this using [Webhooks](https://getstream.io/chat/docs/react-native/webhooks_overview/?language=javascript) and a third-party push provider. See [this article](https://support.getstream.io/hc/en-us/articles/1500006478421-How-can-I-use-the-Stream-Webhook-to-send-customers-emails-based-on-Chat-events-) for an example.
 
 ## Get Google Service Account Credentials
@@ -208,11 +209,13 @@ The delivered push notification message payload depends upon the [push payload t
   // other fields..
 }
 ```
+
 :::note
 
 If you had migrated from push v1 to v2, the v1 template is copied to the notification field of the v2 template. In this case, the Firebase SDK will automatically display the message on Android too.
 
 :::
+
 ## Receiving Notifications When On Background Or Quit State
 
 ### iOS
@@ -372,6 +375,7 @@ function App() {
   );
 }
 ```
+
 ## Customizing The Delivered Payload
 
 Please see the [JavaScript SDK documentation](https://getstream.io/chat/docs/javascript/push_template/?language=javascript) about the variables present to configure the push template and the templating language used. Some of the common use-cases for customizing the template are given below.
@@ -440,7 +444,7 @@ notifee.onBackgroundEvent(async ({ detail, type }) => {
 
 :::info
 
-The `notification_template` is a JSON object that includes the keys relevant to push notifications for Android. See the [AndroidNotification](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification) type in the firebase documentation for all the supported keys. 
+The `notification_template` is a JSON object that includes the keys relevant to push notifications for Android. See the [AndroidNotification](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification) type in the firebase documentation for all the supported keys.
 
 :::
 
@@ -462,6 +466,7 @@ client.updateAppSettings({
   }
 });
 ```
+
 :::info
 
 The `apn_template` is a JSON object that includes the keys relevant to push notifications for iOS. See [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification) in the iOS documentation to see the supported keys.
