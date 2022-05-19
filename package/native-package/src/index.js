@@ -8,8 +8,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import Sound from 'react-native-sound';
-import Video from 'react-native-video';
+import SoundPlayer from 'react-native-sound-player';
+import AudioVideoPlayer from 'react-native-video';
 
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
@@ -200,24 +200,25 @@ registerNativeHandlers({
       throw new Error('Sharing failed...');
     }
   },
-  Sound: ({ basePathOrCallback, callback, filenameOrFile }) => {
-    const sound = new Sound(
-      filenameOrFile,
-      basePathOrCallback,
-      callback
-        ? callback()
-        : (error) => {
-            if (error) {
-              console.log(`Failed to load sound:`, error);
-              return;
-            }
-          },
-    );
-
-    console.log(sound);
-
-    return sound;
-  },
+  // eslint-disable-next-line react/display-name
+  Sound: ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
+    <AudioVideoPlayer
+      audioOnly={true}
+      onBuffer={onBuffer}
+      onEnd={onEnd}
+      onError={(error) => {
+        console.log(error);
+      }}
+      onLoad={onLoad}
+      onProgress={onProgress}
+      paused={paused}
+      ref={soundRef}
+      source={{
+        uri,
+      }}
+      style={style}
+    />
+  ),
   takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
@@ -270,7 +271,7 @@ registerNativeHandlers({
   },
   // eslint-disable-next-line react/display-name
   Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, resizeMode, style, uri, videoRef }) => (
-    <Video
+    <AudioVideoPlayer
       onBuffer={onBuffer}
       onEnd={onEnd}
       onError={(error) => {

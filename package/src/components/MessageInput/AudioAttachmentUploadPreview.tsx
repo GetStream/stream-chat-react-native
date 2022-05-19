@@ -11,7 +11,13 @@ import {
   useTheme,
 } from '../../contexts';
 import { Pause, Play } from '../../icons';
-import { PlaybackStatus, Sound, SoundReturnType } from '../../native';
+import {
+  PlaybackStatus,
+  Sound,
+  SoundReturnType,
+  VideoPayloadData,
+  VideoProgressData,
+} from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ProgressControl } from '../ProgressControl/ProgressControl';
 
@@ -86,10 +92,48 @@ const AudioAttachmentUploadPreviewWithContext = <
 ) => {
   const [paused, setPaused] = useState<boolean>(true);
   const [duration, setDuration] = useState<number>(0);
-  const [currentDuration, setCurrentDuration] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const soundRef = useRef<SoundReturnType | null>(null);
   const { fileUploads, index, item } = props;
+
+  const handleLoad = (payload: VideoPayloadData) => {
+    if (payload.duration) {
+      setDuration(payload.duration);
+    }
+  };
+
+  const handleProgress = (data: VideoProgressData) => {
+    if (data.currentTime && data.seekableDuration) {
+      setProgress(data.currentTime / data.seekableDuration);
+    }
+  };
+
+  const handlePlayPause = async () => {
+    if (soundRef.current) {
+      if (progress === 1) {
+        if (soundRef.current.seek) soundRef.current.seek(0);
+        if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+      }
+      if (paused) {
+        if (soundRef.current.playAsync) await soundRef.current.playAsync();
+      } else {
+        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+      }
+      setPaused((state) => !state);
+    }
+  };
+
+  const handleProgressDrag = async (position: number) => {
+    setProgress(position / duration);
+    if (soundRef.current?.seek) soundRef.current.seek(position);
+    if (soundRef.current?.setPositionAsync)
+      await soundRef.current.setPositionAsync(position * 1000);
+  };
+
+  const handleEnd = () => {
+    setPaused(true);
+    setProgress(1);
+  };
 
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
     if (!playbackStatus.isLoaded) {
@@ -99,17 +143,13 @@ const AudioAttachmentUploadPreviewWithContext = <
       }
     } else {
       const { durationMillis, positionMillis } = playbackStatus;
-      console.log(durationMillis);
-      setCurrentDuration(durationMillis / 1000);
       setDuration(durationMillis / 1000);
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
-        setCurrentDuration(positionMillis / 1000);
         setProgress(positionMillis / durationMillis);
       } else {
         // Update your UI for the paused state
-        setCurrentDuration(positionMillis / 1000);
       }
 
       if (playbackStatus.isBuffering) {
@@ -124,41 +164,18 @@ const AudioAttachmentUploadPreviewWithContext = <
     }
   };
 
-  const handleProgressDrag = async (position: number) => {
-    setProgress(position / duration);
-    if (soundRef.current) {
-      await soundRef.current.setPositionAsync(position * 1000);
-    }
-  };
-
-  const handlePlayPause = async () => {
-    if (soundRef.current) {
-      if (progress === 1) {
-        soundRef.current.setPositionAsync(0);
-      }
-      if (paused) {
-        setPaused((state) => !state);
-        await soundRef.current.playAsync();
-      } else {
-        setPaused((state) => !state);
-        await soundRef.current.pauseAsync();
-      }
-    }
-  };
-
   useEffect(() => {
     const initiateSound = async () => {
       if (item && item.file && item.file.uri) {
-        soundRef.current = await Sound({
-          initialStatus: {},
-          onPlaybackStatusUpdate,
-          source: { uri: item.file.uri },
-        });
+        if (typeof Sound === 'function')
+          soundRef.current = await Sound({
+            initialStatus: {},
+            onPlaybackStatusUpdate,
+            source: { uri: item.file.uri },
+          });
       }
     };
-    initiateSound();
-
-    return () => soundRef.current?.stopAsync();
+    // initiateSound();
   }, []);
 
   const {
@@ -177,10 +194,12 @@ const AudioAttachmentUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const videoDuration = currentDuration
-    ? currentDuration / 3600 >= 1
-      ? dayjs.duration(currentDuration, 'second').format('HH:mm:ss')
-      : dayjs.duration(currentDuration, 'second').format('mm:ss')
+  const progressValueInSeconds = progress * duration;
+
+  const progressDuration = progressValueInSeconds
+    ? progressValueInSeconds / 3600 >= 1
+      ? dayjs.duration(progressValueInSeconds, 'second').format('HH:mm:ss')
+      : dayjs.duration(progressValueInSeconds, 'second').format('mm:ss')
     : '00:00';
 
   const lastIndexOfDot = item.file.name.lastIndexOf('.');
@@ -234,8 +253,16 @@ const AudioAttachmentUploadPreviewWithContext = <
               flexDirection: 'row',
             }}
           >
+            <Sound
+              onEnd={handleEnd}
+              onLoad={handleLoad}
+              onProgress={handleProgress}
+              paused={paused}
+              soundRef={soundRef}
+              uri={item.file.uri}
+            />
             <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
-              {videoDuration}
+              {progressDuration}
             </Text>
             <ProgressControl
               duration={duration}

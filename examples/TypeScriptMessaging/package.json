@@ -31,6 +31,7 @@
     "react-native-screens": "3.2.0",
     "react-native-share": "6.0.1",
     "react-native-sound": "^0.11.2",
+    "react-native-sound-player": "^0.12.1",
     "react-native-svg": "12.1.1",
     "react-native-video": "^5.2.0",
     "stream-chat-react-native": "link:../../package/native-package",

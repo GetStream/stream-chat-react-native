@@ -126,17 +126,46 @@ export type SoundOptions = {
   source?: { uri: string };
 };
 
-export type SoundReturnType = {
-  getDuration: () => number;
-  isPlaying: () => boolean;
-  pauseAsync: () => void;
-  play: () => void;
-  playAsync: () => void;
-  setPositionAsync: (millis: number) => void;
-  stopAsync: () => void;
+export type SoundPlayerEventData = {
+  name?: string;
+  success?: boolean;
+  type?: string;
+  url?: string;
 };
 
-export type SoundType = (options: SoundOptions) => SoundReturnType;
+export type SoundPlayerEvent =
+  | 'FinishedLoading'
+  | 'FinishedPlaying'
+  | 'FinishedLoadingURL'
+  | 'FinishedLoadingFile';
+
+export type SoundReturnType = {
+  paused: boolean;
+  getDuration?: () => number;
+  isPlaying?: () => boolean;
+  onBuffer?: (props: { isBuffering: boolean }) => void;
+  onEnd?: () => void;
+  onLoad?: (payload: VideoPayloadData) => void;
+  onLoadStart?: () => void;
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
+  onProgress?: (data: VideoProgressData) => void;
+  onReadyForDisplay?: () => void;
+  pauseAsync?: () => void;
+  play?: () => void;
+  playAsync?: () => void;
+  replayAsync?: () => void;
+  resizeMode?: string;
+  seek?: (progress: number) => void;
+  setPositionAsync?: (millis: number) => void;
+  soundRef?: React.RefObject<SoundReturnType>;
+  stopAsync?: () => void;
+  style?: StyleProp<ViewStyle>;
+  uri?: string;
+};
+
+export type SoundType =
+  | ((options?: SoundOptions) => SoundReturnType)
+  | React.ComponentType<SoundReturnType>;
 
 export let Sound: SoundType = fail;
 
