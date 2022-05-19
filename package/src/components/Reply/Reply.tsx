@@ -104,23 +104,36 @@ const ReplyWithContext = <
 
   if (typeof quotedMessage === 'boolean') return null;
 
+  let messageType;
+
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
 
-  const messageType = lastAttachment
-    ? lastAttachment.type === 'file' ||
+  if (lastAttachment) {
+    const isLastAttachmentFile =
+      lastAttachment.type === 'file' ||
       lastAttachment.type === 'audio' ||
-      lastAttachment.type === 'video'
+      lastAttachment.type === 'video';
+
+    const isLastAttachmentGiphy =
+      lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur';
+
+    const isLastAttachmentImageOrGiphy =
+      lastAttachment.type === 'image' &&
+      !lastAttachment.title_link &&
+      !lastAttachment.og_scrape_url;
+
+    const isLastAttachmentImage = lastAttachment.image_url || lastAttachment.thumb_url;
+
+    messageType = isLastAttachmentFile
       ? 'file'
-      : lastAttachment.type === 'image' &&
-        !lastAttachment.title_link &&
-        !lastAttachment.og_scrape_url
-      ? lastAttachment.image_url || lastAttachment.thumb_url
+      : isLastAttachmentImageOrGiphy
+      ? isLastAttachmentImage
         ? 'image'
         : undefined
-      : lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur'
+      : isLastAttachmentGiphy
       ? 'giphy'
-      : 'other'
-    : undefined;
+      : 'other';
+  }
 
   const hasImage =
     !error &&

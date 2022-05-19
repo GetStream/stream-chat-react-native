@@ -61,22 +61,29 @@ type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
   onPress: () => void;
   selected: boolean;
-  type: 'image' | 'video';
+  uri: string;
+  numberOfAttachmentPickerImageColumns?: number;
+};
+
+type AttachmentVideoProps = {
+  ImageOverlaySelectedComponent: React.ComponentType;
+  onPress: () => void;
+  selected: boolean;
   uri: string;
   videoDuration: string | null;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
-const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
+const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   const {
     ImageOverlaySelectedComponent,
     numberOfAttachmentPickerImageColumns,
     onPress,
     selected,
-    type,
     uri,
     videoDuration,
   } = props;
+
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
@@ -104,10 +111,48 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
             <ImageOverlaySelectedComponent />
           </View>
         )}
-        {type === 'video' && (
-          <View style={styles.videoView}>
-            <Recorder height={20} pathFill={white} width={25} />
-            {videoDuration ? <Text style={styles.timeColor}>{videoDuration}</Text> : null}
+        <View style={styles.videoView}>
+          <Recorder height={20} pathFill={white} width={25} />
+          {videoDuration ? <Text style={styles.timeColor}>{videoDuration}</Text> : null}
+        </View>
+      </ImageBackground>
+    </TouchableOpacity>
+  );
+};
+
+const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
+  const {
+    ImageOverlaySelectedComponent,
+    numberOfAttachmentPickerImageColumns,
+    onPress,
+    selected,
+    uri,
+  } = props;
+  const {
+    theme: {
+      attachmentPicker: { image, imageOverlay },
+      colors: { overlay },
+    },
+  } = useTheme();
+
+  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <ImageBackground
+        source={{ uri }}
+        style={[
+          {
+            height: size,
+            margin: 1,
+            width: size,
+          },
+          image,
+        ]}
+      >
+        {selected && (
+          <View style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}>
+            <ImageOverlaySelectedComponent />
           </View>
         )}
       </ImageBackground>
@@ -140,20 +185,25 @@ const renderImage = ({
 
   const contentType = lookup(asset.filename) || 'multipart/form-data';
 
-  const isImage = asset.filename
+  const fileType = asset.filename
     ? contentType.startsWith('image/')
       ? 'image'
       : 'video'
     : asset.type === 'video'
     ? 'video'
     : 'image';
+
   const videoDuration = asset.duration ? asset.duration : asset.playableDuration;
 
-  const duration = videoDuration
-    ? videoDuration / 3600 >= 1
-      ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
-      : dayjs.duration(videoDuration, 'second').format('mm:ss')
-    : null;
+  let duration = '00:00';
+
+  if (videoDuration) {
+    const formattedVideoDuration =
+      videoDuration / 3600 >= 1
+        ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
+        : dayjs.duration(videoDuration, 'second').format('mm:ss');
+    duration = formattedVideoDuration;
+  }
 
   const onPressImage = () => {
     if (selected) {
@@ -190,13 +240,20 @@ const renderImage = ({
     }
   };
 
-  return (
+  return fileType === 'image' ? (
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={isImage === 'image' ? onPressImage : onPressVideo}
+      onPress={onPressImage}
       selected={selected}
-      type={isImage}
+      uri={asset.uri}
+    />
+  ) : (
+    <AttachmentVideo
+      ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+      onPress={onPressVideo}
+      selected={selected}
       uri={asset.uri}
       videoDuration={duration}
     />
