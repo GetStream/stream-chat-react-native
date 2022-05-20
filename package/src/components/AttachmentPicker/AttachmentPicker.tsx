@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BackHandler,
   Dimensions,
@@ -200,13 +200,7 @@ export const AttachmentPicker = React.forwardRef(
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
-
-    const hideAttachmentPicker = () => {
-      setSelectedPicker(undefined);
-      if ((ref as React.MutableRefObject<BottomSheet>)?.current) {
-        (ref as React.MutableRefObject<BottomSheet>).current.close();
-      }
-    };
+    const bottomSheetCloseOnKeyboardShowTimeout = useRef<NodeJS.Timeout>();
 
     const getMorePhotos = async () => {
       if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
@@ -248,6 +242,20 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker]);
 
     useEffect(() => {
+      const hideAttachmentPicker = () => {
+        if (bottomSheetCloseOnKeyboardShowTimeout.current) {
+          clearTimeout(bottomSheetCloseOnKeyboardShowTimeout.current);
+        }
+        setSelectedPicker(undefined);
+        // This short timeout is to prevent a race condition
+        // where the close function is called during the point when a internal container layout happens within the bottomsheet due to keyboard affecting the layout
+        // If the container layout measures a shorter height than previous but if the close snapped to the previous height's position, the bottom sheet will show up
+        // this short delay ensures that close function is always called after a container layout due to keyboard change
+        bottomSheetCloseOnKeyboardShowTimeout.current = setTimeout(
+          () => (ref as React.MutableRefObject<BottomSheet | undefined>).current?.close(),
+          150,
+        );
+      };
       const keyboardSubscription =
         Platform.OS === 'ios'
           ? Keyboard.addListener('keyboardWillShow', hideAttachmentPicker)
@@ -264,6 +272,9 @@ export const AttachmentPicker = React.forwardRef(
           Keyboard.removeListener('keyboardWillShow', hideAttachmentPicker);
         } else {
           Keyboard.removeListener('keyboardDidShow', hideAttachmentPicker);
+        }
+        if (bottomSheetCloseOnKeyboardShowTimeout.current) {
+          clearTimeout(bottomSheetCloseOnKeyboardShowTimeout.current);
         }
       };
     }, []);
