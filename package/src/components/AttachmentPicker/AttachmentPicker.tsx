@@ -337,35 +337,24 @@ export const AttachmentPicker = React.forwardRef(
           : statusBarHeight
         : 0;
 
-    const initialSnapPoint = useMemo(
-      () =>
-        attachmentPickerBottomSheetHeight ?? Platform.OS === 'android'
-          ? 308 +
-            (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) -
-            handleHeight
-          : 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment),
-      [
-        attachmentPickerBottomSheetHeight,
-        androidBottomBarHeightAdjustment,
-        fullScreenHeight,
-        handleHeight,
-        screenHeight,
-      ],
-    );
+    const initialSnapPoint =
+      attachmentPickerBottomSheetHeight ?? Platform.OS === 'android'
+        ? 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight
+        : 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment);
 
-    const finalSnapPoint = useMemo(
-      () =>
-        Platform.OS === 'android'
-          ? fullScreenHeight - topInset - handleHeight
-          : fullScreenHeight - topInset,
-      [fullScreenHeight, handleHeight, topInset],
-    );
+    const finalSnapPoint =
+      Platform.OS === 'android'
+        ? fullScreenHeight - topInset - handleHeight
+        : fullScreenHeight - topInset;
 
     /**
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
-    const snapPoints = [initialSnapPoint, finalSnapPoint];
+    const snapPoints = useMemo(
+      () => [initialSnapPoint, finalSnapPoint],
+      [initialSnapPoint, finalSnapPoint],
+    );
 
     return (
       <>
@@ -381,7 +370,7 @@ export const AttachmentPicker = React.forwardRef(
           }
           handleHeight={handleHeight}
           index={-1}
-          onChange={(index: number) => setCurrentIndex(index)}
+          onChange={setCurrentIndex}
           ref={ref}
           snapPoints={snapPoints}
         >
