@@ -225,7 +225,7 @@ const MessageContentWithContext = <
 
   const isBorderColor = isMyMessage && !error;
 
-  const applyBorderRadius = (firstGroupStyle: string, secondGroupStyle: string): boolean =>
+  const shouldApplyBorderRadius = (firstGroupStyle: string, secondGroupStyle: string): boolean =>
     (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
     (!hasThreadReplies || threadList);
 
@@ -303,17 +303,17 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single')
+              borderBottomLeftRadius: shouldApplyBorderRadius('left_bottom', 'left_single')
                 ? borderRadiusS
                 : borderRadiusL,
-              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single')
+              borderBottomRightRadius: shouldApplyBorderRadius('right_bottom', 'right_single')
                 ? borderRadiusS
                 : borderRadiusL,
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
-              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single')
+              borderTopLeftRadius: shouldApplyBorderRadius('left_top', 'right_single')
                 ? borderRadiusS
                 : borderRadiusL,
-              borderTopRightRadius: applyBorderRadius('right_top', 'right_single')
+              borderTopRightRadius: shouldApplyBorderRadius('right_top', 'right_single')
                 ? borderRadiusS
                 : borderRadiusL,
             },
