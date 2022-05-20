@@ -63,5 +63,7 @@
   "Only visible to you": "あなただけに見える",
   "Reply": "返事",
   "Reply to Message": "メッセージに返信",
-  "🏙 Attachment...": "🏙 アタッチメント..."
+  "🏙 Attachment...": "🏙 アタッチメント...",
+  "Not supported": "サポートしていません",
+  "File type not supported": "サポートされていないファイルです"
 }
