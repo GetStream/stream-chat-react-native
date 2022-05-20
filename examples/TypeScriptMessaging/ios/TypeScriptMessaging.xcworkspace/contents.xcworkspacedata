@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../node_modules/react-native-video/ios/RCTVideo.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:TypeScriptMessaging.xcodeproj">
    </FileRef>
    <FileRef
