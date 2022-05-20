@@ -11,6 +11,7 @@ export type Asset = {
   uri: string;
   width: number;
   id?: string;
+  size?: number | string;
 };
 
 export type File = {

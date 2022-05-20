@@ -1,5 +1,47 @@
 # Change Log
 
+## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+* add theming support for the chevron icon in scroll to bottom button ([2a4bc9a](https://github.com/GetStream/stream-chat-react-native/commit/2a4bc9a647595aff0ea2f3e57718219d0b60f7e2))
+
+
+### Bug Fixes
+
+* url without http/s opening issue ([46da678](https://github.com/GetStream/stream-chat-react-native/commit/46da6787423f751f7e1de02d1d865b1e5fe8a07a))
+
+### [4.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.3.0...v4.3.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* fixes the broken giphy "shuffle" behaviour ([16f139a](https://github.com/GetStream/stream-chat-react-native/commit/16f139ab609304193d3d19488bd5227d0078e17d))
+* typescript for "giphyVersion" prop on `OverlayProvider` component ([35c1c10](https://github.com/GetStream/stream-chat-react-native/commit/35c1c10889d30106002bcd0b7b2e55ca27fbcbcb))
+
+
+### Reverts
+
+* "feat: add appSettings to ChatContext" ([5d947a3](https://github.com/GetStream/stream-chat-react-native/commit/5d947a30222ef99c50d6568cff4f8770bf16a237))
+
+## [4.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.2.0...v4.3.0) (2022-04-04)
+
+
+### Features
+
+* add isAttachmentEqual props around memoization of custom properties [CRNS - 290] ([cd51ee8](https://github.com/GetStream/stream-chat-react-native/commit/cd51ee89ab959cd3e38bbdbd5e949bc401b40ec4))
+* editing state header, reply state header and giphy input customization [CRNS - 535] ([4c1d67d](https://github.com/GetStream/stream-chat-react-native/commit/4c1d67d9a4e45050a45a402a53c2cf9b6fbc39b8))
+* open giphy in image viewer when pressed [CRNS - 540] ([3cc2e93](https://github.com/GetStream/stream-chat-react-native/commit/3cc2e939bb4f935e245e46006d4fb607f4cde47c))
+
+
+### Bug Fixes
+
+* handling the case of undefined updated_at on message ([bad1f45](https://github.com/GetStream/stream-chat-react-native/commit/bad1f45d1d6466532d8b5cbc4d2806221b639f03))
+* issues with opening old Giphy on ImageGallery ([7f21b6c](https://github.com/GetStream/stream-chat-react-native/commit/7f21b6c5c98dca210d8b77030c4442c644bb86a1))
+* re-render ownCapabilitiesContext when channel capabilities are u… ([9bbf25e](https://github.com/GetStream/stream-chat-react-native/commit/9bbf25e9237c1a0bf770bd194b67e0737046def8))
+
 ## [4.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.4...v4.2.0) (2022-03-17)
 
 
@@ -892,13 +934,13 @@ We are going to incrementally implement these changes and will try to keep every
 - Upgrading @stream-io/react-native-simple-markdown to 1.2.1 [d89f012](https://github.com/GetStream/react-native-simple-markdown/commit/d89f0128e6c4f179f2afe9f9a896b289288e2afd)
 
   It fixes the issue with markdown where text like "#stream" was treated as heading, thus disallowing anyone to use hashtags in chat.
-  
-- Internal directory restructuring of components 
+
+- Internal directory restructuring of components
 
 ## [0.14.0] 2020-07-16
 
 - Fixing compatibility issues with react-native 0.63 [88721a0](https://github.com/GetStream/stream-chat-react-native/commit/88721a077b3bb3369c3d8dbde9451d84f6761d87)
-- Updating stream-chat to 0.13.x [4af1b1d](https://github.com/GetStream/stream-chat-react-native/commit/4af1b1d63a3c7dec662f8c75426ea7a7082f26a4) 
+- Updating stream-chat to 0.13.x [4af1b1d](https://github.com/GetStream/stream-chat-react-native/commit/4af1b1d63a3c7dec662f8c75426ea7a7082f26a4)
 
 ## [0.13.1] 2020-07-14
 
@@ -1247,7 +1289,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.7.0] 2020-03-17
 
-- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/docs/Streami18n.md
+- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/docs/Streami18n.md
 
 ## [0.6.6] 2020-02-20
 

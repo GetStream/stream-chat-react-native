@@ -44,8 +44,8 @@ export const useMessageDetailsForState = <
   useEffect(() => {
     if (message && !isEditingBoolean<StreamChatGenerics>(message)) {
       setText(message?.text || '');
-      const newFileUploads = [];
-      const newImageUploads = [];
+      const newFileUploads: FileUpload[] = [];
+      const newImageUploads: ImageUpload[] = [];
 
       const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 

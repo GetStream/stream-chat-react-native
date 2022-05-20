@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
 });
 
 const screenHeight = vh(100);
-const fullScreenHeight = Dimensions.get('screen').height;
+const fullScreenHeight = Dimensions.get('window').height;
 
 type AttachmentImageProps = {
   ImageOverlaySelectedComponent: React.ComponentType;
@@ -195,13 +195,16 @@ const renderImage = ({
 
   const videoDuration = asset.duration ? asset.duration : asset.playableDuration;
 
+  const ONE_HOUR_IN_SECONDS = 3600;
+
   let duration = '00:00';
 
   if (videoDuration) {
-    const formattedVideoDuration =
-      videoDuration / 3600 >= 1
-        ? dayjs.duration(videoDuration, 'second').format('HH:mm:ss')
-        : dayjs.duration(videoDuration, 'second').format('mm:ss');
+    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
+    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+    const formattedVideoDuration = dayjs
+      .duration(videoDuration, 'second')
+      .format(formattedDurationParam);
     duration = formattedVideoDuration;
   }
 
@@ -264,25 +267,25 @@ export type AttachmentPickerProps = {
   /**
    * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png) of attachment picker.
    *
-   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
+   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
    */
   AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
   /**
    * Custom UI component to render error component while opening attachment picker.
    *
-   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
+   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
    */
   AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
   /**
    * Custom UI component to render error image for attachment picker
    *
-   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
+   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
    */
   AttachmentPickerErrorImage: React.ComponentType;
   /**
    * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png) (with tick mark)
    *
-   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
+   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
   attachmentPickerBottomSheetHandleHeight?: number;
@@ -463,25 +466,35 @@ export const AttachmentPicker = React.forwardRef(
           : statusBarHeight
         : 0;
 
+    const initialSnapPoint = useMemo(
+      () =>
+        attachmentPickerBottomSheetHeight ?? Platform.OS === 'android'
+          ? 308 +
+            (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) -
+            handleHeight
+          : 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment),
+      [
+        attachmentPickerBottomSheetHeight,
+        androidBottomBarHeightAdjustment,
+        fullScreenHeight,
+        handleHeight,
+        screenHeight,
+      ],
+    );
+
+    const finalSnapPoint = useMemo(
+      () =>
+        Platform.OS === 'android'
+          ? fullScreenHeight - topInset - handleHeight
+          : fullScreenHeight - topInset,
+      [fullScreenHeight, handleHeight, topInset],
+    );
+
     /**
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
-    const snapPoints = useMemo(
-      () => [
-        attachmentPickerBottomSheetHeight ??
-          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
-        fullScreenHeight - topInset - handleHeight,
-      ],
-      [
-        androidBottomBarHeightAdjustment,
-        attachmentPickerBottomSheetHeight,
-        fullScreenHeight,
-        handleHeight,
-        screenHeight,
-        topInset,
-      ],
-    );
+    const snapPoints = [initialSnapPoint, finalSnapPoint];
 
     return (
       <>

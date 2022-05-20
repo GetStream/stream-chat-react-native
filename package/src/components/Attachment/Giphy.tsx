@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   },
   giphyHeaderTitle: {
     fontSize: 14,
+    marginLeft: 8,
   },
   giphyMask: {
     bottom: 8,
@@ -84,7 +85,8 @@ const styles = StyleSheet.create({
     width: '60%',
   },
   selectionContainer: {
-    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 0,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: 'hidden',
     width: 272,
@@ -201,6 +203,7 @@ const GiphyWithContext = <
         { backgroundColor: white, borderColor: `${black}0D` },
         selectionContainer,
       ]}
+      testID='giphy-action-attachment'
     >
       <View style={[styles.header, header]}>
         <GiphyIcon />
@@ -229,6 +232,7 @@ const GiphyWithContext = <
               { borderColor: grey_gainsboro, borderRightWidth: 1 },
               buttonContainer,
             ]}
+            testID={`${actions?.[2].value}-action-button`}
           >
             <Text style={[styles.cancel, { color: grey }, cancel]}>{actions?.[2].text}</Text>
           </TouchableOpacity>
@@ -243,6 +247,7 @@ const GiphyWithContext = <
               { borderColor: grey_gainsboro, borderRightWidth: 1 },
               buttonContainer,
             ]}
+            testID={`${actions?.[1].value}-action-button`}
           >
             <Text style={[styles.shuffle, { color: grey }, shuffle]}>{actions?.[1].text}</Text>
           </TouchableOpacity>
@@ -253,6 +258,7 @@ const GiphyWithContext = <
               }
             }}
             style={[styles.buttonContainer, { borderColor: grey_gainsboro }, buttonContainer]}
+            testID={`${actions?.[0].value}-action-button`}
           >
             <Text style={[styles.send, { color: accent_blue }, send]}>{actions?.[0].text}</Text>
           </TouchableOpacity>

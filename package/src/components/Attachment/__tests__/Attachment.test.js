@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { Linking } from 'react-native';
+
+import { act, renderHook } from '@testing-library/react-hooks';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,13 +13,12 @@ import {
   generateAudioAttachment,
   generateCardAttachment,
   generateFileAttachment,
-  generateGiphyAttachment,
   generateImageAttachment,
-  generateImgurAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
+import { useGoToURL } from '../hooks/useGoToURL';
 
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
@@ -50,65 +52,6 @@ describe('Attachment', () => {
 
     await waitFor(() => {
       expect(getByTestId('file-attachment')).toBeTruthy();
-    });
-  });
-
-  it('should render Card component for "imgur" type attachment', async () => {
-    const attachment = generateImgurAttachment();
-    const { getByTestId } = render(getAttachmentComponent({ attachment }));
-
-    await waitFor(() => {
-      expect(getByTestId('giphy-attachment')).toBeTruthy();
-    });
-  });
-
-  it('should render Card component for "giphy" type attachment', async () => {
-    const attachment = generateGiphyAttachment();
-    const { getByTestId } = render(getAttachmentComponent({ attachment }));
-
-    await waitFor(() => {
-      expect(getByTestId('giphy-attachment')).toBeTruthy();
-    });
-  });
-
-  it('"giphy" attachment size should be customisable', async () => {
-    const attachment = generateGiphyAttachment();
-    attachment.giphy = {
-      fixed_height: {
-        height: '200',
-        url: 'https://media1.giphy.com/media/test/fixed_height.gif',
-        width: '375',
-      },
-      original: {
-        height: '256',
-        url: 'https://media1.giphy.com/media/test/original.gif',
-        width: '480',
-      },
-    };
-    const { getByTestId: getByTestIdFixedHeight } = render(
-      getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
-    );
-    const { getByTestId: getByTestIdOriginal } = render(
-      getAttachmentComponent({ attachment, giphyVersion: 'original' }),
-    );
-    await waitFor(() => {
-      const checkImageProps = (imageProps, specificSizedGiphyData) => {
-        let imageStyle = imageProps.style;
-        if (Array.isArray(imageStyle)) {
-          imageStyle = Object.assign({}, ...imageStyle);
-        }
-        expect(imageStyle.height).toBe(parseFloat(specificSizedGiphyData.height));
-        expect(imageStyle.width).toBe(parseFloat(specificSizedGiphyData.width));
-        expect(imageProps.source.uri).toBe(specificSizedGiphyData.url);
-      };
-      checkImageProps(
-        getByTestIdFixedHeight('giphy-attachment-image').props,
-        attachment.giphy.fixed_height,
-      );
-      checkImageProps(
-        getByTestIdOriginal('giphy-attachment-image').props,
-        attachment.giphy.original,
-      );
     });
   });
 
@@ -179,6 +122,41 @@ describe('Attachment', () => {
     );
     await waitFor(() => {
       expect(getByTestId('card-attachment')).toBeTruthy();
+    });
+  });
+
+  it('should open the URL in the browser', async () => {
+    jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(true));
+
+    jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(false));
+
+    const { result, waitFor } = renderHook(() => useGoToURL('www.google.com'));
+
+    const [error, openURL] = result.current;
+
+    await act(openURL);
+
+    await waitFor(() => {
+      expect(Linking.canOpenURL).toHaveBeenCalled();
+      expect(error).not.toBeTruthy();
+      expect(Linking.openURL).toHaveBeenCalled();
+    });
+  });
+
+  it('should open the URL in the browser when no url', async () => {
+    jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(false));
+
+    jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(true));
+
+    const { result, waitForNextUpdate } = await renderHook(() => useGoToURL());
+    const [error, openURL] = result.current;
+
+    act(openURL);
+
+    await waitForNextUpdate(() => {
+      expect(Linking.canOpenURL).toHaveBeenCalled();
+      expect(error).toBeTruthy();
+      expect(Linking.openURL).not.toHaveBeenCalled();
     });
   });
 });
