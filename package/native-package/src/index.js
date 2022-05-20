@@ -8,6 +8,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
+import Video from 'react-native-video';
+
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
@@ -247,6 +249,26 @@ registerNativeHandlers({
       ignoreAndroidSystemSettings: false,
     });
   },
+  // eslint-disable-next-line react/display-name
+  Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, resizeMode, style, uri, videoRef }) => (
+    <Video
+      onBuffer={onBuffer}
+      onEnd={onEnd}
+      onError={(error) => {
+        console.log(error);
+      }}
+      onLoad={onLoad}
+      onProgress={onProgress}
+      paused={paused}
+      poster='https://wallpaperaccess.com/full/1754609.jpg'
+      posterResizeMode={resizeMode}
+      ref={videoRef}
+      source={{
+        uri,
+      }}
+      style={style}
+    />
+  ),
 });
 
 if (Platform.OS === 'android') {

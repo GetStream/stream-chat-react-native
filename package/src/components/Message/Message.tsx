@@ -325,9 +325,12 @@ const MessageWithContext = <
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
-            if (cur.type === 'file' || cur.type === 'video') {
+            if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
+            } else if (cur.type === 'video' && !cur.og_scrape_url) {
+              acc.images.push({ image_url: cur.asset_url, type: 'video' });
+              acc.other = [];
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
@@ -524,7 +527,7 @@ const MessageWithContext = <
       files: attachments.files,
       groupStyles,
       handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
-      images: attachments.images,
+      imagesAndVideos: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },
@@ -597,7 +600,7 @@ const MessageWithContext = <
     handleToggleMuteUser,
     handleToggleReaction,
     hasReactions,
-    images: attachments.images,
+    imagesAndVideos: attachments.images,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,

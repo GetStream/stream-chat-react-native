@@ -14,6 +14,7 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
+import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessageProps,
   MessageTouchableHandlerPayload,
@@ -228,6 +229,7 @@ export type MessagesContextValue<
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Card.tsx
    */
   UrlPreview: React.ComponentType<CardProps<StreamChatGenerics>>;
+  VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
