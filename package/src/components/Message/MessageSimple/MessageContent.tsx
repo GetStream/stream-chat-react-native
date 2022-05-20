@@ -222,18 +222,11 @@ const MessageContentWithContext = <
   }
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
-  const isBorderBottomLeftRadius =
-    (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
-    (!hasThreadReplies || threadList);
-  const isBorderBottomRightRadius =
-    (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
-    (!hasThreadReplies || threadList);
+
   const isBorderColor = isMyMessage && !error;
-  const isBorderTopLeftRadius =
-    (groupStyle === 'left_top' || groupStyle === 'left_single') &&
-    (!hasThreadReplies || threadList);
-  const isBorderTopRightRadius =
-    (groupStyle === 'right_top' || groupStyle === 'right_single') &&
+
+  const applyBorderRadius = (firstGroupStyle: string, secondGroupStyle: string): boolean =>
+    (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
     (!hasThreadReplies || threadList);
 
   return (
@@ -310,11 +303,19 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius: isBorderBottomLeftRadius ? borderRadiusS : borderRadiusL,
-              borderBottomRightRadius: isBorderBottomRightRadius ? borderRadiusS : borderRadiusL,
+              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single')
+                ? borderRadiusS
+                : borderRadiusL,
+              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single')
+                ? borderRadiusS
+                : borderRadiusL,
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
-              borderTopLeftRadius: isBorderTopLeftRadius ? borderRadiusS : borderRadiusL,
-              borderTopRightRadius: isBorderTopRightRadius ? borderRadiusS : borderRadiusL,
+              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single')
+                ? borderRadiusS
+                : borderRadiusL,
+              borderTopRightRadius: applyBorderRadius('right_top', 'right_single')
+                ? borderRadiusS
+                : borderRadiusL,
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
