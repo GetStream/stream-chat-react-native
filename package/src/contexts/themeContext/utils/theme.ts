@@ -195,7 +195,7 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
-    videoControl: {
+    mediaControl: {
       durationTextStyle: TextStyle;
       roundedView: ViewStyle;
       videoContainer: ViewStyle;
@@ -676,7 +676,7 @@ export const defaultTheme: Theme = {
       rightContainer: {},
       usernameText: {},
     },
-    videoControl: {
+    mediaControl: {
       durationTextStyle: {},
       roundedView: {},
       videoContainer: {},
