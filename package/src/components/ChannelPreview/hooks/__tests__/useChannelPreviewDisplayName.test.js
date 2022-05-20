@@ -38,7 +38,7 @@ describe('useChannelPreviewDisplayName', () => {
     channel = null;
   });
 
-  it('will return a channel display name', async () => {
+  it('should return a channel display name', async () => {
     const channelName = 'okechukwu';
     const characterLength = 15;
     await initializeChannel(
@@ -62,7 +62,7 @@ describe('useChannelPreviewDisplayName', () => {
     });
   });
 
-  it('will return the same channelName when channelName length is less than characterLength', async () => {
+  it('should return the full channelName when channelName length is less than characterLength', async () => {
     const channelName = 'okechukwu';
     const characterLength = 15;
     const currentUserId = chatClient.userID;
@@ -86,13 +86,13 @@ describe('useChannelPreviewDisplayName', () => {
       channelName,
       currentUserId,
       maxCharacterLength: characterLength,
-      members: channel['state']['members'],
+      members: channel.state.members,
     });
 
     expect(displayName).toEqual(channelName);
   });
 
-  it('will return the same channelName length as the characterLength', async () => {
+  it('should return the first characters of a channelName up to a limit of characterLength', async () => {
     const channelName = 'okechukwu nwagba martin';
     const characterLength = 15;
     const currentUserId = chatClient.userID;
@@ -108,28 +108,22 @@ describe('useChannelPreviewDisplayName', () => {
       channelName,
       currentUserId,
       maxCharacterLength: characterLength,
-      members: channel['state']['members'],
+      members: channel.state.members,
     });
 
-    expect(displayName.length).toEqual(channelName.length);
+    expect(displayName).toEqual(channelName);
   });
 
-  test.each([
-    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick,... +2'],
-    [15, CHANNEL_WITH_ONE_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nwagb...'],
+  it.each([
+    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick, qatest1,...+2'],
+    [15, CHANNEL_WITH_ONE_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nw...'],
     [15, CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
   ])(
     'getChannelPreviewDisplayName(%i, %p, %s) result in %s',
-    async (characterLength, members, currentUserId, expected) => {
-      await initializeChannel(
-        generateChannelResponse({
-          channel: {},
-        }),
-      );
-
+    (characterLength, members, currentUserId, expected) => {
       const displayName = getChannelPreviewDisplayName({
+        characterLimit: characterLength,
         currentUserId,
-        maxCharacterLength: characterLength,
         members,
       });
 
