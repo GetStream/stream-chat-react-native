@@ -2,10 +2,8 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
-assignees: 
-  - vishalnarkhede
-  - madsroskar
+labels: 'Needs Triaging'
+assignees: ''
 
 ---
 
@@ -14,7 +12,10 @@ PLEASE READ THIS BEFORE PROCEEDING:
 
 Did you check docs? - https://getstream.io/chat/docs/sdk/reactnative
 
-If you are looking for an answer to "how to implement/do ... using xx component?" question, please check the Guides section of the docs. If you can't find an answer there, please leave a comment here - https://github.com/GetStream/stream-chat-react-native/issues/184 and I will try to add/include a sample code or example  as soon as possible to Guides section of docs. This way it can help the other devs who are looking for same answer. Also if you have some feedback regarding docs, please don't hesitate to comment there.
+If you are looking for an answer to "how to implement/do ... using xx component?" question, please check the Guides section of the docs.
+If you can't find an answer there, please create an issue, and we will try to add/include a sample code or example to the Guides section of docs. 
+This way it can help the other devs who are looking for the same answer. 
+Also if you have some feedback regarding docs, please don't hesitate to comment there.
 
 Your co-operation is really-really appreciated in this manner. Thanks and happy coding :)
 -->

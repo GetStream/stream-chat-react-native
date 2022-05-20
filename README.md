@@ -1,4 +1,4 @@
-# Official React Native SDK for [Stream Chat](https://getstream.io/chat/)
+# Official React Native SDK for Stream Chat
 
 <p align="center">
   <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
@@ -42,10 +42,9 @@ For complete pricing details visit our [Chat Pricing Page](https://getstream.io/
 
 ## 🔮 Example Apps
 
-This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
+This repo includes 3 example apps. One made with Expo, two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
 - [Expo example](./examples/ExpoMessaging)
-- [Native example](./examples/NativeMessaging)
 - [Typescript example](./examples/TypeScriptMessaging)
 - [Fully featured messaging application](./examples/SampleApp)
 
@@ -53,6 +52,7 @@ Besides, our team maintains a dedicated repository for fully-fledged sample appl
 
 - [Slack Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/SlackClone#slack-clone-using-react-native-and-stream-chat)
 - [iMessage Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/iMessageClone#imessage-clone)
+- [WhatsApp Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/WhatsAppClone#whatsapp-clone-using-react-native-and-stream-chat)
 
 ## 💬 Keep in mind
 
