@@ -69,6 +69,36 @@ type ReplyPropsWithContext<
     }>;
   };
 
+const getMessageType = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  lastAttachment: Attachment<StreamChatGenerics>,
+) => {
+  let messageType;
+
+  const isLastAttachmentFile =
+    lastAttachment.type === 'file' ||
+    lastAttachment.type === 'audio' ||
+    lastAttachment.type === 'video';
+
+  const isLastAttachmentGiphy = lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur';
+
+  const isLastAttachmentImageOrGiphy =
+    lastAttachment.type === 'image' && !lastAttachment.title_link && !lastAttachment.og_scrape_url;
+
+  const isLastAttachmentImage = lastAttachment.image_url || lastAttachment.thumb_url;
+
+  if (isLastAttachmentFile) {
+    messageType = 'file';
+  } else if (isLastAttachmentImageOrGiphy) {
+    if (isLastAttachmentImage) messageType = 'image';
+    else messageType = undefined;
+  } else if (isLastAttachmentGiphy) messageType = 'giphy';
+  else messageType = 'other';
+
+  return messageType;
+};
+
 const ReplyWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -105,20 +135,7 @@ const ReplyWithContext = <
   if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
-
-  const messageType = lastAttachment
-    ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'
-      ? 'file'
-      : lastAttachment.type === 'image' &&
-        !lastAttachment.title_link &&
-        !lastAttachment.og_scrape_url
-      ? lastAttachment.image_url || lastAttachment.thumb_url
-        ? 'image'
-        : undefined
-      : lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur'
-      ? 'giphy'
-      : 'other'
-    : undefined;
+  const messageType = getMessageType(lastAttachment);
 
   const hasImage =
     !error &&

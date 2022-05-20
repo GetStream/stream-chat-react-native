@@ -2,6 +2,8 @@ import { FlatList as DefaultFlatList } from 'react-native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
+import type { Asset, File } from './types/types';
+
 const fail = () => {
   throw Error(
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
@@ -24,16 +26,9 @@ export let compressImage: CompressImage = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
-type GetLocalAssetUri = (uriOrAssetId: string) => Promise<string> | never;
+type GetLocalAssetUri = (uriOrAssetId: string) => never;
 export let getLocalAssetUri: GetLocalAssetUri = fail;
 
-export type Asset = {
-  height: number;
-  source: 'camera' | 'picker';
-  uri: string;
-  width: number;
-  id?: string;
-};
 type GetPhotos = ({ after, first }: { first: number; after?: string }) =>
   | Promise<{
       assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
@@ -58,12 +53,7 @@ export let NetInfo: NetInfo = {
 type PickDocument = ({ maxNumberOfFiles }: { maxNumberOfFiles?: number }) =>
   | Promise<{
       cancelled: boolean;
-      docs?: {
-        name: string;
-        size?: number | string;
-        type?: string;
-        uri?: string;
-      }[];
+      docs?: File[];
     }>
   | never;
 export let pickDocument: PickDocument = fail;

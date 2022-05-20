@@ -7,6 +7,7 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
@@ -15,13 +16,20 @@ import BottomSheet, {
   BottomSheetHandleProps,
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import { lookup } from 'mime-types';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Asset, getPhotos } from '../../native';
+import { Recorder } from '../../icons';
+import { getPhotos } from '../../native';
+import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
+
+dayjs.extend(duration);
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +38,19 @@ const styles = StyleSheet.create({
   overlay: {
     alignItems: 'flex-end',
     flex: 1,
+  },
+  timeColor: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  videoView: {
+    bottom: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 5,
+    position: 'absolute',
+    width: '100%',
   },
 });
 
@@ -42,6 +63,61 @@ type AttachmentImageProps = {
   selected: boolean;
   uri: string;
   numberOfAttachmentPickerImageColumns?: number;
+};
+
+type AttachmentVideoProps = {
+  ImageOverlaySelectedComponent: React.ComponentType;
+  onPress: () => void;
+  selected: boolean;
+  uri: string;
+  videoDuration: string | null;
+  numberOfAttachmentPickerImageColumns?: number;
+};
+
+const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
+  const {
+    ImageOverlaySelectedComponent,
+    numberOfAttachmentPickerImageColumns,
+    onPress,
+    selected,
+    uri,
+    videoDuration,
+  } = props;
+
+  const {
+    theme: {
+      attachmentPicker: { image, imageOverlay },
+      colors: { overlay, white },
+    },
+  } = useTheme();
+
+  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <ImageBackground
+        source={{ uri }}
+        style={[
+          {
+            height: size,
+            margin: 1,
+            width: size,
+          },
+          image,
+        ]}
+      >
+        {selected && (
+          <View style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}>
+            <ImageOverlaySelectedComponent />
+          </View>
+        )}
+        <View style={styles.videoView}>
+          <Recorder height={20} pathFill={white} width={25} />
+          {videoDuration ? <Text style={styles.timeColor}>{videoDuration}</Text> : null}
+        </View>
+      </ImageBackground>
+    </TouchableOpacity>
+  );
 };
 
 const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
@@ -92,6 +168,7 @@ const renderImage = ({
     ImageOverlaySelectedComponent: React.ComponentType;
     maxNumberOfFiles: number;
     selected: boolean;
+    setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
     setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
     numberOfAttachmentPickerImageColumns?: number;
   };
@@ -102,9 +179,36 @@ const renderImage = ({
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
     selected,
+    setSelectedFiles,
     setSelectedImages,
   } = item;
-  const onPress = () => {
+
+  const contentType = lookup(asset.filename) || 'multipart/form-data';
+
+  const fileType = asset.filename
+    ? contentType.startsWith('image/')
+      ? 'image'
+      : 'video'
+    : asset.type === 'video'
+    ? 'video'
+    : 'image';
+
+  const videoDuration = asset.duration ? asset.duration : asset.playableDuration;
+
+  const ONE_HOUR_IN_SECONDS = 3600;
+
+  let duration = '00:00';
+
+  if (videoDuration) {
+    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
+    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+    const formattedVideoDuration = dayjs
+      .duration(videoDuration, 'second')
+      .format(formattedDurationParam);
+    duration = formattedVideoDuration;
+  }
+
+  const onPressImage = () => {
     if (selected) {
       setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
     } else {
@@ -117,13 +221,44 @@ const renderImage = ({
     }
   };
 
-  return (
+  const onPressVideo = () => {
+    if (selected) {
+      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+    } else {
+      setSelectedFiles((files) => {
+        if (files.length >= maxNumberOfFiles) {
+          return files;
+        }
+        return [
+          ...files,
+          {
+            duration,
+            name: asset.filename,
+            size: asset.fileSize,
+            type: 'video',
+            uri: asset.uri,
+          },
+        ];
+      });
+    }
+  };
+
+  return fileType === 'image' ? (
     <AttachmentImage
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={onPress}
+      onPress={onPressImage}
       selected={selected}
       uri={asset.uri}
+    />
+  ) : (
+    <AttachmentVideo
+      ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+      onPress={onPressVideo}
+      selected={selected}
+      uri={asset.uri}
+      videoDuration={duration}
     />
   );
 };
@@ -187,8 +322,10 @@ export const AttachmentPicker = React.forwardRef(
     const {
       closePicker,
       maxNumberOfFiles,
+      selectedFiles,
       selectedImages,
       selectedPicker,
+      setSelectedFiles,
       setSelectedImages,
       setSelectedPicker,
       topInset,
@@ -295,7 +432,10 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      selected: selectedImages.some((image) => image.uri === asset.uri),
+      selected:
+        selectedImages.some((image) => image.uri === asset.uri) ||
+        selectedFiles.some((file) => file.uri === asset.uri),
+      setSelectedFiles,
       setSelectedImages,
     }));
 
