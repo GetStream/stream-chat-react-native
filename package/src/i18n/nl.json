@@ -61,5 +61,7 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Antwoorden",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Discussiereacties",
   "{{ user }} is typing": "{{ user }} is aan het typen",
-  "🏙 Attachment...": "🏙 Bijlage..."
+  "🏙 Attachment...": "🏙 Bijlage...",
+  "File type not supported": "Bestandstype niet ondersteund",
+  "Not supported": "niet ondersteund"
 }

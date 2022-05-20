@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { reduceMessagesToString } from '../../../utils/utils';
 
 export const useCreateThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -19,14 +20,7 @@ export const useCreateThreadContext = <
 }: ThreadContextValue<StreamChatGenerics>) => {
   const threadId = thread?.id;
   const threadReplyCount = thread?.reply_count;
-  const threadMessagesUpdated = threadMessages
-    .map(
-      ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
-        `${deleted_at}${
-          latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
-        }${reply_count}${status}${updated_at.toISOString()}`,
-    )
-    .join();
+  const threadMessagesStr = reduceMessagesToString(threadMessages);
 
   const threadContext: ThreadContextValue<StreamChatGenerics> = useMemo(
     () => ({
@@ -46,7 +40,7 @@ export const useCreateThreadContext = <
       threadHasMore,
       threadId,
       threadLoadingMore,
-      threadMessagesUpdated,
+      threadMessagesStr,
       threadReplyCount,
     ],
   );

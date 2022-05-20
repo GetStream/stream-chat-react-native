@@ -8,7 +8,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import Video from 'react-native-video';
+import Video, { FilterType } from 'react-native-video';
 
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
@@ -255,13 +255,11 @@ registerNativeHandlers({
       onBuffer={onBuffer}
       onEnd={onEnd}
       onError={(error) => {
-        console.log(error);
+        console.error(error);
       }}
       onLoad={onLoad}
       onProgress={onProgress}
       paused={paused}
-      poster='https://wallpaperaccess.com/full/1754609.jpg'
-      posterResizeMode={resizeMode}
       ref={videoRef}
       source={{
         uri,

@@ -41,6 +41,7 @@ import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
   FileState,
+  FileStateValue,
   generateRandomId,
   TriggerSettings,
   urlRegex,
@@ -56,7 +57,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 export type FileUpload = {
   file: File;
   id: string;
-  state: string;
+  state: FileStateValue;
   url?: string;
 };
 
@@ -65,7 +66,7 @@ export type ImageUpload = {
     name?: string;
   };
   id: string;
-  state: string;
+  state: FileStateValue;
   height?: number;
   url?: string;
   width?: number;
@@ -404,7 +405,31 @@ export const MessageInputProvider = <
 }>) => {
   const { closePicker, openPicker, selectedPicker, setSelectedPicker } =
     useAttachmentPickerContext();
-  const { client } = useChatContext<StreamChatGenerics>();
+  const { appSettings, client } = useChatContext<StreamChatGenerics>();
+
+  const getFileUploadConfig = () => {
+    const fileConfig = appSettings?.app?.file_upload_config;
+    if (fileConfig !== null || fileConfig !== undefined) {
+      return fileConfig;
+    } else {
+      return {};
+    }
+  };
+
+  const blockedFileExtensionTypes = getFileUploadConfig()?.blocked_file_extensions;
+  const blockedFileMimeTypes = getFileUploadConfig()?.blocked_mime_types;
+
+  const getImageUploadConfig = () => {
+    const imageConfig = appSettings?.app?.image_upload_config;
+    if (imageConfig !== null || imageConfig !== undefined) {
+      return imageConfig;
+    }
+    return {};
+  };
+
+  const blockedImageExtensionTypes = getImageUploadConfig()?.blocked_file_extensions;
+  const blockedImageMimeTypes = getImageUploadConfig()?.blocked_mime_types;
+
   const channelCapabities = useOwnCapabilitiesContext();
 
   const { channel, giphyEnabled } = useChannelContext<StreamChatGenerics>();
@@ -809,68 +834,75 @@ export const MessageInputProvider = <
     }
   };
 
+  const regExcondition = /File (extension \.\w{2,4}|type \S+) is not supported/;
+
+  const getUploadSetStateAction = <UploadType extends ImageUpload | FileUpload>(
+    id: string,
+    fileState: FileStateValue,
+    extraData: Partial<UploadType> = {},
+  ): React.SetStateAction<UploadType[]> => {
+    const uploads: (prevUploads: UploadType[]) => UploadType[] = (prevUploads: UploadType[]) =>
+      prevUploads.map((prevUpload) => {
+        if (prevUpload.id === id) {
+          return {
+            ...prevUpload,
+            ...extraData,
+            state: fileState,
+          };
+        }
+        return prevUpload;
+      });
+
+    return uploads;
+  };
+
+  const handleFileOrImageUploadError = (error: unknown, isImageError: boolean, id: string) => {
+    if (isImageError) {
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setImageUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+        }
+
+        return setImageUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+      }
+    } else {
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+
+      if (error instanceof Error) {
+        if (regExcondition.test(error.message)) {
+          return setFileUploads(getUploadSetStateAction(id, FileState.NOT_SUPPORTED));
+        }
+        return setFileUploads(getUploadSetStateAction(id, FileState.UPLOAD_FAILED));
+      }
+    }
+  };
+
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
     if (!newFile) {
       return;
     }
     const { file, id } = newFile;
 
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => {
-        if (fileUpload.id === id) {
-          return {
-            ...fileUpload,
-            state: FileState.UPLOADING,
-          };
-        }
-        return fileUpload;
-      }),
-    );
+    setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
 
-    let response = {} as SendFileAPIResponse;
+    let response: Partial<SendFileAPIResponse> = {};
     try {
       if (value.doDocUploadRequest) {
         response = await value.doDocUploadRequest(file, channel);
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-    } catch (error) {
-      console.warn(error);
-      if (!newFile) {
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      } else {
-        setFileUploads((prevFileUploads) =>
-          prevFileUploads.map((fileUpload) => {
-            if (fileUpload.id === id) {
-              return {
-                ...fileUpload,
-                state: FileState.UPLOAD_FAILED,
-              };
-            }
-            return fileUpload;
-          }),
-        );
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      }
-      return;
+      const extraData: Partial<FileUpload> = { url: response.file };
+      setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
+    } catch (error: unknown) {
+      handleFileOrImageUploadError(error, false, id);
     }
-
-    setFileUploads((prevFileUploads) =>
-      prevFileUploads.map((fileUpload) => {
-        if (fileUpload.id === id) {
-          return {
-            ...fileUpload,
-            state: FileState.UPLOADED,
-            url: response.file,
-          };
-        }
-        return fileUpload;
-      }),
-    );
   };
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
     const { file, id } = newImage || {};
+
     if (!file) {
       return;
     }
@@ -929,18 +961,10 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads((prevImageUploads) =>
-                prevImageUploads.map((imageUpload) => {
-                  if (imageUpload.id === id) {
-                    return {
-                      ...imageUpload,
-                      state: FileState.UPLOADED,
-                      url: res.file,
-                    };
-                  }
-                  return imageUpload;
-                }),
-              );
+              const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+                url: res.file,
+              });
+              setImageUploads(newImageUploads);
             }
           });
         } else {
@@ -949,49 +973,43 @@ export const MessageInputProvider = <
       }
 
       if (Object.keys(response).length) {
-        setImageUploads((prevImageUploads) =>
-          prevImageUploads.map((imageUpload) => {
-            if (imageUpload.id === id) {
-              return {
-                ...imageUpload,
-                height: file.height,
-                state: FileState.UPLOADED,
-                url: response.file,
-                width: file.width,
-              };
-            }
-            return imageUpload;
-          }),
-        );
+        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+          height: file.height,
+          url: response.file,
+          width: file.width,
+        });
+        setImageUploads(newImageUploads);
       }
     } catch (error) {
-      console.warn(error);
-      if (newImage) {
-        setImageUploads((prevImageUploads) =>
-          prevImageUploads.map((imageUpload) => {
-            if (imageUpload.id === id) {
-              return {
-                ...imageUpload,
-                state: FileState.UPLOAD_FAILED,
-              };
-            }
-            return imageUpload;
-          }),
-        );
-      }
-      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-
-      return;
+      handleFileOrImageUploadError(error, true, id);
     }
   };
 
-  const uploadNewFile = async (file: File) => {
-    const id = generateRandomId();
-    const mimeType = lookup(file.name);
+  const uploadNewFile = async (file: {
+    name: string;
+    size?: number | string;
+    type?: string;
+    uri?: string;
+  }) => {
+    const id: string = generateRandomId();
+    const mimeType: string | boolean = lookup(file.name);
+
+    const isBlockedFileExtension: boolean | undefined = blockedFileExtensionTypes?.some(
+      (fileExtensionType: string) => file.name?.includes(fileExtensionType),
+    );
+    const isBlockedFileMimeType: boolean | undefined = blockedFileMimeTypes?.some(
+      (mimeType: string) => file.name?.includes(mimeType),
+    );
+
+    const fileState =
+      isBlockedFileExtension || isBlockedFileMimeType
+        ? FileState.NOT_SUPPORTED
+        : FileState.UPLOADING;
+
     const newFile: FileUpload = {
       file: { ...file, type: mimeType || file?.type },
       id,
-      state: FileState.UPLOADING,
+      state: fileState,
     };
 
     await Promise.all([
@@ -999,22 +1017,41 @@ export const MessageInputProvider = <
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
 
-    uploadFile({ newFile });
+    if (!isBlockedFileExtension) {
+      uploadFile({ newFile });
+    }
   };
 
   const uploadNewImage = async (image: Asset) => {
     const id = generateRandomId();
+
+    const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
+      image.uri?.includes(mimeType),
+    );
+
+    const isBlockedImageExtension = blockedImageExtensionTypes?.some((imageExtensionType: string) =>
+      image.uri?.includes(imageExtensionType),
+    );
+
+    const imageState =
+      isBlockedImageExtension || isBlockedImageMimeType
+        ? FileState.NOT_SUPPORTED
+        : FileState.UPLOADING;
+
     const newImage: ImageUpload = {
       file: image,
       id,
-      state: FileState.UPLOADING,
+      state: imageState,
     };
 
     await Promise.all([
       setImageUploads((prevImageUploads) => prevImageUploads.concat([newImage])),
       setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
     ]);
-    uploadImage({ newImage });
+
+    if (!isBlockedImageExtension) {
+      uploadImage({ newImage });
+    }
   };
 
   const messageInputContext = useCreateMessageInputContext({

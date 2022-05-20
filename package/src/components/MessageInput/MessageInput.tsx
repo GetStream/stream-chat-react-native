@@ -270,28 +270,36 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
+  const uploadImagesHandler = () => {
+    const imagesToUpload = selectedImages.filter((selectedImage) => {
+      const uploadedImage = imageUploads.find(
+        (imageUpload) =>
+          imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+      );
+      return !uploadedImage;
+    });
+    imagesToUpload.forEach((image) => uploadNewImage(image));
+  };
+
+  const removeImagesHandler = () => {
+    const imagesToRemove = imageUploads.filter(
+      (imageUpload) =>
+        !selectedImages.find(
+          (selectedImage) =>
+            selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
+        ),
+    );
+    imagesToRemove.forEach((image) => removeImage(image.id));
+  };
+
   useEffect(() => {
     if (imagesForInput) {
       if (selectedImagesLength > imageUploadsLength) {
         /** User selected an image in bottom sheet attachment picker */
-        const imagesToUpload = selectedImages.filter((selectedImage) => {
-          const uploadedImage = imageUploads.find(
-            (imageUpload) =>
-              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
-          );
-          return !uploadedImage;
-        });
-        imagesToUpload.forEach((image) => uploadNewImage(image));
+        uploadImagesHandler();
       } else {
         /** User de-selected an image in bottom sheet attachment picker */
-        const imagesToRemove = imageUploads.filter(
-          (imageUpload) =>
-            !selectedImages.find(
-              (selectedImage) =>
-                selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
-            ),
-        );
-        imagesToRemove.forEach((image) => removeImage(image.id));
+        removeImagesHandler();
       }
     }
   }, [selectedImagesLength]);
