@@ -1,55 +1,69 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel } from 'stream-chat';
+import type { Channel, ChannelMemberResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { vw } from '../../../utils/utils';
 
-const maxCharacterLengthDefault = (vw(100) - 16) / 6;
+const DEFAULT_MAX_CHARACTER_LENGTH = (vw(100) - 16) / 6;
+
+const ELLIPSIS = `...`;
+
+const getMemberName = (member: ChannelMemberResponse) =>
+  member.user?.name || member.user?.id || 'Unknown User';
 
 export const getChannelPreviewDisplayName = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channelName,
+  characterLimit,
   currentUserId,
-  maxCharacterLength,
   members,
 }: {
-  maxCharacterLength: number;
+  characterLimit: number;
   channelName?: string;
   currentUserId?: string;
   members?: Channel<StreamChatGenerics>['state']['members'];
 }): string => {
+  // return channelName if it exists
   if (channelName) return channelName;
 
+  // turn the values of the members object to a list
   const channelMembers = Object.values(members || {});
+
+  // filter the list to remove the current user
   const otherMembers = channelMembers.filter((member) => member.user?.id !== currentUserId);
+  otherMembers.sort((prevUser, nextUser) =>
+    (prevUser?.user?.name ?? '')
+      .toLowerCase()
+      .localeCompare((nextUser?.user?.name ?? '').toLocaleUpperCase()),
+  );
 
-  const name = otherMembers.slice(0).reduce((returnString, currentMember, index, originalArray) => {
-    const returnStringLength = returnString.length;
-    const currentMemberName: string =
-      currentMember.user?.name || currentMember.user?.id || 'Unknown User';
+  const createChannelNameSuffix = (remainingNumberOfMembers: number) =>
+    remainingNumberOfMembers <= 1 ? `${ELLIPSIS}` : `,${ELLIPSIS}+${remainingNumberOfMembers}`;
 
-    const currentNamelessThanMax: boolean =
-      returnStringLength + (currentMemberName.length + 3) < maxCharacterLength;
-    const currentNamegreaterThanMax = !currentNamelessThanMax;
-
-    if (currentNamelessThanMax) {
-      returnStringLength
-        ? (returnString += `, ${currentMemberName}`)
-        : (returnString = currentMemberName);
+  const name = otherMembers.reduce((result, currentMember, index, originalArray) => {
+    if (result.length >= characterLimit) {
+      return result;
     }
 
-    if (currentNamegreaterThanMax) {
-      const remainingMembers = originalArray.length - index;
-      !returnString ? (returnString = currentMemberName.slice(0, maxCharacterLength)) : false;
+    const currentMemberName: string = getMemberName(currentMember);
 
-      returnString += remainingMembers <= 1 ? `...` : `,... +${remainingMembers}`;
-      originalArray.splice(1);
+    const resultHasSpaceForCurrentMemberName: boolean =
+      result.length + (currentMemberName.length + ELLIPSIS.length) < characterLimit;
+    if (resultHasSpaceForCurrentMemberName) {
+      return result.length > 0 ? `${result}, ${currentMemberName}, ` : currentMemberName;
+    } else {
+      const remainingNumberOfMembers = originalArray.length - index;
+      const truncateLimit: number = characterLimit - (ELLIPSIS.length + result.length);
+      const tuncatedCurrentMemberName = `${currentMemberName.slice(0, truncateLimit)}`;
+
+      const channelNameSuffix = createChannelNameSuffix(remainingNumberOfMembers);
+
+      return `${result}${tuncatedCurrentMemberName}${channelNameSuffix}`;
     }
-    return returnString;
   }, '');
 
   return name;
@@ -67,12 +81,12 @@ export const useChannelPreviewDisplayName = <
   const members = channel?.state.members;
   const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
-  const maxCharacterLength = characterLength || maxCharacterLengthDefault;
+  const maxCharacterLength = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
   const [displayName, setDisplayName] = useState(
     getChannelPreviewDisplayName({
       channelName,
+      characterLimit: maxCharacterLength,
       currentUserId,
-      maxCharacterLength,
       members,
     }),
   );
@@ -81,8 +95,8 @@ export const useChannelPreviewDisplayName = <
     setDisplayName(
       getChannelPreviewDisplayName({
         channelName,
+        characterLimit: maxCharacterLength,
         currentUserId,
-        maxCharacterLength,
         members,
       }),
     );
