@@ -74,14 +74,6 @@ describe('useChannelPreviewDisplayName', () => {
       }),
     );
 
-    const TestComponent = () => {
-      const channelDisplayName = useChannelPreviewDisplayName(channel, characterLength);
-
-      return <Text>{channelDisplayName}</Text>;
-    };
-
-    render(<TestComponent />);
-
     const displayName = getChannelPreviewDisplayName({
       channelName,
       currentUserId,
@@ -115,7 +107,7 @@ describe('useChannelPreviewDisplayName', () => {
   });
 
   it.each([
-    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick, qatest1,...+2'],
+    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick, q,...+2'],
     [15, CHANNEL_WITH_ONE_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nw...'],
     [15, CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
   ])(
