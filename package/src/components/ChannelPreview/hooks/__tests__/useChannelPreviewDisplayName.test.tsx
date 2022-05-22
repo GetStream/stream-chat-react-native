@@ -3,14 +3,14 @@ import { Text } from 'react-native';
 
 import { render, waitFor } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import type { DefaultStreamChatGenerics } from 'src/types/types';
+import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
+
 import {
   CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK,
   CHANNEL_WITH_ONE_MEMBER_MOCK,
   GROUP_CHANNEL_MOCK,
 } from '../../../../mock-builders/api/queryMembers';
-import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
-import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
 import {
@@ -20,15 +20,8 @@ import {
 
 describe('useChannelPreviewDisplayName', () => {
   const clientUser = generateUser();
-  let chatClient;
-  let channel;
-  const initializeChannel = async (c) => {
-    useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
-
-    channel = chatClient.channel('messaging');
-
-    await channel.watch();
-  };
+  let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
+  let channel: Channel<DefaultGenerics> | Channel<DefaultStreamChatGenerics> | null;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
@@ -39,19 +32,16 @@ describe('useChannelPreviewDisplayName', () => {
   });
 
   it('should return a channel display name', async () => {
-    const channelName = 'okechukwu';
     const characterLength = 15;
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {
-          name: channelName,
-        },
-      }),
-    );
+    const channelName = 'okechukwu';
 
     const TestComponent = () => {
-      const channelDisplayName = useChannelPreviewDisplayName(channel, characterLength);
-
+      const channelDisplayName = useChannelPreviewDisplayName(
+        {
+          data: { name: channelName },
+        } as unknown as Channel<DefaultGenerics>,
+        characterLength,
+      );
       return <Text>{channelDisplayName}</Text>;
     };
 
@@ -62,45 +52,34 @@ describe('useChannelPreviewDisplayName', () => {
     });
   });
 
-  it('should return the full channelName when channelName length is less than characterLength', async () => {
+  it('should return the full channelName when channelName length is less than characterLength', () => {
     const channelName = 'okechukwu';
     const characterLength = 15;
     const currentUserId = chatClient.userID;
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {
-          name: channelName,
-        },
-      }),
-    );
 
     const displayName = getChannelPreviewDisplayName({
       channelName,
+      characterLimit: characterLength,
       currentUserId,
-      maxCharacterLength: characterLength,
-      members: channel.state.members,
+      members: channel?.state.members,
     });
 
     expect(displayName).toEqual(channelName);
   });
 
-  it('should return the first characters of a channelName up to a limit of characterLength', async () => {
+  it('should return the first characters of a channelName up to a limit of characterLength', () => {
     const channelName = 'okechukwu nwagba martin';
     const characterLength = 15;
     const currentUserId = chatClient.userID;
-    await initializeChannel(
-      generateChannelResponse({
-        channel: {
-          name: channelName,
-        },
-      }),
-    );
 
     const displayName = getChannelPreviewDisplayName({
       channelName,
+      characterLimit: characterLength,
       currentUserId,
-      maxCharacterLength: characterLength,
-      members: channel.state.members,
+      members: channel?.state.members as unknown as Record<
+        string,
+        ChannelMemberResponse<DefaultStreamChatGenerics>
+      >,
     });
 
     expect(displayName).toEqual(channelName);
@@ -116,7 +95,10 @@ describe('useChannelPreviewDisplayName', () => {
       const displayName = getChannelPreviewDisplayName({
         characterLimit: characterLength,
         currentUserId,
-        members,
+        members: members as unknown as Record<
+          string,
+          ChannelMemberResponse<DefaultStreamChatGenerics>
+        >,
       });
 
       expect(displayName).toEqual(expected);
