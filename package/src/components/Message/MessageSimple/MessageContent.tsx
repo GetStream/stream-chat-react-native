@@ -143,7 +143,7 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadiusL, borderRadiusS, ...container },
+          container: { borderRadius, borderRadiusL, borderRadiusS, ...container },
           containerInner,
           errorContainer,
           errorIcon,
@@ -303,6 +303,7 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
+
               borderBottomLeftRadius: shouldApplyBorderRadius('left_bottom', 'left_single')
                 ? borderRadiusS
                 : borderRadiusL,
@@ -310,6 +311,7 @@ const MessageContentWithContext = <
                 ? borderRadiusS
                 : borderRadiusL,
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              borderRadius,
               borderTopLeftRadius: shouldApplyBorderRadius('left_top', 'right_single')
                 ? borderRadiusS
                 : borderRadiusL,
