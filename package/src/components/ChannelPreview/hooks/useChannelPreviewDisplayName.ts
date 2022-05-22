@@ -78,7 +78,7 @@ export const useChannelPreviewDisplayName = <
   const { client } = useChatContext<StreamChatGenerics>();
 
   const currentUserId = client?.userID;
-  const members = channel?.state.members;
+  const members = channel?.state?.members;
   const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
   const maxCharacterLength = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
