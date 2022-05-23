@@ -81,11 +81,11 @@ export const useChannelPreviewDisplayName = <
   const members = channel?.state?.members;
   const numOfMembers = Object.keys(members || {}).length;
   const channelName = channel?.data?.name;
-  const maxCharacterLength = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
+  const characterLimit = characterLength || DEFAULT_MAX_CHARACTER_LENGTH;
   const [displayName, setDisplayName] = useState(
     getChannelPreviewDisplayName({
       channelName,
-      characterLimit: maxCharacterLength,
+      characterLimit,
       currentUserId,
       members,
     }),
@@ -95,12 +95,12 @@ export const useChannelPreviewDisplayName = <
     setDisplayName(
       getChannelPreviewDisplayName({
         channelName,
-        characterLimit: maxCharacterLength,
+        characterLimit,
         currentUserId,
         members,
       }),
     );
-  }, [channelName, currentUserId, maxCharacterLength, numOfMembers]);
+  }, [channelName, currentUserId, characterLimit, numOfMembers]);
 
   return displayName;
 };
