@@ -57,30 +57,31 @@ const screenHeight = vh(100);
 const fullScreenHeight = Dimensions.get('window').height;
 
 type AttachmentImageProps = {
+  asset: Asset;
   ImageOverlaySelectedComponent: React.ComponentType;
-  onPress: () => void;
+  maxNumberOfFiles: number;
   selected: boolean;
-  uri: string;
+  setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
 type AttachmentVideoProps = {
+  asset: Asset;
   ImageOverlaySelectedComponent: React.ComponentType;
-  onPress: () => void;
+  maxNumberOfFiles: number;
   selected: boolean;
-  uri: string;
-  videoDuration: string | null;
+  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
 const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   const {
+    asset,
     ImageOverlaySelectedComponent,
+    maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
-    onPress,
     selected,
-    uri,
-    videoDuration,
+    setSelectedFiles,
   } = props;
 
   const {
@@ -90,10 +91,49 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     },
   } = useTheme();
 
+  const { duration, playableDuration, uri } = asset;
+
+  const videoDuration = duration ? duration : playableDuration;
+
+  const ONE_HOUR_IN_SECONDS = 3600;
+
+  let durationLabel = '00:00';
+
+  if (videoDuration) {
+    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
+    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+    const formattedVideoDuration = dayjs
+      .duration(videoDuration, 'second')
+      .format(formattedDurationParam);
+    durationLabel = formattedVideoDuration;
+  }
+
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
+  const onPressVideo = () => {
+    if (selected) {
+      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+    } else {
+      setSelectedFiles((files) => {
+        if (files.length >= maxNumberOfFiles) {
+          return files;
+        }
+        return [
+          ...files,
+          {
+            duration: durationLabel,
+            name: asset.filename,
+            size: asset.fileSize,
+            type: 'video',
+            uri: asset.uri,
+          },
+        ];
+      });
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPressVideo}>
       <ImageBackground
         source={{ uri }}
         style={[
@@ -114,7 +154,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
           <Recorder height={20} pathFill={white} width={25} />
           {videoDuration ? (
             <Text style={[styles.durationText, durationText, { color: white }]}>
-              {videoDuration}
+              {durationLabel}
             </Text>
           ) : null}
         </View>
@@ -125,11 +165,12 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
 const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   const {
+    asset,
     ImageOverlaySelectedComponent,
+    maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
-    onPress,
     selected,
-    uri,
+    setSelectedImages,
   } = props;
   const {
     theme: {
@@ -140,8 +181,23 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
+  const { uri } = asset;
+
+  const onPressImage = () => {
+    if (selected) {
+      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
+    } else {
+      setSelectedImages((images) => {
+        if (images.length >= maxNumberOfFiles) {
+          return images;
+        }
+        return [...images, asset];
+      });
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPressImage}>
       <ImageBackground
         source={{ uri }}
         style={[
@@ -196,72 +252,23 @@ const renderImage = ({
     ? 'video'
     : 'image';
 
-  const videoDuration = asset.duration ? asset.duration : asset.playableDuration;
-
-  const ONE_HOUR_IN_SECONDS = 3600;
-
-  let duration = '00:00';
-
-  if (videoDuration) {
-    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
-    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
-    const formattedVideoDuration = dayjs
-      .duration(videoDuration, 'second')
-      .format(formattedDurationParam);
-    duration = formattedVideoDuration;
-  }
-
-  const onPressImage = () => {
-    if (selected) {
-      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
-    } else {
-      setSelectedImages((images) => {
-        if (images.length >= maxNumberOfFiles) {
-          return images;
-        }
-        return [...images, asset];
-      });
-    }
-  };
-
-  const onPressVideo = () => {
-    if (selected) {
-      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
-    } else {
-      setSelectedFiles((files) => {
-        if (files.length >= maxNumberOfFiles) {
-          return files;
-        }
-        return [
-          ...files,
-          {
-            duration,
-            name: asset.filename,
-            size: asset.fileSize,
-            type: 'video',
-            uri: asset.uri,
-          },
-        ];
-      });
-    }
-  };
-
   return fileType === 'image' ? (
     <AttachmentImage
+      asset={asset}
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={onPressImage}
       selected={selected}
-      uri={asset.uri}
+      setSelectedImages={setSelectedImages}
     />
   ) : (
     <AttachmentVideo
+      asset={asset}
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={onPressVideo}
       selected={selected}
-      uri={asset.uri}
-      videoDuration={duration}
+      setSelectedFiles={setSelectedFiles}
     />
   );
 };
