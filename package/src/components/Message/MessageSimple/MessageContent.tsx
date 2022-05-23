@@ -235,9 +235,8 @@ const MessageContentWithContext = <
   ): number | undefined => {
     if (shouldApplyBorderRadius(firstGroupStyle, secondGroupStyle)) {
       return borderRadiusS;
-    } else {
-      return borderRadiusL;
     }
+    return borderRadiusL;
   };
 
   return (
