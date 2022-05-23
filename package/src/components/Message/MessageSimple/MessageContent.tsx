@@ -229,6 +229,17 @@ const MessageContentWithContext = <
     (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
     (!hasThreadReplies || threadList);
 
+  const applyBorderRadius = (
+    firstGroupStyle: string,
+    secondGroupStyle: string,
+  ): number | undefined => {
+    if (shouldApplyBorderRadius(firstGroupStyle, secondGroupStyle)) {
+      return borderRadiusS;
+    } else {
+      return borderRadiusL;
+    }
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -303,21 +314,12 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-
-              borderBottomLeftRadius: shouldApplyBorderRadius('left_bottom', 'left_single')
-                ? borderRadiusS
-                : borderRadiusL,
-              borderBottomRightRadius: shouldApplyBorderRadius('right_bottom', 'right_single')
-                ? borderRadiusS
-                : borderRadiusL,
+              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single'),
+              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single'),
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
               borderRadius,
-              borderTopLeftRadius: shouldApplyBorderRadius('left_top', 'right_single')
-                ? borderRadiusS
-                : borderRadiusL,
-              borderTopRightRadius: shouldApplyBorderRadius('right_top', 'right_single')
-                ? borderRadiusS
-                : borderRadiusL,
+              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single'),
+              borderTopRightRadius: applyBorderRadius('right_top', 'right_single'),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
