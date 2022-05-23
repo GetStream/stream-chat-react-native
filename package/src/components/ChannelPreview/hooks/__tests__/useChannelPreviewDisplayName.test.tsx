@@ -21,15 +21,10 @@ import {
 describe('useChannelPreviewDisplayName', () => {
   const clientUser = generateUser();
   let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
-  let channel: Channel<DefaultGenerics> | Channel<DefaultStreamChatGenerics> | null;
   const CHARACTER_LENGTH = 15;
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
-  });
-
-  afterEach(() => {
-    channel = null;
   });
 
   it('should return a channel display name', async () => {
@@ -60,7 +55,7 @@ describe('useChannelPreviewDisplayName', () => {
       channelName,
       characterLimit: CHARACTER_LENGTH,
       currentUserId,
-      members: channel?.state.members,
+      members: ONE_CHANNEL_MEMBER_MOCK,
     });
 
     expect(displayName).toEqual(channelName);
