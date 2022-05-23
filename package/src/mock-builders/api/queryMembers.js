@@ -15,7 +15,7 @@ export const queryMembersApi = (members = []) => {
   return mockedApiResponse(result, 'get');
 };
 
-export const CHANNEL_WITH_ONE_MEMBER_MOCK = {
+export const ONE_CHANNEL_MEMBER_MOCK = {
   okey: {
     banned: false,
     channel_role: 'channel_member',
@@ -31,7 +31,7 @@ export const CHANNEL_WITH_ONE_MEMBER_MOCK = {
   },
 };
 
-export const GROUP_CHANNEL_MOCK = {
+export const GROUP_CHANNEL_MEMBERS_MOCK = {
   ben: {
     banned: false,
     channel_role: 'channel_member',
@@ -100,7 +100,7 @@ export const GROUP_CHANNEL_MOCK = {
   },
 };
 
-export const CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK = {
+export const ONE_MEMBER_WITH_EMPTY_USER_MOCK = {
   okey: {
     banned: false,
     channel_role: 'channel_member',

@@ -7,9 +7,9 @@ import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { Channel, ChannelMemberResponse, DefaultGenerics, StreamChat } from 'stream-chat';
 
 import {
-  CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK,
-  CHANNEL_WITH_ONE_MEMBER_MOCK,
-  GROUP_CHANNEL_MOCK,
+  GROUP_CHANNEL_MEMBERS_MOCK,
+  ONE_CHANNEL_MEMBER_MOCK,
+  ONE_MEMBER_WITH_EMPTY_USER_MOCK,
 } from '../../../../mock-builders/api/queryMembers';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
@@ -86,9 +86,9 @@ describe('useChannelPreviewDisplayName', () => {
   });
 
   it.each([
-    [15, GROUP_CHANNEL_MOCK, 'okechukwu nwagba', 'ben, nick, q,...+2'],
-    [15, CHANNEL_WITH_ONE_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nw...'],
-    [15, CHANNEL_WITH_ONE_MEMBER_AND_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
+    [15, GROUP_CHANNEL_MEMBERS_MOCK, 'okechukwu nwagba', 'ben, nick, q,...+2'],
+    [15, ONE_CHANNEL_MEMBER_MOCK, 'okechukwu nwagba', 'okechukwu nw...'],
+    [15, ONE_MEMBER_WITH_EMPTY_USER_MOCK, 'okechukwu nwagba', 'Unknown User...'],
   ])(
     'getChannelPreviewDisplayName(%i, %p, %s) result in %s',
     (characterLength, members, currentUserId, expected) => {
