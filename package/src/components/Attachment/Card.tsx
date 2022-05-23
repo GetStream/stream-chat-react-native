@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginHorizontal: 8,
   },
-  roundedView: {
+  playButtonStyle: {
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 50,
@@ -205,7 +205,7 @@ const CardWithContext = <
             style={[styles.cardCover, cover, stylesProp.cardCover]}
           >
             {isVideo ? (
-              <View style={[styles.roundedView, roundedView]}>
+              <View style={[styles.playButtonStyle, roundedView]}>
                 {<Play height={24} pathFill={'#000'} width={24} />}
               </View>
             ) : (
