@@ -149,6 +149,9 @@ const CardWithContext = <
           footer: { description, title: titleStyle, ...footerStyle },
           noURI,
         },
+        content: {
+          playIcon: { height, pathFill, width },
+        },
       },
     },
   } = useTheme();
@@ -206,12 +209,11 @@ const CardWithContext = <
           >
             {isVideo ? (
               <View style={[styles.playButtonStyle, roundedView]}>
-                {<Play height={24} pathFill={'#000'} width={24} />}
+                {<Play height={height} pathFill={pathFill} width={width} />}
               </View>
             ) : (
               <></>
             )}
-            {/* {isVideo ? <Text>Video</Text> : <Text>Not video</Text>} */}
           </ImageBackground>
           {author_name && (
             <View style={[styles.authorNameMask, authorNameMask, stylesProp.authorNameMask]}>
