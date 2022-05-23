@@ -35,13 +35,12 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
   },
+  durationText: {
+    fontWeight: 'bold',
+  },
   overlay: {
     alignItems: 'flex-end',
     flex: 1,
-  },
-  timeColor: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   videoView: {
     bottom: 5,
@@ -86,7 +85,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const {
     theme: {
-      attachmentPicker: { image, imageOverlay },
+      attachmentPicker: { durationText, image, imageOverlay },
       colors: { overlay, white },
     },
   } = useTheme();
@@ -113,7 +112,11 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
         )}
         <View style={styles.videoView}>
           <Recorder height={20} pathFill={white} width={25} />
-          {videoDuration ? <Text style={styles.timeColor}>{videoDuration}</Text> : null}
+          {videoDuration ? (
+            <Text style={[styles.durationText, durationText, { color: white }]}>
+              {videoDuration}
+            </Text>
+          ) : null}
         </View>
       </ImageBackground>
     </TouchableOpacity>
