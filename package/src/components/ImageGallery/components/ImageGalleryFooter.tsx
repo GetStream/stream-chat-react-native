@@ -158,7 +158,7 @@ export const ImageGalleryFooterWithContext = <
         },
       ],
     }),
-    [],
+    [height],
   );
 
   const share = async () => {
