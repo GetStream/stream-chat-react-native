@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -9,11 +9,14 @@ import {
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Close } from '../../icons/Close';
+import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const IMAGE_PREVIEW_SIZE = 100;
+const WARNING_ICON_SIZE = 16;
 
 const styles = StyleSheet.create({
   dismiss: {
@@ -22,16 +25,44 @@ const styles = StyleSheet.create({
     right: 8,
     top: 8,
   },
+  fileSizeText: {
+    fontSize: 12,
+    paddingLeft: 10,
+  },
   flatList: { paddingBottom: 12 },
+  iconContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   itemContainer: {
     flexDirection: 'row',
     height: IMAGE_PREVIEW_SIZE,
     marginLeft: 8,
   },
+  unsupportedImage: {
+    borderRadius: 20,
+    bottom: 8,
+    flexDirection: 'row',
+    marginLeft: 3,
+    position: 'absolute',
+  },
   upload: {
     borderRadius: 10,
     height: IMAGE_PREVIEW_SIZE,
     width: IMAGE_PREVIEW_SIZE,
+  },
+  warningIconStyle: {
+    borderRadius: 24,
+    marginLeft: 4,
+    marginTop: 4,
+  },
+  warningText: {
+    alignItems: 'center',
+    color: 'black',
+    fontSize: 10,
+    justifyContent: 'center',
+    paddingRight: 8,
   },
 });
 
@@ -46,6 +77,8 @@ export type ImageUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<ImageUploadPreviewPropsWithContext<StreamChatGenerics>>;
 
+type ImageUploadPreviewItem = { index: number; item: ImageUpload };
+
 const ImageUploadPreviewWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -55,52 +88,72 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay, white },
+      colors: { overlay },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ index, item }: { index: number; item: ImageUpload }) => (
-    <View
-      style={[
-        styles.itemContainer,
-        index === imageUploads.length - 1 ? { marginRight: 8 } : {},
-        itemContainer,
-      ]}
-    >
-      <UploadProgressIndicator
-        action={() => {
-          uploadImage({ newImage: item });
-        }}
-        active={item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED}
-        style={styles.upload}
-        type={
-          item.state === FileState.UPLOADING
-            ? ProgressIndicatorTypes.IN_PROGRESS
-            : item.state === FileState.UPLOAD_FAILED
-            ? ProgressIndicatorTypes.RETRY
-            : undefined
-        }
-      >
-        <Image
-          resizeMode='cover'
-          source={{ uri: item.file.uri || item.url }}
-          style={[styles.upload, upload]}
-        />
-      </UploadProgressIndicator>
-      <TouchableOpacity
-        onPress={() => {
-          removeImage(item.id);
-        }}
-        style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
-        testID='remove-image-upload-preview'
-      >
-        <Close pathFill={white} />
-      </TouchableOpacity>
-    </View>
-  );
+  const UnsupportedImageTypeIndicator = ({
+    indicatorType,
+  }: {
+    indicatorType: typeof ProgressIndicatorTypes[keyof typeof ProgressIndicatorTypes] | null;
+  }) => {
+    const {
+      theme: {
+        colors: { accent_red, overlay, white },
+      },
+    } = useTheme();
+
+    const { t } = useTranslationContext();
+    return indicatorType === ProgressIndicatorTypes.NOT_SUPPORTED ? (
+      <View style={[styles.unsupportedImage, { backgroundColor: overlay }]}>
+        <View style={[styles.iconContainer]}>
+          <Warning
+            height={WARNING_ICON_SIZE}
+            pathFill={accent_red}
+            style={styles.warningIconStyle}
+            width={WARNING_ICON_SIZE}
+          />
+          <Text style={[styles.warningText, { color: white }]}>{t('Not supported')}</Text>
+        </View>
+      </View>
+    ) : null;
+  };
+
+  const renderItem = ({ index, item }: ImageUploadPreviewItem) => {
+    const indicatorType = getIndicatorTypeForFileState(item.state);
+    const itemMarginForIndex = index === imageUploads.length - 1 ? { marginRight: 8 } : {};
+
+    return (
+      <View style={[styles.itemContainer, itemMarginForIndex, itemContainer]}>
+        <UploadProgressIndicator
+          action={() => {
+            uploadImage({ newImage: item });
+          }}
+          style={styles.upload}
+          type={indicatorType}
+        >
+          <Image
+            resizeMode='cover'
+            source={{ uri: item.file.uri || item.url }}
+            style={[styles.upload, upload]}
+          />
+        </UploadProgressIndicator>
+        <TouchableOpacity
+          onPress={() => {
+            removeImage(item.id);
+          }}
+          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+          testID='remove-image-upload-preview'
+        >
+          <Close />
+        </TouchableOpacity>
+        <UnsupportedImageTypeIndicator indicatorType={indicatorType} />
+      </View>
+    );
+  };
 
   return imageUploads.length > 0 ? (
     <FlatList

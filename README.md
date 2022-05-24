@@ -1,7 +1,7 @@
 # Official React Native SDK for Stream Chat
 
 <p align="center">
-  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
+  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
 </p>
 
 > The official React Native and Expo components for Stream Chat, a service for
@@ -9,7 +9,7 @@
 
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
-[![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/test/badge.svg?branch=master)](https://github.com/GetStream/stream-chat-react-native/actions)
+[![Build Status](https://github.com/GetStream/stream-chat-react-native/workflows/test/badge.svg?branch=main)](https://github.com/GetStream/stream-chat-react-native/actions)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.io/chat/docs/sdk/reactnative)
 
 <img align="right" src="https://getstream.imgix.net/images/ios-chat-tutorial/iphone_chat_art@3x.png?auto=format,enhance" width="50%" />
@@ -42,10 +42,9 @@ For complete pricing details visit our [Chat Pricing Page](https://getstream.io/
 
 ## 🔮 Example Apps
 
-This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
+This repo includes 3 example apps. One made with Expo, two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
 - [Expo example](./examples/ExpoMessaging)
-- [Native example](./examples/NativeMessaging)
 - [Typescript example](./examples/TypeScriptMessaging)
 - [Fully featured messaging application](./examples/SampleApp)
 
@@ -53,6 +52,7 @@ Besides, our team maintains a dedicated repository for fully-fledged sample appl
 
 - [Slack Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/SlackClone#slack-clone-using-react-native-and-stream-chat)
 - [iMessage Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/iMessageClone#imessage-clone)
+- [WhatsApp Clone](https://github.com/GetStream/react-native-samples/tree/main/projects/WhatsAppClone#whatsapp-clone-using-react-native-and-stream-chat)
 
 ## 💬 Keep in mind
 
@@ -68,7 +68,7 @@ We welcome code changes that improve this library or fix a problem, and please m
 
 ## Git flow & Release process
 
-We enforce conventional commits and have an automated releasing process using workspaces and semantic-release. Read our [git flow & release process guide](https://github.com/GetStream/stream-chat-react-native/blob/master/RELEASE_PROCESS.md) for more information
+We enforce conventional commits and have an automated releasing process using workspaces and semantic-release. Read our [git flow & release process guide](https://github.com/GetStream/stream-chat-react-native/blob/main/RELEASE_PROCESS.md) for more information
 
 ## We are hiring
 

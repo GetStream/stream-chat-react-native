@@ -1,5 +1,34 @@
 # Change Log
 
+## [1.5.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.4.0...sampleapp@v1.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+
+
+### Bug Fixes
+
+* manually update iOS version to 93 ([7e8b57d](https://github.com/GetStream/stream-chat-react-native/commit/7e8b57d95f74a84e67cf951b0be66c865dc86e45))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.4.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.1...sampleapp@v1.4.0) (2022-04-27)
+
+
+### Features
+
+* clarify push v2 background handling on docs and add push v2 to sample app ([df9907c](https://github.com/GetStream/stream-chat-react-native/commit/df9907c4f484f992e5d13706a871c745f0174665))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.3.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.0...sampleapp@v1.3.1) (2022-04-12)
 
 

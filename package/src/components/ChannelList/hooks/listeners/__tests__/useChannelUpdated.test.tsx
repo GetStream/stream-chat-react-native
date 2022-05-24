@@ -56,6 +56,7 @@ describe('useChannelUpdated', () => {
         <ChatContext.Provider
           // @ts-ignore
           value={{
+            appSettings: null,
             client: mockClient,
             connectionRecovering: false,
             isOnline: true,

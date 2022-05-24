@@ -143,7 +143,7 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadiusL, borderRadiusS, ...container },
+          container: { borderRadius, borderRadiusL, borderRadiusS, ...container },
           containerInner,
           errorContainer,
           errorIcon,
@@ -223,6 +223,22 @@ const MessageContentWithContext = <
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
 
+  const isBorderColor = isMyMessage && !error;
+
+  const shouldApplyBorderRadius = (firstGroupStyle: string, secondGroupStyle: string): boolean =>
+    (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
+    (!hasThreadReplies || threadList);
+
+  const applyBorderRadius = (
+    firstGroupStyle: string,
+    secondGroupStyle: string,
+  ): number | undefined => {
+    if (shouldApplyBorderRadius(firstGroupStyle, secondGroupStyle)) {
+      return borderRadiusS;
+    }
+    return borderRadiusL;
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -297,17 +313,12 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius:
-                (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: isMyMessage && !error ? backgroundColor : grey_whisper,
+              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single'),
+              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single'),
+              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              borderRadius,
+              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single'),
+              borderTopRightRadius: applyBorderRadius('right_top', 'right_single'),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,

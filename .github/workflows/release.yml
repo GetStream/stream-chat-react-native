@@ -3,7 +3,7 @@ name: Release
 on:
  push:
    branches:
-     - master
+     - main
 
 jobs:
  publish-release:
@@ -42,5 +42,5 @@ jobs:
          git stash
          git checkout develop
          git pull origin develop
-         git merge master -m "chore: merge back release [skip ci]"
+         git merge main -m "chore: merge back release [skip ci]"
          git push origin develop

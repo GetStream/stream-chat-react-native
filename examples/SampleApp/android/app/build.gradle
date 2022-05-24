@@ -204,7 +204,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation platform('com.google.firebase:firebase-bom:25.12.0')
+    implementation platform('com.google.firebase:firebase-bom:29.3.0')
 
     // For animated GIF support
     implementation 'com.facebook.fresco:animated-gif:2.6.0'

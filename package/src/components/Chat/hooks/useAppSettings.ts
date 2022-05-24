@@ -21,7 +21,7 @@ export const useAppSettings = <
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
-          throw new Error(`An error occurred while getting app settings: ${error.message}`);
+          console.error(`An error occurred while getting app settings: ${error}`);
         }
       }
     }
