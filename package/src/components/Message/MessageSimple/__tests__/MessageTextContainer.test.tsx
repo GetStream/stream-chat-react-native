@@ -11,6 +11,7 @@ import {
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { MessageTextContainer } from '../MessageTextContainer';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 afterEach(cleanup);
 
@@ -34,9 +35,7 @@ describe('MessageTextContainer', () => {
     rerender(
       <ThemeProvider style={defaultTheme}>
         <MessageTextContainer
-          alignment='right'
-          groupStyles={['top']}
-          message={message}
+          message={message as any}
           MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
         />
       </ThemeProvider>,
@@ -54,7 +53,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageTextContainer message={staticMessage} />
+        <MessageTextContainer message={staticMessage as any} />
       </ThemeProvider>,
     );
 
