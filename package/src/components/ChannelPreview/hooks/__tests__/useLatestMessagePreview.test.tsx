@@ -2,51 +2,58 @@ import { render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 import type { Channel, MessageResponse, StreamChat } from 'stream-chat';
-import { Chat } from '../../../Chat/Chat';
 import { ChatContextValue, ChatProvider } from '../../../../contexts/chatContext/ChatContext';
 import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../../../contexts/translationContext/TranslationContext';
-import {
-  useLatestMessagePreview,
-  LatestMessage,
-  getLatestMessageDisplayText,
-} from '../useLatestMessagePreview';
+import { useLatestMessagePreview, getLatestMessageDisplayText } from '../useLatestMessagePreview';
 
 describe('useLatestMessagePreview', () => {
-  // it("return a preview with '¡Hola mundo!' if userLanguage is es and the message has the translation", async () => {
-  //   const expectedResult = '¡Hola mundo!';
-  //   const message = {
-  //     i18n: {
-  //       es_text: expectedResult,
-  //     },
-  //   } as MessageResponse;
-  //   const channel = {
-  //     state: {
-  //       messages: [],
-  //       read: {
-  //         fred_flintstone: false,
-  //         asd: false,
-  //       },
-  //     },
-  //   } as Channel;
-  //   const client = { userID: 'fred_flintstone' } as StreamChat;
-  //   const TestComponent = () => {
-  //     const result = useLatestMessagePreview(channel, 0, message);
-  //     return <Text>{result.previews[0].text}</Text>;
-  //   };
-  //   const { getByText } = render(
-  //     <ChatProvider value={{ client } as ChatContextValue}>
-  //       <TranslationProvider value={{ userLanguage: 'es' } as TranslationContextValue}>
-  //         <TestComponent />
-  //       </TranslationProvider>
-  //     </ChatProvider>,
-  //   );
-  //   await waitFor(() => {
-  //     expect(getByText(expectedResult)).toBeTruthy();
-  //   });
-  // });
+  it("return a preview with '¡Hola mundo!' if userLanguage is es and the message has the translation", async () => {
+    const expectedResult = '¡Hola mundo!';
+    const message = {
+      i18n: {
+        es_text: expectedResult,
+      },
+    } as MessageResponse;
+    const channel = {
+      state: {
+        messages: [],
+        members: [],
+        read: {
+          fred_flintstone: false,
+          asd: false,
+        },
+      },
+    } as Channel;
+    const client = { userID: 'fred_flintstone' } as StreamChat;
+    const TestComponent = () => {
+      const result = useLatestMessagePreview(channel, 0, message);
+      if (result.previews.length < 2) {
+        return null;
+      }
+      return <Text>{result.previews[1].text}</Text>;
+    };
+    const { getByText } = render(
+      <ChatProvider value={{ client } as ChatContextValue}>
+        <TranslationProvider
+          value={
+            {
+              tDateTimeParser: jest.fn().mockReturnValue({}),
+              t: (s: string) => s,
+              userLanguage: 'es',
+            } as unknown as TranslationContextValue
+          }
+        >
+          <TestComponent />
+        </TranslationProvider>
+      </ChatProvider>,
+    );
+    await waitFor(() => {
+      expect(getByText(expectedResult)).toBeTruthy();
+    });
+  });
 });
 
 describe('getLatestMessageDisplayText', () => {

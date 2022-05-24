@@ -10,7 +10,7 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useTranslatedMessage } from '../../Message/MessageSimple/MessageTextContainer';
+import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 
 export type LatestMessage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -96,12 +96,12 @@ const createMessageTextDisplayObjects = <
 
 const isUndefinedOrEmpty = (s: string | undefined) => s !== undefined && s !== '';
 
-const createDisplayTextObjectFromString = (s: string) => {
-  if (s.includes('@')) {
-    return { bold: true, text: s };
+const createDisplayTextObjectFromString = (text: string) => {
+  if (text.includes('@')) {
+    return { bold: true, text };
   }
 
-  return { bold: false, text: s };
+  return { bold: false, text };
 };
 
 export const getLatestMessageDisplayText = <
@@ -220,9 +220,8 @@ const getLatestMessagePreview = <
       status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
     };
   }
-  // const message = lastMessage <==== works
-  // const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined; <==== culprit
-  const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
+
+  const message = lastMessage !== undefined ? lastMessage : messages.reverse()?.pop();
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
@@ -253,7 +252,7 @@ export const useLatestMessagePreview = <
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const messages = []; //channel.state.messages;
+  const messages = channel.state.messages;
   const message = messages.length ? messages[messages.length - 1] : undefined;
 
   const channelLastMessageString = `${lastMessage?.id || message?.id}${
@@ -282,7 +281,7 @@ export const useLatestMessagePreview = <
     readEvents,
   );
 
-  const text = useTranslatedMessage(lastMessage);
+  const text = useTranslatedMessage(lastMessage || message);
   const translatedLastMessage = { ...message, text };
 
   useEffect(() => {
@@ -294,20 +293,20 @@ export const useLatestMessagePreview = <
     }
   }, [channelConfigExists]);
 
-  // useEffect(
-  //   () =>
-  //     setLatestMessagePreview(
-  //       getLatestMessagePreview({
-  //         channel,
-  //         client,
-  //         lastMessage: translatedLastMessage,
-  //         readEvents,
-  //         t,
-  //         tDateTimeParser,
-  //       }),
-  //     ),
-  //   [channelLastMessageString, forceUpdate, readEvents, readStatus],
-  // );
+  useEffect(
+    () =>
+      setLatestMessagePreview(
+        getLatestMessagePreview({
+          channel,
+          client,
+          lastMessage: translatedLastMessage,
+          readEvents,
+          t,
+          tDateTimeParser,
+        }),
+      ),
+    [channelLastMessageString, forceUpdate, readEvents, readStatus],
+  );
 
   return latestMessagePreview;
 };
