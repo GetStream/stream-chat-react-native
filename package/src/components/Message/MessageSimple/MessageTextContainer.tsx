@@ -15,9 +15,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useTranslationContext } from '../../../contexts';
-import { MessageType } from '../../MessageList/hooks/useMessageList';
-import { TranslationLanguages } from 'stream-chat/src/types';
+import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage.test';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },
@@ -44,23 +42,6 @@ export type MessageTextContainerPropsWithContext<
       textContainer: StyleProp<ViewStyle>;
     }>;
   };
-
-//todo: This has to be changed in the future and is depending on a change in the js client stream-chat/src/types.ts:491
-type I18nTextKey = `${TranslationLanguages}_text`;
-
-export const useTranslatedMessage = <StreamChatGenerics,>(
-  message: MessageType<StreamChatGenerics>,
-) => {
-  const { userLanguage } = useTranslationContext();
-
-  if (message.i18n !== undefined) {
-    const i18nTextKey = `${userLanguage}_text` as I18nTextKey;
-    const translationExistsInUserLanguage = i18nTextKey in message.i18n;
-    if (translationExistsInUserLanguage) return message.i18n[i18nTextKey];
-  }
-
-  return message.text;
-};
 
 const MessageTextContainerWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
