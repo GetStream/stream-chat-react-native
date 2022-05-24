@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel, ChannelState, MessageResponse, StreamChat, User } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
@@ -12,7 +12,7 @@ import {
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useTranslatedMessage } from '../../Message/MessageSimple/MessageTextContainer';
 
-type LatestMessage<
+export type LatestMessage<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > =
   | ReturnType<ChannelState<StreamChatGenerics>['formatMessage']>
@@ -30,7 +30,81 @@ export type LatestMessagePreview<
   status: number;
 };
 
-const getLatestMessageDisplayText = <
+const getChannelMembers = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  channel: Channel<StreamChatGenerics>,
+) => (channel.state ? Object.keys(channel.state.members) : []);
+
+const getMessageUserNameOrID = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics>,
+) => message.user?.name || message.user?.username || message.user?.id || '';
+
+const truncateMessageText = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics>,
+) => message.text && message.text.substring(0, 100).replace(/\n/g, ' ');
+
+const createDiplayTextObjects = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics>,
+  t: (key: string) => string,
+) => {
+  if (message.text) {
+    return createMessageTextDisplayObjects(message);
+  }
+
+  if (message.command) {
+    return [{ bold: false, text: `/${message.command}` }];
+  }
+
+  if (message.attachments?.length) {
+    return [{ bold: false, text: t('🏙 Attachment...') }];
+  }
+
+  return [{ bold: false, text: t('Empty message...') }];
+};
+
+const createMessageTextDisplayObjects = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics>,
+) => {
+  const shortenedText = truncateMessageText(message) || '';
+
+  const mentionedUsers = message.mentioned_users
+    ?.map((user: User) => `(@${user.name || user.id || ''})`)
+    .join('|');
+
+  const mentionedUsersRegExp = new RegExp(`${mentionedUsers}|(!:${mentionedUsers})`, 'mg');
+
+  if (mentionedUsers?.length) {
+    return [
+      ...shortenedText
+        .split(mentionedUsersRegExp)
+        .filter(isUndefinedOrEmpty)
+        .map(createDisplayTextObjectFromString),
+    ];
+  }
+
+  return [{ bold: false, text: shortenedText }];
+};
+
+const isUndefinedOrEmpty = (s: string | undefined) => s !== undefined && s !== '';
+
+const createDisplayTextObjectFromString = (s: string) => {
+  if (s.includes('@')) {
+    return { bold: true, text: s };
+  }
+
+  return { bold: false, text: s };
+};
+
+export const getLatestMessageDisplayText = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channel: Channel<StreamChatGenerics>,
@@ -38,66 +112,30 @@ const getLatestMessageDisplayText = <
   message: LatestMessage<StreamChatGenerics> | undefined,
   t: (key: string) => string,
 ) => {
-  if (!message) return [{ bold: false, text: t('Nothing yet...') }];
-  const isMessageTypeDeleted = message.type === 'deleted';
-  if (isMessageTypeDeleted) return [{ bold: false, text: t('Message deleted') }];
-  const currentUserId = client.userID;
-  const messageOwnerId = message.user?.id;
-  const members = Object.keys(channel.state.members);
-  const owner =
-    messageOwnerId === currentUserId
-      ? t('You')
-      : members.length > 2
-      ? message.user?.name || message.user?.username || message.user?.id || ''
-      : '';
-  const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
-  const boldOwner = ownerText.includes('@');
-  if (message.text) {
-    // rough guess optimization to limit string preview to max 100 characters
-    const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
-    const mentionedUsers = Array.isArray(message.mentioned_users)
-      ? message.mentioned_users.reduce((acc, cur) => {
-          const userName = cur.name || cur.id || '';
-          if (userName) {
-            acc += `${acc.length ? '|' : ''}@${userName}`;
-          }
-          return acc;
-        }, '')
-      : '';
-    const regEx = new RegExp(`^(${mentionedUsers})`);
-    return [
-      { bold: boldOwner, text: ownerText },
-      ...shortenedText.split('').reduce(
-        (acc, cur, index) => {
-          if (cur === '@' && mentionedUsers && regEx.test(shortenedText.substring(index))) {
-            acc.push({ bold: true, text: cur });
-          } else if (mentionedUsers && regEx.test(acc[acc.length - 1].text)) {
-            acc.push({ bold: false, text: cur });
-          } else {
-            acc[acc.length - 1].text += cur;
-          }
-          return acc;
-        },
-        [{ bold: false, text: '' }],
-      ),
-    ];
-  }
-  if (message.command) {
-    return [
-      { bold: boldOwner, text: ownerText },
-      { bold: false, text: `/${message.command}` },
-    ];
-  }
-  if (message.attachments?.length) {
-    return [
-      { bold: boldOwner, text: ownerText },
-      { bold: false, text: t('🏙 Attachment...') },
-    ];
-  }
-  return [
-    { bold: boldOwner, text: ownerText },
-    { bold: false, text: t('Empty message...') },
-  ];
+  if (!message) return [createDisplayTextObjectFromString(t('Nothing yet...'))];
+  if (message.type === 'deleted') return [createDisplayTextObjectFromString(t('Message deleted'))];
+
+  const createMessageOwnerString = (
+    messageOwnerId: string | undefined,
+    currentUserId: string | undefined,
+  ) => {
+    if (messageOwnerId === currentUserId) {
+      return `${t('You')}: `;
+    }
+
+    const messageUserNameOrID = getMessageUserNameOrID(message);
+    const channelHasMoreThanTwoMembers = getChannelMembers(channel).length > 2;
+    if (messageUserNameOrID && channelHasMoreThanTwoMembers) {
+      return `@${messageUserNameOrID}: `;
+    }
+
+    return '';
+  };
+
+  const owner = createMessageOwnerString(message.user?.id, client.userID);
+  const boldOwner = owner.includes('@');
+
+  return [{ bold: boldOwner, text: owner }, ...createDiplayTextObjects(message, t)];
 };
 
 const getLatestMessageDisplayDate = <
@@ -185,7 +223,6 @@ const getLatestMessagePreview = <
   // const message = lastMessage <==== works
   // const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined; <==== culprit
   const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
-  console.log('message ', message.text);
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
@@ -216,7 +253,7 @@ export const useLatestMessagePreview = <
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const messages = channel.state.messages;
+  const messages = []; //channel.state.messages;
   const message = messages.length ? messages[messages.length - 1] : undefined;
 
   const channelLastMessageString = `${lastMessage?.id || message?.id}${
@@ -257,20 +294,20 @@ export const useLatestMessagePreview = <
     }
   }, [channelConfigExists]);
 
-  useEffect(
-    () =>
-      setLatestMessagePreview(
-        getLatestMessagePreview({
-          channel,
-          client,
-          lastMessage: translatedLastMessage,
-          readEvents,
-          t,
-          tDateTimeParser,
-        }),
-      ),
-    [channelLastMessageString, forceUpdate, readEvents, readStatus],
-  );
+  // useEffect(
+  //   () =>
+  //     setLatestMessagePreview(
+  //       getLatestMessagePreview({
+  //         channel,
+  //         client,
+  //         lastMessage: translatedLastMessage,
+  //         readEvents,
+  //         t,
+  //         tDateTimeParser,
+  //       }),
+  //     ),
+  //   [channelLastMessageString, forceUpdate, readEvents, readStatus],
+  // );
 
   return latestMessagePreview;
 };
