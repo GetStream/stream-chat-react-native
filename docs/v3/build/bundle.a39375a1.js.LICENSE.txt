@@ -8,7 +8,7 @@ object-assign
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
- *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+ *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/main/LICENSE
  * @version   v4.2.8+1e68dce6
  */
 
@@ -42,7 +42,7 @@ object-assign
 /*!
  * regjsgen 0.5.2
  * Copyright 2014-2020 Benjamin Tan <https://ofcr.se/>
- * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/master/LICENSE-MIT.txt>
+ * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/main/LICENSE-MIT.txt>
  */
 
 /*! clipboard-copy. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */

@@ -19,6 +19,7 @@
   "Error loading channel list...": "Kanal listesi yüklenirken hata oluştu...",
   "Error loading messages for this channel...": "Bu kanal için mesajlar yüklenirken hata oluştu...",
   "Error while loading, please reload/refresh": "Yüklenirken hata oluştu, lütfen tekrar deneyin",
+  "File type not supported": "Dosya türü desteklenmiyor",
   "Flag": "Raporla",
   "Flag Message": "Mesajı İşaretle",
   "Flag action failed either due to a network issue or the message is already flagged": "Raporlama, mesajın raporlanmış olması veya bağlantı hatası sebebiyle başarısız oldu.",
@@ -31,6 +32,7 @@
   "Message deleted": "Mesaj silindi",
   "Message flagged": "Mesaj işaretlendi",
   "Mute User": "Kullanıcının Sesini Kapat",
+  "Not supported": "Desteklenmiyor",
   "Nothing yet...": "Şimdilik hiçbir şey...",
   "Ok": "Tamam",
   "Only visible to you": "Sadece siz görebilirsiniz",
@@ -61,7 +63,5 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Cevaplar",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapları",
   "{{ user }} is typing": "{{ user }} yazıyor",
-  "🏙 Attachment...": "🏙 Ek...",
-  "File type not supported": "Dosya türü desteklenmiyor",
-  "Not supported": "Desteklenmiyor"
+  "🏙 Attachment...": "🏙 Ek..."
 }
