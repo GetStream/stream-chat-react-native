@@ -19,6 +19,7 @@
   "Error loading channel list...": "Error loading channel list...",
   "Error loading messages for this channel...": "Error loading messages for this channel...",
   "Error while loading, please reload/refresh": "Error while loading, please reload/refresh",
+  "File type not supported": "File type not supported",
   "Flag": "Flag",
   "Flag Message": "Flag Message",
   "Flag action failed either due to a network issue or the message is already flagged": "Flag action failed either due to a network issue or the message is already flagged.",
@@ -31,6 +32,7 @@
   "Message deleted": "Message deleted",
   "Message flagged": "Message flagged",
   "Mute User": "Mute User",
+  "Not supported": "Not supported",
   "Nothing yet...": "Nothing yet...",
   "Ok": "Ok",
   "Only visible to you": "Only visible to you",
@@ -61,7 +63,5 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Replies",
   "{{ replyCount }} Thread Replies": "{{ replyCount }} Thread Replies",
   "{{ user }} is typing": "{{ user }} is typing",
-  "🏙 Attachment...": "🏙 Attachment...",
-  "File type not supported": "File type not supported",
-  "Not supported": "Not supported"
+  "🏙 Attachment...": "🏙 Attachment..."
 }
