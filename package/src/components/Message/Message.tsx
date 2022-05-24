@@ -329,7 +329,7 @@ const MessageWithContext = <
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
             } else if (cur.type === 'video' && !cur.og_scrape_url) {
-              acc.images.push({ image_url: cur.asset_url, type: 'video' });
+              acc.videos.push({ image_url: cur.asset_url, type: 'video' });
               acc.other = [];
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
@@ -341,7 +341,7 @@ const MessageWithContext = <
                 acc.other = []; // remove other attachments if an image exists
               }
               // only add other attachments if there are no files/images
-            } else if (!acc.files.length && !acc.images.length) {
+            } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
               acc.other.push(cur);
             }
 
@@ -351,12 +351,14 @@ const MessageWithContext = <
             files: [] as Attachment<StreamChatGenerics>[],
             images: [] as Attachment<StreamChatGenerics>[],
             other: [] as Attachment<StreamChatGenerics>[],
+            videos: [] as Attachment<StreamChatGenerics>[],
           },
         )
       : {
           files: [] as Attachment<StreamChatGenerics>[],
           images: [] as Attachment<StreamChatGenerics>[],
           other: [] as Attachment<StreamChatGenerics>[],
+          videos: [] as Attachment<StreamChatGenerics>[],
         };
 
   /**
@@ -378,7 +380,7 @@ const MessageWithContext = <
       case 'files':
         return !!attachments.files.length;
       case 'gallery':
-        return !!attachments.images.length;
+        return !!attachments.images.length || !!attachments.videos.length;
       case 'text':
       default:
         return !!message.text;
@@ -527,7 +529,7 @@ const MessageWithContext = <
       files: attachments.files,
       groupStyles,
       handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
-      imagesAndVideos: attachments.images,
+      images: attachments.images,
       message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },
@@ -539,6 +541,7 @@ const MessageWithContext = <
       ownCapabilities,
       supportedReactions,
       threadList,
+      videos: attachments.videos,
     });
 
     setOverlay('message');
@@ -600,7 +603,7 @@ const MessageWithContext = <
     handleToggleMuteUser,
     handleToggleReaction,
     hasReactions,
-    imagesAndVideos: attachments.images,
+    images: attachments.images,
     isMyMessage,
     lastGroupMessage: groupStyles?.[0] === 'single' || groupStyles?.[0] === 'bottom',
     lastReceivedId,
@@ -654,6 +657,7 @@ const MessageWithContext = <
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
+    videos: attachments.videos,
   });
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;

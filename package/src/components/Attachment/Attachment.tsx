@@ -67,7 +67,18 @@ const AttachmentWithContext = <
   if (attachment.type === 'image') {
     return (
       <>
-        <Gallery imagesAndVideos={[attachment]} />
+        <Gallery images={[attachment]} />
+        {hasAttachmentActions && (
+          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+        )}
+      </>
+    );
+  }
+
+  if (attachment.type === 'video' && !attachment.og_scrape_url) {
+    return (
+      <>
+        <Gallery videos={[attachment]} />
         {hasAttachmentActions && (
           <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
         )}

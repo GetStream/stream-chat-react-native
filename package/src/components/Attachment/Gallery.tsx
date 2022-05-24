@@ -75,7 +75,8 @@ export type GalleryPropsWithContext<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
     | 'groupStyles'
-    | 'imagesAndVideos'
+    | 'images'
+    | 'videos'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
@@ -114,7 +115,7 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
-    imagesAndVideos,
+    images,
     legacyImageViewerSwipeBehaviour,
     message,
     onLongPress,
@@ -125,6 +126,7 @@ const GalleryWithContext = <
     setImages,
     setOverlay,
     threadList,
+    videos,
     VideoThumbnail,
   } = props;
 
@@ -158,14 +160,14 @@ const GalleryWithContext = <
     minHeight,
     minWidth,
   };
-
+  const imagesAndVideos = [...images, ...videos];
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
         images: imagesAndVideos,
         sizeConfig,
       }),
-    [imagesAndVideos.length],
+    [images.length, videos.length],
   );
 
   if (!imagesAndVideos?.length) return null;
@@ -215,6 +217,23 @@ const GalleryWithContext = <
                   setOverlay('gallery');
                 }
               };
+
+              const borderRadius = getGalleryImageBorderRadius({
+                alignment,
+                colIndex,
+                groupStyles,
+                hasThreadReplies,
+                height,
+                invertedDirections,
+                messageText,
+                numOfColumns,
+                numOfRows,
+                rowIndex,
+                sizeConfig,
+                threadList,
+                width,
+              });
+
               return (
                 <TouchableOpacity
                   activeOpacity={0.8}
@@ -262,21 +281,7 @@ const GalleryWithContext = <
                   {type === 'video' ? (
                     <VideoThumbnail
                       style={[
-                        getGalleryImageBorderRadius({
-                          alignment,
-                          colIndex,
-                          groupStyles,
-                          hasThreadReplies,
-                          height,
-                          invertedDirections,
-                          messageText,
-                          numOfColumns,
-                          numOfRows,
-                          rowIndex,
-                          sizeConfig,
-                          threadList,
-                          width,
-                        }),
+                        borderRadius,
                         image,
                         {
                           height: height - 1,
@@ -288,21 +293,7 @@ const GalleryWithContext = <
                     <MemoizedGalleryImage
                       resizeMode={resizeMode}
                       style={[
-                        getGalleryImageBorderRadius({
-                          alignment,
-                          colIndex,
-                          groupStyles,
-                          hasThreadReplies,
-                          height,
-                          invertedDirections,
-                          messageText,
-                          numOfColumns,
-                          numOfRows,
-                          rowIndex,
-                          sizeConfig,
-                          threadList,
-                          width,
-                        }),
+                        borderRadius,
                         image,
                         {
                           height: height - 1,
@@ -345,14 +336,16 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const {
     groupStyles: prevGroupStyles,
     hasThreadReplies: prevHasThreadReplies,
-    imagesAndVideos: prevImagesAndVideos,
+    images: prevImages,
     message: prevMessage,
+    videos: prevVideos,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
     hasThreadReplies: nextHasThreadReplies,
-    imagesAndVideos: nextImagesAndVideos,
+    images: nextImages,
     message: nextMessage,
+    videos: nextVideos,
   } = nextProps;
 
   const messageEqual = prevMessage?.id === nextMessage?.id;
@@ -366,15 +359,22 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   if (!hasThreadRepliesEqual) return false;
 
   const imagesEqual =
-    prevImagesAndVideos.length === nextImagesAndVideos.length &&
-    prevImagesAndVideos.every(
+    prevImages.length === nextImages.length &&
+    prevImages.every(
       (image, index) =>
-        getUrlWithoutParams(image.image_url) ===
-          getUrlWithoutParams(nextImagesAndVideos[index].image_url) &&
-        getUrlWithoutParams(image.thumb_url) ===
-          getUrlWithoutParams(nextImagesAndVideos[index].thumb_url),
+        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextImages[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
     );
   if (!imagesEqual) return false;
+
+  const videosEqual =
+    prevVideos.length === nextVideos.length &&
+    prevVideos.every(
+      (image, index) =>
+        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextVideos[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextVideos[index].thumb_url),
+    );
+  if (!videosEqual) return false;
 
   return true;
 };
@@ -398,7 +398,7 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
-    imagesAndVideos: propImagesAndVideos,
+    images: propImages,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -406,6 +406,7 @@ export const Gallery = <
     setImage: propSetImage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
+    videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
@@ -413,13 +414,14 @@ export const Gallery = <
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
-    imagesAndVideos: contextImagesAndVideos,
+    images: contextImages,
     message,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     threadList: contextThreadList,
+    videos: contextVideos,
   } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
@@ -428,9 +430,10 @@ export const Gallery = <
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
-  const imagesAndVideos = propImagesAndVideos || contextImagesAndVideos;
+  const images = propImages || contextImages;
+  const videos = propVideos || contextVideos;
 
-  if (!imagesAndVideos.length) return null;
+  if (!images.length && !videos.length) return null;
 
   const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
@@ -453,7 +456,7 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
-        imagesAndVideos,
+        images,
         legacyImageViewerSwipeBehaviour,
         message,
         onLongPress,
@@ -464,6 +467,7 @@ export const Gallery = <
         setImages,
         setOverlay,
         threadList,
+        videos,
         VideoThumbnail,
       }}
     />
