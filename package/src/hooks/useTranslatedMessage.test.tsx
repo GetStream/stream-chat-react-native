@@ -1,7 +1,7 @@
-import type { MessageType } from '../components/MessageList/hooks/useMessageList';
 import type { TranslationLanguages } from 'stream-chat';
 import type { DefaultStreamChatGenerics } from '../types/types';
 import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
+import type { MessageType } from '../components/MessageList/hooks/useMessageList';
 
 //todo: This has to be changed in the future and is
 // depending on a change in the js client
@@ -18,7 +18,7 @@ export const useTranslatedMessage = <
   if (message.i18n !== undefined) {
     const i18nTextKey = `${userLanguage}_text` as I18nTextKey;
     const translationExistsInUserLanguage = i18nTextKey in message.i18n;
-    if (translationExistsInUserLanguage) return message.i18n[i18nTextKey];
+    return translationExistsInUserLanguage && message.i18n[i18nTextKey];
   }
 
   return message.text;

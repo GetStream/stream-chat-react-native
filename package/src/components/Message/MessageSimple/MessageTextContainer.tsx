@@ -76,7 +76,7 @@ const MessageTextContainerWithContext = <
     },
   } = theme;
 
-  if (!message.text) return null;
+  if (!text) return null;
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 

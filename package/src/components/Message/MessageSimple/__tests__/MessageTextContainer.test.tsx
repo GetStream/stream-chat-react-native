@@ -4,6 +4,10 @@ import { Text } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  TranslationProvider,
+} from '../../../../contexts/translationContext/TranslationContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
@@ -23,7 +27,7 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
-        <MessageTextContainer alignment='right' groupStyles={['top']} message={message} />
+        <MessageTextContainer message={message as any} />
       </ThemeProvider>,
     );
 
@@ -36,7 +40,9 @@ describe('MessageTextContainer', () => {
       <ThemeProvider style={defaultTheme}>
         <MessageTextContainer
           message={message as any}
-          MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
+          MessageText={({ message }) => (
+            <Text testID='message-text'>{message?.text as string}</Text>
+          )}
         />
       </ThemeProvider>,
     );
@@ -59,6 +65,43 @@ describe('MessageTextContainer', () => {
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
+    });
+  });
+
+  it('should not render if there is no message text', async () => {
+    const TestComponent = () => <MessageTextContainer message={{} as MessageType} />;
+
+    const { toJSON } = render(
+      <ThemeProvider style={defaultTheme}>
+        <TestComponent />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(toJSON()).toBe(null);
+    });
+  });
+
+  it('should render ¡Hello mundo! when userLanguage is `es` and the message contains a translation', async () => {
+    const userLanguage = 'es';
+    const expectedResult = '¡Hola mundo!';
+
+    const TestComponent = () => (
+      <MessageTextContainer
+        message={{ i18n: { es_text: expectedResult }, text: 'Hello world!' } as MessageType}
+      />
+    );
+
+    const { getByText } = render(
+      <ThemeProvider style={defaultTheme}>
+        <TranslationProvider value={{ userLanguage } as TranslationContextValue}>
+          <TestComponent />
+        </TranslationProvider>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getByText(expectedResult)).toBeTruthy();
     });
   });
 });
