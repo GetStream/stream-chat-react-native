@@ -105,7 +105,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     </View>
   ) : (
     <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {getFileSizeDisplayText(item.file.size)}
+      {item.file.duration ? item.file.duration : getFileSizeDisplayText(item.file.size)}
     </Text>
   );
 };

@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import type { Asset } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type AttachmentPickerIconProps = {
@@ -42,9 +41,11 @@ export type AttachmentPickerContextValue = {
    */
   maxNumberOfFiles: number;
   openPicker: () => void;
+  selectedFiles: File[];
   selectedImages: Asset[];
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
@@ -80,6 +81,7 @@ export const AttachmentPickerProvider = ({
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
   const [topInset, setTopInset] = useState<number>(value?.topInset ?? 0);
 
@@ -93,10 +95,12 @@ export const AttachmentPickerProvider = ({
 
   const combinedValue = {
     maxNumberOfFiles,
+    selectedFiles,
     selectedImages,
     selectedPicker,
     setBottomInset,
     setMaxNumberOfFiles,
+    setSelectedFiles,
     setSelectedImages,
     setSelectedPicker,
     setTopInset,
