@@ -7,7 +7,7 @@ configPromise.then((config) => {
   return semanticRelease({
     ...config,
     branches: [
-      'master',
+      'main',
       {
         name: 'develop',
         channel: 'beta',

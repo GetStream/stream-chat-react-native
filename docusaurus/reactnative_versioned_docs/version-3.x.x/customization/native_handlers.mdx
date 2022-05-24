@@ -14,7 +14,7 @@ The non _core_ packages call a function from the core package, `registerNativeHa
 If desired the native handlers can be overridden.
 The same function that is called internally to set the handlers can be used to override them, `registerNativeHandlers`.
 If the function returns the same type of data as the original function it should seamlessly work with the rest of the SDK.
-You should look at the [default implementation](https://github.com/GetStream/stream-chat-react-native/blob/master/package/native-package/src/index.js)
+You should look at the [default implementation](https://github.com/GetStream/stream-chat-react-native/blob/main/package/native-package/src/index.js)
 to ensure any override conforms to the appropriate type definition provided by the SDK.
 
 :::note
