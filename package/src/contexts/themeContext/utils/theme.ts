@@ -80,6 +80,7 @@ export type MarkdownStyle = Partial<{
 export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
+    durationText: TextStyle;
     errorButtonText: TextStyle;
     errorContainer: ViewStyle;
     errorText: TextStyle;
@@ -539,6 +540,7 @@ export type Theme = {
 export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
+    durationText: {},
     errorButtonText: {},
     errorContainer: {},
     errorText: {},

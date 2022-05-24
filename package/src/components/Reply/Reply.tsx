@@ -143,7 +143,7 @@ const ReplyWithContext = <
   if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
-  const messageType = getMessageType(lastAttachment);
+  const messageType = lastAttachment && getMessageType(lastAttachment);
 
   const hasImage =
     !error &&
