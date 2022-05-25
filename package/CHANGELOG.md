@@ -1,5 +1,24 @@
 # Change Log
 
+### [4.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.0...v4.6.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* hotfixes borderRadius ([1dd116d](https://github.com/GetStream/stream-chat-react-native/commit/1dd116de7d402a8b301438c88e996a28ba15970e))
+
+## [4.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.5.0...v4.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* race condition when bottom sheet is closed during keyboard show ([994addf](https://github.com/GetStream/stream-chat-react-native/commit/994addf9e907f5ba78e81cd9fb46a93221a6070f))
+
 ## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
 
 
