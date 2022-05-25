@@ -45,15 +45,19 @@ registerNativeHandlers({
       const results = await MediaLibrary.getAssetsAsync({
         after,
         first,
-        mediaType: [MediaLibrary.MediaType.photo],
+        mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
       });
       const assets = results.assets.map((asset) => ({
+        duration: asset.duration,
+        filename: asset.filename,
         height: asset.height,
         id: asset.id,
         source: 'picker',
+        type: asset.mediaType,
         uri: asset.uri,
         width: asset.width,
       }));
+
       const hasNextPage = results.hasNextPage;
       const endCursor = results.endCursor;
       return { assets, endCursor, hasNextPage };
@@ -155,12 +159,13 @@ registerNativeHandlers({
             // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
             // This we can't rely on them as it is, and we need to use Image.getSize
             // to get accurate size.
-            const getSize = () => new Promise((resolve) => {
-              Image.getSize(photo.uri, (width, height) => {
-                resolve({height, width});
+            const getSize = () =>
+              new Promise((resolve) => {
+                Image.getSize(photo.uri, (width, height) => {
+                  resolve({ height, width });
+                });
               });
-            });
-    
+
             try {
               const { height, width } = await getSize();
               size.height = height;
@@ -175,12 +180,12 @@ registerNativeHandlers({
               width: photo.width,
             };
           }
-    
+
           return {
             cancelled: false,
             source: 'camera',
             uri: photo.uri,
-            ...size
+            ...size,
           };
         }
       }

@@ -35,8 +35,8 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -55,12 +55,7 @@ import { useTranslationContext } from '../translationContext/TranslationContext'
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
+  file: File;
   id: string;
   state: FileStateValue;
   url?: string;
@@ -207,13 +202,8 @@ export type LocalMessageInputContext<
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadNewFile: (file: File) => Promise<void>;
+  uploadNewImage: (image: Asset) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -238,7 +228,7 @@ export type InputMessageInputContextValue<
    * being allowed to send another message. This component is displayed in place of the
    * send button for the MessageInput component.
    *
-   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/CooldownTimer.tsx)
+   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<StreamChatGenerics>;
@@ -246,7 +236,7 @@ export type InputMessageInputContextValue<
 
   /**
    * Custom UI component for FileUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/FileUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
 
@@ -258,7 +248,7 @@ export type InputMessageInputContextValue<
   hasImagePicker: boolean;
   /**
    * Custom UI component for ImageUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/ImageUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/ImageUploadPreview.tsx
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<StreamChatGenerics>>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps<StreamChatGenerics>>;
@@ -294,7 +284,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/UploadProgressIndicator.tsx)
+   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
@@ -355,7 +345,7 @@ export type InputMessageInputContextValue<
   initialValue?: string;
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps<StreamChatGenerics>, 'Input'> &
@@ -365,7 +355,7 @@ export type InputMessageInputContextValue<
   >;
   /**
    * Custom UI component to override buttons on left side of input box
-   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/InputButtons.tsx),
+   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/InputButtons.tsx),
    * which contain following components/buttons:
    *
    *  - AttachButton
@@ -699,6 +689,7 @@ export const MessageInputProvider = <
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
+            duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
             title: file.file.name,
@@ -970,7 +961,10 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads(getUploadSetStateAction(id, FileState.UPLOADED, { url: res.file }));
+              const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+                url: res.file,
+              });
+              setImageUploads(newImageUploads);
             }
           });
         } else {
@@ -979,13 +973,12 @@ export const MessageInputProvider = <
       }
 
       if (Object.keys(response).length) {
-        setImageUploads(
-          getUploadSetStateAction(id, FileState.UPLOADED, {
-            height: file.height,
-            url: response.file,
-            width: file.width,
-          }),
-        );
+        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+          height: file.height,
+          url: response.file,
+          width: file.width,
+        });
+        setImageUploads(newImageUploads);
       }
     } catch (error) {
       handleFileOrImageUploadError(error, true, id);
@@ -1029,7 +1022,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = async (image: Asset) => {
     const id = generateRandomId();
 
     const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>

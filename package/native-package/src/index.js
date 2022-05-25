@@ -72,9 +72,9 @@ registerNativeHandlers({
       }
       const results = await CameraRoll.getPhotos({
         after,
-        assetType: 'Photos',
+        assetType: 'All',
         first,
-        include: ['imageSize'],
+        include: ['fileSize', 'filename', 'imageSize', 'playableDuration'],
       });
       const assets = results.edges.map((edge) => ({
         ...edge.node.image,
@@ -210,11 +210,12 @@ registerNativeHandlers({
         // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
         // This we can't rely on them as it is, and we need to use Image.getSize
         // to get accurate size.
-        const getSize = () => new Promise((resolve) => {
-          Image.getSize(photo.path, (width, height) => {
-            resolve({height, width});
+        const getSize = () =>
+          new Promise((resolve) => {
+            Image.getSize(photo.path, (width, height) => {
+              resolve({ height, width });
+            });
           });
-        });
 
         try {
           const { height, width } = await getSize();
