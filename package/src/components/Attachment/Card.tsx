@@ -211,9 +211,7 @@ const CardWithContext = <
               <View style={[styles.playButtonStyle, roundedView]}>
                 {<Play height={height} pathFill={pathFill} width={width} />}
               </View>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </ImageBackground>
           {author_name && (
             <View style={[styles.authorNameMask, authorNameMask, stylesProp.authorNameMask]}>
