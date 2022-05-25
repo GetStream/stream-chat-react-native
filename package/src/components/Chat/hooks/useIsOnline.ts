@@ -37,7 +37,7 @@ export const useIsOnline = <
 
     client.closeConnection();
     setIsOnline(false);
-  }, [closeConnectionOnBackground, client]);
+  }, [closeConnectionOnBackground, client, clientExists]);
 
   const onForeground = useCallback(() => {
     if (!closeConnectionOnBackground || !clientExists) return;
