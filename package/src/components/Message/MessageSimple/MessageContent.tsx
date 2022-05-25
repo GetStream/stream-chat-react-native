@@ -234,17 +234,47 @@ const MessageContentWithContext = <
 
   const isBorderColor = isMyMessage && !error;
 
-  const isLastMessageInMessageGroup = (firstGroupStyle: string, secondGroupStyle: string) =>
-    (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
-    (!hasThreadReplies || threadList);
+  const getBorderRadius = () => {
+    // enum('top', 'middle', 'bottom', 'single')
+    const groupPosition = groupStyles?.[0];
 
-  const calculateBorderRadius = (firstGroupStyle: string, secondGroupStyle: string) =>
-    isLastMessageInMessageGroup(firstGroupStyle, secondGroupStyle) ? borderRadiusS : borderRadiusL;
+    const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
+    let borderBottomLeftRadius = borderRadiusL;
+    let borderBottomRightRadius = borderRadiusL;
 
-  const getRadiusFromTheme = (
-    radius: number | undefined,
-    defaultValue: number | undefined = borderRadiusL,
-  ) => (radius !== undefined ? radius : defaultValue);
+    if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
+      // add relevant sharp corner
+      if (alignment === 'left') {
+        borderBottomLeftRadius = borderRadiusS;
+      } else {
+        borderBottomRightRadius = borderRadiusS;
+      }
+    }
+
+    return {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+    };
+  };
+
+  const getBorderRadiusFromTheme = () => {
+    const bordersFromTheme: Record<string, number | undefined> = {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderRadius,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+    };
+
+    // filter out undefined values
+    for (const key in bordersFromTheme) {
+      if (bordersFromTheme[key] === undefined) {
+        delete bordersFromTheme[key];
+      }
+    }
+
+    return bordersFromTheme;
+  };
 
   return (
     <TouchableOpacity
@@ -320,18 +350,9 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius: getRadiusFromTheme(
-                borderBottomLeftRadius,
-                calculateBorderRadius('left_bottom', 'left_single'),
-              ),
-              borderBottomRightRadius: getRadiusFromTheme(
-                borderBottomRightRadius,
-                calculateBorderRadius('right_bottom', 'right_single'),
-              ),
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
-              borderRadius,
-              borderTopLeftRadius: getRadiusFromTheme(borderTopLeftRadius),
-              borderTopRightRadius: getRadiusFromTheme(borderTopRightRadius),
+              ...getBorderRadius(),
+              ...getBorderRadiusFromTheme(),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
