@@ -47,8 +47,8 @@ export type MessageContextValue<
   handleToggleReaction: (reactionType: string) => Promise<void>;
   /** Whether or not message has reactions */
   hasReactions: boolean;
-  /** The images and videos attached to a message */
-  imagesAndVideos: Attachment<StreamChatGenerics>[];
+  /** The images attached to a message */
+  images: Attachment<StreamChatGenerics>[];
   /** Whether or not this is the active user's message */
   isMyMessage: boolean;
   /** Whether or not this is the last message in a group of messages */
@@ -61,7 +61,7 @@ export type MessageContextValue<
    * You can call methods available on the Message
    * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
    *
    * By default, we show the overlay with all the message actions on long press.
    *
@@ -76,7 +76,7 @@ export type MessageContextValue<
    * You can call methods available on the Message
    * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
    *
    * By default, we will dismiss the keyboard on press.
    *
@@ -91,6 +91,8 @@ export type MessageContextValue<
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
+  /** The videos attached to a message */
+  videos: Attachment<StreamChatGenerics>[];
   goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;

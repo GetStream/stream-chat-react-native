@@ -36,7 +36,7 @@ export type ChannelContextValue<
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
-   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Indicators/EmptyStateIndicator.tsx)
+   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Indicators/EmptyStateIndicator.tsx)
    */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
@@ -155,7 +155,7 @@ export type ChannelContextValue<
   /**
    * Custom UI component for sticky header of channel.
    *
-   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/DateHeader.tsx)
+   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    */
   StickyHeader?: React.ComponentType<{ dateString: string }>;
   /**

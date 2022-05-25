@@ -19,6 +19,7 @@
   "Error loading channel list...": "Erreur lors du chargement de la liste de canaux...",
   "Error loading messages for this channel...": "Erreur lors du chargement des messages de ce canal...",
   "Error while loading, please reload/refresh": "Erreur lors du chargement, veuillez recharger/rafraîchir",
+  "File type not supported": "Le type de fichier n'est pas pris en charge",
   "Flag": "Signaler",
   "Flag Message": "Signaler le message",
   "Flag action failed either due to a network issue or the message is already flagged": "L'action de signalisation a échoué en raison d'un problème de réseau ou le message est déjà signalé.",
@@ -31,6 +32,7 @@
   "Message deleted": "Message supprimé",
   "Message flagged": "Message signalé",
   "Mute User": "Utilisateur muet",
+  "Not supported": "Non pris en charge",
   "Nothing yet...": "Aucun message...",
   "Ok": "Ok",
   "Only visible to you": "Seulement visible par vous",
@@ -61,7 +63,5 @@
   "{{ replyCount }} Replies": "{{ replyCount }} Réponses",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Réponses à la discussion",
   "{{ user }} is typing": "{{ user }} est en train d'écrire",
-  "🏙 Attachment...": "🏙 Pièce jointe...",
-  "File type not supported": "Le type de fichier n'est pas pris en charge",
-  "Not supported": "Non pris en charge"
+  "🏙 Attachment...": "🏙 Pièce jointe..."
 }

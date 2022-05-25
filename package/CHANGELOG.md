@@ -1,5 +1,24 @@
 # Change Log
 
+### [4.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.0...v4.6.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* hotfixes borderRadius ([1dd116d](https://github.com/GetStream/stream-chat-react-native/commit/1dd116de7d402a8b301438c88e996a28ba15970e))
+
+## [4.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.5.0...v4.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* race condition when bottom sheet is closed during keyboard show ([994addf](https://github.com/GetStream/stream-chat-react-native/commit/994addf9e907f5ba78e81cd9fb46a93221a6070f))
+
 ## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
 
 
@@ -1016,7 +1035,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.10.3] 2020-05-15
 
-- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/master/docs/userToken.md)
+- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/main/docs/userToken.md)
 - Disable longPress on Image gallery [f7aacb5](https://github.com/GetStream/stream-chat-react-native/commit/f7aacb5741e85811de37d5e3b550d2be539b89a4)
 - Fixing markdown issue [ac621f0](https://github.com/GetStream/stream-chat-react-native/commit/ac621f0eb1f6be7f0496b82ee425f3bc90c10839)
 
@@ -1289,7 +1308,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.7.0] 2020-03-17
 
-- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/docs/Streami18n.md
+- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/docs/Streami18n.md
 
 ## [0.6.6] 2020-02-20
 

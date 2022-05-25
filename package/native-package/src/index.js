@@ -255,13 +255,11 @@ registerNativeHandlers({
       onBuffer={onBuffer}
       onEnd={onEnd}
       onError={(error) => {
-        console.log(error);
+        console.error(error);
       }}
       onLoad={onLoad}
       onProgress={onProgress}
       paused={paused}
-      poster='https://wallpaperaccess.com/full/1754609.jpg'
-      posterResizeMode={resizeMode}
       ref={videoRef}
       source={{
         uri,
