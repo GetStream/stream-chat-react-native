@@ -10,12 +10,14 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
  */
 export function getAspectRatio<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(image: Attachment<StreamChatGenerics>) {
-  if (image.type !== 'image') {
-    throw new Error('getAspectRatio() can only be called on an image attachment');
+>(attachment: Attachment<StreamChatGenerics>) {
+  if (!(attachment.type === 'image' || attachment.type === 'video')) {
+    throw new Error(
+      'getAspectRatio() can only be called on an image attachment or video thumbnail',
+    );
   }
 
-  if (!image.original_width || !image.original_height) return 1;
+  if (!attachment.original_width || !attachment.original_height) return 1;
 
-  return image.original_width / image.original_height;
+  return attachment.original_width / attachment.original_height;
 }

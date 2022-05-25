@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -20,8 +20,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Spinner: React.FC = () => {
+export type SpinnerProps = {
+  height?: number;
+  style?: StyleProp<ViewStyle>;
+  width?: number;
+};
+
+export const Spinner: React.FC<SpinnerProps> = (props) => {
   const rotation = useSharedValue(0);
+  const { height, style, width } = props;
 
   const {
     theme: {
@@ -49,8 +56,8 @@ export const Spinner: React.FC = () => {
   }, []);
 
   return (
-    <Animated.View style={[styles.spinner, animatedStyle, spinner]}>
-      <Loading stopColor={accent_blue} />
+    <Animated.View style={[style, styles.spinner, animatedStyle, spinner, { height, width }]}>
+      <Loading height={height} stopColor={accent_blue} width={width} />
     </Animated.View>
   );
 };

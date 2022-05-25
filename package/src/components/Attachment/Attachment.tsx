@@ -75,15 +75,19 @@ const AttachmentWithContext = <
     );
   }
 
-  if (attachment.type === 'file' || attachment.type === 'audio') {
-    return <FileAttachment attachment={attachment} />;
+  if (attachment.type === 'video' && !attachment.og_scrape_url) {
+    return (
+      <>
+        <Gallery videos={[attachment]} />
+        {hasAttachmentActions && (
+          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+        )}
+      </>
+    );
   }
 
-  if (attachment.type === 'video' && attachment.asset_url) {
-    return (
-      // TODO: Put in video component
-      <FileAttachment attachment={attachment} />
-    );
+  if (attachment.type === 'file' || attachment.type === 'audio') {
+    return <FileAttachment attachment={attachment} />;
   }
 
   if (hasAttachmentActions) {

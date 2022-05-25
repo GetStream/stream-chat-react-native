@@ -40,6 +40,7 @@ export type MessageOverlayData<
   ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
+  videos?: Attachment<StreamChatGenerics>[];
 };
 
 export type MessageOverlayContextValue<

@@ -91,6 +91,8 @@ export type MessageContextValue<
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
+  /** The videos attached to a message */
+  videos: Attachment<StreamChatGenerics>[];
   goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;

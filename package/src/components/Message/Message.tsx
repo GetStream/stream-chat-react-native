@@ -325,9 +325,12 @@ const MessageWithContext = <
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
-            if (cur.type === 'file' || cur.type === 'video') {
+            if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
+            } else if (cur.type === 'video' && !cur.og_scrape_url) {
+              acc.videos.push({ image_url: cur.asset_url, type: 'video' });
+              acc.other = [];
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
@@ -338,7 +341,7 @@ const MessageWithContext = <
                 acc.other = []; // remove other attachments if an image exists
               }
               // only add other attachments if there are no files/images
-            } else if (!acc.files.length && !acc.images.length) {
+            } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
               acc.other.push(cur);
             }
 
@@ -348,12 +351,14 @@ const MessageWithContext = <
             files: [] as Attachment<StreamChatGenerics>[],
             images: [] as Attachment<StreamChatGenerics>[],
             other: [] as Attachment<StreamChatGenerics>[],
+            videos: [] as Attachment<StreamChatGenerics>[],
           },
         )
       : {
           files: [] as Attachment<StreamChatGenerics>[],
           images: [] as Attachment<StreamChatGenerics>[],
           other: [] as Attachment<StreamChatGenerics>[],
+          videos: [] as Attachment<StreamChatGenerics>[],
         };
 
   /**
@@ -375,7 +380,7 @@ const MessageWithContext = <
       case 'files':
         return !!attachments.files.length;
       case 'gallery':
-        return !!attachments.images.length;
+        return !!attachments.images.length || !!attachments.videos.length;
       case 'text':
       default:
         return !!message.text;
@@ -536,6 +541,7 @@ const MessageWithContext = <
       ownCapabilities,
       supportedReactions,
       threadList,
+      videos: attachments.videos,
     });
 
     setOverlay('message');
@@ -651,6 +657,7 @@ const MessageWithContext = <
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
+    videos: attachments.videos,
   });
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;
