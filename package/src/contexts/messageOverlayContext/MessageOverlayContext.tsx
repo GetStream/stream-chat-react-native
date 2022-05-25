@@ -28,7 +28,7 @@ export type MessageOverlayData<
   files?: Attachment<StreamChatGenerics>[];
   groupStyles?: GroupType[];
   handleReaction?: (reactionType: string) => Promise<void>;
-  imagesAndVideos?: Attachment<StreamChatGenerics>[];
+  images?: Attachment<StreamChatGenerics>[];
   message?: MessageType<StreamChatGenerics>;
   messageActions?: MessageActionType[];
   messageContext?: MessageContextValue<StreamChatGenerics>;
@@ -40,6 +40,7 @@ export type MessageOverlayData<
   ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
+  videos?: Attachment<StreamChatGenerics>[];
 };
 
 export type MessageOverlayContextValue<
