@@ -31,7 +31,7 @@ You can use this `ImageGalleryContext` in combination with `OverlayContext` to o
 
 ```tsx
 const { images, setImages } = useImageGalleryContext();
-const { setBlurType, setOverlay } = useOverlayContext();
+const { setOverlay } = useOverlayContext();
 
 onPress={() => {
   setImages(messagesWithImage);
@@ -39,7 +39,6 @@ onPress={() => {
     messageId: selectedItem.messageId,
     url: selectedItem.uri,
   });
-  setBlurType('dark');
   setOverlay('gallery');
 }}
 ```
