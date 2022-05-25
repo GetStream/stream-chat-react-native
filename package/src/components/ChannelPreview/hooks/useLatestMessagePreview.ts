@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel, ChannelState, MessageResponse, StreamChat, UserResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
@@ -29,6 +29,43 @@ export type LatestMessagePreview<
   status: number;
 };
 
+const messageOwner = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics> | undefined,
+  currentUserId: string | undefined,
+  t: (key: string) => string,
+  membersLength: number,
+) => {
+  if (message?.user?.id === currentUserId) {
+    return t('You');
+  }
+
+  if (membersLength > 2) {
+    return message?.user?.name || message?.user?.username || message?.user?.id || '';
+  }
+
+  return '';
+};
+
+const getMentionUsers = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  mentionedUser: UserResponse<StreamChatGenerics>[],
+) => {
+  if (Array.isArray(mentionedUser)) {
+    const mentionUSerString = mentionedUser.reduce((acc, cur) => {
+      const userName = cur.name || cur.id || '';
+      if (userName) {
+        acc += `${acc.length ? '|' : ''}@${userName}`;
+      }
+      return acc;
+    }, '');
+    return mentionUSerString;
+  }
+  return '';
+};
+
 const getLatestMessageDisplayText = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -40,29 +77,16 @@ const getLatestMessageDisplayText = <
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
   const isMessageTypeDeleted = message.type === 'deleted';
   if (isMessageTypeDeleted) return [{ bold: false, text: t('Message deleted') }];
-  const currentUserId = client.userID;
-  const messageOwnerId = message.user?.id;
+  const currentUserId = client?.userID;
   const members = Object.keys(channel.state.members);
-  const owner =
-    messageOwnerId === currentUserId
-      ? t('You')
-      : members.length > 2
-      ? message.user?.name || message.user?.username || message.user?.id || ''
-      : '';
+
+  const owner = messageOwner(message, currentUserId, t, members.length);
   const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
   const boldOwner = ownerText.includes('@');
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
-    const mentionedUsers = Array.isArray(message.mentioned_users)
-      ? message.mentioned_users.reduce((acc, cur) => {
-          const userName = cur.name || cur.id || '';
-          if (userName) {
-            acc += `${acc.length ? '|' : ''}@${userName}`;
-          }
-          return acc;
-        }, '')
-      : '';
+    const mentionedUsers = getMentionUsers(message.mentioned_users);
     const regEx = new RegExp(`^(${mentionedUsers})`);
     return [
       { bold: boldOwner, text: ownerText },
