@@ -43,7 +43,7 @@ export const useIsOnline = <
     if (!closeConnectionOnBackground || !clientExists) return;
 
     client.openConnection();
-  }, [closeConnectionOnBackground, client]);
+  }, [closeConnectionOnBackground, client, clientExists]);
 
   useAppStateListener(onForeground, onBackground);
 
