@@ -143,7 +143,16 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadius, borderRadiusL, borderRadiusS, ...container },
+          container: {
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+            borderRadius,
+            borderRadiusL,
+            borderRadiusS,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+            ...container
+          },
           containerInner,
           errorContainer,
           errorIcon,
@@ -313,12 +322,20 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single'),
-              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single'),
+              borderBottomLeftRadius:
+                borderBottomLeftRadius !== undefined
+                  ? borderBottomLeftRadius
+                  : applyBorderRadius('left_bottom', 'left_single'),
+              borderBottomRightRadius:
+                borderBottomRightRadius !== undefined
+                  ? borderBottomRightRadius
+                  : applyBorderRadius('right_bottom', 'right_single'),
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
               borderRadius,
-              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single'),
-              borderTopRightRadius: applyBorderRadius('right_top', 'right_single'),
+              borderTopLeftRadius:
+                borderTopLeftRadius !== undefined ? borderTopLeftRadius : borderRadiusL,
+              borderTopRightRadius:
+                borderTopRightRadius !== undefined ? borderTopRightRadius : borderRadiusL,
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
