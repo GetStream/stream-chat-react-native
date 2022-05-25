@@ -369,9 +369,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
-                                  "borderRadius": undefined,
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
                                 },
                                 Object {},
                                 Object {},
@@ -450,7 +447,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            4:50 PM
                           </Text>
                         </View>
                       </View>
@@ -620,9 +617,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
-                                  "borderRadius": undefined,
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
                                 },
                                 Object {},
                                 Object {},
@@ -701,7 +695,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            4:50 PM
                           </Text>
                         </View>
                       </View>
@@ -871,9 +865,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                   "borderBottomLeftRadius": 0,
                                   "borderBottomRightRadius": 16,
                                   "borderColor": "#ECEBEB",
-                                  "borderRadius": undefined,
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
                                 },
                                 Object {},
                                 Object {},
@@ -952,7 +943,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               ]
                             }
                           >
-                            2:50 PM
+                            4:50 PM
                           </Text>
                         </View>
                       </View>
@@ -1170,9 +1161,6 @@ exports[`Thread should match thread snapshot 1`] = `
                                     "borderBottomLeftRadius": 0,
                                     "borderBottomRightRadius": 16,
                                     "borderColor": "#ECEBEB",
-                                    "borderRadius": undefined,
-                                    "borderTopLeftRadius": 16,
-                                    "borderTopRightRadius": 16,
                                   },
                                   Object {},
                                   Object {},
@@ -1251,7 +1239,7 @@ exports[`Thread should match thread snapshot 1`] = `
                                 ]
                               }
                             >
-                              2:50 PM
+                              4:50 PM
                             </Text>
                           </View>
                         </View>
