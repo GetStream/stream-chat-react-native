@@ -1,5 +1,12 @@
 # Change Log
 
+### [1.6.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.0...sampleapp@v1.6.1) (2022-05-25)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.6.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.5.0...sampleapp@v1.6.0) (2022-05-25)
 
 
