@@ -160,14 +160,15 @@ const GalleryWithContext = <
     minHeight,
     minWidth,
   };
-  const imagesAndVideos = [...images, ...videos];
+
+  const imagesAndVideos = [...(images || []), ...(videos || [])];
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
         images: imagesAndVideos,
         sizeConfig,
       }),
-    [images.length, videos.length],
+    [imagesAndVideos.length],
   );
 
   if (!imagesAndVideos?.length) return null;
