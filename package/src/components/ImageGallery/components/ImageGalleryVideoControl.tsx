@@ -56,7 +56,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
     const {
       theme: {
         imageGallery: {
-          mediaControl: { durationTextStyle, roundedView, videoContainer },
+          videoControl: { durationTextStyle, roundedView, videoContainer },
         },
       },
     } = useTheme();

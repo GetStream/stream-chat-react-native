@@ -135,7 +135,7 @@ const CardWithContext = <
     theme: {
       colors: { accent_blue, black, blue_alice, transparent },
       imageGallery: {
-        mediaControl: { roundedView },
+        videoControl: { roundedView },
       },
       messageSimple: {
         card: {
