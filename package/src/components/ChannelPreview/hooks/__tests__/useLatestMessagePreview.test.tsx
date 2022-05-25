@@ -70,7 +70,7 @@ describe('getLatestMessageDisplayText', () => {
     expect(actualResult).toEqual(expectedResult);
   });
 
-  it("should return 'Nothing yet...' if message is undefined", () => {
+  it("should return 'Message deleted' if message has been deleted", () => {
     const message = { type: 'deleted' };
     const expectedResult = [{ bold: false, text: 'Message deleted' }];
 
