@@ -143,7 +143,16 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadius, borderRadiusL, borderRadiusS, ...container },
+          container: {
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+            borderRadius,
+            borderRadiusL,
+            borderRadiusS,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+            ...container
+          },
           containerInner,
           errorContainer,
           errorIcon,
@@ -225,18 +234,46 @@ const MessageContentWithContext = <
 
   const isBorderColor = isMyMessage && !error;
 
-  const shouldApplyBorderRadius = (firstGroupStyle: string, secondGroupStyle: string): boolean =>
-    (groupStyle === firstGroupStyle || groupStyle === secondGroupStyle) &&
-    (!hasThreadReplies || threadList);
+  const getBorderRadius = () => {
+    // enum('top', 'middle', 'bottom', 'single')
+    const groupPosition = groupStyles?.[0];
 
-  const applyBorderRadius = (
-    firstGroupStyle: string,
-    secondGroupStyle: string,
-  ): number | undefined => {
-    if (shouldApplyBorderRadius(firstGroupStyle, secondGroupStyle)) {
-      return borderRadiusS;
+    const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
+    let borderBottomLeftRadius = borderRadiusL;
+    let borderBottomRightRadius = borderRadiusL;
+
+    if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
+      // add relevant sharp corner
+      if (alignment === 'left') {
+        borderBottomLeftRadius = borderRadiusS;
+      } else {
+        borderBottomRightRadius = borderRadiusS;
+      }
     }
-    return borderRadiusL;
+
+    return {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+    };
+  };
+
+  const getBorderRadiusFromTheme = () => {
+    const bordersFromTheme: Record<string, number | undefined> = {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderRadius,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+    };
+
+    // filter out undefined values
+    for (const key in bordersFromTheme) {
+      if (bordersFromTheme[key] === undefined) {
+        delete bordersFromTheme[key];
+      }
+    }
+
+    return bordersFromTheme;
   };
 
   return (
@@ -313,12 +350,9 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius: applyBorderRadius('left_bottom', 'left_single'),
-              borderBottomRightRadius: applyBorderRadius('right_bottom', 'right_single'),
               borderColor: isBorderColor ? backgroundColor : grey_whisper,
-              borderRadius,
-              borderTopLeftRadius: applyBorderRadius('left_top', 'right_single'),
-              borderTopRightRadius: applyBorderRadius('right_top', 'right_single'),
+              ...getBorderRadius(),
+              ...getBorderRadiusFromTheme(),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
