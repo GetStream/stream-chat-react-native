@@ -54,7 +54,6 @@ describe('useChannelUpdated', () => {
     const { getByText } = await waitFor(() =>
       render(
         <ChatContext.Provider
-          // @ts-ignore
           value={{
             appSettings: null,
             client: mockClient,

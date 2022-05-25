@@ -15,7 +15,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
-import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage.test';
+import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },

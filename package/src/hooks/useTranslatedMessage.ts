@@ -11,15 +11,15 @@ type I18nTextKey = `${TranslationLanguages}_text`;
 export const useTranslatedMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  message: MessageType<StreamChatGenerics>,
+  message: MessageType<StreamChatGenerics> | undefined,
 ) => {
   const { userLanguage } = useTranslationContext();
 
-  if (message.i18n !== undefined) {
+  if (message !== undefined && message.i18n !== undefined) {
     const i18nTextKey = `${userLanguage}_text` as I18nTextKey;
     const translationExistsInUserLanguage = i18nTextKey in message.i18n;
     return translationExistsInUserLanguage && message.i18n[i18nTextKey];
   }
 
-  return message.text;
+  return message?.text || '';
 };

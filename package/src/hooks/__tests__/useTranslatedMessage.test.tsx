@@ -5,7 +5,7 @@ import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
-import { useTranslatedMessage } from '../useTranslatedMessage.test';
+import { useTranslatedMessage } from '../useTranslatedMessage';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 
 describe('useTranslatedMessage', () => {
