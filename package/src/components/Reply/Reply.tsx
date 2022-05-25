@@ -84,10 +84,9 @@ const getMessageType = <
 ) => {
   let messageType;
 
-  const isLastAttachmentFile =
-    lastAttachment.type === 'file' ||
-    lastAttachment.type === 'audio' ||
-    lastAttachment.type === 'video';
+  const isLastAttachmentFile = lastAttachment.type === 'file' || lastAttachment.type === 'audio';
+
+  const isLastAttachmentVideo = lastAttachment.type === 'video';
 
   const isLastAttachmentGiphy = lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur';
 
@@ -98,6 +97,8 @@ const getMessageType = <
 
   if (isLastAttachmentFile) {
     messageType = 'file';
+  } else if (isLastAttachmentVideo) {
+    messageType = 'video';
   } else if (isLastAttachmentImageOrGiphy) {
     if (isLastAttachmentImage) messageType = 'image';
     else messageType = undefined;
