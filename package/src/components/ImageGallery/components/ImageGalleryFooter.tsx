@@ -64,7 +64,7 @@ export type ImageGalleryFooterCustomComponent<
 
 export type ImageGalleryFooterVideoControlProps = {
   duration: number;
-  onPlayPause: () => void;
+  onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   paused: boolean;
   progress: number;

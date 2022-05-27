@@ -140,9 +140,16 @@ registerNativeHandlers({
       throw new Error('Sharing failed or cancelled...');
     }
   },
-  Sound: async ({ source, initialStatus = {}, onPlaybackStatusUpdate }) => {
-    const { sound } = await Audio.Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate);
-    return sound;
+  Sound: {
+    initializeSound: async (source, initialStatus, onPlaybackStatusUpdate) => {
+      const { sound } = await Audio.Sound.createAsync(
+        source,
+        initialStatus,
+        onPlaybackStatusUpdate,
+      );
+      return sound;
+    },
+    Player: null,
   },
   takePhoto: async ({ compressImageQuality = 1 }) => {
     try {

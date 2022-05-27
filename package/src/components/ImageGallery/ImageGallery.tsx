@@ -463,17 +463,21 @@ export const ImageGallery = <
     }
   };
 
-  const handlePlayPause = () => {
-    // React Native Video for RN CLI has seek as an API to move to a particular location in the video
-    if (progress === 1 && videoRef.current && videoRef.current.seek) {
-      videoRef.current.seek(0);
-    }
-    // Expo AV for Expo has replayAsync as an API to move to a starting of the video
-    if (progress === 1 && videoRef.current && videoRef.current.replayAsync) {
-      videoRef.current.replayAsync();
-    }
+  const handlePlayPause = (status?: boolean) => {
+    if (status === undefined) {
+      // React Native Video for RN CLI has seek as an API to move to a particular location in the video
+      if (progress === 1 && videoRef.current && videoRef.current.seek) {
+        videoRef.current.seek(0);
+      }
+      // Expo AV for Expo has replayAsync as an API to move to a starting of the video
+      if (progress === 1 && videoRef.current && videoRef.current.replayAsync) {
+        videoRef.current.replayAsync();
+      }
 
-    setPaused((state) => !state);
+      setPaused((state) => !state);
+    } else {
+      setPaused(status);
+    }
   };
 
   const onProgressDrag = (progress: number) => {

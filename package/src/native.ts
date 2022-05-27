@@ -163,11 +163,16 @@ export type SoundReturnType = {
   uri?: string;
 };
 
-export type SoundType =
-  | ((options?: SoundOptions) => SoundReturnType)
-  | React.ComponentType<SoundReturnType>;
+export type SoundType = {
+  initializeSound: (
+    source?: { uri: string },
+    initialStatus?: Partial<AVPlaybackStatusToSet>,
+    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
+  ) => SoundReturnType | null;
+  Player: React.ComponentType<SoundReturnType> | null;
+};
 
-export let Sound: SoundType = fail;
+export let Sound: SoundType;
 
 export type VideoProgressData = {
   currentTime?: number;

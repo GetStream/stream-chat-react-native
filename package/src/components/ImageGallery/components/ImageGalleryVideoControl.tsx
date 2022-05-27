@@ -64,7 +64,11 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     return (
       <View style={[styles.videoContainer, videoContainer]}>
-        <TouchableOpacity onPress={onPlayPause}>
+        <TouchableOpacity
+          onPress={() => {
+            onPlayPause();
+          }}
+        >
           <View style={[styles.roundedView, roundedView]}>
             {paused ? (
               <Play height={24} pathFill={'#000'} width={24} />

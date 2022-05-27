@@ -108,26 +108,31 @@ const AudioAttachmentUploadPreviewWithContext = <
     }
   };
 
-  const handlePlayPause = async () => {
-    if (soundRef.current) {
-      if (progress === 1) {
-        if (soundRef.current.seek) soundRef.current.seek(0);
-        if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+  const handlePlayPause = async (status?: boolean) => {
+    if (status === undefined) {
+      if (soundRef.current) {
+        if (progress === 1) {
+          if (soundRef.current.seek) soundRef.current.seek(0);
+          if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+        }
+        if (paused) {
+          if (soundRef.current.playAsync) await soundRef.current.playAsync();
+        } else {
+          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+        }
+        setPaused((state) => !state);
       }
-      if (paused) {
-        if (soundRef.current.playAsync) await soundRef.current.playAsync();
-      } else {
-        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-      }
-      setPaused((state) => !state);
+    } else {
+      setPaused(status);
     }
   };
 
   const handleProgressDrag = async (position: number) => {
     setProgress(position / duration);
     if (soundRef.current?.seek) soundRef.current.seek(position);
-    if (soundRef.current?.setPositionAsync)
+    if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(position * 1000);
+    }
   };
 
   const handleEnd = () => {
@@ -165,17 +170,22 @@ const AudioAttachmentUploadPreviewWithContext = <
   };
 
   useEffect(() => {
-    const initiateSound = async () => {
-      if (item && item.file && item.file.uri) {
-        if (typeof Sound === 'function')
-          soundRef.current = await Sound({
-            initialStatus: {},
+    if (Sound.Player === null) {
+      const initiateSound = async () => {
+        if (item && item.file && item.file.uri) {
+          soundRef.current = await Sound.initializeSound(
+            { uri: item.file.uri },
+            {},
             onPlaybackStatusUpdate,
-            source: { uri: item.file.uri },
-          });
-      }
+          );
+        }
+      };
+      initiateSound();
+    }
+
+    return () => {
+      if (soundRef.current?.stopAsync) soundRef.current.stopAsync();
     };
-    // initiateSound();
   }, []);
 
   const {
@@ -221,7 +231,12 @@ const AudioAttachmentUploadPreviewWithContext = <
       ]}
     >
       <View style={[styles.fileContentContainer, fileContentContainer]}>
-        <TouchableOpacity onPress={handlePlayPause} style={[styles.roundedView, roundedView]}>
+        <TouchableOpacity
+          onPress={() => {
+            handlePlayPause();
+          }}
+          style={[styles.roundedView, roundedView]}
+        >
           {paused ? (
             <Play height={24} pathFill={'#000'} width={24} />
           ) : (
@@ -253,14 +268,16 @@ const AudioAttachmentUploadPreviewWithContext = <
               flexDirection: 'row',
             }}
           >
-            <Sound
-              onEnd={handleEnd}
-              onLoad={handleLoad}
-              onProgress={handleProgress}
-              paused={paused}
-              soundRef={soundRef}
-              uri={item.file.uri}
-            />
+            {Sound.Player && (
+              <Sound.Player
+                onEnd={handleEnd}
+                onLoad={handleLoad}
+                onProgress={handleProgress}
+                paused={paused}
+                soundRef={soundRef}
+                uri={item.file.uri}
+              />
+            )}
             <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
               {progressDuration}
             </Text>

@@ -14,7 +14,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 type ProgressControlProps = {
   duration: number;
   filledColor: string;
-  onPlayPause: () => void;
+  onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   progress: number;
   width: number;
@@ -85,10 +85,10 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
           translateX.value = state.value;
           const dragFinishLocationInSeconds = (state.value / width) * duration;
           runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
-          runOnJS(onPlayPause)();
+          runOnJS(onPlayPause)(false);
         },
         onStart: () => {
-          runOnJS(onPlayPause)();
+          runOnJS(onPlayPause)(true);
           cancelAnimation(translateX);
           state.value = translateX.value;
         },

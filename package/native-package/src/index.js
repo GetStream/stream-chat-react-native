@@ -200,25 +200,28 @@ registerNativeHandlers({
       throw new Error('Sharing failed...');
     }
   },
-  // eslint-disable-next-line react/display-name
-  Sound: ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
-    <AudioVideoPlayer
-      audioOnly={true}
-      onBuffer={onBuffer}
-      onEnd={onEnd}
-      onError={(error) => {
-        console.log(error);
-      }}
-      onLoad={onLoad}
-      onProgress={onProgress}
-      paused={paused}
-      ref={soundRef}
-      source={{
-        uri,
-      }}
-      style={style}
-    />
-  ),
+  Sound: {
+    initializeSound: null,
+    // eslint-disable-next-line react/display-name
+    Player: ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
+      <AudioVideoPlayer
+        audioOnly={true}
+        onBuffer={onBuffer}
+        onEnd={onEnd}
+        onError={(error) => {
+          console.log(error);
+        }}
+        onLoad={onLoad}
+        onProgress={onProgress}
+        paused={paused}
+        ref={soundRef}
+        source={{
+          uri,
+        }}
+        style={style}
+      />
+    ),
+  },
   takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
       compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
