@@ -209,7 +209,7 @@ const CardWithContext = <
           >
             {isVideo ? (
               <View style={[styles.playButtonStyle, roundedView]}>
-                {<Play height={height} pathFill={pathFill} width={width} />}
+                <Play height={height} pathFill={pathFill} width={width} />
               </View>
             ) : null}
           </ImageBackground>
