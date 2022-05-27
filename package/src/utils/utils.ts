@@ -8,6 +8,7 @@ import type {
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
   CommandResponse,
+  FormatMessageResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -32,7 +33,7 @@ export const FileState = Object.freeze({
   // while later is set on backend side
   // TODO: Unify both of them
   FINISHED: 'finished',
-  NO_FILE: 'no_file',
+  NOT_SUPPORTED: 'not_supported',
   UPLOAD_FAILED: 'upload_failed',
   UPLOADED: 'uploaded',
   UPLOADING: 'uploading',
@@ -40,9 +41,13 @@ export const FileState = Object.freeze({
 
 export const ProgressIndicatorTypes: {
   IN_PROGRESS: 'in_progress';
+  INACTIVE: 'inactive';
+  NOT_SUPPORTED: 'not_supported';
   RETRY: 'retry';
 } = Object.freeze({
   IN_PROGRESS: 'in_progress',
+  INACTIVE: 'inactive',
+  NOT_SUPPORTED: 'not_supported',
   RETRY: 'retry',
 });
 
@@ -50,6 +55,24 @@ export const MessageStatusTypes = {
   FAILED: 'failed',
   RECEIVED: 'received',
   SENDING: 'sending',
+};
+
+export type FileStateValue = typeof FileState[keyof typeof FileState];
+
+type ValueOf<T> = T[keyof T];
+type Progress = ValueOf<typeof ProgressIndicatorTypes>;
+type IndicatorStatesMap = Record<ValueOf<typeof FileState>, Progress | null>;
+
+export const getIndicatorTypeForFileState = (fileState: FileStateValue): Progress | null => {
+  const indicatorMap: IndicatorStatesMap = {
+    [FileState.UPLOADING]: ProgressIndicatorTypes.IN_PROGRESS,
+    [FileState.UPLOAD_FAILED]: ProgressIndicatorTypes.RETRY,
+    [FileState.NOT_SUPPORTED]: ProgressIndicatorTypes.NOT_SUPPORTED,
+    [FileState.UPLOADED]: ProgressIndicatorTypes.INACTIVE,
+    [FileState.FINISHED]: ProgressIndicatorTypes.INACTIVE,
+  };
+
+  return indicatorMap[fileState];
 };
 
 const defaultAutoCompleteSuggestionsLimit = 10;
@@ -512,3 +535,32 @@ export const emojiRegex =
 
 export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
+
+/**
+ * Stringifies a message object
+ * @param {FormatMessageResponse<StreamChatGenerics>} message - the message object to be stringified
+ * @returns {string} The stringified message
+ */
+const stringifyMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  deleted_at,
+  latest_reactions,
+  reply_count,
+  status,
+  updated_at,
+}: FormatMessageResponse<StreamChatGenerics>): string =>
+  `${deleted_at}${
+    latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
+  }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
+
+/**
+ * Reduces a list of messages to strings that are used in useEffect & useMemo
+ * @param {messages} messages - the array of messages to be compared
+ * @returns {string} The mapped message string
+ */
+export const reduceMessagesToString = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: FormatMessageResponse<StreamChatGenerics>[],
+): string => messages.map(stringifyMessage).join();

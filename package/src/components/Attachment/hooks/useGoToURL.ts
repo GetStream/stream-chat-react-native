@@ -19,7 +19,7 @@ export const useGoToURL: UseGoToURLType = (url?: string) => {
         Linking.openURL(finalUrl);
       } else {
         setError(true);
-        console.log(`Don't know how to open URI: ${finalUrl}`);
+        console.warn(`Don't know how to open URI: ${finalUrl}`);
       }
     });
 

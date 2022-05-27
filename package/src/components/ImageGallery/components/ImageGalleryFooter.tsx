@@ -158,18 +158,21 @@ export const ImageGalleryFooterWithContext = <
         },
       ],
     }),
-    [],
+    [height],
   );
 
   const share = async () => {
     setShareMenuOpen(true);
     try {
-      const localImage = await saveFile({
-        fileName: `${photo.user?.id || 'ChatPhoto'}-${photo.messageId}-${selectedIndex}.jpg`,
+      const extension = photo.mime_type?.split('/')[1] || 'jpg';
+      const localFile = await saveFile({
+        fileName: `${photo.user?.id || 'ChatPhoto'}-${
+          photo.messageId
+        }-${selectedIndex}.${extension}`,
         fromUrl: photo.uri,
       });
-      await shareImage({ type: 'image/jpeg', url: localImage });
-      await deleteFile({ uri: localImage });
+      await shareImage({ type: photo.mime_type, url: localFile });
+      await deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
     }

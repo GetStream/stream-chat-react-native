@@ -252,6 +252,7 @@ export const ImageGallery = <
    */
 
   const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+    console.log(cur);
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
@@ -274,6 +275,7 @@ export const ImageGallery = <
         created_at: cur.created_at,
         id: `photoId-${cur.id}-${imageUrl}`,
         messageId: cur.id,
+        mime_type: a.mime_type,
         original_height: a.original_height,
         original_width: a.original_width,
         type: a.type,
@@ -676,6 +678,7 @@ export type Photo<
   channelId?: string;
   created_at?: string | Date;
   messageId?: string;
+  mime_type?: string;
   original_height?: number;
   original_width?: number;
   type?: string;

@@ -81,6 +81,7 @@ export type MarkdownStyle = Partial<{
 export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
+    durationText: TextStyle;
     errorButtonText: TextStyle;
     errorContainer: ViewStyle;
     errorText: TextStyle;
@@ -396,7 +397,7 @@ export type Theme = {
       eyeIcon: IconProps;
       /**
        * Available options for styling text:
-       * https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js
+       * https://github.com/andangrd/react-native-markdown-package/blob/main/styles.js
        */
       markdown: MarkdownStyle;
       messageUser: TextStyle;
@@ -541,6 +542,7 @@ export type Theme = {
 export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
+    durationText: {},
     errorButtonText: {},
     errorContainer: {},
     errorText: {},

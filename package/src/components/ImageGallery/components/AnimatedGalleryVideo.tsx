@@ -16,7 +16,7 @@ import { Spinner } from '../../Spinner/Spinner';
 
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
-const oneEight = 1 / 8;
+const oneEighth = 1 / 8;
 
 type Props = {
   handleEnd: () => void;
@@ -96,7 +96,7 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
         // Update your UI for the unloaded state
         setOpacity(1);
         if (playbackStatus.error) {
-          console.log(`Encountered a fatal error during playback: ${playbackStatus.error}`);
+          console.error(`Encountered a fatal error during playback: ${playbackStatus.error}`);
         }
       } else {
         // Update your UI for the loaded state
@@ -108,8 +108,6 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
             currentTime: playbackStatus.positionMillis / 1000,
             seekableDuration: playbackStatus.durationMillis / 1000,
           });
-        } else {
-          // Update your UI for the paused state
         }
 
         if (playbackStatus.isBuffering) {
@@ -142,7 +140,7 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
             translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,
           },
           {
-            scale: selected ? scale.value / 8 : oneEight,
+            scale: selected ? scale.value / 8 : oneEighth,
           },
           { scaleX: -1 },
         ],
@@ -155,7 +153,7 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={[style, { transform: [{ scale: oneEight }] }]} />;
+      return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
     }
 
     return (
@@ -170,7 +168,7 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
               {
                 translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
               },
-              { scale: oneEight },
+              { scale: oneEighth },
             ],
           },
         ]}
@@ -196,7 +194,7 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
               transform: [
                 { scaleX: -1 },
                 { translateY: -screenHeight * 4 },
-                { scale: 1 / oneEight },
+                { scale: 1 / oneEighth },
               ],
             },
           ]}

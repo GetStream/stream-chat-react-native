@@ -23,7 +23,7 @@ export const useCreateMessageContext = <
   handleToggleMuteUser,
   handleToggleReaction,
   hasReactions,
-  imagesAndVideos,
+  images,
   isMyMessage,
   lastGroupMessage,
   lastReceivedId,
@@ -42,6 +42,7 @@ export const useCreateMessageContext = <
   showMessageOverlay,
   showMessageStatus,
   threadList,
+  videos,
 }: MessageContextValue<StreamChatGenerics>) => {
   const groupStylesLength = groupStyles.length;
   const reactionsValue = reactions.map(({ own, type }) => `${own}${type}`).join();
@@ -74,7 +75,7 @@ export const useCreateMessageContext = <
       handleToggleMuteUser,
       handleToggleReaction,
       hasReactions,
-      imagesAndVideos,
+      images,
       isMyMessage,
       lastGroupMessage,
       lastReceivedId,
@@ -93,6 +94,7 @@ export const useCreateMessageContext = <
       showMessageOverlay,
       showMessageStatus,
       threadList,
+      videos,
     }),
     [
       actionsEnabled,
