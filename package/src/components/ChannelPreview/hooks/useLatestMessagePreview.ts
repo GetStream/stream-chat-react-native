@@ -51,7 +51,7 @@ const messageOwner = <
 const getMentionUsers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  mentionedUser: UserResponse<StreamChatGenerics>[],
+  mentionedUser: UserResponse<StreamChatGenerics>[] | undefined,
 ) => {
   if (Array.isArray(mentionedUser)) {
     const mentionUSerString = mentionedUser.reduce((acc, cur) => {
