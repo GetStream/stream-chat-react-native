@@ -132,8 +132,14 @@ const FileUploadPreviewWithContext = <
 ) => {
   const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
+  const [currentlyPlayingAudio, setCurrentlyPlayingAudio] = useState<string | null>(null);
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
+
+  const handleCurrentlyPlayingAudio = (url: string) => {
+    console.log(url);
+    setCurrentlyPlayingAudio(url);
+  };
 
   const {
     theme: {
@@ -166,7 +172,12 @@ const FileUploadPreviewWithContext = <
           type={indicatorType}
         >
           {item.file.type?.startsWith('audio/') ? (
-            <AudioAttachmentUploadPreview index={index} item={item} />
+            <AudioAttachmentUploadPreview
+              currentlyPlayingAudio={currentlyPlayingAudio}
+              handleCurrentlyPlayingAudio={handleCurrentlyPlayingAudio}
+              index={index}
+              item={item}
+            />
           ) : (
             <View
               style={[

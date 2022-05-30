@@ -81,6 +81,8 @@ type AudioAttachmentUploadPreviewPropsWithContext<
   MessageInputContextValue<StreamChatGenerics>,
   'fileUploads' | 'removeFile' | 'uploadFile'
 > & {
+  currentlyPlayingAudio: string | null;
+  handleCurrentlyPlayingAudio: (url: string) => void;
   index: number;
   item: FileUpload;
 };
@@ -94,7 +96,7 @@ const AudioAttachmentUploadPreviewWithContext = <
   const [duration, setDuration] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const soundRef = useRef<SoundReturnType | null>(null);
-  const { fileUploads, index, item } = props;
+  const { currentlyPlayingAudio, fileUploads, handleCurrentlyPlayingAudio, index, item } = props;
 
   const handleLoad = (payload: VideoPayloadData) => {
     if (payload.duration) {
@@ -109,21 +111,26 @@ const AudioAttachmentUploadPreviewWithContext = <
   };
 
   const handlePlayPause = async (status?: boolean) => {
-    if (status === undefined) {
-      if (soundRef.current) {
-        if (progress === 1) {
-          if (soundRef.current.seek) soundRef.current.seek(0);
-          if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
-        }
-        if (paused) {
-          if (soundRef.current.playAsync) await soundRef.current.playAsync();
-        } else {
-          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-        }
-        setPaused((state) => !state);
-      }
+    if (item.file.uri !== currentlyPlayingAudio) {
+      handleCurrentlyPlayingAudio(item.file.uri as string);
+      setPaused((state) => !state);
     } else {
-      setPaused(status);
+      if (status === undefined) {
+        if (soundRef.current) {
+          if (progress === 1) {
+            if (soundRef.current.seek) soundRef.current.seek(0);
+            if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+          }
+          if (paused) {
+            if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          } else {
+            if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+          }
+          setPaused((state) => !state);
+        }
+      } else {
+        setPaused(status);
+      }
     }
   };
 
@@ -275,7 +282,7 @@ const AudioAttachmentUploadPreviewWithContext = <
                 onProgress={handleProgress}
                 paused={paused}
                 soundRef={soundRef}
-                uri={item.file.uri}
+                uri={currentlyPlayingAudio as string}
               />
             )}
             <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
@@ -300,8 +307,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
   nextProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { fileUploads: prevFileUploads } = prevProps;
-  const { fileUploads: nextFileUploads } = nextProps;
+  const { currentlyPlayingAudio: prevCurrentlyPlayingAudio, fileUploads: prevFileUploads } =
+    prevProps;
+  const { currentlyPlayingAudio: nextCurrentlyPlayingAudio, fileUploads: nextFileUploads } =
+    nextProps;
+
+  const currentlyPlayingAudioEqual = prevCurrentlyPlayingAudio === nextCurrentlyPlayingAudio;
+
+  if (!currentlyPlayingAudioEqual) return false;
 
   return (
     prevFileUploads.length === nextFileUploads.length &&
@@ -319,6 +332,8 @@ const MemoizedAudioAttachmentUploadPreview = React.memo(
 export type FileUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>> & {
+  currentlyPlayingAudio: string | null;
+  handleCurrentlyPlayingAudio: (url: string) => void;
   index: number;
   item: FileUpload;
 };

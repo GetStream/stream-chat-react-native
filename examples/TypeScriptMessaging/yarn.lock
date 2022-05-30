@@ -6146,16 +6146,6 @@ react-native-share@6.0.1:
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-6.0.1.tgz#e982be50e33490dbd953ec26375230df1188770a"
   integrity sha512-K7mw2ep4cg++K6GUab32Kic3DeDUveonsQhTElwb6pZyjp0R/TLGQ11+pxcZBVlTiZhdOttyrLdCA6TsMX1lzg==
 
-react-native-sound-player@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/react-native-sound-player/-/react-native-sound-player-0.12.1.tgz#d8e9dc67d67386c6dfe0607e44afffa391cb54fe"
-  integrity sha512-jkJNz2c1dHV4nQMurR/3asYgZdZYzqmNNkyWmezxmwBBGPAUMiE7REoqUjSxumIOV5R0MzT8efBzl2f4d09iVQ==
-
-react-native-sound@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.11.2.tgz#e542dc5b9e16ab4b3ac7e6eaddb1fc8d98da9038"
-  integrity sha512-LmGc8lgOK3qecYMVQpyHvww/C+wgT6sWeMpVbOe4NCRGC2yKd4fo4U0KBUo9PO7AqKESO3I/2GZg1/C0+bwiiA==
-
 react-native-svg@12.1.1:
   version "12.1.1"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.1.1.tgz#5f292410b8bcc07bbc52b2da7ceb22caf5bcaaee"

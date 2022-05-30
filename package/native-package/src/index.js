@@ -8,7 +8,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import SoundPlayer from 'react-native-sound-player';
 import AudioVideoPlayer from 'react-native-video';
 
 import CameraRoll from '@react-native-community/cameraroll';
@@ -273,7 +272,7 @@ registerNativeHandlers({
     });
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, resizeMode, style, uri, videoRef }) => (
+  Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
     <AudioVideoPlayer
       onBuffer={onBuffer}
       onEnd={onEnd}
