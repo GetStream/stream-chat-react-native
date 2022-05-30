@@ -37,7 +37,7 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=package/coverage/lcov.info
             -Dsonar.sources=package/src/
             -Dsonar.test.exclusions=**/__tests__/**
-            -Dsonar.tests=**/__tests__/**/*.{js,jsx}
+            -Dsonar.tests=**/__tests__/**
             -Dsonar.verbose=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
