@@ -34,8 +34,8 @@ jobs:
           args: >
             -Dsonar.organization=getstream
             -Dsonar.projectKey=GetStream_stream-chat-react-native
-            -Dsonar.javascript.lcov.reportPaths=package/coverage/lcov.info
-            -Dsonar.tests=package/src/
+            -Dsonar.javascript.lcov.reportPaths=./package/coverage/lcov.info
+            -Dsonar.sources=package/src/
             -Dsonar.test.exclusions=**/__tests__/**
             -Dsonar.verbose=true
         env:
