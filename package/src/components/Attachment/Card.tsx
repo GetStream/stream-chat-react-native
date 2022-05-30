@@ -157,6 +157,7 @@ const CardWithContext = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            additionalInfo: { url: og_scrape_url },
             defaultHandler: defaultOnPress,
             emitter: 'card',
             event,
