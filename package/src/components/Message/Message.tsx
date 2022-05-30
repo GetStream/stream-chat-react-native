@@ -53,15 +53,13 @@ import {
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
 export type TouchableEmitter =
-  | 'card'
   | 'fileAttachment'
   | 'gallery'
   | 'giphy'
   | 'message'
   | 'messageContent'
   | 'messageReplies'
-  | 'reactionList'
-  | 'textLink';
+  | 'reactionList';
 
 export type TextMentionTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -70,21 +68,27 @@ export type TextMentionTouchableHandlerPayload<
   additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
 };
 
+export type CardAndTextLinkTouchableHandlerPayload = {
+  emitter: 'textLink' | 'card';
+  additionalInfo?: { url?: string };
+};
+
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
   | {
-      additionalInfo?: Record<string, unknown>;
       emitter?: TouchableEmitter;
     }
   | TextMentionTouchableHandlerPayload
+  | CardAndTextLinkTouchableHandlerPayload
 );
 
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
+  additionalInfo?: Record<string, unknown>;
   message?: MessageType<StreamChatGenerics>;
 };
 
