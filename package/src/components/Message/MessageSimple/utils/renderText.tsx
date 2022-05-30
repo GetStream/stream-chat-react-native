@@ -164,7 +164,10 @@ export const renderText = <
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
-          defaultHandler: () => onLink(node.target),
+          additionalInfo: { link: node.target },
+          defaultHandler: () => {
+            onLink(node.target);
+          },
           emitter: 'textLink',
           event,
         });
