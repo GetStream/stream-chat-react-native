@@ -23,7 +23,7 @@ For example:
 ```tsx
     <Channel
       onPressMessage={({ additionalInfo, defaultHandler, emitter }) => {
-        
+
           if (emitter === 'textMention') {
             console.log(additionalInfo?.user);
             return;
