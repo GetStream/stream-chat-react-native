@@ -148,7 +148,7 @@ describe('Attachment', () => {
 
     jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(true));
 
-    const { result } = await renderHook(() => useGoToURL());
+    const { result } = renderHook(() => useGoToURL());
     const [, openURL] = result.current;
     await act(openURL);
     const [error] = result.current;
