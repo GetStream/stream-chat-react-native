@@ -4,6 +4,8 @@ import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
 
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
@@ -37,7 +39,7 @@ export const mergeThemes = (params: MergedThemesParams) => {
   return finalTheme;
 };
 
-export const ThemeContext = React.createContext<Theme | undefined>(undefined);
+export const ThemeContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as Theme);
 
 export const ThemeProvider: React.FC<
   PropsWithChildren<ThemeProviderInputValue & Partial<ThemeContextValue>>

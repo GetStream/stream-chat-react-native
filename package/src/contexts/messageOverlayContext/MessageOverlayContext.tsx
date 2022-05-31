@@ -18,7 +18,10 @@ import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageOverlayData<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -71,8 +74,9 @@ export type MessageOverlayContextValue<
   data?: MessageOverlayData<StreamChatGenerics>;
 };
 
-export const MessageOverlayContext =
-  React.createContext<MessageOverlayContextValue | undefined>(undefined);
+export const MessageOverlayContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageOverlayContextValue,
+);
 
 export const MessageOverlayProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -97,7 +101,7 @@ export const useMessageOverlayContext = <
     MessageOverlayContext,
   ) as unknown as MessageOverlayContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );

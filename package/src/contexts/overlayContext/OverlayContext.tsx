@@ -13,7 +13,10 @@ import type { AttachmentPickerContextValue } from '../attachmentPickerContext/At
 import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
@@ -24,7 +27,9 @@ export type OverlayContextValue = {
   translucentStatusBar?: boolean;
 };
 
-export const OverlayContext = React.createContext<OverlayContextValue | undefined>(undefined);
+export const OverlayContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as OverlayContextValue,
+);
 
 export type OverlayProviderProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -76,7 +81,7 @@ export type OverlayProviderProps<
 export const useOverlayContext = () => {
   const contextValue = useContext(OverlayContext);
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useOverlayContext hook was called outside the OverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );

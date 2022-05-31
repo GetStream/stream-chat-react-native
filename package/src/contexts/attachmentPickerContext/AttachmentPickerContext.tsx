@@ -1,7 +1,10 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
   numberOfImageUploads: number;
@@ -55,8 +58,9 @@ export type AttachmentPickerContextValue = {
   selectedPicker?: 'images';
 };
 
-export const AttachmentPickerContext =
-  React.createContext<AttachmentPickerContextValue | undefined>(undefined);
+export const AttachmentPickerContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as AttachmentPickerContextValue,
+);
 
 export const AttachmentPickerProvider = ({
   children,
@@ -122,7 +126,7 @@ export const useAttachmentPickerContext = () => {
     AttachmentPickerContext,
   ) as unknown as AttachmentPickerContextValue;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );

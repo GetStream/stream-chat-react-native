@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+
 import { Alert, Keyboard } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
@@ -52,7 +53,10 @@ import { useChatContext } from '../chatContext/ChatContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type FileUpload = {
   file: File;
@@ -393,8 +397,9 @@ export type MessageInputContextValue<
 > = LocalMessageInputContext<StreamChatGenerics> &
   Omit<InputMessageInputContextValue<StreamChatGenerics>, 'sendMessage'>;
 
-export const MessageInputContext =
-  React.createContext<MessageInputContextValue | undefined>(undefined);
+export const MessageInputContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
+);
 
 export const MessageInputProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -1134,7 +1139,7 @@ export const useMessageInputContext = <
     MessageInputContext,
   ) as unknown as MessageInputContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );

@@ -11,7 +11,10 @@ import type { GroupType, MessageType } from '../../components/MessageList/hooks/
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Alignment = 'right' | 'left';
 
@@ -102,7 +105,9 @@ export type MessageContextValue<
   showAvatar?: boolean;
 } & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'disabled' | 'members'>;
 
-export const MessageContext = React.createContext<MessageContextValue | undefined>(undefined);
+export const MessageContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,
+);
 
 export const MessageProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -124,7 +129,7 @@ export const useMessageContext = <
     MessageContext,
   ) as unknown as MessageContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useMessageContext hook was called outside of the MessageContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
     );

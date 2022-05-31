@@ -1,5 +1,9 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
+import { isTestEnvironment } from '../utils/isTestEnvironment';
+
 export const allOwnCapabilities = {
   banChannelMembers: 'ban-channel-members',
   deleteAnyMessage: 'delete-any-message',
@@ -37,7 +41,7 @@ export const OwnCapabilitiesProvider = ({
 export const useOwnCapabilitiesContext = () => {
   const contextValue = useContext(OwnCapabilitiesContext);
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useOwnCapabilitiesContext hook was called outside the Channel Component. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );

@@ -3,7 +3,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { ChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type PaginatedMessageListContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -42,8 +45,9 @@ export type PaginatedMessageListContextValue<
   setLoadingMoreRecent: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const PaginatedMessageListContext =
-  React.createContext<PaginatedMessageListContextValue | undefined>(undefined);
+export const PaginatedMessageListContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as PaginatedMessageListContextValue,
+);
 
 export const PaginatedMessageListProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -67,7 +71,7 @@ export const usePaginatedMessageListContext = <
     PaginatedMessageListContext,
   ) as unknown as PaginatedMessageListContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The usePaginatedMessageListContext hook was called outside of the PaginatedMessageList provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );

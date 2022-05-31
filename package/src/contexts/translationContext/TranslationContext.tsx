@@ -6,8 +6,8 @@ import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>
   (output as Dayjs.Dayjs | Moment).isSame != null;
@@ -37,7 +37,7 @@ export const TranslationProvider: React.FC<{
 export const useTranslationContext = () => {
   const contextValue = useContext(TranslationContext);
 
-  if (!contextValue) {
+  if (!contextValue && !isTestEnvironment()) {
     throw new Error(
       `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider)(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );

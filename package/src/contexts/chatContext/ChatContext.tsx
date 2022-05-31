@@ -3,7 +3,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChatContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -58,7 +61,7 @@ export type ChatContextValue<
   channel?: Channel<StreamChatGenerics>;
 };
 
-export const ChatContext = React.createContext<ChatContextValue | undefined>(undefined);
+export const ChatContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ChatContextValue);
 
 export const ChatProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -78,7 +81,7 @@ export const useChatContext = <
 >() => {
   const contextValue = useContext(ChatContext) as unknown as ChatContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useChatContext hook was called outside the ChatContext Provider. Make sure you have configured Chat component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#chat`,
     );

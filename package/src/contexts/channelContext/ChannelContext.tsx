@@ -5,7 +5,10 @@ import type { Channel, ChannelState } from 'stream-chat';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -167,7 +170,9 @@ export type ChannelContextValue<
   watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
 };
 
-export const ChannelContext = React.createContext<ChannelContextValue | undefined>(undefined);
+export const ChannelContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelContextValue,
+);
 
 export const ChannelProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -189,7 +194,7 @@ export const useChannelContext = <
     ChannelContext,
   ) as unknown as ChannelContextValue<StreamChatGenerics>;
 
-  if (!contextValue) {
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useChannelContext hook was called outside of the ChannelContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
     );
