@@ -3,6 +3,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (4.0.2):
     - ExpoModulesCore
+  - EXAV (10.2.1):
+    - ExpoModulesCore
+    - ReactCommon/turbomodule/core
   - EXBlur (11.0.0):
     - ExpoModulesCore
   - EXConstants (13.0.2):
@@ -350,6 +353,7 @@ PODS:
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
+  - EXAV (from `../node_modules/expo-av/ios`)
   - EXBlur (from `../node_modules/expo-blur/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXDocumentPicker (from `../node_modules/expo-document-picker/ios`)
@@ -411,6 +415,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
     :path: "../node_modules/expo-application/ios"
+  EXAV:
+    :path: "../node_modules/expo-av/ios"
   EXBlur:
     :path: "../node_modules/expo-blur/ios"
   EXConstants:
@@ -514,6 +520,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXApplication: 54fe5bd6268d697771645e8f1aef8b806a65247a
+  EXAV: b9ed0c201092244c46aa78f907f5c66176bed236
   EXBlur: 82055865de17cf2cf797ff064c50fb59fcbe703f
   EXConstants: 88bf79622fbd9b476c96d8ec57fe97ca44fe8e3c
   EXDocumentPicker: d3eb6a207e1f370e496bea959b3ac145126560f5

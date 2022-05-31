@@ -665,6 +665,8 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          original_height: image.height,
+          original_width: image.width,
           type: 'image',
         } as Attachment<StreamChatGenerics>);
       }
@@ -685,6 +687,15 @@ export const MessageInputProvider = <
             fallback: file.file.name,
             image_url: file.url,
             type: 'image',
+          } as Attachment<StreamChatGenerics>);
+        } else if (file.file.type?.startsWith('audio/')) {
+          attachments.push({
+            asset_url: file.url,
+            duration: file.file.duration,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'audio',
           } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({

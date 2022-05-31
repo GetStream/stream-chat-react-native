@@ -1,5 +1,29 @@
 # Change Log
 
+### [1.6.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.0...sampleapp@v1.6.1) (2022-05-25)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.6.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.5.0...sampleapp@v1.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* solves multiple crashes in the Sample app, that were related to setBlurType ([4b45d80](https://github.com/GetStream/stream-chat-react-native/commit/4b45d804f901d1d2e48ec2af7fd9180a4f44cfd3))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.5.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.4.0...sampleapp@v1.5.0) (2022-05-17)
 
 

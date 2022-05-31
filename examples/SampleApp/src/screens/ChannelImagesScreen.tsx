@@ -67,7 +67,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   },
 }) => {
   const { images, setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
-  const { setBlurType, setOverlay } = useOverlayContext();
+  const { setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'image');
   const {
     theme: {
@@ -179,7 +179,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
                   messageId: item.messageId,
                   url: item.uri,
                 });
-                setBlurType('dark');
                 setOverlay('gallery');
               }}
             >

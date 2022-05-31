@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
+import { Video as ExpoVideoPlayer } from 'expo-av';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
@@ -218,6 +219,19 @@ registerNativeHandlers({
         Haptics.selectionAsync();
     }
   },
+  // eslint-disable-next-line react/display-name
+  Video: ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
+    <ExpoVideoPlayer
+      onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+      ref={videoRef}
+      resizeMode='contain'
+      shouldPlay={!paused}
+      source={{
+        uri,
+      }}
+      style={[style]}
+    />
+  ),
 });
 
 export * from 'stream-chat-react-native-core';

@@ -36,6 +36,7 @@ export function buildThumbnail<
     resizeMode: resizeMode
       ? resizeMode
       : ((image.original_height && image.original_width ? 'contain' : 'cover') as ImageResizeMode),
+    type: image.type,
     url: shouldResize
       ? getResizedImageUrl({
           height,
