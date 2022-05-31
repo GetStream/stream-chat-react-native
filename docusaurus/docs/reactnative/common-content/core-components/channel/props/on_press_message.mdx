@@ -22,13 +22,20 @@ For example:
 
 ```tsx
     <Channel
-    onPressMessage={({ additionalInfo, defaultHandler, emitter }) => {
-        if (emitter === 'textMention') {
-          console.log(additionalInfo?.user);
-          return;
-        }
-        defaultHandler?.();
-    }}
+      onPressMessage={({ additionalInfo, defaultHandler, emitter }) => {
+        
+          if (emitter === 'textMention') {
+            console.log(additionalInfo?.user);
+            return;
+          }
+
+          if (emitter === 'card' || emitter === 'textLink') {
+            console.log(additionalInfo?.url);
+            return;
+          }
+
+          defaultHandler?.();
+      }}
     >
 ```
 
