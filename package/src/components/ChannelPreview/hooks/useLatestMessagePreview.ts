@@ -115,12 +115,12 @@ const getLatestMessageDisplayDate = <
   return parserOutput;
 };
 
-/**
- * set up enum
- * 0 = latest message is not current user's message
- * 1 = nobody has read latest message which is the current user's message
- * 2 = someone has read latest message which is the current user's message
- */
+export enum MessageReadStatus {
+  NOT_SENT_BY_CURRENT_USER = 0,
+  UNREAD = 1,
+  READ = 2,
+}
+
 const getLatestMessageReadStatus = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -128,9 +128,11 @@ const getLatestMessageReadStatus = <
   client: StreamChat<StreamChatGenerics>,
   message: LatestMessage<StreamChatGenerics> | undefined,
   readEvents: boolean,
-) => {
+): MessageReadStatus => {
   const currentUserId = client.userID;
-  if (!message || currentUserId !== message.user?.id || readEvents === false) return 0;
+  if (!message || currentUserId !== message.user?.id || readEvents === false) {
+    return MessageReadStatus.NOT_SENT_BY_CURRENT_USER;
+  }
 
   const readList = channel.state.read;
   if (currentUserId) {
@@ -146,8 +148,8 @@ const getLatestMessageReadStatus = <
   return Object.values(readList).some(
     ({ last_read }) => messageUpdatedAt && messageUpdatedAt < last_read,
   )
-    ? 2
-    : 1;
+    ? MessageReadStatus.READ
+    : MessageReadStatus.UNREAD;
 };
 
 const getLatestMessagePreview = <
@@ -176,7 +178,7 @@ const getLatestMessagePreview = <
           text: t('Nothing yet...'),
         },
       ],
-      status: 0,
+      status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
     };
   }
   const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
@@ -229,7 +231,7 @@ export const useLatestMessagePreview = <
         text: '',
       },
     ],
-    status: 0,
+    status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
   });
 
   const readStatus = getLatestMessageReadStatus(

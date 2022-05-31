@@ -1,4 +1,4 @@
-The MessageInput component supports a suggestions feature. Suggestions are displayed using a popup which contains a list of the suggestion items. All functionality is saved in the SuggestionsContext and can be accessed through the [SuggestionsProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/suggestionsContext/SuggestionsContext.tsx) higher order component. This HOC provides the following functions to its underlying child components:
+The MessageInput component supports a suggestions feature. Suggestions are displayed using a popup which contains a list of the suggestion items. All functionality is saved in the SuggestionsContext and can be accessed through the [SuggestionsProvider](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/suggestionsContext/SuggestionsContext.tsx) higher order component. This HOC provides the following functions to its underlying child components:
 
 - **closeSuggestions** {function} Closes the suggestions popup above the input box
 - **openSuggestions** {function} Opens the suggestions popup above the input box

@@ -1,0 +1,547 @@
+---
+id: push-notifications-v2
+sidebar_position: 2
+title: Push Notifications (V2)
+---
+
+import chatOverviewPage from '../assets/guides/push-notifications-v2/chat_overview_page.png';
+import firebaseNotificationsToggle from '../assets/guides/push-notifications-v2/firebase_notifications_toggle.png';
+
+Easiest way to integrate push notifications in your Chat applications is using Firebase. [React Native Firebase](https://rnfirebase.io/) is the officially recommended package to add Firebase to your apps. We also recommend the [Notifee](https://notifee.app/) library for customising push notifications and listening to user interaction events.
+
+## Requirements
+
+<!-- TODO: Change to new docs for links -->
+
+- Push notifications are sent only for new messages.
+- Only channel members receive push messages.
+- Members receive push notifications regardless of their online status.
+- Replies inside a [thread](https://getstream.io/chat/docs/javascript/threads/?language=javascript) are only sent to users that are part of that thread:
+  - They posted at least one message
+  - They were mentioned
+- Messages from muted users are not sent.
+- Messages are sent to all registered devices for a user (up to 25).
+- Up to 100 members of a channel will receive push notifications.
+- skip_push is marked as false, as described [here](https://getstream.io/chat/docs/javascript/send_message/?language=javascript#complex-example).
+- push_notifications is enabled (default) on the channel type for the sent message.
+
+:::note
+
+- If you would like to get push notifications only when users are offline, please contact support@getstream.io.
+- Push notifications require membership. Watching a channel isn't enough.
+
+:::
+
+## Firebase Project Setup
+
+Follow the steps mentioned below to setup a Firebase project for your apps:
+
+1. [Create a Firebase project for your apps](https://console.firebase.google.com/).
+2. Register your [Android](https://firebase.google.com/docs/android/setup#register-app) app and [iOS](https://firebase.google.com/docs/ios/setup#register-app) app with the Firebase project.
+3. Upload your [APNs authentication key](https://firebase.google.com/docs/cloud-messaging/ios/client#upload_your_apns_authentication_key) to your Firebase project.
+
+## App setup
+
+Follow the steps below to setup your apps with Firebase:
+
+1. Install React Native Firebase and its messaging module
+
+   ```sh
+   # Install & setup the app module
+   yarn add @react-native-firebase/app
+
+   # Install the messaging module
+   yarn add @react-native-firebase/messaging
+   ```
+
+2. [Setup your Android app with credentials and configure Firebase](https://rnfirebase.io/#2-android-setup).
+3. [Setup your iOS app with credentials and configure Firebase](https://rnfirebase.io/#3-ios-setup).
+4. Add the [Push Notifications Capability](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app) for your iOS app.
+
+### Expo
+
+For bare workflow, all of the installation steps above will suffice. For custom managed workflow, please see [the expo installation docs at React Native Firebase](https://rnfirebase.io/#expo). React Native Firebase cannot be used in the "Expo Go" app because [it is not possible to include custom native code](https://docs.expo.dev/bare/using-expo-client/). If you are using "Expo Go" app and want notifications, you can achieve this using [Webhooks](https://getstream.io/chat/docs/react-native/webhooks_overview/?language=javascript) and a third-party push provider. See [this article](https://support.getstream.io/hc/en-us/articles/1500006478421-How-can-I-use-the-Stream-Webhook-to-send-customers-emails-based-on-Chat-events-) for an example.
+
+## Get Google Service Account Credentials
+
+Firebase projects support Google service accounts. Credentials obtained via this service account are used by Stream to call Firebase server APIs.
+
+These credentials are the [private key file](https://firebase.google.com/docs/admin/setup#:~:text=To%20generate%20a%20private%20key%20file%20for%20your%20service%20account%3A) for your service account in the Firebase console. To generate a private key file for your service account:
+
+- In the Firebase console, open `Settings > Service Accounts`.
+- Click `Generate New Private Key`, then confirm by clicking `Generate Key`.
+- Securely store the JSON file containing the key.
+
+This JSON file contains the credentials which needs to be uploaded to Stream server as explained in next step.
+
+## Upload Firebase Credentials
+
+You can upload your JSON file containing your Firebase credentials either using dashboard or using the app settings api:
+
+### Using Dashboard
+
+1. Go to Chat Overview page on Stream Dashboard
+
+<img src={chatOverviewPage} />
+
+2. Enable Firebase Notification toggle on Chat Overview
+
+<img src={firebaseNotificationsToggle} />
+
+3. Enter your Firebase Credentials in input box below the toggle and **press "Save" button**.
+
+### Using API
+
+You can also enable Firebase notifications and upload the Firebase credentials using api:
+
+```js
+const client = StreamChat.getInstance('api_key', 'api_secret');
+client.updateAppSettings({
+  push_config: {
+    version: 'v2'
+  },
+  firebase_config: {
+    credentials_json: fs.readFileSync(
+      './firebase-credentials.json',
+      'utf-8',
+    ),
+ });
+```
+
+## Registering a device with Stream
+
+Once you configure the Firebase server key and set it up on the Stream dashboard, a device that is supposed to receive push notifications needs to be registered at the Stream backend. This is usually done by listening for the Firebase device token.
+
+:::caution
+
+Please note that, `client.addDevice` call requires a user token to be set on the client.
+So `client.addDevice` call should be made after `client.connectUser` in code.
+
+:::
+
+```js
+// Request Push Notification permission from device.
+const requestPermission = async () => {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+};
+
+const App = () => {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    let unsubscribeTokenRefreshListener;
+    // Register FCM token with stream chat server.
+    const registerPushToken = async () => {
+      const token = await messaging().getToken();
+      await client.addDevice(token, 'firebase');
+
+      unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
+        await client.addDevice(newToken, 'firebase');
+      });
+    };
+
+    const init = async () => {
+      await client.connectUser({ id: USER_ID }, USER_TOKEN);
+
+      await requestPermission();
+      await registerPushToken();
+
+      setIsReady(true);
+    };
+
+    init();
+
+    return async () => {
+      await client?.disconnectUser();
+      unsubscribeTokenRefreshListener?.();
+    };
+  }, []);
+
+  if (!isReady) {
+    return null;
+  }
+
+  return (
+    <View style={styles.container}>
+      <Chat client={client}>{/* Child components of Chat go here */}</Chat>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## The Push Notification Message Payload
+
+When a message is received by the Chat API, if the [requirements](#requirements) are met, it kicks a job to send a notification message to Firebase.
+According to the [battery and the online status](https://firebase.google.com/docs/cloud-messaging/concept-options#lifetime) of the device, Firebase will deliver this payload to the actual devices.
+
+The delivered push notification message payload depends upon the [push payload template](https://getstream.io/chat/docs/react/push_template/?language=javascript) that has been set for your app at Stream. The current template set is visible in the Dashboard and can be customized. The default payload template has different fields based on iOS or Android. The `notification` field is handled by the Firebase SDK to display the message and `data` property should be handled by the app if needed. The [device state and payload contents](https://rnfirebase.io/messaging/usage#notifications) determine whether a Notification will be displayed. On iOS, both `notification` and `data` are present. On Android, only `data` is present. An example payload for iOS is below:
+
+```json
+{
+  "data": {
+    "sender": "stream.chat",
+    "type": "message.new",
+    "version": "v2",
+    "id": "d152f6c1-8c8c-476d-bfd6-59c15c20548a",
+    "channel_type": "messaging",
+    "channel_id": "company-chat",
+    "cid": "messaging:company-chat"
+  },
+  // the notification field is present only on iOS by default and not on Android
+  "notification": {
+    "title": "Message from user",
+    "body": "Hello"
+  }
+  // other fields..
+}
+```
+
+:::note
+
+If you had migrated from push v1 to v2, the v1 template is copied to the notification field of the v2 template. In this case, the Firebase SDK will automatically display the message on Android too.
+
+:::
+
+## Receiving Notifications When On Background Or Quit State
+
+### iOS
+
+Since the `notification` field is present on iOS, it is automatically picked up by the Firebase SDK and displayed to the user when the app is not in the foreground.
+
+:::info
+
+If you want to customize the notification dynamically on the iOS app without customizing the payload or increment the badge number on every push, you will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
+
+:::
+
+### Android
+
+To listen to notifications in the background, you can use the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
+
+:::caution
+
+This handler works only on Android. For this handler to work on iOS, the payload must be customized [`data` only](#make-ios-payload-data-only).
+
+:::
+
+When the handler is triggered, you can display the notification on Android after retrieving the message. To setup, call the `setBackgroundMessageHandler` outside of your application logic as early as possible:
+
+```jsx
+// index.js
+import { AppRegistry } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { StreamChat } from 'stream-chat';
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  const client = StreamChat.getInstance('api_key');
+
+  // You can also provide tokenProvider instead of static token
+  // await client._setToken({ id: userId }, tokenProvider)
+  client._setToken(
+    {
+      id: 'user_id',
+    },
+    'user_token',
+  );
+  // handle the message
+  const message = await client.getMessage(remoteMessage.data.id);
+
+  // create the android channel to send the notification to
+  const channelId = await notifee.createChannel({
+    id: 'chat-messages',
+    name: 'Chat Messages',
+  });
+
+  // display the notification
+  await notifee.displayNotification({
+    title: 'New message from ' + message.message.user.name,
+    body: message.message.text,
+    data: remoteMessage.data,
+    android: {
+      channelId,
+      // add a press action to open the app on press
+      pressAction: {
+        id: 'default',
+      },
+    },
+  });
+});
+
+function App() {
+  // Your application
+}
+
+AppRegistry.registerComponent('app', App);
+```
+
+### Listen To User Interactions For Background Notifications
+
+When a user interacts with the notification by pressing on it, the default behavior is to open the application. In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you could open a specific screen, for example). The handlers that are triggered are different from iOS and Android.
+
+The [React Native Firebase API](https://rnfirebase.io/messaging/notifications#handling-interaction) provides two APIs for handling interaction, and it is triggered on iOS:
+
+- `messaging().getInitialNotification`: When the application is opened from a quit state.
+- `messaging().onNotificationOpenedApp`: When the application is running, but in the background.
+
+The [Notifee library](https://notifee.app/react-native/docs/events) provides events for handling interaction and it is triggered on Android:
+
+- `notifee.getInitialNotification`: When the application is opened from a quit state.
+- `notifee.onBackgroundEvent`: When the application is running but in the background.
+
+To handle all the scenarios, the code must be executed during the app setup. See the code below for an example. Here using [React Navigation](https://reactnavigation.org/) we set an initial route when the app is opened from a quit state and also push to a Channel screen when the app is in a background state:
+
+```js
+import React, { useEffect, useState } from 'react';
+import messaging from '@react-native-firebase/messaging';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+const navigationContainerRef = React.createRef<NavigationContainerRef>();
+
+notifee.onBackgroundEvent(async ({ detail, type }) => {
+  if (type === EventType.PRESS) {
+    // user press on notification detected while app was on background on Android
+    const channelId = detail.notification?.data?.channel_id;
+    if (channelId) {
+       navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+    }
+    await Promise.resolve();
+  }
+});
+
+function App() {
+  const [initialChannelId, setInitialChannelId] = useState<string>()
+  useEffect(() => {
+    const unsubscribeOnNotificationOpen = messaging().onNotificationOpenedApp((remoteMessage) => {
+      // Notification caused app to open from background state on iOS
+      const channelId = remoteMessage.data?.channel_id;
+      // The navigation logic, to navigate to relevant channel screen.
+      if (channelId) {
+        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+      }
+    });
+
+    notifee.getInitialNotification().then(initialNotification => {
+      if (initialNotification) {
+        // Notification caused app to open from quit state on Android
+        const channelId = initialNotification.notification.data?.channel_id;
+        // Start the app with the relevant channel screen.
+        setInitialChannelId(channelId)
+      }
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          // Notification caused app to open from quit state on iOS
+          const channelId = remoteMessage.data?.channel_id;
+          // Start the app with the relevant channel screen.
+          setInitialChannelId(channelId)
+        }
+    });
+
+    return () => {
+      unsubscribeOnNotificationOpen();
+    };
+  }, []);
+
+  return (
+    <NavigationContainer ref={navigationContainerRef}>
+      <Stack.Navigator initialRouteName={initialChannelId ? "ChannelScreen" : "Home"}>
+        <Stack.Screen name='Home' component={HomeScreen} />
+        <Stack.Screen name='ChannelListScreen' component={ChannelListScreen} />
+        <Stack.Screen name='ChannelScreen'
+          component={ChannelScreen}
+          initialParams={initialChannelId ? { channelId: initialChannelId } : undefined}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+## Customizing The Delivered Payload
+
+Please see the [JavaScript SDK documentation](https://getstream.io/chat/docs/javascript/push_template/?language=javascript) about the variables present to configure the push template and the templating language used. Some of the common use-cases for customizing the template are given below.
+
+:::caution
+
+The methods to customize the push template are **server-side** only.
+
+:::
+
+### Add Notification Field In Android Payload
+
+To update the payload for Android to have notification payload also, you can add relevant keys to the `notification_template` using the JavaScript SDK like below:
+
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+const notification_template = `{
+    "title": "New message from {{ sender.name }}",
+    "body": "{{ truncate message.text 2000 }}"
+    "click_action": "OPEN_ACTIVITY_1",
+    "sound": "default"
+}`;
+
+client.updateAppSettings({
+  firebase_config: {
+    notification_template,
+  }
+});
+```
+
+The above configuration allows to align Android with iOS, by receiving the same notification payload, which makes it so that there is no need to display notifications using Notifee. The `click_action` key is essential to make your app open on press. Also, note that the action must be added to the launcher activity in your app's `AndroidManifest.xml`. See the example below where we add `OPEN_ACTIVITY_1` action to the launcher activity:
+
+```xml
+<activity
+  android:name=".MainActivity"
+  android:label="@string/app_name"
+  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+  android:launchMode="singleTask"
+  android:windowSoftInputMode="adjustResize"
+  android:exported="true">
+  <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+  </intent-filter>
+  <intent-filter>
+      <action android:name="OPEN_ACTIVITY_1" />
+      <category android:name="android.intent.category.DEFAULT" />
+  </intent-filter>
+</activity>
+```
+
+Also you must use `ACTION_PRESS` event from Notifee to handle the user press on background in Android like below:
+
+```js
+notifee.onBackgroundEvent(async ({ detail, type }) => {
+  if (type === EventType.ACTION_PRESS) {
+    // user press on notification detected while app was on background on Android
+    const channelId = detail.notification?.data?.channel_id;
+    if (channelId) {
+      navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+    }
+    await Promise.resolve();
+  }
+});
+```
+
+:::info
+
+The `notification_template` is a JSON object that includes the keys relevant to push notifications for Android. See the [AndroidNotification](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification) type in the firebase documentation for all the supported keys.
+
+:::
+
+### Make iOS Payload Data Only
+
+If the iOS payload is made to be data only, then `setBackgroundMessageHandler` can be used to display notifications using Notifee. The payload can be customized using the JavaScript SDK like below:
+
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+const apn_template = `{
+  "aps": {
+      "content-available": 1
+  }
+}`;
+
+client.updateAppSettings({
+  firebase_config: {
+    apn_template,
+  }
+});
+```
+
+:::info
+
+The `apn_template` is a JSON object that includes the keys relevant to push notifications for iOS. See [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification) in the iOS documentation to see the supported keys.
+
+:::
+:::caution
+Ensure that the headless prop can be injected to your iOS app as mentioned [here](https://rnfirebase.io/messaging/usage#background-application-state=). Also, enable the Remote Notifications Capability for your app as mentioned [in the iOS documentation](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app).
+
+:::
+
+The `content-available` key is essential to inform iOS that it is a [silent background update](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification). Please note that iOS will consider background notifications as a [low priority](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/pushing_background_updates_to_your_app). Thus, the delivery of these notifications may be throttled.
+
+## Display Notification In Foreground
+
+As mentioned before, the Firebase SDK automatically displays the message to the user on iOS using the `notification` property when the app is not in the foreground. And on Android, you can use [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method to display notifications in the background.
+
+However, if you do want to display the notification in the foreground, you can listen to messages using the [`onMessage`](https://rnfirebase.io/messaging/usage#foreground-state-messages) callback inside of your application code and display a notification to end user. Code executed via this handler has access to React context and is able to interact with your application (e.g., updating the state or UI).
+
+:::note
+
+Generally, chat applications don't show push notifications when the app is in the foreground, so you may want to ignore this step depending on your product requirement.
+
+:::
+
+```jsx
+import messaging from '@react-native-firebase/messaging';
+import notifee from '@notifee/react-native';
+
+useEffect(() => {
+  // add listener to notifications received when on foreground
+  const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
+    const message = await chatClient.getMessage(remoteMessage.data.id);
+
+    // create the android channel to send the notification to
+    const channelId = await notifee.createChannel({
+      id: 'chat-messages',
+      name: 'Chat Messages',
+    });
+
+    // display the notification
+    await notifee.displayNotification({
+      title: 'New message from ' + message.message.user.name,
+      body: message.message.text,
+      data: remoteMessage.data,
+      android: {
+        channelId,
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+  });
+
+  // add listener to user interactions on foreground notifications
+  const unsubscribeForegroundEvent = notifee.onForegroundEvent(({ detail, type }) => {
+    if (type === EventType.PRESS) {
+      // user has pressed notification
+      const channelId = detail.notification?.data?.channel_id;
+      // The navigation logic, to navigate to relevant channel screen.
+      if (channelId) {
+        navigationContainerRef.current?.navigate('ChannelScreen', { channelId });
+      }
+    }
+  });
+
+  return () => {
+    unsubscribeOnMessage();
+    unsubscribeForegroundEvent();
+  };
+}, []);
+```
+
+## Troubleshooting
+
+- You can check the "Webhook & Push Logs" section in the Dashboard to see if Notifications were sent by Stream. Please see the [Common Issues & FAQ](https://getstream.io/chat/docs/javascript/push_-_common_issues_and_faq/?language=javascript) to diagnose the various cases in which the Stream Chat API may not send the notifications.
+- Android devices can restrict your app while it's in the background to preserve battery life. This can prevent trigger notifications from being displayed. The [Notifee documentation](https://notifee.app/react-native/docs/android/background-restrictions) explains it in detail.
+- Additionally, suppose Stream Chat API has sent the notifications but was not displayed on the device. In that case, you can check the diagnostics steps for [Android](https://firebase.google.com/support/troubleshooter/fcm/delivery/diagnose/android) and [iOS](https://firebase.google.com/support/troubleshooter/fcm/delivery/diagnose/ios) in the Firebase cloud messaging documentation.
+- If you are still having trouble with Push Notifications, please contact support@getstream.io.

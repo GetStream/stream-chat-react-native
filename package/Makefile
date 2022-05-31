@@ -2,7 +2,7 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = ../examples
-NATIVE_EXAMPLES = NativeMessaging SampleApp TypeScriptMessaging
+NATIVE_EXAMPLES = SampleApp TypeScriptMessaging
 NATIVE_EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(NATIVE_EXAMPLES))
 NATIVE_EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(NATIVE_EXAMPLES_APPS))
 
@@ -18,11 +18,16 @@ LIB_SOURCES = $(wildcard *.js) $(wildcard */*.js) $(wildcard */*.scss) $(wildcar
 
 CHAT_DEPS = ../client/package.json
 
+
+# By default, we install all dependencies for all the example apps
+.DEFAULT_GOAL = all-example-deps
+
 native-example-deps: $(NATIVE_EXAMPLES_APPS_DEPS)
 expo-example-deps: $(EXPO_EXAMPLES_APPS_DEPS)
+all-example-deps: $(NATIVE_EXAMPLES_APPS_DEPS) $(EXPO_EXAMPLES_APPS_DEPS)
 
 $(NATIVE_EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
-	cd $* && yarn install && npx pod-install
+	cd $* && bundle install && yarn install && cd ios && bundle exec pod install
 	touch $@
 
 $(EXPO_EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
@@ -42,7 +47,8 @@ dist/built: $(LIB_SOURCES) node_modules/installed_dependencies
 	touch $@ q
 
 clean:
-	rm -rf $(addsuffix /node_modules,$(EXAMPLES_APPS)) || true
+	rm -rf $(addsuffix /node_modules,$(NATIVE_EXAMPLES_APPS)) || true
+	rm -rf $(addsuffix /node_modules,$(EXPO_EXAMPLES_APPS)) || true
 	rm -rf $(addsuffix /node_modules,$(WRAPPER_PACKAGES)) || true
 	rm -rf dist || true
 	rm -rf node_modules || true

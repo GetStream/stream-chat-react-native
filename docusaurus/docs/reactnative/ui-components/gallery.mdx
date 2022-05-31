@@ -4,6 +4,7 @@ title: Gallery
 ---
 
 import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx';
+import SetImages from '../common-content/contexts/image-gallery-context/set_images.mdx';
 
 import Alignment from '../common-content/contexts/message-context/alignment.mdx';
 import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
@@ -19,12 +20,13 @@ import OnPressIn from '../common-content/contexts/message-context/on_press_in.md
 import OnlyEmojis from '../common-content/contexts/message-context/only_emojis.mdx';
 import OtherAttachments from '../common-content/contexts/message-context/other_attachments.mdx';
 import ThreadList from '../common-content/contexts/message-context/thread_list.mdx';
+import Videos from '../common-content/contexts/message-context/videos.mdx';
 
-import SetBlurType from '../common-content/contexts/overlay-context/set_blur_type.mdx';
 import SetOverlay from '../common-content/contexts/overlay-context/set_overlay.mdx';
 
 import AdditionalTouchableProps from '../common-content/core-components/channel/props/additional_touchable_props.mdx';
 import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
+import VideoThumbnail from '../common-content/core-components/channel/props/video_thumbnail.mdx';
 
 Component to render image attachments within the [`MessageList`](./message_list.mdx).
 
@@ -104,13 +106,13 @@ If true, onPress handler will be disabled.
 | ------- | ------- |
 | boolean | false   |
 
-### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setblurtype)_</div> setBlurType {#setblurtype}
-
-<SetBlurType />
-
 ### <div class="label description">_overrides the value from [ImageGalleryContext](../contexts/image_gallery_context.mdx#setimage)_</div> setImage {#setimage}
 
 <SetImage />
+
+### <div class="label description">_overrides the value from [ImageGalleryContext](../contexts/image_gallery_context.mdx#setimages)_</div> setImages {#setimages}
+
+<SetImages />
 
 ### <div class="label description">_overrides the value from [OverlayContext](../contexts/overlay_context.mdx#setoverlay)_</div> setOverlay {#setoverlay}
 
@@ -119,3 +121,11 @@ If true, onPress handler will be disabled.
 ### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#threadlist)_</div> threadList {#threadlist}
 
 <ThreadList />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#videos)_</div> videos {#videos}
+
+<Videos />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/messages_context.mdx#videothumbnail)_</div> VideoThumbnail {#videoThumbnail}
+
+<VideoThumbnail />

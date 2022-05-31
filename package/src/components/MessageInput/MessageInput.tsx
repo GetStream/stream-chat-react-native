@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -29,10 +29,8 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
-import type { Asset } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -44,6 +42,8 @@ const styles = StyleSheet.create({
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
+    paddingLeft: 16,
+    paddingRight: 16,
   },
   composerContainer: {
     alignItems: 'flex-end',
@@ -52,28 +52,6 @@ const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
     padding: 10,
-  },
-  editingBoxHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-  editingBoxHeaderTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  giphyContainer: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    height: 24,
-    marginRight: 8,
-    paddingHorizontal: 8,
-  },
-  giphyText: {
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   inputBoxContainer: {
     borderRadius: 20,
@@ -120,6 +98,9 @@ type MessageInputPropsWithContext<
     | 'Input'
     | 'inputBoxRef'
     | 'InputButtons'
+    | 'InputEditingStateHeader'
+    | 'InputGiphySearch'
+    | 'InputReplyStateHeader'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
     | 'mentionedUsers'
@@ -133,7 +114,9 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'removeFile'
     | 'removeImage'
+    | 'uploadNewFile'
     | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
@@ -160,8 +143,6 @@ const MessageInputWithContext = <
     asyncIds,
     asyncUploads,
     AutoCompleteSuggestionList,
-    clearEditingState,
-    clearQuotedMessageState,
     closeAttachmentPicker,
     cooldownEndsAt,
     CooldownTimer,
@@ -175,26 +156,28 @@ const MessageInputWithContext = <
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     members,
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     Reply,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
-    setGiphyActive,
-    setShowMoreOptions,
     ShowThreadMessageInChannelButton,
     suggestions,
-    t,
     thread,
     threadList,
     triggerType,
+    uploadNewFile,
     uploadNewImage,
     watchers,
   } = props;
@@ -203,25 +186,12 @@ const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        black,
-        border,
-        grey,
-        grey_gainsboro,
-        grey_whisper,
-        white,
-        white_smoke,
-      },
+      colors: { border, grey_whisper, white, white_smoke },
       messageInput: {
         attachmentSelectionBar,
         autoCompleteInputContainer,
         composerContainer,
         container,
-        editingBoxHeader,
-        editingBoxHeaderTitle,
-        giphyContainer,
-        giphyText,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -235,9 +205,11 @@ const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
+    selectedFiles,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
+    setSelectedFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
 
@@ -257,8 +229,11 @@ const MessageInputWithContext = <
   }, []);
 
   const [hasResetImages, setHasResetImages] = useState(false);
+  const [hasResetFiles, setHasResetFiles] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
+  const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
   const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
 
   useEffect(() => {
@@ -270,10 +245,24 @@ const MessageInputWithContext = <
   }, []);
 
   useEffect(() => {
+    setSelectedFiles([]);
+    if (fileUploads.length) {
+      fileUploads.forEach((file) => removeFile(file.id));
+    }
+    return () => setSelectedFiles([]);
+  }, []);
+
+  useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
       setHasResetImages(true);
     }
   }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
+      setHasResetFiles(true);
+    }
+  }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput === false && imageUploads.length) {
@@ -281,31 +270,63 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
+  const uploadImagesHandler = () => {
+    const imagesToUpload = selectedImages.filter((selectedImage) => {
+      const uploadedImage = imageUploads.find(
+        (imageUpload) =>
+          imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+      );
+      return !uploadedImage;
+    });
+    imagesToUpload.forEach((image) => uploadNewImage(image));
+  };
+
+  const removeImagesHandler = () => {
+    const imagesToRemove = imageUploads.filter(
+      (imageUpload) =>
+        !selectedImages.find(
+          (selectedImage) =>
+            selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
+        ),
+    );
+    imagesToRemove.forEach((image) => removeImage(image.id));
+  };
+
   useEffect(() => {
     if (imagesForInput) {
       if (selectedImagesLength > imageUploadsLength) {
         /** User selected an image in bottom sheet attachment picker */
-        const imagesToUpload = selectedImages.filter((selectedImage) => {
-          const uploadedImage = imageUploads.find(
-            (imageUpload) =>
-              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
-          );
-          return !uploadedImage;
-        });
-        imagesToUpload.forEach((image) => uploadNewImage(image));
-      } else if (selectedImagesLength < imageUploadsLength) {
+        uploadImagesHandler();
+      } else {
         /** User de-selected an image in bottom sheet attachment picker */
-        const imagesToRemove = imageUploads.filter(
-          (imageUpload) =>
-            !selectedImages.find(
-              (selectedImage) =>
-                selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
-            ),
-        );
-        imagesToRemove.forEach((image) => removeImage(image.id));
+        removeImagesHandler();
       }
     }
   }, [selectedImagesLength]);
+
+  useEffect(() => {
+    if (selectedFilesLength > fileUploadsLength) {
+      /** User selected a video in bottom sheet attachment picker */
+      const filesToUpload = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return !uploadedFile;
+      });
+      filesToUpload.forEach((file) => uploadNewFile(file));
+    } else {
+      /** User de-selected a video in bottom sheet attachment picker */
+      const filesToRemove = fileUploads.filter(
+        (fileUpload) =>
+          !selectedFiles.find(
+            (selectedFile) =>
+              selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+          ),
+      );
+      filesToRemove.forEach((file) => removeFile(file.id));
+    }
+  }, [selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput) {
@@ -338,6 +359,35 @@ const MessageInputWithContext = <
       }
     }
   }, [imageUploadsLength]);
+
+  useEffect(() => {
+    if (fileUploadsLength < selectedFilesLength) {
+      /** User removed some video from seleted files within ImageUploadPreview. */
+      const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return uploadedFile;
+      });
+      setSelectedFiles(updatedSelectedFiles);
+    } else if (fileUploadsLength > selectedFilesLength) {
+      /**
+       * User is editing some message which contains video attachments OR
+       * video attachment is added from custom image picker (other than the default bottomsheet image picker)
+       * using `uploadNewFile` function from `MessageInputContext`.
+       **/
+      setSelectedFiles(
+        fileUploads.map((fileUpload) => ({
+          duration: fileUpload.file.duration,
+          name: fileUpload.file.name,
+          size: fileUpload.file.size,
+          type: fileUpload.file.type,
+          uri: fileUpload.file.uri,
+        })),
+      );
+    }
+  }, [fileUploadsLength]);
 
   const editingExists = !!editing;
   useEffect(() => {
@@ -434,33 +484,8 @@ const MessageInputWithContext = <
         }) => setHeight(newHeight)}
         style={[styles.container, { backgroundColor: white, borderColor: border }, container]}
       >
-        {(editing || quotedMessage) && (
-          <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-            {editing ? (
-              <Edit pathFill={grey_gainsboro} />
-            ) : (
-              <CurveLineLeftUp pathFill={grey_gainsboro} />
-            )}
-            <Text style={[styles.editingBoxHeaderTitle, { color: black }, editingBoxHeaderTitle]}>
-              {editing ? t('Editing Message') : t('Reply to Message')}
-            </Text>
-            <TouchableOpacity
-              disabled={disabled}
-              onPress={() => {
-                resetInput();
-                if (editing) {
-                  clearEditingState();
-                }
-                if (quotedMessage) {
-                  clearQuotedMessageState();
-                }
-              }}
-              testID='close-button'
-            >
-              <CircleClose pathFill={grey} />
-            </TouchableOpacity>
-          </View>
-        )}
+        {editing && <InputEditingStateHeader />}
+        {quotedMessage && <InputReplyStateHeader />}
         <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
@@ -500,45 +525,16 @@ const MessageInputWithContext = <
                   />
                 ) : null}
                 {fileUploads.length ? <FileUploadPreview /> : null}
-                <View
-                  style={[
-                    styles.autoCompleteInputContainer,
-                    {
-                      paddingLeft: giphyActive ? 8 : 16,
-                      paddingRight: giphyActive ? 10 : 16,
-                    },
-                    autoCompleteInputContainer,
-                  ]}
-                >
-                  {giphyActive && (
-                    <View
-                      style={[
-                        styles.giphyContainer,
-                        { backgroundColor: accent_blue },
-                        giphyContainer,
-                      ]}
-                    >
-                      <Lightning height={16} pathFill={white} width={16} />
-                      <Text style={[styles.giphyText, { color: white }, giphyText]}>GIPHY</Text>
-                    </View>
-                  )}
-                  <AutoCompleteInput<StreamChatGenerics>
-                    additionalTextInputProps={additionalTextInputProps}
-                    cooldownActive={!!cooldownRemainingSeconds}
-                  />
-                  {giphyActive && (
-                    <TouchableOpacity
-                      disabled={disabled}
-                      onPress={() => {
-                        setGiphyActive(false);
-                        setShowMoreOptions(true);
-                      }}
-                      testID='close-button'
-                    >
-                      <CircleClose height={20} pathFill={grey} width={20} />
-                    </TouchableOpacity>
-                  )}
-                </View>
+                {giphyActive ? (
+                  <InputGiphySearch />
+                ) : (
+                  <View style={[styles.autoCompleteInputContainer, autoCompleteInputContainer]}>
+                    <AutoCompleteInput<StreamChatGenerics>
+                      additionalTextInputProps={additionalTextInputProps}
+                      cooldownActive={!!cooldownRemainingSeconds}
+                    />
+                  </View>
+                )}
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
                 {cooldownRemainingSeconds ? (
@@ -745,11 +741,15 @@ export const MessageInput = <
     Input,
     inputBoxRef,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     isValidMessage,
     maxNumberOfFiles,
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     resetInput,
     SendButton,
@@ -760,6 +760,7 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext<StreamChatGenerics>();
 
@@ -805,12 +806,16 @@ export const MessageInput = <
         Input,
         inputBoxRef,
         InputButtons,
+        InputEditingStateHeader,
+        InputGiphySearch,
+        InputReplyStateHeader,
         isValidMessage,
         maxNumberOfFiles,
         members,
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
+        removeFile,
         removeImage,
         Reply,
         resetInput,
@@ -825,6 +830,7 @@ export const MessageInput = <
         t,
         thread,
         triggerType,
+        uploadNewFile,
         uploadNewImage,
         watchers,
       }}

@@ -164,7 +164,6 @@ const ChannelListMessengerWithContext = <
         ListHeaderComponent={ListFooterComponent}
         onEndReached={onEndReached}
         onEndReachedThreshold={loadMoreThreshold}
-        // @ts-expect-error waiting for this merged PR to be released https://github.com/software-mansion/react-native-gesture-handler/pull/1394
         ref={setFlatListRef}
         refreshControl={<RefreshControl onRefresh={refreshList} refreshing={refreshing} />}
         renderItem={renderItem}

@@ -172,37 +172,37 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelAvatar.tsx)
+   * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
   PreviewAvatar?: React.ComponentType<ChannelAvatarProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview of latest message on channel.
    *
-   * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
+   * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
   PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render muted status.
    *
-   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
+   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
    */
   PreviewMutedStatus?: React.ComponentType<ChannelPreviewMutedStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
+   * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
    */
   PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
+   * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
   PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
+   * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
 };

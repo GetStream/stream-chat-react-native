@@ -1,4 +1,4 @@
-Please check the `ChatContextValue` in [ChatContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/chatContext/ChatContext.tsx), for consumable values.
+Please check the `ChatContextValue` in [ChatContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/chatContext/ChatContext.tsx), for consumable values.
 Provider for this context exists in `Chat` component. And so, any child component of Chat
 can get access to context as following:
 

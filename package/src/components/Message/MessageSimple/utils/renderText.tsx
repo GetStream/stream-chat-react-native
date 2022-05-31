@@ -17,6 +17,8 @@ import {
   State,
 } from 'simple-markdown';
 
+import type { UserResponse } from 'stream-chat';
+
 import { parseLinksFromText } from './parseLinks';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
@@ -147,16 +149,26 @@ export const renderText = <
     },
   };
 
-  const onLink = (url: string) =>
-    onLinkParams
+  const onLink = (url: string) => {
+    const pattern = new RegExp(/^\S+:\/\//);
+    if (!pattern.test(url)) {
+      url = 'http://' + url;
+    }
+
+    return onLinkParams
       ? onLinkParams(url)
       : Linking.canOpenURL(url).then((canOpenUrl) => canOpenUrl && Linking.openURL(url));
+  };
 
   const link: ReactNodeOutput = (node, output, { ...state }) => {
+    const url = node.target;
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
-          defaultHandler: () => onLink(node.target),
+          additionalInfo: { url },
+          defaultHandler: () => {
+            onLink(url);
+          },
           emitter: 'textLink',
           event,
         });
@@ -166,6 +178,7 @@ export const renderText = <
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
         onLongPressParam({
+          additionalInfo: { url },
           emitter: 'textLink',
           event,
         });
@@ -205,9 +218,16 @@ export const renderText = <
   const match: MatchFunction = (source) => regEx.exec(source);
 
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) => {
+    /**removes the @ prefix of username */
+    const userName = node.content[0]?.content?.substring(1);
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
+          additionalInfo: {
+            user: mentioned_users?.find(
+              (user: UserResponse<StreamChatGenerics>) => userName === user.name,
+            ),
+          },
           emitter: 'textMention',
           event,
         });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgressIndicator 1`] = `
+exports[`UploadProgressIndicator should render an active UploadProgressIndicator 1`] = `
 <View
   style={
     Array [
@@ -46,6 +46,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
         Object {},
       ]
     }
+    testID="not-supported-upload-progress-indicator"
   >
     <View
       style={
@@ -61,10 +62,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       }
     >
       <ActivityIndicator
-        animating={true}
         color="#F2F2F2"
-        hidesWhenStopped={true}
-        size="small"
         testID="upload-progress-indicator"
       />
     </View>
@@ -72,7 +70,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
 </View>
 `;
 
-exports[`UploadProgressIndicator should render an active RETRY UploadProgressIndicator 1`] = `
+exports[`UploadProgressIndicator should render an active UploadProgressIndicator and in-progress indicator 1`] = `
 <View
   style={
     Array [
@@ -118,9 +116,128 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
         Object {},
       ]
     }
+    testID="not-supported-upload-progress-indicator"
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "bottom": 0,
+          "justifyContent": "center",
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    >
+      <ActivityIndicator
+        color="#F2F2F2"
+        testID="upload-progress-indicator"
+      />
+    </View>
+  </View>
+</View>
+`;
+
+exports[`UploadProgressIndicator should render an active UploadProgressIndicator and not-supported indicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="active-upload-progress-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "opacity": 0,
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "overflow": "hidden",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+    testID="not-supported-upload-progress-indicator"
+  />
+</View>
+`;
+
+exports[`UploadProgressIndicator should render an active UploadProgressIndicator and retry indicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "overflow": "hidden",
+      },
+      undefined,
+    ]
+  }
+  testID="active-upload-progress-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "opacity": 0,
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "height": "100%",
+          "justifyContent": "center",
+          "position": "absolute",
+          "width": "100%",
+        },
+        Object {
+          "backgroundColor": "#000000CC",
+        },
+        Object {},
+      ]
+    }
+    testID="not-supported-upload-progress-indicator"
   >
     <View
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -190,21 +307,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
 </View>
 `;
 
-exports[`UploadProgressIndicator should render an inactive IN_PROGRESS UploadProgressIndicator 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "overflow": "hidden",
-      },
-      undefined,
-    ]
-  }
-  testID="inactive-upload-progress-indicator"
-/>
-`;
-
-exports[`UploadProgressIndicator should render an inactive RETRY UploadProgressIndicator 1`] = `
+exports[`UploadProgressIndicator should render an inactive UploadProgressIndicator 1`] = `
 <View
   style={
     Array [

@@ -98,24 +98,22 @@ describe('Thread', () => {
     let setLastRead;
 
     const { getByText, toJSON } = render(
-      <OverlayProvider>
-        <ChannelsStateProvider>
-          <Chat client={chatClient} i18nInstance={i18nInstance}>
-            <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
-              <ImageGalleryProvider>
-                <Channel channel={channel} client={chatClient} thread={thread} threadList>
-                  <ChannelContext.Consumer>
-                    {(c) => {
-                      setLastRead = c.setLastRead;
-                      return <Thread />;
-                    }}
-                  </ChannelContext.Consumer>
-                </Channel>
-              </ImageGalleryProvider>
-            </AttachmentPickerProvider>
-          </Chat>
-        </ChannelsStateProvider>
-      </OverlayProvider>,
+      <ChannelsStateProvider>
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <AttachmentPickerProvider value={{ closePicker: jest.fn(), openPicker: jest.fn() }}>
+            <ImageGalleryProvider>
+              <Channel channel={channel} client={chatClient} thread={thread} threadList>
+                <ChannelContext.Consumer>
+                  {(c) => {
+                    setLastRead = c.setLastRead;
+                    return <Thread />;
+                  }}
+                </ChannelContext.Consumer>
+              </Channel>
+            </ImageGalleryProvider>
+          </AttachmentPickerProvider>
+        </Chat>
+      </ChannelsStateProvider>,
     );
 
     await waitFor(() => {

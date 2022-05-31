@@ -82,6 +82,7 @@ import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
+import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
@@ -105,6 +106,9 @@ import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
+import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
+import { InputReplyStateHeader as InputReplyStateHeaderDefault } from '../MessageInput/components/InputReplyStateHeader';
 import { CooldownTimer as CooldownTimerDefault } from '../MessageInput/CooldownTimer';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
@@ -238,6 +242,7 @@ export type ChannelPropsWithContext<
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
+      | 'giphyVersion'
       | 'handleBlock'
       | 'handleCopy'
       | 'handleDelete'
@@ -251,6 +256,7 @@ export type ChannelPropsWithContext<
       | 'handleThreadReply'
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
+      | 'isAttachmentEqual'
       | 'legacyImageViewerSwipeBehaviour'
       | 'markdownRules'
       | 'Message'
@@ -282,6 +288,7 @@ export type ChannelPropsWithContext<
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
+      | 'VideoThumbnail'
     >
   > &
   Partial<
@@ -299,7 +306,7 @@ export type ChannelPropsWithContext<
     /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
-     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
      * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
      * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
@@ -340,7 +347,7 @@ export type ChannelPropsWithContext<
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      *
      * **Example:**
      *
@@ -366,7 +373,7 @@ export type ChannelPropsWithContext<
     maxMessageLength?: number;
     messageId?: string;
     newMessageStateUpdateThrottleInterval?: number;
-    overrideOwnCapabilities?: OwnCapabilitiesContextValue;
+    overrideOwnCapabilities?: Partial<OwnCapabilitiesContextValue>;
     stateUpdateThrottleInterval?: number;
     /**
      * Tells if channel is rendering a thread list
@@ -426,6 +433,7 @@ const ChannelWithContext = <
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
+    giphyVersion = 'fixed_height',
     globalUnreadCountLimit = 255,
     handleBlock,
     handleCopy,
@@ -450,6 +458,10 @@ const ChannelWithContext = <
     InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     InputButtons = InputButtonsDefault,
+    InputEditingStateHeader = InputEditingStateHeaderDefault,
+    InputGiphySearch = InputGiphyCommandInputDefault,
+    InputReplyStateHeader = InputReplyStateHeaderDefault,
+    isAttachmentEqual,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -524,6 +536,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
+    VideoThumbnail = VideoThumbnailDefault,
     watcherCount,
     watchers,
   } = props;
@@ -1596,7 +1609,7 @@ const ChannelWithContext = <
     watchers,
   });
 
-  const inputMessageInputContext = useCreateInputMessageInputContext({
+  const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
     autoCompleteSuggestionsLimit,
@@ -1619,6 +1632,9 @@ const ChannelWithContext = <
     initialValue,
     Input,
     InputButtons,
+    InputEditingStateHeader,
+    InputGiphySearch,
+    InputReplyStateHeader,
     maxMessageLength: maxMessageLengthProp ?? clientChannelConfig?.max_message_length ?? undefined,
     maxNumberOfFiles,
     mentionAllAppUsersEnabled,
@@ -1672,6 +1688,7 @@ const ChannelWithContext = <
     formatDate,
     Gallery,
     Giphy,
+    giphyVersion,
     handleBlock,
     handleCopy,
     handleDelete,
@@ -1686,6 +1703,7 @@ const ChannelWithContext = <
     initialScrollToFirstUnreadMessage,
     InlineDateSeparator,
     InlineUnreadIndicator,
+    isAttachmentEqual,
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,
@@ -1723,6 +1741,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer,
     updateMessage,
     UrlPreview,
+    VideoThumbnail,
   });
 
   const suggestionsContext = {

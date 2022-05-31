@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BackHandler,
   Dimensions,
@@ -7,6 +7,7 @@ import {
   Platform,
   StatusBar,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
@@ -15,42 +16,161 @@ import BottomSheet, {
   BottomSheetHandleProps,
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import { lookup } from 'mime-types';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Asset, getPhotos } from '../../native';
+import { Recorder } from '../../icons';
+import { getPhotos } from '../../native';
+import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
+
+dayjs.extend(duration);
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
   },
+  durationText: {
+    fontWeight: 'bold',
+  },
   overlay: {
     alignItems: 'flex-end',
     flex: 1,
   },
+  videoView: {
+    bottom: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 5,
+    position: 'absolute',
+    width: '100%',
+  },
 });
 
 const screenHeight = vh(100);
-const fullScreenHeight = Dimensions.get('screen').height;
+const fullScreenHeight = Dimensions.get('window').height;
 
 type AttachmentImageProps = {
+  asset: Asset;
   ImageOverlaySelectedComponent: React.ComponentType;
-  onPress: () => void;
+  maxNumberOfFiles: number;
   selected: boolean;
-  uri: string;
+  setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   numberOfAttachmentPickerImageColumns?: number;
+};
+
+type AttachmentVideoProps = {
+  asset: Asset;
+  ImageOverlaySelectedComponent: React.ComponentType;
+  maxNumberOfFiles: number;
+  selected: boolean;
+  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  numberOfAttachmentPickerImageColumns?: number;
+};
+
+const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
+  const {
+    asset,
+    ImageOverlaySelectedComponent,
+    maxNumberOfFiles,
+    numberOfAttachmentPickerImageColumns,
+    selected,
+    setSelectedFiles,
+  } = props;
+
+  const {
+    theme: {
+      attachmentPicker: { durationText, image, imageOverlay },
+      colors: { overlay, white },
+    },
+  } = useTheme();
+
+  const { duration, playableDuration, uri } = asset;
+
+  const videoDuration = duration ? duration : playableDuration;
+
+  const ONE_HOUR_IN_SECONDS = 3600;
+
+  let durationLabel = '00:00';
+
+  if (videoDuration) {
+    const isDurationLongerThanHour = videoDuration / ONE_HOUR_IN_SECONDS >= 1;
+    const formattedDurationParam = isDurationLongerThanHour ? 'HH:mm:ss' : 'mm:ss';
+    const formattedVideoDuration = dayjs
+      .duration(videoDuration, 'second')
+      .format(formattedDurationParam);
+    durationLabel = formattedVideoDuration;
+  }
+
+  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
+
+  const onPressVideo = () => {
+    if (selected) {
+      setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
+    } else {
+      setSelectedFiles((files) => {
+        if (files.length >= maxNumberOfFiles) {
+          return files;
+        }
+        return [
+          ...files,
+          {
+            duration: durationLabel,
+            name: asset.filename,
+            size: asset.fileSize,
+            type: 'video',
+            uri: asset.uri,
+          },
+        ];
+      });
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={onPressVideo}>
+      <ImageBackground
+        source={{ uri }}
+        style={[
+          {
+            height: size,
+            margin: 1,
+            width: size,
+          },
+          image,
+        ]}
+      >
+        {selected && (
+          <View style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}>
+            <ImageOverlaySelectedComponent />
+          </View>
+        )}
+        <View style={styles.videoView}>
+          <Recorder height={20} pathFill={white} width={25} />
+          {videoDuration ? (
+            <Text style={[styles.durationText, durationText, { color: white }]}>
+              {durationLabel}
+            </Text>
+          ) : null}
+        </View>
+      </ImageBackground>
+    </TouchableOpacity>
+  );
 };
 
 const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   const {
+    asset,
     ImageOverlaySelectedComponent,
+    maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
-    onPress,
     selected,
-    uri,
+    setSelectedImages,
   } = props;
   const {
     theme: {
@@ -61,8 +181,23 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
+  const { uri } = asset;
+
+  const onPressImage = () => {
+    if (selected) {
+      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
+    } else {
+      setSelectedImages((images) => {
+        if (images.length >= maxNumberOfFiles) {
+          return images;
+        }
+        return [...images, asset];
+      });
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPressImage}>
       <ImageBackground
         source={{ uri }}
         style={[
@@ -92,6 +227,7 @@ const renderImage = ({
     ImageOverlaySelectedComponent: React.ComponentType;
     maxNumberOfFiles: number;
     selected: boolean;
+    setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
     setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
     numberOfAttachmentPickerImageColumns?: number;
   };
@@ -102,55 +238,64 @@ const renderImage = ({
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
     selected,
+    setSelectedFiles,
     setSelectedImages,
   } = item;
-  const onPress = () => {
-    if (selected) {
-      setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
-    } else {
-      setSelectedImages((images) => {
-        if (images.length >= maxNumberOfFiles) {
-          return images;
-        }
-        return [...images, asset];
-      });
-    }
-  };
 
-  return (
+  const contentType = lookup(asset.filename) || 'multipart/form-data';
+
+  const fileType = asset.filename
+    ? contentType.startsWith('image/')
+      ? 'image'
+      : 'video'
+    : asset.type === 'video'
+    ? 'video'
+    : 'image';
+
+  return fileType === 'image' ? (
     <AttachmentImage
+      asset={asset}
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
-      onPress={onPress}
       selected={selected}
-      uri={asset.uri}
+      setSelectedImages={setSelectedImages}
+    />
+  ) : (
+    <AttachmentVideo
+      asset={asset}
+      ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
+      maxNumberOfFiles={maxNumberOfFiles}
+      numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+      selected={selected}
+      setSelectedFiles={setSelectedFiles}
     />
   );
 };
 
 export type AttachmentPickerProps = {
   /**
-   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png) of attachment picker.
+   * Custom UI component to render [draggable handle](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) of attachment picker.
    *
-   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
+   * **Default** [AttachmentPickerBottomSheetHandle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle.tsx)
    */
   AttachmentPickerBottomSheetHandle: React.FC<BottomSheetHandleProps>;
   /**
    * Custom UI component to render error component while opening attachment picker.
    *
-   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
+   * **Default** [AttachmentPickerError](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerError.tsx)
    */
   AttachmentPickerError: React.ComponentType<AttachmentPickerErrorProps>;
   /**
    * Custom UI component to render error image for attachment picker
    *
-   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
+   * **Default** [AttachmentPickerErrorImage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/AttachmentPickerErrorImage.tsx)
    */
   AttachmentPickerErrorImage: React.ComponentType;
   /**
-   * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png) (with tick mark)
+   * Custom UI component to render overlay component, that shows up on top of [selected image](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png) (with tick mark)
    *
-   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
+   * **Default** [ImageOverlaySelectedComponent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageOverlaySelectedComponent.tsx)
    */
   ImageOverlaySelectedComponent: React.ComponentType;
   attachmentPickerBottomSheetHandleHeight?: number;
@@ -187,8 +332,10 @@ export const AttachmentPicker = React.forwardRef(
     const {
       closePicker,
       maxNumberOfFiles,
+      selectedFiles,
       selectedImages,
       selectedPicker,
+      setSelectedFiles,
       setSelectedImages,
       setSelectedPicker,
       topInset,
@@ -200,13 +347,7 @@ export const AttachmentPicker = React.forwardRef(
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [photos, setPhotos] = useState<Asset[]>([]);
-
-    const hideAttachmentPicker = () => {
-      setSelectedPicker(undefined);
-      if ((ref as React.MutableRefObject<BottomSheet>)?.current) {
-        (ref as React.MutableRefObject<BottomSheet>).current.close();
-      }
-    };
+    const bottomSheetCloseOnKeyboardShowTimeout = useRef<NodeJS.Timeout>();
 
     const getMorePhotos = async () => {
       if (hasNextPage && !loadingPhotos && currentIndex > -1 && selectedPicker === 'images') {
@@ -248,17 +389,39 @@ export const AttachmentPicker = React.forwardRef(
     }, [selectedPicker]);
 
     useEffect(() => {
-      if (Platform.OS === 'ios') {
-        Keyboard.addListener('keyboardWillShow', hideAttachmentPicker);
-      } else {
-        Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
-      }
+      const hideAttachmentPicker = () => {
+        if (bottomSheetCloseOnKeyboardShowTimeout.current) {
+          clearTimeout(bottomSheetCloseOnKeyboardShowTimeout.current);
+        }
+        setSelectedPicker(undefined);
+        // This short timeout is to prevent a race condition
+        // where the close function is called during the point when a internal container layout happens within the bottomsheet due to keyboard affecting the layout
+        // If the container layout measures a shorter height than previous but if the close snapped to the previous height's position, the bottom sheet will show up
+        // this short delay ensures that close function is always called after a container layout due to keyboard change
+        bottomSheetCloseOnKeyboardShowTimeout.current = setTimeout(
+          () => (ref as React.MutableRefObject<BottomSheet | undefined>).current?.close(),
+          150,
+        );
+      };
+      const keyboardSubscription =
+        Platform.OS === 'ios'
+          ? Keyboard.addListener('keyboardWillShow', hideAttachmentPicker)
+          : Keyboard.addListener('keyboardDidShow', hideAttachmentPicker);
 
       return () => {
+        if (keyboardSubscription?.remove) {
+          keyboardSubscription.remove();
+          return;
+        }
+
+        // To keep compatibility with older versions of React Native, where `remove()` is not available
         if (Platform.OS === 'ios') {
           Keyboard.removeListener('keyboardWillShow', hideAttachmentPicker);
         } else {
           Keyboard.removeListener('keyboardDidShow', hideAttachmentPicker);
+        }
+        if (bottomSheetCloseOnKeyboardShowTimeout.current) {
+          clearTimeout(bottomSheetCloseOnKeyboardShowTimeout.current);
         }
       };
     }, []);
@@ -290,7 +453,10 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      selected: selectedImages.some((image) => image.uri === asset.uri),
+      selected:
+        selectedImages.some((image) => image.uri === asset.uri) ||
+        selectedFiles.some((file) => file.uri === asset.uri),
+      setSelectedFiles,
       setSelectedImages,
     }));
 
@@ -321,24 +487,23 @@ export const AttachmentPicker = React.forwardRef(
           : statusBarHeight
         : 0;
 
+    const initialSnapPoint =
+      attachmentPickerBottomSheetHeight ?? Platform.OS === 'android'
+        ? 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight
+        : 308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment);
+
+    const finalSnapPoint =
+      Platform.OS === 'android'
+        ? fullScreenHeight - topInset - handleHeight
+        : fullScreenHeight - topInset;
+
     /**
      * Snap points changing cause a rerender of the position,
      * this is an issue if you are calling close on the bottom sheet.
      */
     const snapPoints = useMemo(
-      () => [
-        attachmentPickerBottomSheetHeight ??
-          308 + (fullScreenHeight - screenHeight + androidBottomBarHeightAdjustment) - handleHeight,
-        fullScreenHeight - topInset - handleHeight,
-      ],
-      [
-        androidBottomBarHeightAdjustment,
-        attachmentPickerBottomSheetHeight,
-        fullScreenHeight,
-        handleHeight,
-        screenHeight,
-        topInset,
-      ],
+      () => [initialSnapPoint, finalSnapPoint],
+      [initialSnapPoint, finalSnapPoint],
     );
 
     return (
@@ -355,7 +520,7 @@ export const AttachmentPicker = React.forwardRef(
           }
           handleHeight={handleHeight}
           index={-1}
-          onChange={(index: number) => setCurrentIndex(index)}
+          onChange={setCurrentIndex}
           ref={ref}
           snapPoints={snapPoints}
         >

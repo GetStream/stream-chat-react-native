@@ -49,6 +49,7 @@ import FormatDate from '../common-content/core-components/channel/props/format_d
 import Gallery from '../common-content/core-components/channel/props/gallery.mdx';
 import Giphy from '../common-content/core-components/channel/props/giphy.mdx';
 import GiphyEnabled from '../common-content/core-components/channel/props/giphy_enabled.mdx';
+import GiphyVersion from '../common-content/core-components/channel/props/giphy_version.mdx';
 import HandleBlock from '../common-content/core-components/channel/props/handle_block.mdx';
 import HandleCopy from '../common-content/core-components/channel/props/handle_copy.mdx';
 import HandleDelete from '../common-content/core-components/channel/props/handle_delete.mdx';
@@ -72,6 +73,10 @@ import InlineDateSeparator from '../common-content/core-components/channel/props
 import InlineUnreadIndicator from '../common-content/core-components/channel/props/inline_unread_indicator.mdx';
 import Input from '../common-content/core-components/channel/props/input.mdx';
 import InputButtons from '../common-content/core-components/channel/props/input_buttons.mdx';
+import InputEditingStateHeader from '../common-content/core-components/channel/props/input_editing_state_header.mdx';
+import InputGiphySearch from '../common-content/core-components/channel/props/input_giphy_search.mdx';
+import InputReplyStateHeader from '../common-content/core-components/channel/props/input_reply_state_header.mdx';
+import IsAttachmentEqual from '../common-content/core-components/channel/props/is_attachment_equal.mdx';
 import LegacyImageViewerSwipeBehaviour from '../common-content/core-components/channel/props/legacy_image_viewer_swipe_behaviour.mdx';
 import MarkdownRules from '../common-content/core-components/channel/props/markdown_rules.mdx';
 import MaxMessageLength from '../common-content/core-components/channel/props/max_message_length.mdx';
@@ -436,6 +441,10 @@ The max allowable is 255, which when reached displays as `255+`.
 | ------ | ------- |
 | number | 255     |
 
+### giphyVersion
+
+<GiphyVersion />
+
 ### handleBlock
 
 <HandleBlock />
@@ -507,6 +516,10 @@ The max allowable is 255, which when reached displays as `255+`.
 ### initialValue
 
 <InitialValue />
+
+### isAttachmentEqual
+
+<IsAttachmentEqual />
 
 ### keyboardBehavior
 
@@ -749,6 +762,18 @@ Callback function to set the [ref](https://reactjs.org/docs/refs-and-the-dom.htm
 
 <InputButtons />
 
+### InputEditingStateHeader
+
+<InputEditingStateHeader />
+
+### InputGiphySearch
+
+<InputGiphySearch />
+
+### InputReplyStateHeader
+
+<InputReplyStateHeader />
+
 ### KeyboardCompatibleView
 
 Component to override underlying default `KeyboardCompatibleView`. Generally you won't need to use this prop at all,
@@ -757,17 +782,17 @@ you can simply use following props instead:
 - [`keyboardVerticalOffset`](#required-keyboardverticaloffset)
 - [`disableKeyboardCompatibleView`](#disablekeyboardcompatibleview)
 
-| Type      | Default                                                                                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| component | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
+| Type      | Default                                                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| component | [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx) |
 
 ### LoadingErrorIndicator
 
 Component to render full screen error indicator, when channel fails to load.
 
-| Type      | Default                                                                                                                                                |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| component | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Indicators/LoadingErrorIndicator.tsx) |
+| Type      | Default                                                                                                                                              |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| component | [LoadingErrorIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Indicators/LoadingErrorIndicator.tsx) |
 
 ### LoadingIndicator
 
@@ -875,9 +900,9 @@ Component to render full screen error indicator, when channel fails to load.
 
 Component to render upload progress indicator as an overlay above [ImageUploadPreview](#imageuploadpreview) and [FileUploadPreview](#fileuploadpreview).
 
-| Type      | Default                                                                                                                                                      |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| component | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/UploadProgressIndicator.tsx) |
+| Type      | Default                                                                                                                                                    |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| component | [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx) |
 
 ### UrlPreview
 

@@ -20,6 +20,7 @@ export const Colors = {
   grey_gainsboro: '#DBDBDB',
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
+  label_bg_transparent: '#00000033', // 33 = 20% opacity
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
@@ -79,6 +80,7 @@ export type MarkdownStyle = Partial<{
 export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
+    durationText: TextStyle;
     errorButtonText: TextStyle;
     errorContainer: ViewStyle;
     errorText: TextStyle;
@@ -194,7 +196,14 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
+    videoControl: {
+      durationTextStyle: TextStyle;
+      roundedView: ViewStyle;
+      videoContainer: ViewStyle;
+    };
     backgroundColor?: string;
+    pager?: ViewStyle;
+    slide?: ImageStyle;
   };
   inlineDateSeparator: {
     container: ViewStyle;
@@ -230,6 +239,10 @@ export type Theme = {
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: TextStyle;
+    editingStateHeader: {
+      editingBoxHeader: ViewStyle;
+      editingBoxHeaderTitle: TextStyle;
+    };
     fileUploadPreview: {
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
@@ -239,8 +252,10 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
-    giphyContainer: ViewStyle;
-    giphyText: TextStyle;
+    giphyCommandInput: {
+      giphyContainer: ViewStyle;
+      giphyText: TextStyle;
+    };
     imageUploadPreview: {
       dismiss: ViewStyle;
       flatList: ViewStyle;
@@ -325,6 +340,7 @@ export type Theme = {
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
       wrapper: ViewStyle;
+      chevronColor?: Color;
     };
     typingIndicatorContainer: ViewStyle;
   };
@@ -379,7 +395,7 @@ export type Theme = {
       eyeIcon: IconProps;
       /**
        * Available options for styling text:
-       * https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js
+       * https://github.com/andangrd/react-native-markdown-package/blob/main/styles.js
        */
       markdown: MarkdownStyle;
       messageUser: TextStyle;
@@ -465,6 +481,10 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageUnderlay: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
   };
   overlay: {
     container: ViewStyle;
@@ -520,6 +540,7 @@ export type Theme = {
 export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
+    durationText: {},
     errorButtonText: {},
     errorContainer: {},
     errorText: {},
@@ -657,6 +678,11 @@ export const defaultTheme: Theme = {
       rightContainer: {},
       usernameText: {},
     },
+    videoControl: {
+      durationTextStyle: {},
+      roundedView: {},
+      videoContainer: {},
+    },
   },
   inlineDateSeparator: {
     container: {},
@@ -692,6 +718,10 @@ export const defaultTheme: Theme = {
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
+    editingStateHeader: {
+      editingBoxHeader: {},
+      editingBoxHeaderTitle: {},
+    },
     fileUploadPreview: {
       dismiss: {},
       fileContainer: {},
@@ -701,8 +731,10 @@ export const defaultTheme: Theme = {
       fileTextContainer: {},
       flatList: {},
     },
-    giphyContainer: {},
-    giphyText: {},
+    giphyCommandInput: {
+      giphyContainer: {},
+      giphyText: {},
+    },
     imageUploadPreview: {
       dismiss: {},
       flatList: {},
@@ -965,6 +997,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageUnderlay: {},
+    videoThumbnail: {
+      container: {},
+      roundedView: {},
+    },
   },
   overlay: {
     container: {},

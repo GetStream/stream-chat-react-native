@@ -3,28 +3,23 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../SendButton';
 
 describe('SendButton', () => {
+  const getComponent = ({ editing, ...rest } = {}) => (
+    <ThemeProvider>
+      <MessagesProvider value={{ editing }}>
+        <SendButton {...rest} />
+      </MessagesProvider>
+    </ThemeProvider>
+  );
+
   it('should render a non-editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider>
-          <Chat>
-            <Channel>
-              <MessagesProvider value={{ editing: false }}>
-                <SendButton sendMessage={sendMessage} />
-              </MessagesProvider>
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
+      getComponent({ editing: false, sendMessage }),
     );
 
     await waitFor(() => {
@@ -47,17 +42,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider>
-          <Chat>
-            <Channel>
-              <MessagesProvider value={{ editing: false }}>
-                <SendButton disabled sendMessage={sendMessage} />
-              </MessagesProvider>
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
+      getComponent({ disabled: true, editing: false, sendMessage }),
     );
 
     await waitFor(() => {
@@ -80,17 +65,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider>
-          <Chat>
-            <Channel>
-              <MessagesProvider value={{ editing: true }}>
-                <SendButton sendMessage={sendMessage} />
-              </MessagesProvider>
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
+      getComponent({ editing: true, sendMessage }),
     );
 
     await waitFor(() => {
@@ -113,11 +88,7 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ThemeProvider>
-        <MessagesProvider value={{ editing: true }}>
-          <SendButton disabled sendMessage={sendMessage} />
-        </MessagesProvider>
-      </ThemeProvider>,
+      getComponent({ disabled: true, editing: true, sendMessage }),
     );
 
     await waitFor(() => {

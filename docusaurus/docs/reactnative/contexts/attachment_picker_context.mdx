@@ -86,6 +86,20 @@ Function to open the attachment picker bottom sheet.
 | -------- |
 | function |
 
+### selectedFiles
+
+List of currently selected files in attachment picker.
+
+```tsx
+Array<{
+  duration: number | null;
+  name: string;
+  size: string;
+  type: string;
+  uri: string;
+}>
+```
+
 ### selectedImages
 
 List of currently selected images in attachment picker.
@@ -117,6 +131,14 @@ Setter function for [`bottomInset`](#bottominset)
 | `(bottomInset: number) => void` |
 
 <!-- ### setMaxNumberOfFiles -->
+
+### setSelectedFiles
+
+Setter function for [`selectedFiles`](#selectedFiles)
+
+| Type                      |
+| ------------------------- |
+| `(selectedFiles) => void` |
 
 ### setSelectedImages
 

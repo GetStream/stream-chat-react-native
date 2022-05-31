@@ -4,11 +4,11 @@ buildscript {
     ext {
         buildToolsVersion = "30.0.3"
         minSdkVersion = 21
-        compileSdkVersion = 30
+        compileSdkVersion = 31
         targetSdkVersion = 30
         androidXCore = "1.0.2"
         ndkVersion = "21.4.7075529"
-        kotlinVersion = '1.3.10'
+        kotlinVersion = '1.5.30'
     }
     repositories {
         google()
@@ -20,14 +20,12 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.4'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
     }
 }
 
 allprojects {
     repositories {
-        mavenCentral()
-        mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -36,12 +34,22 @@ allprojects {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
         }
-
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
         google()
-        maven { url 'https://maven.google.com' }
+        jcenter()
         maven { url 'https://www.jitpack.io' }
         maven {
             url "$rootDir/../../../node_modules/detox/Detox-android"
+        }
+        // this is how Notifee finds it's Android library:
+        maven {
+            url "$rootDir/../node_modules/@notifee/react-native/android/libs"
         }
     }
 }

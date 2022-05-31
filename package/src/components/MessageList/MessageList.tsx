@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   FlatListProps,
   FlatList as FlatListType,
+  Platform,
   ScrollViewProps,
   StyleSheet,
   View,
@@ -389,6 +390,22 @@ const MessageListWithContext = <
    */
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
+      /**
+       * When a new message comes in, list scrolls down to the bottom automatically (using prop `maintainVisibleContentPosition`)
+       * and we mark the channel as read from handleScroll function.
+       * Although this logic is dependent on the fact that `onScroll` event gets triggered during this process.
+       * But for Android, this event is not triggered when messages length is lesser than visible screen height.
+       *
+       * And thus we need to check if the message list length is lesser than visible screen height and mark the channel as read.
+       */
+      if (
+        Platform.OS === 'android' &&
+        viewableItems?.length &&
+        viewableItems?.length >= messageListLengthBeforeUpdate.current
+      ) {
+        channel.markRead();
+      }
+
       if (viewableItems && !hideStickyDateHeader) {
         updateStickyHeaderDateIfNeeded(viewableItems);
       }
@@ -448,7 +465,6 @@ const MessageListWithContext = <
       if (!client || !channel || messageList.length === 0) {
         return;
       }
-
       if (
         (hasNewMessage && isMyMessage) ||
         messageListLengthAfterUpdate < messageListLengthBeforeUpdate.current ||

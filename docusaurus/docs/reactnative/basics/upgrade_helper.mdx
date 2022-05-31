@@ -244,11 +244,18 @@ Please refer to our typescript guide for details of [Generics](../customization/
 ### Optimized Image Attachments
 
 [Gallery](../ui-components/gallery.mdx) component has been revamped to be more performant and more responsive.
-Heavy images have been one of the crucial reasons previously for slow performance on low end devices. In this version of SDK,
-we render resized version of images to avoid heavy load on memory.
+Heavy images have been one of the crucial reasons previously for slow performance on low RAM devices. In this version of SDK,
+resized version of images (depending on DP ratio of device) will be requested from new CDN to avoid rendering heavy images on UI.
 
 Also previously all the image attachments used to be rendered in fixed size container, which was not ideal for portrait or landscape images since
 user won't be able to see a cropped image on UI. In this version, we render images in dynamic size container, depending on aspect ratio of image.
+
+:::note
+
+Resizing support on Stream's CDN (mentioned above) has not been released yet. But once available, you will be able to enable it for your organization
+without any changes to your code or SDK version.
+
+:::
 
 <Tabs
   defaultValue='case1'
@@ -442,7 +449,7 @@ api doesn't support pagination and it resulted into confusing user experience.
 
 #### Autocomplete suggestions
 
-Following two new props on `Channel` componenent allows customizing UI for autocomplete suggestions list:
+The following three new props on `Channel` component allows customizing UI for autocomplete suggestions list:
 
 - [`AutoCompleteSuggestionHeader`](../core-components/channel.mdx#autocompletesuggestionheader)
 - [`AutoCompleteSuggestionList`](../core-components/channel.mdx#autocompletesuggestionlist)

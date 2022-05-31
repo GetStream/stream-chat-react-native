@@ -2,27 +2,20 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-import { Channel } from '../../Channel/Channel';
-import { Chat } from '../../Chat/Chat';
 import { AttachButton } from '../AttachButton';
 
 describe('AttachButton', () => {
+  const getComponent = (props = {}) => (
+    <ThemeProvider>
+      <AttachButton {...props} />
+    </ThemeProvider>
+  );
+
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider>
-          <Chat>
-            <Channel>
-              <AttachButton handleOnPress={handleOnPress} />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
-    );
+    const { getByTestId, queryByTestId, toJSON } = render(getComponent({ handleOnPress }));
 
     await waitFor(() => {
       expect(queryByTestId('attach-button')).toBeTruthy();
@@ -44,15 +37,7 @@ describe('AttachButton', () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider>
-          <Chat>
-            <Channel>
-              <AttachButton disabled handleOnPress={handleOnPress} />
-            </Channel>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
+      getComponent({ disabled: true, handleOnPress }),
     );
 
     await waitFor(() => {

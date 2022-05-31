@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
-
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+import { MessageReadStatus } from './hooks/useLatestMessagePreview';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Check, CheckAll } from '../../icons';
@@ -48,9 +48,9 @@ export const ChannelPreviewStatus = <
 
   return (
     <View style={styles.flexRow}>
-      {status === 2 ? (
+      {status === MessageReadStatus.READ ? (
         <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-      ) : status === 1 ? (
+      ) : status === MessageReadStatus.UNREAD ? (
         <Check pathFill={grey} {...checkIcon} />
       ) : null}
       <Text style={[styles.date, { color: grey }, date]}>

@@ -31,7 +31,7 @@ You can use this `ImageGalleryContext` in combination with `OverlayContext` to o
 
 ```tsx
 const { images, setImages } = useImageGalleryContext();
-const { setBlurType, setOverlay } = useOverlayContext();
+const { setOverlay } = useOverlayContext();
 
 onPress={() => {
   setImages(messagesWithImage);
@@ -39,12 +39,11 @@ onPress={() => {
     messageId: selectedItem.messageId,
     url: selectedItem.uri,
   });
-  setBlurType('dark');
   setOverlay('gallery');
 }}
 ```
 
-Please check the implementation of [`ChannelImagesScreen`](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/SampleApp/src/screens/ChannelImagesScreen.tsx) within SampleApp, for exact implementation.
+Please check the implementation of [`ChannelImagesScreen`](https://github.com/GetStream/stream-chat-react-native/blob/main/examples/SampleApp/src/screens/ChannelImagesScreen.tsx) within SampleApp, for exact implementation.
 
 ## Value
 
@@ -67,9 +66,9 @@ Current active image in image viewer/gallery.
 
 All the messages in channel which contain image attachments. Image viewer/gallery uses this array to navigate to next or previous image.
 
-| Type                                                                                                                                          |
-| --------------------------------------------------------------------------------------------------------------------------------------------- |
-| [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/hooks/useMessageList.ts)[] |
+| Type                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/hooks/useMessageList.ts)[] |
 
 ### setImage
 
@@ -79,6 +78,6 @@ All the messages in channel which contain image attachments. Image viewer/galler
 
 Setter for value [images](#images).
 
-| Type                                                                                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| (messageWithImages: [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/hooks/useMessageList.ts)[]) => void |
+| Type                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| (messageWithImages: [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/hooks/useMessageList.ts)[]) => void |

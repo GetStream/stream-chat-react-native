@@ -134,9 +134,9 @@ You can replace the `Input` in its entirety, as in the example above, or create 
 Suppose you would like to replace a specific internal UI component of `MessageInput`; in that case, you can provide your UI component for the default component you want to replace as a prop to the `Channel` component.
 The following images show the prop names for replacing corresponding components. Within your custom UI implementation, you can access all the stateful information via the available contexts.
 
-![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/visualGuide/4.svg)
+![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
 
-![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/master/screenshots/visualGuide/4.svg)
+![](https://raw.githubusercontent.com/GetStream/stream-chat-react-native/main/screenshots/visualGuide/4.svg)
 
 ### Custom Send Button
 
@@ -488,4 +488,93 @@ const CustomAttachButton = () => {
 <ActionSheetProvider>
   <Channel AttachButton={CustomAttachButton} />
 </ActionSheetProvider>;
+```
+
+## Creating a Custom Editing state Header in MessageInput
+
+To make a custom editing state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Editing state header component and pass it inside [InputEditingStateHeader](../core-components/channel.mdx#inputeditingstateheader) prop.
+
+```tsx
+import { Button, Text, View } from 'react-native';
+import { Channel, useMessageInputContext } from 'stream-chat-react-native';
+
+const CustomInputEditingStateHeader = () => {
+  const { clearEditingState, resetInput } = useMessageInputContext();
+  return (
+    <View>
+      <Text>Editing Header</Text>
+      <Button
+        onPress={() => {
+          clearEditingState();
+          resetInput();
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
+
+<Channel channel={channel} InputEditingStateHeader={CustomInputEditingStateHeader}>
+  {/* The underlying components */}
+</Channel>;
+```
+
+## Creating a Custom reply state Header in MessageInput
+
+To make a custom reply state header, you can use the [Channel](../core-components/channel.mdx) component with a custom Reply state header component and pass it inside [InputReplyStateHeader](../core-components/channel.mdx#inputreplystateheader) prop.
+
+```tsx
+import { Button, Text, View } from 'react-native';
+import { Channel, useMessageInputContext } from 'stream-chat-react-native';
+
+const CustomInputReplyStateHeader = () => {
+  const { clearQuotedMessageState, resetInput } = useMessageInputContext();
+  return (
+    <View>
+      <Text>Reply Header</Text>
+      <Button
+        onPress={() => {
+          clearQuotedMessageState();
+          resetInput();
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
+
+<Channel channel={channel} InputReplyStateHeader={CustomInputReplyStateHeader}>
+  {/* The underlying components */}
+</Channel>;
+```
+
+## Creating a custom giphy search input inside MessageInput
+
+To make a custom giphy search input, you can use the [Channel](../core-components/channel.mdx) component with a custom Giphy Search component and pass it inside [InputGiphySearch](../core-components/channel.mdx#inputgiphysearch) prop.
+
+```tsx
+import { Button, Text, View } from 'react-native';
+import { AutoCompleteInput, Channel, useMessageInputContext } from 'stream-chat-react-native';
+
+const CustomInputGiphySearch = () => {
+  const { setGiphyActive, setShowMoreOptions } = useMessageInputContext();
+
+  return (
+    <View>
+      <Text style={{ textAlign: 'center' }}>Giphy</Text>
+      <AutoCompleteInput />
+      <Button
+        onPress={() => {
+          setGiphyActive(false);
+          setShowMoreOptions(true);
+        }}
+        title='Close'
+      />
+    </View>
+  );
+};
+
+<Channel channel={channel} InputGiphySearch={CustomInputGiphySearch}>
+  {/* The underlying components */}
+</Channel>;
 ```

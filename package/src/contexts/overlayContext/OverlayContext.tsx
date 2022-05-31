@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import type Animated from 'react-native-reanimated';
 
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import type { Attachment } from 'stream-chat';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
@@ -53,9 +53,12 @@ export type OverlayProviderProps<
     >
   > &
   Pick<OverlayContextValue, 'translucentStatusBar'> & {
-    overlayOpacity: Animated.SharedValue<number>;
+    /**
+     * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
+     * */
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     error?: boolean | Error;
+    giphyVersion?: keyof NonNullable<Attachment['giphy']>;
     /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;

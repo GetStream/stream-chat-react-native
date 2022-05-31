@@ -5,6 +5,7 @@ import Dayjs from 'dayjs';
 
 import type { Channel } from 'stream-chat';
 
+import { useAppSettings } from './hooks/useAppSettings';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
@@ -90,7 +91,7 @@ export type ChatProps<
    */
   i18nInstance?: Streami18n;
   /**
-   * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
+   * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/themeContext/utils/theme.ts)
    *
    * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-v3.0#theme) for details.
    *
@@ -161,7 +162,10 @@ const ChatWithContext = <
 
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
+  const appSettings = useAppSettings(client, isOnline);
+
   const chatContext = useCreateChatContext({
+    appSettings,
     channel,
     client,
     connectionRecovering,

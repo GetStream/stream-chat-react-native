@@ -1,35 +1,40 @@
 import React from 'react';
-
 import type Animated from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 
-import { render } from '@testing-library/react-native';
+import { renderHook } from '@testing-library/react-hooks';
 
-import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
+import { render, waitFor } from '@testing-library/react-native';
+
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+
 import { ImageGalleryHeader } from '../ImageGalleryHeader';
 
-it('doesnt fail if fromNow is not available on first render', () => {
+it('doesnt fail if fromNow is not available on first render', async () => {
   try {
+    let sharedValueOpacity: Animated.SharedValue<number>;
+    let sharedValueVisible: Animated.SharedValue<number>;
+    renderHook(() => {
+      sharedValueOpacity = useSharedValue(1);
+      sharedValueVisible = useSharedValue(1);
+    });
     const { getAllByText } = render(
-      <OverlayProvider
-        overlayOpacity={{
-          value: 1,
-        }}
-      >
-        <ThemeProvider>
-          <ImageGalleryHeader
-            opacity={1 as unknown as Animated.SharedValue<number>}
-            photo={{
-              id: 'id',
-              uri: 'file:///bogus/uri/to/photo.jpg',
-            }}
-            visible={1 as unknown as Animated.SharedValue<number>}
-          />
-        </ThemeProvider>
-      </OverlayProvider>,
+      <ThemeProvider>
+        <ImageGalleryHeader
+          // @ts-ignore
+          opacity={sharedValueOpacity}
+          photo={{
+            id: 'id',
+            uri: 'file:///bogus/uri/to/photo.jpg',
+          }}
+          // @ts-ignore
+          visible={sharedValueVisible}
+        />
+      </ThemeProvider>,
     );
-
-    expect(getAllByText('Unknown User')).toBeTruthy();
+    await waitFor(() => {
+      expect(getAllByText('Unknown User')).toBeTruthy();
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(`Error encountered on first render of ImageGalleryHeader: ${error.message}`);

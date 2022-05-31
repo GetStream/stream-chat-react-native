@@ -2,7 +2,6 @@ import React from 'react';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
@@ -10,10 +9,6 @@ import {
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
-import { Channel } from '../../../Channel/Channel';
-import { ChannelList } from '../../../ChannelList/ChannelList';
-import { Chat } from '../../../Chat/Chat';
-import { MessageList } from '../../../MessageList/MessageList';
 import { MessageAvatar } from '../MessageAvatar';
 
 afterEach(cleanup);
@@ -25,19 +20,9 @@ describe('MessageAvatar', () => {
       user: { ...staticUser, image: undefined },
     });
     const { getByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <OverlayProvider>
-        <ThemeProvider style={defaultTheme}>
-          <Chat>
-            <ChannelList>
-              <Channel>
-                <MessageList>
-                  <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
-                </MessageList>
-              </Channel>
-            </ChannelList>
-          </Chat>
-        </ThemeProvider>
-      </OverlayProvider>,
+      <ThemeProvider style={defaultTheme}>
+        <MessageAvatar alignment='right' groupStyles={['bottom']} message={message} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -46,9 +31,7 @@ describe('MessageAvatar', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageList>
-          <MessageAvatar alignment='right' groupStyles={[]} message={message} />
-        </MessageList>
+        <MessageAvatar alignment='right' groupStyles={[]} message={message} />
       </ThemeProvider>,
     );
 
@@ -63,14 +46,12 @@ describe('MessageAvatar', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageList>
-          <MessageAvatar
-            alignment='left'
-            groupStyles={['single']}
-            message={staticMessage}
-            showAvatar
-          />
-        </MessageList>
+        <MessageAvatar
+          alignment='left'
+          groupStyles={['single']}
+          message={staticMessage}
+          showAvatar
+        />
       </ThemeProvider>,
     );
 

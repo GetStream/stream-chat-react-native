@@ -27,6 +27,7 @@ export const useCreateMessagesContext = <
   formatDate,
   Gallery,
   Giphy,
+  giphyVersion,
   handleBlock,
   handleCopy,
   handleDelete,
@@ -41,6 +42,7 @@ export const useCreateMessagesContext = <
   initialScrollToFirstUnreadMessage,
   InlineDateSeparator,
   InlineUnreadIndicator,
+  isAttachmentEqual,
   legacyImageViewerSwipeBehaviour,
   markdownRules,
   Message,
@@ -78,6 +80,7 @@ export const useCreateMessagesContext = <
   TypingIndicatorContainer,
   updateMessage,
   UrlPreview,
+  VideoThumbnail,
 }: MessagesContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -111,6 +114,7 @@ export const useCreateMessagesContext = <
       formatDate,
       Gallery,
       Giphy,
+      giphyVersion,
       handleBlock,
       handleCopy,
       handleDelete,
@@ -125,6 +129,7 @@ export const useCreateMessagesContext = <
       initialScrollToFirstUnreadMessage,
       InlineDateSeparator,
       InlineUnreadIndicator,
+      isAttachmentEqual,
       legacyImageViewerSwipeBehaviour,
       markdownRules,
       Message,
@@ -162,6 +167,7 @@ export const useCreateMessagesContext = <
       TypingIndicatorContainer,
       updateMessage,
       UrlPreview,
+      VideoThumbnail,
     }),
     [
       additionalTouchablePropsLength,

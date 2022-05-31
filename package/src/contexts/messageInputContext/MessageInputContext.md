@@ -1,4 +1,4 @@
-Please check the `MessageInputContextValue` in [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx), for consumable values.
+Please check the `MessageInputContextValue` in [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx), for consumable values.
 Provider for this context exists in `Channel` component. And so, any child component of `Channel`
 can get access to context as following:
 

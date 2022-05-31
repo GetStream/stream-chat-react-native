@@ -11,7 +11,8 @@ describe('getResizedImageUrl', () => {
   });
 
   it('should append given height, width and resize mode to url', () => {
-    const testUrl = 'http://us-east.stream-io-cdn.com/blah';
+    const testUrl =
+      'http://us-east.stream-io-cdn.com/blah?sig=34k23n4k23nk423&oh=300&ow=200&h=*&w=*&resize=*';
 
     const testConfigs = [
       { height: 100, resize: 'scale', width: 100 },
@@ -33,7 +34,7 @@ describe('getResizedImageUrl', () => {
   });
 
   it('should replace wildcards with given height, width and resize mode within url', () => {
-    const testUrl = 'http://us-east.stream-io-cdn.com/blah?h=*&w=*&resize=*';
+    const testUrl = 'http://us-east.stream-io-cdn.com/blah?oh=300&ow=200&h=*&w=*&resize=*';
 
     const testConfigs = [
       { height: 100, resize: 'scale', width: 100 },

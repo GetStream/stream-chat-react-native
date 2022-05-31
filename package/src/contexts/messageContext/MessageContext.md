@@ -1,4 +1,4 @@
-Please check the `MessageContextValue` in [MessageContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageContext/MessageContext.tsx), for consumable values.
+Please check the `MessageContextValue` in [MessageContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageContext/MessageContext.tsx), for consumable values.
 Provider for this context exists in `Message` component. And so, any child component of `Message`
 can get access to context as following:
 

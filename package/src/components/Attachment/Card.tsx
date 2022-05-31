@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Image,
   ImageStyle,
-  Linking,
   StyleProp,
   StyleSheet,
   Text,
@@ -13,6 +12,8 @@ import {
 } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
+
+import { useGoToURL } from './hooks/useGoToURL';
 
 import {
   MessageContextValue,
@@ -66,17 +67,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
-
-const goToURL = (url?: string) => {
-  if (!url) return;
-  Linking.canOpenURL(url).then((supported) => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URI: ${url}`);
-    }
-  });
-};
 
 export type CardPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -149,7 +139,9 @@ const CardWithContext = <
 
   const uri = image_url || thumb_url;
 
-  const defaultOnPress = () => goToURL(og_scrape_url || uri);
+  const [error, openURL] = useGoToURL(og_scrape_url || uri);
+
+  const defaultOnPress = () => !error && openURL && openURL();
 
   return (
     <TouchableOpacity
@@ -157,6 +149,7 @@ const CardWithContext = <
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
+            additionalInfo: { url: og_scrape_url },
             emitter: 'card',
             event,
           });
@@ -165,6 +158,7 @@ const CardWithContext = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            additionalInfo: { url: og_scrape_url },
             defaultHandler: defaultOnPress,
             emitter: 'card',
             event,
@@ -174,6 +168,7 @@ const CardWithContext = <
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            additionalInfo: { url: og_scrape_url },
             defaultHandler: defaultOnPress,
             emitter: 'card',
             event,

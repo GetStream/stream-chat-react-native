@@ -239,7 +239,6 @@ export type OverlayReactionListPropsWithContext<
       y: number;
     }>;
     ownReactionTypes: string[];
-    setReactionListHeight: React.Dispatch<React.SetStateAction<number>>;
     showScreen: Animated.SharedValue<number>;
     fill?: FillProps['fill'];
   };
@@ -255,7 +254,6 @@ const OverlayReactionListWithContext = <
     handleReaction,
     messageLayout,
     ownReactionTypes,
-    setReactionListHeight,
     showScreen,
     setOverlay,
     supportedReactions = reactionData,
@@ -356,7 +354,6 @@ const OverlayReactionListWithContext = <
           }) => {
             reactionListLayout.value = { height, width: layoutWidth };
             reactionListHeight.value = height;
-            setReactionListHeight(height);
           }}
           style={[
             styles.reactionList,

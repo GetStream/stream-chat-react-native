@@ -23,6 +23,7 @@ import {
 } from 'stream-chat-react-native';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 LogBox.ignoreAllLogs(true);
 
@@ -221,40 +222,42 @@ const App = () => {
       }}
     >
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <OverlayProvider<StreamChatGenerics>
-          bottomInset={bottom}
-          i18nInstance={streami18n}
-          value={{ style: theme }}
-        >
-          {clientReady && (
-            <Stack.Navigator
-              initialRouteName='ChannelList'
-              screenOptions={{
-                headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-              }}
-            >
-              <Stack.Screen
-                component={ChannelScreen}
-                name='Channel'
-                options={() => ({
-                  headerBackTitle: 'Back',
-                  headerRight: () => <></>,
-                  headerTitle: channel?.data?.name,
-                })}
-              />
-              <Stack.Screen
-                component={ChannelListScreen}
-                name='ChannelList'
-                options={{ headerTitle: 'Channel List' }}
-              />
-              <Stack.Screen
-                component={ThreadScreen}
-                name='Thread'
-                options={() => ({ headerLeft: () => <></> })}
-              />
-            </Stack.Navigator>
-          )}
-        </OverlayProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <OverlayProvider<StreamChatGenerics>
+            bottomInset={bottom}
+            i18nInstance={streami18n}
+            value={{ style: theme }}
+          >
+            {clientReady && (
+              <Stack.Navigator
+                initialRouteName='ChannelList'
+                screenOptions={{
+                  headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+                }}
+              >
+                <Stack.Screen
+                  component={ChannelScreen}
+                  name='Channel'
+                  options={() => ({
+                    headerBackTitle: 'Back',
+                    headerRight: () => <></>,
+                    headerTitle: channel?.data?.name,
+                  })}
+                />
+                <Stack.Screen
+                  component={ChannelListScreen}
+                  name='ChannelList'
+                  options={{ headerTitle: 'Channel List' }}
+                />
+                <Stack.Screen
+                  component={ThreadScreen}
+                  name='Thread'
+                  options={() => ({ headerLeft: () => <></> })}
+                />
+              </Stack.Navigator>
+            )}
+          </OverlayProvider>
+        </GestureHandlerRootView>
       </AppContext.Provider>
     </NavigationContainer>
   );

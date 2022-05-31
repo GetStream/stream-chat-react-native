@@ -1,5 +1,111 @@
 # Change Log
 
+### [4.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.0...v4.6.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* hotfixes borderRadius ([1dd116d](https://github.com/GetStream/stream-chat-react-native/commit/1dd116de7d402a8b301438c88e996a28ba15970e))
+
+## [4.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.5.0...v4.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* race condition when bottom sheet is closed during keyboard show ([994addf](https://github.com/GetStream/stream-chat-react-native/commit/994addf9e907f5ba78e81cd9fb46a93221a6070f))
+
+## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+* add theming support for the chevron icon in scroll to bottom button ([2a4bc9a](https://github.com/GetStream/stream-chat-react-native/commit/2a4bc9a647595aff0ea2f3e57718219d0b60f7e2))
+
+
+### Bug Fixes
+
+* url without http/s opening issue ([46da678](https://github.com/GetStream/stream-chat-react-native/commit/46da6787423f751f7e1de02d1d865b1e5fe8a07a))
+
+### [4.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.3.0...v4.3.1) (2022-04-12)
+
+
+### Bug Fixes
+
+* fixes the broken giphy "shuffle" behaviour ([16f139a](https://github.com/GetStream/stream-chat-react-native/commit/16f139ab609304193d3d19488bd5227d0078e17d))
+* typescript for "giphyVersion" prop on `OverlayProvider` component ([35c1c10](https://github.com/GetStream/stream-chat-react-native/commit/35c1c10889d30106002bcd0b7b2e55ca27fbcbcb))
+
+
+### Reverts
+
+* "feat: add appSettings to ChatContext" ([5d947a3](https://github.com/GetStream/stream-chat-react-native/commit/5d947a30222ef99c50d6568cff4f8770bf16a237))
+
+## [4.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.2.0...v4.3.0) (2022-04-04)
+
+
+### Features
+
+* add isAttachmentEqual props around memoization of custom properties [CRNS - 290] ([cd51ee8](https://github.com/GetStream/stream-chat-react-native/commit/cd51ee89ab959cd3e38bbdbd5e949bc401b40ec4))
+* editing state header, reply state header and giphy input customization [CRNS - 535] ([4c1d67d](https://github.com/GetStream/stream-chat-react-native/commit/4c1d67d9a4e45050a45a402a53c2cf9b6fbc39b8))
+* open giphy in image viewer when pressed [CRNS - 540] ([3cc2e93](https://github.com/GetStream/stream-chat-react-native/commit/3cc2e939bb4f935e245e46006d4fb607f4cde47c))
+
+
+### Bug Fixes
+
+* handling the case of undefined updated_at on message ([bad1f45](https://github.com/GetStream/stream-chat-react-native/commit/bad1f45d1d6466532d8b5cbc4d2806221b639f03))
+* issues with opening old Giphy on ImageGallery ([7f21b6c](https://github.com/GetStream/stream-chat-react-native/commit/7f21b6c5c98dca210d8b77030c4442c644bb86a1))
+* re-render ownCapabilitiesContext when channel capabilities are u… ([9bbf25e](https://github.com/GetStream/stream-chat-react-native/commit/9bbf25e9237c1a0bf770bd194b67e0737046def8))
+
+## [4.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.4...v4.2.0) (2022-03-17)
+
+
+### Features
+
+* add giphy size customisation [CRNS-514] ([90c87da](https://github.com/GetStream/stream-chat-react-native/commit/90c87da095bd6f243613853091f11a9b6564632e))
+* update core to rn 0.67 [CRNS-539] ([46e9b37](https://github.com/GetStream/stream-chat-react-native/commit/46e9b3761021c0f6ddbe03f5afb81e3426877625))
+* upgrade react native gesture handler version to 2.3.1 ([f9eba70](https://github.com/GetStream/stream-chat-react-native/commit/f9eba70d5f961f2aed7f52eeb458b4ea6f18678e))
+
+
+### Bug Fixes
+
+* show background for Giphy on long press ([459a595](https://github.com/GetStream/stream-chat-react-native/commit/459a59522c7acb9d20b5e78809efc31084201257))
+
+### [4.1.4](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.3...v4.1.4) (2022-03-13)
+
+
+### Bug Fixes
+
+* overrideOwnCapabilities typescript issue ([a8010ef](https://github.com/GetStream/stream-chat-react-native/commit/a8010efe6d841d447c32bf7f1fe0e3ecab2761c3))
+
+### [4.1.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.2...v4.1.3) (2022-03-10)
+
+
+### Bug Fixes
+
+* add missing own_capabilities field after channel.updated event [CRNS-537] ([0a27963](https://github.com/GetStream/stream-chat-react-native/commit/0a279637dbf0cc4474b0ffc3052f6df6cdbfacf1))
+* cleanup of keyboard listeners ([7f4d6f2](https://github.com/GetStream/stream-chat-react-native/commit/7f4d6f27e061c66a8f6631a3840a7a911650c423))
+* pull to refresh functionality [CRNS-536] ([df6e6df](https://github.com/GetStream/stream-chat-react-native/commit/df6e6df3b70a6c9f986723b9328c8a99def67511))
+
+### [4.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.1...v4.1.2) (2022-03-07)
+
+
+### Bug Fixes
+
+* export ownCapabilitiesContext from SDK ([e0a9f75](https://github.com/GetStream/stream-chat-react-native/commit/e0a9f757e431bd29310e8bfc16f4abf5fdca0ae2))
+
+### [4.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.1.0...v4.1.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* image gallery cleanup and fixing race condition ([4c53f33](https://github.com/GetStream/stream-chat-react-native/commit/4c53f3374a7ebe7e42f61473480acd7642de489d))
+* mark channel as read when messages length is less than visible screen ([2dd87b3](https://github.com/GetStream/stream-chat-react-native/commit/2dd87b340d4d5d66911c9306b58d8307e089ed33))
+
 ### [3.10.2](https://github.com/GetStream/stream-chat-react-native/compare/v3.10.1...v3.10.2) (2021-11-23)
 
 
@@ -847,13 +953,13 @@ We are going to incrementally implement these changes and will try to keep every
 - Upgrading @stream-io/react-native-simple-markdown to 1.2.1 [d89f012](https://github.com/GetStream/react-native-simple-markdown/commit/d89f0128e6c4f179f2afe9f9a896b289288e2afd)
 
   It fixes the issue with markdown where text like "#stream" was treated as heading, thus disallowing anyone to use hashtags in chat.
-  
-- Internal directory restructuring of components 
+
+- Internal directory restructuring of components
 
 ## [0.14.0] 2020-07-16
 
 - Fixing compatibility issues with react-native 0.63 [88721a0](https://github.com/GetStream/stream-chat-react-native/commit/88721a077b3bb3369c3d8dbde9451d84f6761d87)
-- Updating stream-chat to 0.13.x [4af1b1d](https://github.com/GetStream/stream-chat-react-native/commit/4af1b1d63a3c7dec662f8c75426ea7a7082f26a4) 
+- Updating stream-chat to 0.13.x [4af1b1d](https://github.com/GetStream/stream-chat-react-native/commit/4af1b1d63a3c7dec662f8c75426ea7a7082f26a4)
 
 ## [0.13.1] 2020-07-14
 
@@ -929,7 +1035,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.10.3] 2020-05-15
 
-- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/master/docs/userToken.md)
+- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/main/docs/userToken.md)
 - Disable longPress on Image gallery [f7aacb5](https://github.com/GetStream/stream-chat-react-native/commit/f7aacb5741e85811de37d5e3b550d2be539b89a4)
 - Fixing markdown issue [ac621f0](https://github.com/GetStream/stream-chat-react-native/commit/ac621f0eb1f6be7f0496b82ee425f3bc90c10839)
 
@@ -1202,7 +1308,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.7.0] 2020-03-17
 
-- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/docs/Streami18n.md
+- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/docs/Streami18n.md
 
 ## [0.6.6] 2020-02-20
 

@@ -20,7 +20,14 @@ export type AttachmentPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessagesContextValue<StreamChatGenerics>,
-  'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+  | 'AttachmentActions'
+  | 'Card'
+  | 'FileAttachment'
+  | 'Gallery'
+  | 'giphyVersion'
+  | 'Giphy'
+  | 'isAttachmentEqual'
+  | 'UrlPreview'
 > & {
   /**
    * The attachment to render
@@ -33,12 +40,21 @@ const AttachmentWithContext = <
 >(
   props: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment, AttachmentActions, Card, FileAttachment, Gallery, Giphy, UrlPreview } = props;
+  const {
+    attachment,
+    AttachmentActions,
+    Card,
+    FileAttachment,
+    Gallery,
+    Giphy,
+    giphyVersion,
+    UrlPreview,
+  } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    return <Giphy attachment={attachment} />;
+    return <Giphy attachment={attachment} giphyVersion={giphyVersion} />;
   }
 
   if (
@@ -59,15 +75,19 @@ const AttachmentWithContext = <
     );
   }
 
-  if (attachment.type === 'file' || attachment.type === 'audio') {
-    return <FileAttachment attachment={attachment} />;
+  if (attachment.type === 'video' && !attachment.og_scrape_url) {
+    return (
+      <>
+        <Gallery videos={[attachment]} />
+        {hasAttachmentActions && (
+          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+        )}
+      </>
+    );
   }
 
-  if (attachment.type === 'video' && attachment.asset_url) {
-    return (
-      // TODO: Put in video component
-      <FileAttachment attachment={attachment} />
-    );
+  if (attachment.type === 'file' || attachment.type === 'audio') {
+    return <FileAttachment attachment={attachment} />;
   }
 
   if (hasAttachmentActions) {
@@ -86,15 +106,20 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AttachmentPropsWithContext<StreamChatGenerics>,
   nextProps: AttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { attachment: prevAttachment } = prevProps;
+  const { attachment: prevAttachment, isAttachmentEqual } = prevProps;
   const { attachment: nextAttachment } = nextProps;
 
   const attachmentEqual =
     prevAttachment.actions?.length === nextAttachment.actions?.length &&
     prevAttachment.image_url === nextAttachment.image_url &&
     prevAttachment.thumb_url === nextAttachment.thumb_url;
+  if (!attachmentEqual) return false;
 
-  return attachmentEqual;
+  if (isAttachmentEqual) {
+    return isAttachmentEqual(prevAttachment, nextAttachment);
+  }
+
+  return true;
 };
 
 const MemoizedAttachment = React.memo(
@@ -107,7 +132,14 @@ export type AttachmentProps<
 > = Partial<
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'AttachmentActions' | 'Card' | 'FileAttachment' | 'Gallery' | 'Giphy' | 'UrlPreview'
+    | 'AttachmentActions'
+    | 'Card'
+    | 'FileAttachment'
+    | 'Gallery'
+    | 'Giphy'
+    | 'giphyVersion'
+    | 'UrlPreview'
+    | 'isAttachmentEqual'
   >
 > &
   Pick<AttachmentPropsWithContext<StreamChatGenerics>, 'attachment'>;
@@ -127,6 +159,7 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
+    giphyVersion: PropGiphyVersion,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -136,6 +169,8 @@ export const Attachment = <
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
+    giphyVersion: ContextGiphyVersion,
+    isAttachmentEqual,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<StreamChatGenerics>();
 
@@ -150,6 +185,7 @@ export const Attachment = <
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
+  const giphyVersion = PropGiphyVersion || ContextGiphyVersion;
 
   return (
     <MemoizedAttachment
@@ -160,6 +196,8 @@ export const Attachment = <
         FileAttachment,
         Gallery,
         Giphy,
+        giphyVersion,
+        isAttachmentEqual,
         UrlPreview,
       }}
     />

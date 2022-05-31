@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, Mute, StreamChat } from 'stream-chat';
+import type { AppSettingsAPIResponse, Channel, Mute, StreamChat } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
@@ -8,6 +8,10 @@ import { getDisplayName } from '../utils/getDisplayName';
 export type ChatContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
+  /**
+   * Object of application settings returned from Stream.
+   * */
+  appSettings: AppSettingsAPIResponse<StreamChatGenerics> | null;
   /**
    * The StreamChat client object
    *

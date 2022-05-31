@@ -61,6 +61,13 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
   return (
     <ScreenHeader
+      onBack={() => {
+        if (!navigation.canGoBack()) {
+          // if no previous screen was present in history, go to the list screen
+          // this can happen when opened through push notification
+          navigation.navigate('ChatScreen');
+        }
+      }}
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {

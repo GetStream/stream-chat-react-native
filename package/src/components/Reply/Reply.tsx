@@ -24,6 +24,7 @@ import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { emojiRegex } from '../../utils/utils';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
+import { VideoThumbnail } from '../Attachment/VideoThumbnail';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 
@@ -52,6 +53,13 @@ const styles = StyleSheet.create({
   },
   text: { fontSize: 12 },
   textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
+  videoAttachment: {
+    borderRadius: 8,
+    height: 50,
+    marginLeft: 8,
+    marginVertical: 8,
+    width: 50,
+  },
 });
 
 type ReplyPropsWithContext<
@@ -68,6 +76,37 @@ type ReplyPropsWithContext<
       textContainer: ViewStyle;
     }>;
   };
+
+const getMessageType = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  lastAttachment: Attachment<StreamChatGenerics>,
+) => {
+  let messageType;
+
+  const isLastAttachmentFile = lastAttachment.type === 'file' || lastAttachment.type === 'audio';
+
+  const isLastAttachmentVideo = lastAttachment.type === 'video';
+
+  const isLastAttachmentGiphy = lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur';
+
+  const isLastAttachmentImageOrGiphy =
+    lastAttachment.type === 'image' && !lastAttachment.title_link && !lastAttachment.og_scrape_url;
+
+  const isLastAttachmentImage = lastAttachment.image_url || lastAttachment.thumb_url;
+
+  if (isLastAttachmentFile) {
+    messageType = 'file';
+  } else if (isLastAttachmentVideo) {
+    messageType = 'video';
+  } else if (isLastAttachmentImageOrGiphy) {
+    if (isLastAttachmentImage) messageType = 'image';
+    else messageType = undefined;
+  } else if (isLastAttachmentGiphy) messageType = 'giphy';
+  else messageType = 'other';
+
+  return messageType;
+};
 
 const ReplyWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -105,20 +144,7 @@ const ReplyWithContext = <
   if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment = quotedMessage.attachments?.slice(-1)[0] as Attachment<StreamChatGenerics>;
-
-  const messageType = lastAttachment
-    ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'
-      ? 'file'
-      : lastAttachment.type === 'image' &&
-        !lastAttachment.title_link &&
-        !lastAttachment.og_scrape_url
-      ? lastAttachment.image_url || lastAttachment.thumb_url
-        ? 'image'
-        : undefined
-      : lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur'
-      ? 'giphy'
-      : 'other'
-    : undefined;
+  const messageType = lastAttachment && getMessageType(lastAttachment);
 
   const hasImage =
     !error &&
@@ -177,6 +203,7 @@ const ReplyWithContext = <
             />
           ) : null
         ) : null}
+        {messageType === 'video' ? <VideoThumbnail style={[styles.videoAttachment]} /> : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
             quotedMessage.deleted_at
@@ -193,6 +220,8 @@ const ReplyWithContext = <
                 : quotedMessage.text
               : messageType === 'image'
               ? t('Photo')
+              : messageType === 'video'
+              ? 'Video'
               : messageType === 'file'
               ? lastAttachment?.title || ''
               : '',
@@ -201,25 +230,26 @@ const ReplyWithContext = <
           styles={{
             textContainer: [
               {
-                marginRight: hasImage
-                  ? Number(
-                      stylesProp.imageAttachment?.height ||
-                        imageAttachment.height ||
-                        styles.imageAttachment.height,
-                    ) +
-                    Number(
-                      stylesProp.imageAttachment?.marginLeft ||
-                        imageAttachment.marginLeft ||
-                        styles.imageAttachment.marginLeft,
-                    )
-                  : messageType === 'file'
-                  ? attachmentSize +
-                    Number(
-                      stylesProp.fileAttachmentContainer?.paddingLeft ||
-                        fileAttachmentContainer.paddingLeft ||
-                        styles.fileAttachmentContainer.paddingLeft,
-                    )
-                  : undefined,
+                marginRight:
+                  hasImage || messageType === 'video'
+                    ? Number(
+                        stylesProp.imageAttachment?.height ||
+                          imageAttachment.height ||
+                          styles.imageAttachment.height,
+                      ) +
+                      Number(
+                        stylesProp.imageAttachment?.marginLeft ||
+                          imageAttachment.marginLeft ||
+                          styles.imageAttachment.marginLeft,
+                      )
+                    : messageType === 'file'
+                    ? attachmentSize +
+                      Number(
+                        stylesProp.fileAttachmentContainer?.paddingLeft ||
+                          fileAttachmentContainer.paddingLeft ||
+                          styles.fileAttachmentContainer.paddingLeft,
+                      )
+                    : undefined,
               },
               styles.textContainer,
               textContainer,

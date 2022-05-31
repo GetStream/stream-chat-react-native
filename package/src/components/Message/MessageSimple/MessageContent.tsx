@@ -84,6 +84,7 @@ export type MessageContentPropsWithContext<
     | 'FileAttachmentGroup'
     | 'formatDate'
     | 'Gallery'
+    | 'isAttachmentEqual'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageDeleted'
@@ -142,7 +143,16 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadiusL, borderRadiusS, ...container },
+          container: {
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+            borderRadius,
+            borderRadiusL,
+            borderRadiusS,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+            ...container
+          },
           containerInner,
           errorContainer,
           errorIcon,
@@ -185,7 +195,14 @@ const MessageContentWithContext = <
 
   const hasThreadReplies = !!message?.reply_count;
 
-  const noBorder = (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+  let noBorder = onlyEmojis && !message.quoted_message;
+  if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy' && !isMyMessage) {
+      noBorder = false;
+    } else {
+      noBorder = true;
+    }
+  }
 
   const isMessageTypeDeleted = message.type === 'deleted';
 
@@ -200,20 +217,64 @@ const MessageContentWithContext = <
     );
   }
 
-  const backgroundColor =
-    onlyEmojis && !message.quoted_message
-      ? transparent
-      : otherAttachments.length
-      ? otherAttachments[0].type === 'giphy'
-        ? !message.quoted_message
-          ? transparent
-          : grey_gainsboro
-        : blue_alice
-      : alignment === 'left' || error
-      ? white
-      : grey_gainsboro;
+  let backgroundColor = grey_gainsboro;
+  if (onlyEmojis && !message.quoted_message) {
+    backgroundColor = transparent;
+  } else if (otherAttachments.length) {
+    if (otherAttachments[0].type === 'giphy') {
+      backgroundColor = message.quoted_message ? grey_gainsboro : transparent;
+    } else {
+      backgroundColor = blue_alice;
+    }
+  } else if (alignment === 'left' || error) {
+    backgroundColor = white;
+  }
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
+
+  const isBorderColor = isMyMessage && !error;
+
+  const getBorderRadius = () => {
+    // enum('top', 'middle', 'bottom', 'single')
+    const groupPosition = groupStyles?.[0];
+
+    const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
+    let borderBottomLeftRadius = borderRadiusL;
+    let borderBottomRightRadius = borderRadiusL;
+
+    if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
+      // add relevant sharp corner
+      if (alignment === 'left') {
+        borderBottomLeftRadius = borderRadiusS;
+      } else {
+        borderBottomRightRadius = borderRadiusS;
+      }
+    }
+
+    return {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+    };
+  };
+
+  const getBorderRadiusFromTheme = () => {
+    const bordersFromTheme: Record<string, number | undefined> = {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderRadius,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+    };
+
+    // filter out undefined values
+    for (const key in bordersFromTheme) {
+      if (bordersFromTheme[key] === undefined) {
+        delete bordersFromTheme[key];
+      }
+    }
+
+    return bordersFromTheme;
+  };
 
   return (
     <TouchableOpacity
@@ -289,17 +350,9 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius:
-                (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: isMyMessage && !error ? backgroundColor : grey_whisper,
+              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              ...getBorderRadius(),
+              ...getBorderRadiusFromTheme(),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,
@@ -364,6 +417,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     goToMessage: prevGoToMessage,
     groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
+    isAttachmentEqual,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
@@ -395,7 +449,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 
   const goToMessageChangedAndMatters =
     nextMessage.quoted_message_id && prevGoToMessage !== nextGoToMessage;
-
   if (goToMessageChangedAndMatters) return false;
 
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
@@ -424,7 +477,6 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
     prevMessage.pinned === nextMessage.pinned;
-
   if (!messageEqual) return false;
 
   const isPrevQuotedMessageTypeDeleted = prevMessage.quoted_message?.type === 'deleted';
@@ -433,21 +485,27 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const quotedMessageEqual =
     prevMessage.quoted_message?.id === nextMessage.quoted_message?.id &&
     isPrevQuotedMessageTypeDeleted === isNextQuotedMessageTypeDeleted;
-
   if (!quotedMessageEqual) return false;
 
-  const prevAttachments = prevMessage.attachments;
-  const nextAttachments = nextMessage.attachments;
+  const prevMessageAttachments = prevMessage.attachments;
+  const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
-      ? prevAttachments.length === nextAttachments.length &&
-        prevAttachments.every(
-          (attachment, index) =>
-            attachment.image_url === nextAttachments[index].image_url &&
-            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
-            attachment.thumb_url === nextAttachments[index].thumb_url,
-        )
-      : prevAttachments === nextAttachments;
+    Array.isArray(prevMessageAttachments) && Array.isArray(nextMessageAttachments)
+      ? prevMessageAttachments.length === nextMessageAttachments.length &&
+        prevMessageAttachments.every((attachment, index) => {
+          const attachmentKeysEqual =
+            attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.og_scrape_url === nextMessageAttachments[index].og_scrape_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url;
+
+          if (isAttachmentEqual)
+            return (
+              attachmentKeysEqual && !!isAttachmentEqual(attachment, nextMessageAttachments[index])
+            );
+
+          return attachmentKeysEqual;
+        })
+      : prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
@@ -520,6 +578,7 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    isAttachmentEqual,
     MessageDeleted,
     MessageFooter,
     MessageHeader,
@@ -542,6 +601,7 @@ export const MessageContent = <
         goToMessage,
         groupStyles,
         hasReactions,
+        isAttachmentEqual,
         isMyMessage,
         lastGroupMessage,
         lastReceivedId,

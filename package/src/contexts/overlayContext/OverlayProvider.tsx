@@ -81,6 +81,7 @@ export const OverlayProvider = <
       }
     },
     FileSelectorIcon = DefaultFileSelectorIcon,
+    giphyVersion,
     i18nInstance,
     imageGalleryCustomComponents,
     imageGalleryGridHandleHeight,
@@ -218,17 +219,16 @@ export const OverlayProvider = <
                     OverlayReactionList={OverlayReactionList}
                     OverlayReactions={OverlayReactions}
                     OverlayReactionsAvatar={OverlayReactionsAvatar}
-                    visible={overlay === 'message'}
                   />
                 )}
                 {overlay === 'gallery' && (
                   <ImageGallery<StreamChatGenerics>
+                    giphyVersion={giphyVersion}
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
                     imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
                     imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
                     numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
                     overlayOpacity={overlayOpacity}
-                    visible={overlay === 'gallery'}
                   />
                 )}
                 <AttachmentPicker ref={bottomSheetRef} {...attachmentPickerProps} />

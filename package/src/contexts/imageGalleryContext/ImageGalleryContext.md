@@ -1,4 +1,4 @@
-Please check the `ImageGalleryContextValue` in [ImageGalleryContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/imageGalleryContext/ImageGalleryContext.tsx), for consumable values.
+Please check the `ImageGalleryContextValue` in [ImageGalleryContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/imageGalleryContext/ImageGalleryContext.tsx), for consumable values.
 Provider for this context exists in `OverlayProvider` component. And so, any child component of OverlayProvider
 can get access to context as following:
 

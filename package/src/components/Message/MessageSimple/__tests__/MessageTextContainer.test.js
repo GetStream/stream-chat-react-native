@@ -3,7 +3,6 @@ import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
@@ -11,9 +10,6 @@ import {
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
-import { Channel } from '../../../Channel/Channel';
-import { Chat } from '../../../Chat/Chat';
-import { MessageList } from '../../../MessageList/MessageList';
 import { MessageTextContainer } from '../MessageTextContainer';
 
 afterEach(cleanup);
@@ -25,17 +21,9 @@ describe('MessageTextContainer', () => {
       user: { ...staticUser, image: undefined },
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
-      <OverlayProvider>
-        <Chat>
-          <Channel>
-            <ThemeProvider style={defaultTheme}>
-              <MessageList>
-                <MessageTextContainer alignment='right' groupStyles={['top']} message={message} />
-              </MessageList>
-            </ThemeProvider>
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
+      <ThemeProvider style={defaultTheme}>
+        <MessageTextContainer alignment='right' groupStyles={['top']} message={message} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -45,14 +33,12 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageList>
-          <MessageTextContainer
-            alignment='right'
-            groupStyles={['top']}
-            message={message}
-            MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
-          />
-        </MessageList>
+        <MessageTextContainer
+          alignment='right'
+          groupStyles={['top']}
+          message={message}
+          MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
+        />
       </ThemeProvider>,
     );
 
@@ -68,9 +54,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageList>
-          <MessageTextContainer message={staticMessage} />
-        </MessageList>
+        <MessageTextContainer message={staticMessage} />
       </ThemeProvider>,
     );
 
