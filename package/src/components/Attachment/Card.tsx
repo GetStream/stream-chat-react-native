@@ -149,6 +149,7 @@ const CardWithContext = <
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
+            additionalInfo: { url: og_scrape_url },
             emitter: 'card',
             event,
           });
@@ -167,6 +168,7 @@ const CardWithContext = <
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            additionalInfo: { url: og_scrape_url },
             defaultHandler: defaultOnPress,
             emitter: 'card',
             event,
