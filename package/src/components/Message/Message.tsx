@@ -68,7 +68,7 @@ export type TextMentionTouchableHandlerPayload<
   additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
 };
 
-export type CardAndTextLinkTouchableHandlerPayload = {
+export type UrlTouchableHandlerPayload = {
   emitter: 'textLink' | 'card';
   additionalInfo?: { url?: string };
 };
@@ -81,7 +81,7 @@ export type TouchableHandlerPayload = {
       emitter?: TouchableEmitter;
     }
   | TextMentionTouchableHandlerPayload
-  | CardAndTextLinkTouchableHandlerPayload
+  | UrlTouchableHandlerPayload
 );
 
 export type MessageTouchableHandlerPayload<
