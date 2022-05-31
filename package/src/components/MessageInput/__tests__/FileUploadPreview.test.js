@@ -25,6 +25,21 @@ function MockedFlatList(props) {
   return <View testID={props.testID}>{items}</View>;
 }
 
+const renderComponent = ({ channel, chatClient, fileUploads, removeFile, uploadFile }) =>
+  render(
+    <OverlayProvider>
+      <Chat client={chatClient}>
+        <Channel channel={channel} FlatList={MockedFlatList}>
+          <FileUploadPreview
+            fileUploads={fileUploads}
+            removeFile={removeFile}
+            uploadFile={uploadFile}
+          />
+        </Channel>
+      </Chat>
+    </OverlayProvider>,
+  );
+
 describe('FileUploadPreview', () => {
   it('should render FileUploadPreview with all uploading files', async () => {
     const fileUploads = [
@@ -48,19 +63,13 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = renderComponent({
+      channel,
+      chatClient,
+      fileUploads,
+      removeFile,
+      uploadFile,
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
@@ -102,19 +111,13 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = renderComponent({
+      channel,
+      chatClient,
+      fileUploads,
+      removeFile,
+      uploadFile,
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(0);
@@ -158,19 +161,13 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = renderComponent({
+      channel,
+      chatClient,
+      fileUploads,
+      removeFile,
+      uploadFile,
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
@@ -219,19 +216,13 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getAllByTestId, queryAllByTestId, queryAllByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { getAllByTestId, queryAllByTestId, queryAllByText } = renderComponent({
+      channel,
+      chatClient,
+      fileUploads,
+      removeFile,
+      uploadFile,
+    });
 
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(fileUploads.length);
@@ -273,19 +264,13 @@ describe('FileUploadPreview', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { queryAllByTestId, queryAllByText } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel} FlatList={MockedFlatList}>
-            <FileUploadPreview
-              fileUploads={fileUploads}
-              removeFile={removeFile}
-              uploadFile={uploadFile}
-            />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
+    const { queryAllByTestId, queryAllByText } = renderComponent({
+      channel,
+      chatClient,
+      fileUploads,
+      removeFile,
+      uploadFile,
+    });
     await waitFor(() => {
       expect(queryAllByTestId('active-upload-progress-indicator')).toHaveLength(
         fileUploads.length - 1,
