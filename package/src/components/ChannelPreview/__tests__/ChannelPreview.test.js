@@ -3,7 +3,6 @@ import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
@@ -12,8 +11,6 @@ import { generateChannelResponse } from '../../../mock-builders/generator/channe
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Channel } from '../../Channel/Channel';
-import { ChannelList } from '../../ChannelList/ChannelList';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreview } from '../ChannelPreview';
 
@@ -35,18 +32,14 @@ describe('ChannelPreview', () => {
   let channel;
 
   const getComponent = (props = {}) => (
-    <OverlayProvider>
-      <Chat client={chatClient}>
-        <ChannelList>
-          <ChannelPreview
-            {...props}
-            channel={channel}
-            client={chatClient}
-            Preview={ChannelPreviewUIComponent}
-          />
-        </ChannelList>
-      </Chat>
-    </OverlayProvider>
+    <Chat client={chatClient}>
+      <ChannelPreview
+        {...props}
+        channel={channel}
+        client={chatClient}
+        Preview={ChannelPreviewUIComponent}
+      />
+    </Chat>
   );
 
   const initializeChannel = async (c) => {

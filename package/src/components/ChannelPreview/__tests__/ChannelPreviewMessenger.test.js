@@ -3,7 +3,6 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
@@ -11,7 +10,6 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { ChannelList } from '../../ChannelList/ChannelList';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
 
@@ -21,29 +19,25 @@ describe('ChannelPreviewMessenger', () => {
   let channel;
 
   const getComponent = (props = {}) => (
-    <OverlayProvider>
-      <Chat client={chatClient}>
-        <ChannelList>
-          <ChannelPreviewMessenger
-            channel={channel}
-            client={chatClient}
-            latestMessagePreview={{
-              created_at: '',
-              messageObject: generateMessage(),
-              previews: [
-                {
-                  bold: true,
-                  text: 'This is the message preview text',
-                },
-              ],
-              status: 0 | 1 | 2, // read states of latest message.
-            }}
-            onSelect={jest.fn()}
-            {...props}
-          />
-        </ChannelList>
-      </Chat>
-    </OverlayProvider>
+    <Chat client={chatClient}>
+      <ChannelPreviewMessenger
+        channel={channel}
+        client={chatClient}
+        latestMessagePreview={{
+          created_at: '',
+          messageObject: generateMessage(),
+          previews: [
+            {
+              bold: true,
+              text: 'This is the message preview text',
+            },
+          ],
+          status: 0 | 1 | 2, // read states of latest message.
+        }}
+        onSelect={jest.fn()}
+        {...props}
+      />
+    </Chat>
   );
 
   const initializeChannel = async (c) => {

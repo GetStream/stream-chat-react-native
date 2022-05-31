@@ -148,15 +148,15 @@ describe('Attachment', () => {
 
     jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(true));
 
-    const { result, waitForNextUpdate } = await renderHook(() => useGoToURL());
-    const [error, openURL] = result.current;
+    const { result } = await renderHook(() => useGoToURL());
+    const [, openURL] = result.current;
+    await act(openURL);
+    const [error] = result.current;
 
-    act(openURL);
-
-    await waitForNextUpdate(() => {
+    await waitFor(() => {
       expect(Linking.canOpenURL).toHaveBeenCalled();
       expect(error).toBeTruthy();
-      expect(Linking.openURL).not.toHaveBeenCalled();
+      expect(Linking.openURL).toHaveBeenCalled();
     });
   });
 });
