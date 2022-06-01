@@ -130,6 +130,7 @@ export type MessagePropsWithContext<
     | 'handleRetry'
     | 'handleThreadReply'
     | 'isAttachmentEqual'
+    | 'isMessageEqual'
     | 'messageActions'
     | 'messageContentOrder'
     | 'MessageSimple'

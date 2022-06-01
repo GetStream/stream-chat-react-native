@@ -257,6 +257,7 @@ export type ChannelPropsWithContext<
       | 'InlineDateSeparator'
       | 'InlineUnreadIndicator'
       | 'isAttachmentEqual'
+      | 'isMessageEqual''
       | 'legacyImageViewerSwipeBehaviour'
       | 'markdownRules'
       | 'Message'
@@ -462,6 +463,7 @@ const ChannelWithContext = <
     InputGiphySearch = InputGiphyCommandInputDefault,
     InputReplyStateHeader = InputReplyStateHeaderDefault,
     isAttachmentEqual,
+    isMessageEqual,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -1704,6 +1706,7 @@ const ChannelWithContext = <
     InlineDateSeparator,
     InlineUnreadIndicator,
     isAttachmentEqual,
+    isMessageEqual,
     legacyImageViewerSwipeBehaviour,
     markdownRules,
     Message,

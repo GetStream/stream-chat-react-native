@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, Platform, SafeAreaView, View, useColorScheme } from 'react-native';
+import { LogBox, Platform, SafeAreaView, View, useColorScheme, Text } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
@@ -19,6 +19,7 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
+  useMessageContext,
   useOverlayContext,
 } from 'stream-chat-react-native';
 
