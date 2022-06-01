@@ -223,7 +223,7 @@ const GiphyWithContext = <
         <View style={styles.actionsRow}>
           <TouchableOpacity
             onPress={() => {
-              if (actions?.[2].name && actions?.[2].value) {
+              if (actions?.[2].name && actions?.[2].value && handleAction) {
                 handleAction(actions[2].name, actions[2].value);
               }
             }}
@@ -238,7 +238,7 @@ const GiphyWithContext = <
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              if (actions?.[1].name && actions?.[1].value) {
+              if (actions?.[1].name && actions?.[1].value && handleAction) {
                 handleAction(actions[1].name, actions[1].value);
               }
             }}
@@ -253,7 +253,7 @@ const GiphyWithContext = <
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              if (actions?.[0].name && actions?.[0].value) {
+              if (actions?.[0].name && actions?.[0].value && handleAction) {
                 handleAction(actions[0].name, actions[0].value);
               }
             }}

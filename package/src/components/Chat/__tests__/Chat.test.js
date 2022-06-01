@@ -30,11 +30,9 @@ describe('Chat', () => {
 
   it('renders children without crashing', async () => {
     const { getByTestId } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <View testID='children' />
-        </Chat>
-      </OverlayProvider>,
+      <Chat client={chatClient}>
+        <View testID='children' />
+      </Chat>,
     );
 
     await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -71,15 +69,13 @@ describe('Chat', () => {
     let context;
 
     render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>
-      </OverlayProvider>,
+      <Chat client={chatClient}>
+        <ChatContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></ChatContextConsumer>
+      </Chat>,
     );
 
     act(() => dispatchConnectionRecoveredEvent(chatClient));
@@ -116,15 +112,13 @@ describe('Chat', () => {
       let context;
 
       render(
-        <OverlayProvider>
-          <Chat client={chatClient}>
-            <ChatContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></ChatContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient}>
+          <ChatContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ChatContextConsumer>
+        </Chat>,
       );
 
       const channel = { cid: 'cid', id: 'cid', query: jest.fn() };
@@ -168,15 +162,13 @@ describe('Chat', () => {
       i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
 
       render(
-        <OverlayProvider>
-          <Chat client={chatClient} i18nInstance={i18nInstance}>
-            <TranslationContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></TranslationContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <TranslationContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></TranslationContextConsumer>
+        </Chat>,
       );
 
       await waitFor(() => {
@@ -195,15 +187,13 @@ describe('Chat', () => {
       i18nInstance.tDateTimeParser = () => 'tDateTimeParser';
 
       const { rerender } = render(
-        <OverlayProvider>
-          <Chat client={chatClient} i18nInstance={i18nInstance}>
-            <TranslationContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></TranslationContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient} i18nInstance={i18nInstance}>
+          <TranslationContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></TranslationContextConsumer>
+        </Chat>,
       );
 
       await waitFor(() => {
@@ -217,15 +207,13 @@ describe('Chat', () => {
       newI18nInstance.tDateTimeParser = () => 'newtDateTimeParser';
 
       rerender(
-        <OverlayProvider>
-          <Chat client={chatClient} i18nInstance={newI18nInstance}>
-            <TranslationContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></TranslationContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient} i18nInstance={newI18nInstance}>
+          <TranslationContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></TranslationContextConsumer>
+        </Chat>,
       );
       await waitFor(() => {
         expect(context.t).not.toBe(i18nInstance.t);

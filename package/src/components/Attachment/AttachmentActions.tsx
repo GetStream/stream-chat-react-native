@@ -79,7 +79,7 @@ const AttachmentActionsWithContext = <
           <TouchableOpacity
             key={`${index}-${action.value}`}
             onPress={() => {
-              if (action.name && action.value) {
+              if (action.name && action.value && handleAction) {
                 handleAction(action.name, action.value);
               }
             }}
