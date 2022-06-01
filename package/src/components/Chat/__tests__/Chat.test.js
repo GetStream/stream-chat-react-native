@@ -6,7 +6,6 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import { setNetInfoFetchMock } from '../../../../jest-setup';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import dispatchConnectionChangedEvent from '../../../mock-builders/event/connectionChanged';
 import dispatchConnectionRecoveredEvent from '../../../mock-builders/event/connectionRecovered';
@@ -44,15 +43,13 @@ describe('Chat', () => {
     setNetInfoFetchMock(netInfoFetch);
 
     render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <ChatContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ChatContextConsumer>
-        </Chat>
-      </OverlayProvider>,
+      <Chat client={chatClient}>
+        <ChatContextConsumer
+          fn={(ctx) => {
+            context = ctx;
+          }}
+        ></ChatContextConsumer>
+      </Chat>,
     );
 
     await waitFor(() => expect(netInfoFetch).toHaveBeenCalledTimes(1));
@@ -88,15 +85,13 @@ describe('Chat', () => {
       let context;
 
       render(
-        <OverlayProvider>
-          <Chat client={chatClient}>
-            <ChatContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></ChatContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient}>
+          <ChatContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ChatContextConsumer>
+        </Chat>,
       );
 
       await waitFor(() => {
@@ -135,15 +130,13 @@ describe('Chat', () => {
       let context;
 
       render(
-        <OverlayProvider>
-          <Chat client={chatClient}>
-            <TranslationContextConsumer
-              fn={(ctx) => {
-                context = ctx;
-              }}
-            ></TranslationContextConsumer>
-          </Chat>
-        </OverlayProvider>,
+        <Chat client={chatClient}>
+          <TranslationContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></TranslationContextConsumer>
+        </Chat>,
       );
 
       await waitFor(() => {
