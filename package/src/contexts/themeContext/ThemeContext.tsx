@@ -65,5 +65,5 @@ export const useTheme = () => {
       `The useThemeContext hook was called outside the ThemeContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
   }
-  return { theme } as ThemeContextValue;
+  return { theme };
 };

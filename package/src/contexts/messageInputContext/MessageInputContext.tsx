@@ -1145,7 +1145,7 @@ export const useMessageInputContext = <
     );
   }
 
-  return contextValue as MessageInputContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

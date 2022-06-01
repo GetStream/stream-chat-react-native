@@ -107,7 +107,7 @@ export const useMessageOverlayContext = <
     );
   }
 
-  return contextValue as MessageOverlayContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

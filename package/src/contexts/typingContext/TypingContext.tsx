@@ -42,7 +42,7 @@ export const useTypingContext = <
     );
   }
 
-  return contextValue as TypingContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

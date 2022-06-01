@@ -132,7 +132,7 @@ export const useAttachmentPickerContext = () => {
     );
   }
 
-  return contextValue as AttachmentPickerContextValue;
+  return contextValue;
 };
 
 export const withAttachmentPickerContext = <

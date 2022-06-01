@@ -195,7 +195,7 @@ export const useChannelsStateContext = <
     );
   }
 
-  return contextValue as ChannelsStateContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 export const withChannelsStateContext = <

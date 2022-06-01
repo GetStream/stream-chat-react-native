@@ -135,7 +135,7 @@ export const useMessageContext = <
     );
   }
 
-  return contextValue as MessageContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

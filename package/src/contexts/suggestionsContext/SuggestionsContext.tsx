@@ -146,7 +146,7 @@ export const useSuggestionsContext = <
     );
   }
 
-  return contextValue as SuggestionsContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 export const withSuggestionsContext = <

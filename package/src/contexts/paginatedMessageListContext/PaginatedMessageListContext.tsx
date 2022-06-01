@@ -77,7 +77,7 @@ export const usePaginatedMessageListContext = <
     );
   }
 
-  return contextValue as PaginatedMessageListContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

@@ -87,7 +87,7 @@ export const useChatContext = <
     );
   }
 
-  return contextValue as ChatContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 
 /**

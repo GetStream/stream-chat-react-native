@@ -52,7 +52,7 @@ export const useThreadContext = <
     );
   }
 
-  return contextValue as ThreadContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 /**
  * Typescript currently does not support partial inference so if ThreadContext

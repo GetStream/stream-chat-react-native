@@ -47,5 +47,5 @@ export const useOwnCapabilitiesContext = () => {
     );
   }
 
-  return contextValue as OwnCapabilitiesContextValue;
+  return contextValue;
 };

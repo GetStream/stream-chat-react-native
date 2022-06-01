@@ -87,7 +87,7 @@ export const useOverlayContext = () => {
     );
   }
 
-  return contextValue as OverlayContextValue;
+  return contextValue;
 };
 
 export const withOverlayContext = <

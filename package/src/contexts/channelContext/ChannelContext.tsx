@@ -200,7 +200,7 @@ export const useChannelContext = <
     );
   }
 
-  return contextValue as ChannelContextValue<StreamChatGenerics>;
+  return contextValue;
 };
 /**
  * Typescript currently does not support partial inference so if ChatContext
