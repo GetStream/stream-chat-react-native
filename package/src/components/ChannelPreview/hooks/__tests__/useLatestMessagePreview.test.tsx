@@ -25,6 +25,33 @@ describe('useLatestMessagePreview', () => {
   const clientUser = generateUser();
   let chatClient: StreamChat<DefaultGenerics> | StreamChat<DefaultStreamChatGenerics>;
 
+  const channelName = 'okechukwu';
+  const channel = {
+    data: { name: channelName },
+    state: { messages: [] },
+  } as unknown as Channel<DefaultStreamChatGenerics>;
+
+  const LATEST_MESSAGE = {
+    args: 'string',
+    attachments: [],
+    channel,
+    cid: 'string',
+    command: 'string',
+    command_info: { name: 'string' },
+    created_at: 'string',
+    deleted_at: 'string',
+    id: 'string',
+    type: 'MessageLabel',
+    user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
+  } as unknown as MessageResponse<DefaultStreamChatGenerics>;
+
+  const LATEST_MESSAGE_OBJECT_WITH_UNDEFINED_MESSAGEOBJECT = {
+    created_at: 'LT',
+    messageObject: undefined,
+    previews: [{ bold: false, text: 'Nothing yet...' }],
+    status: 0,
+  };
+
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
   });
@@ -46,32 +73,8 @@ describe('useLatestMessagePreview', () => {
     render(ui, { wrapper: ChatProvider, ...options });
 
   it('should return a channel latest message', async () => {
-    const channelName = 'okechukwu';
-    const channel = {
-      data: { name: channelName },
-    } as unknown as Channel<DefaultStreamChatGenerics>;
-
     const TestComponent = () => {
-      const channelLatestMessage = useLatestMessagePreview(
-        {
-          data: { name: channelName },
-          state: { messages: [] },
-        } as unknown as Channel<DefaultStreamChatGenerics>,
-        FORCE_UPDATE,
-        {
-          args: 'string',
-          attachments: [],
-          channel,
-          cid: 'string',
-          command: 'string',
-          command_info: { name: 'string' },
-          created_at: 'string',
-          deleted_at: 'string',
-          id: 'string',
-          type: 'MessageLabel',
-          user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
-        } as unknown as MessageResponse<DefaultStreamChatGenerics>,
-      );
+      const channelLatestMessage = useLatestMessagePreview(channel, FORCE_UPDATE, LATEST_MESSAGE);
 
       return <Text>{JSON.stringify(channelLatestMessage)}</Text>;
     };
@@ -80,14 +83,7 @@ describe('useLatestMessagePreview', () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          JSON.stringify({
-            created_at: 'LT',
-            messageObject: undefined,
-            previews: [{ bold: false, text: 'Nothing yet...' }],
-            status: 0,
-          }),
-        ),
+        getByText(JSON.stringify(LATEST_MESSAGE_OBJECT_WITH_UNDEFINED_MESSAGEOBJECT)),
       ).toBeTruthy();
     });
   });
