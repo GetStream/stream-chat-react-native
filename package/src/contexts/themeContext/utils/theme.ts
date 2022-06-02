@@ -377,6 +377,11 @@ export type Theme = {
         title: TextStyle;
       };
       noURI: ViewStyle;
+      playButtonStyle: {
+        durationTextStyle: TextStyle;
+        roundedView: ViewStyle;
+        videoContainer: ViewStyle;
+      };
       playIcon: IconProps;
     };
     container: ViewStyle;
@@ -859,6 +864,11 @@ export const defaultTheme: Theme = {
       noURI: {
         borderLeftWidth: 2,
         paddingLeft: 8,
+      },
+      playButtonStyle: {
+        durationTextStyle: {},
+        roundedView: {},
+        videoContainer: {},
       },
       playIcon: {
         height: 24,

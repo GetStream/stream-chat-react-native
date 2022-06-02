@@ -133,9 +133,6 @@ const CardWithContext = <
   const {
     theme: {
       colors: { accent_blue, black, blue_alice, transparent, white },
-      imageGallery: {
-        videoControl: { roundedView },
-      },
       messageSimple: {
         card: {
           authorName,
@@ -147,6 +144,7 @@ const CardWithContext = <
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
           noURI,
+          playButtonStyle: { roundedView },
           playIcon: { height, width },
         },
       },
