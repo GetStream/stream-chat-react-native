@@ -203,7 +203,9 @@ const ReplyWithContext = <
             />
           ) : null
         ) : null}
-        {messageType === 'video' ? <VideoThumbnail style={[styles.videoAttachment]} /> : null}
+        {messageType === 'video' && !lastAttachment.og_scrape_url ? (
+          <VideoThumbnail style={[styles.videoAttachment]} />
+        ) : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
             quotedMessage.deleted_at
