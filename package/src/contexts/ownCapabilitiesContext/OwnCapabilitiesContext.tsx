@@ -25,7 +25,9 @@ export const allOwnCapabilities = {
 export type OwnCapability = keyof typeof allOwnCapabilities;
 
 export type OwnCapabilitiesContextValue = Record<OwnCapability, boolean>;
-export const OwnCapabilitiesContext = React.createContext({} as OwnCapabilitiesContextValue);
+export const OwnCapabilitiesContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as OwnCapabilitiesContextValue,
+);
 
 export const OwnCapabilitiesProvider = ({
   children,

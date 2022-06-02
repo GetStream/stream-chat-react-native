@@ -5,6 +5,7 @@ import merge from 'lodash/merge';
 import { defaultTheme, Theme } from './utils/theme';
 
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -60,7 +61,7 @@ export const ThemeProvider: React.FC<
 export const useTheme = () => {
   const theme = useContext(ThemeContext);
 
-  if (!theme) {
+  if (theme === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
     throw new Error(
       `The useThemeContext hook was called outside the ThemeContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
