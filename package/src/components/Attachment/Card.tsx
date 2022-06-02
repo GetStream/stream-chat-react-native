@@ -147,7 +147,7 @@ const CardWithContext = <
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
           noURI,
-          playIcon: { height, pathFill, width },
+          playIcon: { height, width },
         },
       },
     },
@@ -206,7 +206,7 @@ const CardWithContext = <
           >
             {isVideo ? (
               <View style={[styles.playButtonStyle, roundedView, { backgroundColor: white }]}>
-                <Play height={height} pathFill={pathFill} width={width} />
+                <Play height={height} pathFill={black} width={width} />
               </View>
             ) : null}
           </ImageBackground>

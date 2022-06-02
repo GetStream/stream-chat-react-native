@@ -862,7 +862,6 @@ export const defaultTheme: Theme = {
       },
       playIcon: {
         height: 24,
-        pathFill: '#000',
         width: 24,
       },
     },
