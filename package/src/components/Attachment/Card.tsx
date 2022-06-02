@@ -133,7 +133,7 @@ const CardWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, blue_alice, transparent },
+      colors: { accent_blue, black, blue_alice, transparent, white },
       imageGallery: {
         videoControl: { roundedView },
       },
@@ -148,8 +148,6 @@ const CardWithContext = <
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
           noURI,
-        },
-        content: {
           playIcon: { height, pathFill, width },
         },
       },

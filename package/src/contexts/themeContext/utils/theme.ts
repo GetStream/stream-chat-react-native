@@ -377,6 +377,7 @@ export type Theme = {
         title: TextStyle;
       };
       noURI: ViewStyle;
+      playIcon: IconProps;
     };
     container: ViewStyle;
     content: {
@@ -401,7 +402,6 @@ export type Theme = {
       messageUser: TextStyle;
       metaContainer: ViewStyle;
       metaText: TextStyle;
-      playIcon: IconProps;
       replyBorder: ViewStyle;
       replyContainer: ViewStyle;
       textContainer: ViewStyle & {
@@ -860,6 +860,11 @@ export const defaultTheme: Theme = {
         borderLeftWidth: 2,
         paddingLeft: 8,
       },
+      playIcon: {
+        height: 24,
+        pathFill: '#000',
+        width: 24,
+      },
     },
     container: {},
     content: {
@@ -909,11 +914,6 @@ export const defaultTheme: Theme = {
       },
       metaText: {
         fontSize: 12,
-      },
-      playIcon: {
-        height: 24,
-        pathFill: '#000',
-        width: 24,
       },
       replyBorder: {},
       replyContainer: {},
