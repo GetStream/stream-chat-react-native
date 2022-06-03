@@ -25,7 +25,7 @@ import { useChannelsStateContext } from '../channelsStateContext/ChannelsStateCo
 jest.mock('../utils/isTestEnvironment', () => ({ isTestEnvironment: jest.fn(() => false) }));
 console.error = jest.fn();
 describe('contexts hooks in a component throws an error with message when not wrapped in a provider', () => {
-  const TestComponent = ({ useContextHook }: { useContextHook(): {} }) => {
+  const TestComponent = ({ useContextHook }: { useContextHook(): void }) => {
     useContextHook();
     return <View />;
   };
