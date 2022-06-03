@@ -26,7 +26,7 @@ jest.mock('../utils/isTestEnvironment', () => ({ isTestEnvironment: jest.fn(() =
 console.error = jest.fn();
 describe('contexts hooks in a component throws an error with message when not wrapped in a provider', () => {
   const TestComponent = ({ useContextHook }: { useContextHook(): {} }) => {
-    const result = useContextHook();
+    useContextHook();
     return <View />;
   };
 
