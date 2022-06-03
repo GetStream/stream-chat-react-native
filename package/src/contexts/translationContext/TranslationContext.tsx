@@ -23,10 +23,14 @@ export type TranslationContextValue = {
   tDateTimeParser: TDateTimeParser;
 };
 
-export const TranslationContext = React.createContext<TranslationContextValue>({
+const defaultTranslationContextValue: TranslationContextValue = {
   t: (key: string) => key,
   tDateTimeParser: (input) => Dayjs(input),
-});
+};
+
+export const TranslationContext = React.createContext<TranslationContextValue>(
+  defaultTranslationContextValue,
+);
 
 export const TranslationProvider: React.FC<{
   value: TranslationContextValue;
@@ -37,7 +41,7 @@ export const TranslationProvider: React.FC<{
 export const useTranslationContext = () => {
   const contextValue = useContext(TranslationContext);
 
-  if (!contextValue && !isTestEnvironment()) {
+  if (contextValue === defaultTranslationContextValue && !isTestEnvironment()) {
     throw new Error(
       `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider)(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
     );
