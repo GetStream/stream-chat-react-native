@@ -157,7 +157,7 @@ const CardWithContext = <
 
   const defaultOnPress = () => !error && openURL && openURL();
 
-  const isVideo = type === 'video';
+  const isVideoCard = type === 'video' && og_scrape_url;
 
   return (
     <TouchableOpacity
@@ -205,7 +205,7 @@ const CardWithContext = <
             source={{ uri: makeImageCompatibleUrl(uri) }}
             style={[styles.cardCover, cover, stylesProp.cardCover]}
           >
-            {isVideo ? (
+            {isVideoCard ? (
               <View style={[styles.playButtonStyle, roundedView, { backgroundColor: white }]}>
                 <Play height={height} pathFill={black} width={width} />
               </View>
