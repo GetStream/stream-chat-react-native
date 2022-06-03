@@ -252,7 +252,6 @@ export const ImageGallery = <
    */
 
   const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
-    console.log(cur);
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>

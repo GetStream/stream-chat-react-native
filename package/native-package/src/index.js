@@ -15,6 +15,35 @@ import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
+const VideoComponent = ({
+  onBuffer,
+  onEnd,
+  onLoad,
+  onProgress,
+  paused,
+  resizeMode,
+  style,
+  uri,
+  videoRef,
+}) => (
+  <Video
+    onBuffer={onBuffer}
+    onEnd={onEnd}
+    onError={(error) => {
+      console.error(error);
+    }}
+    onLoad={onLoad}
+    onProgress={onProgress}
+    paused={paused}
+    ref={videoRef}
+    resizeMode={resizeMode}
+    source={{
+      uri,
+    }}
+    style={style}
+  />
+);
+
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
     try {
@@ -249,24 +278,7 @@ registerNativeHandlers({
       ignoreAndroidSystemSettings: false,
     });
   },
-  // eslint-disable-next-line react/display-name
-  Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, resizeMode, style, uri, videoRef }) => (
-    <Video
-      onBuffer={onBuffer}
-      onEnd={onEnd}
-      onError={(error) => {
-        console.error(error);
-      }}
-      onLoad={onLoad}
-      onProgress={onProgress}
-      paused={paused}
-      ref={videoRef}
-      source={{
-        uri,
-      }}
-      style={style}
-    />
-  ),
+  Video: VideoComponent,
 });
 
 if (Platform.OS === 'android') {

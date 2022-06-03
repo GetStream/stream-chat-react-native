@@ -12,6 +12,19 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
+const VideoComponent = ({ onPlaybackStatusUpdate, paused, resizeMode, style, uri, videoRef }) => (
+  <ExpoVideoPlayer
+    onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+    ref={videoRef}
+    resizeMode={resizeMode}
+    shouldPlay={!paused}
+    source={{
+      uri,
+    }}
+    style={[style]}
+  />
+);
+
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, uri }) => {
     const { uri: compressedUri } = await ImageManipulator.manipulateAsync(uri, [], {
@@ -219,19 +232,7 @@ registerNativeHandlers({
         Haptics.selectionAsync();
     }
   },
-  // eslint-disable-next-line react/display-name
-  Video: ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
-    <ExpoVideoPlayer
-      onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-      ref={videoRef}
-      resizeMode='contain'
-      shouldPlay={!paused}
-      source={{
-        uri,
-      }}
-      style={[style]}
-    />
-  ),
+  Video: VideoComponent,
 });
 
 export * from 'stream-chat-react-native-core';
