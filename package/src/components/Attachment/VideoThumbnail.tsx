@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ViewProps } from 'react-native';
+import { ImageBackground, StyleSheet, View, ViewProps } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons';
@@ -24,7 +24,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export type VideoThumbnailProps = ViewProps;
+export type VideoThumbnailProps = ViewProps & {
+  thumb_url?: string;
+};
 
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
@@ -34,12 +36,16 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
       },
     },
   } = useTheme();
-  const { style, ...rest } = props;
+  const { style, thumb_url, ...rest } = props;
   return (
-    <View {...rest} style={[styles.container, container, style]}>
+    <ImageBackground
+      source={{ uri: thumb_url }}
+      {...rest}
+      style={[styles.container, container, style]}
+    >
       <View style={[styles.roundedView, roundedView]}>
         <Play height={24} pathFill={'#000'} width={24} />
       </View>
-    </View>
+    </ImageBackground>
   );
 };

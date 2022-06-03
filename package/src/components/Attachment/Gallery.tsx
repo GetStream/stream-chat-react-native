@@ -204,7 +204,7 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
+            {rows.map(({ height, resizeMode, thumb_url, type, url, width }, rowIndex) => {
               const defaultOnPress = () => {
                 // Added if-else to keep the logic readable, instead of DRY.
                 // if - legacyImageViewerSwipeBehaviour is disabled
@@ -289,6 +289,7 @@ const GalleryWithContext = <
                           width: width - 1,
                         },
                       ]}
+                      thumb_url={thumb_url}
                     />
                   ) : (
                     <MemoizedGalleryImage
