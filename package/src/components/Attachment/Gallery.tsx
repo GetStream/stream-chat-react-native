@@ -5,6 +5,8 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
+import { openUrlSafely } from './utils/openUrlSafely';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
@@ -23,6 +25,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -206,6 +209,10 @@ const GalleryWithContext = <
           >
             {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
               const defaultOnPress = () => {
+                if (type === 'video' && !isVideoPackageAvailable()) {
+                  return openUrlSafely(url);
+                }
+
                 // Added if-else to keep the logic readable, instead of DRY.
                 // if - legacyImageViewerSwipeBehaviour is disabled
                 // else - legacyImageViewerSwipeBehaviour is enabled
