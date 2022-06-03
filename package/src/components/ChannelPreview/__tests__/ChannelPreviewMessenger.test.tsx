@@ -12,20 +12,25 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
+import type { Channel, MessageResponse, StreamChat } from 'stream-chat';
+import {
+  TranslationContextValue,
+  TranslationProvider,
+} from '../../../contexts/translationContext/TranslationContext';
+import type { ChannelPreviewMessageProps } from 'stream-chat-react-native';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: Channel | null;
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
       <ChannelPreviewMessenger
-        channel={channel}
-        client={chatClient}
+        channel={channel as Channel}
         latestMessagePreview={{
           created_at: '',
-          messageObject: generateMessage(),
+          messageObject: generateMessage() as MessageResponse,
           previews: [
             {
               bold: true,
@@ -40,8 +45,8 @@ describe('ChannelPreviewMessenger', () => {
     </Chat>
   );
 
-  const initializeChannel = async (c) => {
-    useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
+  const initializeChannel = async (channelWithOverrides: Channel) => {
+    useMockedApis(chatClient, [getOrCreateChannelApi(channelWithOverrides)]);
 
     channel = chatClient.channel('messaging');
 
@@ -58,7 +63,7 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should call setActiveChannel on click', async () => {
     const onSelect = jest.fn();
-    await initializeChannel(generateChannelResponse());
+    await initializeChannel(generateChannelResponse() as unknown as Channel);
 
     const { getByTestId } = render(
       getComponent({
@@ -96,8 +101,10 @@ describe('ChannelPreviewMessenger', () => {
 
     await initializeChannel(
       generateChannelResponse({
-        members: [m1, m2, m3],
-      }),
+        channel: {
+          members: [m1, m2, m3],
+        },
+      }) as unknown as Channel,
     );
 
     const { queryByText } = render(getComponent());
@@ -108,7 +115,7 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
     const message = generateMessage();
-    await initializeChannel(generateChannelResponse());
+    await initializeChannel(generateChannelResponse() as unknown as Channel);
 
     const { queryByText } = render(
       getComponent({
