@@ -1,5 +1,13 @@
-import React, { useMemo } from 'react';
-import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  ImageProps,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
@@ -34,7 +42,7 @@ const GalleryImage: React.FC<
   const { uri, ...rest } = props;
 
   return (
-    <Image
+    <ImageBackground
       {...rest}
       source={{
         uri: makeImageCompatibleUrl(uri),
@@ -51,7 +59,14 @@ const MemoizedGalleryImage = React.memo(
 ) as typeof GalleryImage;
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  activityIndicator: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  flex: { alignItems: 'center', flex: 1 },
   galleryContainer: {
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
@@ -66,6 +81,10 @@ const styles = StyleSheet.create({
     margin: 1,
   },
   moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
+  warningIconStyle: {
+    borderRadius: 24,
+    marginTop: 4,
+  },
 });
 
 export type GalleryPropsWithContext<
@@ -129,6 +148,7 @@ const GalleryWithContext = <
     videos,
     VideoThumbnail,
   } = props;
+  const [loadingImage, setLoadingImage] = useState(true);
 
   const {
     theme: {
@@ -291,18 +311,23 @@ const GalleryWithContext = <
                       ]}
                     />
                   ) : (
-                    <MemoizedGalleryImage
-                      resizeMode={resizeMode}
-                      style={[
-                        borderRadius,
-                        image,
-                        {
-                          height: height - 1,
-                          width: width - 1,
-                        },
-                      ]}
-                      uri={url}
-                    />
+                    <View style={styles.flex}>
+                      <MemoizedGalleryImage
+                        onLoadEnd={() => setLoadingImage(false)}
+                        onLoadStart={() => setLoadingImage(false)}
+                        resizeMode={resizeMode}
+                        style={[
+                          borderRadius,
+                          image,
+                          {
+                            height: height - 1,
+                            width: width - 1,
+                          },
+                        ]}
+                        uri={url}
+                      />
+                      {loadingImage && <ActivityIndicator style={styles.activityIndicator} />}
+                    </View>
                   )}
                   {colIndex === numOfColumns - 1 &&
                   rowIndex === numOfRows - 1 &&
