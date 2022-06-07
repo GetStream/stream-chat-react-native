@@ -447,7 +447,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
   const {
     fileUploads,
     imageUploads,
@@ -536,7 +536,7 @@ export const MessageInputProvider = <
   };
 
   const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
+    if (hasImagePicker) {
       Keyboard.dismiss();
       openPicker();
       setSelectedPicker('images');
@@ -548,7 +548,7 @@ export const MessageInputProvider = <
        * https://github.com/gorhom/react-native-bottom-sheet/issues/446
        */
       setTimeout(openPicker, 600);
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+    } else if (hasFilePicker) {
       pickFile();
     }
   };
@@ -572,6 +572,7 @@ export const MessageInputProvider = <
 
   const pickFile = async () => {
     if (numberOfUploads >= value.maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
       return;
     }
 
