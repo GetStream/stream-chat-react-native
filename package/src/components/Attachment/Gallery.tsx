@@ -208,21 +208,25 @@ const GalleryWithContext = <
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
             {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
-              const defaultOnPress = () => {
-                if (type === 'video' && !isVideoPackageAvailable()) {
-                  return openUrlSafely(url);
-                }
-
-                // Added if-else to keep the logic readable, instead of DRY.
-                // if - legacyImageViewerSwipeBehaviour is disabled
-                // else - legacyImageViewerSwipeBehaviour is enabled
+              const openImageViewer = () => {
                 if (!legacyImageViewerSwipeBehaviour && message) {
+                  // Added if-else to keep the logic readable, instead of DRY.
+                  // if - legacyImageViewerSwipeBehaviour is disabled
+                  // else - legacyImageViewerSwipeBehaviour is enabled
                   setImages([message]);
                   setImage({ messageId: message.id, url });
                   setOverlay('gallery');
                 } else if (legacyImageViewerSwipeBehaviour) {
                   setImage({ messageId: message?.id, url });
                   setOverlay('gallery');
+                }
+              };
+
+              const defaultOnPress = () => {
+                if (type === 'video' && !isVideoPackageAvailable()) {
+                  openUrlSafely(url);
+                } else {
+                  openImageViewer();
                 }
               };
 
