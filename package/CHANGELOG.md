@@ -1,5 +1,23 @@
 # Change Log
 
+## [4.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.1...v4.7.0) (2022-06-07)
+
+
+### Features
+
+* ability to customize onPress handler for urls ([e5b840f](https://github.com/GetStream/stream-chat-react-native/commit/e5b840f07983c71cc58322194c5b62ebbefa9252))
+* allow video upload from image picker and file picker ([6009d36](https://github.com/GetStream/stream-chat-react-native/commit/6009d3626bed416c1bd043fbf1c6ebb156186677))
+* inline video renderer/player support for SDK ([862c4bb](https://github.com/GetStream/stream-chat-react-native/commit/862c4bb990f98f26c6c81e2335692569a44018b9))
+
+
+### Bug Fixes
+
+* correctly truncate channel name in useChannelPreviewDisplayName ([cdabaa3](https://github.com/GetStream/stream-chat-react-native/commit/cdabaa3682747c3590df37a2ad86380c67e0ef29))
+* filePicker appearing issue on tapping the attachment picker icon after file is selected ([ae19950](https://github.com/GetStream/stream-chat-react-native/commit/ae19950b397b5e999e10c9ae7f1a41ad5dfdec12))
+* issue with the link text overflowing the reply view ([1c5aa3e](https://github.com/GetStream/stream-chat-react-native/commit/1c5aa3eac161f115a4c6799dfecd48966f770c06))
+* issues with video upload in expo from attachment picker and component displayname ([d8d621d](https://github.com/GetStream/stream-chat-react-native/commit/d8d621d0754d0d7962791a8756142955b2d661d6))
+* smart gallery rendering while optimistically adding a message to list ([748f36b](https://github.com/GetStream/stream-chat-react-native/commit/748f36b7db4ce69c8d39cad24d9588359b6346f3))
+
 ### [4.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.0...v4.6.1) (2022-05-25)
 
 

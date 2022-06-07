@@ -13,7 +13,7 @@ import {
 
 import type { Attachment } from 'stream-chat';
 
-import { useGoToURL } from './hooks/useGoToURL';
+import { openUrlSafely } from './utils/openUrlSafely';
 
 import {
   MessageContextValue,
@@ -139,9 +139,7 @@ const CardWithContext = <
 
   const uri = image_url || thumb_url;
 
-  const [error, openURL] = useGoToURL(og_scrape_url || uri);
-
-  const defaultOnPress = () => !error && openURL && openURL();
+  const defaultOnPress = () => openUrlSafely(og_scrape_url || uri);
 
   return (
     <TouchableOpacity

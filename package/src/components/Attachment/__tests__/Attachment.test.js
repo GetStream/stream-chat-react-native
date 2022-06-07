@@ -1,8 +1,5 @@
 import React from 'react';
 
-import { Linking } from 'react-native';
-
-import { act, renderHook } from '@testing-library/react-hooks';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,7 +15,6 @@ import {
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
-import { useGoToURL } from '../hooks/useGoToURL';
 
 const getAttachmentComponent = (props) => {
   const message = generateMessage();
