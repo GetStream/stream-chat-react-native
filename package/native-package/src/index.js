@@ -8,41 +8,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import Video from 'react-native-video';
-
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-const VideoComponent = ({
-  onBuffer,
-  onEnd,
-  onLoad,
-  onProgress,
-  paused,
-  resizeMode,
-  style,
-  uri,
-  videoRef,
-}) => (
-  <Video
-    onBuffer={onBuffer}
-    onEnd={onEnd}
-    onError={(error) => {
-      console.error(error);
-    }}
-    onLoad={onLoad}
-    onProgress={onProgress}
-    paused={paused}
-    ref={videoRef}
-    resizeMode={resizeMode}
-    source={{
-      uri,
-    }}
-    style={style}
-  />
-);
+import Video from './optionalDependencies/Video';
 
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
@@ -278,7 +249,25 @@ registerNativeHandlers({
       ignoreAndroidSystemSettings: false,
     });
   },
-  Video: VideoComponent,
+  // eslint-disable-next-line react/display-name
+  Video: Video ? ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
+      <Video
+        ignoreSilentSwitch={'ignore'}
+        onBuffer={onBuffer}
+        onEnd={onEnd}
+        onError={(error) => {
+          console.error(error);
+        }}
+        onLoad={onLoad}
+        onProgress={onProgress}
+        paused={paused}
+        ref={videoRef}
+        source={{
+          uri,
+        }}
+        style={style}
+      />
+    ) : null,
 });
 
 if (Platform.OS === 'android') {
