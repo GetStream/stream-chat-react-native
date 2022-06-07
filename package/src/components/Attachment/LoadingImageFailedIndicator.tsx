@@ -6,12 +6,13 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { Warning } from '../../icons';
 
-const WARNING_ICON_SIZE = 20;
+const WARNING_ICON_SIZE = 24;
 
 const styles = StyleSheet.create({
   container: {
     alignContent: 'center',
-    flexDirection: 'row',
+    alignItems: 'center',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
   errorText: {

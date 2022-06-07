@@ -12,6 +12,8 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
+import { openUrlSafely } from './utils/openUrlSafely';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
@@ -30,6 +32,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -206,111 +209,140 @@ const GalleryWithContext = <
   const numOfColumns = thumbnailGrid.length;
 
   return (
-    <View>
-      <View
-        style={[
-          styles.galleryContainer,
-          {
-            height,
-            width,
-          },
-          galleryContainer,
-          {
-            flexDirection: invertedDirections ? 'column' : 'row',
-          },
-        ]}
-        testID='gallery-container'
-      >
-        {thumbnailGrid.map((rows, colIndex) => {
-          const numOfRows = rows.length;
-          return (
-            <View
-              key={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
-              style={[
-                {
-                  flexDirection: invertedDirections ? 'row' : 'column',
-                },
-                galleryItemColumn,
-              ]}
-              testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
-            >
-              {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
-                const defaultOnPress = () => {
+    <View
+      style={[
+        styles.galleryContainer,
+        {
+          height,
+          width,
+        },
+        galleryContainer,
+        {
+          flexDirection: invertedDirections ? 'column' : 'row',
+        },
+      ]}
+      testID='gallery-container'
+    >
+      {thumbnailGrid.map((rows, colIndex) => {
+        const numOfRows = rows.length;
+        return (
+          <View
+            key={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
+            style={[
+              {
+                flexDirection: invertedDirections ? 'row' : 'column',
+              },
+              galleryItemColumn,
+            ]}
+            testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
+          >
+            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
+              const openImageViewer = () => {
+                if (!legacyImageViewerSwipeBehaviour && message) {
                   // Added if-else to keep the logic readable, instead of DRY.
                   // if - legacyImageViewerSwipeBehaviour is disabled
                   // else - legacyImageViewerSwipeBehaviour is enabled
-                  if (!legacyImageViewerSwipeBehaviour && message) {
-                    setImages([message]);
-                    setImage({ messageId: message.id, url });
-                    setOverlay('gallery');
-                  } else if (legacyImageViewerSwipeBehaviour) {
-                    setImage({ messageId: message?.id, url });
-                    setOverlay('gallery');
-                  }
-                };
+                  setImages([message]);
+                  setImage({ messageId: message.id, url });
+                  setOverlay('gallery');
+                } else if (legacyImageViewerSwipeBehaviour) {
+                  setImage({ messageId: message?.id, url });
+                  setOverlay('gallery');
+                }
+              };
 
-                const borderRadius = getGalleryImageBorderRadius({
-                  alignment,
-                  colIndex,
-                  groupStyles,
-                  hasThreadReplies,
-                  height,
-                  invertedDirections,
-                  messageText,
-                  numOfColumns,
-                  numOfRows,
-                  rowIndex,
-                  sizeConfig,
-                  threadList,
-                  width,
-                });
+              const defaultOnPress = () => {
+                if (type === 'video' && !isVideoPackageAvailable()) {
+                  // This condition is kinda unreachable, since we render videos as file attachment if the video
+                  // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+                  openUrlSafely(url);
+                } else {
+                  openImageViewer();
+                }
+              };
 
-                return (
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    disabled={preventPress}
-                    key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
-                    onLongPress={(event) => {
-                      if (onLongPress) {
-                        onLongPress({
-                          emitter: 'gallery',
-                          event,
-                        });
-                      }
-                    }}
-                    onPress={(event) => {
-                      if (onPress) {
-                        onPress({
-                          defaultHandler: defaultOnPress,
-                          emitter: 'gallery',
-                          event,
-                        });
-                      }
-                    }}
-                    onPressIn={(event) => {
-                      if (onPressIn) {
-                        onPressIn({
-                          defaultHandler: defaultOnPress,
-                          emitter: 'gallery',
-                          event,
-                        });
-                      }
-                    }}
-                    style={[
-                      styles.imageContainer,
-                      {
-                        height,
-                        width,
-                      },
-                      imageContainer,
-                    ]}
-                    testID={`gallery-${
-                      invertedDirections ? 'row' : 'column'
-                    }-${colIndex}-item-${rowIndex}`}
-                    {...additionalTouchableProps}
-                  >
-                    {type === 'video' ? (
-                      <VideoThumbnail
+              const borderRadius = getGalleryImageBorderRadius({
+                alignment,
+                colIndex,
+                groupStyles,
+                hasThreadReplies,
+                height,
+                invertedDirections,
+                messageText,
+                numOfColumns,
+                numOfRows,
+                rowIndex,
+                sizeConfig,
+                threadList,
+                width,
+              });
+
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  disabled={preventPress}
+                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
+                  onLongPress={(event) => {
+                    if (onLongPress) {
+                      onLongPress({
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
+                  onPress={(event) => {
+                    if (onPress) {
+                      onPress({
+                        defaultHandler: defaultOnPress,
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
+                  onPressIn={(event) => {
+                    if (onPressIn) {
+                      onPressIn({
+                        defaultHandler: defaultOnPress,
+                        emitter: 'gallery',
+                        event,
+                      });
+                    }
+                  }}
+                  style={[
+                    styles.imageContainer,
+                    {
+                      height,
+                      width,
+                    },
+                    imageContainer,
+                  ]}
+                  testID={`gallery-${
+                    invertedDirections ? 'row' : 'column'
+                  }-${colIndex}-item-${rowIndex}`}
+                  {...additionalTouchableProps}
+                >
+                  {type === 'video' ? (
+                    <VideoThumbnail
+                      style={[
+                        borderRadius,
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <View style={styles.flex}>
+                      <MemoizedGalleryImage
+                        onError={(error) => {
+                          console.warn(error);
+                          setLoadingImage(false);
+                          setLoadingImageError(true);
+                        }}
+                        onLoadEnd={() => setLoadingImage(false)}
+                        onLoadStart={() => setLoadingImage(false)}
+                        resizeMode={resizeMode}
                         style={[
                           borderRadius,
                           image,
@@ -319,57 +351,36 @@ const GalleryWithContext = <
                             width: width - 1,
                           },
                         ]}
+                        uri={url}
                       />
-                    ) : (
-                      <View style={styles.flex}>
-                        <MemoizedGalleryImage
-                          onError={(error) => {
-                            console.warn(error);
-                            setLoadingImage(false);
-                            setLoadingImageError(true);
-                          }}
-                          onLoadEnd={() => setLoadingImage(false)}
-                          onLoadStart={() => setLoadingImage(false)}
-                          resizeMode={resizeMode}
-                          style={[
-                            borderRadius,
-                            image,
-                            {
-                              height: height - 1,
-                              width: width - 1,
-                            },
-                          ]}
-                          uri={url}
-                        />
-                        {loadingImage && <ImageLoadingIndicator style={styles.activityIndicator} />}
-                        {loadingImageError && (
-                          <LoadingImageFailedIndicator style={styles.activityIndicator} />
-                        )}
-                      </View>
-                    )}
-                    {colIndex === numOfColumns - 1 &&
-                    rowIndex === numOfRows - 1 &&
-                    imagesAndVideos.length > 4 ? (
-                      <View
-                        style={[
-                          StyleSheet.absoluteFillObject,
-                          styles.moreImagesContainer,
-                          { backgroundColor: overlay },
-                          moreImagesContainer,
-                        ]}
-                      >
-                        <Text style={[styles.moreImagesText, moreImagesText]}>
-                          {`+${imagesAndVideos.length - 4}`}
-                        </Text>
-                      </View>
-                    ) : null}
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          );
-        })}
-      </View>
+                      {loadingImage && <ImageLoadingIndicator style={styles.activityIndicator} />}
+                      {loadingImageError && (
+                        <LoadingImageFailedIndicator style={styles.activityIndicator} />
+                      )}
+                    </View>
+                  )}
+                  {colIndex === numOfColumns - 1 &&
+                  rowIndex === numOfRows - 1 &&
+                  imagesAndVideos.length > 4 ? (
+                    <View
+                      style={[
+                        StyleSheet.absoluteFillObject,
+                        styles.moreImagesContainer,
+                        { backgroundColor: overlay },
+                        moreImagesContainer,
+                      ]}
+                    >
+                      <Text style={[styles.moreImagesText, moreImagesText]}>
+                        {`+${imagesAndVideos.length - 4}`}
+                      </Text>
+                    </View>
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        );
+      })}
     </View>
   );
 };

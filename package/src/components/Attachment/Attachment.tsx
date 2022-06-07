@@ -11,6 +11,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { isVideoPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
@@ -76,13 +77,15 @@ const AttachmentWithContext = <
   }
 
   if (attachment.type === 'video' && !attachment.og_scrape_url) {
-    return (
+    return isVideoPackageAvailable() ? (
       <>
         <Gallery videos={[attachment]} />
         {hasAttachmentActions && (
           <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
         )}
       </>
+    ) : (
+      <FileAttachment attachment={attachment} />
     );
   }
 
