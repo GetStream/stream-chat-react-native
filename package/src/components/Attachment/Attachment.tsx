@@ -11,6 +11,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { isVideoPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
@@ -75,15 +76,21 @@ const AttachmentWithContext = <
     );
   }
 
-  if (attachment.type === 'file' || attachment.type === 'audio') {
-    return <FileAttachment attachment={attachment} />;
-  }
-
-  if (attachment.type === 'video' && attachment.asset_url) {
-    return (
-      // TODO: Put in video component
+  if (attachment.type === 'video' && !attachment.og_scrape_url) {
+    return isVideoPackageAvailable() ? (
+      <>
+        <Gallery videos={[attachment]} />
+        {hasAttachmentActions && (
+          <AttachmentActions key={`key-actions-${attachment.id}`} {...attachment} />
+        )}
+      </>
+    ) : (
       <FileAttachment attachment={attachment} />
     );
+  }
+
+  if (attachment.type === 'file' || attachment.type === 'audio') {
+    return <FileAttachment attachment={attachment} />;
   }
 
   if (hasAttachmentActions) {

@@ -447,7 +447,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
   const {
     fileUploads,
     imageUploads,
@@ -536,7 +536,7 @@ export const MessageInputProvider = <
   };
 
   const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
+    if (hasImagePicker) {
       Keyboard.dismiss();
       openPicker();
       setSelectedPicker('images');
@@ -548,7 +548,7 @@ export const MessageInputProvider = <
        * https://github.com/gorhom/react-native-bottom-sheet/issues/446
        */
       setTimeout(openPicker, 600);
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+    } else if (hasFilePicker) {
       pickFile();
     }
   };
@@ -572,6 +572,7 @@ export const MessageInputProvider = <
 
   const pickFile = async () => {
     if (numberOfUploads >= value.maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
       return;
     }
 
@@ -665,6 +666,8 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          original_height: image.height,
+          original_width: image.width,
           type: 'image',
         } as Attachment<StreamChatGenerics>);
       }
@@ -685,6 +688,15 @@ export const MessageInputProvider = <
             fallback: file.file.name,
             image_url: file.url,
             type: 'image',
+          } as Attachment<StreamChatGenerics>);
+        } else if (file.file.type?.startsWith('audio/')) {
+          attachments.push({
+            asset_url: file.url,
+            duration: file.file.duration,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'audio',
           } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({

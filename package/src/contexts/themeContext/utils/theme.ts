@@ -196,6 +196,11 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
+    videoControl: {
+      durationTextStyle: TextStyle;
+      roundedView: ViewStyle;
+      videoContainer: ViewStyle;
+    };
     backgroundColor?: string;
     pager?: ViewStyle;
     slide?: ImageStyle;
@@ -476,6 +481,10 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageUnderlay: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
   };
   overlay: {
     container: ViewStyle;
@@ -668,6 +677,11 @@ export const defaultTheme: Theme = {
       leftContainer: {},
       rightContainer: {},
       usernameText: {},
+    },
+    videoControl: {
+      durationTextStyle: {},
+      roundedView: {},
+      videoContainer: {},
     },
   },
   inlineDateSeparator: {
@@ -983,6 +997,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageUnderlay: {},
+    videoThumbnail: {
+      container: {},
+      roundedView: {},
+    },
   },
   overlay: {
     container: {},

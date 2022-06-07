@@ -6,5 +6,5 @@ import type { Attachment } from 'stream-chat';
  * @returns {string}
  */
 export function getUrlOfImageAttachment(image: Attachment) {
-  return image.image_url || image.thumb_url;
+  return image.image_url || image.thumb_url || image.asset_url;
 }
