@@ -26,7 +26,7 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../icons';
-import { getPhotos } from '../../native';
+import { getLocalAssetUri, getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
@@ -109,7 +109,8 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const onPressVideo = () => {
+  const onPressVideo = async () => {
+    const localAssetURI = asset.id && (await getLocalAssetUri(asset.id));
     if (selected) {
       setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
     } else {
@@ -125,7 +126,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
             name: asset.filename,
             size: asset.fileSize,
             type: 'video',
-            uri: asset.uri,
+            uri: localAssetURI || asset.uri,
           },
         ];
       });

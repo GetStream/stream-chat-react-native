@@ -145,7 +145,7 @@ export type VideoType = {
   style?: StyleProp<ViewStyle>;
 };
 
-export let Video: React.ComponentType<VideoType> = fail;
+export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
   compressImage?: CompressImage;
@@ -219,3 +219,5 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     Video = handlers.Video;
   }
 };
+
+export const isVideoPackageAvailable = () => !!Video;
