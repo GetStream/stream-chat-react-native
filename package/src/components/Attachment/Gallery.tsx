@@ -224,6 +224,8 @@ const GalleryWithContext = <
 
               const defaultOnPress = () => {
                 if (type === 'video' && !isVideoPackageAvailable()) {
+                  // This condition is kinda unreachable, since we render videos as file attachment if the video
+                  // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
                   openUrlSafely(url);
                 } else {
                   openImageViewer();
