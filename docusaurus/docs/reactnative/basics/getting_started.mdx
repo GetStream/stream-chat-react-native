@@ -180,9 +180,67 @@ But an awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is q
 
 ## Expo Installation
 
-Stream Chat for React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run:
+Stream Chat for React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run.
+
+### Add Required Dependencies
 
 ```bash
 expo install stream-chat-expo
 expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg expo-av
 ```
+
+### Additional Steps
+
+For some of the packages listed below, there are additional steps required to setup the package:
+
+- `react-native-reanimated` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/reanimated/#installation)
+
+  Add Reanimated's babel plugin to your babel.config.js:
+
+  ```js
+    module.exports = {
+        ...
+        plugins: [
+            ...
+            'react-native-reanimated/plugin',
+        ],
+    };
+  ```
+
+- `react-native-gesture-handler` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/gesture-handler/#api)
+
+  RNGH requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
+
+  ```tsx
+  import 'react-native-gesture-handler';
+  import { AppRegistry } from 'react-native';
+
+  import App from './App';
+  import { name as appName } from './app.json';
+
+  AppRegistry.registerComponent(appName, () => App);
+  ```
+
+  Also wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHO`
+
+  ```jsx
+  import { GestureHandlerRootView } from 'react-native-gesture-handler';
+  import { OverlayProvider } from 'stream-chat-react-native';
+
+  export default function App() {
+    return (
+      <GestureHandlerRootView>
+        <OverlayProvider>{/* Your app code goes here */}</OverlayProvider>
+      </GestureHandlerRootView>
+    );
+  }
+  ```
+
+### Add Optional Dependencies
+
+- `expo-av` - [additional installation steps](https://docs.expo.dev/versions/v45.0.0/sdk/video/)
+
+  > Available in stream-chat-expo >= v4.7.0
+
+  Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default
+  browser of the device.
