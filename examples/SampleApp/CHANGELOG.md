@@ -1,5 +1,18 @@
 # Change Log
 
+## [1.7.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.1...sampleapp@v1.7.0) (2022-06-07)
+
+
+### Features
+
+* allow video upload from image picker and file picker ([6009d36](https://github.com/GetStream/stream-chat-react-native/commit/6009d3626bed416c1bd043fbf1c6ebb156186677))
+* inline video renderer/player support for SDK ([862c4bb](https://github.com/GetStream/stream-chat-react-native/commit/862c4bb990f98f26c6c81e2335692569a44018b9))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.6.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.0...sampleapp@v1.6.1) (2022-05-25)
 
 
