@@ -3,7 +3,9 @@ try {
   const videoPackage = require('expo-av');
   VideoComponent = videoPackage.Video;
 } catch (_) {
-  console.log('video library is not installed');
+  console.warn(
+    'Video library is currently not installed. To allow in-app video playback, install the "expo-av" package.',
+  );
 }
 
 export default VideoComponent;
