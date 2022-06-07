@@ -6,25 +6,16 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { Warning } from '../../icons';
 
-const WARNING_ICON_SIZE = 24;
+const WARNING_ICON_SIZE = 20;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    backgroundColor: 'black',
-    display: 'flex',
-    height: '100%',
+    alignContent: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
-    width: '100%',
   },
-  roundedView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    display: 'flex',
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
+  errorText: {
+    fontSize: 12,
   },
 });
 
@@ -34,9 +25,6 @@ export const LoadingImageFailedIndicator: React.FC<LoadingImageFailedIndicatorPr
   const {
     theme: {
       colors: { accent_red, black },
-      messageSimple: {
-        videoThumbnail: { container },
-      },
     },
   } = useTheme();
 
@@ -44,11 +32,11 @@ export const LoadingImageFailedIndicator: React.FC<LoadingImageFailedIndicatorPr
 
   const { style, ...rest } = props;
   return (
-    <View {...rest} style={[styles.container, container, style]}>
-      <Warning height={WARNING_ICON_SIZE} pathFill={accent_red} width={WARNING_ICON_SIZE} />
-      <Text {...rest} style={[{ color: black, fontSize: 10 }, style]}>
-        {t('Error loading')}
-      </Text>
+    <View {...rest} style={[style]}>
+      <View style={styles.container}>
+        <Warning height={WARNING_ICON_SIZE} pathFill={accent_red} width={WARNING_ICON_SIZE} />
+        <Text style={[styles.errorText, { color: black }]}>{t('Error loading')}</Text>
+      </View>
     </View>
   );
 };
