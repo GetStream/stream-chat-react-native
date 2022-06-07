@@ -252,6 +252,7 @@ registerNativeHandlers({
   // eslint-disable-next-line react/display-name
   Video: Video ? ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
       <Video
+        ignoreSilentSwitch={'ignore'}
         onBuffer={onBuffer}
         onEnd={onEnd}
         onError={(error) => {
