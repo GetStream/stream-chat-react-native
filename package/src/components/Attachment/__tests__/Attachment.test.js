@@ -4,6 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAttachmentAction,
@@ -13,6 +14,9 @@ import {
   generateImageAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+
+import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
+import { LoadingImageFailedIndicator } from '../../Attachment/LoadingImageFailedIndicator';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
 
@@ -20,9 +24,11 @@ const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessageProvider value={{ message }}>
-        <Attachment {...props} />
-      </MessageProvider>
+      <MessagesProvider value={{ ImageLoadingIndicator, LoadingImageFailedIndicator }}>
+        <MessageProvider value={{ message }}>
+          <Attachment {...props} />
+        </MessageProvider>
+      </MessagesProvider>
     </ThemeProvider>
   );
 };
