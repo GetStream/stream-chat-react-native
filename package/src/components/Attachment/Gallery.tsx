@@ -1,14 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   ImageBackground,
   ImageProps,
-  StyleProp,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ViewStyle,
 } from 'react-native';
 
 import { buildGallery } from './utils/buildGallery/buildGallery';
@@ -33,12 +30,8 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
-const WARNING_ICON_SIZE = 24;
 
 const GalleryImage: React.FC<
   Omit<ImageProps, 'height' | 'source'> & {
@@ -113,7 +106,11 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour' | 'VideoThumbnail'
+    | 'additionalTouchableProps'
+    | 'legacyImageViewerSwipeBehaviour'
+    | 'VideoThumbnail'
+    | 'LoadingImageFailedIndicator'
+    | 'ImageLoadingIndicator'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -133,28 +130,6 @@ export type GalleryPropsWithContext<
     message?: MessageType<StreamChatGenerics>;
   };
 
-const ImageDownloadFailedComponent = ({ style }: { style: StyleProp<ViewStyle> }) => {
-  const {
-    theme: {
-      colors: { accent_red, black },
-    },
-  } = useTheme();
-
-  const { t } = useTranslationContext();
-
-  return (
-    <View style={style}>
-      <Warning
-        height={WARNING_ICON_SIZE}
-        pathFill={accent_red}
-        style={styles.warningIconStyle}
-        width={WARNING_ICON_SIZE}
-      />
-      <Text style={[styles.erroeTextSize, { color: black }]}>{t('Error loading')}</Text>
-    </View>
-  );
-};
-
 const GalleryWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -165,8 +140,10 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
+    ImageLoadingIndicator,
     images,
     legacyImageViewerSwipeBehaviour,
+    LoadingImageFailedIndicator,
     message,
     onLongPress,
     onPress,
@@ -364,9 +341,9 @@ const GalleryWithContext = <
                           ]}
                           uri={url}
                         />
-                        {loadingImage && <ActivityIndicator style={styles.activityIndicator} />}
+                        {loadingImage && <ImageLoadingIndicator style={styles.activityIndicator} />}
                         {loadingImageError && (
-                          <ImageDownloadFailedComponent style={styles.activityIndicator} />
+                          <LoadingImageFailedIndicator style={styles.activityIndicator} />
                         )}
                       </View>
                     )}
@@ -466,7 +443,9 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
+    ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
+    LoadingImageFailedIndicator: PropLoadingImageFailedIndicator,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -493,7 +472,9 @@ export const Gallery = <
   } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
+    ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
+    LoadingImageFailedIndicator: ContextLoadingImageFailedIndicator,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
@@ -515,6 +496,9 @@ export const Gallery = <
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
+  const LoadingImageFailedIndicator =
+    PropLoadingImageFailedIndicator || ContextLoadingImageFailedIndicator;
+  const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
 
   return (
     <MemoizedGallery
@@ -524,8 +508,10 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        ImageLoadingIndicator,
         images,
         legacyImageViewerSwipeBehaviour,
+        LoadingImageFailedIndicator,
         message,
         onLongPress,
         onPress,
