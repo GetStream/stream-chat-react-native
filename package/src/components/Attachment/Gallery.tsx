@@ -341,7 +341,7 @@ const GalleryWithContext = <
                           setLoadingImageError(true);
                         }}
                         onLoadEnd={() => setLoadingImage(false)}
-                        onLoadStart={() => setLoadingImage(false)}
+                        onLoadStart={() => setLoadingImage(true)}
                         resizeMode={resizeMode}
                         style={[
                           borderRadius,
