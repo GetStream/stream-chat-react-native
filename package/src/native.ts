@@ -145,7 +145,7 @@ export type VideoType = {
   style?: StyleProp<ViewStyle>;
 };
 
-export let Video: React.ComponentType<VideoType>;
+export let Video: React.ComponentType<VideoType> | undefined;
 
 type Handlers = {
   compressImage?: CompressImage;
