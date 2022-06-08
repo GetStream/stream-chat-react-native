@@ -116,26 +116,28 @@ const App = () => {
         backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
       }}
     >
-      <NavigationContainer
-        ref={RootNavigationRef}
-        theme={{
-          colors: {
-            ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-            background: streamChatTheme.colors?.white_snow || '#FCFCFC',
-          },
-          dark: colorScheme === 'dark',
-        }}
-      >
-        <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
-          {isConnecting ? (
-            <LoadingScreen />
-          ) : chatClient ? (
-            <DrawerNavigatorWrapper chatClient={chatClient} />
-          ) : (
-            <UserSelector />
-          )}
-        </AppContext.Provider>
-      </NavigationContainer>
+      <ThemeProvider style={streamChatTheme}>
+        <NavigationContainer
+          ref={RootNavigationRef}
+          theme={{
+            colors: {
+              ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+              background: streamChatTheme.colors?.white_snow || '#FCFCFC',
+            },
+            dark: colorScheme === 'dark',
+          }}
+        >
+          <AppContext.Provider value={{ chatClient, loginUser, logout, switchUser }}>
+            {isConnecting ? (
+              <LoadingScreen />
+            ) : chatClient ? (
+              <DrawerNavigatorWrapper chatClient={chatClient} />
+            ) : (
+              <UserSelector />
+            )}
+          </AppContext.Provider>
+        </NavigationContainer>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 };
@@ -176,23 +178,19 @@ const DrawerNavigatorWrapper: React.FC<{
 };
 
 const UserSelector = () => {
-  const streamChatTheme = useStreamChatTheme();
-
   return (
-    <ThemeProvider style={streamChatTheme}>
-      <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
-        <UserSelectorStack.Screen
-          component={AdvancedUserSelectorScreen}
-          name='AdvancedUserSelectorScreen'
-          options={{ gestureEnabled: false, headerShown: false }}
-        />
-        <UserSelectorStack.Screen
-          component={UserSelectorScreen}
-          name='UserSelectorScreen'
-          options={{ gestureEnabled: false, headerShown: false }}
-        />
-      </UserSelectorStack.Navigator>
-    </ThemeProvider>
+    <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
+      <UserSelectorStack.Screen
+        component={AdvancedUserSelectorScreen}
+        name='AdvancedUserSelectorScreen'
+        options={{ gestureEnabled: false, headerShown: false }}
+      />
+      <UserSelectorStack.Screen
+        component={UserSelectorScreen}
+        name='UserSelectorScreen'
+        options={{ gestureEnabled: false, headerShown: false }}
+      />
+    </UserSelectorStack.Navigator>
   );
 };
 
