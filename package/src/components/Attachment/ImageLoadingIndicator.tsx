@@ -6,20 +6,10 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: 'black',
     display: 'flex',
     height: '100%',
     justifyContent: 'center',
     width: '100%',
-  },
-  roundedView: {
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    display: 'flex',
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
   },
 });
 
