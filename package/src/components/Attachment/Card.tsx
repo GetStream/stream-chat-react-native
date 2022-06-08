@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Image,
+  ImageBackground,
   ImageStyle,
   StyleProp,
   StyleSheet,
@@ -24,6 +24,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Play } from '../../icons/Play';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -41,13 +42,15 @@ const styles = StyleSheet.create({
   },
   authorNameMask: {
     bottom: 0,
-    left: 8,
+    left: 2,
     position: 'absolute',
   },
   cardCover: {
+    alignItems: 'center',
     borderRadius: 8,
     height: 140,
-    marginHorizontal: 8,
+    justifyContent: 'center',
+    marginHorizontal: 2,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -61,6 +64,14 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 12,
     marginHorizontal: 8,
+  },
+  playButtonStyle: {
+    alignItems: 'center',
+    borderRadius: 50,
+    elevation: 2,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
   title: {
     fontSize: 12,
@@ -116,11 +127,12 @@ const CardWithContext = <
     text,
     thumb_url,
     title,
+    type,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, black, blue_alice, transparent },
+      colors: { accent_blue, black, blue_alice, transparent, white },
       messageSimple: {
         card: {
           authorName,
@@ -132,6 +144,8 @@ const CardWithContext = <
           cover,
           footer: { description, title: titleStyle, ...footerStyle },
           noURI,
+          playButtonStyle: { roundedView },
+          playIcon: { height, width },
         },
       },
     },
@@ -140,6 +154,8 @@ const CardWithContext = <
   const uri = image_url || thumb_url;
 
   const defaultOnPress = () => openUrlSafely(og_scrape_url || uri);
+
+  const isVideoCard = type === 'video' && og_scrape_url;
 
   return (
     <TouchableOpacity
@@ -181,11 +197,18 @@ const CardWithContext = <
       {CardCover && <CardCover {...props} />}
       {uri && !CardCover && (
         <View>
-          <Image
+          <ImageBackground
+            imageStyle={styles.cardCover}
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
             style={[styles.cardCover, cover, stylesProp.cardCover]}
-          />
+          >
+            {isVideoCard ? (
+              <View style={[styles.playButtonStyle, roundedView, { backgroundColor: white }]}>
+                <Play height={height} pathFill={black} width={width} />
+              </View>
+            ) : null}
+          </ImageBackground>
           {author_name && (
             <View style={[styles.authorNameMask, authorNameMask, stylesProp.authorNameMask]}>
               <View
