@@ -17,7 +17,9 @@ const setUser = (client, user) =>
     resolve();
   });
 
-function mockClient(client) {
+function mockClient(client, options = {}) {
+  const { disableAppSettings = true } = options;
+
   jest.spyOn(client, '_setToken').mockImplementation();
   jest.spyOn(client, '_setupConnection').mockImplementation();
   client.tokenManager = {
@@ -25,15 +27,26 @@ function mockClient(client) {
     tokenReady: jest.fn(() => true),
   };
   client.setUser = setUser.bind(null, client);
+
+  if (disableAppSettings) {
+    client.getAppSettings = jest.fn(() => ({}));
+  }
+
   return client;
 }
 
-export const getTestClient = () => mockClient(new StreamChat(apiKey));
+export const getTestClient = (options = {}) => mockClient(new StreamChat(apiKey), options);
 
-export const getTestClientWithUser = async (user) => {
+export const getTestClientWithUser = async (user, options = {}) => {
+  const { disableAppSettings = true } = options;
   const client = mockClient(new StreamChat(apiKey));
   await setUser(client, user);
   client.wsPromise = Promise.resolve();
+
+  if (disableAppSettings) {
+    client.getAppSettings = jest.fn(() => ({}));
+  }
+
   return client;
 };
 

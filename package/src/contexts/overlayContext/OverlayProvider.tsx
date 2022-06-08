@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+
 import { BackHandler, Dimensions, StyleSheet, ViewStyle } from 'react-native';
 
 import Animated, {

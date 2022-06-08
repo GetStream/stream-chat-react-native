@@ -27,6 +27,7 @@ export const SendMessageDisallowedIndicator = () => {
       },
     },
   } = useTheme();
+
   return (
     <View
       style={[
