@@ -177,22 +177,20 @@ const DrawerNavigatorWrapper: React.FC<{
   );
 };
 
-const UserSelector = () => {
-  return (
-    <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
-      <UserSelectorStack.Screen
-        component={AdvancedUserSelectorScreen}
-        name='AdvancedUserSelectorScreen'
-        options={{ gestureEnabled: false, headerShown: false }}
-      />
-      <UserSelectorStack.Screen
-        component={UserSelectorScreen}
-        name='UserSelectorScreen'
-        options={{ gestureEnabled: false, headerShown: false }}
-      />
-    </UserSelectorStack.Navigator>
-  );
-};
+const UserSelector = () => (
+  <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
+    <UserSelectorStack.Screen
+      component={AdvancedUserSelectorScreen}
+      name='AdvancedUserSelectorScreen'
+      options={{ gestureEnabled: false, headerShown: false }}
+    />
+    <UserSelectorStack.Screen
+      component={UserSelectorScreen}
+      name='UserSelectorScreen'
+      options={{ gestureEnabled: false, headerShown: false }}
+    />
+  </UserSelectorStack.Navigator>
+);
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
