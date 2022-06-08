@@ -8,7 +8,6 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAttachmentAction,
   generateAudioAttachment,
-  generateCardAttachment,
   generateFileAttachment,
   generateImageAttachment,
 } from '../../../mock-builders/generator/attachment';
@@ -105,54 +104,6 @@ describe('Attachment', () => {
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  it('should render "Card" if attachment type is not recognized', async () => {
-    const { getByTestId } = render(
-      getAttachmentComponent({
-        attachment: generateCardAttachment({
-          type: Date.now().toString(),
-        }),
-      }),
-    );
-    await waitFor(() => {
-      expect(getByTestId('card-attachment')).toBeTruthy();
-    });
-  });
-
-  it('should open the URL in the browser', async () => {
-    jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(true));
-
-    jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(false));
-
-    const { result, waitFor } = renderHook(() => useGoToURL('www.google.com'));
-
-    const [error, openURL] = result.current;
-
-    await act(openURL);
-
-    await waitFor(() => {
-      expect(Linking.canOpenURL).toHaveBeenCalled();
-      expect(error).not.toBeTruthy();
-      expect(Linking.openURL).toHaveBeenCalled();
-    });
-  });
-
-  it('should open the URL in the browser when no url', async () => {
-    jest.spyOn(Linking, 'canOpenURL').mockImplementation(jest.fn().mockResolvedValue(false));
-
-    jest.spyOn(Linking, 'openURL').mockImplementation(jest.fn().mockResolvedValue(true));
-
-    const { result } = renderHook(() => useGoToURL());
-    const [, openURL] = result.current;
-    await act(openURL);
-    const [error] = result.current;
-
-    await waitFor(() => {
-      expect(Linking.canOpenURL).toHaveBeenCalled();
-      expect(error).toBeTruthy();
-      expect(Linking.openURL).toHaveBeenCalled();
     });
   });
 });
