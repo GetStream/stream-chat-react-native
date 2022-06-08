@@ -1,5 +1,55 @@
 # Change Log
 
+## [4.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.1...v4.7.0) (2022-06-07)
+
+
+### Features
+
+* ability to customize onPress handler for urls ([e5b840f](https://github.com/GetStream/stream-chat-react-native/commit/e5b840f07983c71cc58322194c5b62ebbefa9252))
+* allow video upload from image picker and file picker ([6009d36](https://github.com/GetStream/stream-chat-react-native/commit/6009d3626bed416c1bd043fbf1c6ebb156186677))
+* inline video renderer/player support for SDK ([862c4bb](https://github.com/GetStream/stream-chat-react-native/commit/862c4bb990f98f26c6c81e2335692569a44018b9))
+
+
+### Bug Fixes
+
+* correctly truncate channel name in useChannelPreviewDisplayName ([cdabaa3](https://github.com/GetStream/stream-chat-react-native/commit/cdabaa3682747c3590df37a2ad86380c67e0ef29))
+* filePicker appearing issue on tapping the attachment picker icon after file is selected ([ae19950](https://github.com/GetStream/stream-chat-react-native/commit/ae19950b397b5e999e10c9ae7f1a41ad5dfdec12))
+* issue with the link text overflowing the reply view ([1c5aa3e](https://github.com/GetStream/stream-chat-react-native/commit/1c5aa3eac161f115a4c6799dfecd48966f770c06))
+* issues with video upload in expo from attachment picker and component displayname ([d8d621d](https://github.com/GetStream/stream-chat-react-native/commit/d8d621d0754d0d7962791a8756142955b2d661d6))
+* smart gallery rendering while optimistically adding a message to list ([748f36b](https://github.com/GetStream/stream-chat-react-native/commit/748f36b7db4ce69c8d39cad24d9588359b6346f3))
+
+### [4.6.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.0...v4.6.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* hotfixes borderRadius ([1dd116d](https://github.com/GetStream/stream-chat-react-native/commit/1dd116de7d402a8b301438c88e996a28ba15970e))
+
+## [4.6.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.5.0...v4.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* race condition when bottom sheet is closed during keyboard show ([994addf](https://github.com/GetStream/stream-chat-react-native/commit/994addf9e907f5ba78e81cd9fb46a93221a6070f))
+
+## [4.5.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.4.0...v4.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+* add theming support for the chevron icon in scroll to bottom button ([2a4bc9a](https://github.com/GetStream/stream-chat-react-native/commit/2a4bc9a647595aff0ea2f3e57718219d0b60f7e2))
+
+
+### Bug Fixes
+
+* url without http/s opening issue ([46da678](https://github.com/GetStream/stream-chat-react-native/commit/46da6787423f751f7e1de02d1d865b1e5fe8a07a))
+
 ### [4.3.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.3.0...v4.3.1) (2022-04-12)
 
 
@@ -1003,7 +1053,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.10.3] 2020-05-15
 
-- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/master/docs/userToken.md)
+- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/main/docs/userToken.md)
 - Disable longPress on Image gallery [f7aacb5](https://github.com/GetStream/stream-chat-react-native/commit/f7aacb5741e85811de37d5e3b550d2be539b89a4)
 - Fixing markdown issue [ac621f0](https://github.com/GetStream/stream-chat-react-native/commit/ac621f0eb1f6be7f0496b82ee425f3bc90c10839)
 
@@ -1276,7 +1326,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.7.0] 2020-03-17
 
-- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/docs/Streami18n.md
+- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/docs/Streami18n.md
 
 ## [0.6.6] 2020-02-20
 

@@ -63,5 +63,7 @@
   "Only visible to you": "당신만 볼 수 있습니다",
   "Reply": "답장",
   "Reply to Message": "메시지에 답장",
-  "🏙 Attachment...": "🏙 부착..."
+  "🏙 Attachment...": "🏙 부착...",
+  "File type not supported": "지원하지 않는 파일입니다.",
+  "Not supported": "지원하지 않습니다"
 }

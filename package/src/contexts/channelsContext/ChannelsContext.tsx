@@ -19,7 +19,10 @@ import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndi
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -172,42 +175,44 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelAvatar.tsx)
+   * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelAvatar.tsx)
    */
   PreviewAvatar?: React.ComponentType<ChannelAvatarProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview of latest message on channel.
    *
-   * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
+   * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
    */
   PreviewMessage?: React.ComponentType<ChannelPreviewMessageProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render muted status.
    *
-   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
+   * **Default** [ChannelMutedStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewMutedStatus.tsx)
    */
   PreviewMutedStatus?: React.ComponentType<ChannelPreviewMutedStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
+   * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
    */
   PreviewStatus?: React.ComponentType<ChannelPreviewStatusProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
+   * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
   PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps<StreamChatGenerics>>;
   /**
    * Custom UI component to render preview avatar.
    *
-   * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
+   * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
 };
 
-export const ChannelsContext = React.createContext({} as ChannelsContextValue);
+export const ChannelsContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelsContextValue,
+);
 
 export const ChannelsProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -224,8 +229,19 @@ export const ChannelsProvider = <
 
 export const useChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ChannelsContext,
+  ) as unknown as ChannelsContextValue<StreamChatGenerics>;
 
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure you have configured ChannelList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel-list`,
+    );
+  }
+
+  return contextValue;
+};
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the

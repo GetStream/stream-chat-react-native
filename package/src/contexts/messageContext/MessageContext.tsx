@@ -3,12 +3,18 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import type { TouchableHandlerPayload } from '../../components/Message/Message';
+import type {
+  MessageTouchableHandlerPayload,
+  TouchableHandlerPayload,
+} from '../../components/Message/Message';
 import type { GroupType, MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Alignment = 'right' | 'left';
 
@@ -58,11 +64,11 @@ export type MessageContextValue<
    * You can call methods available on the Message
    * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
    *
    * By default, we show the overlay with all the message actions on long press.
    *
-   * @param event   Event object for onLongPress event
+   * @param payload   Payload object for onLongPress event
    */
   onLongPress: (payload: TouchableHandlerPayload) => void;
   /** Whether the message is only text and the text is only emojis */
@@ -73,13 +79,13 @@ export type MessageContextValue<
    * You can call methods available on the Message
    * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
    *
    * By default, we will dismiss the keyboard on press.
    *
-   * @param event   Event object for onPress event
+   * @param payload   Payload object for onPress event
    */
-  onPress: (payload: TouchableHandlerPayload) => void;
+  onPress: (payload: MessageTouchableHandlerPayload) => void;
   onPressIn: ((payload: TouchableHandlerPayload) => void) | null;
   /** The images attached to a message */
   otherAttachments: Attachment<StreamChatGenerics>[];
@@ -88,6 +94,8 @@ export type MessageContextValue<
   showMessageStatus: boolean;
   /** Whether or not the Message is part of a Thread */
   threadList: boolean;
+  /** The videos attached to a message */
+  videos: Attachment<StreamChatGenerics>[];
   goToMessage?: (messageId: string) => void;
   /** Latest message id on current channel */
   lastReceivedId?: string;
@@ -97,7 +105,9 @@ export type MessageContextValue<
   showAvatar?: boolean;
 } & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'disabled' | 'members'>;
 
-export const MessageContext = React.createContext({} as MessageContextValue);
+export const MessageContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,
+);
 
 export const MessageProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -114,7 +124,19 @@ export const MessageProvider = <
 
 export const useMessageContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessageContext) as unknown as MessageContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessageContext,
+  ) as unknown as MessageContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessageContext hook was called outside of the MessageContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageContext

@@ -251,10 +251,12 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
 
-    expect(queryByTestId('giphy-action-attachment')).toBeTruthy();
-    expect(getByTestId('cancel-action-button')).toBeTruthy();
-    expect(getByTestId('shuffle-action-button')).toBeTruthy();
-    expect(getByTestId('send-action-button')).toBeTruthy();
+    await waitFor(() => {
+      expect(queryByTestId('giphy-action-attachment')).toBeTruthy();
+      expect(getByTestId('cancel-action-button')).toBeTruthy();
+      expect(getByTestId('shuffle-action-button')).toBeTruthy();
+      expect(getByTestId('send-action-button')).toBeTruthy();
+    });
   });
 
   it('giphy attachment UI should render within the message list', async () => {
@@ -285,6 +287,8 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
 
-    expect(queryByTestId('giphy-attachment')).toBeTruthy();
+    await waitFor(() => {
+      expect(queryByTestId('giphy-attachment')).toBeTruthy();
+    });
   });
 });

@@ -8,7 +8,6 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAttachmentAction,
   generateAudioAttachment,
-  generateCardAttachment,
   generateFileAttachment,
   generateImageAttachment,
 } from '../../../mock-builders/generator/attachment';
@@ -105,19 +104,6 @@ describe('Attachment', () => {
 
     await waitFor(() => {
       expect(handleAction).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  it('should render "Card" if attachment type is not recognized', async () => {
-    const { getByTestId } = render(
-      getAttachmentComponent({
-        attachment: generateCardAttachment({
-          type: Date.now().toString(),
-        }),
-      }),
-    );
-    await waitFor(() => {
-      expect(getByTestId('card-attachment')).toBeTruthy();
     });
   });
 });

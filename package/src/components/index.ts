@@ -6,6 +6,7 @@ export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
+export * from './Attachment/VideoThumbnail';
 export * from './Attachment/utils/buildGallery/buildGallery';
 
 export * from './AttachmentPicker/AttachmentPicker';
@@ -74,6 +75,7 @@ export * from './Chat/hooks/useMutedUsers';
 
 export * from './ImageGallery/ImageGallery';
 export * from './ImageGallery/components/AnimatedGalleryImage';
+export * from './ImageGallery/components/AnimatedGalleryVideo';
 export * from './ImageGallery/components/ImageGalleryFooter';
 export * from './ImageGallery/components/ImageGalleryHeader';
 export * from './ImageGallery/components/ImageGalleryOverlay';

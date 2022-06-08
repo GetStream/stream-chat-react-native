@@ -4,7 +4,10 @@ import type { ChannelState } from 'stream-chat';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ThreadContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -21,7 +24,7 @@ export type ThreadContextValue<
   threadMessages: ChannelState<StreamChatGenerics>['threads'][string];
 };
 
-export const ThreadContext = React.createContext({} as ThreadContextValue);
+export const ThreadContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as ThreadContextValue);
 
 export const ThreadProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -38,8 +41,19 @@ export const ThreadProvider = <
 
 export const useThreadContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ThreadContext) as unknown as ThreadContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ThreadContext,
+  ) as unknown as ThreadContextValue<StreamChatGenerics>;
 
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useThreadContext hook was called outside of the ThreadContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 /**
  * Typescript currently does not support partial inference so if ThreadContext
  * typing is desired while using the HOC withThreadContextContext the Props for the

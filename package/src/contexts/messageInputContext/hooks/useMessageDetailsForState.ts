@@ -44,8 +44,8 @@ export const useMessageDetailsForState = <
   useEffect(() => {
     if (message && !isEditingBoolean<StreamChatGenerics>(message)) {
       setText(message?.text || '');
-      const newFileUploads = [];
-      const newImageUploads = [];
+      const newFileUploads: FileUpload[] = [];
+      const newImageUploads: ImageUpload[] = [];
 
       const attachments = Array.isArray(message.attachments) ? message.attachments : [];
 
@@ -65,10 +65,26 @@ export const useMessageDetailsForState = <
         } else if (attachment.type === 'image') {
           const id = generateRandomId();
           newImageUploads.push({
-            file: { name: attachment.fallback },
+            file: {
+              name: attachment.fallback,
+              size: attachment.file_size,
+              type: attachment.type,
+            },
             id,
             state: 'finished',
             url: attachment.image_url || attachment.asset_url || attachment.thumb_url,
+          });
+        } else if (attachment.type === 'video') {
+          const id = generateRandomId();
+          newFileUploads.push({
+            file: {
+              name: attachment.title || '',
+              size: attachment.file_size,
+              type: attachment.mime_type,
+            },
+            id,
+            state: 'finished',
+            url: attachment.asset_url,
           });
         }
       }

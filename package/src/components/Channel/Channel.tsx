@@ -82,6 +82,7 @@ import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
+import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
 import { AutoCompleteSuggestionList as AutoCompleteSuggestionListDefault } from '../AutoCompleteInput/AutoCompleteSuggestionList';
@@ -281,6 +282,7 @@ export type ChannelPropsWithContext<
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
+      | 'VideoThumbnail'
     >
   > &
   Partial<
@@ -298,7 +300,7 @@ export type ChannelPropsWithContext<
     /**
      * When true, disables the KeyboardCompatibleView wrapper
      *
-     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
      * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
      * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
@@ -334,7 +336,7 @@ export type ChannelPropsWithContext<
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
      *
      * **Example:**
      *
@@ -525,6 +527,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
+    VideoThumbnail = VideoThumbnailDefault,
     watcherCount,
     watchers,
   } = props;
@@ -1558,7 +1561,7 @@ const ChannelWithContext = <
     watchers,
   });
 
-  const inputMessageInputContext = useCreateInputMessageInputContext({
+  const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
     autoCompleteSuggestionsLimit,
@@ -1691,6 +1694,7 @@ const ChannelWithContext = <
     TypingIndicatorContainer,
     updateMessage,
     UrlPreview,
+    VideoThumbnail,
   });
 
   const suggestionsContext = {
