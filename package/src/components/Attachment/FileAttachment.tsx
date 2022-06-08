@@ -11,7 +11,7 @@ import {
 
 import type { Attachment } from 'stream-chat';
 
-import { useGoToURL } from './hooks/useGoToURL';
+import { openUrlSafely } from './utils/openUrlSafely';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
@@ -95,9 +95,7 @@ const FileAttachmentWithContext = <
     },
   } = useTheme();
 
-  const [error, openURL] = useGoToURL(attachment.asset_url);
-
-  const defaultOnPress = () => !error && openURL && openURL();
+  const defaultOnPress = () => openUrlSafely(attachment.asset_url);
 
   return (
     <TouchableOpacity

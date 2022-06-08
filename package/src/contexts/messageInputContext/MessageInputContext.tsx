@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+
 import { Alert, Keyboard } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
@@ -52,7 +53,10 @@ import { useChatContext } from '../chatContext/ChatContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type FileUpload = {
   file: File;
@@ -394,7 +398,9 @@ export type MessageInputContextValue<
 > = LocalMessageInputContext<StreamChatGenerics> &
   Omit<InputMessageInputContextValue<StreamChatGenerics>, 'sendMessage'>;
 
-export const MessageInputContext = React.createContext({} as MessageInputContextValue);
+export const MessageInputContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
+);
 
 export const MessageInputProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -448,7 +454,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
   const {
     fileUploads,
     imageUploads,
@@ -537,7 +543,7 @@ export const MessageInputProvider = <
   };
 
   const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
+    if (hasImagePicker) {
       Keyboard.dismiss();
       openPicker();
       setSelectedPicker('images');
@@ -549,7 +555,7 @@ export const MessageInputProvider = <
        * https://github.com/gorhom/react-native-bottom-sheet/issues/446
        */
       setTimeout(openPicker, 600);
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+    } else if (hasFilePicker) {
       pickFile();
     }
   };
@@ -573,6 +579,7 @@ export const MessageInputProvider = <
 
   const pickFile = async () => {
     if (numberOfUploads >= value.maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
       return;
     }
 
@@ -1130,7 +1137,19 @@ export const MessageInputProvider = <
 
 export const useMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessageInputContext) as unknown as MessageInputContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessageInputContext,
+  ) as unknown as MessageInputContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageInputContext

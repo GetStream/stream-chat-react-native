@@ -42,7 +42,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { triggerHaptic } from '../../native';
+import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
 
@@ -332,13 +332,16 @@ const MessageWithContext = <
             if (cur.type === 'file') {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
-            } else if (cur.type === 'video' && !cur.og_scrape_url) {
+            } else if (cur.type === 'video' && !cur.og_scrape_url && isVideoPackageAvailable()) {
               acc.videos.push({
                 image_url: cur.asset_url,
                 thumb_url: cur.thumb_url,
                 type: 'video',
               });
               acc.other = [];
+            } else if (cur.type === 'video' && !cur.og_scrape_url) {
+              acc.files.push(cur);
+              acc.other = []; // remove other attachments if a file exists
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have

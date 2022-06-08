@@ -5,6 +5,8 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
+import { openUrlSafely } from './utils/openUrlSafely';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import {
   ImageGalleryContextValue,
@@ -23,6 +25,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -205,17 +208,27 @@ const GalleryWithContext = <
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
             {rows.map(({ height, resizeMode, thumb_url, type, url, width }, rowIndex) => {
-              const defaultOnPress = () => {
-                // Added if-else to keep the logic readable, instead of DRY.
-                // if - legacyImageViewerSwipeBehaviour is disabled
-                // else - legacyImageViewerSwipeBehaviour is enabled
+              const openImageViewer = () => {
                 if (!legacyImageViewerSwipeBehaviour && message) {
+                  // Added if-else to keep the logic readable, instead of DRY.
+                  // if - legacyImageViewerSwipeBehaviour is disabled
+                  // else - legacyImageViewerSwipeBehaviour is enabled
                   setImages([message]);
                   setImage({ messageId: message.id, url });
                   setOverlay('gallery');
                 } else if (legacyImageViewerSwipeBehaviour) {
                   setImage({ messageId: message?.id, url });
                   setOverlay('gallery');
+                }
+              };
+
+              const defaultOnPress = () => {
+                if (type === 'video' && !isVideoPackageAvailable()) {
+                  // This condition is kinda unreachable, since we render videos as file attachment if the video
+                  // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+                  openUrlSafely(url);
+                } else {
+                  openImageViewer();
                 }
               };
 
