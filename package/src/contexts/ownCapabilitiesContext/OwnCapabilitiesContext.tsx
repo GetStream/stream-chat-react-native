@@ -1,5 +1,9 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
+import { isTestEnvironment } from '../utils/isTestEnvironment';
+
 export const allOwnCapabilities = {
   banChannelMembers: 'ban-channel-members',
   deleteAnyMessage: 'delete-any-message',
@@ -21,7 +25,9 @@ export const allOwnCapabilities = {
 export type OwnCapability = keyof typeof allOwnCapabilities;
 
 export type OwnCapabilitiesContextValue = Record<OwnCapability, boolean>;
-export const OwnCapabilitiesContext = React.createContext({} as OwnCapabilitiesContextValue);
+export const OwnCapabilitiesContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as OwnCapabilitiesContextValue,
+);
 
 export const OwnCapabilitiesProvider = ({
   children,
@@ -34,5 +40,14 @@ export const OwnCapabilitiesProvider = ({
   </OwnCapabilitiesContext.Provider>
 );
 
-export const useOwnCapabilitiesContext = () =>
-  useContext(OwnCapabilitiesContext) as unknown as OwnCapabilitiesContextValue;
+export const useOwnCapabilitiesContext = () => {
+  const contextValue = useContext(OwnCapabilitiesContext);
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useOwnCapabilitiesContext hook was called outside the Channel Component. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};

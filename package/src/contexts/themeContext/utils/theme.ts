@@ -196,6 +196,11 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
+    videoControl: {
+      durationTextStyle: TextStyle;
+      roundedView: ViewStyle;
+      videoContainer: ViewStyle;
+    };
     backgroundColor?: string;
     pager?: ViewStyle;
     slide?: ImageStyle;
@@ -372,6 +377,12 @@ export type Theme = {
         title: TextStyle;
       };
       noURI: ViewStyle;
+      playButtonStyle: {
+        durationTextStyle: TextStyle;
+        roundedView: ViewStyle;
+        videoContainer: ViewStyle;
+      };
+      playIcon: IconProps;
     };
     container: ViewStyle;
     content: {
@@ -476,6 +487,10 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageUnderlay: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
   };
   overlay: {
     container: ViewStyle;
@@ -669,6 +684,11 @@ export const defaultTheme: Theme = {
       rightContainer: {},
       usernameText: {},
     },
+    videoControl: {
+      durationTextStyle: {},
+      roundedView: {},
+      videoContainer: {},
+    },
   },
   inlineDateSeparator: {
     container: {},
@@ -845,6 +865,15 @@ export const defaultTheme: Theme = {
         borderLeftWidth: 2,
         paddingLeft: 8,
       },
+      playButtonStyle: {
+        durationTextStyle: {},
+        roundedView: {},
+        videoContainer: {},
+      },
+      playIcon: {
+        height: 24,
+        width: 24,
+      },
     },
     container: {},
     content: {
@@ -983,6 +1012,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageUnderlay: {},
+    videoThumbnail: {
+      container: {},
+      roundedView: {},
+    },
   },
   overlay: {
     container: {},

@@ -15,7 +15,10 @@ import type { ChannelContextValue } from '../channelContext/ChannelContext';
 import type { PaginatedMessageListContextValue } from '../paginatedMessageListContext/PaginatedMessageListContext';
 import type { ThreadContextValue } from '../threadContext/ThreadContext';
 import type { TypingContextValue } from '../typingContext/TypingContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelState<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -131,15 +134,9 @@ function reducer(state: ChannelsState, action: Action) {
   }
 }
 
-const ChannelsStateContext = React.createContext({
-  removeChannelState: () => {
-    // do nothing.
-  },
-  setState: () => {
-    // do nothing.
-  },
-  state: {},
-} as unknown as ChannelsStateContextValue);
+const ChannelsStateContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelsStateContextValue,
+);
 
 export const ChannelsStateProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -187,7 +184,19 @@ export const ChannelsStateProvider = <
 
 export const useChannelsStateContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelsStateContext) as unknown as ChannelsStateContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ChannelsStateContext,
+  ) as unknown as ChannelsStateContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useChannelStateContext hook was called outside the ChannelStateContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
+    );
+  }
+
+  return contextValue;
+};
 
 export const withChannelsStateContext = <
   P extends UnknownType,

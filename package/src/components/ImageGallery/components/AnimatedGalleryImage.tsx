@@ -7,7 +7,7 @@ import { vw } from '../../../utils/utils';
 
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
-const oneEight = 1 / 8;
+const oneEighth = 1 / 8;
 
 type Props = {
   index: number;
@@ -65,7 +65,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
             translateY: selected ? translateY.value + yScaleOffset : yScaleOffset,
           },
           {
-            scale: selected ? scale.value / 8 : oneEight,
+            scale: selected ? scale.value / 8 : oneEighth,
           },
           { scaleX: -1 },
         ],
@@ -78,7 +78,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={[style, { transform: [{ scale: oneEight }] }]} />;
+      return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
     }
 
     return (
@@ -95,7 +95,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
               {
                 translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
               },
-              { scale: oneEight },
+              { scale: oneEighth },
             ],
           },
         ]}

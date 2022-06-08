@@ -14,6 +14,7 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
+import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessageProps,
   MessageTouchableHandlerPayload,
@@ -48,7 +49,10 @@ import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
@@ -228,6 +232,7 @@ export type MessagesContextValue<
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx
    */
   UrlPreview: React.ComponentType<CardProps<StreamChatGenerics>>;
+  VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -460,7 +465,9 @@ export type MessagesContextValue<
   targetedMessage?: string;
 };
 
-export const MessagesContext = React.createContext({} as MessagesContextValue);
+export const MessagesContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessagesContextValue,
+);
 
 export const MessagesProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -477,7 +484,19 @@ export const MessagesProvider = <
 
 export const useMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessagesContext) as unknown as MessagesContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessagesContext,
+  ) as unknown as MessagesContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessagesContext hook was called outside of the MessagesContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext

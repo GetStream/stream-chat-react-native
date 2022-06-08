@@ -1,8 +1,11 @@
-import React, { useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useContext, useMemo } from 'react';
 
 import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
+
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -16,6 +19,10 @@ export type ThemeProviderInputValue = {
 export type MergedThemesParams = {
   style?: DeepPartial<Theme>;
   theme?: Theme;
+};
+
+export type ThemeContextValue = {
+  theme: Theme;
 };
 
 export const mergeThemes = (params: MergedThemesParams) => {
@@ -33,11 +40,13 @@ export const mergeThemes = (params: MergedThemesParams) => {
   return finalTheme;
 };
 
-export const ThemeContext = React.createContext({} as Theme);
+export const ThemeContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as Theme);
 
-export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
-  const { children, mergedStyle, style } = props;
-  const { theme } = useTheme();
+export const ThemeProvider: React.FC<
+  PropsWithChildren<ThemeProviderInputValue & Partial<ThemeContextValue>>
+> = (props) => {
+  const { children, mergedStyle, style, theme } = props;
+
   const modifiedTheme = useMemo(() => {
     if (mergedStyle) {
       return mergedStyle;
@@ -52,5 +61,10 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
 export const useTheme = () => {
   const theme = useContext(ThemeContext);
 
+  if (theme === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useThemeContext hook was called outside the ThemeContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
+    );
+  }
   return { theme };
 };

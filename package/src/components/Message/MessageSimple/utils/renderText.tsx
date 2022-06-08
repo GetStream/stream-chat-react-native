@@ -159,10 +159,14 @@ export const renderText = <
   };
 
   const link: ReactNodeOutput = (node, output, { ...state }) => {
+    const url = node.target;
     const onPress = (event: GestureResponderEvent) => {
       if (!preventPress && onPressParam) {
         onPressParam({
-          defaultHandler: () => onLink(node.target),
+          additionalInfo: { url },
+          defaultHandler: () => {
+            onLink(url);
+          },
           emitter: 'textLink',
           event,
         });
@@ -172,6 +176,7 @@ export const renderText = <
     const onLongPress = (event: GestureResponderEvent) => {
       if (!preventPress && onLongPressParam) {
         onLongPressParam({
+          additionalInfo: { url },
           emitter: 'textLink',
           event,
         });

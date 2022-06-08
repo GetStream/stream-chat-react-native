@@ -13,7 +13,7 @@ import type { DefaultStreamChatGenerics } from '../../../types/types';
 /**
  * Disconnect the websocket connection when app goes to background,
  * and reconnect when app comes to foreground.
- * We do this to make sure, user receives push notifications when app is in the background.
+ * We do this to make sure the user receives push notifications when app is in the background.
  * You can't receive push notification until you have active websocket connection.
  */
 export const useIsOnline = <
@@ -25,10 +25,10 @@ export const useIsOnline = <
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
   const isMounted = useIsMountedRef();
-  const clientExits = !!client;
+  const clientExists = !!client;
 
   const onBackground = useCallback(() => {
-    if (!closeConnectionOnBackground) return;
+    if (!closeConnectionOnBackground || !clientExists) return;
 
     for (const cid in client.activeChannels) {
       const channel = client.activeChannels[cid];
@@ -37,13 +37,13 @@ export const useIsOnline = <
 
     client.closeConnection();
     setIsOnline(false);
-  }, [closeConnectionOnBackground, client]);
+  }, [closeConnectionOnBackground, client, clientExists]);
 
   const onForeground = useCallback(() => {
-    if (!closeConnectionOnBackground) return;
+    if (!closeConnectionOnBackground || !clientExists) return;
 
     client.openConnection();
-  }, [closeConnectionOnBackground, client]);
+  }, [closeConnectionOnBackground, client, clientExists]);
 
   useAppStateListener(onForeground, onBackground);
 
@@ -101,7 +101,7 @@ export const useIsOnline = <
       chatListeners.forEach((listener) => listener.unsubscribe?.());
       unsubscribeNetInfo?.();
     };
-  }, [clientExits]);
+  }, [clientExists]);
 
   return { connectionRecovering, isOnline };
 };
