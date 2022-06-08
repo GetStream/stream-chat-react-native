@@ -15,10 +15,15 @@ export const useTranslatedMessage = <
 ) => {
   const { userLanguage } = useTranslationContext();
 
-  if (message !== undefined && message.i18n !== undefined) {
-    const i18nTextKey = `${userLanguage}_text` as I18nTextKey;
-    const translationExistsInUserLanguage = i18nTextKey in message.i18n;
-    return translationExistsInUserLanguage && message.i18n[i18nTextKey];
+  if (message?.i18n === undefined) {
+    return message?.text || '';
+  }
+
+  const i18nTextKey = `${userLanguage}_text` as I18nTextKey;
+  const translationExistsInUserLanguage = i18nTextKey in message.i18n;
+
+  if (translationExistsInUserLanguage) {
+    return message.i18n[i18nTextKey];
   }
 
   return message?.text || '';
