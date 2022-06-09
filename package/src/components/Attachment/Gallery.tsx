@@ -82,10 +82,6 @@ const styles = StyleSheet.create({
     margin: 1,
   },
   moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
-  warningIconStyle: {
-    borderRadius: 24,
-    marginTop: 4,
-  },
 });
 
 export type GalleryPropsWithContext<
