@@ -961,7 +961,7 @@ export const MessageInputProvider = <
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
+          channel.sendImage(compressedUri, file.filename, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -980,7 +980,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, contentType);
+          response = await channel.sendImage(compressedUri, file.filename, contentType);
         }
       }
 
