@@ -83,7 +83,7 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { ImageLoadingIndicator as ImageLoadingIndicatorDefault } from '../Attachment/ImageLoadingIndicator';
-import { LoadingImageFailedIndicator as LoadingImageFailedIndicatorDefault } from '../Attachment/LoadingImageFailedIndicator';
+import { ImageLoadingFailedIndicator as LoadingImageFailedIndicatorDefault } from '../Attachment/LoadingImageFailedIndicator';
 import { VideoThumbnail as VideoThumbnailDefault } from '../Attachment/VideoThumbnail';
 import { AutoCompleteSuggestionHeader as AutoCompleteSuggestionHeaderDefault } from '../AutoCompleteInput/AutoCompleteSuggestionHeader';
 import { AutoCompleteSuggestionItem as AutoCompleteSuggestionItemDefault } from '../AutoCompleteInput/AutoCompleteSuggestionItem';
@@ -474,7 +474,7 @@ const ChannelWithContext = <
     LoadingIndicator = LoadingIndicatorDefault,
     loadingMore: loadingMoreProp,
     loadingMoreRecent: loadingMoreRecentProp,
-    LoadingImageFailedIndicator = LoadingImageFailedIndicatorDefault,
+    ImageLoadingFailedIndicator: LoadingImageFailedIndicator = LoadingImageFailedIndicatorDefault,
     ImageLoadingIndicator = ImageLoadingIndicatorDefault,
     markdownRules,
     maxMessageLength: maxMessageLengthProp,
@@ -1712,7 +1712,7 @@ const ChannelWithContext = <
     InlineUnreadIndicator,
     isAttachmentEqual,
     legacyImageViewerSwipeBehaviour,
-    LoadingImageFailedIndicator,
+    ImageLoadingFailedIndicator: LoadingImageFailedIndicator,
     markdownRules,
     Message,
     messageActions,

@@ -112,8 +112,8 @@ export type GalleryPropsWithContext<
     | 'additionalTouchableProps'
     | 'legacyImageViewerSwipeBehaviour'
     | 'VideoThumbnail'
-    | 'LoadingImageFailedIndicator'
     | 'ImageLoadingIndicator'
+    | 'ImageLoadingFailedIndicator'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -143,10 +143,10 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
+    ImageLoadingFailedIndicator,
     ImageLoadingIndicator,
     images,
     legacyImageViewerSwipeBehaviour,
-    LoadingImageFailedIndicator,
     message,
     onLongPress,
     onPress,
@@ -355,7 +355,7 @@ const GalleryWithContext = <
                       />
                       {loadingImage && <ImageLoadingIndicator style={styles.activityIndicator} />}
                       {loadingImageError && (
-                        <LoadingImageFailedIndicator style={styles.activityIndicator} />
+                        <ImageLoadingFailedIndicator style={styles.activityIndicator} />
                       )}
                     </View>
                   )}
@@ -454,9 +454,9 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
+    ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
-    LoadingImageFailedIndicator: PropLoadingImageFailedIndicator,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -483,9 +483,9 @@ export const Gallery = <
   } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
+    ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
     ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
-    LoadingImageFailedIndicator: ContextLoadingImageFailedIndicator,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
@@ -507,8 +507,8 @@ export const Gallery = <
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
-  const LoadingImageFailedIndicator =
-    PropLoadingImageFailedIndicator || ContextLoadingImageFailedIndicator;
+  const ImageLoadingFailedIndicator =
+    PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
   const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
 
   return (
@@ -519,10 +519,10 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        ImageLoadingFailedIndicator,
         ImageLoadingIndicator,
         images,
         legacyImageViewerSwipeBehaviour,
-        LoadingImageFailedIndicator,
         message,
         onLongPress,
         onPress,
