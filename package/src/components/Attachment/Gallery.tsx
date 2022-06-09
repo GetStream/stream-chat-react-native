@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  erroeTextSize: { fontSize: 10 },
+  errorTextSize: { fontSize: 10 },
   flex: { alignItems: 'center', flex: 1 },
   galleryContainer: {
     borderTopLeftRadius: 13,
