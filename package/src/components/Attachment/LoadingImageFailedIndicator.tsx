@@ -20,9 +20,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export type LoadingImageFailedIndicatorProps = ViewProps;
+export type ImageLoadingFailedIndicatorProps = ViewProps;
 
-export const LoadingImageFailedIndicator: React.FC<LoadingImageFailedIndicatorProps> = (props) => {
+export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorProps) => {
   const {
     theme: {
       colors: { accent_red, black },
