@@ -151,8 +151,8 @@ const GalleryWithContext = <
     videos,
     VideoThumbnail,
   } = props;
-  const [loadingImage, setLoadingImage] = useState(true);
-  const [loadingImageError, setLoadingImageError] = useState(false);
+  const [isLoadingImage, setLoadingImage] = useState(true);
+  const [isLoadingImageError, setLoadingImageError] = useState(false);
 
   const {
     theme: {
@@ -345,10 +345,10 @@ const GalleryWithContext = <
                         ]}
                         uri={url}
                       />
-                      {loadingImage && (
+                      {isLoadingImage && (
                         <ImageLoadingIndicator style={styles.activityIndicatorStyle} />
                       )}
-                      {loadingImageError && (
+                      {isLoadingImageError && (
                         <ImageLoadingFailedIndicator style={styles.activityIndicatorStyle} />
                       )}
                     </View>
