@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 
 export type ImageLoadingIndicatorProps = ViewProps;
 
-export const ImageLoadingIndicator: React.FC<ImageLoadingIndicatorProps> = (props) => {
+export const ImageLoadingIndicator = (props: ImageLoadingIndicatorProps) => {
   const {
     theme: {
       messageSimple: {
