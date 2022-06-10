@@ -6,17 +6,25 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { Warning } from '../../icons';
 
-const WARNING_ICON_SIZE = 24;
+const WARNING_ICON_SIZE = 14;
 
 const styles = StyleSheet.create({
   container: {
     alignContent: 'center',
     alignItems: 'center',
-    flexDirection: 'column',
+    borderRadius: 20,
+    flexDirection: 'row',
     justifyContent: 'center',
   },
   errorText: {
-    fontSize: 12,
+    fontSize: 8,
+    justifyContent: 'center',
+    paddingRight: 8,
+  },
+  warningIconStyle: {
+    borderRadius: 24,
+    marginLeft: 4,
+    marginTop: 6,
   },
 });
 
@@ -25,7 +33,7 @@ export type ImageLoadingFailedIndicatorProps = ViewProps;
 export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorProps) => {
   const {
     theme: {
-      colors: { accent_red, black },
+      colors: { accent_red, overlay, white },
     },
   } = useTheme();
 
@@ -34,9 +42,14 @@ export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorPr
   const { style, ...rest } = props;
   return (
     <View {...rest} style={[style]}>
-      <View style={styles.container}>
-        <Warning height={WARNING_ICON_SIZE} pathFill={accent_red} width={WARNING_ICON_SIZE} />
-        <Text style={[styles.errorText, { color: black }]}>{t('Error loading')}</Text>
+      <View style={[styles.container, { backgroundColor: overlay }]}>
+        <Warning
+          height={WARNING_ICON_SIZE}
+          pathFill={accent_red}
+          style={styles.warningIconStyle}
+          width={WARNING_ICON_SIZE}
+        />
+        <Text style={[styles.errorText, { color: white }]}>{t('Error loading')}</Text>
       </View>
     </View>
   );
