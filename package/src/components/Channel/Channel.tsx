@@ -786,23 +786,29 @@ const ChannelWithContext = <
     };
   }, [channelId, connectionChangedHandler, connectionRecoveredHandler, handleEvent]);
 
-  const channelQueryCallRef = useRef(async (queryCall: () => void = () => null) => {
-    setError(false);
-    try {
-      await queryCall();
-      setLastRead(new Date());
-      setHasMore(true);
-      copyChannelState();
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err);
-      } else {
-        setError(true);
+  const channelQueryCallRef = useRef(
+    async (
+      queryCall: () => Promise<void>,
+      onAfterQueryCall: (() => void) | undefined = undefined,
+    ) => {
+      setError(false);
+      try {
+        await queryCall();
+        setLastRead(new Date());
+        setHasMore(true);
+        copyChannelState();
+        onAfterQueryCall?.();
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err);
+        } else {
+          setError(true);
+        }
+        setLoading(false);
+        setLastRead(new Date());
       }
-      setLoading(false);
-      setLastRead(new Date());
-    }
-  });
+    },
+  );
 
   /**
    * Loads channel at first unread message.
@@ -834,18 +840,25 @@ const ChannelWithContext = <
    */
   const loadChannelAroundMessage: ChannelContextValue<StreamChatGenerics>['loadChannelAroundMessage'] =
     ({ messageId }) =>
-      channelQueryCallRef.current(async () => {
-        setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
-        setLoading(true);
-        if (messageId) {
-          await channel.state.loadMessageIntoState(messageId);
-          setTargetedMessage(messageId);
-        } else {
-          await channel.state.loadMessageIntoState('latest');
-          channel.state.setIsUpToDate(true);
-        }
-        setLoading(false);
-      });
+      channelQueryCallRef.current(
+        async () => {
+          setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
+          setLoading(true);
+          if (messageId) {
+            console.log('setting the messageID', { messageId });
+            await channel.state.loadMessageIntoState(messageId);
+          } else {
+            await channel.state.loadMessageIntoState('latest');
+            channel.state.setIsUpToDate(true);
+          }
+          setLoading(false);
+        },
+        () => {
+          if (messageId) {
+            setTargetedMessage(messageId);
+          }
+        },
+      );
 
   /**
    * @deprecated use loadChannelAroundMessage instead
