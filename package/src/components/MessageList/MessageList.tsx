@@ -821,7 +821,7 @@ const MessageListWithContext = <
   useEffect(() => {
     if (scrollToDebounceTimeoutRef.current) clearTimeout(scrollToDebounceTimeoutRef.current);
     scrollToDebounceTimeoutRef.current = setTimeout(() => {
-      let messageIdToScroll = messageIdToScrollToRef.current; // goToMessage method might have requested to scroll to a message
+      let messageIdToScroll: string | undefined;
       if (!initialScrollSet.current && initialScrollToFirstUnreadMessage) {
         // find the first unread message, if we have to initially scroll to an unread message
         for (let index = messageList.length - 1; index >= 0; index--) {
@@ -830,12 +830,19 @@ const MessageListWithContext = <
             break;
           }
         }
-      } else if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
-        // if some messageId was targeted but not scrolledTo yet
-        // we have scroll to there after loading completes
-        messageIdToScroll = targetedMessage;
       }
-      if (!messageIdToScroll) return;
+      if (!messageIdToScroll) {
+        if (targetedMessage && messageIdLastScrolledToRef.current !== targetedMessage) {
+          // if some messageId was targeted but not scrolledTo yet
+          // we have scroll to there after loading completes
+          messageIdToScroll = targetedMessage;
+        } else if (messageIdToScrollToRef.current) {
+          // goToMessage method might have requested to scroll to a message
+          messageIdToScroll = messageIdToScrollToRef.current;
+        } else {
+          return;
+        }
+      }
       const indexOfParentInMessageList = messageList.findIndex(
         (message) => message?.id === messageIdToScroll,
       );
