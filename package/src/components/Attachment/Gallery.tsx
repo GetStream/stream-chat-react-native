@@ -1,13 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import {
-  ImageBackground,
-  ImageProps,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { GalleryImage } from './GallaryImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
@@ -34,25 +28,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
-const GalleryImage: React.FC<
-  Omit<ImageProps, 'height' | 'source'> & {
-    uri: string;
-  }
-> = (props) => {
-  const { uri, ...rest } = props;
-
-  return (
-    <ImageBackground
-      {...rest}
-      source={{
-        uri: makeImageCompatibleUrl(uri),
-      }}
-      testID='image-attachment-single'
-    />
-  );
-};
+import { getUrlWithoutParams } from '../../utils/utils';
 
 const MemoizedGalleryImage = React.memo(
   GalleryImage,
