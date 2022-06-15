@@ -3,6 +3,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
+import { useLoadingImage } from './hooks/useLoadingImage';
+
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -28,6 +30,11 @@ import { makeImageCompatibleUrl } from '../../utils/utils';
 const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
+  },
+  activityIndicatorStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
   },
   buttonContainer: {
     alignItems: 'center',
@@ -128,7 +135,13 @@ export type GiphyPropsWithContext<
     | 'onPressIn'
     | 'preventPress'
   > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'giphyVersion' | 'additionalTouchableProps'> & {
+  Pick<
+    MessagesContextValue<StreamChatGenerics>,
+    | 'giphyVersion'
+    | 'additionalTouchableProps'
+    | 'ImageLoadingIndicator'
+    | 'ImageLoadingFailedIndicator'
+  > & {
     attachment: Attachment<StreamChatGenerics>;
   } & Pick<OverlayContextValue, 'setOverlay'>;
 
@@ -142,6 +155,8 @@ const GiphyWithContext = <
     attachment,
     giphyVersion,
     handleAction,
+    ImageLoadingFailedIndicator,
+    ImageLoadingIndicator,
     isMyMessage,
     message,
     onLongPress,
@@ -154,6 +169,9 @@ const GiphyWithContext = <
   } = props;
 
   const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
+
+  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
+    useLoadingImage();
 
   const {
     theme: {
@@ -214,6 +232,13 @@ const GiphyWithContext = <
       </View>
       <View style={styles.selectionImageContainer}>
         <Image
+          onError={(error) => {
+            console.warn(error);
+            setLoadingImage(false);
+            setLoadingImageError(true);
+          }}
+          onLoadEnd={() => setLoadingImage(false)}
+          onLoadStart={() => setLoadingImage(true)}
           resizeMode='contain'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphyDimensions, giphy]}
@@ -304,11 +329,22 @@ const GiphyWithContext = <
         ]}
       >
         <Image
+          onError={(error) => {
+            console.warn(error);
+            setLoadingImage(false);
+            setLoadingImageError(true);
+          }}
+          onLoadEnd={() => setLoadingImage(false)}
+          onLoadStart={() => setLoadingImage(true)}
           resizeMode='contain'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.giphy, giphyDimensions, giphy]}
           testID='giphy-attachment-image'
         />
+        {isLoadingImage && <ImageLoadingIndicator style={styles.activityIndicatorStyle} />}
+        {isLoadingImageError && (
+          <ImageLoadingFailedIndicator style={styles.activityIndicatorStyle} />
+        )}
         <View style={[styles.giphyMask, giphyMask]}>
           <View
             style={[
@@ -387,12 +423,23 @@ export const Giphy = <
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
   const { setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
+
+  const {
+    ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
+    ImageLoadingIndicator: ContextImageLoadingIndicator,
+  } = useMessagesContext<StreamChatGenerics>();
+  const ImageLoadingFailedIndicator =
+    ContextImageLoadingFailedIndicator || props.ImageLoadingFailedIndicator;
+  const ImageLoadingIndicator = ContextImageLoadingIndicator || props.ImageLoadingIndicator;
+
   return (
     <MemoizedGiphy
       {...{
         additionalTouchableProps,
         giphyVersion,
         handleAction,
+        ImageLoadingFailedIndicator,
+        ImageLoadingIndicator,
         isMyMessage,
         message,
         onLongPress,
