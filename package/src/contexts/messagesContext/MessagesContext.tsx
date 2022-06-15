@@ -2,8 +2,8 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { TouchableOpacityProps } from 'react-native';
 
+import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/ImageLoadingFailedIndicator';
 import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/ImageLoadingIndicator';
-import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/LoadingImageFailedIndicator';
 
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
