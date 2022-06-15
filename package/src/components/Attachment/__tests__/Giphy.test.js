@@ -292,4 +292,69 @@ describe('Giphy', () => {
 
     expect(queryByTestId('giphy-attachment')).toBeTruthy();
   });
+
+  it('should render a loading indicator in giphy image', async () => {
+    const user1 = generateUser();
+    const attachment = generateGiphyAttachment();
+
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByA11yLabel, getByAccessibilityHint } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadStart');
+
+    expect(getByAccessibilityHint('loading')).toBeTruthy();
+  });
+
+  it('should render a error indicator in giphy image', async () => {
+    const user1 = generateUser();
+    const attachment = generateGiphyAttachment();
+
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
+      ],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+
+    const { getByA11yLabel, getByAccessibilityHint } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
+    expect(getByAccessibilityHint('error')).toBeTruthy();
+  });
 });
