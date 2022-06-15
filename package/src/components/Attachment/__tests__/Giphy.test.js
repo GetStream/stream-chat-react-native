@@ -3,6 +3,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -17,6 +18,8 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
+import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
@@ -27,9 +30,11 @@ describe('Giphy', () => {
     const message = generateMessage();
     return (
       <ThemeProvider>
-        <MessageProvider value={{ message }}>
-          <Giphy {...props} />
-        </MessageProvider>
+        <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+          <MessageProvider value={{ message }}>
+            <Giphy {...props} />
+          </MessageProvider>
+        </MessagesProvider>
       </ThemeProvider>
     );
   };
