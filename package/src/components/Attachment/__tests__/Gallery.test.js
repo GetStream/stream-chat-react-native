@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -229,5 +229,33 @@ describe('Gallery', () => {
       expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
       expect(queryAllByTestId('gallery-column-1-item-1').length).toBe(1);
     });
+  });
+
+  it('should render a loading indicator', async () => {
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1]);
+    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+
+    fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
+    expect(getByAccessibilityHint('loading')).toBeTruthy();
+    
+  });
+
+  it('should render a error indicator', async () => {
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1]);
+    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+
+    fireEvent(getByA11yLabel('gallery-image'), 'error');
+    expect(getByAccessibilityHint('error')).toBeTruthy();
+    
   });
 });
