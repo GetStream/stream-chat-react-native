@@ -197,6 +197,7 @@ export const AutoCompleteSuggestionList = <
 ) => {
   const { AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem } =
     useSuggestionsContext<StreamChatGenerics>();
+
   return (
     <MemoizedAutoCompleteSuggestionList
       {...{ AutoCompleteSuggestionHeader, AutoCompleteSuggestionItem }}

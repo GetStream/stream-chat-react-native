@@ -6,8 +6,8 @@ import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>
   (output as Dayjs.Dayjs | Moment).isSame != null;
@@ -23,10 +23,14 @@ export type TranslationContextValue = {
   tDateTimeParser: TDateTimeParser;
 };
 
-export const TranslationContext = React.createContext<TranslationContextValue>({
+const defaultTranslationContextValue: TranslationContextValue = {
   t: (key: string) => key,
   tDateTimeParser: (input) => Dayjs(input),
-});
+};
+
+export const TranslationContext = React.createContext<TranslationContextValue>(
+  defaultTranslationContextValue,
+);
 
 export const TranslationProvider: React.FC<{
   value: TranslationContextValue;
@@ -34,7 +38,17 @@ export const TranslationProvider: React.FC<{
   <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>
 );
 
-export const useTranslationContext = () => useContext(TranslationContext);
+export const useTranslationContext = () => {
+  const contextValue = useContext(TranslationContext);
+
+  if (contextValue === defaultTranslationContextValue && !isTestEnvironment()) {
+    throw new Error(
+      `The useTranslationContext hook was called outside the TranslationContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider)(https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
+    );
+  }
+
+  return contextValue;
+};
 
 export const withTranslationContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -7,7 +7,10 @@ import type { AutoCompleteSuggestionItemProps } from '../../components/AutoCompl
 import type { AutoCompleteSuggestionListProps } from '../../components/AutoCompleteInput/AutoCompleteSuggestionList';
 import type { Emoji } from '../../emoji-data/compiled';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type SuggestionComponentType = 'command' | 'emoji' | 'mention';
 
@@ -80,7 +83,9 @@ export type SuggestionsContextValue<
   suggestionsViewActive?: boolean;
 };
 
-export const SuggestionsContext = React.createContext({} as SuggestionsContextValue);
+export const SuggestionsContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as SuggestionsContextValue,
+);
 
 /**
  * This provider component exposes the properties stored within the SuggestionsContext.
@@ -130,7 +135,19 @@ export const SuggestionsProvider = <
 
 export const useSuggestionsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(SuggestionsContext) as unknown as SuggestionsContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    SuggestionsContext,
+  ) as unknown as SuggestionsContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useSuggestionsContext hook was called outside of the SuggestionsContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 
 export const withSuggestionsContext = <
   P extends UnknownType,
