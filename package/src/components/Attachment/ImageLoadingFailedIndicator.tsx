@@ -41,7 +41,7 @@ export const ImageLoadingFailedIndicator = (props: ImageLoadingFailedIndicatorPr
 
   const { style, ...rest } = props;
   return (
-    <View {...rest} style={[style]}>
+    <View {...rest} accessibilityHint='error' style={[style]}>
       <View style={[styles.container, { backgroundColor: overlay }]}>
         <Warning
           height={WARNING_ICON_SIZE}
