@@ -1666,7 +1666,7 @@ const ChannelWithContext = <
     handleReaction,
     handleRetry,
     handleThreadReply,
-    initialScrollToFirstUnreadMessage,
+    initialScrollToFirstUnreadMessage: !messageId && initialScrollToFirstUnreadMessage, // when messageId is set, we scroll to the messageId instead of first unread
     InlineDateSeparator,
     InlineUnreadIndicator,
     isAttachmentEqual,
