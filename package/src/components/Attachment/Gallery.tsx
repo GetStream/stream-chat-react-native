@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { GalleryImage } from './GallaryImage';
+import { useLoadingImage } from './hooks/useLoadingImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
@@ -127,8 +128,9 @@ const GalleryWithContext = <
     videos,
     VideoThumbnail,
   } = props;
-  const [isLoadingImage, setLoadingImage] = useState(true);
-  const [isLoadingImageError, setLoadingImageError] = useState(false);
+
+  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
+    useLoadingImage();
 
   const {
     theme: {
