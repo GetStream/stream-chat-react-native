@@ -15,8 +15,8 @@ import {
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
 
+import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
-import { LoadingImageFailedIndicator } from '../../Attachment/LoadingImageFailedIndicator';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
 
@@ -24,7 +24,7 @@ const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessagesProvider value={{ ImageLoadingIndicator, LoadingImageFailedIndicator }}>
+      <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
         <MessageProvider value={{ message }}>
           <Attachment {...props} />
         </MessageProvider>

@@ -242,7 +242,6 @@ describe('Gallery', () => {
 
     fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
     expect(getByAccessibilityHint('loading')).toBeTruthy();
-    
   });
 
   it('should render a error indicator', async () => {
@@ -256,6 +255,5 @@ describe('Gallery', () => {
 
     fireEvent(getByA11yLabel('gallery-image'), 'error');
     expect(getByAccessibilityHint('error')).toBeTruthy();
-    
   });
 });
