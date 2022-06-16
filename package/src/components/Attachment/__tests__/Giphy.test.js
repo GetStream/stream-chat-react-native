@@ -38,6 +38,29 @@ describe('Giphy', () => {
   let chatClient;
   let channel;
   let attachment;
+
+  const actions = [
+    { name: 'image_action', text: 'Send', value: 'send' },
+    { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
+    {
+      name: 'image_action',
+      text: 'Cancel',
+      value: 'cancel',
+    },
+  ];
+
+  const giphy = {
+    fixed_height: {
+      height: '200',
+      url: 'https://media1.giphy.com/media/test/fixed_height.gif',
+      width: '375',
+    },
+    original: {
+      height: '256',
+      url: 'https://media1.giphy.com/media/test/original.gif',
+      width: '480',
+    },
+  };
   const initChannel = async () => {
     const user1 = generateUser();
     attachment = generateGiphyAttachment();
@@ -80,18 +103,7 @@ describe('Giphy', () => {
   });
 
   it('"giphy" attachment size should be customisable', async () => {
-    attachment.giphy = {
-      fixed_height: {
-        height: '200',
-        url: 'https://media1.giphy.com/media/test/fixed_height.gif',
-        width: '375',
-      },
-      original: {
-        height: '256',
-        url: 'https://media1.giphy.com/media/test/original.gif',
-        width: '480',
-      },
-    };
+    attachment.giphy = giphy;
     const { getByTestId: getByTestIdFixedHeight } = render(
       getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
     );
@@ -120,15 +132,7 @@ describe('Giphy', () => {
   });
 
   it('show render giphy action UI and all the 3 action buttons', async () => {
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
     );
@@ -143,15 +147,7 @@ describe('Giphy', () => {
 
   it('should trigger the cancel giphy action', async () => {
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -175,15 +171,7 @@ describe('Giphy', () => {
 
   it('should trigger the shuffle giphy action', async () => {
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -207,15 +195,7 @@ describe('Giphy', () => {
 
   it('should trigger the send giphy action', async () => {
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -239,15 +219,7 @@ describe('Giphy', () => {
 
   it('giphy attachment UI should render within the message list with actions', async () => {
     const user1 = generateUser();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
