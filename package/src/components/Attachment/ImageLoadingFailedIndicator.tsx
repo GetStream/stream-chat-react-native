@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 8,
     justifyContent: 'center',
-    paddingRight: 8,
+    paddingHorizontal: 8,
   },
   warningIconStyle: {
     borderRadius: 24,
