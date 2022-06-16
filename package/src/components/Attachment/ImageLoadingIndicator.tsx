@@ -25,7 +25,7 @@ export const ImageLoadingIndicator = (props: ImageLoadingIndicatorProps) => {
   } = useTheme();
   const { style, ...rest } = props;
   return (
-    <View {...rest} accessibilityHint='loading' style={[styles.container, container, style]}>
+    <View {...rest} accessibilityHint='image-loading' style={[styles.container, container, style]}>
       <ActivityIndicator />
     </View>
   );
