@@ -241,7 +241,11 @@ describe('Gallery', () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(component);
 
     fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
-    expect(getByAccessibilityHint('loading')).toBeTruthy();
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
+    fireEvent(getByA11yLabel('gallery-image'), 'onLoadFiniah');
+
+    expect(getByA11yLabel('gallery-image')).toBeTruthy();
   });
 
   it('should render a error indicator', async () => {
@@ -254,6 +258,6 @@ describe('Gallery', () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(component);
 
     fireEvent(getByA11yLabel('gallery-image'), 'error');
-    expect(getByAccessibilityHint('error')).toBeTruthy();
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 });

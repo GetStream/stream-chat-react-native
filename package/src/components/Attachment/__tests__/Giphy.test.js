@@ -297,7 +297,7 @@ describe('Giphy', () => {
     });
   });
 
-  it('should render a loading indicator in giphy image', async () => {
+  it('should render a loading indicator in giphy image and when successful render image', async () => {
     const user1 = generateUser();
     const attachment = generateGiphyAttachment();
 
@@ -327,7 +327,11 @@ describe('Giphy', () => {
 
     fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadStart');
 
-    expect(getByAccessibilityHint('loading')).toBeTruthy();
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFiniah');
+
+    expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
 
   it('should render a error indicator in giphy image', async () => {
@@ -359,6 +363,6 @@ describe('Giphy', () => {
     );
 
     fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
-    expect(getByAccessibilityHint('error')).toBeTruthy();
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 });
