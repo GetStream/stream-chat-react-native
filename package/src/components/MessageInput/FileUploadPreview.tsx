@@ -121,7 +121,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -130,15 +130,32 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
+  const { FileAttachmentIcon, fileUploads, removeFile, setFileUploads, uploadFile } = props;
 
-  const [currentlyPlayingAudio, setCurrentlyPlayingAudio] = useState<string | null>(null);
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
-  const handleCurrentlyPlayingAudio = (url: string) => {
-    console.log(url);
-    setCurrentlyPlayingAudio(url);
+  const onLoad = (index: string, duration?: number) => {
+    const files = [...fileUploads];
+    const currentAudioIndex = fileUploads.findIndex((audio) => audio.id === index);
+    files[currentAudioIndex].duration = duration;
+    setFileUploads(files);
+  };
+
+  const onProgress = (index: string, currentTime: number, duration: number) => {
+    const files = [...fileUploads];
+    const currentAudioIndex = fileUploads.findIndex((audio) => audio.id === index);
+    files[currentAudioIndex].progress = currentTime / duration;
+    setFileUploads(files);
+  };
+
+  const onPlayPause = (index: string) => {
+    setFileUploads((prevFileUploads) => {
+      const files = [...prevFileUploads];
+      const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
+      files[currentAudioIndex].paused = !prevFileUploads[currentAudioIndex].paused;
+      return files;
+    });
   };
 
   const {
@@ -173,10 +190,11 @@ const FileUploadPreviewWithContext = <
         >
           {item.file.type?.startsWith('audio/') ? (
             <AudioAttachmentUploadPreview
-              currentlyPlayingAudio={currentlyPlayingAudio}
-              handleCurrentlyPlayingAudio={handleCurrentlyPlayingAudio}
               index={index}
               item={item}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
             />
           ) : (
             <View
@@ -249,6 +267,8 @@ const FileUploadPreviewWithContext = <
     }
   }, [fileUploadsLength]);
 
+  console.log('hehehe');
+
   return fileUploadsLength ? (
     <FlatList
       data={fileUploads}
@@ -257,7 +277,7 @@ const FileUploadPreviewWithContext = <
         length: FILE_PREVIEW_HEIGHT + 8,
         offset: (FILE_PREVIEW_HEIGHT + 8) * index,
       })}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => `${item.id},${item.paused}`}
       onLayout={({
         nativeEvent: {
           layout: { width },
@@ -278,11 +298,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const { fileUploads: prevFileUploads } = prevProps;
   const { fileUploads: nextFileUploads } = nextProps;
-
   return (
     prevFileUploads.length === nextFileUploads.length &&
     prevFileUploads.every(
-      (prevFileUpload, index) => prevFileUpload.state === nextFileUploads[index].state,
+      (prevFileUpload, index) =>
+        prevFileUpload.state === nextFileUploads[index].state &&
+        prevFileUpload.paused === nextFileUploads[index].paused &&
+        prevFileUpload.progress === nextFileUploads[index].progress &&
+        prevFileUpload.duration === nextFileUploads[index].duration,
     )
   );
 };
@@ -305,13 +328,13 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
-
+  const { fileUploads, removeFile, setFileUploads, uploadFile } =
+    useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
-      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile }}
+      {...{ FileAttachmentIcon, fileUploads, removeFile, setFileUploads, uploadFile }}
       {...props}
     />
   );

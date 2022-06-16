@@ -419,13 +419,6 @@ PODS:
     - React-Core
   - RNShare (6.0.1):
     - React-Core
-  - RNSound (0.11.2):
-    - React-Core
-    - RNSound/Core (= 0.11.2)
-  - RNSound/Core (0.11.2):
-    - React-Core
-  - RNSoundPlayer (0.12.1):
-    - React
   - RNSVG (12.1.1):
     - React
   - TOCropViewController (2.6.1)
@@ -504,8 +497,6 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
-  - RNSound (from `../node_modules/react-native-sound`)
-  - RNSoundPlayer (from `../node_modules/react-native-sound-player`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -617,10 +608,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNShare:
     :path: "../node_modules/react-native-share"
-  RNSound:
-    :path: "../node_modules/react-native-sound"
-  RNSoundPlayer:
-    :path: "../node_modules/react-native-sound-player"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -685,8 +672,6 @@ SPEC CHECKSUMS:
   RNReanimated: 3ad6ec4e147462206be9d1c925df10b6ea850b0e
   RNScreens: c277bfc4b5bb7c2fe977d19635df6f974f95dfd6
   RNShare: 755de6bac084428f8fd8fb54c376f126f40e560c
-  RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSoundPlayer: d1145002a4dec983165bbce0bfdeddfd4e62cdbc
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 90dcd029e45d8a7c1ff059e8b3c6612ff409061a

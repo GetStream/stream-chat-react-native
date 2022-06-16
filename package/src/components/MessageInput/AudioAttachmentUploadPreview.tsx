@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -81,10 +81,11 @@ type AudioAttachmentUploadPreviewPropsWithContext<
   MessageInputContextValue<StreamChatGenerics>,
   'fileUploads' | 'removeFile' | 'uploadFile'
 > & {
-  currentlyPlayingAudio: string | null;
-  handleCurrentlyPlayingAudio: (url: string) => void;
   index: number;
   item: FileUpload;
+  onLoad: (index: string, duration?: number) => void;
+  onPlayPause: (index: string) => void;
+  onProgress: (index: string, currentTime: number, duration: number) => void;
 };
 
 const AudioAttachmentUploadPreviewWithContext = <
@@ -92,50 +93,36 @@ const AudioAttachmentUploadPreviewWithContext = <
 >(
   props: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const [paused, setPaused] = useState<boolean>(true);
-  const [duration, setDuration] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
   const soundRef = useRef<SoundReturnType | null>(null);
-  const { currentlyPlayingAudio, fileUploads, handleCurrentlyPlayingAudio, index, item } = props;
+  const { fileUploads, index, item, onLoad, onPlayPause, onProgress } = props;
 
   const handleLoad = (payload: VideoPayloadData) => {
-    if (payload.duration) {
-      setDuration(payload.duration);
-    }
+    onLoad(item.id, payload.duration);
   };
 
   const handleProgress = (data: VideoProgressData) => {
     if (data.currentTime && data.seekableDuration) {
-      setProgress(data.currentTime / data.seekableDuration);
+      onProgress(item.id, data.currentTime, data.seekableDuration);
     }
   };
 
-  const handlePlayPause = async (status?: boolean) => {
-    if (item.file.uri !== currentlyPlayingAudio) {
-      handleCurrentlyPlayingAudio(item.file.uri as string);
-      setPaused((state) => !state);
-    } else {
-      if (status === undefined) {
-        if (soundRef.current) {
-          if (progress === 1) {
-            if (soundRef.current.seek) soundRef.current.seek(0);
-            if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
-          }
-          if (paused) {
-            if (soundRef.current.playAsync) await soundRef.current.playAsync();
-          } else {
-            if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-          }
-          setPaused((state) => !state);
-        }
-      } else {
-        setPaused(status);
+  const handlePlayPause = async () => {
+    if (soundRef.current) {
+      if (item.progress === 1) {
+        if (soundRef.current.seek) soundRef.current.seek(0);
+        if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
       }
+      if (item.paused) {
+        if (soundRef.current.playAsync) await soundRef.current.playAsync();
+      } else {
+        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+      }
+      onPlayPause(item.id);
     }
   };
 
   const handleProgressDrag = async (position: number) => {
-    setProgress(position / duration);
+    onProgress(item.id, position, item.duration as number);
     if (soundRef.current?.seek) soundRef.current.seek(position);
     if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(position * 1000);
@@ -143,8 +130,8 @@ const AudioAttachmentUploadPreviewWithContext = <
   };
 
   const handleEnd = () => {
-    setPaused(true);
-    setProgress(1);
+    onPlayPause(item.id);
+    onProgress(item.id, 1, 1);
   };
 
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
@@ -155,11 +142,11 @@ const AudioAttachmentUploadPreviewWithContext = <
       }
     } else {
       const { durationMillis, positionMillis } = playbackStatus;
-      setDuration(durationMillis / 1000);
+      onLoad(item.id, durationMillis / 1000);
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
-        setProgress(positionMillis / durationMillis);
+        onProgress(item.id, positionMillis, durationMillis);
       } else {
         // Update your UI for the paused state
       }
@@ -170,8 +157,8 @@ const AudioAttachmentUploadPreviewWithContext = <
 
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
         // The player has just finished playing and will stop. Maybe you want to play something else?
-        setPaused(true);
-        setProgress(1);
+        onPlayPause(item.id);
+        onProgress(item.id, 1, 1);
       }
     }
   };
@@ -181,7 +168,7 @@ const AudioAttachmentUploadPreviewWithContext = <
       const initiateSound = async () => {
         if (item && item.file && item.file.uri) {
           soundRef.current = await Sound.initializeSound(
-            { uri: item.file.uri },
+            { uri: item.file.uri as string },
             {},
             onPlaybackStatusUpdate,
           );
@@ -211,7 +198,7 @@ const AudioAttachmentUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const progressValueInSeconds = progress * duration;
+  const progressValueInSeconds = item.duration as number;
 
   const progressDuration = progressValueInSeconds
     ? progressValueInSeconds / 3600 >= 1
@@ -244,7 +231,7 @@ const AudioAttachmentUploadPreviewWithContext = <
           }}
           style={[styles.roundedView, roundedView]}
         >
-          {paused ? (
+          {item.paused ? (
             <Play height={24} pathFill={'#000'} width={24} />
           ) : (
             <Pause height={24} width={24} />
@@ -280,20 +267,20 @@ const AudioAttachmentUploadPreviewWithContext = <
                 onEnd={handleEnd}
                 onLoad={handleLoad}
                 onProgress={handleProgress}
-                paused={paused}
+                paused={item.paused as boolean}
                 soundRef={soundRef}
-                uri={currentlyPlayingAudio as string}
+                uri={item.file.uri}
               />
             )}
             <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
               {progressDuration}
             </Text>
             <ProgressControl
-              duration={duration}
+              duration={item.duration as number}
               filledColor={accent_blue}
               onPlayPause={handlePlayPause}
               onProgressDrag={handleProgressDrag}
-              progress={progress}
+              progress={item.progress as number}
               width={110}
             />
           </View>
@@ -307,21 +294,29 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
   nextProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { currentlyPlayingAudio: prevCurrentlyPlayingAudio, fileUploads: prevFileUploads } =
-    prevProps;
-  const { currentlyPlayingAudio: nextCurrentlyPlayingAudio, fileUploads: nextFileUploads } =
-    nextProps;
+  const { fileUploads: prevFileUploads, item: prevItem } = prevProps;
+  const { fileUploads: nextFileUploads, item: nextItem } = nextProps;
 
-  const currentlyPlayingAudioEqual = prevCurrentlyPlayingAudio === nextCurrentlyPlayingAudio;
+  const isItemEqual =
+    prevItem.duration === nextItem.duration &&
+    prevItem.progress === nextItem.progress &&
+    prevItem.paused === nextItem.paused;
 
-  if (!currentlyPlayingAudioEqual) return false;
+  if (!isItemEqual) return false;
 
-  return (
+  const isFileUploadsEqual =
     prevFileUploads.length === nextFileUploads.length &&
     prevFileUploads.every(
-      (prevFileUpload, index) => prevFileUpload.state === nextFileUploads[index].state,
-    )
-  );
+      (prevFileUpload, index) =>
+        prevFileUpload.state === nextFileUploads[index].state &&
+        prevFileUpload.paused === nextFileUploads[index].paused &&
+        prevFileUpload.progress === nextFileUploads[index].progress &&
+        prevFileUpload.duration === nextFileUploads[index].duration,
+    );
+
+  if (!isFileUploadsEqual) return false;
+
+  return true;
 };
 
 const MemoizedAudioAttachmentUploadPreview = React.memo(
@@ -332,10 +327,11 @@ const MemoizedAudioAttachmentUploadPreview = React.memo(
 export type FileUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>> & {
-  currentlyPlayingAudio: string | null;
-  handleCurrentlyPlayingAudio: (url: string) => void;
   index: number;
   item: FileUpload;
+  onLoad: (index: string, duration?: number) => void;
+  onPlayPause: (index: string) => void;
+  onProgress: (index: string, currentTime: number, duration: number) => void;
 };
 
 /**

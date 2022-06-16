@@ -58,6 +58,9 @@ export type FileUpload = {
   file: File;
   id: string;
   state: FileStateValue;
+  duration?: number;
+  paused?: boolean;
+  progress?: number;
   url?: string;
 };
 
@@ -1015,8 +1018,11 @@ export const MessageInputProvider = <
         : FileState.UPLOADING;
 
     const newFile: FileUpload = {
+      duration: 0,
       file: { ...file, type: mimeType || file?.type },
       id,
+      paused: true,
+      progress: 0,
       state: fileState,
     };
 
