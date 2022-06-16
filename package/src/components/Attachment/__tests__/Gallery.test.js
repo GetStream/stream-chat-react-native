@@ -231,7 +231,7 @@ describe('Gallery', () => {
     });
   });
 
-  it('should render a loading indicator', async () => {
+  it('should render a loading indicator and when successful render the image', async () => {
     const image1 = generateImageAttachment({
       original_height: 300,
       original_width: 600,

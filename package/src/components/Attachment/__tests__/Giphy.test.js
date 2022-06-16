@@ -297,7 +297,7 @@ describe('Giphy', () => {
     });
   });
 
-  it('should render a loading indicator in giphy image and when successful render image', async () => {
+  it('should render a loading indicator in giphy image and when successful render the image', async () => {
     const user1 = generateUser();
     const attachment = generateGiphyAttachment();
 
