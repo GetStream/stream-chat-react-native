@@ -243,7 +243,7 @@ describe('Gallery', () => {
     fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('gallery-image'), 'onLoadFiniah');
+    fireEvent(getByA11yLabel('gallery-image'), 'onLoadFinish');
 
     expect(getByA11yLabel('gallery-image')).toBeTruthy();
   });

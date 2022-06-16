@@ -283,7 +283,7 @@ describe('Giphy', () => {
 
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFiniah');
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFinish');
 
     expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
