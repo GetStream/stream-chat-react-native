@@ -1,6 +1,6 @@
 Removes attached file in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [FileUploadPreview](../../../core-components/channel.mdx#fileuploadpreview).
-It takes index of file (to be removed) in [`fileUploads`](../../../contexts/message_input_context.mdx#fileuploads) array as parameter.
+It takes a string ID of the file to be removed in the [`fileUploads`](../../../contexts/message_input_context.mdx#fileuploads) array as parameter.
 
-| Type              |
-| ----------------- |
-| `(index) => void` |
+| Type                   |
+| ---------------------- |
+| `(id: string) => void` |
