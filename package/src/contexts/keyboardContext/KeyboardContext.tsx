@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+
 import { Keyboard } from 'react-native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
@@ -8,7 +9,7 @@ export type KeyboardContextValue = {
   dismissKeyboard: () => void;
 };
 
-export const KeyboardContext = React.createContext<KeyboardContextValue>({
+export const KeyboardContext = React.createContext({
   dismissKeyboard: Keyboard.dismiss,
 });
 

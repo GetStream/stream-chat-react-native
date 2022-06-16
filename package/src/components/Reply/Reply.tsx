@@ -88,12 +88,15 @@ const getMessageType = <
 
   const isLastAttachmentVideo = lastAttachment.type === 'video';
 
-  const isLastAttachmentGiphy = lastAttachment.type === 'giphy' || lastAttachment.type === 'imgur';
+  const isLastAttachmentGiphy =
+    lastAttachment?.type === 'giphy' || lastAttachment?.type === 'imgur';
 
   const isLastAttachmentImageOrGiphy =
-    lastAttachment.type === 'image' && !lastAttachment.title_link && !lastAttachment.og_scrape_url;
+    lastAttachment?.type === 'image' &&
+    !lastAttachment?.title_link &&
+    !lastAttachment?.og_scrape_url;
 
-  const isLastAttachmentImage = lastAttachment.image_url || lastAttachment.thumb_url;
+  const isLastAttachmentImage = lastAttachment?.image_url || lastAttachment?.thumb_url;
 
   if (isLastAttachmentFile) {
     messageType = 'file';
