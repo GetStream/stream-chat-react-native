@@ -14,7 +14,6 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
-import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Alignment = 'right' | 'left';
 
