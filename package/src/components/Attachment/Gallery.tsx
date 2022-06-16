@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
   activityIndicatorStyle: {
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
   },
   errorTextSize: { fontSize: 10 },
   galleryContainer: {
