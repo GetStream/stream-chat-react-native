@@ -845,7 +845,6 @@ const ChannelWithContext = <
           setHasNoMoreRecentMessagesToLoad(false); // we are jumping to a message, hence we do not know for sure anymore if there are no more recent messages
           setLoading(true);
           if (messageId) {
-            console.log('setting the messageID', { messageId });
             await channel.state.loadMessageIntoState(messageId);
           } else {
             await channel.state.loadMessageIntoState('latest');
