@@ -17,7 +17,6 @@ export const GalleryImage: React.FC<
       source={{
         uri: makeImageCompatibleUrl(uri),
       }}
-      testID='image-attachment-single'
     />
   );
 };
