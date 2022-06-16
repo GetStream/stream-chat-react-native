@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
   activityIndicatorStyle: {
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
   },
   buttonContainer: {
     alignItems: 'center',
