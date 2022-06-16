@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
@@ -9,10 +9,7 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import {
-  generateGiphyAttachment,
-  generateImgurAttachment,
-} from '../../../mock-builders/generator/attachment';
+import { generateGiphyAttachment } from '../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
@@ -38,9 +35,35 @@ describe('Giphy', () => {
       </ThemeProvider>
     );
   };
+  let chatClient;
+  let channel;
+  let attachment;
+  const initChannel = async () => {
+    const user1 = generateUser();
+    attachment = generateGiphyAttachment();
+
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
+      ],
+    });
+
+    chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+  };
+
+  beforeEach(async () => {
+    await initChannel();
+  });
+
+  afterEach(cleanup);
 
   it('should render Card component for "imgur" type attachment', async () => {
-    const attachment = generateImgurAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -49,7 +72,6 @@ describe('Giphy', () => {
   });
 
   it('should render Card component for "giphy" type attachment', async () => {
-    const attachment = generateGiphyAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -58,7 +80,6 @@ describe('Giphy', () => {
   });
 
   it('"giphy" attachment size should be customisable', async () => {
-    const attachment = generateGiphyAttachment();
     attachment.giphy = {
       fixed_height: {
         height: '200',
@@ -99,7 +120,6 @@ describe('Giphy', () => {
   });
 
   it('show render giphy action UI and all the 3 action buttons', async () => {
-    const attachment = generateGiphyAttachment();
     attachment.actions = [
       { name: 'image_action', text: 'Send', value: 'send' },
       { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
@@ -122,7 +142,6 @@ describe('Giphy', () => {
   });
 
   it('should trigger the cancel giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
     attachment.actions = [
       { name: 'image_action', text: 'Send', value: 'send' },
@@ -155,7 +174,6 @@ describe('Giphy', () => {
   });
 
   it('should trigger the shuffle giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
     attachment.actions = [
       { name: 'image_action', text: 'Send', value: 'send' },
@@ -188,7 +206,6 @@ describe('Giphy', () => {
   });
 
   it('should trigger the send giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
     attachment.actions = [
       { name: 'image_action', text: 'Send', value: 'send' },
@@ -222,7 +239,6 @@ describe('Giphy', () => {
 
   it('giphy attachment UI should render within the message list with actions', async () => {
     const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
     attachment.actions = [
       { name: 'image_action', text: 'Send', value: 'send' },
       { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
@@ -265,23 +281,6 @@ describe('Giphy', () => {
   });
 
   it('giphy attachment UI should render within the message list', async () => {
-    const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
     const { queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -297,24 +296,7 @@ describe('Giphy', () => {
     });
   });
 
-  it('should render a loading indicator in giphy image and when successful render the image', async () => {
-    const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
+  it('should render a loading indicator in giphy image and when successful render the image', () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -334,24 +316,7 @@ describe('Giphy', () => {
     expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
 
-  it('should render a error indicator in giphy image', async () => {
-    const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
+  it('should render a error indicator in giphy image', () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
