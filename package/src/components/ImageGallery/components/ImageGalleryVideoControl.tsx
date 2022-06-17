@@ -12,12 +12,10 @@ import { ProgressControl } from '../../ProgressControl/ProgressControl';
 
 const styles = StyleSheet.create({
   durationTextStyle: {
-    color: '#fff',
     fontWeight: 'bold',
   },
   roundedView: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
     elevation: 2,
@@ -55,7 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
-        colors: { white_snow },
+        colors: { black, white_snow },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -69,15 +67,15 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
             onPlayPause();
           }}
         >
-          <View style={[styles.roundedView, roundedView]}>
+          <View style={[styles.roundedView, roundedView, { backgroundColor: white_snow }]}>
             {paused ? (
-              <Play height={24} pathFill={'#000'} width={24} />
+              <Play height={24} pathFill={black} width={24} />
             ) : (
               <Pause height={24} width={24} />
             )}
           </View>
         </TouchableOpacity>
-        <Text style={[styles.durationTextStyle, durationTextStyle]}>
+        <Text style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}>
           {progressDuration ? progressDuration : '00:00'}
         </Text>
         <ProgressControl
@@ -88,7 +86,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
           progress={progress}
           width={180}
         />
-        <Text style={[styles.durationTextStyle, durationTextStyle]}>
+        <Text style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}>
           {videoDuration ? videoDuration : '00:00'}
         </Text>
       </View>

@@ -4,6 +4,7 @@ import type { StyleProp } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import {
+  isVideoPackageAvailable,
   PlaybackStatus,
   Video,
   VideoPayloadData,
@@ -173,19 +174,21 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
           },
         ]}
       >
-        <Video
-          onBuffer={onBuffer}
-          onEnd={onEnd}
-          onLoad={onLoad}
-          onLoadStart={onLoadStart}
-          onPlaybackStatusUpdate={onPlayBackStatusUpdate}
-          onProgress={onProgress}
-          paused={paused}
-          resizeMode='cover'
-          style={style}
-          uri={source.uri}
-          videoRef={videoRef}
-        />
+        {isVideoPackageAvailable() && (
+          <Video
+            onBuffer={onBuffer}
+            onEnd={onEnd}
+            onLoad={onLoad}
+            onLoadStart={onLoadStart}
+            onPlaybackStatusUpdate={onPlayBackStatusUpdate}
+            onProgress={onProgress}
+            paused={paused}
+            resizeMode='contain'
+            style={style}
+            uri={source.uri}
+            videoRef={videoRef}
+          />
+        )}
         <Animated.View
           style={[
             styles.activityIndicator,

@@ -135,27 +135,44 @@ const FileUploadPreviewWithContext = <
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
-  const onLoad = (index: string, duration?: number) => {
-    const files = [...fileUploads];
-    const currentAudioIndex = fileUploads.findIndex((audio) => audio.id === index);
-    files[currentAudioIndex].duration = duration;
-    setFileUploads(files);
-  };
-
-  const onProgress = (index: string, currentTime: number, duration: number) => {
-    const files = [...fileUploads];
-    const currentAudioIndex = fileUploads.findIndex((audio) => audio.id === index);
-    files[currentAudioIndex].progress = currentTime / duration;
-    setFileUploads(files);
-  };
-
-  const onPlayPause = (index: string) => {
+  const onLoad = (index: string, duration: number) => {
     setFileUploads((prevFileUploads) => {
       const files = [...prevFileUploads];
       const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
-      files[currentAudioIndex].paused = !prevFileUploads[currentAudioIndex].paused;
+      files[currentAudioIndex].duration = duration;
       return files;
     });
+  };
+
+  const onProgress = (index: string, currentTime?: number) => {
+    setFileUploads((prevFileUploads) => {
+      const files = [...prevFileUploads];
+      const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
+      files[currentAudioIndex].progress = currentTime
+        ? currentTime / (files[currentAudioIndex].duration as number)
+        : 1;
+      return files;
+    });
+  };
+
+  const onPlayPause = (index: string, status?: boolean) => {
+    if (status === false) {
+      setFileUploads((prevFileUploads) => {
+        const files = prevFileUploads.map((fileUpload) => ({
+          ...fileUpload,
+          paused: fileUpload.id === index ? false : true,
+        }));
+        return files;
+      });
+    } else {
+      setFileUploads((prevFileUploads) => {
+        const files = prevFileUploads.map((fileUpload) => ({
+          ...fileUpload,
+          paused: true,
+        }));
+        return files;
+      });
+    }
   };
 
   const {
@@ -267,8 +284,6 @@ const FileUploadPreviewWithContext = <
     }
   }, [fileUploadsLength]);
 
-  console.log('hehehe');
-
   return fileUploadsLength ? (
     <FlatList
       data={fileUploads}
@@ -277,7 +292,7 @@ const FileUploadPreviewWithContext = <
         length: FILE_PREVIEW_HEIGHT + 8,
         offset: (FILE_PREVIEW_HEIGHT + 8) * index,
       })}
-      keyExtractor={(item) => `${item.id},${item.paused}`}
+      keyExtractor={(item) => `${item.id}`}
       onLayout={({
         nativeEvent: {
           layout: { width },

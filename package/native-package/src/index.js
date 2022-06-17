@@ -8,12 +8,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 
-import AudioVideoPlayer from 'react-native-video';
-
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
+
+import AudioVideoPlayer from './optionalDependencies/Video';
 
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
@@ -202,24 +202,26 @@ registerNativeHandlers({
   Sound: {
     initializeSound: null,
     // eslint-disable-next-line react/display-name
-    Player: ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
-      <AudioVideoPlayer
-        audioOnly={true}
-        onBuffer={onBuffer}
-        onEnd={onEnd}
-        onError={(error) => {
-          console.log(error);
-        }}
-        onLoad={onLoad}
-        onProgress={onProgress}
-        paused={paused}
-        ref={soundRef}
-        source={{
-          uri,
-        }}
-        style={style}
-      />
-    ),
+    Player: AudioVideoPlayer
+      ? ({ onBuffer, onEnd, onLoad, onProgress, paused, soundRef, style, uri }) => (
+          <AudioVideoPlayer
+            audioOnly={true}
+            onBuffer={onBuffer}
+            onEnd={onEnd}
+            onError={(error) => {
+              console.log(error);
+            }}
+            onLoad={onLoad}
+            onProgress={onProgress}
+            paused={paused}
+            ref={soundRef}
+            source={{
+              uri,
+            }}
+            style={style}
+          />
+        )
+      : null,
   },
   takePhoto: async ({ compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1 }) => {
     const photo = await ImagePicker.openCamera({
@@ -272,23 +274,26 @@ registerNativeHandlers({
     });
   },
   // eslint-disable-next-line react/display-name
-  Video: ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
-    <AudioVideoPlayer
-      onBuffer={onBuffer}
-      onEnd={onEnd}
-      onError={(error) => {
-        console.error(error);
-      }}
-      onLoad={onLoad}
-      onProgress={onProgress}
-      paused={paused}
-      ref={videoRef}
-      source={{
-        uri,
-      }}
-      style={style}
-    />
-  ),
+  Video: AudioVideoPlayer
+    ? ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
+        <AudioVideoPlayer
+          ignoreSilentSwitch={'ignore'}
+          onBuffer={onBuffer}
+          onEnd={onEnd}
+          onError={(error) => {
+            console.error(error);
+          }}
+          onLoad={onLoad}
+          onProgress={onProgress}
+          paused={paused}
+          ref={videoRef}
+          source={{
+            uri,
+          }}
+          style={style}
+        />
+      )
+    : null,
 });
 
 if (Platform.OS === 'android') {

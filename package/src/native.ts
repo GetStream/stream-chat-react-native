@@ -181,9 +181,9 @@ export type VideoProgressData = {
 };
 
 export type VideoPayloadData = {
+  duration: number;
   audioTracks?: { index: number; language: string; title: string; type: string }[];
   currentPosition?: number;
-  duration?: number;
   naturalSize?: { height: number; orientation: 'portrait' | 'landscape'; width: number };
   textTracks?: { index: number; language: string; title: string; type: string }[];
   videoTracks?: {
@@ -292,3 +292,5 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     Video = handlers.Video;
   }
 };
+
+export const isVideoPackageAvailable = () => !!Video;

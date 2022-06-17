@@ -55,7 +55,12 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import type { VideoPayloadData, VideoProgressData, VideoType } from '../../native';
+import {
+  isVideoPackageAvailable,
+  VideoPayloadData,
+  VideoProgressData,
+  VideoType,
+} from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
@@ -263,7 +268,7 @@ export const ImageGallery = <
             !attachment.title_link &&
             !attachment.og_scrape_url &&
             getUrlOfImageAttachment(attachment)) ||
-          attachment.type === 'video',
+          (isVideoPackageAvailable() && attachment.type === 'video'),
       ) || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {

@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   },
   roundedView: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
     height: 36,
@@ -29,6 +28,7 @@ export type VideoThumbnailProps = ViewProps;
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
     theme: {
+      colors: { black, white_snow },
       messageSimple: {
         videoThumbnail: { container, roundedView },
       },
@@ -37,8 +37,8 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const { style, ...rest } = props;
   return (
     <View {...rest} style={[styles.container, container, style]}>
-      <View style={[styles.roundedView, roundedView]}>
-        <Play height={24} pathFill={'#000'} width={24} />
+      <View style={[styles.roundedView, roundedView, { backgroundColor: white_snow }]}>
+        <Play height={24} pathFill={black} width={24} />
       </View>
     </View>
   );

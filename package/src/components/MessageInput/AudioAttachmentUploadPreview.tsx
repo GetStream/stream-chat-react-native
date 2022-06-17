@@ -58,13 +58,11 @@ const styles = StyleSheet.create({
   roundedView: {
     alignItems: 'center',
     alignSelf: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
     elevation: 4,
     height: 36,
     justifyContent: 'center',
-    shadowColor: '#000',
     shadowOffset: {
       height: 2,
       width: 0,
@@ -83,9 +81,9 @@ type AudioAttachmentUploadPreviewPropsWithContext<
 > & {
   index: number;
   item: FileUpload;
-  onLoad: (index: string, duration?: number) => void;
-  onPlayPause: (index: string) => void;
-  onProgress: (index: string, currentTime: number, duration: number) => void;
+  onLoad: (index: string, duration: number) => void;
+  onPlayPause: (index: string, status?: boolean) => void;
+  onProgress: (index: string, currentTime?: number) => void;
 };
 
 const AudioAttachmentUploadPreviewWithContext = <
@@ -102,27 +100,32 @@ const AudioAttachmentUploadPreviewWithContext = <
 
   const handleProgress = (data: VideoProgressData) => {
     if (data.currentTime && data.seekableDuration) {
-      onProgress(item.id, data.currentTime, data.seekableDuration);
+      onProgress(item.id, data.currentTime);
     }
   };
 
-  const handlePlayPause = async () => {
-    if (soundRef.current) {
-      if (item.progress === 1) {
-        if (soundRef.current.seek) soundRef.current.seek(0);
-        if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+  const handlePlayPause = async (status?: boolean) => {
+    if (status === undefined) {
+      if (soundRef.current) {
+        if (item.progress === 1) {
+          if (soundRef.current.seek) soundRef.current.seek(0);
+          if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
+        }
+        if (item.paused) {
+          if (soundRef.current.playAsync) await soundRef.current.playAsync();
+          onPlayPause(item.id, false);
+        } else {
+          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+          onPlayPause(item.id, true);
+        }
       }
-      if (item.paused) {
-        if (soundRef.current.playAsync) await soundRef.current.playAsync();
-      } else {
-        if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
-      }
-      onPlayPause(item.id);
+    } else {
+      onPlayPause(item.id, status);
     }
   };
 
   const handleProgressDrag = async (position: number) => {
-    onProgress(item.id, position, item.duration as number);
+    onProgress(item.id, position);
     if (soundRef.current?.seek) soundRef.current.seek(position);
     if (soundRef.current?.setPositionAsync) {
       await soundRef.current.setPositionAsync(position * 1000);
@@ -130,8 +133,8 @@ const AudioAttachmentUploadPreviewWithContext = <
   };
 
   const handleEnd = () => {
-    onPlayPause(item.id);
-    onProgress(item.id, 1, 1);
+    onPlayPause(item.id, true);
+    onProgress(item.id);
   };
 
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
@@ -146,7 +149,7 @@ const AudioAttachmentUploadPreviewWithContext = <
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
-        onProgress(item.id, positionMillis, durationMillis);
+        onProgress(item.id, positionMillis);
       } else {
         // Update your UI for the paused state
       }
@@ -157,8 +160,8 @@ const AudioAttachmentUploadPreviewWithContext = <
 
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
         // The player has just finished playing and will stop. Maybe you want to play something else?
-        onPlayPause(item.id);
-        onProgress(item.id, 1, 1);
+        onPlayPause(item.id, true);
+        onProgress(item.id, 1);
       }
     }
   };
@@ -184,7 +187,7 @@ const AudioAttachmentUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, grey_dark, grey_whisper },
+      colors: { accent_blue, black, grey_dark, grey_whisper, white_snow },
       messageInput: {
         fileUploadPreview: {
           fileContainer,
@@ -198,7 +201,7 @@ const AudioAttachmentUploadPreviewWithContext = <
     },
   } = useTheme();
 
-  const progressValueInSeconds = item.duration as number;
+  const progressValueInSeconds = (item.duration as number) * (item.progress as number);
 
   const progressDuration = progressValueInSeconds
     ? progressValueInSeconds / 3600 >= 1
@@ -229,10 +232,14 @@ const AudioAttachmentUploadPreviewWithContext = <
           onPress={() => {
             handlePlayPause();
           }}
-          style={[styles.roundedView, roundedView]}
+          style={[
+            styles.roundedView,
+            roundedView,
+            { backgroundColor: white_snow, shadowColor: black },
+          ]}
         >
           {item.paused ? (
-            <Play height={24} pathFill={'#000'} width={24} />
+            <Play height={24} pathFill={black} width={24} />
           ) : (
             <Pause height={24} width={24} />
           )}
@@ -290,48 +297,14 @@ const AudioAttachmentUploadPreviewWithContext = <
   );
 };
 
-const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
-  prevProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
-  nextProps: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
-) => {
-  const { fileUploads: prevFileUploads, item: prevItem } = prevProps;
-  const { fileUploads: nextFileUploads, item: nextItem } = nextProps;
-
-  const isItemEqual =
-    prevItem.duration === nextItem.duration &&
-    prevItem.progress === nextItem.progress &&
-    prevItem.paused === nextItem.paused;
-
-  if (!isItemEqual) return false;
-
-  const isFileUploadsEqual =
-    prevFileUploads.length === nextFileUploads.length &&
-    prevFileUploads.every(
-      (prevFileUpload, index) =>
-        prevFileUpload.state === nextFileUploads[index].state &&
-        prevFileUpload.paused === nextFileUploads[index].paused &&
-        prevFileUpload.progress === nextFileUploads[index].progress &&
-        prevFileUpload.duration === nextFileUploads[index].duration,
-    );
-
-  if (!isFileUploadsEqual) return false;
-
-  return true;
-};
-
-const MemoizedAudioAttachmentUploadPreview = React.memo(
-  AudioAttachmentUploadPreviewWithContext,
-  areEqual,
-) as typeof AudioAttachmentUploadPreviewWithContext;
-
 export type FileUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>> & {
   index: number;
   item: FileUpload;
-  onLoad: (index: string, duration?: number) => void;
-  onPlayPause: (index: string) => void;
-  onProgress: (index: string, currentTime: number, duration: number) => void;
+  onLoad: (index: string, duration: number) => void;
+  onPlayPause: (index: string, status?: boolean) => void;
+  onProgress: (index: string, currentTime?: number) => void;
 };
 
 /**
@@ -346,7 +319,10 @@ export const AudioAttachmentUploadPreview = <
   const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
 
   return (
-    <MemoizedAudioAttachmentUploadPreview {...{ fileUploads, removeFile, uploadFile }} {...props} />
+    <AudioAttachmentUploadPreviewWithContext
+      {...{ fileUploads, removeFile, uploadFile }}
+      {...props}
+    />
   );
 };
 

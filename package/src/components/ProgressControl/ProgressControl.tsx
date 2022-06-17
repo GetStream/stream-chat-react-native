@@ -30,11 +30,9 @@ const styles = StyleSheet.create({
     height,
   },
   progressControlThumbStyle: {
-    backgroundColor: '#fff',
     borderRadius: 5,
     elevation: 6,
     height: 20,
-    shadowColor: '#000',
     shadowOffset: {
       height: 3,
       width: 0,
@@ -46,7 +44,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const ProgressControlThumb = () => <View style={styles.progressControlThumbStyle} />;
+const ProgressControlThumb = () => {
+  const {
+    theme: {
+      colors: { black, white_snow },
+    },
+  } = useTheme();
+  return (
+    <View
+      style={[
+        styles.progressControlThumbStyle,
+        { backgroundColor: white_snow, shadowColor: black },
+      ]}
+    />
+  );
+};
 
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {

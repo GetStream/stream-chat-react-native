@@ -3,7 +3,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { ChannelState } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type TypingContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -11,7 +14,7 @@ export type TypingContextValue<
   typing: ChannelState<StreamChatGenerics>['typing'];
 };
 
-export const TypingContext = React.createContext({} as TypingContextValue);
+export const TypingContext = React.createContext(DEFAULT_BASE_CONTEXT_VALUE as TypingContextValue);
 
 export const TypingProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -28,7 +31,19 @@ export const TypingProvider = <
 
 export const useTypingContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(TypingContext) as unknown as TypingContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    TypingContext,
+  ) as unknown as TypingContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useTypingContext hook was called outside of the TypingContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if TypingContext
