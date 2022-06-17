@@ -8,7 +8,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react-native';
 
-
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
@@ -276,7 +275,7 @@ describe('Giphy', () => {
   });
 
   it('should render a error indicator in giphy image', () => {
-    const {  getByA11yLabel, getByAccessibilityHint } = render(
+    const { getByA11yLabel, getByAccessibilityHint } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
           <Channel channel={channel}>
@@ -285,7 +284,7 @@ describe('Giphy', () => {
         </Chat>
       </OverlayProvider>,
     );
-   
+
     fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
@@ -312,5 +311,4 @@ describe('Giphy', () => {
     waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
     expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
-
 });

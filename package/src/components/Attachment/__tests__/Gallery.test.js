@@ -1,6 +1,11 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
@@ -231,6 +236,19 @@ describe('Gallery', () => {
     });
   });
 
+  it('should render a error indicator', async () => {
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1]);
+    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+
+    fireEvent(getByA11yLabel('gallery-image'), 'error');
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+  });
+
   it('should render a loading indicator and when successful render the image', async () => {
     const image1 = generateImageAttachment({
       original_height: 300,
@@ -244,20 +262,7 @@ describe('Gallery', () => {
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
     fireEvent(getByA11yLabel('gallery-image'), 'onLoadFinish');
-
+    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
     expect(getByA11yLabel('gallery-image')).toBeTruthy();
-  });
-
-  it('should render a error indicator', async () => {
-    const image1 = generateImageAttachment({
-      original_height: 300,
-      original_width: 600,
-    });
-
-    const component = await getComponent([image1]);
-    const { getByA11yLabel, getByAccessibilityHint } = render(component);
-
-    fireEvent(getByA11yLabel('gallery-image'), 'error');
-    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 });
