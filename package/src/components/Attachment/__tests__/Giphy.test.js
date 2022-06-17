@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react-native';
+
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
@@ -268,6 +275,21 @@ describe('Giphy', () => {
     });
   });
 
+  it('should render a error indicator in giphy image', () => {
+    const {  getByA11yLabel, getByAccessibilityHint } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+   
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+  });
+
   it('should render a loading indicator in giphy image and when successful render the image', () => {
     const { getByA11yLabel, getByAccessibilityHint } = render(
       <OverlayProvider>
@@ -279,27 +301,16 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
 
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
     fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadStart');
 
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
     fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFinish');
 
+    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
     expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
 
-  it('should render a error indicator in giphy image', () => {
-    const { getByA11yLabel, getByAccessibilityHint } = render(
-      <OverlayProvider>
-        <Chat client={chatClient}>
-          <Channel channel={channel}>
-            <MessageList />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
-    );
-
-    fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
-    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
-  });
 });
