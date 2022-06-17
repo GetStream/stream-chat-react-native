@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.1...v4.7.2) (2022-06-17)
+
+
+### Bug Fixes
+
+* remove error thrown in useMessageContext ([4673f21](https://github.com/GetStream/stream-chat-react-native/commit/4673f210798f310bbbf809d4147041e022eca74e))
+
 ### [4.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.0...v4.7.1) (2022-06-15)
 
 
