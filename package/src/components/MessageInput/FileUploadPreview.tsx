@@ -135,28 +135,40 @@ const FileUploadPreviewWithContext = <
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
+  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
     setFileUploads((prevFileUploads) => {
       const files = [...prevFileUploads];
       const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
-      files[currentAudioIndex].duration = duration;
+      if (files[currentAudioIndex]) {
+        files[currentAudioIndex].duration = duration;
+      }
       return files;
     });
   };
 
-  const onProgress = (index: string, currentTime?: number) => {
+  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+  const onProgress = (index: string, currentTime?: number, hasEnd?: boolean) => {
     setFileUploads((prevFileUploads) => {
       const files = [...prevFileUploads];
       const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
-      files[currentAudioIndex].progress = currentTime
-        ? currentTime / (files[currentAudioIndex].duration as number)
-        : 1;
+
+      if (files[currentAudioIndex]) {
+        files[currentAudioIndex].progress = currentTime
+          ? currentTime / (files[currentAudioIndex].duration as number)
+          : 0;
+      }
+      if (hasEnd) {
+        files[currentAudioIndex].progress = 1;
+      }
       return files;
     });
   };
 
+  // The handler which controls or sets the paused/played state of the audio.
   const onPlayPause = (index: string, status?: boolean) => {
     if (status === false) {
+      // If the status is false we set the audio with the index as playing and the others as paused.
       setFileUploads((prevFileUploads) => {
         const files = prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
@@ -165,6 +177,7 @@ const FileUploadPreviewWithContext = <
         return files;
       });
     } else {
+      // If the status is true we simply set all the audio's paused state as true.
       setFileUploads((prevFileUploads) => {
         const files = prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
@@ -313,6 +326,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
 ) => {
   const { fileUploads: prevFileUploads } = prevProps;
   const { fileUploads: nextFileUploads } = nextProps;
+
   return (
     prevFileUploads.length === nextFileUploads.length &&
     prevFileUploads.every(

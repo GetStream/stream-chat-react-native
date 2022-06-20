@@ -41,11 +41,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 10,
   },
-  fileSizeText: {
-    fontSize: 12,
-    paddingLeft: 10,
-    paddingRight: 8,
-  },
   fileTextContainer: {
     justifyContent: 'space-around',
   },
@@ -54,6 +49,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginLeft: 8,
     marginRight: 8,
+  },
+  progressControlView: {
+    flex: 8,
+  },
+  progressDurationText: {
+    flex: 4,
+    fontSize: 12,
+    paddingLeft: 10,
+    paddingRight: 8,
   },
   roundedView: {
     alignItems: 'center',
@@ -83,7 +87,7 @@ type AudioAttachmentUploadPreviewPropsWithContext<
   item: FileUpload;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, status?: boolean) => void;
-  onProgress: (index: string, currentTime?: number) => void;
+  onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
 };
 
 const AudioAttachmentUploadPreviewWithContext = <
@@ -104,9 +108,9 @@ const AudioAttachmentUploadPreviewWithContext = <
     }
   };
 
-  const handlePlayPause = async (status?: boolean) => {
-    if (status === undefined) {
-      if (soundRef.current) {
+  const handlePlayPause = async (isPausedStatusAvailable?: boolean) => {
+    if (soundRef.current) {
+      if (isPausedStatusAvailable === undefined) {
         if (item.progress === 1) {
           if (soundRef.current.seek) soundRef.current.seek(0);
           if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
@@ -118,9 +122,9 @@ const AudioAttachmentUploadPreviewWithContext = <
           if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
           onPlayPause(item.id, true);
         }
+      } else {
+        onPlayPause(item.id, isPausedStatusAvailable);
       }
-    } else {
-      onPlayPause(item.id, status);
     }
   };
 
@@ -134,7 +138,7 @@ const AudioAttachmentUploadPreviewWithContext = <
 
   const handleEnd = () => {
     onPlayPause(item.id, true);
-    onProgress(item.id);
+    onProgress(item.id, item.duration, true);
   };
 
   const onPlaybackStatusUpdate = (playbackStatus: PlaybackStatus) => {
@@ -149,7 +153,7 @@ const AudioAttachmentUploadPreviewWithContext = <
       // Update your UI for the loaded state
       if (playbackStatus.isPlaying) {
         // Update your UI for the playing state
-        onProgress(item.id, positionMillis);
+        onProgress(item.id, positionMillis / 1000);
       } else {
         // Update your UI for the paused state
       }
@@ -160,8 +164,8 @@ const AudioAttachmentUploadPreviewWithContext = <
 
       if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
         // The player has just finished playing and will stop. Maybe you want to play something else?
-        onPlayPause(item.id, true);
-        onProgress(item.id, 1);
+        // status: opposite of pause,says i am playing
+        handleEnd();
       }
     }
   };
@@ -171,7 +175,7 @@ const AudioAttachmentUploadPreviewWithContext = <
       const initiateSound = async () => {
         if (item && item.file && item.file.uri) {
           soundRef.current = await Sound.initializeSound(
-            { uri: item.file.uri as string },
+            { uri: item.file.uri },
             {},
             onPlaybackStatusUpdate,
           );
@@ -181,21 +185,39 @@ const AudioAttachmentUploadPreviewWithContext = <
     }
 
     return () => {
-      if (soundRef.current?.stopAsync) soundRef.current.stopAsync();
+      if (soundRef.current?.stopAsync && soundRef.current.unloadAsync) {
+        soundRef.current.stopAsync();
+        soundRef.current.unloadAsync();
+      }
     };
   }, []);
+
+  // This is needed for expo applications where the rerender doesn't occur on time thefore you need to update the state of the sound.
+  useEffect(() => {
+    const initalPlayPause = async () => {
+      if (soundRef.current) {
+        if (item.paused) {
+          if (soundRef.current.pauseAsync) await soundRef.current.pauseAsync();
+        } else {
+          if (soundRef.current.playAsync) await soundRef.current.playAsync();
+        }
+      }
+    };
+    if (!Sound.Player) {
+      initalPlayPause();
+    }
+  }, [item.paused]);
 
   const {
     theme: {
       colors: { accent_blue, black, grey_dark, grey_whisper, white_snow },
       messageInput: {
         fileUploadPreview: {
+          audioAttachmentUploadPreview: { progressControlView, progressDurationText, roundedView },
           fileContainer,
           fileContentContainer,
           filenameText,
-          fileSizeText,
           fileTextContainer,
-          roundedView,
         },
       },
     },
@@ -229,9 +251,7 @@ const AudioAttachmentUploadPreviewWithContext = <
     >
       <View style={[styles.fileContentContainer, fileContentContainer]}>
         <TouchableOpacity
-          onPress={() => {
-            handlePlayPause();
-          }}
+          onPress={() => handlePlayPause()}
           style={[
             styles.roundedView,
             roundedView,
@@ -269,6 +289,7 @@ const AudioAttachmentUploadPreviewWithContext = <
               flexDirection: 'row',
             }}
           >
+            {/* <ExpoSoundPlayer filePaused={!!item.paused} soundRef={soundRef} /> */}
             {Sound.Player && (
               <Sound.Player
                 onEnd={handleEnd}
@@ -279,17 +300,19 @@ const AudioAttachmentUploadPreviewWithContext = <
                 uri={item.file.uri}
               />
             )}
-            <Text style={[styles.fileSizeText, { color: grey_dark }, fileSizeText]}>
+            <Text style={[styles.progressDurationText, { color: grey_dark }, progressDurationText]}>
               {progressDuration}
             </Text>
-            <ProgressControl
-              duration={item.duration as number}
-              filledColor={accent_blue}
-              onPlayPause={handlePlayPause}
-              onProgressDrag={handleProgressDrag}
-              progress={item.progress as number}
-              width={110}
-            />
+            <View style={[styles.progressControlView, progressControlView]}>
+              <ProgressControl
+                duration={item.duration as number}
+                filledColor={accent_blue}
+                onPlayPause={handlePlayPause}
+                onProgressDrag={handleProgressDrag}
+                progress={item.progress as number}
+                width={110}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -297,14 +320,14 @@ const AudioAttachmentUploadPreviewWithContext = <
   );
 };
 
-export type FileUploadPreviewProps<
+export type AudioAttachmentUploadPreviewProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Partial<AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>> & {
   index: number;
   item: FileUpload;
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, status?: boolean) => void;
-  onProgress: (index: string, currentTime?: number) => void;
+  onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
 };
 
 /**
@@ -314,7 +337,7 @@ export type FileUploadPreviewProps<
 export const AudioAttachmentUploadPreview = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: FileUploadPreviewProps<StreamChatGenerics>,
+  props: AudioAttachmentUploadPreviewProps<StreamChatGenerics>,
 ) => {
   const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
 

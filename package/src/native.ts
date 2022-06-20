@@ -160,6 +160,7 @@ export type SoundReturnType = {
   soundRef?: React.RefObject<SoundReturnType>;
   stopAsync?: () => void;
   style?: StyleProp<ViewStyle>;
+  unloadAsync?: () => void;
   uri?: string;
 };
 

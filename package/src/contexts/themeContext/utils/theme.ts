@@ -245,6 +245,11 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
+      audioAttachmentUploadPreview: {
+        progressControlView: ViewStyle;
+        progressDurationText: TextStyle;
+        roundedView: ViewStyle;
+      };
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
       fileContentContainer: ViewStyle;
@@ -252,7 +257,6 @@ export type Theme = {
       fileSizeText: TextStyle;
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
-      roundedView: ViewStyle;
     };
     giphyCommandInput: {
       giphyContainer: ViewStyle;
@@ -731,6 +735,11 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
+      audioAttachmentUploadPreview: {
+        progressControlView: {},
+        progressDurationText: {},
+        roundedView: {},
+      },
       dismiss: {},
       fileContainer: {},
       fileContentContainer: {},
@@ -738,7 +747,6 @@ export const defaultTheme: Theme = {
       fileSizeText: {},
       fileTextContainer: {},
       flatList: {},
-      roundedView: {},
     },
     giphyCommandInput: {
       giphyContainer: {},
