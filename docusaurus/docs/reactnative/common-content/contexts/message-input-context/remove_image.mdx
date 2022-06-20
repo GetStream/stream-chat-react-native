@@ -1,6 +1,6 @@
-Removes attached image in message, which is being composed in `MessageInput` component. By default, this function is attached to onPress handler for close button in [ImageUploadPreview](../../../core-components/channel.mdx#imageuploadpreview).
-It takes index of file (to be removed) in [imageUploads](../../../contexts/message_input_context.mdx#imageuploads) array as parameter.
+Removes an attached image in a message being composed in the `MessageInput` component. By default, this function is attached to onPress handler for close button in [ImageUploadPreview](../../../core-components/channel.mdx#imageuploadpreview).
+It takes a string ID of the image to be removed in the [imageUploads](../../../contexts/message_input_context.mdx#imageuploads) array as parameter.
 
-| Type              |
-| ----------------- |
-| `(index) => void` |
+| Type                   |
+| ---------------------- |
+| `(id: string) => void` |

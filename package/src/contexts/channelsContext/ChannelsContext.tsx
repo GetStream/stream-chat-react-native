@@ -19,7 +19,10 @@ import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndi
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -207,7 +210,9 @@ export type ChannelsContextValue<
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
 };
 
-export const ChannelsContext = React.createContext({} as ChannelsContextValue);
+export const ChannelsContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelsContextValue,
+);
 
 export const ChannelsProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -224,8 +229,19 @@ export const ChannelsProvider = <
 
 export const useChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ChannelsContext,
+  ) as unknown as ChannelsContextValue<StreamChatGenerics>;
 
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure you have configured ChannelList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel-list`,
+    );
+  }
+
+  return contextValue;
+};
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the

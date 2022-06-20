@@ -11,6 +11,8 @@ import type { GroupType, MessageType } from '../../components/MessageList/hooks/
 import type { ChannelContextValue } from '../../contexts/channelContext/ChannelContext';
 import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
 
 export type Alignment = 'right' | 'left';
@@ -102,7 +104,9 @@ export type MessageContextValue<
   showAvatar?: boolean;
 } & Pick<ChannelContextValue<StreamChatGenerics>, 'channel' | 'disabled' | 'members'>;
 
-export const MessageContext = React.createContext({} as MessageContextValue);
+export const MessageContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageContextValue,
+);
 
 export const MessageProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -119,7 +123,13 @@ export const MessageProvider = <
 
 export const useMessageContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessageContext) as unknown as MessageContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessageContext,
+  ) as unknown as MessageContextValue<StreamChatGenerics>;
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageContext

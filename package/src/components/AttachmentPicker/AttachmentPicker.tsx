@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
   BackHandler,
   Dimensions,
   ImageBackground,
@@ -25,7 +26,7 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Recorder } from '../../icons';
-import { getPhotos } from '../../native';
+import { getLocalAssetUri, getPhotos } from '../../native';
 import type { Asset, File } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 
@@ -56,23 +57,20 @@ const styles = StyleSheet.create({
 const screenHeight = vh(100);
 const fullScreenHeight = Dimensions.get('window').height;
 
-type AttachmentImageProps = {
+export type AttachmentPickerItemType = {
   asset: Asset;
   ImageOverlaySelectedComponent: React.ComponentType;
   maxNumberOfFiles: number;
+  numberOfUploads: number;
   selected: boolean;
+  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   numberOfAttachmentPickerImageColumns?: number;
 };
 
-type AttachmentVideoProps = {
-  asset: Asset;
-  ImageOverlaySelectedComponent: React.ComponentType;
-  maxNumberOfFiles: number;
-  selected: boolean;
-  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-  numberOfAttachmentPickerImageColumns?: number;
-};
+type AttachmentImageProps = Omit<AttachmentPickerItemType, 'setSelectedFiles'>;
+
+type AttachmentVideoProps = Omit<AttachmentPickerItemType, 'setSelectedImages'>;
 
 const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
   const {
@@ -80,6 +78,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
     ImageOverlaySelectedComponent,
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
+    numberOfUploads,
     selected,
     setSelectedFiles,
   } = props;
@@ -110,12 +109,15 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
 
   const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
-  const onPressVideo = () => {
+  const onPressVideo = async () => {
+    // For the case of expo messaging app where you need to fetch the asset uri from asset id
+    const localAssetURI = asset.id && (await getLocalAssetUri(asset.id));
     if (selected) {
       setSelectedFiles((files) => files.filter((file) => file.uri !== asset.uri));
     } else {
       setSelectedFiles((files) => {
-        if (files.length >= maxNumberOfFiles) {
+        if (numberOfUploads >= maxNumberOfFiles) {
+          Alert.alert('Maximum number of files reached');
           return files;
         }
         return [
@@ -125,7 +127,7 @@ const AttachmentVideo: React.FC<AttachmentVideoProps> = (props) => {
             name: asset.filename,
             size: asset.fileSize,
             type: 'video',
-            uri: asset.uri,
+            uri: localAssetURI || asset.uri,
           },
         ];
       });
@@ -169,6 +171,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     ImageOverlaySelectedComponent,
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
+    numberOfUploads,
     selected,
     setSelectedImages,
   } = props;
@@ -188,7 +191,8 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
       setSelectedImages((images) => images.filter((image) => image.uri !== asset.uri));
     } else {
       setSelectedImages((images) => {
-        if (images.length >= maxNumberOfFiles) {
+        if (numberOfUploads >= maxNumberOfFiles) {
+          Alert.alert('Maximum number of files reached');
           return images;
         }
         return [...images, asset];
@@ -219,24 +223,13 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   );
 };
 
-const renderImage = ({
-  item,
-}: {
-  item: {
-    asset: Asset;
-    ImageOverlaySelectedComponent: React.ComponentType;
-    maxNumberOfFiles: number;
-    selected: boolean;
-    setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
-    setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
-    numberOfAttachmentPickerImageColumns?: number;
-  };
-}) => {
+const renderItem = ({ item }: { item: AttachmentPickerItemType }) => {
   const {
     asset,
     ImageOverlaySelectedComponent,
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
+    numberOfUploads,
     selected,
     setSelectedFiles,
     setSelectedImages,
@@ -258,6 +251,7 @@ const renderImage = ({
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+      numberOfUploads={numberOfUploads}
       selected={selected}
       setSelectedImages={setSelectedImages}
     />
@@ -267,6 +261,7 @@ const renderImage = ({
       ImageOverlaySelectedComponent={ImageOverlaySelectedComponent}
       maxNumberOfFiles={maxNumberOfFiles}
       numberOfAttachmentPickerImageColumns={numberOfAttachmentPickerImageColumns}
+      numberOfUploads={numberOfUploads}
       selected={selected}
       setSelectedFiles={setSelectedFiles}
     />
@@ -453,6 +448,7 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
+      numberOfUploads: selectedFiles.length + selectedImages.length,
       selected:
         selectedImages.some((image) => image.uri === asset.uri) ||
         selectedFiles.some((file) => file.uri === asset.uri),
@@ -535,7 +531,7 @@ export const AttachmentPicker = React.forwardRef(
             keyExtractor={(item) => item.asset.uri}
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
             onEndReached={getMorePhotos}
-            renderItem={renderImage}
+            renderItem={renderItem}
           />
         </BottomSheet>
         {selectedPicker === 'images' && photoError && (

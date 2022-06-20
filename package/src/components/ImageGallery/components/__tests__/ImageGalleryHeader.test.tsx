@@ -4,13 +4,13 @@ import { useSharedValue } from 'react-native-reanimated';
 
 import { renderHook } from '@testing-library/react-hooks';
 
-import { render } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 
 import { ImageGalleryHeader } from '../ImageGalleryHeader';
 
-it('doesnt fail if fromNow is not available on first render', () => {
+it('doesnt fail if fromNow is not available on first render', async () => {
   try {
     let sharedValueOpacity: Animated.SharedValue<number>;
     let sharedValueVisible: Animated.SharedValue<number>;
@@ -32,7 +32,9 @@ it('doesnt fail if fromNow is not available on first render', () => {
         />
       </ThemeProvider>,
     );
-    expect(getAllByText('Unknown User')).toBeTruthy();
+    await waitFor(() => {
+      expect(getAllByText('Unknown User')).toBeTruthy();
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(`Error encountered on first render of ImageGalleryHeader: ${error.message}`);
