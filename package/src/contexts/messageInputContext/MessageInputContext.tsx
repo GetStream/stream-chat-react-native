@@ -22,6 +22,7 @@ import { useCreateMessageInputContext } from './hooks/useCreateMessageInputConte
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
+import type { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/AudioAttachmentUploadPreview';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
@@ -222,6 +223,12 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
+
+  /** Custom UI component for AudioAttachmentUploadPreview. */
+  AudioAttachmentUploadPreview: React.ComponentType<
+    AudioAttachmentUploadPreviewProps<StreamChatGenerics>
+  >;
+
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
   /**

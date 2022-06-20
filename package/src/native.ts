@@ -126,19 +126,6 @@ export type SoundOptions = {
   source?: { uri: string };
 };
 
-export type SoundPlayerEventData = {
-  name?: string;
-  success?: boolean;
-  type?: string;
-  url?: string;
-};
-
-export type SoundPlayerEvent =
-  | 'FinishedLoading'
-  | 'FinishedPlaying'
-  | 'FinishedLoadingURL'
-  | 'FinishedLoadingFile';
-
 export type SoundReturnType = {
   paused: boolean;
   getDuration?: () => number;
@@ -214,7 +201,7 @@ export type VideoType = {
   style?: StyleProp<ViewStyle>;
 };
 
-export let Video: React.ComponentType<VideoType> = fail;
+export let Video: React.ComponentType<VideoType>;
 
 type Handlers = {
   compressImage?: CompressImage;
@@ -257,10 +244,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     getPhotos = handlers.getPhotos;
   }
 
-  if (handlers.NetInfo) {
-    NetInfo = handlers.NetInfo;
-  }
-
   if (handlers.pickDocument) {
     pickDocument = handlers.pickDocument;
   }
@@ -295,3 +278,4 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 };
 
 export const isVideoPackageAvailable = () => !!Video;
+export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;

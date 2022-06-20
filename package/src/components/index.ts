@@ -113,6 +113,7 @@ export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
+export * from './MessageInput/AudioAttachmentUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/InputButtons';
 export * from './MessageInput/MessageInput';

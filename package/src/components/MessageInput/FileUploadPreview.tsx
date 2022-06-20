@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { AudioAttachmentUploadPreview } from './AudioAttachmentUploadPreview';
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import {
@@ -17,6 +16,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
+import { isAudioPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
@@ -121,7 +121,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -130,25 +130,44 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { FileAttachmentIcon, fileUploads, removeFile, setFileUploads, uploadFile } = props;
+  const {
+    AudioAttachmentUploadPreview,
+    FileAttachmentIcon,
+    fileUploads,
+    removeFile,
+    setFileUploads,
+    uploadFile,
+  } = props;
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
-    setFileUploads((prevFileUploads) => {
-      const files = [...prevFileUploads];
-      const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
-      if (files[currentAudioIndex]) {
-        files[currentAudioIndex].duration = duration;
-      }
-      return files;
-    });
+    setFileUploads((prevFileUploads) =>
+      prevFileUploads.map((fileUpload) => ({
+        ...fileUpload,
+        duration: fileUpload.id === index ? duration : fileUpload.duration,
+      })),
+    );
   };
 
   // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
   const onProgress = (index: string, currentTime?: number, hasEnd?: boolean) => {
+    setFileUploads((prevFileUploads) =>
+      prevFileUploads.map((fileUpload) => ({
+        ...fileUpload,
+        progress:
+          fileUpload.id === index
+            ? hasEnd
+              ? 1
+              : currentTime
+              ? currentTime / (fileUpload.duration as number)
+              : 0
+            : fileUpload.progress,
+      })),
+    );
+
     setFileUploads((prevFileUploads) => {
       const files = [...prevFileUploads];
       const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
@@ -169,22 +188,20 @@ const FileUploadPreviewWithContext = <
   const onPlayPause = (index: string, status?: boolean) => {
     if (status === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
-      setFileUploads((prevFileUploads) => {
-        const files = prevFileUploads.map((fileUpload) => ({
+      setFileUploads((prevFileUploads) =>
+        prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
           paused: fileUpload.id === index ? false : true,
-        }));
-        return files;
-      });
+        })),
+      );
     } else {
       // If the status is true we simply set all the audio's paused state as true.
-      setFileUploads((prevFileUploads) => {
-        const files = prevFileUploads.map((fileUpload) => ({
+      setFileUploads((prevFileUploads) =>
+        prevFileUploads.map((fileUpload) => ({
           ...fileUpload,
           paused: true,
-        }));
-        return files;
-      });
+        })),
+      );
     }
   };
 
@@ -218,7 +235,7 @@ const FileUploadPreviewWithContext = <
           style={styles.overlay}
           type={indicatorType}
         >
-          {item.file.type?.startsWith('audio/') ? (
+          {item.file.type?.startsWith('audio/') && isAudioPackageAvailable() ? (
             <AudioAttachmentUploadPreview
               index={index}
               item={item}
@@ -357,13 +374,20 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
-      {...{ FileAttachmentIcon, fileUploads, removeFile, setFileUploads, uploadFile }}
+      {...{
+        AudioAttachmentUploadPreview,
+        FileAttachmentIcon,
+        fileUploads,
+        removeFile,
+        setFileUploads,
+        uploadFile,
+      }}
       {...props}
     />
   );

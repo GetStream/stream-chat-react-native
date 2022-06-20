@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type AudioAttachmentUploadPreviewPropsWithContext<
+export type AudioAttachmentUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
@@ -112,7 +112,9 @@ const AudioAttachmentUploadPreviewWithContext = <
     if (soundRef.current) {
       if (isPausedStatusAvailable === undefined) {
         if (item.progress === 1) {
+          // For native CLI
           if (soundRef.current.seek) soundRef.current.seek(0);
+          // For expo CLI
           if (soundRef.current.setPositionAsync) soundRef.current.setPositionAsync(0);
         }
         if (item.paused) {
@@ -248,6 +250,7 @@ const AudioAttachmentUploadPreviewWithContext = <
         },
         fileContainer,
       ]}
+      testID='audio-attachment-upload-preview'
     >
       <View style={[styles.fileContentContainer, fileContentContainer]}>
         <TouchableOpacity
@@ -331,8 +334,8 @@ export type AudioAttachmentUploadPreviewProps<
 };
 
 /**
- * FileUploadPreview
- * UI Component to preview the files set for upload
+ * AudioAttachmentUploadPreview
+ * UI Component to preview the audio files set for upload
  */
 export const AudioAttachmentUploadPreview = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
