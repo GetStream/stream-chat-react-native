@@ -74,6 +74,43 @@ describe('useLatestMessagePreview', () => {
     },
   } as unknown as Channel<DefaultStreamChatGenerics>;
 
+  const CHANNEL_WITH_NO_MESSAGES = {
+    data: { name: channelName },
+    state: {
+      members: GROUP_CHANNEL_MEMBERS_MOCK,
+      messages: [
+        // {
+        //   args: 'string',
+        //   attachments: [],
+        //   channel,
+        //   cid: 'stridkncnng',
+        //   command: 'giphy',
+        //   command_info: { name: 'string' },
+        //   created_at: new Date('2021-02-12T12:12:35.862Z'),
+        //   deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        //   id: 'ljkblk',
+        //   text: 'jkbkbiubicbi',
+        //   type: 'MessageLabel',
+        //   user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
+        // } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+        // {
+        //   args: 'string',
+        //   attachments: [],
+        //   channel,
+        //   cid: 'stridodong',
+        //   command: 'giphy',
+        //   command_info: { name: 'string' },
+        //   created_at: new Date('2021-02-12T12:12:35.862Z'),
+        //   deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        //   id: 'jbkjb',
+        //   text: 'jkbkbiubicbi',
+        //   type: 'MessageLabel',
+        //   user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
+        // } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+      ],
+    },
+  } as unknown as Channel<DefaultStreamChatGenerics>;
+
   const CHANNEL_WITH_MESSAGES_COMMAND = {
     data: { name: channelName },
     state: {
@@ -265,6 +302,21 @@ describe('useLatestMessagePreview', () => {
     });
   });
 
+  it('should return a nothing yet', async () => {
+    const { result } = renderHook(
+      () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
+      { wrapper: ChatProvider },
+    );
+    console.log(result.current);
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        created_at: 'LT',
+        previews: [{ bold: false, text: 'Nothing yet...' }],
+        status: 0,
+      });
+    });
+  });
+
   it('should return latest text', async () => {
     const { result } = renderHook(
       () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, LATEST_MESSAGE),
@@ -301,7 +353,7 @@ describe('useLatestMessagePreview', () => {
     });
   });
 
-  it('should return a channel with an no message', async () => {
+  it('should return a channel with an empty message', async () => {
     const { result } = renderHook(
       () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
