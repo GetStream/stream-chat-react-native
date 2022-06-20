@@ -29,7 +29,7 @@ export type LatestMessagePreview<
   status: number;
 };
 
-const messageOwner = <
+const getMessageSenderName = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   message: LatestMessage<StreamChatGenerics> | undefined,
@@ -80,16 +80,18 @@ const getLatestMessageDisplayText = <
   const currentUserId = client?.userID;
   const members = Object.keys(channel.state.members);
 
-  const owner = messageOwner(message, currentUserId, t, members.length);
-  const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
-  const boldOwner = ownerText.includes('@');
+  const messageSender = getMessageSenderName(message, currentUserId, t, members.length);
+  const messageSenderText = messageSender
+    ? `${messageSender === t('You') ? '' : '@'}${messageSender}: `
+    : '';
+  const boldOwner = messageSenderText.includes('@');
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
     const mentionedUsers = getMentionUsers(message.mentioned_users);
     const regEx = new RegExp(`^(${mentionedUsers})`);
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       ...shortenedText.split('').reduce(
         (acc, cur, index) => {
           if (cur === '@' && mentionedUsers && regEx.test(shortenedText.substring(index))) {
@@ -107,18 +109,18 @@ const getLatestMessageDisplayText = <
   }
   if (message.command) {
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       { bold: false, text: `/${message.command}` },
     ];
   }
   if (message.attachments?.length) {
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       { bold: false, text: t('🏙 Attachment...') },
     ];
   }
   return [
-    { bold: boldOwner, text: ownerText },
+    { bold: boldOwner, text: messageSenderText },
     { bold: false, text: t('Empty message...') },
   ];
 };
