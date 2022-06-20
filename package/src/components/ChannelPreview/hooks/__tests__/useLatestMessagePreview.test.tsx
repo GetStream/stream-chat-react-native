@@ -16,7 +16,10 @@ import type {
 } from 'stream-chat';
 
 import { ChatContext, ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
-import { GROUP_CHANNEL_MEMBERS_MOCK } from '../../../../mock-builders/api/queryMembers';
+import {
+  GROUP_CHANNEL_MEMBERS_MOCK,
+  ONE_MEMBER_WITH_EMPTY_USER_MOCK,
+} from '../../../../mock-builders/api/queryMembers';
 
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../../mock-builders/mock';
@@ -171,6 +174,35 @@ describe('useLatestMessagePreview', () => {
     updated_at: new Date('2021-02-12T12:12:35.862282Z'),
   };
 
+  const CHANNEL_WITH_MENTIONED_USERS = {
+    state: {
+      members: ONE_MEMBER_WITH_EMPTY_USER_MOCK,
+      messages: [
+        {
+          args: 'string',
+          attachments: [],
+          cid: 'stridkncnng',
+          command_info: { name: 'string' },
+          created_at: new Date('2021-02-12T12:12:35.862Z'),
+          deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+          mentioned_users: [
+            { id: 'Max' },
+            { id: 'Ada' },
+            { id: 'Enzo' },
+          ] as UserResponse<DefaultStreamChatGenerics>[],
+        } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+        {
+          args: 'string',
+          attachments: [],
+          cid: 'stridodong',
+          command_info: { name: 'string' },
+          created_at: new Date('2021-02-12T12:12:35.862Z'),
+          deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+      ],
+    },
+  } as unknown as Channel<DefaultStreamChatGenerics>;
+
   const channelWithMessages = {
     data: { name: channelName },
     state: {
@@ -263,6 +295,34 @@ describe('useLatestMessagePreview', () => {
         previews: [
           { bold: true, text: '@okechukwu: ' },
           { bold: false, text: 'jkbkbiubicbi' },
+        ],
+        status: 0,
+      });
+    });
+  });
+
+  it('should return a channel with an no message', async () => {
+    const { result } = renderHook(
+      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, LATEST_MESSAGE),
+      { wrapper: ChatProvider },
+    );
+    console.log(result.current.created_at);
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        created_at: 'L',
+        messageObject: {
+          args: 'string',
+          attachments: [],
+          cid: 'stridodong',
+          command_info: {
+            name: 'string',
+          },
+          created_at: new Date('2021-02-12T12:12:35.862Z'),
+          deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        },
+        previews: [
+          { bold: false, text: '' },
+          { bold: false, text: 'Empty message...' },
         ],
         status: 0,
       });
