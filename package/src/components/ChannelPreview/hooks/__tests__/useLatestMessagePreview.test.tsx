@@ -80,32 +80,10 @@ describe('useLatestMessagePreview', () => {
       members: GROUP_CHANNEL_MEMBERS_MOCK,
       messages: [
         {
-          // args: 'string',
-          // attachments: [],
-          // channel,
-          // cid: 'stridkncnng',
-          // command: 'giphy',
-          // command_info: { name: 'string' },
-          // created_at: new Date('2021-02-12T12:12:35.862Z'),
-          // deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-          // id: 'ljkblk',
-          // text: 'jkbkbiubicbi',
           type: 'deleted',
-          // user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
         } as unknown as MessageResponse<DefaultStreamChatGenerics>,
         {
-          // args: 'string',
-          // attachments: [],
-          // channel,
-          // cid: 'stridodong',
-          // command: 'giphy',
-          // command_info: { name: 'string' },
-          // created_at: new Date('2021-02-12T12:12:35.862Z'),
-          // deleted_at: new Date('2021-02-12T12:12:35.862Z'),
-          // id: 'jbkjb',
-          // text: 'jkbkbiubicbi',
           type: 'deleted',
-          // user: { id: 'okechukwu' } as unknown as UserResponse<DefaultStreamChatGenerics>,
         } as unknown as MessageResponse<DefaultStreamChatGenerics>,
       ],
     },
@@ -231,9 +209,9 @@ describe('useLatestMessagePreview', () => {
           created_at: new Date('2021-02-12T12:12:35.862Z'),
           deleted_at: new Date('2021-02-12T12:12:35.862Z'),
           mentioned_users: [
-            { id: 'Max' },
-            { id: 'Ada' },
-            { id: 'Enzo' },
+            { id: 'Max', name: 'Max' },
+            { id: 'Ada', name: 'Ada' },
+            { id: 'Enzo', name: 'Enzo' },
           ] as UserResponse<DefaultStreamChatGenerics>[],
         } as unknown as MessageResponse<DefaultStreamChatGenerics>,
         {
@@ -243,6 +221,11 @@ describe('useLatestMessagePreview', () => {
           command_info: { name: 'string' },
           created_at: new Date('2021-02-12T12:12:35.862Z'),
           deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+          mentioned_users: [
+            { id: 'Max', name: 'Max' },
+            { id: 'Ada', name: 'Ada' },
+            { id: 'Enzo', name: 'Enzo' },
+          ] as UserResponse<DefaultStreamChatGenerics>[],
         } as unknown as MessageResponse<DefaultStreamChatGenerics>,
       ],
     },
@@ -278,7 +261,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(channel, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current);
     await waitFor(() => {
       expect(result.current).toBeTruthy();
     });
@@ -289,7 +271,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'L',
@@ -315,7 +296,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'LT',
@@ -330,7 +310,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'LT',
@@ -348,7 +327,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'LT',
@@ -363,7 +341,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current.created_at);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'L',
@@ -427,7 +404,6 @@ describe('useLatestMessagePreview', () => {
       () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_COMMAND, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current.created_at);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'L',
@@ -462,7 +438,6 @@ describe('useLatestMessagePreview', () => {
         useLatestMessagePreview(CHANNEL_WITH_MESSAGES_ATTACHMENTS, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current.created_at);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'L',
