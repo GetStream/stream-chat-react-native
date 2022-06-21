@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   fileSizeText: {
     fontSize: 12,
-    paddingLeft: 10,
+    paddingHorizontal: 10,
   },
   flatList: { paddingBottom: 12 },
   iconContainer: {
