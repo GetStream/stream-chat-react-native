@@ -18,7 +18,7 @@ import { Close } from '../../icons/Close';
 import { Warning } from '../../icons/Warning';
 import { isAudioPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
+import { FileState, getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 
 const FILE_PREVIEW_HEIGHT = 60;
@@ -167,21 +167,6 @@ const FileUploadPreviewWithContext = <
             : fileUpload.progress,
       })),
     );
-
-    setFileUploads((prevFileUploads) => {
-      const files = [...prevFileUploads];
-      const currentAudioIndex = prevFileUploads.findIndex((audio) => audio.id === index);
-
-      if (files[currentAudioIndex]) {
-        files[currentAudioIndex].progress = currentTime
-          ? currentTime / (files[currentAudioIndex].duration as number)
-          : 0;
-      }
-      if (hasEnd) {
-        files[currentAudioIndex].progress = 1;
-      }
-      return files;
-    });
   };
 
   // The handler which controls or sets the paused/played state of the audio.
@@ -210,6 +195,7 @@ const FileUploadPreviewWithContext = <
       colors: { black, grey_whisper, light_gray },
       messageInput: {
         fileUploadPreview: {
+          audioAttachmentFileContainer,
           dismiss,
           fileContainer,
           fileContentContainer,
@@ -236,13 +222,20 @@ const FileUploadPreviewWithContext = <
           type={indicatorType}
         >
           {item.file.type?.startsWith('audio/') && isAudioPackageAvailable() ? (
-            <AudioAttachmentUploadPreview
-              index={index}
-              item={item}
-              onLoad={onLoad}
-              onPlayPause={onPlayPause}
-              onProgress={onProgress}
-            />
+            <View
+              style={[
+                { marginBottom: item.state === FileState.UPLOADED ? 8 : 0 },
+                audioAttachmentFileContainer,
+              ]}
+            >
+              <AudioAttachmentUploadPreview
+                index={index}
+                item={item}
+                onLoad={onLoad}
+                onPlayPause={onPlayPause}
+                onProgress={onProgress}
+              />
+            </View>
           ) : (
             <View
               style={[

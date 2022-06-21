@@ -31,7 +31,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     height: FILE_PREVIEW_HEIGHT,
-    marginBottom: 8,
     paddingLeft: 8,
     paddingRight: 8,
   },

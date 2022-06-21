@@ -245,6 +245,7 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
+      audioAttachmentFileContainer: ViewStyle;
       audioAttachmentUploadPreview: {
         progressControlView: ViewStyle;
         progressDurationText: TextStyle;
@@ -735,6 +736,7 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
+      audioAttachmentFileContainer: {},
       audioAttachmentUploadPreview: {
         progressControlView: {},
         progressDurationText: {},
