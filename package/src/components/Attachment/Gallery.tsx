@@ -38,11 +38,6 @@ const MemoizedGalleryImage = React.memo(
 ) as typeof GalleryImage;
 
 const styles = StyleSheet.create({
-  activityIndicatorStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-  },
   errorTextSize: { fontSize: 10 },
   galleryContainer: {
     borderTopLeftRadius: 13,
@@ -53,6 +48,11 @@ const styles = StyleSheet.create({
   },
   imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
   imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingIndicatorStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -324,10 +324,10 @@ const GalleryWithContext = <
                         uri={url}
                       />
                       {isLoadingImage && (
-                        <ImageLoadingIndicator style={styles.activityIndicatorStyle} />
+                        <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
                       )}
                       {isLoadingImageError && (
-                        <ImageLoadingFailedIndicator style={styles.activityIndicatorStyle} />
+                        <ImageLoadingFailedIndicator style={styles.imageLoadingIndicatorStyle} />
                       )}
                     </View>
                   )}
