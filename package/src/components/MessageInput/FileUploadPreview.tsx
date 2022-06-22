@@ -229,11 +229,16 @@ const FileUploadPreviewWithContext = <
               ]}
             >
               <AudioAttachmentUploadPreview
+                duration={item.duration as number}
+                fileId={item.id}
+                fileName={item.file.name}
+                fileUrl={item.file.uri}
                 index={index}
-                item={item}
                 onLoad={onLoad}
                 onPlayPause={onPlayPause}
                 onProgress={onProgress}
+                paused={item.paused as boolean}
+                progress={item.progress as number}
               />
             </View>
           ) : (

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+
+import type { Attachment } from 'stream-chat';
 
 import { Attachment as AttachmentDefault } from './Attachment';
 
@@ -14,6 +16,7 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { AudioAttachmentUploadPreview } from '../MessageInput/AudioAttachmentUploadPreview';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,12 +38,73 @@ export type FileAttachmentGroupPropsWithContext<
     }>;
   };
 
+type FilesToDisplayType<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = Attachment<StreamChatGenerics> & {
+  duration: number;
+  paused: boolean;
+  progress: number;
+};
+
 const FileAttachmentGroupWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   props: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
   const { Attachment, files, messageId, styles: stylesProp = {} } = props;
+  const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>([]);
+
+  useEffect(() => {
+    setFilesToDisplay(files.map((file) => ({ ...file, duration: 0, paused: true, progress: 0 })));
+  }, [files]);
+
+  // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
+  const onLoad = (index: string, duration: number) => {
+    setFilesToDisplay((prevFileUploads) =>
+      prevFileUploads.map((fileUpload, id) => ({
+        ...fileUpload,
+        duration: id.toString() === index ? duration : fileUpload.duration,
+      })),
+    );
+  };
+
+  // The handler which is triggered when the audio progresses/ the thumb is dragged in the progress control. The progressed duration is set here.
+  const onProgress = (index: string, currentTime?: number, hasEnd?: boolean) => {
+    setFilesToDisplay((prevFileUploads) =>
+      prevFileUploads.map((fileUpload, id) => ({
+        ...fileUpload,
+        progress:
+          id.toString() === index
+            ? hasEnd
+              ? 1
+              : currentTime
+              ? currentTime / (fileUpload.duration as number)
+              : 0
+            : fileUpload.progress,
+      })),
+    );
+  };
+
+  // The handler which controls or sets the paused/played state of the audio.
+  const onPlayPause = (index: string, status?: boolean) => {
+    if (status === false) {
+      // If the status is false we set the audio with the index as playing and the others as paused.
+      setFilesToDisplay((prevFileUploads) =>
+        prevFileUploads.map((fileUpload, id) => ({
+          ...fileUpload,
+          paused: id.toString() === index ? false : true,
+        })),
+      );
+    } else {
+      // If the status is true we simply set all the audio's paused state as true.
+      setFilesToDisplay((prevFileUploads) =>
+        prevFileUploads.map((fileUpload) => ({
+          ...fileUpload,
+          paused: true,
+        })),
+      );
+    }
+  };
 
   const {
     theme: {
@@ -52,7 +116,7 @@ const FileAttachmentGroupWithContext = <
 
   return (
     <View style={[styles.container, container, stylesProp.container]}>
-      {files.map((file, index) => (
+      {filesToDisplay.map((file, index) => (
         <View
           key={`${messageId}-${index}`}
           style={[
@@ -60,7 +124,22 @@ const FileAttachmentGroupWithContext = <
             stylesProp.attachmentContainer,
           ]}
         >
-          <Attachment attachment={file} />
+          {file.type === 'audio' ? (
+            <AudioAttachmentUploadPreview
+              duration={file.duration}
+              fileId={index.toString()}
+              fileName={file.title as string}
+              fileUrl={file.asset_url}
+              index={index}
+              onLoad={onLoad}
+              onPlayPause={onPlayPause}
+              onProgress={onProgress}
+              paused={file.paused}
+              progress={file.progress}
+            />
+          ) : (
+            <Attachment attachment={file} />
+          )}
         </View>
       ))}
     </View>
@@ -74,9 +153,7 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const { files: prevFiles } = prevProps;
   const { files: nextFiles } = nextProps;
 
-  const filesEqual = prevFiles.length === nextFiles.length;
-
-  return filesEqual;
+  return prevFiles.length === nextFiles.length;
 };
 
 const MemoizedFileAttachmentGroup = React.memo(
