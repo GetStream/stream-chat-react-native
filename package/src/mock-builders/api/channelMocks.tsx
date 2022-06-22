@@ -79,7 +79,7 @@ const CHANNEL_WITH_NO_MESSAGES = {
   },
 } as unknown as Channel<DefaultStreamChatGenerics>;
 
-const CHANNEL_WITH_MESSAGES_COMMAND = {
+const CHANNEL_WITH_MESSAGE_COMMAND = {
   data: { name: channelName },
   state: {
     members: GROUP_CHANNEL_MEMBERS_MOCK,
@@ -195,6 +195,42 @@ const CHANNEL_WITH_MENTIONED_USERS = {
           { id: 'Ada', name: 'Ada' },
           { id: 'Enzo', name: 'Enzo' },
         ] as UserResponse<DefaultStreamChatGenerics>[],
+        text: 'Max',
+      } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+      {
+        args: 'string',
+        attachments: [],
+        cid: 'stridodong',
+        command_info: { name: 'string' },
+        created_at: new Date('2021-02-12T12:12:35.862Z'),
+        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        mentioned_users: [
+          { id: 'Max', name: 'Max' },
+          { id: 'Ada', name: 'Ada' },
+          { id: 'Enzo', name: 'Enzo' },
+        ] as UserResponse<DefaultStreamChatGenerics>[],
+        text: 'Max',
+      } as unknown as MessageResponse<DefaultStreamChatGenerics>,
+    ],
+  },
+} as unknown as Channel<DefaultStreamChatGenerics>;
+
+const CHANNEL_WITH_EMPTY_MESSAGE = {
+  state: {
+    members: ONE_MEMBER_WITH_EMPTY_USER_MOCK,
+    messages: [
+      {
+        args: 'string',
+        attachments: [],
+        cid: 'stridkncnng',
+        command_info: { name: 'string' },
+        created_at: new Date('2021-02-12T12:12:35.862Z'),
+        deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+        mentioned_users: [
+          { id: 'Max', name: 'Max' },
+          { id: 'Ada', name: 'Ada' },
+          { id: 'Enzo', name: 'Enzo' },
+        ] as UserResponse<DefaultStreamChatGenerics>[],
       } as unknown as MessageResponse<DefaultStreamChatGenerics>,
       {
         args: 'string',
@@ -223,12 +259,13 @@ const CHANNEL_WITH_MESSAGES = {
 
 export {
   CHANNEL,
+  CHANNEL_WITH_EMPTY_MESSAGE,
   CHANNEL_WITH_MESSAGES,
   CHANNEL_WITH_MENTIONED_USERS,
   FORMATTED_MESSAGE,
   LATEST_MESSAGE,
   CHANNEL_WITH_MESSAGES_ATTACHMENTS,
-  CHANNEL_WITH_MESSAGES_COMMAND,
+  CHANNEL_WITH_MESSAGE_COMMAND as CHANNEL_WITH_MESSAGES_COMMAND,
   CHANNEL_WITH_NO_MESSAGES,
   CHANNEL_WITH_DELETED_MESSAGES,
   CHANNEL_WITH_MESSAGES_TEXT,

@@ -11,6 +11,7 @@ import { ChatContext, ChatContextValue } from '../../../../contexts/chatContext/
 import {
   CHANNEL,
   CHANNEL_WITH_DELETED_MESSAGES,
+  CHANNEL_WITH_EMPTY_MESSAGE,
   CHANNEL_WITH_MENTIONED_USERS,
   CHANNEL_WITH_MESSAGES,
   CHANNEL_WITH_MESSAGES_ATTACHMENTS,
@@ -164,10 +165,9 @@ describe('useLatestMessagePreview', () => {
 
   it('should return a channel with an empty message', async () => {
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_EMPTY_MESSAGE, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
-    console.log(result.current.created_at);
     await waitFor(() => {
       expect(result.current).toEqual({
         created_at: 'L',
@@ -189,6 +189,39 @@ describe('useLatestMessagePreview', () => {
         previews: [
           { bold: false, text: '' },
           { bold: false, text: 'Empty message...' },
+        ],
+        status: 0,
+      });
+    });
+  });
+
+  it('should return a channel with a mentioned user', async () => {
+    const { result } = renderHook(
+      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, LATEST_MESSAGE),
+      { wrapper: ChatProvider },
+    );
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        created_at: 'L',
+        messageObject: {
+          args: 'string',
+          attachments: [],
+          cid: 'stridodong',
+          command_info: {
+            name: 'string',
+          },
+          created_at: new Date('2021-02-12T12:12:35.862Z'),
+          deleted_at: new Date('2021-02-12T12:12:35.862Z'),
+          mentioned_users: [
+            { id: 'Max', name: 'Max' },
+            { id: 'Ada', name: 'Ada' },
+            { id: 'Enzo', name: 'Enzo' },
+          ],
+          text: 'Max',
+        },
+        previews: [
+          { bold: false, text: '' },
+          { bold: false, text: 'Max' },
         ],
         status: 0,
       });
