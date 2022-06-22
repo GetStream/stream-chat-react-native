@@ -25,9 +25,6 @@
     "react-native-image-resizer": ">=1.4.2",
     "react-native-share": ">=4.1.0"
   },
-  "optionalDependencies": {
-    "react-native-video": "^5.2.0"
-  },
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"

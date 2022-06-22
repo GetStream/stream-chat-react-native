@@ -23,9 +23,6 @@
     "expo-media-library": "^12.0.2",
     "expo-sharing": "^9.1.2"
   },
-  "optionalDependencies": {
-    "expo-av": "^11.2.3"
-  },
   "scripts": {
     "prepack": " cp ../../README.md .",
     "postpack": "rm README.md"
