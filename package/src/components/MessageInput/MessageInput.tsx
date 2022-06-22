@@ -708,11 +708,11 @@ export type MessageInputProps<
 /**
  * UI Component for message input
  * It's a consumer of
- * [Channel Context](https://getstream.github.io/stream-chat-react-native/v3/#channelcontext),
- * [Chat Context](https://getstream.github.io/stream-chat-react-native/v3/#chatcontext),
- * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/v3/#messageinputcontext),
- * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/v3/#suggestionscontext), and
- * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
+ * [Channel Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/),
+ * [Chat Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/),
+ * [MessageInput Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/message-input-context/),
+ * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
+ * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
 export const MessageInput = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

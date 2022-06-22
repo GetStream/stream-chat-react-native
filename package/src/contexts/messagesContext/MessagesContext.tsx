@@ -179,7 +179,7 @@ export type MessagesContextValue<
   MessageStatus: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
   /**
    * UI component for MessageSystem
-   * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
+   * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
    */
   MessageSystem: React.ComponentType<MessageSystemProps<StreamChatGenerics>>;
   /**
@@ -194,7 +194,7 @@ export type MessagesContextValue<
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
-   * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/v3/#reply)
+   * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
    */
   Reply: React.ComponentType<ReplyProps<StreamChatGenerics>>;
   /**
@@ -203,7 +203,7 @@ export type MessagesContextValue<
   retrySendMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
-   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
+   * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<StreamChatGenerics>) => void;
@@ -211,12 +211,12 @@ export type MessagesContextValue<
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
-   * Defaults to: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#typingindicator)
+   * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
    */
   TypingIndicator: React.ComponentType;
   /**
    * UI component for TypingIndicatorContainer
-   * Defaults to: [TypingIndicatorContainer](https://getstream.github.io/stream-chat-react-native/v3/#typingindicatorcontainer)
+   * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
   TypingIndicatorContainer: React.ComponentType;
   updateMessage: (
