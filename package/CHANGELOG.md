@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.2...v4.7.3) (2022-06-22)
+
+
+### Bug Fixes
+
+* video attachment when video dependency is not installed ([9d9f65c](https://github.com/GetStream/stream-chat-react-native/commit/9d9f65c3c1a179f06370c8f2b60cf4fdcd9c1a5c))
+
 ### [4.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.1...v4.7.2) (2022-06-17)
 
 
