@@ -61,7 +61,7 @@ Besides, our team maintains a dedicated repository for fully-fledged sample appl
 
 2. Minor releases may come with some breaking changes, so always check the release notes before upgrading the minor version.
 
-You can see detailed documentation about the components at <https://getstream.github.io/stream-chat-react-native>
+You can see detailed documentation about the components at <https://getstream.io/chat/docs/sdk/reactnative/>
 
 ## 👏 Contributing
 
