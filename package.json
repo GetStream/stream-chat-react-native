@@ -6,6 +6,7 @@
     "url": "https://github.com/GetStream/stream-chat-react-native.git"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.17.12",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
     "@semantic-release/changelog": "^5.0.1",
