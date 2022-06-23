@@ -12,14 +12,15 @@ export const generateAttachmentAction = (a) => ({
 export const generateVideoAttachment = (a) => ({
   asset_url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
   mime_type: 'video/mp4',
+  thumb_url:
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg',
   title: uuidv4(),
-  type: 'media',
+  type: 'video',
   ...a,
 });
 
 export const generateImageAttachment = (a) => ({
   image_url: uuidv4(),
-  thumb_url: uuidv4(),
   title: uuidv4(),
   type: 'image',
   ...a,

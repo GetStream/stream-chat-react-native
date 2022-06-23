@@ -6,12 +6,16 @@ import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvide
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
+import {
+  generateImageAttachment,
+  generateVideoAttachment,
+} from '../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import * as NativeUtils from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
@@ -67,6 +71,24 @@ describe('Gallery', () => {
 
       expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
       expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+    });
+  });
+
+  it('should render one image and one video attachment', async () => {
+    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => true));
+    const attachment1 = generateImageAttachment({
+      original_height: 600,
+      original_width: 400,
+    });
+    const attachment2 = generateVideoAttachment();
+    const component = await getComponent([attachment1, attachment2]);
+    const { queryAllByTestId } = render(component);
+
+    await waitFor(() => {
+      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+
+      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(queryAllByTestId('video-thumbnail').length).toBe(1);
     });
   });
 
