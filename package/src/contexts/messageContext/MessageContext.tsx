@@ -14,7 +14,6 @@ import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { getDisplayName } from '../utils/getDisplayName';
-import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type Alignment = 'right' | 'left';
 
@@ -128,12 +127,6 @@ export const useMessageContext = <
   const contextValue = useContext(
     MessageContext,
   ) as unknown as MessageContextValue<StreamChatGenerics>;
-
-  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
-    throw new Error(
-      `The useMessageContext hook was called outside of the MessageContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
-    );
-  }
 
   return contextValue;
 };

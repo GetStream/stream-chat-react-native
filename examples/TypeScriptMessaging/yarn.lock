@@ -1459,9 +1459,9 @@
     "@types/react-native" "*"
 
 "@types/react-native@*":
-  version "0.67.4"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.67.4.tgz#97a8d3cff2a7606f247008e93d9fe2a3879bc84e"
-  integrity sha512-L81CB6W1m0s7d+TH/loP318+VKPwwjWQBUTVYQ1+lQTWiE5jHxyihgCmd7JbwLICo708FRSDwJW7pJoiZHy6yg==
+  version "0.68.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.68.0.tgz#d51c34057251302d2f2ba97de8ff8a840e0fddd8"
+  integrity sha512-E+m91xtoX+GRh2MpbIYOanbtXlX76woVgRs6zU7PsJ4ZPFzdsRkpKNTqMZyKgyt7eraZDnJvwFXGXDIW+8NRjA==
   dependencies:
     "@types/react" "*"
 
@@ -2829,9 +2829,9 @@ electron-to-chromium@^1.4.17:
   integrity sha512-Hk61vXXKRb2cd3znPE9F+2pLWdIOmP7GjiTj45y6L3W/lO+hSnUSUhq+6lEaERWBdZOHbk2s3YV5c9xVl3boVw==
 
 eme-encryption-scheme-polyfill@^2.0.1:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/eme-encryption-scheme-polyfill/-/eme-encryption-scheme-polyfill-2.0.4.tgz#7d818302af3f3b19d5974255dcc92dc087413845"
-  integrity sha512-MHYJX1v145Pjj2YJTrVVuJOYyXrxGVy8LWf6kV5M4jrV/GyoeuJKyTuD+GaD+VAiE8Ip+MptiH4dXk6ZVmMNow==
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/eme-encryption-scheme-polyfill/-/eme-encryption-scheme-polyfill-2.0.5.tgz#590a437483539edd95a209bbfc14f5458c0052a6"
+  integrity sha512-F1C7SGjzE0ypKPqr7+30AcGl4YyEllrJidVDDWfwIwCadEfIHuayTn/nsy7EFNoZOJp4gUAohAGwLQEXE+exuw==
 
 emittery@^0.7.1:
   version "0.7.2"
@@ -4779,7 +4779,7 @@ jws@^3.2.2:
 keymirror@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
-  integrity sha1-kYiJ6hP40KQufFVyUO7nE63JXDU=
+  integrity sha512-vIkZAFWoDijgQT/Nvl2AHCMmnegN2ehgTPYuyy2hWQkQSntI0S7ESYqdLkoSe1HyEBFHHkCgSIvVdSEiWwKvCg==
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
@@ -6902,10 +6902,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.6.0.tgz#444a88017c74e0b0ac0c8f030925320175c61934"
-  integrity sha512-065qcp5Bv0t6TFN+UIFZlaoUTh2aXbvwkDLWAJInWYUKuMFmZkYlSfqdw+XBN9tMVlmuxoL06jltVru8HpP/NQ==
+stream-chat-react-native-core@4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.7.2.tgz#c38e9b35044329def28596497f4fb358961365e9"
+  integrity sha512-RBMosHDCmSICdLtNYb+7Eb2MOASkqgbHvNwK24l1xA1CeiclhiGmXg+p3DDxN+kj2gbzucOsDtgBDBbvkioCDw==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.1.5"
