@@ -362,7 +362,7 @@ const AutoCompleteInputWithContext = <
       isTrackingStarted.current
     ) {
       stopTracking();
-    } else if (giphyEnabled && !(await handleCommand(text))) {
+    } else if (!(await handleCommand(text))) {
       const mentionTokenMatch = text
         .slice(0, selectionEnd.current)
         .match(/(?!^|\W)?@[^\s@]*\s?[^\s@]*$/g);

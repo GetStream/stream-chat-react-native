@@ -1,5 +1,28 @@
 # Change Log
 
+### [4.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.2...v4.7.3) (2022-06-22)
+
+
+### Bug Fixes
+
+* video attachment when video dependency is not installed ([9d9f65c](https://github.com/GetStream/stream-chat-react-native/commit/9d9f65c3c1a179f06370c8f2b60cf4fdcd9c1a5c))
+
+### [4.7.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.1...v4.7.2) (2022-06-17)
+
+
+### Bug Fixes
+
+* remove error thrown in useMessageContext ([4673f21](https://github.com/GetStream/stream-chat-react-native/commit/4673f210798f310bbbf809d4147041e022eca74e))
+
+### [4.7.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.0...v4.7.1) (2022-06-15)
+
+
+### Bug Fixes
+
+* consistent link preview component ([0e3c003](https://github.com/GetStream/stream-chat-react-native/commit/0e3c003e282e88291b3b92a6910157943fec5ee3))
+* Error handling of the context consumer hooks [CRNS - 430] ([066d08a](https://github.com/GetStream/stream-chat-react-native/commit/066d08a8d2c0b1d9c8584d4e35776597d373d149))
+* image uploads issue in iOS devices ([f6844f2](https://github.com/GetStream/stream-chat-react-native/commit/f6844f2a9cb6db1a1f28997ade1a596d43207580))
+
 ## [4.7.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.6.1...v4.7.0) (2022-06-07)
 
 

@@ -217,7 +217,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for attach button.
    *
-   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
   clearEditingState: () => void;
@@ -225,7 +225,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for commands button.
    *
-   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
+   * Defaults to and accepts same props as: [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<StreamChatGenerics>>;
   /**
@@ -264,7 +264,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for more options button.
    *
-   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/v3/#moreoptionsbutton)
+   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
   /** Limit on the number of lines in the text input before scrolling */
@@ -273,7 +273,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button.
    *
-   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
+   * Defaults to and accepts same props as: [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
    */
   SendButton: React.ComponentType<SendButtonProps<StreamChatGenerics>>;
   sendImageAsync: boolean;
@@ -969,7 +969,7 @@ export const MessageInputProvider = <
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
+          channel.sendImage(compressedUri, file.filename, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -988,7 +988,7 @@ export const MessageInputProvider = <
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, contentType);
+          response = await channel.sendImage(compressedUri, file.filename, contentType);
         }
       }
 
