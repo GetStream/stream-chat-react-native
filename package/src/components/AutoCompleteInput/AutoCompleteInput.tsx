@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native';
 
 import throttle from 'lodash/throttle';
 
@@ -417,6 +417,7 @@ const AutoCompleteInputWithContext = <
         {
           color: black,
           maxHeight: (textHeight || 17) * numberOfLines,
+          textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
         inputBox,
       ]}
