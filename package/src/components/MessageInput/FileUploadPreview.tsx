@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 3,
+    marginTop: 2,
   },
 });
 

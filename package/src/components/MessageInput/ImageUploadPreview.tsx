@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 4,
+    marginTop: 6,
   },
   warningText: {
     alignItems: 'center',
