@@ -214,13 +214,19 @@ android {
 Opening an external link doesn't work without permissions on `targetSdkVersion` >= 30. So, the following permission must be included in the `AndroidManifest.xml` file.
 
 ```xml
-<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+<queries>
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="http" android:host="*" />
+  </intent>
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="https" android:host="*" />
+  </intent>
+</queries>
 ```
-
-:::caution
-**Note:** Make sure you are aware of [upcoming policies](https://support.google.com/googleplay/android-developer/answer/10158779) that this change will be subjected to.
-:::
-
 ## GIF and WebP not displaying
 
 ### Android
