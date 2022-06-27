@@ -18,5 +18,6 @@ export { default as itTranslations } from './i18n/it.json';
 export { default as nlTranslations } from './i18n/nl.json';
 export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
+export { default as heTranslations } from './i18n/he.json';
 
 export { version } from './version.json';
