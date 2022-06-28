@@ -105,14 +105,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
       </Text>
     </View>
   ) : (
-    <Text
-      style={[
-        styles.fileSizeText,
-        { color: grey },
-        I18nManager.isRTL ? { writingDirection: 'rtl' } : {},
-        fileSizeText,
-      ]}
-    >
+    <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
       {item.file.duration ? item.file.duration : getFileSizeDisplayText(item.file.size)}
     </Text>
   );
