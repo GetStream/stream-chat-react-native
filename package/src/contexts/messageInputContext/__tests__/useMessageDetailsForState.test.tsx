@@ -1,4 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
+import type { MessageType } from 'src/components';
+import type { DefaultStreamChatGenerics } from 'src/types/types';
 
 import {
   generateFileAttachment,
@@ -38,7 +40,11 @@ describe('useMessageDetailsForState', () => {
 
   it('mentioned users is not empty when its present in messages', () => {
     const { result } = renderHook(
-      ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
+      ({ initialValue, message }) =>
+        useMessageDetailsForState(
+          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
+          initialValue,
+        ),
       {
         initialProps: {
           initialValue: '',
@@ -52,7 +58,11 @@ describe('useMessageDetailsForState', () => {
 
   it('has fileUploads and imageUploads when attachments are present in message', () => {
     const { result } = renderHook(
-      ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
+      ({ initialValue, message }) =>
+        useMessageDetailsForState(
+          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
+          initialValue,
+        ),
       {
         initialProps: {
           initialValue: '',
