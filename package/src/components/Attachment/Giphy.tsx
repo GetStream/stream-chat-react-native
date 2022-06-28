@@ -356,9 +356,15 @@ const GiphyWithContext = <
         />
 
         {isLoadingImageError && (
-          <ImageLoadingFailedIndicator style={styles.imageErrorIndicatorStyle} />
+          <View style={{ position: 'absolute' }}>
+            <ImageLoadingFailedIndicator style={styles.imageErrorIndicatorStyle} />
+          </View>
         )}
-        {isLoadingImage && <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />}
+        {isLoadingImage && (
+          <View style={{ position: 'absolute' }}>
+            <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
+          </View>
+        )}
         <View style={[styles.giphyMask, giphyMask]}>
           <View
             style={[
