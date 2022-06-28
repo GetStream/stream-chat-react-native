@@ -31,10 +31,6 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
   },
-  activityIndicatorStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   buttonContainer: {
     alignItems: 'center',
     borderTopWidth: 1,
@@ -45,6 +41,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     paddingVertical: 16,
+  },
+  centerChild: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
   },
   container: {
     overflow: 'hidden',
@@ -89,6 +90,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 8,
     width: '60%',
+  },
+  imageErrorIndicatorStyle: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  imageLoadingIndicatorStyle: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    position: 'absolute',
   },
   selectionContainer: {
     borderBottomRightRadius: 0,
@@ -323,6 +335,7 @@ const GiphyWithContext = <
       <View
         style={[
           styles.container,
+          styles.centerChild,
           { backgroundColor: isMyMessage ? grey_gainsboro : white },
           container,
         ]}
@@ -341,10 +354,11 @@ const GiphyWithContext = <
           style={[styles.giphy, giphyDimensions, giphy]}
           testID='giphy-attachment-image'
         />
-        {isLoadingImage && <ImageLoadingIndicator style={styles.activityIndicatorStyle} />}
+
         {isLoadingImageError && (
-          <ImageLoadingFailedIndicator style={styles.activityIndicatorStyle} />
+          <ImageLoadingFailedIndicator style={styles.imageErrorIndicatorStyle} />
         )}
+        {isLoadingImage && <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />}
         <View style={[styles.giphyMask, giphyMask]}>
           <View
             style={[
