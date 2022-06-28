@@ -46,7 +46,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
+  imageContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 1,
+  },
   imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
   imageLoadingIndicatorStyle: {
     alignItems: 'center',
@@ -324,10 +330,14 @@ const GalleryWithContext = <
                         uri={url}
                       />
                       {isLoadingImage && (
-                        <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
+                        <View style={{ position: 'absolute' }}>
+                          <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
+                        </View>
                       )}
                       {isLoadingImageError && (
-                        <ImageLoadingFailedIndicator style={styles.imageLoadingIndicatorStyle} />
+                        <View style={{ position: 'absolute' }}>
+                          <ImageLoadingFailedIndicator style={styles.imageLoadingIndicatorStyle} />
+                        </View>
                       )}
                     </View>
                   )}
