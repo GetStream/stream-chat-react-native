@@ -9,7 +9,7 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
-  Extrapolate,
+  Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedGestureHandler,
@@ -42,10 +42,7 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import {
-  OverlayReactions as DefaultOverlayReactions,
-  Reaction,
-} from '../MessageOverlay/OverlayReactions';
+import { OverlayReactions as DefaultOverlayReactions, Reaction } from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({
@@ -217,13 +214,13 @@ const MessageOverlayWithContext = <
         translateY.value,
         [0, halfScreenHeight],
         [1, 0.75],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
       scale.value = interpolate(
         translateY.value,
         [0, halfScreenHeight],
         [1, 0.85],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       );
     },
     onFinish: (evt) => {

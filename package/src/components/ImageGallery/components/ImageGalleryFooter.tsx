@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
 
@@ -154,7 +154,7 @@ export const ImageGalleryFooterWithContext = <
       opacity: opacity.value,
       transform: [
         {
-          translateY: interpolate(visible.value, [0, 1], [height, 0], Extrapolate.CLAMP),
+          translateY: interpolate(visible.value, [0, 1], [height, 0], Extrapolation.CLAMP),
         },
       ],
     }),

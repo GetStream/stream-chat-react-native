@@ -9,7 +9,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
@@ -141,7 +141,7 @@ export const ImageGalleryHeader = <
     opacity: opacity.value,
     transform: [
       {
-        translateY: interpolate(visible.value, [0, 1], [-height, 0], Extrapolate.CLAMP),
+        translateY: interpolate(visible.value, [0, 1], [-height, 0], Extrapolation.CLAMP),
       },
     ],
   }));

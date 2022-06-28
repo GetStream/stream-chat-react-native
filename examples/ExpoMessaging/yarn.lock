@@ -3478,6 +3478,13 @@ expo-asset@~8.4.6:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
+expo-av@~10.2.0:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-10.2.1.tgz#c08bce464d673d0e90c68cac082bfb75a9437f25"
+  integrity sha512-thrkHVg4HVn8L+jHKVnXYd4TLkJQblFE8QXd3d1hwrYG63gehQT2nK4DM0Frl50EcdV8YN9XjhwHobtK5oMc9A==
+  dependencies:
+    "@expo/config-plugins" "^4.0.2"
+
 expo-blur@~11.0.0:
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-11.0.0.tgz#3542afed5c0037554657d98c31a5933dd78098dd"
@@ -6622,10 +6629,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@4.7.2:
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.7.2.tgz#c38e9b35044329def28596497f4fb358961365e9"
-  integrity sha512-RBMosHDCmSICdLtNYb+7Eb2MOASkqgbHvNwK24l1xA1CeiclhiGmXg+p3DDxN+kj2gbzucOsDtgBDBbvkioCDw==
+stream-chat-react-native-core@4.7.3:
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.7.3.tgz#9b674f72c764b2da954ca088d783e3fc960e45f7"
+  integrity sha512-5sPe/mXqE255P8MftaTqMVvkrXEFvfEO0MtUb2O5EIK0GFXfToAA45v0K/rXes9OLux4uI6jxG2oRrgKE+0X1w==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "4.1.5"
