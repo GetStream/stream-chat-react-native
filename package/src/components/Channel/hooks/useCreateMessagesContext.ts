@@ -80,6 +80,7 @@ export const useCreateMessagesContext = <
   TypingIndicatorContainer,
   updateMessage,
   UrlPreview,
+  VideoThumbnail,
 }: MessagesContextValue<StreamChatGenerics> & {
   /**
    * To ensure we allow re-render, when channel is changed
@@ -166,6 +167,7 @@ export const useCreateMessagesContext = <
       TypingIndicatorContainer,
       updateMessage,
       UrlPreview,
+      VideoThumbnail,
     }),
     [
       additionalTouchablePropsLength,

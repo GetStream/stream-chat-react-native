@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
+
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
@@ -10,6 +11,8 @@ import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
+
+import ExpoVideoPlayer from './optionalDependencies/Video';
 
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, uri }) => {
@@ -45,15 +48,19 @@ registerNativeHandlers({
       const results = await MediaLibrary.getAssetsAsync({
         after,
         first,
-        mediaType: [MediaLibrary.MediaType.photo],
+        mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
       });
       const assets = results.assets.map((asset) => ({
+        duration: asset.duration,
+        filename: asset.filename,
         height: asset.height,
         id: asset.id,
         source: 'picker',
+        type: asset.mediaType,
         uri: asset.uri,
         width: asset.width,
       }));
+
       const hasNextPage = results.hasNextPage;
       const endCursor = results.endCursor;
       return { assets, endCursor, hasNextPage };
@@ -155,12 +162,13 @@ registerNativeHandlers({
             // https://github.com/ivpusic/react-native-image-crop-picker/issues/901
             // This we can't rely on them as it is, and we need to use Image.getSize
             // to get accurate size.
-            const getSize = () => new Promise((resolve) => {
-              Image.getSize(photo.uri, (width, height) => {
-                resolve({height, width});
+            const getSize = () =>
+              new Promise((resolve) => {
+                Image.getSize(photo.uri, (width, height) => {
+                  resolve({ height, width });
+                });
               });
-            });
-    
+
             try {
               const { height, width } = await getSize();
               size.height = height;
@@ -175,12 +183,12 @@ registerNativeHandlers({
               width: photo.width,
             };
           }
-    
+
           return {
             cancelled: false,
             source: 'camera',
             uri: photo.uri,
-            ...size
+            ...size,
           };
         }
       }
@@ -213,6 +221,19 @@ registerNativeHandlers({
         Haptics.selectionAsync();
     }
   },
+  // eslint-disable-next-line react/display-name
+  Video: ExpoVideoPlayer ? ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
+      <ExpoVideoPlayer
+        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+        ref={videoRef}
+        resizeMode='contain'
+        shouldPlay={!paused}
+        source={{
+          uri,
+        }}
+        style={[style]}
+      />
+    ) : null,
 });
 
 export * from 'stream-chat-react-native-core';

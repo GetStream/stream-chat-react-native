@@ -3,3 +3,4 @@ NEXT_RELEASE_CHANGELOG.md
 artifacts
 e2e/.env
 *.log
+.DS_STORE

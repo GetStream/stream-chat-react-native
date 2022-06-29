@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Animated, { Extrapolate, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 
+import { ImageGalleryVideoControl } from './ImageGalleryVideoControl';
+
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Grid as GridIconDefault, Share as ShareIconDefault } from '../../../icons';
@@ -60,6 +62,22 @@ export type ImageGalleryFooterCustomComponent<
   photo?: Photo<StreamChatGenerics>;
 }) => React.ReactElement | null;
 
+export type ImageGalleryFooterVideoControlProps = {
+  duration: number;
+  onPlayPause: () => void;
+  onProgressDrag: (progress: number) => void;
+  paused: boolean;
+  progress: number;
+};
+
+export type ImageGalleryFooterVideoControlComponent = ({
+  duration,
+  onPlayPause,
+  onProgressDrag,
+  paused,
+  progress,
+}: ImageGalleryFooterVideoControlProps) => React.ReactElement | null;
+
 export type ImageGalleryFooterCustomComponentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
@@ -68,41 +86,55 @@ export type ImageGalleryFooterCustomComponentProps<
   leftElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   rightElement?: ImageGalleryFooterCustomComponent<StreamChatGenerics>;
   ShareIcon?: React.ReactElement;
+  videoControlElement?: ImageGalleryFooterVideoControlComponent;
 };
 
-type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
-    opacity: Animated.SharedValue<number>;
-    openGridView: () => void;
-    photo: Photo<StreamChatGenerics>;
-    photoLength: number;
-    selectedIndex: number;
-    visible: Animated.SharedValue<number>;
-  };
+type ImageGalleryFooterPropsWithContext<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
+  duration: number;
+  onPlayPause: () => void;
+  onProgressDrag: (progress: number) => void;
+  opacity: Animated.SharedValue<number>;
+  openGridView: () => void;
+  paused: boolean;
+  photo: Photo<StreamChatGenerics>;
+  photoLength: number;
+  progress: number;
+  selectedIndex: number;
+  visible: Animated.SharedValue<number>;
+};
 
-export const ImageGalleryFooter = <
+export const ImageGalleryFooterWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatGenerics>,
+  props: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
     centerElement,
+    duration,
     GridIcon,
     leftElement,
+    onPlayPause,
+    onProgressDrag,
     opacity,
     openGridView,
+    paused,
     photo,
     photoLength,
+    progress,
     rightElement,
     selectedIndex,
     ShareIcon,
+    videoControlElement,
     visible,
   } = props;
+
   const [height, setHeight] = useState(200);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const {
     theme: {
-      colors: { black, white },
+      colors: { black },
       imageGallery: {
         footer: {
           centerContainer,
@@ -126,18 +158,21 @@ export const ImageGalleryFooter = <
         },
       ],
     }),
-    [],
+    [height],
   );
 
   const share = async () => {
     setShareMenuOpen(true);
     try {
-      const localImage = await saveFile({
-        fileName: `${photo.user?.id || 'ChatPhoto'}-${photo.messageId}-${selectedIndex}.jpg`,
+      const extension = photo.mime_type?.split('/')[1] || 'jpg';
+      const localFile = await saveFile({
+        fileName: `${photo.user?.id || 'ChatPhoto'}-${
+          photo.messageId
+        }-${selectedIndex}.${extension}`,
         fromUrl: photo.uri,
       });
-      await shareImage({ type: 'image/jpeg', url: localImage });
-      await deleteFile({ uri: localImage });
+      await shareImage({ type: photo.mime_type, url: localFile });
+      await deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
     }
@@ -150,8 +185,21 @@ export const ImageGalleryFooter = <
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[{ backgroundColor: white }, container, footerStyle]}>
-        <View style={[styles.innerContainer, innerContainer]}>
+      <ReanimatedSafeAreaView style={[container, footerStyle]}>
+        {photo.type === 'video' ? (
+          videoControlElement ? (
+            videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
+          ) : (
+            <ImageGalleryVideoControl
+              duration={duration}
+              onPlayPause={onPlayPause}
+              onProgressDrag={onProgressDrag}
+              paused={paused}
+              progress={progress}
+            />
+          )
+        ) : null}
+        <View style={[styles.innerContainer, innerContainer, { backgroundColor: 'white' }]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
@@ -187,5 +235,52 @@ export const ImageGalleryFooter = <
     </Animated.View>
   );
 };
+
+const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
+  prevProps: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
+  nextProps: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
+) => {
+  const {
+    duration: prevDuration,
+    paused: prevPaused,
+    progress: prevProgress,
+    selectedIndex: prevSelectedIndex,
+  } = prevProps;
+  const {
+    duration: nextDuration,
+    paused: nextPaused,
+    progress: nextProgress,
+    selectedIndex: nextSelectedIndex,
+  } = nextProps;
+
+  const isDurationEqual = prevDuration === nextDuration;
+  if (!isDurationEqual) return false;
+
+  const isPausedEqual = prevPaused === nextPaused;
+  if (!isPausedEqual) return false;
+
+  const isProgressEqual = prevProgress === nextProgress;
+  if (!isProgressEqual) return false;
+
+  const isSelectedIndexEqual = prevSelectedIndex === nextSelectedIndex;
+  if (!isSelectedIndexEqual) return false;
+
+  return true;
+};
+
+const MemoizedImageGalleryFooter = React.memo(
+  ImageGalleryFooterWithContext,
+  areEqual,
+) as typeof ImageGalleryFooterWithContext;
+
+export type ImageGalleryFooterProps<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ImageGalleryFooterPropsWithContext<StreamChatGenerics>;
+
+export const ImageGalleryFooter = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  props: ImageGalleryFooterProps<StreamChatGenerics>,
+) => <MemoizedImageGalleryFooter {...props} />;
 
 ImageGalleryFooter.displayName = 'ImageGalleryFooter{imageGallery{footer}}';

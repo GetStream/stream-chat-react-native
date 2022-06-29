@@ -19,7 +19,10 @@ import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndi
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelsContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -49,13 +52,13 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to use when channel list is empty
    *
-   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/v3/#emptystateindicator)
+   * Default: [EmptyStateIndicator](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#emptystateindicator)
    * */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
    * Custom loading indicator to display at bottom of the list, while loading further pages
    *
-   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListFooterLoadingIndicator)
+   * Default: [ChannelListFooterLoadingIndicator](https://getstream.io/chat/docs/sdk/reactnative/contexts/channels-context/#footerloadingindicator)
    */
   FooterLoadingIndicator: React.ComponentType;
   /**
@@ -69,13 +72,13 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to display error at top of list, if loading/pagination error occurs
    *
-   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListHeaderErrorIndicator)
+   * Default: [ChannelListHeaderErrorIndicator](https://getstream.io/chat/docs/sdk/reactnative/contexts/channels-context/#headererrorindicator)
    */
   HeaderErrorIndicator: React.ComponentType<HeaderErrorProps>;
   /**
    * Custom indicator to display network-down error at top of list, if there is connectivity issue
    *
-   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/v3/#ChannelListHeaderNetworkDownIndicator)
+   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.io/chat/docs/sdk/reactnative/contexts/channels-context/#headernetworkdownindicator)
    */
   HeaderNetworkDownIndicator: React.ComponentType;
   /**
@@ -85,7 +88,7 @@ export type ChannelsContextValue<
   /**
    * Custom indicator to use when there is error in fetching channels
    *
-   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/v3/#loadingerrorindicator)
+   * Default: [LoadingErrorIndicator](https://getstream.io/chat/docs/sdk/reactnative/contexts/channels-context/#loadingerrorindicator)
    * */
   LoadingErrorIndicator: React.ComponentType<LoadingErrorProps>;
   /**
@@ -117,7 +120,7 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to display individual channel list items
    *
-   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channelpreviewmessenger)
+   * Default: [ChannelPreviewMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-preview-messenger/)
    */
   Preview: React.ComponentType<ChannelPreviewMessengerProps<StreamChatGenerics>>;
   /**
@@ -155,7 +158,7 @@ export type ChannelsContextValue<
   /**
    * Custom UI component to display loading channel skeletons
    *
-   * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/v3/#skeleton)
+   * Default: [Skeleton](https://getstream.io/chat/docs/sdk/reactnative/contexts/channels-context/#skeleton)
    */
   Skeleton: React.ComponentType;
   /**
@@ -207,7 +210,9 @@ export type ChannelsContextValue<
   PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps<StreamChatGenerics>>;
 };
 
-export const ChannelsContext = React.createContext({} as ChannelsContextValue);
+export const ChannelsContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelsContextValue,
+);
 
 export const ChannelsProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -224,8 +229,19 @@ export const ChannelsProvider = <
 
 export const useChannelsContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelsContext) as unknown as ChannelsContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ChannelsContext,
+  ) as unknown as ChannelsContextValue<StreamChatGenerics>;
 
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useChannelsContext hook was called outside of the ChannelsContext provider. Make sure you have configured ChannelList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel-list`,
+    );
+  }
+
+  return contextValue;
+};
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the

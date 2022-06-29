@@ -1,8 +1,10 @@
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import type { Asset } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics, File } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type AttachmentPickerIconProps = {
   numberOfImageUploads: number;
@@ -19,22 +21,22 @@ export type AttachmentPickerContextValue = {
    */
   bottomInset: number;
   /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
+   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
    */
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
   /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
+   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
    */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
+   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/1.png)
    *
-   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
    */
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
@@ -42,9 +44,11 @@ export type AttachmentPickerContextValue = {
    */
   maxNumberOfFiles: number;
   openPicker: () => void;
+  selectedFiles: File[];
   selectedImages: Asset[];
   setBottomInset: React.Dispatch<React.SetStateAction<number>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
@@ -54,8 +58,8 @@ export type AttachmentPickerContextValue = {
   selectedPicker?: 'images';
 };
 
-export const AttachmentPickerContext = React.createContext<AttachmentPickerContextValue>(
-  {} as AttachmentPickerContextValue,
+export const AttachmentPickerContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as AttachmentPickerContextValue,
 );
 
 export const AttachmentPickerProvider = ({
@@ -80,6 +84,7 @@ export const AttachmentPickerProvider = ({
   const [bottomInset, setBottomInset] = useState<number>(bottomInsetValue ?? 0);
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
   const [topInset, setTopInset] = useState<number>(value?.topInset ?? 0);
 
@@ -93,10 +98,12 @@ export const AttachmentPickerProvider = ({
 
   const combinedValue = {
     maxNumberOfFiles,
+    selectedFiles,
     selectedImages,
     selectedPicker,
     setBottomInset,
     setMaxNumberOfFiles,
+    setSelectedFiles,
     setSelectedImages,
     setSelectedPicker,
     setTopInset,
@@ -114,8 +121,19 @@ export const AttachmentPickerProvider = ({
   );
 };
 
-export const useAttachmentPickerContext = () =>
-  useContext(AttachmentPickerContext) as unknown as AttachmentPickerContextValue;
+export const useAttachmentPickerContext = () => {
+  const contextValue = useContext(
+    AttachmentPickerContext,
+  ) as unknown as AttachmentPickerContextValue;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useAttachmentPickerContext hook was called outside the AttachmentPickerContext provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
+    );
+  }
+
+  return contextValue;
+};
 
 export const withAttachmentPickerContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

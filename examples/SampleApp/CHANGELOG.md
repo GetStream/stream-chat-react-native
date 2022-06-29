@@ -1,5 +1,98 @@
 # Change Log
 
+### [1.7.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.3...sampleapp@v1.7.4) (2022-06-29)
+
+
+### Bug Fixes
+
+* query all packages should not be needed ([27f964d](https://github.com/GetStream/stream-chat-react-native/commit/27f964d49898c874e0209463e3cd4c21ed494583))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.7.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.2...sampleapp@v1.7.3) (2022-06-22)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.7.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.1...sampleapp@v1.7.2) (2022-06-17)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.7.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.0...sampleapp@v1.7.1) (2022-06-15)
+
+
+### Bug Fixes
+
+* Error handling of the context consumer hooks [CRNS - 430] ([066d08a](https://github.com/GetStream/stream-chat-react-native/commit/066d08a8d2c0b1d9c8584d4e35776597d373d149))
+* wrap the SampleApp with ThemeProvider ([a321a43](https://github.com/GetStream/stream-chat-react-native/commit/a321a433ce37127e250eaa0d4040ede9e540e7b3))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.7.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.1...sampleapp@v1.7.0) (2022-06-07)
+
+
+### Features
+
+* allow video upload from image picker and file picker ([6009d36](https://github.com/GetStream/stream-chat-react-native/commit/6009d3626bed416c1bd043fbf1c6ebb156186677))
+* inline video renderer/player support for SDK ([862c4bb](https://github.com/GetStream/stream-chat-react-native/commit/862c4bb990f98f26c6c81e2335692569a44018b9))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.6.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.6.0...sampleapp@v1.6.1) (2022-05-25)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.6.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.5.0...sampleapp@v1.6.0) (2022-05-25)
+
+
+### Features
+
+* allow video upload from image picker ([6989c1d](https://github.com/GetStream/stream-chat-react-native/commit/6989c1d72133518687a5c94f2e44ee38f46efacd))
+
+
+### Bug Fixes
+
+* solves multiple crashes in the Sample app, that were related to setBlurType ([4b45d80](https://github.com/GetStream/stream-chat-react-native/commit/4b45d804f901d1d2e48ec2af7fd9180a4f44cfd3))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.5.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.4.0...sampleapp@v1.5.0) (2022-05-17)
+
+
+### Features
+
+* ability to add onPress handler for mentioned user names - [Documentation link](https://getstream.io/chat/docs/sdk/reactnative/core-components/channel/#onpressmessage) ([7894bf9](https://github.com/GetStream/stream-chat-react-native/commit/7894bf92eeb5a02cc0e5028f25f19486214f6306))
+
+
+### Bug Fixes
+
+* manually update iOS version to 93 ([7e8b57d](https://github.com/GetStream/stream-chat-react-native/commit/7e8b57d95f74a84e67cf951b0be66c865dc86e45))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.4.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.3.1...sampleapp@v1.4.0) (2022-04-27)
 
 

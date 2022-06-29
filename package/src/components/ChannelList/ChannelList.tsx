@@ -74,7 +74,7 @@ export type ChannelListProps<
   /**
    * Custom UI component to display the list of channels
    *
-   * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/v3/#channellistmessenger)
+   * Default: [ChannelListMessenger](https://getstream.io/chat/docs/sdk/reactnative/ui-components/channel-list-messenger/)
    */
   List?: React.ComponentType<ChannelListMessengerProps<StreamChatGenerics>>;
   /**

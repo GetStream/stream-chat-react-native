@@ -5,7 +5,10 @@ import type { Channel, ChannelState } from 'stream-chat';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type ChannelContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -36,7 +39,7 @@ export type ChannelContextValue<
   /**
    * Custom UI component to display empty state when channel has no messages.
    *
-   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Indicators/EmptyStateIndicator.tsx)
+   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Indicators/EmptyStateIndicator.tsx)
    */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   /**
@@ -155,7 +158,7 @@ export type ChannelContextValue<
   /**
    * Custom UI component for sticky header of channel.
    *
-   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/DateHeader.tsx)
+   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    */
   StickyHeader?: React.ComponentType<{ dateString: string }>;
   /**
@@ -167,7 +170,9 @@ export type ChannelContextValue<
   watcherCount?: ChannelState<StreamChatGenerics>['watcher_count'];
 };
 
-export const ChannelContext = React.createContext({} as ChannelContextValue);
+export const ChannelContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as ChannelContextValue,
+);
 
 export const ChannelProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -184,8 +189,19 @@ export const ChannelProvider = <
 
 export const useChannelContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(ChannelContext) as unknown as ChannelContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    ChannelContext,
+  ) as unknown as ChannelContextValue<StreamChatGenerics>;
 
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useChannelContext hook was called outside of the ChannelContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 /**
  * Typescript currently does not support partial inference so if ChatContext
  * typing is desired while using the HOC withChannelContext the Props for the

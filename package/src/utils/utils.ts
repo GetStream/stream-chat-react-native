@@ -8,6 +8,7 @@ import type {
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
   CommandResponse,
+  FormatMessageResponse,
   StreamChat,
   UserResponse,
 } from 'stream-chat';
@@ -534,3 +535,32 @@ export const emojiRegex =
 
 export const urlRegex =
   /(?:\s|^)((?:https?:\/\/)?(?:[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::[0-9]+)?(?:\/(?:[^\s]+)?)?)/g;
+
+/**
+ * Stringifies a message object
+ * @param {FormatMessageResponse<StreamChatGenerics>} message - the message object to be stringified
+ * @returns {string} The stringified message
+ */
+const stringifyMessage = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  deleted_at,
+  latest_reactions,
+  reply_count,
+  status,
+  updated_at,
+}: FormatMessageResponse<StreamChatGenerics>): string =>
+  `${deleted_at}${
+    latest_reactions ? latest_reactions.map(({ type }) => type).join() : ''
+  }${reply_count}${status}${updated_at?.toISOString?.() || updated_at}`;
+
+/**
+ * Reduces a list of messages to strings that are used in useEffect & useMemo
+ * @param {messages} messages - the array of messages to be compared
+ * @returns {string} The mapped message string
+ */
+export const reduceMessagesToString = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  messages: FormatMessageResponse<StreamChatGenerics>[],
+): string => messages.map(stringifyMessage).join();

@@ -143,7 +143,16 @@ const MessageContentWithContext = <
       colors: { accent_red, blue_alice, grey_gainsboro, grey_whisper, transparent, white },
       messageSimple: {
         content: {
-          container: { borderRadiusL, borderRadiusS, ...container },
+          container: {
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+            borderRadius,
+            borderRadiusL,
+            borderRadiusS,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+            ...container
+          },
           containerInner,
           errorContainer,
           errorIcon,
@@ -223,6 +232,50 @@ const MessageContentWithContext = <
 
   const repliesCurveColor = isMyMessage && !error ? backgroundColor : grey_whisper;
 
+  const isBorderColor = isMyMessage && !error;
+
+  const getBorderRadius = () => {
+    // enum('top', 'middle', 'bottom', 'single')
+    const groupPosition = groupStyles?.[0];
+
+    const isBottomOrSingle = groupPosition === 'single' || groupPosition === 'bottom';
+    let borderBottomLeftRadius = borderRadiusL;
+    let borderBottomRightRadius = borderRadiusL;
+
+    if (isBottomOrSingle && (!hasThreadReplies || threadList)) {
+      // add relevant sharp corner
+      if (alignment === 'left') {
+        borderBottomLeftRadius = borderRadiusS;
+      } else {
+        borderBottomRightRadius = borderRadiusS;
+      }
+    }
+
+    return {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+    };
+  };
+
+  const getBorderRadiusFromTheme = () => {
+    const bordersFromTheme: Record<string, number | undefined> = {
+      borderBottomLeftRadius,
+      borderBottomRightRadius,
+      borderRadius,
+      borderTopLeftRadius,
+      borderTopRightRadius,
+    };
+
+    // filter out undefined values
+    for (const key in bordersFromTheme) {
+      if (bordersFromTheme[key] === undefined) {
+        delete bordersFromTheme[key];
+      }
+    }
+
+    return bordersFromTheme;
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -297,17 +350,9 @@ const MessageContentWithContext = <
             styles.containerInner,
             {
               backgroundColor,
-              borderBottomLeftRadius:
-                (groupStyle === 'left_bottom' || groupStyle === 'left_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderBottomRightRadius:
-                (groupStyle === 'right_bottom' || groupStyle === 'right_single') &&
-                (!hasThreadReplies || threadList)
-                  ? borderRadiusS
-                  : borderRadiusL,
-              borderColor: isMyMessage && !error ? backgroundColor : grey_whisper,
+              borderColor: isBorderColor ? backgroundColor : grey_whisper,
+              ...getBorderRadius(),
+              ...getBorderRadiusFromTheme(),
             },
             noBorder ? { borderWidth: 0 } : {},
             containerInner,

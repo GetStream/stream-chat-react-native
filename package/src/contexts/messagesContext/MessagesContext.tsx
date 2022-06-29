@@ -14,6 +14,7 @@ import type { FileAttachmentGroupProps } from '../../components/Attachment/FileA
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
 import type { GiphyProps } from '../../components/Attachment/Giphy';
+import type { VideoThumbnailProps } from '../../components/Attachment/VideoThumbnail';
 import type {
   MessageProps,
   MessageTouchableHandlerPayload,
@@ -48,7 +49,10 @@ import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'quoted_reply' | 'text';
 
@@ -57,22 +61,22 @@ export type MessagesContextValue<
 > = {
   /**
    * UI component for Attachment.
-   * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Attachment.tsx)
+   * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Attachment.tsx)
    */
   Attachment: React.ComponentType<AttachmentProps<StreamChatGenerics>>;
   /**
    * UI component to display AttachmentActions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/AttachmentActions.tsx)
+   * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AttachmentActions.tsx)
    */
   AttachmentActions: React.ComponentType<AttachmentActionsProps<StreamChatGenerics>>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Card.tsx)
+   * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)
    */
   Card: React.ComponentType<CardProps<StreamChatGenerics>>;
   /**
    * UI component for DateHeader
-   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/DateHeader.tsx)
+   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
 
@@ -83,28 +87,28 @@ export type MessagesContextValue<
 
   /**
    * UI component to display File type attachment.
-   * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/FileAttachment.tsx)
+   * Defaults to: [FileAttachment](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachment.tsx)
    */
   FileAttachment: React.ComponentType<FileAttachmentProps<StreamChatGenerics>>;
   /**
    * UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/FileAttachmentGroup.tsx)
+   * Defaults to: [FileAttachmentGroup](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileAttachmentGroup.tsx)
    */
   FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<StreamChatGenerics>>;
   /**
    * UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/FileIcon.tsx
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/FileIcon.tsx
    */
   FileAttachmentIcon: React.ComponentType<FileIconProps>;
   FlatList: typeof FlatList;
   /**
    * UI component to display image attachments
-   * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Gallery.tsx)
+   * Defaults to: [Gallery](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Gallery.tsx)
    */
   Gallery: React.ComponentType<GalleryProps<StreamChatGenerics>>;
   /**
    * UI component for Giphy
-   * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Giphy.tsx)
+   * Defaults to: [Giphy](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Giphy.tsx)
    */
   Giphy: React.ComponentType<GiphyProps<StreamChatGenerics>>;
   /**
@@ -117,30 +121,30 @@ export type MessagesContextValue<
   initialScrollToFirstUnreadMessage: boolean;
   /**
    * UI component for Message Date Separator Component
-   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageList/InlineDateSeparator.tsx)
+   * Defaults to: [InlineDateSeparator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/InlineDateSeparator.tsx)
    */
   InlineDateSeparator: React.ComponentType<InlineDateSeparatorProps>;
   /**
    * UI component for InlineUnreadIndicator
-   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
+   * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
   /**
    * UI component for MessageAvatar
-   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
+   * Defaults to: [MessageAvatar](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageAvatar.tsx)
    **/
   MessageAvatar: React.ComponentType<MessageAvatarProps<StreamChatGenerics>>;
   /**
    * UI component for MessageContent
-   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/MessageSimple/MessageContent.tsx)
+   * Defaults to: [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageContent.tsx)
    */
   MessageContent: React.ComponentType<MessageContentProps<StreamChatGenerics>>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**
    * UI component for MessageDeleted
-   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageSimple/MessageDeleted.tsx)
+   * Defaults to: [MessageDeleted](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageDeleted.tsx)
    */
   MessageDeleted: React.ComponentType<MessageDeletedProps<StreamChatGenerics>>;
   /**
@@ -154,28 +158,28 @@ export type MessagesContextValue<
   MessagePinnedHeader: React.ComponentType<MessagePinnedHeaderProps<StreamChatGenerics>>;
   /**
    * UI component for MessageReplies
-   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageSimple/MessageReplies.tsx)
+   * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageReplies.tsx)
    */
 
   MessageReplies: React.ComponentType<MessageRepliesProps<StreamChatGenerics>>;
   /**
    * UI Component for MessageRepliesAvatars
-   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageSimple/MessageRepliesAvatars.tsx)
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageSimple/MessageRepliesAvatars.tsx)
    */
   MessageRepliesAvatars: React.ComponentType<MessageRepliesAvatarsProps<StreamChatGenerics>>;
   /**
    * UI component for MessageSimple
-   * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/MessageSimple/MessageSimple.tsx)
+   * Defaults to: [MessageSimple](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageSimple.tsx)
    */
   MessageSimple: React.ComponentType<MessageSimpleProps<StreamChatGenerics>>;
   /**
    * UI component for MessageStatus (delivered/read)
-   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/MessageSimple/MessageStatus.tsx)
+   * Defaults to: [MessageStatus](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/MessageStatus.tsx)
    */
   MessageStatus: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
   /**
    * UI component for MessageSystem
-   * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
+   * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
    */
   MessageSystem: React.ComponentType<MessageSystemProps<StreamChatGenerics>>;
   /**
@@ -184,13 +188,13 @@ export type MessagesContextValue<
   OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   /**
    * UI component for ReactionList
-   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Reaction/ReactionList.tsx)
+   * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Reaction/ReactionList.tsx)
    */
   ReactionList: React.ComponentType<ReactionListProps<StreamChatGenerics>>;
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
-   * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/v3/#reply)
+   * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
    */
   Reply: React.ComponentType<ReplyProps<StreamChatGenerics>>;
   /**
@@ -199,7 +203,7 @@ export type MessagesContextValue<
   retrySendMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
-   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
+   * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<StreamChatGenerics>) => void;
@@ -207,12 +211,12 @@ export type MessagesContextValue<
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
-   * Defaults to: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#typingindicator)
+   * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
    */
   TypingIndicator: React.ComponentType;
   /**
    * UI component for TypingIndicatorContainer
-   * Defaults to: [TypingIndicatorContainer](https://getstream.github.io/stream-chat-react-native/v3/#typingindicatorcontainer)
+   * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
   TypingIndicatorContainer: React.ComponentType;
   updateMessage: (
@@ -225,9 +229,10 @@ export type MessagesContextValue<
   ) => void;
   /**
    * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Attachment/Card.tsx
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx
    */
   UrlPreview: React.ComponentType<CardProps<StreamChatGenerics>>;
+  VideoThumbnail: React.ComponentType<VideoThumbnailProps>;
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -460,7 +465,9 @@ export type MessagesContextValue<
   targetedMessage?: string;
 };
 
-export const MessagesContext = React.createContext({} as MessagesContextValue);
+export const MessagesContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessagesContextValue,
+);
 
 export const MessagesProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -477,7 +484,19 @@ export const MessagesProvider = <
 
 export const useMessagesContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessagesContext) as unknown as MessagesContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessagesContext,
+  ) as unknown as MessagesContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessagesContext hook was called outside of the MessagesContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessagesContext

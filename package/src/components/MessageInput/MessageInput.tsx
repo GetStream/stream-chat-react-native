@@ -30,8 +30,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Asset } from '../../native';
-import type { DefaultStreamChatGenerics } from '../../types/types';
+import type { Asset, DefaultStreamChatGenerics } from '../../types/types';
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
@@ -115,7 +114,9 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'showMoreOptions'
     | 'ShowThreadMessageInChannelButton'
+    | 'removeFile'
     | 'removeImage'
+    | 'uploadNewFile'
     | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Reply'> &
@@ -164,6 +165,7 @@ const MessageInputWithContext = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     Reply,
     resetInput,
@@ -175,6 +177,7 @@ const MessageInputWithContext = <
     thread,
     threadList,
     triggerType,
+    uploadNewFile,
     uploadNewImage,
     watchers,
   } = props;
@@ -202,9 +205,11 @@ const MessageInputWithContext = <
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
     bottomInset,
+    selectedFiles,
     selectedImages,
     selectedPicker,
     setMaxNumberOfFiles,
+    setSelectedFiles,
     setSelectedImages,
   } = useAttachmentPickerContext();
 
@@ -224,8 +229,11 @@ const MessageInputWithContext = <
   }, []);
 
   const [hasResetImages, setHasResetImages] = useState(false);
+  const [hasResetFiles, setHasResetFiles] = useState(false);
   const selectedImagesLength = hasResetImages ? selectedImages.length : 0;
   const imageUploadsLength = hasResetImages ? imageUploads.length : 0;
+  const selectedFilesLength = hasResetFiles ? selectedFiles.length : 0;
+  const fileUploadsLength = hasResetFiles ? fileUploads.length : 0;
   const imagesForInput = (!!thread && !!threadList) || (!thread && !threadList);
 
   useEffect(() => {
@@ -237,10 +245,24 @@ const MessageInputWithContext = <
   }, []);
 
   useEffect(() => {
+    setSelectedFiles([]);
+    if (fileUploads.length) {
+      fileUploads.forEach((file) => removeFile(file.id));
+    }
+    return () => setSelectedFiles([]);
+  }, []);
+
+  useEffect(() => {
     if (hasResetImages === false && imageUploadsLength === 0 && selectedImagesLength === 0) {
       setHasResetImages(true);
     }
   }, [imageUploadsLength, selectedImagesLength]);
+
+  useEffect(() => {
+    if (hasResetFiles === false && fileUploadsLength === 0 && selectedFilesLength === 0) {
+      setHasResetFiles(true);
+    }
+  }, [fileUploadsLength, selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput === false && imageUploads.length) {
@@ -248,31 +270,63 @@ const MessageInputWithContext = <
     }
   }, [imagesForInput]);
 
+  const uploadImagesHandler = () => {
+    const imagesToUpload = selectedImages.filter((selectedImage) => {
+      const uploadedImage = imageUploads.find(
+        (imageUpload) =>
+          imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
+      );
+      return !uploadedImage;
+    });
+    imagesToUpload.forEach((image) => uploadNewImage(image));
+  };
+
+  const removeImagesHandler = () => {
+    const imagesToRemove = imageUploads.filter(
+      (imageUpload) =>
+        !selectedImages.find(
+          (selectedImage) =>
+            selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
+        ),
+    );
+    imagesToRemove.forEach((image) => removeImage(image.id));
+  };
+
   useEffect(() => {
     if (imagesForInput) {
       if (selectedImagesLength > imageUploadsLength) {
         /** User selected an image in bottom sheet attachment picker */
-        const imagesToUpload = selectedImages.filter((selectedImage) => {
-          const uploadedImage = imageUploads.find(
-            (imageUpload) =>
-              imageUpload.file.uri === selectedImage.uri || imageUpload.url === selectedImage.uri,
-          );
-          return !uploadedImage;
-        });
-        imagesToUpload.forEach((image) => uploadNewImage(image));
-      } else if (selectedImagesLength < imageUploadsLength) {
+        uploadImagesHandler();
+      } else {
         /** User de-selected an image in bottom sheet attachment picker */
-        const imagesToRemove = imageUploads.filter(
-          (imageUpload) =>
-            !selectedImages.find(
-              (selectedImage) =>
-                selectedImage.uri === imageUpload.file.uri || selectedImage.uri === imageUpload.url,
-            ),
-        );
-        imagesToRemove.forEach((image) => removeImage(image.id));
+        removeImagesHandler();
       }
     }
   }, [selectedImagesLength]);
+
+  useEffect(() => {
+    if (selectedFilesLength > fileUploadsLength) {
+      /** User selected a video in bottom sheet attachment picker */
+      const filesToUpload = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return !uploadedFile;
+      });
+      filesToUpload.forEach((file) => uploadNewFile(file));
+    } else {
+      /** User de-selected a video in bottom sheet attachment picker */
+      const filesToRemove = fileUploads.filter(
+        (fileUpload) =>
+          !selectedFiles.find(
+            (selectedFile) =>
+              selectedFile.uri === fileUpload.file.uri || selectedFile.uri === fileUpload.url,
+          ),
+      );
+      filesToRemove.forEach((file) => removeFile(file.id));
+    }
+  }, [selectedFilesLength]);
 
   useEffect(() => {
     if (imagesForInput) {
@@ -305,6 +359,35 @@ const MessageInputWithContext = <
       }
     }
   }, [imageUploadsLength]);
+
+  useEffect(() => {
+    if (fileUploadsLength < selectedFilesLength) {
+      /** User removed some video from seleted files within ImageUploadPreview. */
+      const updatedSelectedFiles = selectedFiles.filter((selectedFile) => {
+        const uploadedFile = fileUploads.find(
+          (fileUpload) =>
+            fileUpload.file.uri === selectedFile.uri || fileUpload.url === selectedFile.uri,
+        );
+        return uploadedFile;
+      });
+      setSelectedFiles(updatedSelectedFiles);
+    } else if (fileUploadsLength > selectedFilesLength) {
+      /**
+       * User is editing some message which contains video attachments OR
+       * video attachment is added from custom image picker (other than the default bottomsheet image picker)
+       * using `uploadNewFile` function from `MessageInputContext`.
+       **/
+      setSelectedFiles(
+        fileUploads.map((fileUpload) => ({
+          duration: fileUpload.file.duration,
+          name: fileUpload.file.name,
+          size: fileUpload.file.size,
+          type: fileUpload.file.type,
+          uri: fileUpload.file.uri,
+        })),
+      );
+    }
+  }, [fileUploadsLength]);
 
   const editingExists = !!editing;
   useEffect(() => {
@@ -625,11 +708,11 @@ export type MessageInputProps<
 /**
  * UI Component for message input
  * It's a consumer of
- * [Channel Context](https://getstream.github.io/stream-chat-react-native/v3/#channelcontext),
- * [Chat Context](https://getstream.github.io/stream-chat-react-native/v3/#chatcontext),
- * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/v3/#messageinputcontext),
- * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/v3/#suggestionscontext), and
- * [Translation Context](https://getstream.github.io/stream-chat-react-native/v3/#translationcontext)
+ * [Channel Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/channel-context/),
+ * [Chat Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/chat-context/),
+ * [MessageInput Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/message-input-context/),
+ * [Suggestions Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/suggestions-context/), and
+ * [Translation Context](https://getstream.io/chat/docs/sdk/reactnative/contexts/translation-context/)
  */
 export const MessageInput = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -666,6 +749,7 @@ export const MessageInput = <
     mentionedUsers,
     numberOfUploads,
     quotedMessage,
+    removeFile,
     removeImage,
     resetInput,
     SendButton,
@@ -676,6 +760,7 @@ export const MessageInput = <
     setShowMoreOptions,
     showMoreOptions,
     ShowThreadMessageInChannelButton,
+    uploadNewFile,
     uploadNewImage,
   } = useMessageInputContext<StreamChatGenerics>();
 
@@ -730,6 +815,7 @@ export const MessageInput = <
         mentionedUsers,
         numberOfUploads,
         quotedMessage,
+        removeFile,
         removeImage,
         Reply,
         resetInput,
@@ -744,6 +830,7 @@ export const MessageInput = <
         t,
         thread,
         triggerType,
+        uploadNewFile,
         uploadNewImage,
         watchers,
       }}

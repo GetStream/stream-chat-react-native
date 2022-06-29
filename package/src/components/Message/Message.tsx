@@ -1,7 +1,7 @@
 import React from 'react';
 import { GestureResponderEvent, Keyboard, StyleProp, View, ViewStyle } from 'react-native';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, UserResponse } from 'stream-chat';
 
 import { useCreateMessageContext } from './hooks/useCreateMessageContext';
 import { useMessageActionHandlers } from './hooks/useMessageActionHandlers';
@@ -42,7 +42,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { triggerHaptic } from '../../native';
+import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
 
@@ -52,26 +52,43 @@ import {
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
 
+export type TouchableEmitter =
+  | 'fileAttachment'
+  | 'gallery'
+  | 'giphy'
+  | 'message'
+  | 'messageContent'
+  | 'messageReplies'
+  | 'reactionList';
+
+export type TextMentionTouchableHandlerPayload<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  emitter: 'textMention';
+  additionalInfo?: { user?: UserResponse<StreamChatGenerics> };
+};
+
+export type UrlTouchableHandlerPayload = {
+  emitter: 'textLink' | 'card';
+  additionalInfo?: { url?: string };
+};
+
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
-  emitter?:
-    | 'card'
-    | 'fileAttachment'
-    | 'gallery'
-    | 'giphy'
-    | 'message'
-    | 'messageContent'
-    | 'messageReplies'
-    | 'reactionList'
-    | 'textLink'
-    | 'textMention';
   event?: GestureResponderEvent;
-};
+} & (
+  | {
+      emitter?: TouchableEmitter;
+    }
+  | TextMentionTouchableHandlerPayload
+  | UrlTouchableHandlerPayload
+);
 
 export type MessageTouchableHandlerPayload<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = TouchableHandlerPayload & {
   actionHandlers?: MessageActionHandlers;
+  additionalInfo?: Record<string, unknown>;
   message?: MessageType<StreamChatGenerics>;
 };
 
@@ -147,7 +164,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
      *
      * By default, we show the overlay with all the message actions on long press.
      *
@@ -160,7 +177,7 @@ export type MessagePropsWithContext<
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/Message/Message.tsx)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/Message.tsx)
      *
      * By default, we will dismiss the keyboard on press.
      *
@@ -312,7 +329,13 @@ const MessageWithContext = <
     !isMessageTypeDeleted && Array.isArray(message.attachments)
       ? message.attachments.reduce(
           (acc, cur) => {
-            if (cur.type === 'file' || cur.type === 'video') {
+            if (cur.type === 'file') {
+              acc.files.push(cur);
+              acc.other = []; // remove other attachments if a file exists
+            } else if (cur.type === 'video' && !cur.og_scrape_url && isVideoPackageAvailable()) {
+              acc.videos.push({ image_url: cur.asset_url, type: 'video' });
+              acc.other = [];
+            } else if (cur.type === 'video' && !cur.og_scrape_url) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
@@ -325,7 +348,7 @@ const MessageWithContext = <
                 acc.other = []; // remove other attachments if an image exists
               }
               // only add other attachments if there are no files/images
-            } else if (!acc.files.length && !acc.images.length) {
+            } else if (!acc.files.length && !acc.images.length && !acc.videos.length) {
               acc.other.push(cur);
             }
 
@@ -335,12 +358,14 @@ const MessageWithContext = <
             files: [] as Attachment<StreamChatGenerics>[],
             images: [] as Attachment<StreamChatGenerics>[],
             other: [] as Attachment<StreamChatGenerics>[],
+            videos: [] as Attachment<StreamChatGenerics>[],
           },
         )
       : {
           files: [] as Attachment<StreamChatGenerics>[],
           images: [] as Attachment<StreamChatGenerics>[],
           other: [] as Attachment<StreamChatGenerics>[],
+          videos: [] as Attachment<StreamChatGenerics>[],
         };
 
   /**
@@ -362,7 +387,7 @@ const MessageWithContext = <
       case 'files':
         return !!attachments.files.length;
       case 'gallery':
-        return !!attachments.images.length;
+        return !!attachments.images.length || !!attachments.videos.length;
       case 'text':
       default:
         return !!message.text;
@@ -523,6 +548,7 @@ const MessageWithContext = <
       ownCapabilities,
       supportedReactions,
       threadList,
+      videos: attachments.videos,
     });
 
     setOverlay('message');
@@ -595,45 +621,40 @@ const MessageWithContext = <
     onlyEmojis,
     onOpenThread,
     onPress: (payload) => {
-      onPressProp
-        ? onPressProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : onPressMessageProp
-        ? onPressMessageProp({
-            actionHandlers,
-            defaultHandler: payload.defaultHandler || onPress,
-            emitter: payload.emitter || 'message',
-            event: payload.event,
-            message,
-          })
-        : payload.defaultHandler
-        ? payload.defaultHandler()
-        : onPress();
+      const onPressArgs = {
+        actionHandlers,
+        additionalInfo: payload.additionalInfo,
+        defaultHandler: payload.defaultHandler || onPress,
+        emitter: payload.emitter || 'message',
+        event: payload.event,
+        message,
+      };
+
+      const handleOnPress = () => {
+        if (onPressProp) return onPressProp(onPressArgs);
+        if (onPressMessageProp) return onPressMessageProp(onPressArgs);
+        if (payload.defaultHandler) return payload.defaultHandler();
+
+        return onPress();
+      };
+
+      handleOnPress();
     },
     onPressIn:
       onPressInProp || onPressInMessageProp
         ? (payload) => {
-            onPressInProp
-              ? onPressInProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                })
-              : onPressInMessageProp &&
-                onPressInMessageProp({
-                  actionHandlers,
-                  defaultHandler: payload.defaultHandler,
-                  emitter: payload.emitter || 'message',
-                  event: payload.event,
-                  message,
-                });
+            const onPressInArgs = {
+              actionHandlers,
+              defaultHandler: payload.defaultHandler,
+              emitter: payload.emitter || 'message',
+              event: payload.event,
+              message,
+            };
+            const handleOnpressIn = () => {
+              if (onPressInProp) return onPressInProp(onPressInArgs);
+              if (onPressInMessageProp) return onPressInMessageProp(onPressInArgs);
+            };
+            handleOnpressIn();
           }
         : null,
     otherAttachments: attachments.other,
@@ -643,6 +664,7 @@ const MessageWithContext = <
     showMessageOverlay,
     showMessageStatus: typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
+    videos: attachments.videos,
   });
 
   if (!(isMessageTypeDeleted || messageContentOrder.length)) return null;

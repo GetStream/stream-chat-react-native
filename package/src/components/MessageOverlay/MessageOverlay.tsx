@@ -135,6 +135,7 @@ const MessageOverlayWithContext = <
     OverlayReactionsAvatar = OverlayReactionsAvatarDefault,
     setOverlay,
     threadList,
+    videos,
     isMyMessage,
     messageReactions,
     error,
@@ -451,6 +452,7 @@ const MessageOverlayWithContext = <
                                             key={`gallery_${messageContentOrderIndex}`}
                                             message={message}
                                             threadList={threadList}
+                                            videos={videos}
                                           />
                                         )
                                       );

@@ -80,6 +80,7 @@ export type MarkdownStyle = Partial<{
 export type Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: ViewStyle;
+    durationText: TextStyle;
     errorButtonText: TextStyle;
     errorContainer: ViewStyle;
     errorText: TextStyle;
@@ -194,6 +195,11 @@ export type Theme = {
       leftContainer: ViewStyle;
       rightContainer: ViewStyle;
       usernameText: TextStyle;
+    };
+    videoControl: {
+      durationTextStyle: TextStyle;
+      roundedView: ViewStyle;
+      videoContainer: ViewStyle;
     };
     backgroundColor?: string;
     pager?: ViewStyle;
@@ -371,6 +377,12 @@ export type Theme = {
         title: TextStyle;
       };
       noURI: ViewStyle;
+      playButtonStyle: {
+        durationTextStyle: TextStyle;
+        roundedView: ViewStyle;
+        videoContainer: ViewStyle;
+      };
+      playIcon: IconProps;
     };
     container: ViewStyle;
     content: {
@@ -389,7 +401,7 @@ export type Theme = {
       eyeIcon: IconProps;
       /**
        * Available options for styling text:
-       * https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js
+       * https://github.com/andangrd/react-native-markdown-package/blob/main/styles.js
        */
       markdown: MarkdownStyle;
       messageUser: TextStyle;
@@ -475,6 +487,10 @@ export type Theme = {
       timeIcon: IconProps;
     };
     targetedMessageUnderlay: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
   };
   overlay: {
     container: ViewStyle;
@@ -530,6 +546,7 @@ export type Theme = {
 export const defaultTheme: Theme = {
   attachmentPicker: {
     bottomSheetContentContainer: {},
+    durationText: {},
     errorButtonText: {},
     errorContainer: {},
     errorText: {},
@@ -666,6 +683,11 @@ export const defaultTheme: Theme = {
       leftContainer: {},
       rightContainer: {},
       usernameText: {},
+    },
+    videoControl: {
+      durationTextStyle: {},
+      roundedView: {},
+      videoContainer: {},
     },
   },
   inlineDateSeparator: {
@@ -843,6 +865,15 @@ export const defaultTheme: Theme = {
         borderLeftWidth: 2,
         paddingLeft: 8,
       },
+      playButtonStyle: {
+        durationTextStyle: {},
+        roundedView: {},
+        videoContainer: {},
+      },
+      playIcon: {
+        height: 24,
+        width: 24,
+      },
     },
     container: {},
     content: {
@@ -981,6 +1012,10 @@ export const defaultTheme: Theme = {
       },
     },
     targetedMessageUnderlay: {},
+    videoThumbnail: {
+      container: {},
+      roundedView: {},
+    },
   },
   overlay: {
     container: {},

@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+
 import { Alert, Keyboard } from 'react-native';
 
 import type { TextInput, TextInputProps } from 'react-native';
@@ -35,8 +36,8 @@ import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreO
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { Asset, compressImage, getLocalAssetUri, pickDocument } from '../../native';
-import type { DefaultStreamChatGenerics, UnknownType } from '../../types/types';
+import { compressImage, getLocalAssetUri, pickDocument } from '../../native';
+import type { Asset, DefaultStreamChatGenerics, File, UnknownType } from '../../types/types';
 import {
   ACITriggerSettings,
   ACITriggerSettingsParams,
@@ -52,15 +53,13 @@ import { useChatContext } from '../chatContext/ChatContext';
 import { useOwnCapabilitiesContext } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useThreadContext } from '../threadContext/ThreadContext';
 import { useTranslationContext } from '../translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
+  file: File;
   id: string;
   state: FileStateValue;
   url?: string;
@@ -207,13 +206,8 @@ export type LocalMessageInputContext<
   uploadFile: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /** Function for attempting to upload an image */
   uploadImage: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
-  uploadNewFile: (file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  }) => Promise<void>;
-  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
+  uploadNewFile: (file: File) => Promise<void>;
+  uploadNewImage: (image: Asset) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -222,7 +216,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for attach button.
    *
-   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
   clearEditingState: () => void;
@@ -230,7 +224,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for commands button.
    *
-   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
+   * Defaults to and accepts same props as: [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<StreamChatGenerics>>;
   /**
@@ -238,7 +232,7 @@ export type InputMessageInputContextValue<
    * being allowed to send another message. This component is displayed in place of the
    * send button for the MessageInput component.
    *
-   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/CooldownTimer.tsx)
+   * **default** [CooldownTimer](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/CooldownTimer.tsx)
    */
   CooldownTimer: React.ComponentType<CooldownTimerProps>;
   editing: boolean | MessageType<StreamChatGenerics>;
@@ -246,7 +240,7 @@ export type InputMessageInputContextValue<
 
   /**
    * Custom UI component for FileUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/FileUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/FileUploadPreview.tsx
    */
   FileUploadPreview: React.ComponentType<FileUploadPreviewProps<StreamChatGenerics>>;
 
@@ -258,7 +252,7 @@ export type InputMessageInputContextValue<
   hasImagePicker: boolean;
   /**
    * Custom UI component for ImageUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/ImageUploadPreview.tsx
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/ImageUploadPreview.tsx
    */
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps<StreamChatGenerics>>;
   InputEditingStateHeader: React.ComponentType<InputEditingStateHeaderProps<StreamChatGenerics>>;
@@ -269,7 +263,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for more options button.
    *
-   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/v3/#moreoptionsbutton)
+   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
   /** Limit on the number of lines in the text input before scrolling */
@@ -278,7 +272,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button.
    *
-   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
+   * Defaults to and accepts same props as: [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
    */
   SendButton: React.ComponentType<SendButtonProps<StreamChatGenerics>>;
   sendImageAsync: boolean;
@@ -294,7 +288,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/UploadProgressIndicator.tsx)
+   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
@@ -355,7 +349,7 @@ export type InputMessageInputContextValue<
   initialValue?: string;
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps<StreamChatGenerics>, 'Input'> &
@@ -365,7 +359,7 @@ export type InputMessageInputContextValue<
   >;
   /**
    * Custom UI component to override buttons on left side of input box
-   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageInput/InputButtons.tsx),
+   * Defaults to [InputButtons](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageInput/InputButtons.tsx),
    * which contain following components/buttons:
    *
    *  - AttachButton
@@ -403,7 +397,9 @@ export type MessageInputContextValue<
 > = LocalMessageInputContext<StreamChatGenerics> &
   Omit<InputMessageInputContextValue<StreamChatGenerics>, 'sendMessage'>;
 
-export const MessageInputContext = React.createContext({} as MessageInputContextValue);
+export const MessageInputContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageInputContextValue,
+);
 
 export const MessageInputProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -457,7 +453,7 @@ export const MessageInputProvider = <
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
   const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(false);
-  const { editing, hasFilePicker, hasImagePicker, initialValue, maxNumberOfFiles } = value;
+  const { editing, hasFilePicker, hasImagePicker, initialValue } = value;
   const {
     fileUploads,
     imageUploads,
@@ -546,7 +542,7 @@ export const MessageInputProvider = <
   };
 
   const openAttachmentPicker = () => {
-    if (hasImagePicker && !fileUploads.length) {
+    if (hasImagePicker) {
       Keyboard.dismiss();
       openPicker();
       setSelectedPicker('images');
@@ -558,7 +554,7 @@ export const MessageInputProvider = <
        * https://github.com/gorhom/react-native-bottom-sheet/issues/446
        */
       setTimeout(openPicker, 600);
-    } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+    } else if (hasFilePicker) {
       pickFile();
     }
   };
@@ -582,6 +578,7 @@ export const MessageInputProvider = <
 
   const pickFile = async () => {
     if (numberOfUploads >= value.maxNumberOfFiles) {
+      Alert.alert('Maximum number of files reached');
       return;
     }
 
@@ -675,6 +672,8 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          original_height: image.height,
+          original_width: image.width,
           type: 'image',
         } as Attachment<StreamChatGenerics>);
       }
@@ -696,9 +695,19 @@ export const MessageInputProvider = <
             image_url: file.url,
             type: 'image',
           } as Attachment<StreamChatGenerics>);
+        } else if (file.file.type?.startsWith('audio/')) {
+          attachments.push({
+            asset_url: file.url,
+            duration: file.file.duration,
+            file_size: file.file.size,
+            mime_type: file.file.type,
+            title: file.file.name,
+            type: 'audio',
+          } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
+            duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
             title: file.file.name,
@@ -958,7 +967,7 @@ export const MessageInputProvider = <
         response = await value.doImageUploadRequest(file, channel);
       } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(compressedUri, undefined, contentType).then((res) => {
+          channel.sendImage(compressedUri, file.filename, contentType).then((res) => {
             if (asyncIds.includes(id)) {
               // Evaluates to true if user hit send before image successfully uploaded
               setAsyncUploads((prevAsyncUploads) => {
@@ -970,22 +979,24 @@ export const MessageInputProvider = <
                 return prevAsyncUploads;
               });
             } else {
-              setImageUploads(getUploadSetStateAction(id, FileState.UPLOADED, { url: res.file }));
+              const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+                url: res.file,
+              });
+              setImageUploads(newImageUploads);
             }
           });
         } else {
-          response = await channel.sendImage(compressedUri, undefined, contentType);
+          response = await channel.sendImage(compressedUri, file.filename, contentType);
         }
       }
 
       if (Object.keys(response).length) {
-        setImageUploads(
-          getUploadSetStateAction(id, FileState.UPLOADED, {
-            height: file.height,
-            url: response.file,
-            width: file.width,
-          }),
-        );
+        const newImageUploads = getUploadSetStateAction<ImageUpload>(id, FileState.UPLOADED, {
+          height: file.height,
+          url: response.file,
+          width: file.width,
+        });
+        setImageUploads(newImageUploads);
       }
     } catch (error) {
       handleFileOrImageUploadError(error, true, id);
@@ -1029,7 +1040,7 @@ export const MessageInputProvider = <
     }
   };
 
-  const uploadNewImage = async (image: Partial<Asset>) => {
+  const uploadNewImage = async (image: Asset) => {
     const id = generateRandomId();
 
     const isBlockedImageMimeType = blockedImageMimeTypes?.some((mimeType: string) =>
@@ -1124,7 +1135,19 @@ export const MessageInputProvider = <
 
 export const useMessageInputContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() => useContext(MessageInputContext) as unknown as MessageInputContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessageInputContext,
+  ) as unknown as MessageInputContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessageInputContext hook was called outside of the MessageInputContext provider. Make sure you have configured Channel component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#channel`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageInputContext

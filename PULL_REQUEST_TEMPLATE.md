@@ -66,8 +66,9 @@
 
 - [ ] I have signed the [Stream CLA](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) (required)
 - [ ] PR targets the `develop` branch
-- [ ] Commits follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) spec
-- [ ] New code is covered by tests
-- [ ] Screenshots added for visual changes
 - [ ] Documentation is updated
+- [ ] New code is tested in main example apps, including all possible scenarios
+  - [ ] SampleApp iOS and Android
+  - [ ] Expo iOS and Android
+
 

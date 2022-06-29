@@ -5,6 +5,8 @@ import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
 
+import { openUrlSafely } from './utils/openUrlSafely';
+
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
@@ -25,6 +27,7 @@ import {
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
+import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { padding: 1 },
+  imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -82,6 +85,7 @@ export type GalleryPropsWithContext<
     | 'alignment'
     | 'groupStyles'
     | 'images'
+    | 'videos'
     | 'onLongPress'
     | 'onPress'
     | 'onPressIn'
@@ -90,7 +94,7 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour'
+    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour' | 'VideoThumbnail'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -131,6 +135,8 @@ const GalleryWithContext = <
     setImages,
     setOverlay,
     threadList,
+    videos,
+    VideoThumbnail,
   } = props;
 
   const {
@@ -164,16 +170,17 @@ const GalleryWithContext = <
     minWidth,
   };
 
+  const imagesAndVideos = [...(images || []), ...(videos || [])];
   const { height, invertedDirections, thumbnailGrid, width } = useMemo(
     () =>
       buildGallery({
-        images,
+        images: imagesAndVideos,
         sizeConfig,
       }),
-    [images.length],
+    [imagesAndVideos.length],
   );
 
-  if (!images?.length) return null;
+  if (!imagesAndVideos?.length) return null;
   const messageText = message?.text;
   const messageId = message?.id;
   const numOfColumns = thumbnailGrid.length;
@@ -206,12 +213,12 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {rows.map(({ height, resizeMode, url, width }, rowIndex) => {
-              const defaultOnPress = () => {
-                // Added if-else to keep the logic readable, instead of DRY.
-                // if - legacyImageViewerSwipeBehaviour is disabled
-                // else - legacyImageViewerSwipeBehaviour is enabled
+            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
+              const openImageViewer = () => {
                 if (!legacyImageViewerSwipeBehaviour && message) {
+                  // Added if-else to keep the logic readable, instead of DRY.
+                  // if - legacyImageViewerSwipeBehaviour is disabled
+                  // else - legacyImageViewerSwipeBehaviour is enabled
                   setImages([message]);
                   setImage({ messageId: message.id, url });
                   setOverlay('gallery');
@@ -220,11 +227,38 @@ const GalleryWithContext = <
                   setOverlay('gallery');
                 }
               };
+
+              const defaultOnPress = () => {
+                if (type === 'video' && !isVideoPackageAvailable()) {
+                  // This condition is kinda unreachable, since we render videos as file attachment if the video
+                  // library is not installed. But doesn't hurt to have extra safeguard, in case of some customizations.
+                  openUrlSafely(url);
+                } else {
+                  openImageViewer();
+                }
+              };
+
+              const borderRadius = getGalleryImageBorderRadius({
+                alignment,
+                colIndex,
+                groupStyles,
+                hasThreadReplies,
+                height,
+                invertedDirections,
+                messageText,
+                numOfColumns,
+                numOfRows,
+                rowIndex,
+                sizeConfig,
+                threadList,
+                width,
+              });
+
               return (
                 <TouchableOpacity
                   activeOpacity={0.8}
                   disabled={preventPress}
-                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${images.length}`}
+                  key={`gallery-item-${messageId}/${colIndex}/${rowIndex}/${imagesAndVideos.length}`}
                   onLongPress={(event) => {
                     if (onLongPress) {
                       onLongPress({
@@ -264,35 +298,34 @@ const GalleryWithContext = <
                   }-${colIndex}-item-${rowIndex}`}
                   {...additionalTouchableProps}
                 >
-                  <MemoizedGalleryImage
-                    resizeMode={resizeMode}
-                    style={[
-                      getGalleryImageBorderRadius({
-                        alignment,
-                        colIndex,
-                        groupStyles,
-                        hasThreadReplies,
-                        height,
-                        invertedDirections,
-                        messageText,
-                        numOfColumns,
-                        numOfRows,
-                        rowIndex,
-                        sizeConfig,
-                        threadList,
-                        width,
-                      }),
-                      image,
-                      {
-                        height: height - 1,
-                        width: width - 1,
-                      },
-                    ]}
-                    uri={url}
-                  />
+                  {type === 'video' ? (
+                    <VideoThumbnail
+                      style={[
+                        borderRadius,
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <MemoizedGalleryImage
+                      resizeMode={resizeMode}
+                      style={[
+                        borderRadius,
+                        image,
+                        {
+                          height: height - 1,
+                          width: width - 1,
+                        },
+                      ]}
+                      uri={url}
+                    />
+                  )}
                   {colIndex === numOfColumns - 1 &&
                   rowIndex === numOfRows - 1 &&
-                  images.length > 4 ? (
+                  imagesAndVideos.length > 4 ? (
                     <View
                       style={[
                         StyleSheet.absoluteFillObject,
@@ -302,7 +335,7 @@ const GalleryWithContext = <
                       ]}
                     >
                       <Text style={[styles.moreImagesText, moreImagesText]}>
-                        {`+${images.length - 4}`}
+                        {`+${imagesAndVideos.length - 4}`}
                       </Text>
                     </View>
                   ) : null}
@@ -325,12 +358,14 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     hasThreadReplies: prevHasThreadReplies,
     images: prevImages,
     message: prevMessage,
+    videos: prevVideos,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
     hasThreadReplies: nextHasThreadReplies,
     images: nextImages,
     message: nextMessage,
+    videos: nextVideos,
   } = nextProps;
 
   const messageEqual = prevMessage?.id === nextMessage?.id;
@@ -351,6 +386,15 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
         getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextImages[index].thumb_url),
     );
   if (!imagesEqual) return false;
+
+  const videosEqual =
+    prevVideos.length === nextVideos.length &&
+    prevVideos.every(
+      (image, index) =>
+        getUrlWithoutParams(image.image_url) === getUrlWithoutParams(nextVideos[index].image_url) &&
+        getUrlWithoutParams(image.thumb_url) === getUrlWithoutParams(nextVideos[index].thumb_url),
+    );
+  if (!videosEqual) return false;
 
   return true;
 };
@@ -382,6 +426,8 @@ export const Gallery = <
     setImage: propSetImage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
+    videos: propVideos,
+    VideoThumbnail: PropVideoThumbnail,
   } = props;
 
   const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
@@ -395,16 +441,19 @@ export const Gallery = <
     onPressIn: contextOnPressIn,
     preventPress: contextPreventPress,
     threadList: contextThreadList,
+    videos: contextVideos,
   } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
     legacyImageViewerSwipeBehaviour,
+    VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
   const { setOverlay: contextSetOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
+  const videos = propVideos || contextVideos;
 
-  if (!images.length) return null;
+  if (!images.length && !videos.length) return null;
 
   const additionalTouchableProps = propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
@@ -417,6 +466,7 @@ export const Gallery = <
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
+  const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
 
   return (
     <MemoizedGallery
@@ -437,6 +487,8 @@ export const Gallery = <
         setImages,
         setOverlay,
         threadList,
+        videos,
+        VideoThumbnail,
       }}
     />
   );

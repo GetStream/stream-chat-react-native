@@ -18,7 +18,10 @@ import type { ReactionData } from '../../utils/utils';
 import type { Alignment, MessageContextValue } from '../messageContext/MessageContext';
 import type { MessagesContextValue } from '../messagesContext/MessagesContext';
 import type { OwnCapabilitiesContextValue } from '../ownCapabilitiesContext/OwnCapabilitiesContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
+
 import { getDisplayName } from '../utils/getDisplayName';
+import { isTestEnvironment } from '../utils/isTestEnvironment';
 
 export type MessageOverlayData<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -40,28 +43,29 @@ export type MessageOverlayData<
   ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
+  videos?: Attachment<StreamChatGenerics>[];
 };
 
 export type MessageOverlayContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   /**
-   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
+   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png) in overlay.
    *
-   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/MessageActions.tsx)
    */
   MessageActionList: React.ComponentType<MessageActionListProps<StreamChatGenerics>>;
   MessageActionListItem: React.ComponentType<MessageActionListItemProps<StreamChatGenerics>>;
   /**
-   * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
+   * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/OverlayReactionList.tsx)
+   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/OverlayReactionList.tsx)
    */
   OverlayReactionList: React.ComponentType<OverlayReactionListProps<StreamChatGenerics>>;
   /**
-   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png), in overlay (which shows up on long press on message).
+   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/main/screenshots/docs/2.png), in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/package/src/components/MessageOverlay/OverlayReactions.tsx)
+   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageOverlay/OverlayReactions.tsx)
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps<StreamChatGenerics>>;
   OverlayReactionsAvatar: React.ComponentType<OverlayReactionsAvatarProps>;
@@ -70,7 +74,9 @@ export type MessageOverlayContextValue<
   data?: MessageOverlayData<StreamChatGenerics>;
 };
 
-export const MessageOverlayContext = React.createContext({} as MessageOverlayContextValue);
+export const MessageOverlayContext = React.createContext(
+  DEFAULT_BASE_CONTEXT_VALUE as MessageOverlayContextValue,
+);
 
 export const MessageOverlayProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -90,8 +96,19 @@ export const MessageOverlayProvider = <
 
 export const useMessageOverlayContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->() =>
-  useContext(MessageOverlayContext) as unknown as MessageOverlayContextValue<StreamChatGenerics>;
+>() => {
+  const contextValue = useContext(
+    MessageOverlayContext,
+  ) as unknown as MessageOverlayContextValue<StreamChatGenerics>;
+
+  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE && !isTestEnvironment()) {
+    throw new Error(
+      `The useMessageOverlayContext hook was called outside the MessageOverlayContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
+    );
+  }
+
+  return contextValue;
+};
 
 /**
  * Typescript currently does not support partial inference so if MessageOverlayContext
