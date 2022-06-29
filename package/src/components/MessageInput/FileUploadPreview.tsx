@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -188,7 +188,6 @@ const FileUploadPreviewWithContext = <
                         24 - // 24 = close icon size
                         24, // 24 = internal padding
                     },
-                    I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
                     filenameText,
                   ]}
                 >
