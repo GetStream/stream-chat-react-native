@@ -10,12 +10,11 @@ export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
-  const loginUser = async () => {
-
+  const loginUser = async (config: LoginConfig) => {
     const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
       timeout: 6000,
     });
-    console.log('Here in login user function')
+
     const user = {
       id: config.userId,
       image: config.userImage,
@@ -46,7 +45,9 @@ export const useChatClient = () => {
           null,
         );
 
-        await loginUser(config);
+        if (config) {
+          await loginUser(config);
+        }
       }
     } catch (e) {
       console.warn(e);
