@@ -1,5 +1,12 @@
 # Change Log
 
+## [4.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.3...v4.8.0) (2022-06-29)
+
+
+### Features
+
+* hebrew locale support ([20a73f0](https://github.com/GetStream/stream-chat-react-native/commit/20a73f0ee46742b8117bdc175c56fc70ee6074a5))
+
 ### [4.7.3](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.2...v4.7.3) (2022-06-22)
 
 
