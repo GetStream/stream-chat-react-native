@@ -13,7 +13,6 @@ import {
   CHANNEL_WITH_DELETED_MESSAGES,
   CHANNEL_WITH_EMPTY_MESSAGE,
   CHANNEL_WITH_MENTIONED_USERS,
-  CHANNEL_WITH_MESSAGES,
   CHANNEL_WITH_MESSAGES_ATTACHMENTS,
   CHANNEL_WITH_MESSAGES_COMMAND,
   CHANNEL_WITH_MESSAGES_TEXT,
@@ -55,19 +54,6 @@ describe('useLatestMessagePreview', () => {
     );
     await waitFor(() => {
       expect(result.current.previews).toBeTruthy();
-    });
-  });
-
-  it('should return a channel', async () => {
-    const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
-      { wrapper: ChatProvider },
-    );
-    await waitFor(() => {
-      expect(result.current.previews).toEqual([
-        { bold: false, text: '' },
-        { bold: false, text: 'Empty message...' },
-      ]);
     });
   });
 
