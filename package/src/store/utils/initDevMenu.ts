@@ -12,7 +12,6 @@ if (__DEV__) {
 
   DevMenu.addItem('Reset Stream Offline DB', resetDatabase);
   setTimeout(() => {
-    DevMenu.addItem('User Pragma Version', userPragmaVersion);
     (Object.keys(schema) as Table[]).forEach((tName) => {
       DevMenu.addItem(`Log ${tName}`, () => {
         const rows = select(`${tName}`, '*');
@@ -21,23 +20,6 @@ if (__DEV__) {
     });
   }, 100);
 }
-
-const userPragmaVersion = (table: Table, fields = '*') => {
-  openDB();
-
-  const { message, rows, status } = sqlite.executeSql(DB_NAME, `PRAGMA user_version`, []);
-
-  closeDB();
-  if (status === 1) {
-    console.error(`Querying for ${table} failed: ${message}`);
-  }
-
-  // eslint-disable-next-line no-underscore-dangle
-  const result = rows ? rows._array : [];
-  console.log({
-    result
-  })
-};
 
 const select = (table: Table, fields = '*') => {
   openDB();

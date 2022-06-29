@@ -151,7 +151,6 @@ export const useChatClient = () => {
           '@stream-rn-sampleapp-login-config',
           null,
         );
-        console.log({ config });
 
         if (config) {
           await loginUser(config);
@@ -172,7 +171,6 @@ export const useChatClient = () => {
 
   useEffect(() => {
     const run = async () => {
-      console.log('>>>>')
       await requestNotificationPermission();
       await switchUser();
     };
