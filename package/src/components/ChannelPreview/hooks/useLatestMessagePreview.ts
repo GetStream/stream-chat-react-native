@@ -54,14 +54,14 @@ const getMentionUsers = <
   mentionedUser: UserResponse<StreamChatGenerics>[] | undefined,
 ) => {
   if (Array.isArray(mentionedUser)) {
-    const mentionUSerString = mentionedUser.reduce((acc, cur) => {
+    const mentionUserString = mentionedUser.reduce((acc, cur) => {
       const userName = cur.name || cur.id || '';
       if (userName) {
         acc += `${acc.length ? '|' : ''}@${userName}`;
       }
       return acc;
     }, '');
-    return mentionUSerString;
+    return mentionUserString;
   }
   return '';
 };
