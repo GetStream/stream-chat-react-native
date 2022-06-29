@@ -18,7 +18,7 @@ export const ImageLoadingIndicator = (props: ImageLoadingIndicatorProps) => {
   const {
     theme: {
       messageSimple: {
-        videoThumbnail: { container },
+        loadingIndicator: { container },
       },
     },
   } = useTheme();
