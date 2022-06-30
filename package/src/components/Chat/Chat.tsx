@@ -15,6 +15,7 @@ import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext'
 import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
+  DEFAULT_USER_LANGUAGE,
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
@@ -132,6 +133,7 @@ const ChatWithContext = <
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
+    userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE,
   });
 
   /**

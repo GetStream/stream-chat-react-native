@@ -8,6 +8,9 @@ import type { Moment } from 'moment';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
+import type { TranslationLanguages } from 'stream-chat';
+
+export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
 
 export const isDayOrMoment = (output: TDateTimeParserOutput): output is Dayjs.Dayjs | Moment =>
   (output as Dayjs.Dayjs | Moment).isSame != null;
@@ -21,11 +24,13 @@ export type TDateTimeParser = (input?: TDateTimeParserInput) => TDateTimeParserO
 export type TranslationContextValue = {
   t: TFunction | ((key: string) => string);
   tDateTimeParser: TDateTimeParser;
+  userLanguage: TranslationLanguages;
 };
 
 const defaultTranslationContextValue: TranslationContextValue = {
   t: (key: string) => key,
   tDateTimeParser: (input) => Dayjs(input),
+  userLanguage: DEFAULT_USER_LANGUAGE,
 };
 
 export const TranslationContext = React.createContext<TranslationContextValue>(

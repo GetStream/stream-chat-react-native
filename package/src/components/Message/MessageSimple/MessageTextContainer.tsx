@@ -15,6 +15,7 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
   textContainer: { maxWidth: 250, paddingHorizontal: 16 },
@@ -75,7 +76,13 @@ const MessageTextContainerWithContext = <
     },
   } = theme;
 
+  const { userLanguage } = useTranslationContext();
+
   if (!message.text) return null;
+
+  if (message.i18n && `${userLanguage}_text` in message.i18n) {
+    message.text = message.i18n[`${userLanguage}_text`];
+  }
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 
