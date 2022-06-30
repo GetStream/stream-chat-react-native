@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
   filenameText: {
     fontSize: 14,
     fontWeight: 'bold',
-    paddingLeft: 10,
+    paddingHorizontal: 10,
   },
   fileSizeText: {
     fontSize: 12,
-    paddingLeft: 10,
+    paddingHorizontal: 10,
   },
   fileTextContainer: {
     height: '100%',
@@ -66,11 +66,12 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   unsupportedFileText: {
-    fontSize: 16,
+    fontSize: 12,
+    marginHorizontal: 4,
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 4,
+    marginTop: 3,
   },
 });
 
