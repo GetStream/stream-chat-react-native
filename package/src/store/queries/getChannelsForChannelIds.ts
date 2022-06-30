@@ -16,7 +16,7 @@ export const getChannelsForChannelIds = <
   const questionMarks = Array(channelIds.length).fill('?').join(',');
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,
-    `SELECT * FROM channels WHERE cid IN (${questionMarks}) limit 10`,
+    `SELECT * FROM channels WHERE cid IN (${questionMarks})`,
     [...channelIds],
   );
 

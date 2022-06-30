@@ -14,7 +14,7 @@ export const getMessagesForChannel = <
 ): MessageResponse<StreamChatGenerics>[] => {
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,
-    `SELECT * FROM messages WHERE cid = ? ORDER BY datetime(createdAt) DESC limit 10`,
+    `SELECT * FROM messages WHERE cid = ? ORDER BY datetime(createdAt) DESC`,
     [channelId],
   );
 
