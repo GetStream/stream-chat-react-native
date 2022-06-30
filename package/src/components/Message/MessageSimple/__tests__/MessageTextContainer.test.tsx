@@ -2,7 +2,8 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-
+import { Chat } from '../../../Chat/Chat';
+import { Channel } from '../../../Channel/Channel';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
@@ -12,6 +13,15 @@ import {
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { MessageTextContainer } from '../MessageTextContainer';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+import { OverlayProvider } from '../../../../contexts/overlayContext/OverlayProvider';
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateFileUploadPreview } from '../../../../mock-builders/generator/attachment';
+import { generateChannelResponse } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { MessageList } from '../../../MessageList/MessageList';
 
 afterEach(cleanup);
 
@@ -59,6 +69,41 @@ describe('MessageTextContainer', () => {
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
+    });
+  });
+
+  it('should display a translated message if applicable', async () => {
+    const chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' });
+
+    const message = {
+      text: 'Hello world!',
+      i18n: {
+        no_text: 'Hallo verden!',
+      },
+    };
+    const mockedChannel = generateChannelResponse({
+      messages: [message],
+      id: 'chans',
+    });
+
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', 'chans');
+    await channel.watch();
+
+    const TestComponent = () => (
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>
+    );
+
+    const { getByText } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByText(message.i18n.no_text)).toBeTruthy();
     });
   });
 });
