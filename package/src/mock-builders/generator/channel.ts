@@ -53,7 +53,9 @@ const defaultState = {
   setIsUpToDate: jest.fn(),
 };
 
-const getChannelDefaults = ({ id, type } = { id: uuidv4(), type: 'messaging' }) => ({
+const getChannelDefaults = (
+  { id, type }: { [key: string]: any } = { id: uuidv4(), type: 'messaging' },
+) => ({
   _client: {},
   data: {
     cid: `${type}:${id}`,
@@ -75,22 +77,28 @@ const getChannelDefaults = ({ id, type } = { id: uuidv4(), type: 'messaging' }) 
   type,
 });
 
-export const generateChannel = (customValues) =>
+export const generateChannel = (customValues: { [key: string]: any }) =>
   Object.keys(customValues).reduce((accumulated, current) => {
-    if (Object.prototype.hasOwnProperty.call(accumulated, current)) {
-      accumulated[current] =
-        typeof accumulated[current] === 'object'
-          ? { ...accumulated[current], ...customValues[current] }
-          : (accumulated[current] = customValues[current]);
+    if (current in accumulated) {
+      const key = current as keyof typeof accumulated;
+      accumulated[key] =
+        typeof accumulated[key] === 'object'
+          ? { ...accumulated[key], ...customValues[key] }
+          : (accumulated[key] = customValues[key]);
       return accumulated;
     }
     return { ...accumulated, [current]: customValues[current] };
   }, getChannelDefaults());
 
 export const generateChannelResponse = (
-  customValues = { channel: {}, id: uuidv4(), type: 'messaging' },
+  customValues: {
+    channel?: Record<string, any>;
+    id?: string;
+    messages?: Record<string, any>[];
+    type?: string;
+  } = { channel: {}, id: uuidv4(), messages: [], type: 'messaging' },
 ) => {
-  const { id = uuidv4(), type = 'messaging', channel = {}, ...rest } = customValues;
+  const { id = uuidv4(), messages = [], type = 'messaging', channel = {}, ...rest } = customValues;
 
   const defaults = getChannelDefaults();
   return {
@@ -105,7 +113,7 @@ export const generateChannelResponse = (
       },
     },
     members: [],
-    messages: [],
+    messages,
     ...rest,
   };
 };
