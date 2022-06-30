@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import {
+  getOrCreateChannelApi,
+  GetOrCreateChannelApiParams,
+} from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
 import dispatchMessageReadEvent from '../../../mock-builders/event/messageRead';
@@ -13,8 +16,24 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreview } from '../ChannelPreview';
+import type { Channel, StreamChat } from 'stream-chat';
+import type { ChannelPreviewMessengerProps } from '../ChannelPreviewMessenger';
 
-const ChannelPreviewUIComponent = (props) => (
+import '@testing-library/jest-native/extend-expect';
+
+type ChannelPreviewUIComponentProps = {
+  channel: {
+    id: string;
+  };
+  unread: number;
+  latestMessagePreview: {
+    messageObject: {
+      text: string;
+    };
+  };
+};
+
+const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => (
   <>
     <Text testID='channel-id'>{props.channel.id}</Text>
     <Text testID='unread-count'>{props.unread}</Text>
@@ -28,21 +47,27 @@ const ChannelPreviewUIComponent = (props) => (
 
 describe('ChannelPreview', () => {
   const clientUser = generateUser();
-  let chatClient;
-  let channel;
+  let chatClient: StreamChat;
+  let channel: Channel | null;
 
-  const getComponent = (props = {}) => (
-    <Chat client={chatClient}>
-      <ChannelPreview
-        {...props}
-        channel={channel}
-        client={chatClient}
-        Preview={ChannelPreviewUIComponent}
-      />
-    </Chat>
-  );
+  const TestComponent = (props = {}) => {
+    if (channel === null) {
+      return null;
+    }
 
-  const initializeChannel = async (c) => {
+    return (
+      <Chat client={chatClient}>
+        <ChannelPreview
+          {...props}
+          channel={channel}
+          client={chatClient}
+          Preview={ChannelPreviewUIComponent as ComponentType<ChannelPreviewMessengerProps>}
+        />
+      </Chat>
+    );
+  };
+
+  const initializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
     channel = chatClient.channel('messaging');
@@ -66,23 +91,26 @@ describe('ChannelPreview', () => {
       messages: [message],
     });
     await initializeChannel(c);
-    const { queryByText } = render(getComponent());
+    const { queryByText } = render(<TestComponent />);
     await waitFor(() => queryByText(message.text));
   });
 
   it('should mark channel as read, when message.read event is received for current user', async () => {
     const c = generateChannelResponse();
     await initializeChannel(c);
-    channel.countUnread = () => 20;
 
-    const { getByTestId } = render(getComponent());
+    if (channel !== null) {
+      channel.countUnread = () => 20;
+    }
+
+    const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
     expect(getByTestId('unread-count')).toHaveTextContent('20');
 
     act(() => {
-      dispatchMessageReadEvent(chatClient, clientUser, channel);
+      dispatchMessageReadEvent(chatClient, clientUser, channel || {});
     });
 
     await waitFor(() => {
@@ -94,7 +122,7 @@ describe('ChannelPreview', () => {
     const c = generateChannelResponse();
     await initializeChannel(c);
 
-    const { getByTestId } = render(getComponent());
+    const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
@@ -103,7 +131,7 @@ describe('ChannelPreview', () => {
     });
 
     act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel);
+      dispatchMessageNewEvent(chatClient, message, channel || {});
     });
 
     await waitFor(() => {
@@ -115,7 +143,7 @@ describe('ChannelPreview', () => {
     const c = generateChannelResponse();
     await initializeChannel(c);
 
-    const { getByTestId } = render(getComponent());
+    const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() => getByTestId('channel-id'));
 
@@ -123,10 +151,12 @@ describe('ChannelPreview', () => {
       user: clientUser,
     });
 
-    channel.countUnread = () => 10;
+    if (channel !== null) {
+      channel.countUnread = () => 10;
+    }
 
     act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel);
+      dispatchMessageNewEvent(chatClient, message, channel || {});
     });
 
     await waitFor(() => {

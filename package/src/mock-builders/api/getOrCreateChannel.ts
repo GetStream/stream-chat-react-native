@@ -1,5 +1,11 @@
 import { mockedApiResponse } from './utils';
 
+export type GetOrCreateChannelApiParams = {
+  channel?: Record<string, any>;
+  members?: Record<string, any>[];
+  messages?: Record<string, any>[];
+};
+
 /**
  * Returns the api response for queryChannel api.
  *
@@ -8,7 +14,7 @@ import { mockedApiResponse } from './utils';
  * @param {*} channel
  */
 export const getOrCreateChannelApi = (
-  channel = {
+  channel: GetOrCreateChannelApiParams = {
     channel: {},
     members: [],
     messages: [],
