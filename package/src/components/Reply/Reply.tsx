@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
@@ -7,8 +7,8 @@ import type { Attachment } from 'stream-chat';
 
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
-  MessageInputContextValue,
   MessageInputContext,
+  MessageInputContextValue,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
   MessagesContextValue,
@@ -19,6 +19,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { DEFAULT_BASE_CONTEXT_VALUE } from '../../contexts/utils/defaultBaseContextValue';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { emojiRegex } from '../../utils/utils';
@@ -27,7 +28,6 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { VideoThumbnail } from '../Attachment/VideoThumbnail';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../../contexts/utils/defaultBaseContextValue';
 
 const styles = StyleSheet.create({
   container: {

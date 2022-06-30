@@ -1,13 +1,15 @@
 import React from 'react';
-import { Reply } from '../Reply';
-import { act, render, waitFor } from '@testing-library/react-native';
-import { Chat } from '../../Chat/Chat';
-import { Channel } from '../../Channel/Channel';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+
+import { render, waitFor } from '@testing-library/react-native';
+
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
+import { Reply } from '../Reply';
 
 describe('<Reply/>', () => {
   it('can be rendered outside of a MessageInputProvider', async () => {
@@ -38,7 +40,7 @@ describe('<Reply/>', () => {
         expect(toJSON()).not.toBeNull();
       });
     } catch (error: unknown) {
-      fail(`Error thrown: ${error}`);
+      throw new Error(`Error thrown while rendering Reply: ${error}`);
     }
 
     process.env = oldEnvironment;
