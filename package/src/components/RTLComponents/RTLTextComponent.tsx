@@ -2,7 +2,7 @@ import React from 'react';
 import { I18nManager, StyleSheet, Text, ViewProps } from 'react-native';
 
 const styles = StyleSheet.create({
-  defaultStyle: I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
+  defaultStyle: { writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' },
 });
 
 export type RTLTextComponentProps = ViewProps;
