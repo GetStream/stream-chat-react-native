@@ -107,7 +107,7 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
     </View>
   ) : (
     <RTLTextComponent style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {item.file.duration ? item.file.duration : getFileSizeDisplayText(item.file.size)}
+      {item.file.duration || getFileSizeDisplayText(item.file.size)}
     </RTLTextComponent>
   );
 };

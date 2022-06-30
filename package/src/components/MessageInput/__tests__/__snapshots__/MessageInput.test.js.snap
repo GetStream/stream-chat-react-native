@@ -286,6 +286,7 @@ Array [
                     Object {
                       "color": "#000000",
                       "maxHeight": 85,
+                      "textAlign": "left",
                     },
                     Object {},
                   ]

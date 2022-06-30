@@ -9,7 +9,6 @@ import {
   useChannelsContext,
   useChatContext,
   useImageGalleryContext,
-  useMessageContext,
   useMessageOverlayContext,
   useMessagesContext,
   useOverlayContext,
@@ -74,10 +73,6 @@ describe('contexts hooks in a component throws an error with message when not wr
     [
       useImageGalleryContext,
       `The useImageGalleryContext hook was called outside the ImageGalleryContext Provider. Make sure you have configured OverlayProvider component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#overlay-provider`,
-    ],
-    [
-      useMessageContext,
-      `The useMessageContext hook was called outside of the MessageContext provider. Make sure you have configured MessageList component correctly - https://getstream.io/chat/docs/sdk/reactnative/basics/hello_stream_chat/#message-list`,
     ],
     [
       useMessageOverlayContext,
