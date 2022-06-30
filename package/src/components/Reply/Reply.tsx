@@ -19,7 +19,6 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { DEFAULT_BASE_CONTEXT_VALUE } from '../../contexts/utils/defaultBaseContextValue';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { emojiRegex } from '../../utils/utils';
@@ -280,10 +279,6 @@ const useMessageInputContextIfAvailable = <
   const contextValue = useContext(
     MessageInputContext,
   ) as unknown as MessageInputContextValue<StreamChatGenerics>;
-
-  if (contextValue === DEFAULT_BASE_CONTEXT_VALUE) {
-    return { editing: null, quotedMessage: null };
-  }
 
   return contextValue;
 };
