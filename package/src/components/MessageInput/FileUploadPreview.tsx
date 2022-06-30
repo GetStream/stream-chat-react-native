@@ -19,7 +19,7 @@ import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
-import { RTLTextComponent } from '../RTLComponents/RTLTextComponent';
+import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
 
 const FILE_PREVIEW_HEIGHT = 60;
 const WARNING_ICON_SIZE = 16;
@@ -106,9 +106,9 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
       </Text>
     </View>
   ) : (
-    <RTLTextComponent style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
+    <WritingDirectionAwareText style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
       {item.file.duration || getFileSizeDisplayText(item.file.size)}
-    </RTLTextComponent>
+    </WritingDirectionAwareText>
   );
 };
 
