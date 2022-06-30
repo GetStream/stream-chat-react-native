@@ -26,9 +26,9 @@ export const initializeDatabase = () => {
       `Dropping the table since version ${version} is less than DB_VERSION ${DB_VERSION}`,
     );
     dropTables();
+    updateUserPragmaVerion(version + 1);
   }
 
-  updateUserPragmaVerion(version + 1);
   executeQueries([
     [createCreateTableQuery('queryChannelsMap')],
     [createCreateTableQuery('channels')],
