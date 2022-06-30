@@ -11,6 +11,7 @@ import {
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { MessageTextContainer } from '../MessageTextContainer';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
 afterEach(cleanup);
 
@@ -22,7 +23,7 @@ describe('MessageTextContainer', () => {
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider style={defaultTheme}>
-        <MessageTextContainer alignment='right' groupStyles={['top']} message={message} />
+        <MessageTextContainer message={message as unknown as MessageType} />
       </ThemeProvider>,
     );
 
@@ -34,10 +35,8 @@ describe('MessageTextContainer', () => {
     rerender(
       <ThemeProvider style={defaultTheme}>
         <MessageTextContainer
-          alignment='right'
-          groupStyles={['top']}
-          message={message}
-          MessageText={({ message }) => <Text testID='message-text'>{message.text}</Text>}
+          message={message as unknown as MessageType}
+          MessageText={({ message }) => <Text testID='message-text'>{message?.text}</Text>}
         />
       </ThemeProvider>,
     );
@@ -54,7 +53,7 @@ describe('MessageTextContainer', () => {
 
     rerender(
       <ThemeProvider style={defaultTheme}>
-        <MessageTextContainer message={staticMessage} />
+        <MessageTextContainer message={staticMessage as unknown as MessageType} />
       </ThemeProvider>,
     );
 
