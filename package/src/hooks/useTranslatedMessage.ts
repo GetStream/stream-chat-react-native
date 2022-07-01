@@ -11,7 +11,6 @@ export const useTranslatedMessage = <
   message: MessageResponse<StreamChatGenerics> | FormatMessageResponse<StreamChatGenerics>,
 ) => {
   const { userLanguage } = useTranslationContext();
-  // console.log({ message, userLanguage });
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
 
