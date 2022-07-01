@@ -163,4 +163,23 @@ describe('ChannelPreview', () => {
       expect(getByTestId('unread-count')).toHaveTextContent('10');
     });
   });
+
+  it('displays messages translated if applicable', async () => {
+    chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' });
+
+    const message = {
+      text: 'Hello world!',
+      i18n: {
+        no_text: 'Hallo verden!',
+      },
+    };
+    const channel = generateChannelResponse({ messages: [message] });
+    await initializeChannel(channel);
+
+    const { getByText } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByText(message.i18n.no_text)).toBeTruthy();
+    });
+  });
 });
