@@ -11,6 +11,7 @@ import {
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 export type ChannelPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -38,6 +39,12 @@ const ChannelPreviewWithContext = <
     | MessageResponse<StreamChatGenerics>
     | undefined
   >(channel.state.messages[channel.state.messages.length - 1]);
+
+  const { userLanguage } = useTranslationContext();
+  if (lastMessage?.i18n && `${userLanguage}_text` in lastMessage.i18n) {
+    lastMessage.text = lastMessage.i18n[`${userLanguage}_text`];
+  }
+
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
