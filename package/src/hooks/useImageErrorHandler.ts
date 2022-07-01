@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 
-import { useChatContext } from '../contexts/chatContext/ChatContext';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export const useImageErrorHandler = () => {
   const [imageError, setImageError] = useState(false);
-  const { isOnline } = useChatContext();
+  const { isConnected } = useNetInfo();
 
   useEffect(() => {
-    if (isOnline && imageError) {
+    if (isConnected && imageError) {
       setImageError(false);
     }
-  }, [isOnline]);
+  }, [isConnected]);
 
   return { imageError, setImageError };
 };

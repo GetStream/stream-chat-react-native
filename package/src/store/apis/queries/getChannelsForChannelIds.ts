@@ -2,17 +2,15 @@
 import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { ChannelAPIResponse } from 'stream-chat';
 
-import { getMessagesForChannel } from './getMessagesForChannel';
-
-import { DB_NAME } from '../constants';
-import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
-import type { ChannelRow } from '../types';
+import { DB_NAME } from '../../constants';
+import { mapStorableToChannel } from '../../mappers/mapStorableToChannel';
+import type { ChannelRow } from '../../types';
 
 export const getChannelsForChannelIds = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channelIds: string[],
-): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
+): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'read'>[] => {
   const questionMarks = Array(channelIds.length).fill('?').join(',');
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,
@@ -28,6 +26,5 @@ export const getChannelsForChannelIds = <
 
   return result.map((channelRow) => ({
     ...mapStorableToChannel(channelRow),
-    messages: getMessagesForChannel(channelRow.cid),
   }));
 };

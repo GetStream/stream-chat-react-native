@@ -8,6 +8,7 @@ export type ChannelRow = Schema['channels'];
 export type MessageRow = Schema['messages'];
 export type QueryChannelsMapRow = Schema['queryChannelsMap'];
 export type ReactionRow = Schema['reactions'];
+export type ReadRow = Schema['reads'];
 
 export type StorableDatabaseRow = Partial<
   ChannelRow | MessageRow | QueryChannelsMapRow | ReactionRow

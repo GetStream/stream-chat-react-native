@@ -3,11 +3,12 @@ import { useEffect } from 'react';
 import type { Event, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { deleteChannel } from '../../../../store/queries/deleteChannel';
-import { deleteMessagesForChannel } from '../../../../store/queries/deleteMessagesForChannel';
-import { storeChannelInfo } from '../../../../store/queries/storeChannelInfo';
-import { storeChannels } from '../../../../store/queries/storeChannelsPerQuery';
-import { storeMessage } from '../../../../store/queries/storeMessage';
+import { deleteChannel } from '../../../../store/apis/deleteChannel';
+import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
+import { storeChannelInfo } from '../../../../store/apis/storeChannelInfo';
+import { storeChannels } from '../../../../store/apis/storeChannelsPerQuery';
+import { storeMessage } from '../../../../store/apis/storeMessage';
+import { storeRead } from '../../../../store/apis/storeRead';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Params = {
@@ -22,6 +23,20 @@ export const useSyncDatabase = <
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       const { type } = event;
+
+      if (type === 'message.read') {
+        if (event.user?.id && event.cid) {
+          console.log(event.user)
+          storeRead({
+            cid: event.cid,
+            read: {
+              last_read: event.received_at as string,
+              unread_messages: 0,
+              user: event.user,
+            },
+          });
+        }
+      }
 
       if (type === 'message.new') {
         if (event.message) {

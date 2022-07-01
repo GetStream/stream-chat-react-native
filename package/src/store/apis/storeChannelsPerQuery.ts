@@ -4,6 +4,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
+import { mapReadToStorable } from '../mappers/mapReadToStorable';
 import type { PreparedQueries } from '../types';
 import { createInsertQuery } from '../utils/createInsertQuery';
 import { executeQueries } from '../utils/executeQueries';
@@ -30,7 +31,18 @@ export const storeChannels = <
   }
 
   for (const channel of channels) {
-    const { messages } = channel;
+    const { messages, read } = channel;
+    read?.forEach((r) => {
+      queries.push(
+        createInsertQuery(
+          'reads',
+          mapReadToStorable({
+            cid: channel.channel.cid,
+            read: r,
+          }),
+        ),
+      );
+    });
 
     queries.push(createInsertQuery('channels', mapChannelToStorable(channel)));
     if (messages !== undefined) {
@@ -39,16 +51,13 @@ export const storeChannels = <
       );
 
       const reactionsToUpsert = messages.reduce<PreparedQueries[]>((queriesSoFar, message) => {
-        if (message.latest_reactions) {
-          const newQueries = message.latest_reactions.map((r) =>
-            createInsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)),
-          );
-          queriesSoFar.push(...newQueries);
+        const newQueries = [
+          ...(message.latest_reactions || []),
+          ...(message.own_reactions || []),
+        ].map((r) => createInsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)));
+        queriesSoFar.push(...newQueries);
 
-          return queriesSoFar;
-        }
-
-        return [];
+        return queriesSoFar;
       }, []);
 
       queries.push(...messagesToUpsert);

@@ -24,6 +24,7 @@ export const schema: {
     id: 'TEXT PRIMARY KEY',
     cid: 'TEXT NOT NULL',
     deletedAt: "TEXT DEFAULT ''",
+    reactionCounts: "TEXT DEFAULT ''",
     text: "TEXT DEFAULT ''",
     type: "TEXT DEFAULT ''",
     user: "TEXT DEFAULT ''",
@@ -41,6 +42,23 @@ export const schema: {
     score: 'INTEGER DEFAULT 0',
     user: "TEXT DEFAULT ''",
     type: "TEXT DEFAULT ''",
+  },
+  reads: {
+    id: 'TEXT PRIMARY KEY',
+    cid: 'TEXT NOT NULL',
+    lastRead: 'TEXT NOT NULL',
+    unreadMessages: 'INTEGER DEFAULT 0',
+    user: 'TEXT',
+  },
+  users: {
+    banned: 'INTEGER DEFAULT 0',
+    createdAt: 'TEXT',
+    extraData: 'TEXT',
+    id: 'TEXT PRIMARY KEY',
+    lastActive: 'TEXT',
+    online: 'TEXT',
+    role: 'TEXT',
+    updatedAt: 'TEXT',
   },
 };
 
@@ -61,6 +79,7 @@ export type Schema = {
     deletedAt: string;
     extraData: string;
     id: string;
+    reactionCounts: string;
     type: MessageLabel;
     updatedAt: string;
     user: string;
@@ -80,5 +99,22 @@ export type Schema = {
     user: string;
     extraData?: string;
     score?: number;
+  };
+  reads: {
+    cid: string;
+    id: string;
+    lastRead: string;
+    user: string;
+    unreadMessages?: number;
+  };
+  users: {
+    banned: string;
+    createdAt: string;
+    extraData: string;
+    id: string;
+    lastActive: string;
+    online: string;
+    role: string;
+    updatedAt: string;
   };
 };

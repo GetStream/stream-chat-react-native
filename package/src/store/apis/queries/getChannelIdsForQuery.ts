@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import { DB_NAME } from '../constants';
-import type { QueryChannelsMapRow } from '../types';
+import { DB_NAME } from '../../constants';
+import type { QueryChannelsMapRow } from '../../types';
 
 export const getChannelIdsForQuery = (query: string): string[] => {
   const { message, rows, status } = sqlite.executeSql(

@@ -6,7 +6,7 @@ import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRef
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import { getChannels } from '../../../store/queries/getChannels';
+import { getChannels } from '../../../store/apis/getChannels';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';

@@ -29,12 +29,9 @@ export const initializeDatabase = () => {
     updateUserPragmaVerion(version + 1);
   }
 
-  executeQueries([
-    [createCreateTableQuery('queryChannelsMap')],
-    [createCreateTableQuery('channels')],
-    [createCreateTableQuery('messages')],
-    [createCreateTableQuery('reactions')],
-  ]);
+  executeQueries(
+    (Object.keys(schema) as Table[]).map((tableName) => [createCreateTableQuery(tableName)]),
+  );
 };
 
 export const updateUserPragmaVerion = (version: number) => {
