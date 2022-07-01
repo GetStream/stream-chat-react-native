@@ -9,7 +9,9 @@ export const useStreami18n = ({
   i18nInstance,
   setTranslators,
 }: {
-  setTranslators: React.Dispatch<React.SetStateAction<TranslationContextValue>>;
+  setTranslators: React.Dispatch<
+    React.SetStateAction<Pick<TranslationContextValue, 't' | 'tDateTimeParser'>>
+  >;
   i18nInstance?: Streami18n;
 }) => {
   const [loadingTranslators, setLoadingTranslators] = useState(true);

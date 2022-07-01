@@ -35,6 +35,7 @@ import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
+  DEFAULT_USER_LANGUAGE,
   TranslationContextValue,
   TranslationProvider,
 } from '../translationContext/TranslationContext';
@@ -127,7 +128,9 @@ export const OverlayProvider = <
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const [translators, setTranslators] = useState<TranslationContextValue>({
+  const [translators, setTranslators] = useState<
+    Pick<TranslationContextValue, 't' | 'tDateTimeParser'>
+  >({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
@@ -198,7 +201,7 @@ export const OverlayProvider = <
   if (loadingTranslators) return null;
 
   return (
-    <TranslationProvider value={translators}>
+    <TranslationProvider value={{ ...translators, userLanguage: DEFAULT_USER_LANGUAGE }}>
       <OverlayContext.Provider value={overlayContext}>
         <MessageOverlayProvider<StreamChatGenerics>>
           <AttachmentPickerProvider value={attachmentPickerContext}>
