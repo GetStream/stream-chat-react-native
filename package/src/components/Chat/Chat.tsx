@@ -130,10 +130,11 @@ const ChatWithContext = <
   const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<TranslationContextValue>({
+  const [translators, setTranslators] = useState<
+    Pick<TranslationContextValue, 't' | 'tDateTimeParser'>
+  >({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-    userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE,
   });
 
   /**
@@ -180,7 +181,9 @@ const ChatWithContext = <
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
-      <TranslationProvider value={translators}>
+      <TranslationProvider
+        value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
+      >
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
