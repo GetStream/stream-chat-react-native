@@ -14,8 +14,8 @@ import {
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MarkdownStyle, Theme } from '../../../contexts/themeContext/utils/theme';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { useTranslatedMessage } from '../../../hooks/useTranslatedMessage';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 import type { MessageType } from '../../MessageList/hooks/useMessageList';
 
 const styles = StyleSheet.create({
@@ -77,11 +77,11 @@ const MessageTextContainerWithContext = <
     },
   } = theme;
 
-  if (!message.text) return null;
-
   const translatedMessage = useTranslatedMessage<StreamChatGenerics>(
     message,
   ) as MessageType<StreamChatGenerics>;
+
+  if (!message.text) return null;
 
   const markdownStyles = { ...markdown, ...markdownStylesProp };
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mockedApiResponse } from './utils';
 
 export type GetOrCreateChannelApiParams = {

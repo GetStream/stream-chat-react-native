@@ -5,10 +5,11 @@ import Dayjs from 'dayjs';
 import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
+import type { TranslationLanguages } from 'stream-chat';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
-import type { TranslationLanguages } from 'stream-chat';
 
 export const DEFAULT_USER_LANGUAGE: TranslationLanguages = 'en';
 

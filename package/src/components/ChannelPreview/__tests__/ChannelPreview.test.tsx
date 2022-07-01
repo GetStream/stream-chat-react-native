@@ -3,6 +3,8 @@ import { Text } from 'react-native';
 
 import { act, render, waitFor } from '@testing-library/react-native';
 
+import type { Channel, StreamChat } from 'stream-chat';
+
 import {
   getOrCreateChannelApi,
   GetOrCreateChannelApiParams,
@@ -16,7 +18,6 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { Chat } from '../../Chat/Chat';
 import { ChannelPreview } from '../ChannelPreview';
-import type { Channel, StreamChat } from 'stream-chat';
 import type { ChannelPreviewMessengerProps } from '../ChannelPreviewMessenger';
 
 import '@testing-library/jest-native/extend-expect';
@@ -25,12 +26,12 @@ type ChannelPreviewUIComponentProps = {
   channel: {
     id: string;
   };
-  unread: number;
   latestMessagePreview: {
     messageObject: {
       text: string;
     };
   };
+  unread: number;
 };
 
 const ChannelPreviewUIComponent = (props: ChannelPreviewUIComponentProps) => (
@@ -67,7 +68,7 @@ describe('ChannelPreview', () => {
     );
   };
 
-  const initializeChannel = async (c: GetOrCreateChannelApiParams) => {
+  const useInitializeChannel = async (c: GetOrCreateChannelApiParams) => {
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
     channel = chatClient.channel('messaging');
@@ -83,21 +84,9 @@ describe('ChannelPreview', () => {
     channel = null;
   });
 
-  it('should render with latest message on channel', async () => {
-    const message = generateMessage({
-      user: clientUser,
-    });
-    const c = generateChannelResponse({
-      messages: [message],
-    });
-    await initializeChannel(c);
-    const { queryByText } = render(<TestComponent />);
-    await waitFor(() => queryByText(message.text));
-  });
-
   it('should mark channel as read, when message.read event is received for current user', async () => {
     const c = generateChannelResponse();
-    await initializeChannel(c);
+    await useInitializeChannel(c);
 
     if (channel !== null) {
       channel.countUnread = () => 20;
@@ -120,7 +109,7 @@ describe('ChannelPreview', () => {
 
   it('should update the lastest message on "message.new" event', async () => {
     const c = generateChannelResponse();
-    await initializeChannel(c);
+    await useInitializeChannel(c);
 
     const { getByTestId } = render(<TestComponent />);
 
@@ -141,7 +130,7 @@ describe('ChannelPreview', () => {
 
   it('should update the unread count on "message.new" event', async () => {
     const c = generateChannelResponse();
-    await initializeChannel(c);
+    await useInitializeChannel(c);
 
     const { getByTestId } = render(<TestComponent />);
 
@@ -168,13 +157,13 @@ describe('ChannelPreview', () => {
     chatClient = await getTestClientWithUser({ id: 'mads', language: 'no' });
 
     const message = {
-      text: 'Hello world!',
       i18n: {
         no_text: 'Hallo verden!',
       },
+      text: 'Hello world!',
     };
     const channel = generateChannelResponse({ messages: [message] });
-    await initializeChannel(channel);
+    await useInitializeChannel(channel);
 
     const { getByText } = render(<TestComponent />);
 

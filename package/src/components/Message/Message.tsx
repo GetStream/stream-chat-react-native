@@ -42,6 +42,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
+import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
@@ -51,7 +52,6 @@ import {
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
-import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 export type TouchableEmitter =
   | 'fileAttachment'

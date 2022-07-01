@@ -1,12 +1,15 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import { render, waitFor } from '@testing-library/react-native';
-import { useTranslatedMessage } from '../useTranslatedMessage';
-import {
-  TranslationProvider,
-  TranslationContextValue,
-} from '../../contexts/translationContext/TranslationContext';
+
 import type { MessageResponse } from 'stream-chat';
+
+import {
+  TranslationContextValue,
+  TranslationProvider,
+} from '../../contexts/translationContext/TranslationContext';
+import { useTranslatedMessage } from '../useTranslatedMessage';
 
 type TestComponentProps = {
   message: MessageResponse;
@@ -20,10 +23,10 @@ const TestComponent = ({ message }: TestComponentProps) => {
 describe('useTranslatedMessage', () => {
   it("doesn't translate a message if there isn't a translation available for the userLanguage", async () => {
     const message = {
-      text: 'Hello world!',
       i18n: {
         nl_text: 'Hallo wereld!',
       },
+      text: 'Hello world!',
     } as MessageResponse;
 
     const { getByText } = render(
@@ -33,16 +36,16 @@ describe('useTranslatedMessage', () => {
     );
 
     await waitFor(() => {
-      expect(getByText(message.text!)).toBeTruthy();
+      expect(getByText('Hello world!')).toBeTruthy();
     });
   });
 
   it('returns a new message with the text translated if userLanguage is set and the translation exists', async () => {
     const message = {
-      text: 'Hello world!',
       i18n: {
         no_text: 'Hallo verden!',
       },
+      text: 'Hello world!',
     } as MessageResponse;
 
     const { getByText } = render(
@@ -52,7 +55,7 @@ describe('useTranslatedMessage', () => {
     );
 
     await waitFor(() => {
-      expect(getByText(message.i18n!.no_text!)).toBeTruthy();
+      expect(getByText('Hallo verden!')).toBeTruthy();
     });
   });
 
@@ -64,7 +67,7 @@ describe('useTranslatedMessage', () => {
     const { getByText } = render(<TestComponent message={message} />);
 
     await waitFor(() => {
-      expect(getByText(message.text!)).toBeTruthy();
+      expect(getByText('Hello world!')).toBeTruthy();
     });
   });
 });

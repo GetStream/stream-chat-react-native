@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
 
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
-import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 import {
   ChannelsContextValue,
@@ -11,8 +10,8 @@ import {
 } from '../../contexts/channelsContext/ChannelsContext';
 import { ChatContextValue, useChatContext } from '../../contexts/chatContext/ChatContext';
 
+import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 export type ChannelPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

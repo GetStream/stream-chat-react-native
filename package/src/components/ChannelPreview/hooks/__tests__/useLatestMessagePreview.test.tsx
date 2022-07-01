@@ -102,8 +102,8 @@ describe('useLatestMessagePreview', () => {
 
   it('should return a mentioned user (@Max) message preview', async () => {
     const latestMessage = {
-      text: 'Max',
       mentioned_users: [{ id: 'Max', name: 'Max' }],
+      text: 'Max',
       user: {
         id: 'okechukwu',
       },
