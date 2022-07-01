@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import type { Channel, ChannelState, Event, MessageResponse } from 'stream-chat';
 
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
+import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 import {
   ChannelsContextValue,
@@ -40,15 +41,14 @@ const ChannelPreviewWithContext = <
     | undefined
   >(channel.state.messages[channel.state.messages.length - 1]);
 
-  const { userLanguage } = useTranslationContext();
-  if (lastMessage?.i18n && `${userLanguage}_text` in lastMessage.i18n) {
-    lastMessage.text = lastMessage.i18n[`${userLanguage}_text`];
-  }
+  const translatedLastMessage = useTranslatedMessage<StreamChatGenerics>(
+    lastMessage || ({} as MessageResponse<StreamChatGenerics>),
+  );
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
-  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, lastMessage);
+  const latestMessagePreview = useLatestMessagePreview(channel, forceUpdate, translatedLastMessage);
 
   const channelLastMessage = channel.lastMessage();
   const channelLastMessageString = `${channelLastMessage?.id}${channelLastMessage?.updated_at}`;
