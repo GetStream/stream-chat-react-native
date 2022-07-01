@@ -51,6 +51,7 @@ import {
   MessageType,
 } from '../MessageList/hooks/useMessageList';
 import type { MessageActionListItemProps } from '../MessageOverlay/MessageActionListItem';
+import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 
 export type TouchableEmitter =
   | 'fileAttachment'
@@ -499,6 +500,8 @@ const MessageWithContext = <
     updateMessage,
   });
 
+  const translatedMessage = useTranslatedMessage(message) as MessageType<StreamChatGenerics>;
+
   const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
@@ -537,7 +540,7 @@ const MessageWithContext = <
       groupStyles,
       handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
       images: attachments.images,
-      message,
+      message: translatedMessage,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
