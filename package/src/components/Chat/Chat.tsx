@@ -16,8 +16,8 @@ import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeCon
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
   DEFAULT_USER_LANGUAGE,
-  TranslationContextValue,
   TranslationProvider,
+  TranslatorFunctions,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
@@ -130,9 +130,7 @@ const ChatWithContext = <
   const { children, client, closeConnectionOnBackground = true, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<
-    Pick<TranslationContextValue, 't' | 'tDateTimeParser'>
-  >({
+  const [translators, setTranslators] = useState<TranslatorFunctions>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });

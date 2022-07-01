@@ -22,9 +22,12 @@ export type TDateTimeParserOutput = string | number | Date | Dayjs.Dayjs | Momen
 
 export type TDateTimeParser = (input?: TDateTimeParserInput) => TDateTimeParserOutput;
 
-export type TranslationContextValue = {
+export type TranslatorFunctions = {
   t: TFunction | ((key: string) => string);
   tDateTimeParser: TDateTimeParser;
+};
+
+export type TranslationContextValue = TranslatorFunctions & {
   userLanguage: TranslationLanguages;
 };
 

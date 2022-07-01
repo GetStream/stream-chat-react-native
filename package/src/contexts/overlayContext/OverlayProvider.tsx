@@ -36,8 +36,8 @@ import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayC
 import { ThemeProvider } from '../themeContext/ThemeContext';
 import {
   DEFAULT_USER_LANGUAGE,
-  TranslationContextValue,
   TranslationProvider,
+  TranslatorFunctions,
 } from '../translationContext/TranslationContext';
 
 /**
@@ -128,9 +128,7 @@ export const OverlayProvider = <
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const [translators, setTranslators] = useState<
-    Pick<TranslationContextValue, 't' | 'tDateTimeParser'>
-  >({
+  const [translators, setTranslators] = useState<TranslatorFunctions>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
