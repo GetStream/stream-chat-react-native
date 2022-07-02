@@ -2,9 +2,11 @@ import type { MessageResponse } from 'stream-chat';
 
 import { mapStorableToReaction } from './mapStorableToReaction';
 
+import { mapStorableToUser } from './mapStorableToUser';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { MessageRow, ReactionRow } from '../types';
+import type { JoinedMessageRow, JoinedReactionRow } from '../types';
 
 export const mapStorableToMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -12,10 +14,10 @@ export const mapStorableToMessage = <
   messageRow,
   reactionRows,
 }: {
-  messageRow: MessageRow;
-  reactionRows: ReactionRow[];
+  messageRow: JoinedMessageRow;
+  reactionRows: JoinedReactionRow[];
 }): MessageResponse<StreamChatGenerics> => {
-  const { createdAt, deletedAt, extraData, reactionCounts, updatedAt, ...rest } = messageRow;
+  const { createdAt, deletedAt, extraData, reactionCounts, updatedAt, user, ...rest } = messageRow;
   const latestReactions = reactionRows?.map((reaction) => mapStorableToReaction(reaction)) || [];
   const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === 'neil');
 
@@ -28,7 +30,7 @@ export const mapStorableToMessage = <
     own_reactions: ownReactions,
     reaction_counts: reactionCounts ? JSON.parse(reactionCounts) : {},
     updated_at: updatedAt,
-    user: messageRow.user ? JSON.parse(messageRow.user) : {},
+    user: mapStorableToUser(user),
     ...JSON.parse(extraData || '{}'),
   };
 };

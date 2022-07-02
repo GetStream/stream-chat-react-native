@@ -1,10 +1,8 @@
-/* eslint-disable no-underscore-dangle */
 import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { ChannelAPIResponse } from 'stream-chat';
 
-import { DB_NAME } from '../../constants';
 import { mapStorableToChannel } from '../../mappers/mapStorableToChannel';
-import type { ChannelRow } from '../../types';
+import { selectQuery } from '../../utils/selectQuery';
 
 export const getChannelsForChannelIds = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -12,19 +10,15 @@ export const getChannelsForChannelIds = <
   channelIds: string[],
 ): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'read' | 'members'>[] => {
   const questionMarks = Array(channelIds.length).fill('?').join(',');
-  const { message, rows, status } = sqlite.executeSql(
-    DB_NAME,
+  const result = selectQuery(
     `SELECT * FROM channels WHERE cid IN (${questionMarks})`,
     [...channelIds],
+    'query channels for channel ids',
   );
 
-  if (status === 1) {
-    console.error(`Querying for channels failed: ${message}`);
-  }
-
-  const result: ChannelRow[] = rows ? rows._array : [];
-
-  return result.map((channelRow) => ({
-    ...mapStorableToChannel(channelRow),
-  }));
+  return result
+    .map((channelRow) => ({
+      ...mapStorableToChannel<StreamChatGenerics>(channelRow),
+    }))
+    .sort((a, b) => channelIds.indexOf(a.channel.cid) - channelIds.indexOf(b.channel.cid));
 };

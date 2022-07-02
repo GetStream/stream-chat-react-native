@@ -1,17 +1,13 @@
-import { DB_NAME } from '../../constants';
 import type { UserRow } from '../../types';
+import { selectQuery } from '../../utils/selectQuery';
 
 export const getUsers = (userIds: string[]): UserRow[] => {
   const questionMarks = userIds.map((c) => '?').join(',');
-  const { message, rows, status } = sqlite.executeSql(
-    DB_NAME,
+  const result = selectQuery(
     `SELECT * FROM users WHERE id in (${questionMarks})`,
     userIds,
+    'query users',
   );
 
-  if (status === 1) {
-    console.error(`Querying for reads failed: ${message}`);
-  }
-
-  return rows ? rows._array : [];
+  return result;
 };

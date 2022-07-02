@@ -1,12 +1,14 @@
 import type { ChannelAPIResponse, ChannelMemberResponse } from 'stream-chat';
 
+import { mapStorableToUser } from './mapStorableToUser';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { ChannelRow, MemberRow } from '../types';
+import type { ChannelRow, JoinedMemberRow, MemberRow } from '../types';
 
 export const mapStorableToMember = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  memberRow: MemberRow,
+  memberRow: JoinedMemberRow,
 ): ChannelMemberResponse<StreamChatGenerics> => {
   const {
     banned,
@@ -19,6 +21,7 @@ export const mapStorableToMember = <
     role,
     shadowBanned,
     updatedAt,
+    user,
     userId,
   } = memberRow;
 
@@ -33,6 +36,7 @@ export const mapStorableToMember = <
     role,
     shadow_banned: shadowBanned,
     updated_at: updatedAt,
+    user: mapStorableToUser(user),
     user_id: userId,
   };
 };

@@ -1,19 +1,11 @@
-/* eslint-disable no-underscore-dangle */
-import { DB_NAME } from '../../constants';
-import type { QueryChannelsMapRow } from '../../types';
+import { selectQuery } from '../../utils/selectQuery';
 
 export const getChannelIdsForQuery = (query: string): string[] => {
-  const { message, rows, status } = sqlite.executeSql(
-    DB_NAME,
+  const results = selectQuery(
     `SELECT * FROM queryChannelsMap where id = ?`,
     [query],
+    'query cids for filter and sort',
   );
-
-  if (status === 1) {
-    console.error(`Querying for queryChannelsMap failed: ${message}`);
-  }
-
-  const results: QueryChannelsMapRow[] = rows ? rows._array : [];
 
   const channelIdsStr = results?.[0]?.cids;
   return channelIdsStr ? JSON.parse(channelIdsStr) : [];

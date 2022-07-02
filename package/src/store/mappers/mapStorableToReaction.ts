@@ -1,13 +1,15 @@
 import type { ReactionResponse } from 'stream-chat';
 
+import { mapStorableToUser } from './mapStorableToUser';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { ReactionRow } from '../types';
+import type { JoinedReactionRow, ReactionRow } from '../types';
 
 export const mapStorableToReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  reactionRow: ReactionRow,
+  reactionRow: JoinedReactionRow,
 ): ReactionResponse<StreamChatGenerics> => {
   const { createdAt, extraData, messageId, score, type, updatedAt, user } = reactionRow;
 
@@ -17,7 +19,7 @@ export const mapStorableToReaction = <
     score,
     type,
     updated_at: updatedAt,
-    user: user ? JSON.parse(user) : {},
+    user: mapStorableToUser(user),
     ...JSON.parse(extraData || '{}'),
   };
 };

@@ -11,10 +11,24 @@ export type ReactionRow = Schema['reactions'];
 export type ReadRow = Schema['reads'];
 export type MemberRow = Schema['members'];
 
-export type JoinedReadRow = Schema['reads'] &
-  {
-    [K in keyof Schema['users'] as `users__${K}`]: Schema['users'][K];
-  };
+export type JoinedChannelRow = Schema['channels'] & {
+  user: UserRow;
+};
+export type JoinedMessageRow = Schema['messages'] & {
+  user: UserRow;
+};
+export type JoinedQueryChannelsMapRow = Schema['queryChannelsMap'] & {
+  user: UserRow;
+};
+export type JoinedReactionRow = Schema['reactions'] & {
+  user: UserRow;
+};
+export type JoinedReadRow = Schema['reads'] & {
+  user: UserRow;
+};
+export type JoinedMemberRow = Schema['members'] & {
+  user: UserRow;
+};
 
 export type UserRow = Schema['users'];
 

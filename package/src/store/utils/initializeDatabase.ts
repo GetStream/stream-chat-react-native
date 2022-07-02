@@ -4,10 +4,11 @@ import { executeQueries } from './executeQueries';
 
 import { openDB } from './openDB';
 
+import { printRow } from './printRow';
+
 import { DB_NAME, DB_VERSION } from '../constants';
 import { schema } from '../schema';
 import type { Table } from '../types';
-import { printRow } from './printRow';
 
 const createCreateTableQuery = (table: Table) => {
   const columnsWithDescriptors = Object.entries(schema[table]).map((entry) => {
@@ -22,8 +23,12 @@ const createCreateTableQuery = (table: Table) => {
 const testQuery = () => {
   openDB();
   const timeStart = new Date().getTime();
-  const messagesColumnNames = Object.keys(schema['messages']).map(name => `'${name}', a.${name}`).join(', ');
-  const userColumnNames = Object.keys(schema['users']).map(name => `'${name}', b.${name}`).join(', ');
+  const messagesColumnNames = Object.keys(schema.messages)
+    .map((name) => `'${name}', a.${name}`)
+    .join(', ');
+  const userColumnNames = Object.keys(schema.users)
+    .map((name) => `'${name}', b.${name}`)
+    .join(', ');
 
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,
@@ -32,13 +37,22 @@ const testQuery = () => {
         'user', json_object(
           ${userColumnNames}
         ),
-        ${userColumnNames}
+        ${messagesColumnNames}
       ) as value
-    FROM messages a
+    FROM (
+      SELECT
+        *,
+        ROW_NUMBER() OVER (
+          PARTITION BY cid
+          ORDER BY datetime(createdAt) DESC
+        ) RowNum
+      FROM messages
+    ) a
     LEFT JOIN
       users b
-      ON a.userId = b.id
-    LIMIT 2`,
+    ON b.id = a.userId 
+    WHERE RowNum < 2
+    LIMIT 1`,
     [],
   );
   const timeEnd = new Date().getTime();
@@ -56,12 +70,12 @@ const testQuery = () => {
   }
 
   const result = rows ? rows._array : [];
-  result.forEach(v => console.log(JSON.parse(v.value)))
+  result.forEach(r => printRow(JSON.parse(r.value)))
   closeDB();
 };
 
 export const initializeDatabase = () => {
-  testQuery();
+  // testQuery();
   const version = getUserPragmaVersion();
   if (version < DB_VERSION) {
     console.log(

@@ -11,11 +11,11 @@ export const mapStorableToUser = <
   const { banned, createdAt, extraData, id, lastActive, online, role, updatedAt } = userRow;
 
   return {
-    banned,
+    banned: Boolean(banned),
     created_at: createdAt,
     id,
     last_active: lastActive,
-    online,
+    online: Boolean(online),
     role,
     updated_at: updatedAt,
     ...JSON.parse(extraData || '{}'),
