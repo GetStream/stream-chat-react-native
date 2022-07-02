@@ -3,7 +3,7 @@ import type { JoinedReactionRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const getReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
-  const questionMarks = messageIds.map((c) => '?').join(',');
+  const questionMarks = Array(messageIds.length).fill('?').join(',');
   const reactionsColumnNames = Object.keys(schema.reactions)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');

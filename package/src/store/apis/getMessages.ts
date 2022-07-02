@@ -34,7 +34,7 @@ export const getMessages = <
     }
 
     cidVsMessages[m.cid].push(
-      mapStorableToMessage({
+      mapStorableToMessage<StreamChatGenerics>({
         messageRow: m,
         reactionRows: messageIdVsReactions[m.id],
       }),

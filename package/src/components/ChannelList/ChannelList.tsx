@@ -22,7 +22,7 @@ import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedF
 import { useSyncDatabase } from './hooks/listeners/useSyncDatabase';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
-import { convertToQuery, usePaginatedChannels } from './hooks/usePaginatedChannels';
+import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import {
@@ -336,7 +336,8 @@ export const ChannelList = <
 
     storeCidsForQuery({
       cids: channelIds,
-      filtersAndSort: convertToQuery(filters, sort),
+      filters,
+      sort,
     });
   }, [channelIdsStr, offlineChannelsActive]);
 

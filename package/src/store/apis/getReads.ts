@@ -17,7 +17,7 @@ export const getReads = <
     if (!cidVsReads[read.cid]) {
       cidVsReads[read.cid] = [];
     }
-    cidVsReads[read.cid].push(mapStorableToRead(read));
+    cidVsReads[read.cid].push(mapStorableToRead<StreamChatGenerics>(read));
   });
 
   return cidVsReads;

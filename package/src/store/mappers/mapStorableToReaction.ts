@@ -4,7 +4,7 @@ import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { JoinedReactionRow, ReactionRow } from '../types';
+import type { JoinedReactionRow } from '../types';
 
 export const mapStorableToReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

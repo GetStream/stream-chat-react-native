@@ -35,13 +35,6 @@ type QueryType = 'queryLocalDB' | 'reload' | 'refresh' | 'loadChannels';
 
 export type QueryChannels = (queryType?: QueryType, retryCount?: number) => Promise<void>;
 
-export const convertToQuery = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  filters: ChannelFilters<StreamChatGenerics>,
-  sort: ChannelSort<StreamChatGenerics>,
-) => JSON.stringify(`${JSON.stringify(filters)}${JSON.stringify(sort)}`);
-
 export const usePaginatedChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
@@ -187,7 +180,7 @@ export const usePaginatedChannels = <
     if (client) {
       if (enableOfflineSupport) {
         try {
-          const channelsFromDB = getChannels<StreamChatGenerics>(convertToQuery(filters, sort));
+          const channelsFromDB = getChannels(filters, sort);
           setChannels(
             client.hydrateActiveChannels(channelsFromDB, {
               offlineMode: true,

@@ -17,7 +17,7 @@ export const getMembers = <
       cidVsMembers[member.cid] = [];
     }
 
-    cidVsMembers[member.cid].push(mapStorableToMember(member));
+    cidVsMembers[member.cid].push(mapStorableToMember<StreamChatGenerics>(member));
   });
 
   return cidVsMembers;

@@ -3,7 +3,7 @@ import type { JoinedReadRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const getReadsForChannels = (cids: string[]): JoinedReadRow[] => {
-  const questionMarks = cids.map((c) => '?').join(',');
+  const questionMarks = Array(cids.length).fill('?').join(',');
   const readsColumnNames = Object.keys(schema.reads)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');

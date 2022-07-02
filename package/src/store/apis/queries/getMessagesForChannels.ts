@@ -3,7 +3,7 @@ import type { JoinedMessageRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const getMessagesForChannels = (cids: string[]): JoinedMessageRow[] => {
-  const questionMarks = cids.map((c) => '?').join(',');
+  const questionMarks = Array(cids.length).fill('?').join(',');
   const messagesColumnNames = Object.keys(schema.messages)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
