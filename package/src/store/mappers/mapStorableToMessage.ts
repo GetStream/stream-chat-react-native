@@ -18,7 +18,8 @@ export const mapStorableToMessage = <
   reactionRows: JoinedReactionRow[];
 }): MessageResponse<StreamChatGenerics> => {
   const { createdAt, deletedAt, extraData, reactionCounts, updatedAt, user, ...rest } = messageRow;
-  const latestReactions = reactionRows?.map((reaction) => mapStorableToReaction(reaction)) || [];
+  const latestReactions =
+    reactionRows?.map((reaction) => mapStorableToReaction<StreamChatGenerics>(reaction)) || [];
   const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === 'neil');
 
   return {

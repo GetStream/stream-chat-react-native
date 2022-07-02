@@ -2,9 +2,9 @@ import { schema } from '../../schema';
 import type { JoinedMessageRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
-export const getMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
-  const questionMarks = cids.map((c) => '?').join(',');
-  const membersColumnNames = Object.keys(schema.members)
+export const selectMessagesForChannels = (cids: string[]): JoinedMessageRow[] => {
+  const questionMarks = Array(cids.length).fill('?').join(',');
+  const messagesColumnNames = Object.keys(schema.messages)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
   const userColumnNames = Object.keys(schema.users)
@@ -17,15 +17,24 @@ export const getMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
         'user', json_object(
           ${userColumnNames}
         ),
-        ${membersColumnNames}
+        ${messagesColumnNames}
       ) as value
-    FROM members a
+    FROM (
+      SELECT
+        *,
+        ROW_NUMBER() OVER (
+          PARTITION BY cid
+          ORDER BY datetime(createdAt) DESC
+        ) RowNum
+      FROM messages
+      WHERE cid in (${questionMarks})
+    ) a
     LEFT JOIN
       users b
     ON b.id = a.userId 
-    WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
+    WHERE RowNum < 20`,
     cids,
-    'query members',
+    'query messages',
   );
 
   return result.map((r) => JSON.parse(r.value));

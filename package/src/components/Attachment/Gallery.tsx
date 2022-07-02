@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { buildGallery } from './utils/buildGallery/buildGallery';
@@ -8,7 +8,6 @@ import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius
 import { openUrlSafely } from './utils/openUrlSafely';
 
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,

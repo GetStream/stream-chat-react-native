@@ -1,9 +1,9 @@
-import type { ChannelAPIResponse, ChannelMemberResponse } from 'stream-chat';
+import type { ChannelMemberResponse } from 'stream-chat';
 
 import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { ChannelRow, JoinedMemberRow, MemberRow } from '../types';
+import type { JoinedMemberRow } from '../types';
 
 export const mapStorableToMember = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

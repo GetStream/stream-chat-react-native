@@ -6,9 +6,9 @@ import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { deleteChannel } from '../../../../store/apis/deleteChannel';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
 import { storeChannelInfo } from '../../../../store/apis/storeChannelInfo';
-import { storeChannels } from '../../../../store/apis/storeChannelsPerQuery';
-import { storeMessage } from '../../../../store/apis/storeMessage';
-import { storeRead } from '../../../../store/apis/storeRead';
+import { storeChannels } from '../../../../store/apis/storeChannels';
+import { storeMessages } from '../../../../store/apis/storeMessages';
+import { storeReads } from '../../../../store/apis/storeReads';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Params = {
@@ -26,38 +26,40 @@ export const useSyncDatabase = <
 
       if (type === 'message.read') {
         if (event.user?.id && event.cid) {
-          console.log(event.user)
-          storeRead({
+          console.log(event.user);
+          storeReads<StreamChatGenerics>({
             cid: event.cid,
-            read: {
-              last_read: event.received_at as string,
-              unread_messages: 0,
-              user: event.user,
-            },
+            reads: [
+              {
+                last_read: event.received_at as string,
+                unread_messages: 0,
+                user: event.user,
+              },
+            ],
           });
         }
       }
 
       if (type === 'message.new') {
         if (event.message) {
-          storeMessage({
-            message: event.message,
+          storeMessages<StreamChatGenerics>({
+            messages: [event.message],
           });
         }
       }
 
       if (type === 'message.updated') {
         if (event.message) {
-          storeMessage({
-            message: event.message,
+          storeMessages<StreamChatGenerics>({
+            messages: [event.message],
           });
         }
       }
 
       if (type === 'message.deleted') {
         if (event.message) {
-          storeMessage({
-            message: event.message,
+          storeMessages<StreamChatGenerics>({
+            messages: [event.message],
           });
         }
       }
@@ -104,7 +106,7 @@ export const useSyncDatabase = <
 
       if (type === 'activeChannels.new') {
         if (event.channels) {
-          storeChannels({
+          storeChannels<StreamChatGenerics>({
             channels: event.channels,
           });
         }
@@ -128,7 +130,7 @@ export const useSyncDatabase = <
 
       if (type === 'notification.message_new') {
         if (event.channel) {
-          storeChannelInfo({
+          storeChannelInfo<StreamChatGenerics>({
             channel: event.channel,
           });
         }

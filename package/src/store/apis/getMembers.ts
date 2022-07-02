@@ -1,6 +1,6 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
-import { getMembersForChannels } from './queries/getMembersForChannels';
+import { selectMembersForChannels } from './queries/selectMembersForChannels';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToMember } from '../mappers/mapStorableToMember';
@@ -10,14 +10,14 @@ export const getMembers = <
 >(
   channelIds: string[],
 ) => {
-  const members = getMembersForChannels(channelIds);
+  const members = selectMembersForChannels(channelIds);
   const cidVsMembers: Record<string, ChannelMemberResponse<StreamChatGenerics>[]> = {};
   members.forEach((member) => {
     if (!cidVsMembers[member.cid]) {
       cidVsMembers[member.cid] = [];
     }
 
-    cidVsMembers[member.cid].push(mapStorableToMember(member));
+    cidVsMembers[member.cid].push(mapStorableToMember<StreamChatGenerics>(member));
   });
 
   return cidVsMembers;

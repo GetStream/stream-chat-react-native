@@ -4,7 +4,7 @@ import type { ChannelAPIResponse } from 'stream-chat';
 import { mapStorableToChannel } from '../../mappers/mapStorableToChannel';
 import { selectQuery } from '../../utils/selectQuery';
 
-export const getChannelsForChannelIds = <
+export const selectChannelsForChannelIds = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channelIds: string[],

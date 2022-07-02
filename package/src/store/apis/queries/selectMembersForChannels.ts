@@ -1,10 +1,10 @@
 import { schema } from '../../schema';
-import type { JoinedReactionRow } from '../../types';
+import type { JoinedMessageRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
-export const getReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
-  const questionMarks = messageIds.map((c) => '?').join(',');
-  const reactionsColumnNames = Object.keys(schema.reactions)
+export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
+  const questionMarks = Array(cids.length).fill('?').join(',');
+  const membersColumnNames = Object.keys(schema.members)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
   const userColumnNames = Object.keys(schema.users)
@@ -17,15 +17,15 @@ export const getReactionsForMessages = (messageIds: string[]): JoinedReactionRow
         'user', json_object(
           ${userColumnNames}
         ),
-        ${reactionsColumnNames}
+        ${membersColumnNames}
       ) as value
-    FROM reactions a
+    FROM members a
     LEFT JOIN
       users b
     ON b.id = a.userId 
-    WHERE a.messageId in (${questionMarks})`,
-    messageIds,
-    'query reactions',
+    WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
+    cids,
+    'query members',
   );
 
   return result.map((r) => JSON.parse(r.value));
