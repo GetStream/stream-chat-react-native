@@ -2,9 +2,11 @@ import type { ChannelAPIResponse, MessageResponse } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
+import { mapMemberToStorable } from '../mappers/mapMemberToStorable';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapReadToStorable } from '../mappers/mapReadToStorable';
+import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import type { PreparedQueries } from '../types';
 import { createInsertQuery } from '../utils/createInsertQuery';
 import { executeQueries } from '../utils/executeQueries';
@@ -20,6 +22,12 @@ export const storeChannels = <
 }) => {
   // Update the database only if the query is provided.
   const queries: PreparedQueries[] = [];
+  const usersToUpsert: PreparedQueries[] = [];
+  const readsToUpsert: PreparedQueries[] = [];
+  const messagesToUpsert: PreparedQueries[] = [];
+  const membersToUpsert: PreparedQueries[] = [];
+  const reactionsToUpsert: PreparedQueries[] = [];
+
   if (filterAndSort) {
     const channelIds = channels.map((channel) => channel.channel.cid);
     queries.push(
@@ -31,9 +39,29 @@ export const storeChannels = <
   }
 
   for (const channel of channels) {
-    const { messages, read } = channel;
+    const { members, messages, read } = channel;
+    members.forEach((member) => {
+      if (member.user) {
+        usersToUpsert.push(createInsertQuery('users', mapUserToStorable(member.user)));
+      }
+
+      membersToUpsert.push(
+        createInsertQuery(
+          'members',
+          mapMemberToStorable({
+            cid: channel.channel.cid,
+            member,
+          }),
+        ),
+      );
+    });
+
     read?.forEach((r) => {
-      queries.push(
+      if (r.user) {
+        usersToUpsert.push(createInsertQuery('users', mapUserToStorable(r.user)));
+      }
+
+      readsToUpsert.push(
         createInsertQuery(
           'reads',
           mapReadToStorable({
@@ -46,24 +74,31 @@ export const storeChannels = <
 
     queries.push(createInsertQuery('channels', mapChannelToStorable(channel)));
     if (messages !== undefined) {
-      const messagesToUpsert = messages.map((message: MessageResponse<StreamChatGenerics>) =>
-        createInsertQuery('messages', mapMessageToStorable(message)),
-      );
+      messages.forEach((message: MessageResponse<StreamChatGenerics>) => {
+        if (message.user) {
+          usersToUpsert.push(createInsertQuery('users', mapUserToStorable(message.user)));
+        }
+        messagesToUpsert.push(createInsertQuery('messages', mapMessageToStorable(message)));
+      });
 
-      const reactionsToUpsert = messages.reduce<PreparedQueries[]>((queriesSoFar, message) => {
-        const newQueries = [
-          ...(message.latest_reactions || []),
-          ...(message.own_reactions || []),
-        ].map((r) => createInsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)));
-        queriesSoFar.push(...newQueries);
+      messages.forEach((message) => {
+        [...(message.latest_reactions || []), ...(message.own_reactions || [])].forEach((r) => {
+          if (r.user) {
+            usersToUpsert.push(createInsertQuery('users', mapUserToStorable(r.user)));
+          }
 
-        return queriesSoFar;
-      }, []);
-
-      queries.push(...messagesToUpsert);
-      queries.push(...reactionsToUpsert);
+          reactionsToUpsert.push(
+            createInsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)),
+          );
+        });
+      });
     }
   }
+  queries.push(...membersToUpsert);
+  queries.push(...messagesToUpsert);
+  queries.push(...reactionsToUpsert);
+  queries.push(...readsToUpsert);
+  queries.push(...usersToUpsert);
 
   executeQueries(queries);
 

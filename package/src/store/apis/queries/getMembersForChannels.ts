@@ -1,21 +1,11 @@
 import { DB_NAME } from '../../constants';
 import type { MessageRow } from '../../types';
 
-export const getMessagesForChannels = (cids: string[]): MessageRow[] => {
+export const getMembersForChannels = (cids: string[]): MessageRow[] => {
   const questionMarks = cids.map((c) => '?').join(',');
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,
-    `SELECT * FROM (
-      SELECT
-        *,
-        ROW_NUMBER() OVER (
-          PARTITION BY cid
-          ORDER BY datetime(createdAt) DESC
-        ) RowNum
-      FROM messages
-      WHERE cid in (${questionMarks})
-    ) t
-    WHERE RowNum < 20`,
+    `SELECT * FROM members WHERE cid in (${questionMarks}) ORDER BY datetime(createdAt) DESC`,
     cids,
   );
 

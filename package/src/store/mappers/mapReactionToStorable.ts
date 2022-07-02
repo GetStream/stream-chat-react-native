@@ -18,6 +18,6 @@ export const mapReactionToStorable = <
     score,
     type: type || '',
     updatedAt: updated_at || '',
-    user: JSON.stringify(user || {}),
+    userId: user?.id,
   };
 };

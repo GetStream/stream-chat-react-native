@@ -10,7 +10,7 @@ export const getChannelsForChannelIds = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channelIds: string[],
-): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'read'>[] => {
+): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'read' | 'members'>[] => {
   const questionMarks = Array(channelIds.length).fill('?').join(',');
   const { message, rows, status } = sqlite.executeSql(
     DB_NAME,

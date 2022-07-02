@@ -1,4 +1,4 @@
-import type { MessageLabel } from 'stream-chat';
+import type { MessageLabel, Role } from 'stream-chat';
 
 /* eslint-disable sort-keys */
 export const schema: {
@@ -14,11 +14,25 @@ export const schema: {
   channels: {
     id: 'TEXT PRIMARY KEY',
     cid: 'TEXT NOT NULL',
-    members: "TEXT DEFAULT ''",
     pinnedMessages: "TEXT DEFAULT ''",
     extraData: "TEXT DEFAULT ''",
     createdAt: "TEXT DEFAULT ''",
     updatedAt: "TEXT DEFAULT ''",
+  },
+  members: {
+    cid: 'TEXT NOT NULL',
+    id: 'TEXT PRIMARY KEY',
+    banned: 'INTEGER DEFAULT 0',
+    channelRole: 'TEXT NOT NULL',
+    createdAt: 'TEXT',
+    inviteAcceptedAt: 'TEXT',
+    inviteRejectedAt: 'TEXT',
+    invited: 'INTEGER',
+    isModerator: 'INTEGER',
+    role: 'TEXT',
+    shadowBanned: 'INTEGER',
+    updatedAt: 'TEXT',
+    userId: 'TEXT',
   },
   messages: {
     id: 'TEXT PRIMARY KEY',
@@ -27,7 +41,7 @@ export const schema: {
     reactionCounts: "TEXT DEFAULT ''",
     text: "TEXT DEFAULT ''",
     type: "TEXT DEFAULT ''",
-    user: "TEXT DEFAULT ''",
+    userId: "TEXT DEFAULT ''",
     attachments: "TEXT DEFAULT ''",
     createdAt: "TEXT DEFAULT ''",
     updatedAt: "TEXT DEFAULT ''",
@@ -40,7 +54,7 @@ export const schema: {
     extraData: "TEXT DEFAULT ''",
     messageId: "TEXT DEFAULT ''",
     score: 'INTEGER DEFAULT 0',
-    user: "TEXT DEFAULT ''",
+    userId: "TEXT DEFAULT ''",
     type: "TEXT DEFAULT ''",
   },
   reads: {
@@ -48,7 +62,7 @@ export const schema: {
     cid: 'TEXT NOT NULL',
     lastRead: 'TEXT NOT NULL',
     unreadMessages: 'INTEGER DEFAULT 0',
-    user: 'TEXT',
+    userId: 'TEXT',
   },
   users: {
     banned: 'INTEGER DEFAULT 0',
@@ -56,21 +70,36 @@ export const schema: {
     extraData: 'TEXT',
     id: 'TEXT PRIMARY KEY',
     lastActive: 'TEXT',
-    online: 'TEXT',
+    online: 'INTEGER',
     role: 'TEXT',
     updatedAt: 'TEXT',
   },
 };
 
+// TODO: Checking the optionality of columns
 export type Schema = {
   channels: {
     cid: string;
     extraData: string;
     id: string;
-    members: string;
     pinnedMessages: string;
     createdAt?: string;
     updatedAt?: string;
+  };
+  members: {
+    cid: string;
+    id: string;
+    banned?: boolean;
+    channelRole?: Role;
+    createdAt?: string;
+    inviteAcceptedAt?: string;
+    invited?: boolean;
+    inviteRejectedAt?: string;
+    isModerator?: boolean;
+    role?: string;
+    shadowBanned?: boolean;
+    updatedAt?: string;
+    userId?: string;
   };
   messages: {
     attachments: string;
@@ -82,8 +111,8 @@ export type Schema = {
     reactionCounts: string;
     type: MessageLabel;
     updatedAt: string;
-    user: string;
     text?: string;
+    userId?: string;
   };
   queryChannelsMap: {
     cids: string;
@@ -96,25 +125,25 @@ export type Schema = {
     messageId: string;
     type: string;
     updatedAt: string;
-    user: string;
     extraData?: string;
     score?: number;
+    userId?: string;
   };
   reads: {
     cid: string;
     id: string;
     lastRead: string;
-    user: string;
     unreadMessages?: number;
+    userId?: string;
   };
   users: {
-    banned: string;
-    createdAt: string;
-    extraData: string;
     id: string;
-    lastActive: string;
-    online: string;
-    role: string;
-    updatedAt: string;
+    banned?: boolean;
+    createdAt?: string;
+    extraData?: string;
+    lastActive?: string;
+    online?: boolean;
+    role?: string;
+    updatedAt?: string;
   };
 };

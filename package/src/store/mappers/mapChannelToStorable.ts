@@ -10,7 +10,6 @@ export const mapChannelToStorable = <
 ): ChannelRow => {
   const {
     channel: { cid, created_at, id, updated_at, ...extraData },
-    members,
     pinned_messages,
   } = channel;
 
@@ -19,7 +18,6 @@ export const mapChannelToStorable = <
     createdAt: created_at,
     extraData: JSON.stringify(extraData),
     id,
-    members: JSON.stringify(members),
     pinnedMessages: JSON.stringify(pinned_messages),
     updatedAt: updated_at,
   };

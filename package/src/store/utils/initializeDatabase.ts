@@ -7,6 +7,7 @@ import { openDB } from './openDB';
 import { DB_NAME, DB_VERSION } from '../constants';
 import { schema } from '../schema';
 import type { Table } from '../types';
+import { printRow } from './printRow';
 
 const createCreateTableQuery = (table: Table) => {
   const columnsWithDescriptors = Object.entries(schema[table]).map((entry) => {
@@ -18,15 +19,56 @@ const createCreateTableQuery = (table: Table) => {
   ${columnsWithDescriptors.join(',\n')}
   );`;
 };
+const testQuery = () => {
+  openDB();
+  const timeStart = new Date().getTime();
+  const messagesColumnNames = Object.keys(schema['messages']).map(name => `'${name}', a.${name}`).join(', ');
+  const userColumnNames = Object.keys(schema['users']).map(name => `'${name}', b.${name}`).join(', ');
+
+  const { message, rows, status } = sqlite.executeSql(
+    DB_NAME,
+    `SELECT
+      json_object(
+        'user', json_object(
+          ${userColumnNames}
+        ),
+        ${userColumnNames}
+      ) as value
+    FROM messages a
+    LEFT JOIN
+      users b
+      ON a.userId = b.id
+    LIMIT 2`,
+    [],
+  );
+  const timeEnd = new Date().getTime();
+
+  // const timeStart1 = new Date().getTime();
+  // sqlite.executeSql(DB_NAME, `SELECT * FROM messages LIMIT 1`, []);
+  // sqlite.executeSql(DB_NAME, `SELECT * FROM users LIMIT 1`, []);
+
+  // const timeEnd1 = new Date().getTime();
+
+  console.log('Time for join - ', timeEnd - timeStart);
+  // console.log('Time without join - ', timeEnd1 - timeStart1);
+  if (status === 1) {
+    console.error(`Querying for channels failed: ${message}`);
+  }
+
+  const result = rows ? rows._array : [];
+  result.forEach(v => console.log(JSON.parse(v.value)))
+  closeDB();
+};
 
 export const initializeDatabase = () => {
+  testQuery();
   const version = getUserPragmaVersion();
   if (version < DB_VERSION) {
     console.log(
       `Dropping the table since version ${version} is less than DB_VERSION ${DB_VERSION}`,
     );
     dropTables();
-    updateUserPragmaVerion(version + 1);
+    updateUserPragmaVersion(version + 1);
   }
 
   executeQueries(
@@ -34,7 +76,7 @@ export const initializeDatabase = () => {
   );
 };
 
-export const updateUserPragmaVerion = (version: number) => {
+export const updateUserPragmaVersion = (version: number) => {
   openDB();
 
   sqlite.executeSql(DB_NAME, `PRAGMA user_version = ${version}`, []);

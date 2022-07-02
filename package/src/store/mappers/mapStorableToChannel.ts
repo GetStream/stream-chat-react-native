@@ -7,8 +7,7 @@ export const mapStorableToChannel = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
   channelRow: ChannelRow,
-): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages'> => {
-  const members = channelRow.members ? JSON.parse(channelRow.members) : [];
+): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'members'> => {
   const pinnedMessages = channelRow.pinnedMessages ? JSON.parse(channelRow.pinnedMessages) : [];
   const extraData = channelRow.extraData ? JSON.parse(channelRow.extraData) : {};
   const { createdAt, updatedAt, ...rest } = channelRow;
@@ -19,7 +18,6 @@ export const mapStorableToChannel = <
       ...rest,
       ...extraData,
     },
-    members,
     pinned_messages: pinnedMessages,
   };
 };
