@@ -4,7 +4,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapReadToStorable } from '../mappers/mapReadToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import type { PreparedQueries } from '../types';
-import { createInsertQuery } from '../utils/createInsertQuery';
+import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
 export const storeReads = <
@@ -22,11 +22,11 @@ export const storeReads = <
 
   reads?.forEach((read) => {
     if (read.user) {
-      queries.push(createInsertQuery('users', mapUserToStorable(read.user)));
+      queries.push(createUpsertQuery('users', mapUserToStorable(read.user)));
     }
 
     queries.push(
-      createInsertQuery(
+      createUpsertQuery(
         'reads',
         mapReadToStorable({
           cid,

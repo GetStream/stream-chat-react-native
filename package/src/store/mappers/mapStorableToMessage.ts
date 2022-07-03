@@ -11,16 +11,19 @@ import type { JoinedMessageRow, JoinedReactionRow } from '../types';
 export const mapStorableToMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  currentUserId,
   messageRow,
   reactionRows,
 }: {
+  currentUserId: string;
   messageRow: JoinedMessageRow;
   reactionRows: JoinedReactionRow[];
 }): MessageResponse<StreamChatGenerics> => {
   const { createdAt, deletedAt, extraData, reactionCounts, updatedAt, user, ...rest } = messageRow;
   const latestReactions =
     reactionRows?.map((reaction) => mapStorableToReaction<StreamChatGenerics>(reaction)) || [];
-  const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === 'neil');
+
+  const ownReactions = latestReactions.filter((reaction) => reaction.user?.id === currentUserId);
 
   return {
     ...rest,

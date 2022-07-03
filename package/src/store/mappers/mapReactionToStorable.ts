@@ -13,7 +13,6 @@ export const mapReactionToStorable = <
   return {
     createdAt: created_at || '',
     extraData: JSON.stringify(extraData),
-    id: `${type}-${message_id}-${user?.id}`,
     messageId: message_id,
     score,
     type: type || '',

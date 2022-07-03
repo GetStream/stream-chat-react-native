@@ -31,7 +31,6 @@ export const mapMemberToStorable = <
     channelRole: channel_role,
     cid,
     createdAt: created_at,
-    id: `${cid}-${user_id}`,
     inviteAcceptedAt: invite_accepted_at,
     invited,
     inviteRejectedAt: invite_rejected_at,

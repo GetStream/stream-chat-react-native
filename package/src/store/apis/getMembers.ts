@@ -7,12 +7,14 @@ import { mapStorableToMember } from '../mappers/mapStorableToMember';
 
 export const getMembers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channelIds: string[],
-) => {
-  const members = selectMembersForChannels(channelIds);
+>({
+  channelIds,
+}: {
+  channelIds: string[];
+}) => {
+  const memberRows = selectMembersForChannels(channelIds);
   const cidVsMembers: Record<string, ChannelMemberResponse<StreamChatGenerics>[]> = {};
-  members.forEach((member) => {
+  memberRows.forEach((member) => {
     if (!cidVsMembers[member.cid]) {
       cidVsMembers[member.cid] = [];
     }

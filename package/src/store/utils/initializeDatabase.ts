@@ -5,36 +5,58 @@ import { executeQueries } from './executeQueries';
 import { openDB } from './openDB';
 
 import { DB_NAME, DB_VERSION } from '../constants';
-import { schema } from '../schema';
-import type { Table } from '../types';
+import { tables } from '../schema';
+import type { PreparedQueries, Table } from '../types';
 
-const createCreateTableQuery = (table: Table) => {
-  const columnsWithDescriptors = Object.entries(schema[table]).map((entry) => {
+const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
+  const columnsWithDescriptors = Object.entries(tables[tableName].columns).map((entry) => {
     const [key, value] = entry;
     return `${key} ${value}`;
   });
 
-  return `CREATE TABLE IF NOT EXISTS ${table}(
-  ${columnsWithDescriptors.join(',\n')}
-  );`;
+  const primaryKeyConstraint = `PRIMARY KEY (${tables[tableName].primaryKey.join(', ')})`;
+  const foreignKeysConstraints =
+    tables[tableName].foreignKeys?.map(
+      (k) =>
+        `FOREIGN KEY (${k.column}) REFERENCES ${k.referenceTable}(${
+          k.referenceTableColumn
+        }) ON DELETE ${k.onDeleteAction || 'NO ACTION'}`,
+    ) || [];
+
+  const indexQueries: PreparedQueries[] =
+    tables[tableName].indexes?.map((index) => [
+      `CREATE ${index.unique ? 'UNIQUE' : ''} INDEX IF NOT EXISTS ${
+        index.name
+      } ON ${tableName}(${index.columns.join(',')})`,
+    ]) || [];
+
+  return [
+    [
+      `CREATE TABLE IF NOT EXISTS ${tableName}(
+        ${[...columnsWithDescriptors, primaryKeyConstraint, ...foreignKeysConstraints].join(',\n')}
+      );`,
+    ],
+    ...indexQueries,
+  ];
 };
+
 const testQuery = () => {
   openDB();
 
-  const { message, rows, status } = sqlite.executeSql(DB_NAME, `SELECT * FROM messages`, []);
-
+  sqlite.executeSql(DB_NAME, `PRAGMA foreign_keys = ON`, []);
+  const { message, rows, status } = sqlite.executeSql(DB_NAME, `PRAGMA foreign_keys`, []);
   if (status === 1) {
     console.error(`Querying for channels failed: ${message}`);
   }
 
   const result = rows ? rows._array : [];
-  // result.forEach(r => printRow(JSON.parse(r.value)))
+  console.log('first connection', result);
   closeDB();
 };
 
 export const initializeDatabase = () => {
   if (__DEV__) {
-    testQuery();
+    // testQuery();
   }
 
   const version = getUserPragmaVersion();
@@ -43,12 +65,17 @@ export const initializeDatabase = () => {
       `Dropping the table since version ${version} is less than DB_VERSION ${DB_VERSION}`,
     );
     dropTables();
-    updateUserPragmaVersion(version + 1);
+    updateUserPragmaVersion(DB_VERSION);
   }
-
-  executeQueries(
-    (Object.keys(schema) as Table[]).map((tableName) => [createCreateTableQuery(tableName)]),
+  const q = (Object.keys(tables) as Table[]).reduce<PreparedQueries[]>(
+    (queriesSoFar, tableName) => {
+      queriesSoFar.push(...createCreateTableQuery(tableName));
+      return queriesSoFar;
+    },
+    [],
   );
+
+  executeQueries(q);
 };
 
 export const updateUserPragmaVersion = (version: number) => {

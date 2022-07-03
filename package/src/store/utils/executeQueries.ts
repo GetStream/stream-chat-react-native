@@ -15,7 +15,7 @@ export const executeQueries = (queries: PreparedQueries[]) => {
   console.log('TIME TAKEN TO STORE: ', timeEnd - timeStart);
 
   if (res.status === 1) {
-    console.error(`Query/queries failed. ${res.message}`);
+    console.error(`Query/queries failed. ${res.message} ${JSON.stringify(res)}`);
   }
 
   closeDB();

@@ -4,7 +4,7 @@ import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import { createInsertQuery } from '../utils/createInsertQuery';
+import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
 export const storeCidsForQuery = <
@@ -21,9 +21,9 @@ export const storeCidsForQuery = <
   sort?: ChannelSort<StreamChatGenerics>;
 }) => {
   // Update the database only if the query is provided.
-  const query = createInsertQuery('queryChannelsMap', {
+  const query = createUpsertQuery('queryChannelsMap', {
     cids: JSON.stringify(cids),
-    id: convertFilterSortToQuery(filters, sort),
+    id: convertFilterSortToQuery({ filters, sort }),
   });
 
   if (flush) {

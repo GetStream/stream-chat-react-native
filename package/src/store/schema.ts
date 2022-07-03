@@ -1,78 +1,163 @@
 import type { MessageLabel, Role } from 'stream-chat';
 
-/* eslint-disable sort-keys */
-export const schema: {
+type Tables = {
   [P in keyof Schema]: {
-    [K in keyof Schema[P]]: string;
+    columns: {
+      [K in keyof Schema[P]]: string;
+    };
+    primaryKey: Array<keyof Schema[P]>;
+    foreignKeys?: Array<{
+      column: `${Exclude<keyof Schema[P], symbol>}`;
+      referenceTable: `${keyof Schema}`;
+      referenceTableColumn: string;
+      // https://www.sqlite.org/foreignkeys.html#fk_actions
+      onDeleteAction?: 'NO ACTION' | 'RESTRICT' | 'SET NULL' | 'SET DEFAULT' | 'CASCADE';
+    }>;
+    indexes?: Array<{
+      columns: Array<keyof Schema[P]>;
+      name: string;
+      unique: boolean;
+    }>;
   };
-} = {
-  queryChannelsMap: {
-    lastSyncedAt: 'TEXT',
-    id: 'TEXT PRIMARY KEY',
-    cids: 'TEXT',
-  },
+};
+
+export const tables: Tables = {
   channels: {
-    id: 'TEXT PRIMARY KEY',
-    cid: 'TEXT NOT NULL',
-    pinnedMessages: "TEXT DEFAULT ''",
-    extraData: "TEXT DEFAULT ''",
-    createdAt: "TEXT DEFAULT ''",
-    updatedAt: "TEXT DEFAULT ''",
+    columns: {
+      cid: 'TEXT',
+      createdAt: "TEXT DEFAULT ''",
+      extraData: "TEXT DEFAULT ''",
+      id: 'TEXT',
+      pinnedMessages: "TEXT DEFAULT ''",
+      updatedAt: "TEXT DEFAULT ''",
+    },
+    primaryKey: ['cid'],
   },
   members: {
-    cid: 'TEXT NOT NULL',
-    id: 'TEXT PRIMARY KEY',
-    banned: 'INTEGER DEFAULT 0',
-    channelRole: 'TEXT NOT NULL',
-    createdAt: 'TEXT',
-    inviteAcceptedAt: 'TEXT',
-    inviteRejectedAt: 'TEXT',
-    invited: 'INTEGER',
-    isModerator: 'INTEGER',
-    role: 'TEXT',
-    shadowBanned: 'INTEGER',
-    updatedAt: 'TEXT',
-    userId: 'TEXT',
+    columns: {
+      banned: 'INTEGER DEFAULT 0',
+      channelRole: 'TEXT NOT NULL',
+      cid: 'TEXT NOT NULL',
+      createdAt: 'TEXT',
+      inviteAcceptedAt: 'TEXT',
+      invited: 'INTEGER',
+      inviteRejectedAt: 'TEXT',
+      isModerator: 'INTEGER',
+      role: 'TEXT',
+      shadowBanned: 'INTEGER',
+      updatedAt: 'TEXT',
+      userId: 'TEXT',
+    },
+    foreignKeys: [
+      {
+        column: 'cid',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'channels',
+        referenceTableColumn: 'cid',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['cid', 'userId'],
+        name: 'index_members',
+        unique: false,
+      },
+    ],
+    primaryKey: ['cid', 'userId'],
   },
   messages: {
-    id: 'TEXT PRIMARY KEY',
-    cid: 'TEXT NOT NULL',
-    deletedAt: "TEXT DEFAULT ''",
-    reactionCounts: "TEXT DEFAULT ''",
-    text: "TEXT DEFAULT ''",
-    type: "TEXT DEFAULT ''",
-    userId: "TEXT DEFAULT ''",
-    attachments: "TEXT DEFAULT ''",
-    createdAt: "TEXT DEFAULT ''",
-    updatedAt: "TEXT DEFAULT ''",
-    extraData: "TEXT DEFAULT ''",
+    columns: {
+      attachments: "TEXT DEFAULT ''",
+      cid: 'TEXT NOT NULL',
+      createdAt: "TEXT DEFAULT ''",
+      deletedAt: "TEXT DEFAULT ''",
+      extraData: "TEXT DEFAULT ''",
+      id: 'TEXT',
+      reactionCounts: "TEXT DEFAULT ''",
+      text: "TEXT DEFAULT ''",
+      type: "TEXT DEFAULT ''",
+      updatedAt: "TEXT DEFAULT ''",
+      userId: "TEXT DEFAULT ''",
+    },
+    indexes: [
+      {
+        columns: ['cid', 'userId'],
+        name: 'index_messages',
+        unique: false,
+      },
+    ],
+    primaryKey: ['id'],
+  },
+  queryChannelsMap: {
+    columns: {
+      cids: 'TEXT',
+      id: 'TEXT',
+      lastSyncedAt: 'TEXT',
+    },
+    primaryKey: ['id'],
   },
   reactions: {
-    id: 'TEXT PRIMARY KEY',
-    createdAt: "TEXT DEFAULT ''",
-    updatedAt: "TEXT DEFAULT ''",
-    extraData: "TEXT DEFAULT ''",
-    messageId: "TEXT DEFAULT ''",
-    score: 'INTEGER DEFAULT 0',
-    userId: "TEXT DEFAULT ''",
-    type: "TEXT DEFAULT ''",
+    columns: {
+      createdAt: "TEXT DEFAULT ''",
+      extraData: "TEXT DEFAULT ''",
+      messageId: "TEXT DEFAULT ''",
+      score: 'INTEGER DEFAULT 0',
+      type: "TEXT DEFAULT ''",
+      updatedAt: "TEXT DEFAULT ''",
+      userId: "TEXT DEFAULT ''",
+    },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
+    indexes: [
+      {
+        columns: ['messageId', 'userId'],
+        name: 'index_reaction',
+        unique: false,
+      },
+    ],
+    primaryKey: ['messageId', 'userId', 'type'],
   },
   reads: {
-    id: 'TEXT PRIMARY KEY',
-    cid: 'TEXT NOT NULL',
-    lastRead: 'TEXT NOT NULL',
-    unreadMessages: 'INTEGER DEFAULT 0',
-    userId: 'TEXT',
+    columns: {
+      cid: 'TEXT NOT NULL',
+      lastRead: 'TEXT NOT NULL',
+      unreadMessages: 'INTEGER DEFAULT 0',
+      userId: 'TEXT',
+    },
+    indexes: [
+      {
+        columns: ['cid', 'userId'],
+        name: 'index_reads_cid',
+        unique: false,
+      },
+    ],
+    primaryKey: ['userId', 'cid'],
   },
   users: {
-    banned: 'INTEGER DEFAULT 0',
-    createdAt: 'TEXT',
-    extraData: 'TEXT',
-    id: 'TEXT PRIMARY KEY',
-    lastActive: 'TEXT',
-    online: 'INTEGER',
-    role: 'TEXT',
-    updatedAt: 'TEXT',
+    columns: {
+      banned: 'INTEGER DEFAULT 0',
+      createdAt: 'TEXT',
+      extraData: 'TEXT',
+      id: 'TEXT',
+      lastActive: 'TEXT',
+      online: 'INTEGER',
+      role: 'TEXT',
+      updatedAt: 'TEXT',
+    },
+    indexes: [
+      {
+        columns: ['id'],
+        name: 'index_users_id',
+        unique: true,
+      },
+    ],
+    primaryKey: ['id'],
   },
 };
 
@@ -88,7 +173,6 @@ export type Schema = {
   };
   members: {
     cid: string;
-    id: string;
     banned?: boolean;
     channelRole?: Role;
     createdAt?: string;
@@ -121,7 +205,6 @@ export type Schema = {
   };
   reactions: {
     createdAt: string;
-    id: string;
     messageId: string;
     type: string;
     updatedAt: string;
@@ -131,7 +214,6 @@ export type Schema = {
   };
   reads: {
     cid: string;
-    id: string;
     lastRead: string;
     unreadMessages?: number;
     userId?: string;

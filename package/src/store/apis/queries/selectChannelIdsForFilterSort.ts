@@ -7,11 +7,14 @@ import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
 
 export const selectChannelIdsForFilterSort = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  filters?: ChannelFilters<StreamChatGenerics>,
-  sort?: ChannelSort<StreamChatGenerics>,
-): string[] => {
-  const query = convertFilterSortToQuery(filters, sort);
+>({
+  filters,
+  sort,
+}: {
+  filters?: ChannelFilters<StreamChatGenerics>;
+  sort?: ChannelSort<StreamChatGenerics>;
+}): string[] => {
+  const query = convertFilterSortToQuery({ filters, sort });
   const results = selectQuery(
     `SELECT * FROM queryChannelsMap where id = ?`,
     [query],

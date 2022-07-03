@@ -3,11 +3,13 @@ import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-cha
 import { storeCidsForQuery } from './storeCidsForQuery';
 import { storeMembers } from './storeMembers';
 
-import { storeMessages } from './storeMessages';
 import { storeReads } from './storeReads';
+import { storeMessages } from './upsertMessages';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
+import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
 import type { PreparedQueries } from '../types';
+import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
 export const storeChannels = <
@@ -16,11 +18,13 @@ export const storeChannels = <
   channels,
   filters,
   flush = true,
+  isLatestMessagesSet,
   sort,
 }: {
   channels: ChannelAPIResponse<StreamChatGenerics>[];
   filters?: ChannelFilters<StreamChatGenerics>;
   flush?: boolean;
+  isLatestMessagesSet?: boolean;
   sort?: ChannelSort<StreamChatGenerics>;
 }) => {
   // Update the database only if the query is provided.
@@ -39,8 +43,9 @@ export const storeChannels = <
   }
 
   for (const channel of channels) {
-    const { members, messages, read } = channel;
+    queries.push(createUpsertQuery('channels', mapChannelToStorable(channel)));
 
+    const { members, messages, read } = channel;
     queries = queries.concat(
       storeMembers({
         cid: channel.channel.cid,
@@ -59,12 +64,14 @@ export const storeChannels = <
       );
     }
 
-    queries = queries.concat(
-      storeMessages({
-        flush: false,
-        messages,
-      }),
-    );
+    if (isLatestMessagesSet) {
+      queries = queries.concat(
+        storeMessages({
+          flush: false,
+          messages,
+        }),
+      );
+    }
   }
 
   if (flush) {

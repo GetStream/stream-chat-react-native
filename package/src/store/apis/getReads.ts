@@ -7,9 +7,11 @@ import { mapStorableToRead } from '../mappers/mapStorableToRead';
 
 export const getReads = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channelIds: string[],
-) => {
+>({
+  channelIds,
+}: {
+  channelIds: string[];
+}) => {
   const reads = selectReadsForChannels(channelIds);
   const cidVsReads: Record<string, ReadResponse<StreamChatGenerics>[]> = {};
 

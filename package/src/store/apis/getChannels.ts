@@ -7,41 +7,42 @@ import { getReads } from './getReads';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
 import { selectChannelsForChannelIds } from './queries/selectChannelsForChannelIds';
 
-import { closeDB } from '../utils/closeDB';
-import { openDB } from '../utils/openDB';
+import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
 
 export const getChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  filters?: ChannelFilters<StreamChatGenerics>,
-  sort?: ChannelSort<StreamChatGenerics>,
-): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
+>({
+  currentUserId,
+  filters,
+  sort,
+}: {
+  currentUserId: string;
+  filters?: ChannelFilters<StreamChatGenerics>;
+  sort?: ChannelSort<StreamChatGenerics>;
+}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return [];
   }
 
-  openDB();
-
-  const channelIds = selectChannelIdsForFilterSort(filters, sort);
-  const channels = selectChannelsForChannelIds<StreamChatGenerics>(channelIds);
+  const channelIds = selectChannelIdsForFilterSort({ filters, sort });
+  const channels = selectChannelsForChannelIds({ channelIds });
 
   const timeStart = new Date().getTime();
-  const cidVsMembers = getMembers<StreamChatGenerics>(channelIds);
-  const cidVsReads = getReads<StreamChatGenerics>(channelIds);
-  const cidVsMessages = getMessages<StreamChatGenerics>(channelIds);
+  const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });
+  const cidVsReads = getReads<StreamChatGenerics>({ channelIds });
+  const cidVsMessages = getMessages<StreamChatGenerics>({ channelIds, currentUserId });
 
   // Enrich the channels with state
   const result = channels.map((c) => ({
-    ...c,
-    members: cidVsMembers[c.channel.cid],
-    messages: cidVsMessages[c.channel.cid],
-    read: cidVsReads[c.channel.cid],
+    ...mapStorableToChannel<StreamChatGenerics>(c),
+    members: cidVsMembers[c.cid],
+    messages: cidVsMessages[c.cid],
+    read: cidVsReads[c.cid],
   }));
 
   const timeEnd = new Date().getTime();
   console.log('>> PERFORMANCE query 1: getChannels() - time: ', timeEnd - timeStart);
-  closeDB();
 
   return result;
 };

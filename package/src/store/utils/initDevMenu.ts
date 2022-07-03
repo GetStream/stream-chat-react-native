@@ -4,7 +4,7 @@ import { printRow } from './printRow';
 import { resetDatabase } from './resetDatabase';
 
 import { DB_NAME } from '../constants';
-import { schema } from '../schema';
+import { tables } from '../schema';
 import type { Table } from '../types';
 
 if (__DEV__) {
@@ -12,7 +12,7 @@ if (__DEV__) {
 
   DevMenu.addItem('Reset Stream Offline DB', resetDatabase);
   setTimeout(() => {
-    (Object.keys(schema) as Table[]).forEach((tName) => {
+    (Object.keys(tables) as Table[]).forEach((tName) => {
       DevMenu.addItem(`Log ${tName}`, () => {
         const rows = select(`${tName}`, '*');
         rows.forEach((r) => printRow(r));

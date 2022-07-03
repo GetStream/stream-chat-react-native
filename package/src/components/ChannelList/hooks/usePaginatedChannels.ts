@@ -177,10 +177,10 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    if (client) {
+    if (client?.user?.id) {
       if (enableOfflineSupport) {
         try {
-          const channelsFromDB = getChannels(filters, sort);
+          const channelsFromDB = getChannels({ currentUserId: client.user.id, filters, sort });
           setChannels(
             client.hydrateActiveChannels(channelsFromDB, {
               offlineMode: true,

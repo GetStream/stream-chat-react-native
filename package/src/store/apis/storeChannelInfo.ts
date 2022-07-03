@@ -2,7 +2,7 @@ import type { ChannelResponse } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelInfoToStorable } from '../mappers/mapChannelInfoToStorable';
-import { createInsertQuery } from '../utils/createInsertQuery';
+import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
 export const storeChannelInfo = <
@@ -12,6 +12,6 @@ export const storeChannelInfo = <
 }: {
   channel: ChannelResponse<StreamChatGenerics>;
 }) => {
-  const query = createInsertQuery('channels', mapChannelInfoToStorable(channel));
+  const query = createUpsertQuery('channels', mapChannelInfoToStorable(channel));
   executeQueries([query]);
 };

@@ -1,13 +1,13 @@
-import { schema } from '../../schema';
+import { tables } from '../../schema';
 import type { JoinedReactionRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const selectReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
-  const reactionsColumnNames = Object.keys(schema.reactions)
+  const reactionsColumnNames = Object.keys(tables.reactions.columns)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
-  const userColumnNames = Object.keys(schema.users)
+  const userColumnNames = Object.keys(tables.users.columns)
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 

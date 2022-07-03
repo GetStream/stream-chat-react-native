@@ -1,6 +1,6 @@
-import type { Schema, schema } from './schema';
+import type { Schema } from './schema';
 
-export type Table = keyof typeof schema;
+export type Table = keyof Schema;
 
 export type PreparedQueries = [string] | [string, Array<any> | Array<Array<any>>];
 

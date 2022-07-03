@@ -16,7 +16,6 @@ export const mapReadToStorable = <
 
   return {
     cid,
-    id: `${user.id}-${cid}`,
     lastRead: last_read,
     unreadMessages: unread_messages,
     userId: user?.id,

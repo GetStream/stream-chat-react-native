@@ -7,8 +7,9 @@ import { deleteChannel } from '../../../../store/apis/deleteChannel';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
 import { storeChannelInfo } from '../../../../store/apis/storeChannelInfo';
 import { storeChannels } from '../../../../store/apis/storeChannels';
-import { storeMessages } from '../../../../store/apis/storeMessages';
 import { storeReads } from '../../../../store/apis/storeReads';
+import { updateMessages } from '../../../../store/apis/updateMessages';
+import { storeMessages } from '../../../../store/apis/upsertMessages';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Params = {
@@ -50,7 +51,7 @@ export const useSyncDatabase = <
 
       if (type === 'message.updated') {
         if (event.message) {
-          storeMessages<StreamChatGenerics>({
+          updateMessages<StreamChatGenerics>({
             messages: [event.message],
           });
         }
@@ -59,6 +60,14 @@ export const useSyncDatabase = <
       if (type === 'message.deleted') {
         if (event.message) {
           storeMessages<StreamChatGenerics>({
+            messages: [event.message],
+          });
+        }
+      }
+
+      if (type === 'reaction.new' || type === 'reaction.updated' || type === 'reaction.deleted') {
+        if (event.message) {
+          updateMessages<StreamChatGenerics>({
             messages: [event.message],
           });
         }
@@ -104,10 +113,11 @@ export const useSyncDatabase = <
         }
       }
 
-      if (type === 'activeChannels.new') {
+      if (type === 'channels.queried') {
         if (event.channels) {
           storeChannels<StreamChatGenerics>({
             channels: event.channels,
+            isLatestMessagesSet: event.isLatestMessageSet,
           });
         }
       }

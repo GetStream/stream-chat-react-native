@@ -1,13 +1,13 @@
-import { schema } from '../../schema';
+import { tables } from '../../schema';
 import type { JoinedMessageRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');
-  const membersColumnNames = Object.keys(schema.members)
+  const membersColumnNames = Object.keys(tables.members.columns)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
-  const userColumnNames = Object.keys(schema.users)
+  const userColumnNames = Object.keys(tables.users.columns)
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 

@@ -5,7 +5,7 @@ import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import type { PreparedQueries } from '../types';
-import { createInsertQuery } from '../utils/createInsertQuery';
+import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
 export const storeMessages = <
@@ -22,18 +22,18 @@ export const storeMessages = <
   const reactionsToUpsert: PreparedQueries[] = [];
 
   messages?.forEach((message: MessageResponse<StreamChatGenerics>) => {
-    messagesToUpsert.push(createInsertQuery('messages', mapMessageToStorable(message)));
+    messagesToUpsert.push(createUpsertQuery('messages', mapMessageToStorable(message)));
     if (message.user) {
-      usersToUpsert.push(createInsertQuery('users', mapUserToStorable(message.user)));
+      usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(message.user)));
     }
 
     [...(message.latest_reactions || []), ...(message.own_reactions || [])].forEach((r) => {
       if (r.user) {
-        usersToUpsert.push(createInsertQuery('users', mapUserToStorable(r.user)));
+        usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(r.user)));
       }
 
       reactionsToUpsert.push(
-        createInsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)),
+        createUpsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)),
       );
     });
   });

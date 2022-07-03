@@ -10,16 +10,20 @@ import type { JoinedReactionRow } from '../types';
 
 export const getMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  channelIds: string[],
-) => {
-  const messages = selectMessagesForChannels(channelIds);
-  const messageIds = messages.map(({ id }) => id);
+>({
+  channelIds,
+  currentUserId,
+}: {
+  channelIds: string[];
+  currentUserId: string;
+}) => {
+  const messageRows = selectMessagesForChannels(channelIds);
+  const messageIds = messageRows.map(({ id }) => id);
 
   // Populate the message reactions.
-  const reactions = selectReactionsForMessages(messageIds);
+  const reactionRows = selectReactionsForMessages(messageIds);
   const messageIdVsReactions: Record<string, JoinedReactionRow[]> = {};
-  reactions.forEach((reaction) => {
+  reactionRows.forEach((reaction) => {
     if (!messageIdVsReactions[reaction.messageId]) {
       messageIdVsReactions[reaction.messageId] = [];
     }
@@ -28,13 +32,14 @@ export const getMessages = <
 
   // Populate the messages.
   const cidVsMessages: Record<string, MessageResponse<StreamChatGenerics>[]> = {};
-  messages.forEach((m) => {
+  messageRows.forEach((m) => {
     if (!cidVsMessages[m.cid]) {
       cidVsMessages[m.cid] = [];
     }
 
     cidVsMessages[m.cid].push(
       mapStorableToMessage<StreamChatGenerics>({
+        currentUserId,
         messageRow: m,
         reactionRows: messageIdVsReactions[m.id],
       }),

@@ -1,13 +1,13 @@
-import { schema } from '../../schema';
+import { tables } from '../../schema';
 import type { JoinedReadRow } from '../../types';
 import { selectQuery } from '../../utils/selectQuery';
 
 export const selectReadsForChannels = (cids: string[]): JoinedReadRow[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');
-  const readsColumnNames = Object.keys(schema.reads)
+  const readsColumnNames = Object.keys(tables.reads.columns)
     .map((name) => `'${name}', a.${name}`)
     .join(', ');
-  const userColumnNames = Object.keys(schema.users)
+  const userColumnNames = Object.keys(tables.users.columns)
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
   const result = selectQuery(
