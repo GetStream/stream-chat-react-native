@@ -14,7 +14,10 @@ const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
     return `${key} ${value}`;
   });
 
-  const primaryKeyConstraint = `PRIMARY KEY (${tables[tableName].primaryKey.join(', ')})`;
+  const primaryKeyConstraints =
+    tables[tableName].primaryKey.length > 0
+      ? [`PRIMARY KEY (${tables[tableName].primaryKey.join(', ')})`]
+      : [];
   const foreignKeysConstraints =
     tables[tableName].foreignKeys?.map(
       (k) =>
@@ -30,10 +33,22 @@ const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
       } ON ${tableName}(${index.columns.join(',')})`,
     ]) || [];
 
+  // console.log([
+  //   [
+  //     `CREATE TABLE IF NOT EXISTS ${tableName}(
+  //         ${[...columnsWithDescriptors, ...primaryKeyConstraints, ...foreignKeysConstraints].join(
+  //           ',\n',
+  //         )}
+  //       );`,
+  //   ],
+  //   ...indexQueries,
+  // ]);
   return [
     [
       `CREATE TABLE IF NOT EXISTS ${tableName}(
-        ${[...columnsWithDescriptors, primaryKeyConstraint, ...foreignKeysConstraints].join(',\n')}
+        ${[...columnsWithDescriptors, ...primaryKeyConstraints, ...foreignKeysConstraints].join(
+          ',\n',
+        )}
       );`,
     ],
     ...indexQueries,

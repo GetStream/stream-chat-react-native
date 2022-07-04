@@ -164,11 +164,11 @@ const ChatWithContext = <
   const mutedUsers = useMutedUsers<StreamChatGenerics>(client);
 
   useEffect(() => {
-    if (client?.setUserAgent) {
+    if (client) {
       client.setUserAgent(`${SDK}-${Platform.OS}-${version}`);
       // This is to disable recovery related logic in js client, since we handle it in this SDK
       client.recoverStateOnReconnect = false;
-      client.enableOfflineSupport = true;
+      client.persistUserOnConnectionFailure = enableOfflineSupport;
     }
   }, [client]);
 

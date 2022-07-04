@@ -5,11 +5,11 @@ import type { Event, StreamChat } from 'stream-chat';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { deleteChannel } from '../../../../store/apis/deleteChannel';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
-import { storeChannelInfo } from '../../../../store/apis/storeChannelInfo';
-import { storeChannels } from '../../../../store/apis/storeChannels';
-import { storeReads } from '../../../../store/apis/storeReads';
-import { updateMessages } from '../../../../store/apis/updateMessages';
-import { storeMessages } from '../../../../store/apis/upsertMessages';
+import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
+import { updateMessage } from '../../../../store/apis/updateMessage';
+import { upsertChannels } from '../../../../store/apis/upsertChannels';
+import { upsertMessages } from '../../../../store/apis/upsertMessages';
+import { upsertReads } from '../../../../store/apis/upsertReads';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Params = {
@@ -28,7 +28,7 @@ export const useSyncDatabase = <
       if (type === 'message.read') {
         if (event.user?.id && event.cid) {
           console.log(event.user);
-          storeReads<StreamChatGenerics>({
+          upsertReads<StreamChatGenerics>({
             cid: event.cid,
             reads: [
               {
@@ -42,40 +42,43 @@ export const useSyncDatabase = <
       }
 
       if (type === 'message.new') {
-        if (event.message) {
-          storeMessages<StreamChatGenerics>({
+        if (event.message && !event.message.parent_id) {
+          upsertMessages<StreamChatGenerics>({
             messages: [event.message],
           });
         }
       }
 
-      if (type === 'message.updated') {
-        if (event.message) {
-          updateMessages<StreamChatGenerics>({
-            messages: [event.message],
+      if (type === 'message.updated' || type === 'message.deleted') {
+        if (event.message && !event.message.parent_id) {
+          // Update only if it exists, otherwise event could be related
+          // to a message which is not related to existing messages with database.
+          updateMessage<StreamChatGenerics>({
+            message: event.message,
+          });
+        }
+      }
+      if (type === 'reaction.updated') {
+        console.log(type);
+        if (event.message && event.reaction) {
+          updateMessage<StreamChatGenerics>({
+            message: event.message,
           });
         }
       }
 
-      if (type === 'message.deleted') {
-        if (event.message) {
-          storeMessages<StreamChatGenerics>({
-            messages: [event.message],
-          });
-        }
-      }
-
-      if (type === 'reaction.new' || type === 'reaction.updated' || type === 'reaction.deleted') {
-        if (event.message) {
-          updateMessages<StreamChatGenerics>({
-            messages: [event.message],
+      if (type === 'reaction.new' || type === 'reaction.deleted') {
+        console.log(type);
+        if (event.message && !event.message.parent_id) {
+          updateMessage<StreamChatGenerics>({
+            message: event.message,
           });
         }
       }
 
       if (type === 'channel.updated') {
         if (event.channel) {
-          storeChannelInfo({
+          upsertChannelInfo({
             channel: event.channel,
           });
         }
@@ -91,7 +94,7 @@ export const useSyncDatabase = <
 
       if (type === 'channel.visible') {
         if (event.channel) {
-          storeChannelInfo({
+          upsertChannelInfo({
             channel: event.channel,
           });
         }
@@ -115,7 +118,7 @@ export const useSyncDatabase = <
 
       if (type === 'channels.queried') {
         if (event.channels) {
-          storeChannels<StreamChatGenerics>({
+          upsertChannels<StreamChatGenerics>({
             channels: event.channels,
             isLatestMessagesSet: event.isLatestMessageSet,
           });
@@ -124,7 +127,7 @@ export const useSyncDatabase = <
 
       if (type === 'notification.added_to_channel') {
         if (event.channel) {
-          storeChannelInfo({
+          upsertChannelInfo({
             channel: event.channel,
           });
         }
@@ -140,7 +143,7 @@ export const useSyncDatabase = <
 
       if (type === 'notification.message_new') {
         if (event.channel) {
-          storeChannelInfo<StreamChatGenerics>({
+          upsertChannelInfo<StreamChatGenerics>({
             channel: event.channel,
           });
         }

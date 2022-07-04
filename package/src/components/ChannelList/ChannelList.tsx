@@ -30,7 +30,7 @@ import {
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { storeCidsForQuery } from '../../store/apis/storeCidsForQuery';
+import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -334,7 +334,7 @@ export const ChannelList = <
       return;
     }
 
-    storeCidsForQuery({
+    upsertCidsForQuery({
       cids: channelIds,
       filters,
       sort,

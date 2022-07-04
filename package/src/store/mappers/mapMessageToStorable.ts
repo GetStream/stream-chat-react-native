@@ -1,13 +1,8 @@
 import type { MessageResponse } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { MessageRow } from '../types';
 
-export const mapMessageToStorable = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  message: MessageResponse<StreamChatGenerics>,
-): MessageRow => {
+export const mapMessageToStorable = (message: Partial<MessageResponse>): Partial<MessageRow> => {
   const {
     attachments,
     cid,

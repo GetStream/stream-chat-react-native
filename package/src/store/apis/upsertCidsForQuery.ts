@@ -7,7 +7,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
-export const storeCidsForQuery = <
+export const upsertCidsForQuery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   cids,

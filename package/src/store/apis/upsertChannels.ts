@@ -1,10 +1,10 @@
 import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
 
-import { storeCidsForQuery } from './storeCidsForQuery';
-import { storeMembers } from './storeMembers';
+import { upsertCidsForQuery } from './upsertCidsForQuery';
+import { upsertMembers } from './upsertMembers';
 
-import { storeReads } from './storeReads';
-import { storeMessages } from './upsertMessages';
+import { upsertMessages } from './upsertMessages';
+import { upsertReads } from './upsertReads';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
@@ -12,7 +12,7 @@ import type { PreparedQueries } from '../types';
 import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
-export const storeChannels = <
+export const upsertChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channels,
@@ -33,7 +33,7 @@ export const storeChannels = <
   if (filters || sort) {
     const channelIds = channels.map((channel) => channel.channel.cid);
     queries = queries.concat(
-      storeCidsForQuery({
+      upsertCidsForQuery({
         cids: channelIds,
         filters,
         flush: false,
@@ -47,7 +47,7 @@ export const storeChannels = <
 
     const { members, messages, read } = channel;
     queries = queries.concat(
-      storeMembers({
+      upsertMembers({
         cid: channel.channel.cid,
         flush: false,
         members,
@@ -56,7 +56,7 @@ export const storeChannels = <
 
     if (read) {
       queries = queries.concat(
-        storeReads({
+        upsertReads({
           cid: channel.channel.cid,
           flush: false,
           reads: read,
@@ -66,7 +66,7 @@ export const storeChannels = <
 
     if (isLatestMessagesSet) {
       queries = queries.concat(
-        storeMessages({
+        upsertMessages({
           flush: false,
           messages,
         }),
@@ -75,7 +75,7 @@ export const storeChannels = <
   }
 
   if (flush) {
-    executeQueries(queries);
+    executeQueries(queries, 'upsertChannels');
   }
 
   return queries;

@@ -5,7 +5,7 @@ import { mapChannelInfoToStorable } from '../mappers/mapChannelInfoToStorable';
 import { createUpsertQuery } from '../utils/createUpsertQuery';
 import { executeQueries } from '../utils/executeQueries';
 
-export const storeChannelInfo = <
+export const upsertChannelInfo = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,

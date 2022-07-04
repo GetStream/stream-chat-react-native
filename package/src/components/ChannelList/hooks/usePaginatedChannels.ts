@@ -183,7 +183,7 @@ export const usePaginatedChannels = <
           const channelsFromDB = getChannels({ currentUserId: client.user.id, filters, sort });
           setChannels(
             client.hydrateActiveChannels(channelsFromDB, {
-              offlineMode: true,
+              staticState: true,
             }),
           );
         } catch (e) {

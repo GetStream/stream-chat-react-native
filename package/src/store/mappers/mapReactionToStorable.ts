@@ -1,13 +1,8 @@
 import type { ReactionResponse } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReactionRow } from '../types';
 
-export const mapReactionToStorable = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  reaction: ReactionResponse<StreamChatGenerics>,
-): ReactionRow => {
+export const mapReactionToStorable = (reaction: ReactionResponse): ReactionRow => {
   const { created_at, message_id, score, type, updated_at, user, ...extraData } = reaction;
 
   return {

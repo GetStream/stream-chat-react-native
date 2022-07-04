@@ -5,7 +5,7 @@ import { openDB } from './openDB';
 import { DB_NAME } from '../constants';
 import type { PreparedQueries } from '../types';
 
-export const executeQueries = (queries: PreparedQueries[]) => {
+export const executeQueries = (queries: PreparedQueries[], debugInfo?: string) => {
   openDB();
 
   const timeStart = new Date().getTime();
@@ -15,7 +15,7 @@ export const executeQueries = (queries: PreparedQueries[]) => {
   console.log('TIME TAKEN TO STORE: ', timeEnd - timeStart);
 
   if (res.status === 1) {
-    console.error(`Query/queries failed. ${res.message} ${JSON.stringify(res)}`);
+    console.error(`Query/queries failed. ${debugInfo} ${res.message} ${JSON.stringify(res)}`);
   }
 
   closeDB();
