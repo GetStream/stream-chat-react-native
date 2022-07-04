@@ -2,6 +2,9 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { TouchableOpacityProps } from 'react-native';
 
+import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/ImageLoadingFailedIndicator';
+import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/ImageLoadingIndicator';
+
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
@@ -115,6 +118,17 @@ export type MessagesContextValue<
    * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
    * */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
+
+  /**
+   * The indicator rendered when loading an image fails.
+   */
+  ImageLoadingFailedIndicator: React.ComponentType<ImageLoadingFailedIndicatorProps>;
+
+  /**
+   * The indicator rendered when image is loading. By default renders <ActivityIndicator/>
+   */
+  ImageLoadingIndicator: React.ComponentType<ImageLoadingIndicatorProps>;
+
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
@@ -129,6 +143,7 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
+
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
   /**
    * UI component for MessageAvatar

@@ -38,6 +38,7 @@
     "lint": "yarn lerna-workspaces run lint && (cd docusaurus && npx prettier --check '**/*.mdx')",
     "lint-fix": "yarn lerna-workspaces run lint-fix && (cd docusaurus && npx prettier --write '**/*.mdx')",
     "build": "yarn lerna-workspaces run build",
+    "test:coverage": "yarn lerna-workspaces run test:coverage",
     "test:unit": "yarn lerna-workspaces run test:unit",
     "detox-sample-android:build": "detox build --configuration android.sample.release",
     "detox-sample-ios:build": "detox build --configuration ios.sample.release",

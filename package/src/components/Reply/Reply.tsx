@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
@@ -7,8 +7,8 @@ import type { Attachment } from 'stream-chat';
 
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
+  MessageInputContext,
   MessageInputContextValue,
-  useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
   MessagesContextValue,
@@ -267,6 +267,22 @@ const ReplyWithContext = <
   );
 };
 
+/**
+ * When a reply is rendered in a MessageSimple, it does
+ * not have a MessageInputContext. As this is deliberate,
+ * this function exists to avoid the error thrown when
+ * using a context outside of its provider.
+ * */
+const useMessageInputContextIfAvailable = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => {
+  const contextValue = useContext(
+    MessageInputContext,
+  ) as unknown as MessageInputContextValue<StreamChatGenerics>;
+
+  return contextValue;
+};
+
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
   prevProps: ReplyPropsWithContext<StreamChatGenerics>,
   nextProps: ReplyPropsWithContext<StreamChatGenerics>,
@@ -307,7 +323,7 @@ export const Reply = <
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
     useMessagesContext<StreamChatGenerics>();
 
-  const { editing, quotedMessage } = useMessageInputContext<StreamChatGenerics>();
+  const { editing, quotedMessage } = useMessageInputContextIfAvailable<StreamChatGenerics>();
 
   const quotedEditingMessage = (
     typeof editing !== 'boolean' ? editing?.quoted_message || false : false
