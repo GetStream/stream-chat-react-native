@@ -4,10 +4,12 @@ import { FlatList } from 'react-native';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
 import { registerNativeHandlers } from './src/native';
+import { initializeDBMocking, resetDBMocking } from './src/mock-builders/DB/mock';
 
 // eslint-disable-next-line no-underscore-dangle
 
-console.warn = () => {};
+console.warn = () => {
+};
 
 export let netInfoFetch = jest.fn();
 
@@ -49,4 +51,6 @@ jest.mock('@gorhom/bottom-sheet', () => {
     default: react.View,
   };
 });
-// jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+
+beforeEach(initializeDBMocking);
+afterEach(resetDBMocking);
