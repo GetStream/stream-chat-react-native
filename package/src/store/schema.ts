@@ -26,9 +26,13 @@ export const tables: Tables = {
     columns: {
       cid: 'TEXT',
       createdAt: "TEXT DEFAULT ''",
+      createdById: 'TEXT',
+      deletedAt: 'TEXT',
       extraData: "TEXT DEFAULT ''",
       id: 'TEXT',
-      pinnedMessages: "TEXT DEFAULT ''",
+      lastMessageAt: 'TEXT',
+      pinnedMessages: 'TEXT',
+      type: 'TEXT',
       updatedAt: "TEXT DEFAULT ''",
     },
     primaryKey: ['cid'],
@@ -168,7 +172,11 @@ export type Schema = {
     extraData: string;
     id: string;
     pinnedMessages: string;
+    type: string;
     createdAt?: string;
+    createdById?: string;
+    deletedAt?: string;
+    lastMessageAt?: string;
     updatedAt?: string;
   };
   members: {

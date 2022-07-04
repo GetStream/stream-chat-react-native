@@ -28,19 +28,21 @@ export const updateReaction = <
   }
 
   queries.push(
-    createUpdateQuery('reactions', mapReactionToStorable<StreamChatGenerics>(reaction), {
+    createUpdateQuery('reactions', mapReactionToStorable(reaction), {
       messageId: reaction.message_id,
       userId: reaction.user_id,
     }),
   );
 
   if (message.reaction_counts) {
+    const { reactionCounts } = mapMessageToStorable(message);
+
     queries.push(
       createUpdateQuery(
         'messages',
-        mapMessageToStorable({
-          reaction_counts: message.reaction_counts,
-        }),
+        {
+          reactionCounts,
+        },
         {
           id: message.id,
         },

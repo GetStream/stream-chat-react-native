@@ -2,7 +2,7 @@ import type { MessageResponse } from 'stream-chat';
 
 import type { MessageRow } from '../types';
 
-export const mapMessageToStorable = (message: Partial<MessageResponse>): Partial<MessageRow> => {
+export const mapMessageToStorable = (message: MessageResponse): MessageRow => {
   const {
     attachments,
     cid,

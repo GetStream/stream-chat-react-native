@@ -9,16 +9,19 @@ export const mapChannelToStorable = <
   channel: ChannelAPIResponse<StreamChatGenerics>,
 ): ChannelRow => {
   const {
-    channel: { cid, created_at, id, updated_at, ...extraData },
+    channel: { cid, created_at, deleted_at, id, last_message_at, type, updated_at, ...extraData },
     pinned_messages,
   } = channel;
 
   return {
     cid,
     createdAt: created_at,
+    deletedAt: deleted_at,
     extraData: JSON.stringify(extraData),
     id,
+    lastMessageAt: last_message_at,
     pinnedMessages: JSON.stringify(pinned_messages),
+    type,
     updatedAt: updated_at,
   };
 };

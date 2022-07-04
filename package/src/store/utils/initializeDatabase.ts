@@ -33,16 +33,6 @@ const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
       } ON ${tableName}(${index.columns.join(',')})`,
     ]) || [];
 
-  // console.log([
-  //   [
-  //     `CREATE TABLE IF NOT EXISTS ${tableName}(
-  //         ${[...columnsWithDescriptors, ...primaryKeyConstraints, ...foreignKeysConstraints].join(
-  //           ',\n',
-  //         )}
-  //       );`,
-  //   ],
-  //   ...indexQueries,
-  // ]);
   return [
     [
       `CREATE TABLE IF NOT EXISTS ${tableName}(

@@ -32,9 +32,7 @@ export const upsertMessages = <
         usersToUpsert.push(createUpsertQuery('users', mapUserToStorable(r.user)));
       }
 
-      reactionsToUpsert.push(
-        createUpsertQuery('reactions', mapReactionToStorable<StreamChatGenerics>(r)),
-      );
+      reactionsToUpsert.push(createUpsertQuery('reactions', mapReactionToStorable(r)));
     });
   });
 
