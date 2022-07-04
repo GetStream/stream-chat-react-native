@@ -899,9 +899,6 @@ export const MessageInputProvider = <
   };
 
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
-    if (!newFile) {
-      return;
-    }
     const { file, id } = newFile;
 
     setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));

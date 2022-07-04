@@ -20,6 +20,7 @@ export const generateVideoAttachment = (a) => ({
 });
 
 export const generateImageAttachment = (a) => ({
+  id: uuidv4(),
   image_url: uuidv4(),
   title: uuidv4(),
   type: 'image',
