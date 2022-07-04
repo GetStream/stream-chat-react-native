@@ -71,7 +71,6 @@ describe('ChannelPreviewMessenger', () => {
     fireEvent.press(getByTestId('channel-preview-button'));
 
     await waitFor(() => {
-      // eslint-disable-next-line jest/prefer-called-with
       expect(onSelect).toHaveBeenCalledTimes(1);
     });
   });

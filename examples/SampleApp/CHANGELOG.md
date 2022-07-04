@@ -1,5 +1,31 @@
 # Change Log
 
+### [1.7.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.3...sampleapp@v1.7.4) (2022-06-29)
+
+
+### Bug Fixes
+
+* query all packages should not be needed ([27f964d](https://github.com/GetStream/stream-chat-react-native/commit/27f964d49898c874e0209463e3cd4c21ed494583))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.7.3](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.2...sampleapp@v1.7.3) (2022-06-22)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.7.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.1...sampleapp@v1.7.2) (2022-06-17)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.7.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.0...sampleapp@v1.7.1) (2022-06-15)
 
 

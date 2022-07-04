@@ -394,7 +394,7 @@ To update the payload for Android to have notification payload also, you can add
 const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
 const notification_template = `{
     "title": "New message from {{ sender.name }}",
-    "body": "{{ truncate message.text 2000 }}"
+    "body": "{{ truncate message.text 2000 }}",
     "click_action": "OPEN_ACTIVITY_1",
     "sound": "default"
 }`;

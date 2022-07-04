@@ -1,22 +1,28 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react-native';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import {
-  generateGiphyAttachment,
-  generateImgurAttachment,
-} from '../../../mock-builders/generator/attachment';
+import { generateGiphyAttachment } from '../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
+import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
@@ -27,15 +33,66 @@ describe('Giphy', () => {
     const message = generateMessage();
     return (
       <ThemeProvider>
-        <MessageProvider value={{ message }}>
-          <Giphy {...props} />
-        </MessageProvider>
+        <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+          <MessageProvider value={{ message }}>
+            <Giphy {...props} />
+          </MessageProvider>
+        </MessagesProvider>
       </ThemeProvider>
     );
   };
+  let chatClient;
+  let channel;
+  let attachment;
+
+  const actions = [
+    { name: 'image_action', text: 'Send', value: 'send' },
+    { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
+    {
+      name: 'image_action',
+      text: 'Cancel',
+      value: 'cancel',
+    },
+  ];
+
+  const giphy = {
+    fixed_height: {
+      height: '200',
+      url: 'https://media1.giphy.com/media/test/fixed_height.gif',
+      width: '375',
+    },
+    original: {
+      height: '256',
+      url: 'https://media1.giphy.com/media/test/original.gif',
+      width: '480',
+    },
+  };
+  const initChannel = async () => {
+    const user1 = generateUser();
+    attachment = generateGiphyAttachment();
+
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [
+        generateMessage({ user: user1 }),
+        generateMessage({ type: 'system', user: undefined }),
+        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
+      ],
+    });
+
+    chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.watch();
+  };
+
+  beforeEach(async () => {
+    await initChannel();
+  });
+
+  afterEach(cleanup);
 
   it('should render Card component for "imgur" type attachment', async () => {
-    const attachment = generateImgurAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -44,7 +101,6 @@ describe('Giphy', () => {
   });
 
   it('should render Card component for "giphy" type attachment', async () => {
-    const attachment = generateGiphyAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {
@@ -53,19 +109,7 @@ describe('Giphy', () => {
   });
 
   it('"giphy" attachment size should be customisable', async () => {
-    const attachment = generateGiphyAttachment();
-    attachment.giphy = {
-      fixed_height: {
-        height: '200',
-        url: 'https://media1.giphy.com/media/test/fixed_height.gif',
-        width: '375',
-      },
-      original: {
-        height: '256',
-        url: 'https://media1.giphy.com/media/test/original.gif',
-        width: '480',
-      },
-    };
+    attachment.giphy = giphy;
     const { getByTestId: getByTestIdFixedHeight } = render(
       getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
     );
@@ -94,16 +138,7 @@ describe('Giphy', () => {
   });
 
   it('show render giphy action UI and all the 3 action buttons', async () => {
-    const attachment = generateGiphyAttachment();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({ attachment, giphyVersion: 'fixed_height' }),
     );
@@ -117,17 +152,8 @@ describe('Giphy', () => {
   });
 
   it('should trigger the cancel giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -150,17 +176,8 @@ describe('Giphy', () => {
   });
 
   it('should trigger the shuffle giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -183,17 +200,8 @@ describe('Giphy', () => {
   });
 
   it('should trigger the send giphy action', async () => {
-    const attachment = generateGiphyAttachment();
     const handleAction = jest.fn();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment,
@@ -217,16 +225,7 @@ describe('Giphy', () => {
 
   it('giphy attachment UI should render within the message list with actions', async () => {
     const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
-    attachment.actions = [
-      { name: 'image_action', text: 'Send', value: 'send' },
-      { name: 'image_action', text: 'Shuffle', value: 'shuffle' },
-      {
-        name: 'image_action',
-        text: 'Cancel',
-        value: 'cancel',
-      },
-    ];
+    attachment.actions = actions;
     const mockedChannel = generateChannelResponse({
       members: [generateMember({ user: user1 })],
       messages: [
@@ -260,23 +259,6 @@ describe('Giphy', () => {
   });
 
   it('giphy attachment UI should render within the message list', async () => {
-    const user1 = generateUser();
-    const attachment = generateGiphyAttachment();
-
-    const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: user1 })],
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ type: 'system', user: undefined }),
-        generateMessage({ attachments: [{ ...attachment }], user: user1 }),
-      ],
-    });
-
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
-    const channel = chatClient.channel('messaging', mockedChannel.id);
-    await channel.watch();
-
     const { queryByTestId } = render(
       <OverlayProvider>
         <Chat client={chatClient}>
@@ -290,5 +272,43 @@ describe('Giphy', () => {
     await waitFor(() => {
       expect(queryByTestId('giphy-attachment')).toBeTruthy();
     });
+  });
+
+  it('should render a error indicator in giphy image', () => {
+    const { getByA11yLabel, getByAccessibilityHint } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+  });
+
+  it('should render a loading indicator in giphy image and when successful render the image', () => {
+    const { getByA11yLabel, getByAccessibilityHint } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadStart');
+
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
+    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFinish');
+
+    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
+    expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
   });
 });

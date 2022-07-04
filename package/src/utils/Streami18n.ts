@@ -11,6 +11,7 @@ import type moment from 'moment';
 import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
 import enTranslations from '../i18n/en.json';
 import frTranslations from '../i18n/fr.json';
+import heTranslations from '../i18n/he.json';
 import hiTranslations from '../i18n/hi.json';
 import itTranslations from '../i18n/it.json';
 import jaTranslations from '../i18n/ja.json';
@@ -18,9 +19,6 @@ import koTranslations from '../i18n/ko.json';
 import nlTranslations from '../i18n/nl.json';
 import ruTranslations from '../i18n/ru.json';
 import trTranslations from '../i18n/tr.json';
-
-const defaultNS = 'translation';
-const defaultLng = 'en';
 
 import 'dayjs/locale/fr';
 import 'dayjs/locale/hi';
@@ -30,6 +28,7 @@ import 'dayjs/locale/ko';
 import 'dayjs/locale/nl';
 import 'dayjs/locale/ru';
 import 'dayjs/locale/tr';
+import 'dayjs/locale/he';
 
 /**
  * These locale imports also set these locales globally.
@@ -39,6 +38,9 @@ import 'dayjs/locale/tr';
 import 'dayjs/locale/en';
 
 import type { DefaultStreamChatGenerics } from '../types/types';
+
+const defaultNS = 'translation';
+const defaultLng = 'en';
 
 Dayjs.extend(updateLocale);
 
@@ -357,6 +359,7 @@ export class Streami18n {
   } = {
     en: { [defaultNS]: enTranslations },
     fr: { [defaultNS]: frTranslations },
+    he: { [defaultNS]: heTranslations },
     hi: { [defaultNS]: hiTranslations },
     it: { [defaultNS]: itTranslations },
     ja: { [defaultNS]: jaTranslations },
