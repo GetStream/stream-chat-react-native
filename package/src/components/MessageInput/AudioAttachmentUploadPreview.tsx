@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -279,6 +279,7 @@ const AudioAttachmentUploadPreviewWithContext = <
                   24 - // 24 = close icon size
                   24, // 24 = internal padding
               },
+              I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
               filenameText,
             ]}
           >

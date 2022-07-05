@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   fileSizeText: {
     fontSize: 12,
-    paddingLeft: 10,
+    paddingHorizontal: 10,
   },
   flatList: { paddingBottom: 12 },
   iconContainer: {
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     bottom: 8,
     flexDirection: 'row',
-    marginLeft: 3,
+    marginHorizontal: 3,
     position: 'absolute',
   },
   upload: {
@@ -54,15 +54,14 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginLeft: 4,
-    marginTop: 4,
+    marginTop: 6,
   },
   warningText: {
     alignItems: 'center',
     color: 'black',
     fontSize: 10,
     justifyContent: 'center',
-    paddingRight: 8,
+    marginHorizontal: 4,
   },
 });
 

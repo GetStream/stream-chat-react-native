@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { Channel, ChannelState, MessageResponse, StreamChat } from 'stream-chat';
+import type { Channel, ChannelState, MessageResponse, StreamChat, UserResponse } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
@@ -29,6 +29,43 @@ export type LatestMessagePreview<
   status: number;
 };
 
+const getMessageSenderName = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  message: LatestMessage<StreamChatGenerics> | undefined,
+  currentUserId: string | undefined,
+  t: (key: string) => string,
+  membersLength: number,
+) => {
+  if (message?.user?.id === currentUserId) {
+    return t('You');
+  }
+
+  if (membersLength > 2) {
+    return message?.user?.name || message?.user?.username || message?.user?.id || '';
+  }
+
+  return '';
+};
+
+const getMentionUsers = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>(
+  mentionedUser: UserResponse<StreamChatGenerics>[] | undefined,
+) => {
+  if (Array.isArray(mentionedUser)) {
+    const mentionUserString = mentionedUser.reduce((acc, cur) => {
+      const userName = cur.name || cur.id || '';
+      if (userName) {
+        acc += `${acc.length ? '|' : ''}@${userName}`;
+      }
+      return acc;
+    }, '');
+    return mentionUserString;
+  }
+  return '';
+};
+
 const getLatestMessageDisplayText = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
@@ -40,32 +77,21 @@ const getLatestMessageDisplayText = <
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
   const isMessageTypeDeleted = message.type === 'deleted';
   if (isMessageTypeDeleted) return [{ bold: false, text: t('Message deleted') }];
-  const currentUserId = client.userID;
-  const messageOwnerId = message.user?.id;
+  const currentUserId = client?.userID;
   const members = Object.keys(channel.state.members);
-  const owner =
-    messageOwnerId === currentUserId
-      ? t('You')
-      : members.length > 2
-      ? message.user?.name || message.user?.username || message.user?.id || ''
-      : '';
-  const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
-  const boldOwner = ownerText.includes('@');
+
+  const messageSender = getMessageSenderName(message, currentUserId, t, members.length);
+  const messageSenderText = messageSender
+    ? `${messageSender === t('You') ? '' : '@'}${messageSender}: `
+    : '';
+  const boldOwner = messageSenderText.includes('@');
   if (message.text) {
     // rough guess optimization to limit string preview to max 100 characters
     const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
-    const mentionedUsers = Array.isArray(message.mentioned_users)
-      ? message.mentioned_users.reduce((acc, cur) => {
-          const userName = cur.name || cur.id || '';
-          if (userName) {
-            acc += `${acc.length ? '|' : ''}@${userName}`;
-          }
-          return acc;
-        }, '')
-      : '';
+    const mentionedUsers = getMentionUsers(message.mentioned_users);
     const regEx = new RegExp(`^(${mentionedUsers})`);
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       ...shortenedText.split('').reduce(
         (acc, cur, index) => {
           if (cur === '@' && mentionedUsers && regEx.test(shortenedText.substring(index))) {
@@ -83,18 +109,18 @@ const getLatestMessageDisplayText = <
   }
   if (message.command) {
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       { bold: false, text: `/${message.command}` },
     ];
   }
   if (message.attachments?.length) {
     return [
-      { bold: boldOwner, text: ownerText },
+      { bold: boldOwner, text: messageSenderText },
       { bold: false, text: t('🏙 Attachment...') },
     ];
   }
   return [
-    { bold: boldOwner, text: ownerText },
+    { bold: boldOwner, text: messageSenderText },
     { bold: false, text: t('Empty message...') },
   ];
 };
