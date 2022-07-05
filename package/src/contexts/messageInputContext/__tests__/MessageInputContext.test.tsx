@@ -1,22 +1,16 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-import type { TextInput } from 'react-native';
+import { Alert, TextInput } from 'react-native';
 
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { waitFor } from '@testing-library/react-native';
 
-import { Channel } from '../../../components/Channel/Channel';
-import { Chat } from '../../../components/Chat/Chat';
+import type { AppSettingsAPIResponse, StreamChat } from 'stream-chat';
+
 import type { MessageType } from '../../../components/MessageList/hooks/useMessageList';
-import { ChannelsStateProvider } from '../../../contexts/channelsStateContext/ChannelsStateContext';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import {
-  OwnCapabilitiesContextValue,
-  OwnCapabilitiesProvider,
-} from '../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
-import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { ChatContextValue, ChatProvider } from '../../../contexts/chatContext/ChatContext';
+
 import {
   generateFileAttachment,
   generateFileUploadPreview,
@@ -24,16 +18,15 @@ import {
   generateImageUploadPreview,
 } from '../../../mock-builders/generator/attachment';
 
-import { generateChannelResponse } from '../../../mock-builders/generator/channel';
-import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 
-import { getTestClientWithUser } from '../../../mock-builders/mock';
+import * as NativeUtils from '../../../native';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { FileState } from '../../../utils/utils';
 import {
   InputMessageInputContextValue,
+  MessageInputContextValue,
   MessageInputProvider,
   useMessageInputContext,
 } from '../MessageInputContext';
@@ -41,9 +34,46 @@ import {
 type WrapperType<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
   Partial<InputMessageInputContextValue<StreamChatGenerics>>;
 
+afterEach(jest.clearAllMocks);
+
 describe('MessageInputContext', () => {
-  const Wrapper: React.FC<WrapperType> = ({ children, ...rest }) => (
-    <MessageInputProvider value={{ ...rest }}>{children}</MessageInputProvider>
+  const Wrapper = <
+    StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+  >({
+    children,
+    ...rest
+  }: PropsWithChildren<WrapperType<StreamChatGenerics>>) => (
+    <ChatProvider
+      value={
+        {
+          appSettings: {
+            app: {
+              file_upload_config: {
+                blocked_file_extensions: ['.mp3'],
+                blocked_mime_types: ['video/mp4'],
+              },
+              image_upload_config: {
+                blocked_file_extensions: ['.png'],
+                blocked_mime_types: ['image/png'],
+              },
+            },
+          } as unknown as AppSettingsAPIResponse<StreamChatGenerics>,
+          client: {
+            updateMessage: jest.fn().mockResolvedValue({ message: generateMessage() }),
+          } as unknown as StreamChat<StreamChatGenerics>,
+        } as ChatContextValue<StreamChatGenerics>
+      }
+    >
+      <MessageInputProvider
+        value={
+          {
+            ...rest,
+          } as MessageInputContextValue<StreamChatGenerics>
+        }
+      >
+        {children}
+      </MessageInputProvider>
+    </ChatProvider>
   );
 
   it('isValidMessage is false when text is empty and there is no image uploads and file uploads', () => {
@@ -191,41 +221,6 @@ describe('MessageInputContext', () => {
     expect(result.current.isValidMessage()).toBe(false);
   });
 
-  // it('onChange works', () => {
-  //   const user = generateUser({ id: 'id', name: 'name' });
-  //   const members = [generateMember({ user })];
-  //   const messages = [generateMessage({ user })];
-  //   const mockedChannel = generateChannelResponse({
-  //     members,
-  //     messages,
-  //   });
-  //   let chatClient;
-
-  //   const CapabilitiesWrapper: React.FC<OwnCapabilitiesContextValue> = ({ children, ...rest }) => (
-  //     <ChannelsStateProvider>
-  //       <Chat client={chatClient}>
-  //         <Channel channel={mockedChannel}>
-  //           <OwnCapabilitiesProvider value={{ sendTypingEvents: true }}>
-  //             <MessageInputProvider value={{ ...rest }}>{children}</MessageInputProvider>
-  //           </OwnCapabilitiesProvider>
-  //         </Channel>
-  //       </Chat>
-  //     </ChannelsStateProvider>
-  //   );
-
-  //   const { result } = renderHook(() => useMessageInputContext(), {
-  //     initialProps: {
-  //       editing: true,
-  //       hasImagePicker: true,
-  //     },
-  //     wrapper: CapabilitiesWrapper,
-  //   });
-
-  //   act(() => {
-  //     result.current.onChange('dummy');
-  //   });
-  // });
-
   it('appendText works', () => {
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
@@ -247,6 +242,7 @@ describe('MessageInputContext', () => {
   });
 
   it('pickFile throws alert when numberOfUploads is greater than equal to maxNumberOfFiles', () => {
+    jest.spyOn(Alert, 'alert');
     const { rerender, result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         editing: true,
@@ -259,11 +255,68 @@ describe('MessageInputContext', () => {
       result.current.setNumberOfUploads(3);
     });
 
-    rerender();
+    rerender({ editing: false, maxNumberOfFiles: 2 });
 
     act(() => {
       result.current.pickFile();
     });
+
+    expect(Alert.alert).toHaveBeenCalledWith('Maximum number of files reached');
+  });
+
+  it('pickFile succeeds numberOfUploads is less than equal to maxNumberOfFiles', () => {
+    jest.spyOn(Alert, 'alert');
+    jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
+      jest.fn().mockResolvedValue({
+        cancelled: false,
+        docs: [
+          generateFileAttachment(),
+          generateFileAttachment({
+            name: 'dummy.mp3',
+            uri: 'https://www.songspk.com/dummy.mp3',
+          }),
+        ],
+      }),
+    );
+    const { rerender, result } = renderHook(() => useMessageInputContext(), {
+      initialProps: {
+        editing: true,
+        maxNumberOfFiles: 2,
+      },
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      result.current.setNumberOfUploads(1);
+    });
+
+    rerender({ editing: false, maxNumberOfFiles: 2 });
+
+    act(() => {
+      result.current.pickFile();
+    });
+
+    expect(Alert.alert).not.toHaveBeenCalled();
+  });
+
+  it('uploadNewImage with blocked image extensions to be not supported', () => {
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps: {
+        editing: true,
+        maxNumberOfFiles: 2,
+      },
+      wrapper: Wrapper,
+    });
+
+    act(() => {
+      result.current.uploadNewImage(
+        generateImageAttachment({
+          uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-square.png',
+        }),
+      );
+    });
+
+    expect(result.current.imageUploads[0].state).toBe(FileState.NOT_SUPPORTED);
   });
 
   it('onSelectItem works', () => {
@@ -487,7 +540,7 @@ describe('MessageInputContext', () => {
       result.current.sendMessage();
     });
 
-    rerender({ editing: false });
+    rerender({ editing: false, sendImageAsync: true });
 
     await expect(result.current.asyncIds).toHaveLength(1);
     await expect(result.current.sending.current).toBeFalsy();
@@ -557,6 +610,23 @@ describe('MessageInputContext', () => {
     });
 
     expect(result.current.fileUploads.length).toBe(0);
+  });
+
+  it('uploadImage works', async () => {
+    const doImageUploadRequestMock = jest.fn().mockResolvedValue({ file: 'https://www' });
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps: {
+        doImageUploadRequest: doImageUploadRequestMock,
+        editing: true,
+      },
+      wrapper: Wrapper,
+    });
+
+    await act(async () => {
+      await result.current.uploadImage({ newImage: generateImageUploadPreview() });
+    });
+
+    expect(doImageUploadRequestMock).toHaveBeenCalledTimes(1);
   });
 
   it('exit sendMessage when file upload status is uploading', async () => {
@@ -987,7 +1057,36 @@ describe('MessageInputContext', () => {
     });
   });
 
-  it('updateMessage throws error as client.updateMessage is not available', async () => {
+  it('updateMessage throws error as clearEditingState is not available', async () => {
+    const setUpdateMessageMock = jest.fn();
+    const clearEditingStateMock = jest.fn();
+    const generatedMessage: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
+      created_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
+      id: '7a85f744-cc89-4f82-a1d4-5456432cc8bf',
+      updated_at: 'Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)',
+      user: generateUser({
+        id: '5d6f6322-567e-4e1e-af90-97ef1ed5cc23',
+        image: 'fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33',
+        name: '50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995',
+      }),
+    }) as unknown as MessageType<DefaultStreamChatGenerics>;
+
+    const { result } = renderHook(() => useMessageInputContext(), {
+      initialProps: {
+        editing: generatedMessage,
+        setInputRef: setUpdateMessageMock,
+      },
+      wrapper: Wrapper,
+    });
+
+    await act(async () => {
+      await result.current.updateMessage();
+    });
+
+    expect(clearEditingStateMock).toHaveBeenCalledTimes(0);
+  });
+
+  it('updateMessage throws error as client.updateMessage is available', async () => {
     const setUpdateMessageMock = jest.fn();
     const clearEditingStateMock = jest.fn();
     const generatedMessage: boolean | MessageType<DefaultStreamChatGenerics> = generateMessage({
@@ -1014,68 +1113,8 @@ describe('MessageInputContext', () => {
       await result.current.updateMessage();
     });
 
-    expect(clearEditingStateMock).toHaveBeenCalledTimes(0);
+    expect(clearEditingStateMock).toHaveBeenCalledTimes(1);
   });
-
-  // it('sendMessage when file upload status uploaded', async () => {
-  //   const { result } = renderHook(() => useMessageInputContext(), {
-  //     wrapper: Wrapper,
-  //   });
-
-  //   act(() => {
-  //     result.current.setFileUploads([
-  // generateFileUploadPreview(),
-  // generateFileUploadPreview({ type: 'video/mp4' }),
-  // generateFileUploadPreview({ type: 'audio/mp3' }),
-  // generateFileUploadPreview({ type: 'image/jpeg' }),
-  //     ]);
-  //     result.current.setImageUploads([generateImageUploadPreview()]);
-  //     result.current.setMentionedUsers([]);
-  //     result.current.setText('');
-  //   });
-
-  //   await expect(result.current.sending.current).toBeTruthy();
-  // });
-
-  // it('sendMessage when file upload status finished', async () => {
-  //   jest.spyOn(UseMessageDetailsForState, 'useMessageDetailsForState').mockImplementation(
-  //     mockImplementationFunction({
-  //       fileUploads: [
-  //         generateFileUploadPreview({ state: FileState.FINISHED }),
-  //         generateFileUploadPreview({ state: FileState.FINISHED, type: 'video/mp4' }),
-  //         generateFileUploadPreview({ state: FileState.FINISHED, type: 'audio/mp3' }),
-  //         generateFileUploadPreview({ state: FileState.FINISHED, type: 'image/jpeg' }),
-  //       ],
-  //       imageUploads: [generateImageUploadPreview({ state: FileState.FINISHED })],
-  //       mentionedUsers: [],
-  //       setText: jest.fn(),
-  //       text: '',
-  //     }),
-  //   );
-
-  //   const { result } = renderHook(() => useMessageInputContext(), {
-  //     wrapper: Wrapper,
-  //   });
-
-  //   await expect(result.current.sendMessage()).resolves.toBe(undefined);
-  // });
-
-  // it('uploadFile works', () => {
-  //   const fileUpload = generateFileAttachment();
-  //   const { result } = renderHook(() => useMessageInputContext(), {
-  //     wrapper: Wrapper,
-  //   });
-
-  //   act(async () => {
-  //     const value = await result.current.uploadFile({ newFile: null });
-  //     expect(value).toBeUndefined();
-  //   });
-
-  //   act(async () => {
-  //     const value: FileUpload[] = await result.current.uploadFile({ newFile: fileUpload });
-  //     expect(value.length).toBe(1);
-  //   });
-  // });
 
   it('openCommandsPicker works', () => {
     const { result } = renderHook(() => useMessageInputContext(), {
@@ -1110,6 +1149,12 @@ describe('MessageInputContext', () => {
   });
 
   it('openAttachmentPicker works', async () => {
+    jest.spyOn(NativeUtils, 'pickDocument').mockImplementation(
+      jest.fn().mockResolvedValue({
+        cancelled: false,
+        docs: [generateFileAttachment(), generateImageAttachment()],
+      }),
+    );
     const { result } = renderHook(() => useMessageInputContext(), {
       initialProps: {
         editing: true,
@@ -1119,44 +1164,10 @@ describe('MessageInputContext', () => {
       wrapper: Wrapper,
     });
 
-    const pickFile = jest
-      .spyOn(result.current, 'pickFile')
-      .mockImplementation(() => Promise.resolve());
-
     act(() => {
       result.current.openAttachmentPicker();
     });
 
     expect(await result.current.pickFile()).toBe(undefined);
   });
-
-  // it('uploadNewImage works', async () => {
-  //   const chatClient = getTestClient({ appSettings: {} });
-  //   const Wrapper1: React.FC<{
-  //     editing?: boolean;
-  //     hasFilePicker?: boolean;
-  //     hasImagePicker?: boolean;
-  //   }> = ({ children, editing, hasFilePicker, hasImagePicker }) => (
-  //     <Chat client={chatClient}>
-  //       <MessageInputProvider value={{ editing, hasFilePicker, hasImagePicker }}>
-  //         {children}
-  //       </MessageInputProvider>
-  //     </Chat>
-  //   );
-
-  //   const { result } = renderHook(() => useMessageInputContext(), {
-  //     initialProps: {
-  //       editing: true,
-  //       hasFilePicker: true,
-  //     },
-  //     wrapper: Wrapper1,
-  //   });
-
-  //   act(async () => {
-  //     result.current.uploadNewImage({
-  //       uri: 'https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-square.jpg',
-  //       filename: 'Test image',
-  //     });
-  //   });
-  // });
 });
