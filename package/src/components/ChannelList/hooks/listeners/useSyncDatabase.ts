@@ -117,10 +117,10 @@ export const useSyncDatabase = <
       }
 
       if (type === 'channels.queried') {
-        if (event.channels) {
+        if (event.queriedChannels) {
           upsertChannels<StreamChatGenerics>({
-            channels: event.channels,
-            isLatestMessagesSet: event.isLatestMessageSet,
+            channels: event.queriedChannels?.channels,
+            isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
           });
         }
       }
