@@ -12,22 +12,16 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { useMessageDetailsForState } from '../hooks/useMessageDetailsForState';
 
 describe('useMessageDetailsForState', () => {
-  it('text should be an empty string when initialValue is not present', () => {
-    const { result } = renderHook(({ message }) => useMessageDetailsForState(message), {
-      initialProps: { message: true },
-    });
+  it.each([[{ message: true }], [{ initialValue: '', message: true }]])(
+    'test state of useMessageDetailsForState when initialProps differ',
+    () => {
+      const { result } = renderHook(({ message }) => useMessageDetailsForState(message), {
+        initialProps: { message: true },
+      });
 
-    expect(result.current.text).toBe('');
-  });
-
-  it('text should be an empty string when initialValue is empty', () => {
-    const { result } = renderHook(
-      ({ initialValue, message }) => useMessageDetailsForState(message, initialValue),
-      { initialProps: { initialValue: '', message: true } },
-    );
-
-    expect(result.current.text).toBe('');
-  });
+      expect(result.current.text).toBe('');
+    },
+  );
 
   it('showMoreOptions is true when initialValue and text is same', () => {
     const { result } = renderHook(
@@ -38,25 +32,7 @@ describe('useMessageDetailsForState', () => {
     expect(result.current.showMoreOptions).toBe(true);
   });
 
-  it('mentioned users is not empty when its present in messages', () => {
-    const { result } = renderHook(
-      ({ initialValue, message }) =>
-        useMessageDetailsForState(
-          message as unknown as MessageType<DefaultStreamChatGenerics> | boolean,
-          initialValue,
-        ),
-      {
-        initialProps: {
-          initialValue: '',
-          message: generateMessage({ mentioned_users: [generateUser()] }),
-        },
-      },
-    );
-
-    expect(result.current.mentionedUsers.length).toBe(1);
-  });
-
-  it('has fileUploads and imageUploads when attachments are present in message', () => {
+  it('fileUploads, imageUploads and mentionedUsers are not empty when attachments are present in message', () => {
     const { result } = renderHook(
       ({ initialValue, message }) =>
         useMessageDetailsForState(
@@ -73,6 +49,7 @@ describe('useMessageDetailsForState', () => {
               generateFileAttachment({ type: 'video' }),
               generateFileAttachment({ type: 'audio' }),
             ],
+            mentioned_users: [generateUser()],
           }),
         },
       },
@@ -80,5 +57,6 @@ describe('useMessageDetailsForState', () => {
 
     expect(result.current.fileUploads.length).toBeGreaterThan(0);
     expect(result.current.imageUploads.length).toBeGreaterThan(0);
+    expect(result.current.mentionedUsers.length).toBeGreaterThan(0);
   });
 });
