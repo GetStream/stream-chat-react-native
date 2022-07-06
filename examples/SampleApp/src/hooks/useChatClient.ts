@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
-import { resetDatabase } from 'stream-chat-react-native'
+import { QuickSqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
@@ -74,6 +74,7 @@ export const useChatClient = () => {
     unsubscribePushListenersRef.current?.();
     const client = StreamChat.getInstance<StreamChatGenerics>(config.apiKey, {
       timeout: 6000,
+      // logger: (type, msg) => console.log(type, msg)
     });
 
     const user = {
@@ -163,7 +164,7 @@ export const useChatClient = () => {
   };
 
   const logout = async () => {
-    resetDatabase();
+    QuickSqliteClient.resetDB();
     setChatClient(null);
     chatClient?.disconnectUser();
     await AsyncStore.removeItem('@stream-rn-sampleapp-login-config');

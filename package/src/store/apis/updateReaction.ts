@@ -4,11 +4,10 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import type { PreparedQueries } from '../types';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import { executeQueries } from '../sqlite-utils/executeQueries';
-import { selectQuery } from '../sqlite-utils/selectQuery';
+import type { PreparedQueries } from '../types';
 
 export const updateReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -51,12 +50,13 @@ export const updateReaction = <
   }
 
   if (flush) {
-    executeQueries(queries);
+    QuickSqliteClient.executeSqlBatch(queries);
 
     setTimeout(() => {
-      const result = selectQuery('select userId, type from reactions where messageId = ?', [
-        reaction.message_id,
-      ]);
+      const result = QuickSqliteClient.selectQuery(
+        'select userId, type from reactions where messageId = ?',
+        [reaction.message_id],
+      );
       console.log(result);
     }, 2000);
   }

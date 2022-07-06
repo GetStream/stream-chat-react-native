@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+
 import type { StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';

@@ -1,8 +1,8 @@
 import type { ChannelFilters, ChannelSort } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../../types/types';
+import { QuickSqliteClient } from '../../QuickSqliteClient';
 
-import { selectQuery } from '../../sqlite-utils/selectQuery';
 import { convertFilterSortToQuery } from '../utils/convertFilterSortToQuery';
 
 export const selectChannelIdsForFilterSort = <
@@ -15,11 +15,9 @@ export const selectChannelIdsForFilterSort = <
   sort?: ChannelSort<StreamChatGenerics>;
 }): string[] => {
   const query = convertFilterSortToQuery({ filters, sort });
-  const results = selectQuery(
-    `SELECT * FROM channelQueries where id = ?`,
-    [query],
-    'query cids for filter and sort',
-  );
+  const results = QuickSqliteClient.selectQuery(`SELECT * FROM channelQueries where id = ?`, [
+    query,
+  ]);
 
   const channelIdsStr = results?.[0]?.cids;
   return channelIdsStr ? JSON.parse(channelIdsStr) : [];

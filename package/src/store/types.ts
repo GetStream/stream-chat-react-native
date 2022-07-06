@@ -2,7 +2,7 @@ import type { Schema } from './schema';
 
 export type Table = keyof Schema;
 
-export type PreparedQueries = [string] | [string, Array<any> | Array<Array<any>>];
+export type PreparedQueries = [string] | [string, Array<unknown> | Array<Array<unknown>>];
 
 export type ChannelRow = Schema['channels'];
 export type MessageRow = Schema['messages'];

@@ -1,6 +1,5 @@
+import { QuickSqliteClient } from '../../QuickSqliteClient';
 import type { JoinedChannelRow } from '../../types';
-
-import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectChannelsForChannelIds = ({
   channelIds,
@@ -8,10 +7,9 @@ export const selectChannelsForChannelIds = ({
   channelIds: string[];
 }): JoinedChannelRow[] => {
   const questionMarks = Array(channelIds.length).fill('?').join(',');
-  const result = selectQuery(
+  const result = QuickSqliteClient.selectQuery(
     `SELECT * FROM channels WHERE cid IN (${questionMarks})`,
     [...channelIds],
-    'query channels for channel ids',
   );
 
   return result.sort((a, b) => channelIds.indexOf(a.cid) - channelIds.indexOf(b.cid));

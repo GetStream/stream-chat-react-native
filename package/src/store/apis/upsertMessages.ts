@@ -4,9 +4,9 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import type { PreparedQueries } from '../types';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import { executeQueries } from '../sqlite-utils/executeQueries';
+import type { PreparedQueries } from '../types';
 
 export const upsertMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -39,7 +39,7 @@ export const upsertMessages = <
   const finalQueries = [...messagesToUpsert, ...reactionsToUpsert, ...usersToUpsert];
 
   if (flush) {
-    executeQueries(finalQueries);
+    QuickSqliteClient.executeSqlBatch(finalQueries);
   }
 
   return finalQueries;

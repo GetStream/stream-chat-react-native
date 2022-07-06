@@ -1,9 +1,9 @@
 import type { ChannelResponse } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import { executeQueries } from '../sqlite-utils/executeQueries';
 import { mapChannelInfoToStorable } from '../mappers/mapChannelInfoToStorable';
+import { QuickSqliteClient } from '../QuickSqliteClient';
+import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 
 export const upsertChannelInfo = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -13,5 +13,5 @@ export const upsertChannelInfo = <
   channel: ChannelResponse<StreamChatGenerics>;
 }) => {
   const query = createUpsertQuery('channels', mapChannelInfoToStorable(channel));
-  executeQueries([query]);
+  QuickSqliteClient.executeSqlBatch([query]);
 };

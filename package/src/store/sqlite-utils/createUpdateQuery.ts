@@ -7,9 +7,7 @@ export const createUpdateQuery = (
 ) => {
   const fields = Object.keys(set).map((key) => `${key} = ?`);
   const where = Object.keys(whereCondition).map((key) => `${key} = ?`);
-  console.log(`UPDATE ${table}
-  SET ${fields.join(', ')}
-  WHERE ${where.join(' AND ')}`);
+
   return [
     `UPDATE ${table}
     SET ${fields.join(',')}

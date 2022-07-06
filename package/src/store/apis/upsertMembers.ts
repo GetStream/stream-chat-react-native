@@ -3,9 +3,9 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapMemberToStorable } from '../mappers/mapMemberToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
-import type { PreparedQueries } from '../types';
+import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import { executeQueries } from '../sqlite-utils/executeQueries';
+import type { PreparedQueries } from '../types';
 
 export const upsertMembers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -37,7 +37,7 @@ export const upsertMembers = <
   });
 
   if (flush) {
-    executeQueries(queries);
+    QuickSqliteClient.executeSqlBatch(queries);
   }
 
   return queries;

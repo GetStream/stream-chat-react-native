@@ -4,7 +4,7 @@ import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { JoinedReadRow, ReadRow } from '../types';
+import type { JoinedReadRow } from '../types';
 
 export const mapStorableToRead = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

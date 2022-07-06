@@ -4,8 +4,8 @@ import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
+import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
-import { executeQueries } from '../sqlite-utils/executeQueries';
 
 export const upsertCidsForQuery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -27,7 +27,7 @@ export const upsertCidsForQuery = <
   });
 
   if (flush) {
-    executeQueries([query]);
+    QuickSqliteClient.executeSqlBatch([query]);
   }
 
   return [query];

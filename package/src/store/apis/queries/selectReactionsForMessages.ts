@@ -1,6 +1,6 @@
+import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
 import type { JoinedReactionRow } from '../../types';
-import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
@@ -11,7 +11,7 @@ export const selectReactionsForMessages = (messageIds: string[]): JoinedReaction
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  const result = selectQuery(
+  const result = QuickSqliteClient.selectQuery(
     `SELECT
       json_object(
         'user', json_object(
@@ -25,7 +25,6 @@ export const selectReactionsForMessages = (messageIds: string[]): JoinedReaction
     ON b.id = a.userId 
     WHERE a.messageId in (${questionMarks})`,
     messageIds,
-    'query reactions',
   );
 
   return result.map((r) => JSON.parse(r.value));

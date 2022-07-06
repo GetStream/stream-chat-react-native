@@ -1,6 +1,6 @@
+import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
 import type { JoinedMessageRow } from '../../types';
-import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');
@@ -11,7 +11,7 @@ export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => 
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  const result = selectQuery(
+  const result = QuickSqliteClient.selectQuery(
     `SELECT
       json_object(
         'user', json_object(
@@ -25,7 +25,6 @@ export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => 
     ON b.id = a.userId 
     WHERE cid in (${questionMarks}) ORDER BY datetime(a.createdAt) DESC`,
     cids,
-    'query members',
   );
 
   return result.map((r) => JSON.parse(r.value));

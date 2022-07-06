@@ -22,11 +22,10 @@ import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
 
 import { SDK } from '../../native';
-import { initializeDatabase } from '../../store/initializeDatabase';
+import { QuickSqliteClient } from '../../store/QuickSqliteClient';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../version.json';
-import '../../store/sqlite-utils/initDevMenu';
 
 init();
 
@@ -189,7 +188,7 @@ const ChatWithContext = <
 
   useEffect(() => {
     if (enableOfflineSupport) {
-      initializeDatabase();
+      QuickSqliteClient.initializeDatabase();
     }
   }, []);
 
