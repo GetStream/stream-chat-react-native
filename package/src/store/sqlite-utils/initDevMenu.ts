@@ -3,11 +3,12 @@ import { openDB } from './openDB';
 import { printRow } from './printRow';
 import { resetDatabase } from './resetDatabase';
 
+import { isTestEnvironment } from '../../contexts/utils/isTestEnvironment';
 import { DB_NAME } from '../constants';
 import { tables } from '../schema';
 import type { Table } from '../types';
 
-if (__DEV__) {
+if (__DEV__ && !isTestEnvironment()) {
   const DevMenu = require('react-native-dev-menu');
 
   DevMenu.addItem('Reset Stream Offline DB', resetDatabase);

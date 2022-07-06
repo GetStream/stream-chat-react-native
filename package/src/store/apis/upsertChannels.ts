@@ -9,8 +9,8 @@ import { upsertReads } from './upsertReads';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
 import type { PreparedQueries } from '../types';
-import { createUpsertQuery } from '../utils/createUpsertQuery';
-import { executeQueries } from '../utils/executeQueries';
+import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { executeQueries } from '../sqlite-utils/executeQueries';
 
 export const upsertChannels = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

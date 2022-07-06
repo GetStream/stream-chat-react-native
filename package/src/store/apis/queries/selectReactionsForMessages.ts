@@ -1,6 +1,6 @@
 import { tables } from '../../schema';
 import type { JoinedReactionRow } from '../../types';
-import { selectQuery } from '../../utils/selectQuery';
+import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');

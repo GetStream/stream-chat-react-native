@@ -4,8 +4,8 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapMemberToStorable } from '../mappers/mapMemberToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import type { PreparedQueries } from '../types';
-import { createUpsertQuery } from '../utils/createUpsertQuery';
-import { executeQueries } from '../utils/executeQueries';
+import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { executeQueries } from '../sqlite-utils/executeQueries';
 
 export const upsertMembers = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

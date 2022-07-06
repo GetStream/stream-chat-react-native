@@ -5,7 +5,7 @@ import type { PreparedQueries } from '../types';
 
 export const dropTables = () => {
   const queries: PreparedQueries[] = Object.keys(tables).map((table) => [
-    `DROP TABLE ${table}`,
+    `DROP TABLE IF EXISTS ${table}`,
     [],
   ]);
   executeQueries(queries);

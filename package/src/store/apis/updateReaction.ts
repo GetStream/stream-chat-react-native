@@ -5,10 +5,10 @@ import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import type { PreparedQueries } from '../types';
-import { createUpdateQuery } from '../utils/createUpdateQuery';
-import { createUpsertQuery } from '../utils/createUpsertQuery';
-import { executeQueries } from '../utils/executeQueries';
-import { selectQuery } from '../utils/selectQuery';
+import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
+import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { executeQueries } from '../sqlite-utils/executeQueries';
+import { selectQuery } from '../sqlite-utils/selectQuery';
 
 export const updateReaction = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,

@@ -6,7 +6,7 @@ export type PreparedQueries = [string] | [string, Array<any> | Array<Array<any>>
 
 export type ChannelRow = Schema['channels'];
 export type MessageRow = Schema['messages'];
-export type QueryChannelsMapRow = Schema['queryChannelsMap'];
+export type ChannelQueriesRow = Schema['channelQueries'];
 export type ReactionRow = Schema['reactions'];
 export type ReadRow = Schema['reads'];
 export type MemberRow = Schema['members'];
@@ -17,7 +17,7 @@ export type JoinedChannelRow = Schema['channels'] & {
 export type JoinedMessageRow = Schema['messages'] & {
   user: UserRow;
 };
-export type JoinedQueryChannelsMapRow = Schema['queryChannelsMap'] & {
+export type JoinedChannelQueriesRow = Schema['channelQueries'] & {
   user: UserRow;
 };
 export type JoinedReactionRow = Schema['reactions'] & {
@@ -33,5 +33,5 @@ export type JoinedMemberRow = Schema['members'] & {
 export type UserRow = Schema['users'];
 
 export type StorableDatabaseRow = Partial<
-  ChannelRow | MessageRow | QueryChannelsMapRow | ReactionRow
+  ChannelRow | MessageRow | ChannelQueriesRow | ReactionRow
 >;

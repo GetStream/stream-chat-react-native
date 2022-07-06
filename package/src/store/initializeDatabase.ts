@@ -1,12 +1,12 @@
-import { closeDB } from './closeDB';
-import { dropTables } from './dropTables';
-import { executeQueries } from './executeQueries';
+import { closeDB } from './sqlite-utils/closeDB';
+import { dropTables } from './sqlite-utils/dropTables';
+import { executeQueries } from './sqlite-utils/executeQueries';
 
-import { openDB } from './openDB';
+import { openDB } from './sqlite-utils/openDB';
 
-import { DB_NAME, DB_VERSION } from '../constants';
-import { tables } from '../schema';
-import type { PreparedQueries, Table } from '../types';
+import { DB_NAME, DB_VERSION } from './constants';
+import { tables } from './schema';
+import type { PreparedQueries, Table } from './types';
 
 const createCreateTableQuery = (tableName: Table): PreparedQueries[] => {
   const columnsWithDescriptors = Object.entries(tables[tableName].columns).map((entry) => {
@@ -65,7 +65,7 @@ export const initializeDatabase = () => {
   }
 
   const version = getUserPragmaVersion();
-  if (version < DB_VERSION) {
+  if (version !== DB_VERSION) {
     console.log(
       `Dropping the table since version ${version} is less than DB_VERSION ${DB_VERSION}`,
     );
@@ -103,6 +103,5 @@ export const getUserPragmaVersion = () => {
 
   // eslint-disable-next-line no-underscore-dangle
   const result = rows ? rows._array : [];
-
   return result[0].user_version as number;
 };

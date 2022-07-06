@@ -22,5 +22,5 @@ export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 export { default as heTranslations } from './i18n/he.json';
 
-export { resetDatabase } from './store/utils/resetDatabase';
+export { resetDatabase } from './store/sqlite-utils/resetDatabase';
 export { version } from './version.json';

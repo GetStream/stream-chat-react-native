@@ -22,18 +22,26 @@ type Tables = {
 };
 
 export const tables: Tables = {
+  channelQueries: {
+    columns: {
+      cids: 'TEXT',
+      id: 'TEXT',
+      lastSyncedAt: 'TEXT',
+    },
+    primaryKey: ['id'],
+  },
   channels: {
     columns: {
       cid: 'TEXT',
-      createdAt: "TEXT DEFAULT ''",
+      createdAt: 'TEXT',
       createdById: 'TEXT',
       deletedAt: 'TEXT',
-      extraData: "TEXT DEFAULT ''",
+      extraData: 'TEXT',
       id: 'TEXT',
       lastMessageAt: 'TEXT',
       pinnedMessages: 'TEXT',
       type: 'TEXT',
-      updatedAt: "TEXT DEFAULT ''",
+      updatedAt: 'TEXT',
     },
     primaryKey: ['cid'],
   },
@@ -71,17 +79,17 @@ export const tables: Tables = {
   },
   messages: {
     columns: {
-      attachments: "TEXT DEFAULT ''",
+      attachments: 'TEXT',
       cid: 'TEXT NOT NULL',
-      createdAt: "TEXT DEFAULT ''",
-      deletedAt: "TEXT DEFAULT ''",
-      extraData: "TEXT DEFAULT ''",
+      createdAt: 'TEXT',
+      deletedAt: 'TEXT',
+      extraData: 'TEXT',
       id: 'TEXT',
-      reactionCounts: "TEXT DEFAULT ''",
+      reactionCounts: 'TEXT',
       text: "TEXT DEFAULT ''",
-      type: "TEXT DEFAULT ''",
-      updatedAt: "TEXT DEFAULT ''",
-      userId: "TEXT DEFAULT ''",
+      type: 'TEXT',
+      updatedAt: 'TEXT',
+      userId: 'TEXT',
     },
     indexes: [
       {
@@ -92,23 +100,15 @@ export const tables: Tables = {
     ],
     primaryKey: ['id'],
   },
-  queryChannelsMap: {
-    columns: {
-      cids: 'TEXT',
-      id: 'TEXT',
-      lastSyncedAt: 'TEXT',
-    },
-    primaryKey: ['id'],
-  },
   reactions: {
     columns: {
-      createdAt: "TEXT DEFAULT ''",
-      extraData: "TEXT DEFAULT ''",
-      messageId: "TEXT DEFAULT ''",
+      createdAt: 'TEXT',
+      extraData: 'TEXT',
+      messageId: 'TEXT',
       score: 'INTEGER DEFAULT 0',
-      type: "TEXT DEFAULT ''",
-      updatedAt: "TEXT DEFAULT ''",
-      userId: "TEXT DEFAULT ''",
+      type: 'TEXT',
+      updatedAt: 'TEXT',
+      userId: 'TEXT',
     },
     foreignKeys: [
       {
@@ -167,6 +167,11 @@ export const tables: Tables = {
 
 // TODO: Checking the optionality of columns
 export type Schema = {
+  channelQueries: {
+    cids: string;
+    id: string;
+    lastSyncedAt: string;
+  };
   channels: {
     cid: string;
     extraData: string;
@@ -205,11 +210,6 @@ export type Schema = {
     updatedAt: string;
     text?: string;
     userId?: string;
-  };
-  queryChannelsMap: {
-    cids: string;
-    id: string;
-    lastSyncedAt: string;
   };
   reactions: {
     createdAt: string;

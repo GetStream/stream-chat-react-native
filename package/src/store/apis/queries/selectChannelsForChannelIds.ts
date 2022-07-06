@@ -1,6 +1,6 @@
 import type { JoinedChannelRow } from '../../types';
 
-import { selectQuery } from '../../utils/selectQuery';
+import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectChannelsForChannelIds = ({
   channelIds,

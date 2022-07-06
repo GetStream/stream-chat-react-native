@@ -1,6 +1,6 @@
 import { tables } from '../../schema';
 import type { JoinedMessageRow } from '../../types';
-import { selectQuery } from '../../utils/selectQuery';
+import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectMembersForChannels = (cids: string[]): JoinedMessageRow[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');

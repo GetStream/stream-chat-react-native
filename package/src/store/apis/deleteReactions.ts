@@ -1,6 +1,6 @@
 import { DB_NAME } from '../constants';
-import { closeDB } from '../utils/closeDB';
-import { openDB } from '../utils/openDB';
+import { closeDB } from '../sqlite-utils/closeDB';
+import { openDB } from '../sqlite-utils/openDB';
 
 export const deleteReactionsForMessage = ({ messageId }: { messageId: string }) => {
   openDB();

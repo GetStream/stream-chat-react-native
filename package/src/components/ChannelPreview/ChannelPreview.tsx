@@ -73,14 +73,14 @@ const ChannelPreviewWithContext = <
       }
     };
 
-    channel.on('message.new', handleEvent);
-    channel.on('message.updated', handleEvent);
-    channel.on('message.deleted', handleEvent);
+    const listeners = [
+      channel.on('message.new', handleEvent),
+      channel.on('message.updated', handleEvent),
+      channel.on('message.deleted', handleEvent),
+    ];
 
     return () => {
-      channel.off('message.new', handleEvent);
-      channel.off('message.updated', handleEvent);
-      channel.off('message.deleted', handleEvent);
+      listeners.forEach((l) => l.unsubscribe());
     };
   }, []);
 
@@ -93,8 +93,8 @@ const ChannelPreviewWithContext = <
       }
     };
 
-    channel.on('message.read', handleReadEvent);
-    return () => channel.off('message.read', handleReadEvent);
+    const listener = channel.on('message.read', handleReadEvent);
+    return () => listener.unsubscribe();
   }, []);
 
   return <Preview channel={channel} latestMessagePreview={latestMessagePreview} unread={unread} />;

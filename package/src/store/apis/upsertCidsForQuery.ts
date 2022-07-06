@@ -4,8 +4,8 @@ import { convertFilterSortToQuery } from './utils/convertFilterSortToQuery';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import { createUpsertQuery } from '../utils/createUpsertQuery';
-import { executeQueries } from '../utils/executeQueries';
+import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
+import { executeQueries } from '../sqlite-utils/executeQueries';
 
 export const upsertCidsForQuery = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -21,7 +21,7 @@ export const upsertCidsForQuery = <
   sort?: ChannelSort<StreamChatGenerics>;
 }) => {
   // Update the database only if the query is provided.
-  const query = createUpsertQuery('queryChannelsMap', {
+  const query = createUpsertQuery('channelQueries', {
     cids: JSON.stringify(cids),
     id: convertFilterSortToQuery({ filters, sort }),
   });

@@ -5,8 +5,8 @@ import type { Event, StreamChat } from 'stream-chat';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { deleteChannel } from '../../../../store/apis/deleteChannel';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
-import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
 import { updateMessage } from '../../../../store/apis/updateMessage';
+import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
 import { upsertChannels } from '../../../../store/apis/upsertChannels';
 import { upsertMessages } from '../../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../../store/apis/upsertReads';
@@ -27,7 +27,6 @@ export const useSyncDatabase = <
 
       if (type === 'message.read') {
         if (event.user?.id && event.cid) {
-          console.log(event.user);
           upsertReads<StreamChatGenerics>({
             cid: event.cid,
             reads: [

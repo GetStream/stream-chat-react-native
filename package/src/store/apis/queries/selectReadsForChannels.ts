@@ -1,6 +1,6 @@
 import { tables } from '../../schema';
 import type { JoinedReadRow } from '../../types';
-import { selectQuery } from '../../utils/selectQuery';
+import { selectQuery } from '../../sqlite-utils/selectQuery';
 
 export const selectReadsForChannels = (cids: string[]): JoinedReadRow[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');
