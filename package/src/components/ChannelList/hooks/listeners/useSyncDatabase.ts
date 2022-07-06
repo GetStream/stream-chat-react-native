@@ -4,10 +4,12 @@ import type { Event, StreamChat } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 import { deleteChannel } from '../../../../store/apis/deleteChannel';
+import { deleteMember } from '../../../../store/apis/deleteMember';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
 import { updateMessage } from '../../../../store/apis/updateMessage';
 import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
 import { upsertChannels } from '../../../../store/apis/upsertChannels';
+import { upsertMembers } from '../../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../../store/apis/upsertReads';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
@@ -120,6 +122,24 @@ export const useSyncDatabase = <
           upsertChannels<StreamChatGenerics>({
             channels: event.queriedChannels?.channels,
             isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
+          });
+        }
+      }
+
+      if (type === 'member.added' || type === 'member.updated') {
+        if (event.member && event.cid) {
+          upsertMembers({
+            cid: event.cid,
+            members: [event.member],
+          });
+        }
+      }
+
+      if (type === 'member.removed') {
+        if (event.member && event.cid) {
+          deleteMember({
+            cid: event.cid,
+            member: event.member,
           });
         }
       }

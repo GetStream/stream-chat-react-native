@@ -8,7 +8,8 @@ export const mapChannelInfoToStorable = <
 >(
   channel: ChannelResponse<StreamChatGenerics>,
 ): Partial<ChannelRow> => {
-  const { cid, id, ...extraData } = channel;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { cid, id, members, ...extraData } = channel;
 
   return {
     cid,

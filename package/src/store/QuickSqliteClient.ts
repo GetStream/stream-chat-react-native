@@ -37,7 +37,7 @@ export class QuickSqliteClient {
     const res = sqlite.executeSqlBatch(DB_NAME, queries);
     const timeEnd = new Date().getTime();
 
-    console.log('TIME TAKEN TO STORE: ', timeEnd - timeStart);
+    console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY : ${timeEnd - timeStart}`, queries);
 
     if (res.status === 1) {
       console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}`, queries);
@@ -53,7 +53,7 @@ export class QuickSqliteClient {
     const res = sqlite.executeSql(DB_NAME, query, params);
     const timeEnd = new Date().getTime();
 
-    console.log('TIME TAKEN TO STORE: ', timeEnd - timeStart);
+    console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY: ${timeEnd - timeStart}`, query);
 
     if (res.status === 1) {
       console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}: `, query);
