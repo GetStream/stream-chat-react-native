@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
-import { Image, ImageProps, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { GalleryImage } from './GallaryImage';
+import { useLoadingImage } from './hooks/useLoadingImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import { getGalleryImageBorderRadius } from './utils/getGalleryImageBorderRadius';
@@ -25,32 +27,9 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
 import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { getUrlWithoutParams, makeImageCompatibleUrl } from '../../utils/utils';
-
-const GalleryImage: React.FC<
-  Omit<ImageProps, 'height' | 'source'> & {
-    uri: string;
-  }
-> = (props) => {
-  const { uri, ...rest } = props;
-  const { imageError, setImageError } = useImageErrorHandler();
-
-  if (imageError) return null;
-
-  return (
-    <Image
-      {...rest}
-      onError={() => setImageError(true)}
-      source={{
-        uri: makeImageCompatibleUrl(uri),
-      }}
-      testID='image-attachment-single'
-    />
-  );
-};
+import { getUrlWithoutParams } from '../../utils/utils';
 
 const MemoizedGalleryImage = React.memo(
   GalleryImage,
@@ -59,7 +38,7 @@ const MemoizedGalleryImage = React.memo(
 ) as typeof GalleryImage;
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  errorTextSize: { fontSize: 10 },
   galleryContainer: {
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
@@ -67,7 +46,19 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  imageContainer: { display: 'flex', flexDirection: 'row', justifyContent: 'center', padding: 1 },
+  imageContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 1,
+  },
+  imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingIndicatorStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
   moreImagesContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -93,7 +84,11 @@ export type GalleryPropsWithContext<
   > &
   Pick<
     MessagesContextValue<StreamChatGenerics>,
-    'additionalTouchableProps' | 'legacyImageViewerSwipeBehaviour' | 'VideoThumbnail'
+    | 'additionalTouchableProps'
+    | 'legacyImageViewerSwipeBehaviour'
+    | 'VideoThumbnail'
+    | 'ImageLoadingIndicator'
+    | 'ImageLoadingFailedIndicator'
   > &
   Pick<OverlayContextValue, 'setOverlay'> & {
     channelId: string | undefined;
@@ -123,6 +118,8 @@ const GalleryWithContext = <
     alignment,
     groupStyles,
     hasThreadReplies,
+    ImageLoadingFailedIndicator,
+    ImageLoadingIndicator,
     images,
     legacyImageViewerSwipeBehaviour,
     message,
@@ -137,6 +134,9 @@ const GalleryWithContext = <
     videos,
     VideoThumbnail,
   } = props;
+
+  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
+    useLoadingImage();
 
   const {
     theme: {
@@ -309,18 +309,37 @@ const GalleryWithContext = <
                       ]}
                     />
                   ) : (
-                    <MemoizedGalleryImage
-                      resizeMode={resizeMode}
-                      style={[
-                        borderRadius,
-                        image,
-                        {
-                          height: height - 1,
-                          width: width - 1,
-                        },
-                      ]}
-                      uri={url}
-                    />
+                    <View style={styles.imageContainerStyle}>
+                      <MemoizedGalleryImage
+                        onError={(error) => {
+                          console.warn(error);
+                          setLoadingImage(false);
+                          setLoadingImageError(true);
+                        }}
+                        onLoadEnd={() => setLoadingImage(false)}
+                        onLoadStart={() => setLoadingImage(true)}
+                        resizeMode={resizeMode}
+                        style={[
+                          borderRadius,
+                          image,
+                          {
+                            height: height - 1,
+                            width: width - 1,
+                          },
+                        ]}
+                        uri={url}
+                      />
+                      {isLoadingImage && (
+                        <View style={{ position: 'absolute' }}>
+                          <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
+                        </View>
+                      )}
+                      {isLoadingImageError && (
+                        <View style={{ position: 'absolute' }}>
+                          <ImageLoadingFailedIndicator style={styles.imageLoadingIndicatorStyle} />
+                        </View>
+                      )}
+                    </View>
                   )}
                   {colIndex === numOfColumns - 1 &&
                   rowIndex === numOfRows - 1 &&
@@ -417,6 +436,8 @@ export const Gallery = <
     alignment: propAlignment,
     groupStyles: propGroupStyles,
     hasThreadReplies,
+    ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
+    ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
@@ -444,6 +465,8 @@ export const Gallery = <
   } = useMessageContext<StreamChatGenerics>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
+    ImageLoadingFailedIndicator: ContextImageLoadingFailedIndicator,
+    ImageLoadingIndicator: ContextImageLoadingIndicator,
     legacyImageViewerSwipeBehaviour,
     VideoThumbnail: ContextVideoThumnbnail,
   } = useMessagesContext<StreamChatGenerics>();
@@ -466,6 +489,9 @@ export const Gallery = <
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
+  const ImageLoadingFailedIndicator =
+    PropImageLoadingFailedIndicator || ContextImageLoadingFailedIndicator;
+  const ImageLoadingIndicator = PropImageLoadingIndicator || ContextImageLoadingIndicator;
 
   return (
     <MemoizedGallery
@@ -475,6 +501,8 @@ export const Gallery = <
         channelId: message?.cid,
         groupStyles,
         hasThreadReplies: hasThreadReplies || !!message?.reply_count,
+        ImageLoadingFailedIndicator,
+        ImageLoadingIndicator,
         images,
         legacyImageViewerSwipeBehaviour,
         message,

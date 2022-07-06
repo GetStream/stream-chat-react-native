@@ -454,6 +454,10 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    loadingIndicator: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -970,6 +974,10 @@ export const defaultTheme: Theme = {
       send: {},
       shuffle: {},
       title: {},
+    },
+    loadingIndicator: {
+      container: {},
+      roundedView: {},
     },
     pinnedHeader: {
       container: {},
