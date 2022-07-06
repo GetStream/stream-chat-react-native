@@ -87,13 +87,13 @@ describe('Gallery', () => {
     });
     const attachment2 = generateVideoAttachment();
     const component = await getComponent([attachment1, attachment2]);
-    const { queryAllByTestId } = render(component);
+    const { getAllByA11yLabel, queryAllByTestId } = render(component);
 
     await waitFor(() => {
       expect(queryAllByTestId('gallery-row-0').length).toBe(1);
 
       expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(queryAllByTestId('video-thumbnail').length).toBe(1);
+      expect(getAllByA11yLabel('video-thumbnail').length).toBe(1);
     });
   });
 

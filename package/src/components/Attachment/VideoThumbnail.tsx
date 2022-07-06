@@ -39,10 +39,10 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const { style, thumb_url, ...rest } = props;
   return (
     <ImageBackground
+      accessibilityLabel='video-thumbnail'
       source={{ uri: thumb_url }}
       {...rest}
       style={[styles.container, container, style]}
-      testID='video-thumbnail'
     >
       <View style={[styles.roundedView, roundedView]}>
         <Play height={24} pathFill={'#000'} width={24} />
