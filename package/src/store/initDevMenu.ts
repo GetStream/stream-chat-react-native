@@ -6,19 +6,22 @@ import type { Table } from './types';
 import { isTestEnvironment } from '../contexts/utils/isTestEnvironment';
 
 if (__DEV__ && !isTestEnvironment()) {
-  const DevMenu = require('react-native-dev-menu');
-
-  DevMenu.addItem('Reset Stream Offline DB', () => {
-    QuickSqliteClient.resetDB();
-  });
-  setTimeout(() => {
-    (Object.keys(tables) as Table[]).forEach((tName) => {
-      DevMenu.addItem(`Log ${tName}`, () => {
-        const rows = select(`${tName}`, '*');
-        rows.forEach((r) => printRow(r));
-      });
+  try {
+    const DevMenu = require('react-native-dev-menu');
+    DevMenu.addItem('Reset Stream Offline DB', () => {
+      QuickSqliteClient.resetDB();
     });
-  }, 100);
+    setTimeout(() => {
+      (Object.keys(tables) as Table[]).forEach((tName) => {
+        DevMenu.addItem(`Log ${tName}`, () => {
+          const rows = select(`${tName}`, '*');
+          rows.forEach((r) => printRow(r));
+        });
+      });
+    }, 100);
+  } catch (_) {
+    // do nothing
+  }
 }
 
 const select = (table: Table, fields = '*') => {
