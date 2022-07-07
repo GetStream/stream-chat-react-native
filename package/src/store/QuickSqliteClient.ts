@@ -37,10 +37,14 @@ export class QuickSqliteClient {
     const res = sqlite.executeSqlBatch(DB_NAME, queries);
     const timeEnd = new Date().getTime();
 
-    console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY : ${timeEnd - timeStart}`, queries);
+    console.log(
+      `TIME TAKEN TO EXECUTE FOLLOWING QUERY ${queries.length} AMOUNT OF QUERIES: ${
+        timeEnd - timeStart
+      }`,
+    );
 
     if (res.status === 1) {
-      console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}`, queries);
+      console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}`);
     }
 
     this.closeDB();
@@ -50,30 +54,14 @@ export class QuickSqliteClient {
     this.openDB();
 
     const timeStart = new Date().getTime();
-    const res = sqlite.executeSql(DB_NAME, query, params);
-    const timeEnd = new Date().getTime();
-
-    console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY: ${timeEnd - timeStart}`, query);
-
-    if (res.status === 1) {
-      console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}: `, query);
-    }
-
-    this.closeDB();
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static selectQuery = (query: string, params: any[]) => {
-    this.openDB();
-    const timeStart = new Date().getTime();
     const { message, rows, status } = sqlite.executeSql(DB_NAME, query, params);
     const timeEnd = new Date().getTime();
-    this.closeDB();
 
-    console.log(`Time taken for: ${query}: `, timeEnd - timeStart);
+    this.closeDB();
+    // console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY: ${timeEnd - timeStart}`, query);
 
     if (status === 1) {
-      console.error(`${query} failed: ${message}`);
+      console.error(`Query/queries failed: ${message}: `, query);
     }
 
     return rows ? rows._array : [];
@@ -84,6 +72,7 @@ export class QuickSqliteClient {
       `DROP TABLE IF EXISTS ${table}`,
       [],
     ]);
+    console.log('DROPPING ALL TABLES');
     this.executeSqlBatch(queries);
   };
 
@@ -103,9 +92,9 @@ export class QuickSqliteClient {
 
     const version = this.getUserPragmaVersion();
     if (version !== this.dbVersion) {
-      console.log(
-        `Dropping the table since version ${version} is less than DB_VERSION ${this.dbVersion}`,
-      );
+      // console.log(
+      //   `Dropping the table since version ${version} is less than DB_VERSION ${this.dbVersion}`,
+      // );
       this.dropTables();
       this.updateUserPragmaVersion(this.dbVersion);
     }

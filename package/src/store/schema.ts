@@ -26,7 +26,6 @@ export const tables: Tables = {
     columns: {
       cids: 'TEXT',
       id: 'TEXT',
-      lastSyncedAt: 'TEXT',
     },
     primaryKey: ['id'],
   },
@@ -163,6 +162,13 @@ export const tables: Tables = {
     ],
     primaryKey: ['id'],
   },
+  userSyncStatus: {
+    columns: {
+      lastSyncedAt: 'TEXT',
+      userId: 'TEXT',
+    },
+    primaryKey: ['userId'],
+  },
 };
 
 // TODO: Checking the optionality of columns
@@ -235,5 +241,9 @@ export type Schema = {
     online?: boolean;
     role?: string;
     updatedAt?: string;
+  };
+  userSyncStatus: {
+    lastSyncedAt: string;
+    userId: string;
   };
 };

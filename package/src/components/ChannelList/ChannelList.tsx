@@ -19,6 +19,7 @@ import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
+import { useSync } from './hooks/listeners/useSync';
 import { useSyncDatabase } from './hooks/listeners/useSyncDatabase';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
@@ -299,6 +300,7 @@ export const ChannelList = <
   });
 
   useConnectionRecovered<StreamChatGenerics>({
+    enableOfflineSupport,
     refreshList,
     setForceUpdate,
   });

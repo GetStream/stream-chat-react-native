@@ -15,7 +15,7 @@ export const selectChannelIdsForFilterSort = <
   sort?: ChannelSort<StreamChatGenerics>;
 }): string[] => {
   const query = convertFilterSortToQuery({ filters, sort });
-  const results = QuickSqliteClient.selectQuery(`SELECT * FROM channelQueries where id = ?`, [
+  const results = QuickSqliteClient.executeSql(`SELECT * FROM channelQueries where id = ?`, [
     query,
   ]);
 

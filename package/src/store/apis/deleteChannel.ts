@@ -1,5 +1,14 @@
 import { QuickSqliteClient } from '../QuickSqliteClient';
+import { createDeleteQuery } from '../sqlite-utils/createDeleteQuery';
 
-export const deleteChannel = ({ cid }: { cid: string }) => {
-  QuickSqliteClient.executeSql(`DELETE FROM channels where cid = ?`, [cid]);
+export const deleteChannel = ({ cid, flush = true }: { cid: string; flush?: boolean }) => {
+  const query = createDeleteQuery('channels', {
+    cid,
+  });
+
+  if (flush) {
+    QuickSqliteClient.executeSql.apply(null, query);
+  }
+
+  return [query];
 };

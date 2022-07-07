@@ -11,7 +11,7 @@ export const selectMessagesForChannels = (cids: string[]): JoinedMessageRow[] =>
     .map((name) => `'${name}', b.${name}`)
     .join(', ');
 
-  const result = QuickSqliteClient.selectQuery(
+  const result = QuickSqliteClient.executeSql(
     `SELECT
       json_object(
         'user', json_object(
@@ -32,7 +32,7 @@ export const selectMessagesForChannels = (cids: string[]): JoinedMessageRow[] =>
     LEFT JOIN
       users b
     ON b.id = a.userId 
-    WHERE RowNum < 20`,
+    WHERE RowNum < 200`,
     cids,
   );
 

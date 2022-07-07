@@ -1,5 +1,7 @@
 import type { ReadResponse } from 'stream-chat';
 
+import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ReadRow } from '../types';
 
@@ -16,7 +18,7 @@ export const mapReadToStorable = <
 
   return {
     cid,
-    lastRead: last_read,
+    lastRead: mapDateTimeToStorable(last_read),
     unreadMessages: unread_messages,
     userId: user?.id,
   };

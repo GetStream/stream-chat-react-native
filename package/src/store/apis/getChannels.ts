@@ -5,7 +5,7 @@ import { getMembers } from './getMembers';
 import { getMessages } from './getMessages';
 import { getReads } from './getReads';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
-import { selectChannelsForChannelIds } from './queries/selectChannelsForChannelIds';
+import { selectChannels } from './queries/selectChannels';
 
 import { mapStorableToChannel } from '../mappers/mapStorableToChannel';
 
@@ -26,7 +26,7 @@ export const getChannels = <
   }
 
   const channelIds = selectChannelIdsForFilterSort({ filters, sort });
-  const channels = selectChannelsForChannelIds({ channelIds });
+  const channels = selectChannels({ channelIds });
 
   const timeStart = new Date().getTime();
   const cidVsMembers = getMembers<StreamChatGenerics>({ channelIds });

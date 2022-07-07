@@ -9,9 +9,15 @@ export const upsertChannelInfo = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
   channel,
+  flush = true,
 }: {
   channel: ChannelResponse<StreamChatGenerics>;
+  flush?: boolean;
 }) => {
   const query = createUpsertQuery('channels', mapChannelInfoToStorable(channel));
-  QuickSqliteClient.executeSqlBatch([query]);
+  if (flush) {
+    QuickSqliteClient.executeSqlBatch([query]);
+  }
+
+  return [query];
 };

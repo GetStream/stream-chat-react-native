@@ -22,7 +22,7 @@ if (__DEV__ && !isTestEnvironment()) {
 }
 
 const select = (table: Table, fields = '*') => {
-  const result = QuickSqliteClient.selectQuery(`SELECT ${fields} FROM ${table};`, []);
+  const result = QuickSqliteClient.executeSql(`SELECT ${fields} FROM ${table};`, []);
 
   return result;
 };

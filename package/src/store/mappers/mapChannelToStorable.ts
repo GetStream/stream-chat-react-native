@@ -1,5 +1,7 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
+import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { ChannelRow } from '../types';
 
@@ -15,11 +17,11 @@ export const mapChannelToStorable = <
 
   return {
     cid,
-    createdAt: created_at,
-    deletedAt: deleted_at,
+    createdAt: mapDateTimeToStorable(created_at),
+    deletedAt: mapDateTimeToStorable(deleted_at),
     extraData: JSON.stringify(extraData),
     id,
-    lastMessageAt: last_message_at,
+    lastMessageAt: mapDateTimeToStorable(last_message_at),
     pinnedMessages: JSON.stringify(pinned_messages),
     type,
     updatedAt: updated_at,

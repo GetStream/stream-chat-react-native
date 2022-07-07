@@ -1,17 +1,10 @@
 import { useEffect } from 'react';
 
-import type { Event, StreamChat } from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
+
+import { handleEventToSyncDB } from './handleEventToSyncDB';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import { deleteChannel } from '../../../../store/apis/deleteChannel';
-import { deleteMember } from '../../../../store/apis/deleteMember';
-import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
-import { updateMessage } from '../../../../store/apis/updateMessage';
-import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
-import { upsertChannels } from '../../../../store/apis/upsertChannels';
-import { upsertMembers } from '../../../../store/apis/upsertMembers';
-import { upsertMessages } from '../../../../store/apis/upsertMessages';
-import { upsertReads } from '../../../../store/apis/upsertReads';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
 type Params = {
@@ -24,155 +17,10 @@ export const useSyncDatabase = <
 }: Params) => {
   const { client } = useChatContext<StreamChatGenerics>();
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
-      const { type } = event;
-
-      if (type === 'message.read') {
-        if (event.user?.id && event.cid) {
-          upsertReads<StreamChatGenerics>({
-            cid: event.cid,
-            reads: [
-              {
-                last_read: event.received_at as string,
-                unread_messages: 0,
-                user: event.user,
-              },
-            ],
-          });
-        }
-      }
-
-      if (type === 'message.new') {
-        if (event.message && !event.message.parent_id) {
-          upsertMessages<StreamChatGenerics>({
-            messages: [event.message],
-          });
-        }
-      }
-
-      if (type === 'message.updated' || type === 'message.deleted') {
-        if (event.message && !event.message.parent_id) {
-          // Update only if it exists, otherwise event could be related
-          // to a message which is not related to existing messages with database.
-          updateMessage<StreamChatGenerics>({
-            message: event.message,
-          });
-        }
-      }
-      if (type === 'reaction.updated') {
-        console.log(type);
-        if (event.message && event.reaction) {
-          updateMessage<StreamChatGenerics>({
-            message: event.message,
-          });
-        }
-      }
-
-      if (type === 'reaction.new' || type === 'reaction.deleted') {
-        console.log(type);
-        if (event.message && !event.message.parent_id) {
-          updateMessage<StreamChatGenerics>({
-            message: event.message,
-          });
-        }
-      }
-
-      if (type === 'channel.updated') {
-        if (event.channel) {
-          upsertChannelInfo({
-            channel: event.channel,
-          });
-        }
-      }
-
-      if (type === 'channel.hidden') {
-        if (event.channel) {
-          deleteChannel({
-            cid: event.channel.cid,
-          });
-        }
-      }
-
-      if (type === 'channel.visible') {
-        if (event.channel) {
-          upsertChannelInfo({
-            channel: event.channel,
-          });
-        }
-      }
-
-      if (type === 'channel.truncated') {
-        if (event.channel) {
-          deleteMessagesForChannel({
-            cid: event.channel.cid,
-          });
-        }
-      }
-
-      if (type === 'channel.deleted') {
-        if (event.channel) {
-          deleteChannel({
-            cid: event.channel.cid,
-          });
-        }
-      }
-
-      if (type === 'channels.queried') {
-        if (event.queriedChannels) {
-          upsertChannels<StreamChatGenerics>({
-            channels: event.queriedChannels?.channels,
-            isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
-          });
-        }
-      }
-
-      if (type === 'member.added' || type === 'member.updated') {
-        if (event.member && event.cid) {
-          upsertMembers({
-            cid: event.cid,
-            members: [event.member],
-          });
-        }
-      }
-
-      if (type === 'member.removed') {
-        if (event.member && event.cid) {
-          deleteMember({
-            cid: event.cid,
-            member: event.member,
-          });
-        }
-      }
-
-      if (type === 'notification.added_to_channel') {
-        if (event.channel) {
-          upsertChannelInfo({
-            channel: event.channel,
-          });
-        }
-      }
-
-      if (type === 'notification.removed_from_channel') {
-        if (event.channel) {
-          deleteChannel({
-            cid: event.channel.cid,
-          });
-        }
-      }
-
-      if (type === 'notification.message_new') {
-        if (event.channel) {
-          upsertChannelInfo<StreamChatGenerics>({
-            channel: event.channel,
-          });
-        }
-      }
-    };
-
     let listener: ReturnType<StreamChat['on']>;
 
     if (enableOfflineSupport) {
-      listener = client?.on(handleEvent);
+      listener = client?.on(handleEventToSyncDB);
     }
 
     return () => {

@@ -1,5 +1,7 @@
 import type { ChannelMemberResponse } from 'stream-chat';
 
+import { mapDateTimeToStorable } from './mapDateTimeToStorable';
+
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import type { MemberRow } from '../types';
 
@@ -30,14 +32,14 @@ export const mapMemberToStorable = <
     banned,
     channelRole: channel_role,
     cid,
-    createdAt: created_at,
+    createdAt: mapDateTimeToStorable(created_at),
     inviteAcceptedAt: invite_accepted_at,
     invited,
     inviteRejectedAt: invite_rejected_at,
     isModerator: is_moderator,
     role,
     shadowBanned: shadow_banned,
-    updatedAt: updated_at,
+    updatedAt: mapDateTimeToStorable(updated_at),
     userId: user_id,
   };
 };

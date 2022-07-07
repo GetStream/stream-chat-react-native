@@ -50,14 +50,6 @@ export const updateMessage = <
 
   if (flush) {
     QuickSqliteClient.executeSqlBatch(queries);
-
-    setTimeout(() => {
-      const result = QuickSqliteClient.selectQuery(
-        'select userId, type from reactions where messageId = ?',
-        [message.id],
-      );
-      console.log(result);
-    }, 2000);
   }
 
   return queries;
