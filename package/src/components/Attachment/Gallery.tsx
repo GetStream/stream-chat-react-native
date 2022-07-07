@@ -212,7 +212,7 @@ const GalleryWithContext = <
             ]}
             testID={`gallery-${invertedDirections ? 'row' : 'column'}-${colIndex}`}
           >
-            {rows.map(({ height, resizeMode, type, url, width }, rowIndex) => {
+            {rows.map(({ height, resizeMode, thumb_url, type, url, width }, rowIndex) => {
               const openImageViewer = () => {
                 if (!legacyImageViewerSwipeBehaviour && message) {
                   // Added if-else to keep the logic readable, instead of DRY.
@@ -307,6 +307,7 @@ const GalleryWithContext = <
                           width: width - 1,
                         },
                       ]}
+                      thumb_url={thumb_url}
                     />
                   ) : (
                     <View style={styles.imageContainerStyle}>

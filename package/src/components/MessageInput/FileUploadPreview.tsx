@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
@@ -19,6 +19,7 @@ import { Warning } from '../../icons/Warning';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getIndicatorTypeForFileState, ProgressIndicatorTypes } from '../../utils/utils';
 import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
+import { WritingDirectionAwareText } from '../RTLComponents/WritingDirectionAwareText';
 
 const FILE_PREVIEW_HEIGHT = 60;
 const WARNING_ICON_SIZE = 16;
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 3,
+    marginTop: 2,
   },
 });
 
@@ -105,9 +106,9 @@ const UnsupportedFileTypeOrFileSizeIndicator = ({
       </Text>
     </View>
   ) : (
-    <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
-      {item.file.duration ? item.file.duration : getFileSizeDisplayText(item.file.size)}
-    </Text>
+    <WritingDirectionAwareText style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
+      {item.file.duration || getFileSizeDisplayText(item.file.size)}
+    </WritingDirectionAwareText>
   );
 };
 
@@ -188,6 +189,7 @@ const FileUploadPreviewWithContext = <
                         24 - // 24 = close icon size
                         24, // 24 = internal padding
                     },
+                    I18nManager.isRTL ? { writingDirection: 'rtl' } : { writingDirection: 'ltr' },
                     filenameText,
                   ]}
                 >

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageInputContext's sendMessageAsync sendImageAsync is been called with finished file upload state and checked for snapshot) 1`] = `
+Object {
+  "attachments": Array [
+    Object {
+      "image_url": "https://www.test.com",
+      "type": "image",
+    },
+  ],
+  "mentioned_users": Array [],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;
+
+exports[`MessageInputContext's sendMessageAsync sendImageAsync is been called with uploaded file upload state and checked for snapshot) 1`] = `
+Object {
+  "attachments": Array [
+    Object {
+      "image_url": "https://www.test.com",
+      "type": "image",
+    },
+  ],
+  "mentioned_users": Array [],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;

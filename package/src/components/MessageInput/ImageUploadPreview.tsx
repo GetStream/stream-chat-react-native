@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   fileSizeText: {
     fontSize: 12,
-    paddingLeft: 10,
+    paddingHorizontal: 10,
   },
   flatList: { paddingBottom: 12 },
   iconContainer: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   warningIconStyle: {
     borderRadius: 24,
-    marginTop: 4,
+    marginTop: 6,
   },
   warningText: {
     alignItems: 'center',
