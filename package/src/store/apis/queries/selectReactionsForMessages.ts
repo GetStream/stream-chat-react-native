@@ -1,8 +1,10 @@
 import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
-import type { JoinedReactionRow } from '../../types';
+import type { TableRowJoinedUser } from '../../types';
 
-export const selectReactionsForMessages = (messageIds: string[]): JoinedReactionRow[] => {
+export const selectReactionsForMessages = (
+  messageIds: string[],
+): TableRowJoinedUser<'reactions'>[] => {
   const questionMarks = Array(messageIds.length).fill('?').join(',');
   const reactionsColumnNames = Object.keys(tables.reactions.columns)
     .map((name) => `'${name}', a.${name}`)

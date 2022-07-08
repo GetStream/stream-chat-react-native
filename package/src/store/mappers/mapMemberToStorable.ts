@@ -3,7 +3,7 @@ import type { ChannelMemberResponse } from 'stream-chat';
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { MemberRow } from '../types';
+import type { TableRow } from '../types';
 
 export const mapMemberToStorable = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -13,7 +13,7 @@ export const mapMemberToStorable = <
 }: {
   cid: string;
   member: ChannelMemberResponse<StreamChatGenerics>;
-}): MemberRow => {
+}): TableRow<'members'> => {
   const {
     banned,
     channel_role,

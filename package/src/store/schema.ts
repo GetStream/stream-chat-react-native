@@ -38,7 +38,6 @@ export const tables: Tables = {
       extraData: 'TEXT',
       id: 'TEXT',
       lastMessageAt: 'TEXT',
-      pinnedMessages: 'TEXT',
       type: 'TEXT',
       updatedAt: 'TEXT',
     },
@@ -176,13 +175,11 @@ export type Schema = {
   channelQueries: {
     cids: string;
     id: string;
-    lastSyncedAt: string;
   };
   channels: {
     cid: string;
     extraData: string;
     id: string;
-    pinnedMessages: string;
     type: string;
     createdAt?: string;
     createdById?: string;

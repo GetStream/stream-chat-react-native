@@ -1,4 +1,4 @@
-import type { StorableDatabaseRow } from '../types';
+import type { TableRow } from '../types';
 
 function isJson(str: string) {
   try {
@@ -9,7 +9,7 @@ function isJson(str: string) {
   return true;
 }
 
-export const printRow = (row: StorableDatabaseRow) => {
+export const printRow = (row: TableRow<any>) => {
   const prettyRow = {};
   for (const key in row) {
     // @ts-ignore

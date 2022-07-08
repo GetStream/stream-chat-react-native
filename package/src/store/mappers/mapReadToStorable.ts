@@ -3,7 +3,7 @@ import type { ReadResponse } from 'stream-chat';
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { ReadRow } from '../types';
+import type { TableRow } from '../types';
 
 export const mapReadToStorable = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -13,7 +13,7 @@ export const mapReadToStorable = <
 }: {
   cid: string;
   read: ReadResponse<StreamChatGenerics>;
-}): ReadRow => {
+}): TableRow<'reads'> => {
   const { last_read, unread_messages, user } = read;
 
   return {

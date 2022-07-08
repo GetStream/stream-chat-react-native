@@ -1,12 +1,12 @@
 import { appendWhereClause } from './appendWhereCluase';
 
 import type { Schema } from '../schema';
-import type { PreparedQueries, TableColumns } from '../types';
+import type { PreparedQueries, TableColumnNames } from '../types';
 
 export const createSelectQuery = <T extends keyof Schema>(
   table: T,
-  fields: Array<'*'> | Array<Partial<TableColumns<T>>> = ['*'],
-  whereCondition?: Partial<{ [k in TableColumns<T>]: any }>,
+  fields: Array<'*'> | Array<TableColumnNames<T>> = ['*'],
+  whereCondition?: Partial<{ [k in TableColumnNames<T>]: any }>,
 ) => {
   const selectQuery = `SELECT ${fields.join(', ')} FROM ${table}`;
   const [selectQueryWithWhere, whereParams] = appendWhereClause(selectQuery, whereCondition);

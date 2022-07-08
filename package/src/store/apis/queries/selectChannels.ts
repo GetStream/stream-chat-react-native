@@ -1,10 +1,10 @@
 import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { createSelectQuery } from '../../sqlite-utils/createSelectQuery';
-import type { JoinedChannelRow } from '../../types';
+import type { TableRowJoinedUser } from '../../types';
 
 export const selectChannels = ({
   channelIds,
-}: { channelIds?: string[] } = {}): JoinedChannelRow[] => {
+}: { channelIds?: string[] } = {}): TableRowJoinedUser<'channels'>[] => {
   const query = createSelectQuery('channels', ['*'], {
     cid: channelIds,
   });

@@ -6,7 +6,7 @@ import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { JoinedMessageRow, JoinedReactionRow } from '../types';
+import type { TableRowJoinedUser } from '../types';
 
 export const mapStorableToMessage = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -16,8 +16,8 @@ export const mapStorableToMessage = <
   reactionRows,
 }: {
   currentUserId: string;
-  messageRow: JoinedMessageRow;
-  reactionRows: JoinedReactionRow[];
+  messageRow: TableRowJoinedUser<'messages'>;
+  reactionRows: TableRowJoinedUser<'reactions'>[];
 }): MessageResponse<StreamChatGenerics> => {
   const { createdAt, deletedAt, extraData, reactionCounts, updatedAt, user, ...rest } = messageRow;
   const latestReactions =

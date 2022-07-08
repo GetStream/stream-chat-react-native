@@ -1,14 +1,16 @@
 import type { ChannelAPIResponse } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { ChannelRow } from '../types';
+import type { TableRow } from '../types';
 
 export const mapStorableToChannel = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  channelRow: ChannelRow,
-): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'messages' | 'members'> => {
-  const pinnedMessages = channelRow.pinnedMessages ? JSON.parse(channelRow.pinnedMessages) : [];
+  channelRow: TableRow<'channels'>,
+): Omit<
+  ChannelAPIResponse<StreamChatGenerics>,
+  'duration' | 'messages' | 'members' | 'pinned_messages'
+> => {
   const extraData = channelRow.extraData ? JSON.parse(channelRow.extraData) : {};
   const { createdAt, createdById, deletedAt, lastMessageAt, type, updatedAt, ...rest } = channelRow;
   return {
@@ -22,6 +24,5 @@ export const mapStorableToChannel = <
       ...rest,
       ...extraData,
     },
-    pinned_messages: pinnedMessages,
   };
 };

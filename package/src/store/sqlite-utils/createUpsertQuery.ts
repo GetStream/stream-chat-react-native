@@ -1,17 +1,18 @@
-import { tables } from '../schema';
-import type { PreparedQueries, StorableDatabaseRow, Table } from '../types';
+import { Schema, tables } from '../schema';
+import type { PreparedQueries, TableColumnNames, TableRow } from '../types';
 
-export const createUpsertQuery = (
-  table: Table,
-  row: StorableDatabaseRow,
-  conflictCheckKeys?: Array<keyof StorableDatabaseRow>,
+export const createUpsertQuery = <T extends keyof Schema>(
+  table: T,
+  row: Partial<TableRow<T>>,
+  conflictCheckKeys?: Array<TableColumnNames<T>>,
 ) => {
-  const fields = Object.keys(row);
+  const fields = Object.keys(row) as (keyof typeof row)[];
 
   const questionMarks = Array(Object.keys(fields).length).fill('?').join(',');
   const conflictKeys = conflictCheckKeys || tables[table].primaryKey;
   const conflictMatchersWithoutPK = fields
     .filter((f) => !conflictKeys.includes(f))
+    // @ts-ignore
     .map((f) => `${f}=excluded.${f}`);
 
   const conflictConstraint =

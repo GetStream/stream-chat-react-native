@@ -1,8 +1,8 @@
 import type { UserResponse } from 'stream-chat';
 
-import type { UserRow } from '../types';
+import type { TableRow } from '../types';
 
-export const mapUserToStorable = (user: UserResponse): UserRow => {
+export const mapUserToStorable = (user: UserResponse): TableRow<'users'> => {
   const { banned, created_at, id, last_active, online, role, updated_at, ...extraData } = user;
 
   return {

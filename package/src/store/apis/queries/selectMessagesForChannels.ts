@@ -1,8 +1,8 @@
 import { QuickSqliteClient } from '../../QuickSqliteClient';
 import { tables } from '../../schema';
-import type { JoinedMessageRow } from '../../types';
+import type { TableRowJoinedUser } from '../../types';
 
-export const selectMessagesForChannels = (cids: string[]): JoinedMessageRow[] => {
+export const selectMessagesForChannels = (cids: string[]): TableRowJoinedUser<'messages'>[] => {
   const questionMarks = Array(cids.length).fill('?').join(',');
   const messagesColumnNames = Object.keys(tables.messages.columns)
     .map((name) => `'${name}', a.${name}`)

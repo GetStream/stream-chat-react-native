@@ -1,9 +1,9 @@
 import type { Schema } from '../schema';
-import type { TableColumns } from '../types';
+import type { PreparedQueries, TableColumnNames } from '../types';
 
 export const appendWhereClause = <T extends keyof Schema>(
   selectQuery: string,
-  whereCondition?: Partial<{ [k in TableColumns<T>]: any }>,
+  whereCondition?: Partial<{ [k in TableColumnNames<T>]: any }>,
 ) => {
   if (!whereCondition) return [selectQuery, []];
 
@@ -23,5 +23,5 @@ export const appendWhereClause = <T extends keyof Schema>(
     }
   }
 
-  return [`${selectQuery} WHERE ${whereClause.join(' AND ')}`, whereParams];
+  return [`${selectQuery} WHERE ${whereClause.join(' AND ')}`, whereParams] as PreparedQueries;
 };

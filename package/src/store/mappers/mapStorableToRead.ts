@@ -4,12 +4,12 @@ import { mapStorableToUser } from './mapStorableToUser';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
-import type { JoinedReadRow } from '../types';
+import type { TableRowJoinedUser } from '../types';
 
 export const mapStorableToRead = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  row: JoinedReadRow,
+  row: TableRowJoinedUser<'reads'>,
 ): ReadResponse<StreamChatGenerics> => {
   const { lastRead, unreadMessages, user } = row;
 

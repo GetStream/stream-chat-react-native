@@ -1,12 +1,12 @@
 import type { UserResponse } from 'stream-chat';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import type { UserRow } from '../types';
+import type { TableRow } from '../types';
 
 export const mapStorableToUser = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  userRow: UserRow,
+  userRow: TableRow<'users'>,
 ): UserResponse<StreamChatGenerics> => {
   const { banned, createdAt, extraData, id, lastActive, online, role, updatedAt } = userRow;
 

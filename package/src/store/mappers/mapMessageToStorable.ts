@@ -2,9 +2,9 @@ import type { MessageResponse } from 'stream-chat';
 
 import { mapDateTimeToStorable } from './mapDateTimeToStorable';
 
-import type { MessageRow } from '../types';
+import type { TableRow } from '../types';
 
-export const mapMessageToStorable = (message: MessageResponse): MessageRow => {
+export const mapMessageToStorable = (message: MessageResponse): TableRow<'messages'> => {
   const {
     attachments,
     cid,
