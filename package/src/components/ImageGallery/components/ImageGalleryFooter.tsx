@@ -171,7 +171,7 @@ export const ImageGalleryFooterWithContext = <
         }-${selectedIndex}.${extension}`,
         fromUrl: photo.uri,
       });
-      await shareImage({ type: photo.mime_type, url: localFile });
+      await shareImage({ type: photo.mime_type ?? 'image/jpeg', url: localFile });
       await deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
