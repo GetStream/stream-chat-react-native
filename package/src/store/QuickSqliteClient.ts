@@ -33,15 +33,7 @@ export class QuickSqliteClient {
   static executeSqlBatch = (queries: PreparedQueries[]) => {
     this.openDB();
 
-    const timeStart = new Date().getTime();
     const res = sqlite.executeSqlBatch(DB_NAME, queries);
-    const timeEnd = new Date().getTime();
-
-    console.log(
-      `TIME TAKEN TO EXECUTE FOLLOWING QUERY ${queries.length} AMOUNT OF QUERIES: ${
-        timeEnd - timeStart
-      }`,
-    );
 
     if (res.status === 1) {
       console.error(`Query/queries failed: ${res.message} ${JSON.stringify(res)}`);
@@ -53,12 +45,9 @@ export class QuickSqliteClient {
   static executeSql = (query: string, params?: string[]) => {
     this.openDB();
 
-    const timeStart = new Date().getTime();
     const { message, rows, status } = sqlite.executeSql(DB_NAME, query, params);
-    const timeEnd = new Date().getTime();
 
     this.closeDB();
-    // console.log(`TIME TAKEN TO EXECUTE FOLLOWING QUERY: ${timeEnd - timeStart}`, query);
 
     if (status === 1) {
       console.error(`Query/queries failed: ${message}: `, query);
@@ -72,7 +61,7 @@ export class QuickSqliteClient {
       `DROP TABLE IF EXISTS ${table}`,
       [],
     ]);
-    console.log('DROPPING ALL TABLES');
+
     this.executeSqlBatch(queries);
   };
 

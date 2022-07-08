@@ -6,7 +6,7 @@ import { selectReactionsForMessages } from './queries/selectReactionsForMessages
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapStorableToMessage } from '../mappers/mapStorableToMessage';
-import type { JoinedReactionRow } from '../types';
+import type { TableRowJoinedUser } from '../types';
 
 export const getMessages = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -22,7 +22,7 @@ export const getMessages = <
 
   // Populate the message reactions.
   const reactionRows = selectReactionsForMessages(messageIds);
-  const messageIdVsReactions: Record<string, JoinedReactionRow[]> = {};
+  const messageIdVsReactions: Record<string, TableRowJoinedUser<'reactions'>[]> = {};
   reactionRows.forEach((reaction) => {
     if (!messageIdVsReactions[reaction.messageId]) {
       messageIdVsReactions[reaction.messageId] = [];

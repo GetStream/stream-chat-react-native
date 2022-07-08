@@ -9,7 +9,9 @@ module.exports = {
     './src/mock-builders/native/react-native-mock.js',
     './node_modules/react-native-gesture-handler/jestSetup.js',
   ],
-  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect', require.resolve('./jest-setup.js'),
+  setupFilesAfterEnv: [
+    '@testing-library/jest-native/extend-expect',
+    require.resolve('./jest-setup.js'),
   ],
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__', '/lib/'],

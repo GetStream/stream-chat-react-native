@@ -9,13 +9,13 @@ describe('createSelectQuery', () => {
 
   it('should build select query with where clause', () => {
     const query = createSelectQuery('channels', ['cid', 'id'], {
-      cid: 'boo',
-      id: ['cute', 'foo'],
+      cid: 'messaging:1nj32k341nkn23',
+      id: ['123', '456'],
     });
 
     expect(query).toStrictEqual([
       'SELECT cid, id FROM channels WHERE cid = ? AND id in (?,?)',
-      ['boo', 'cute', 'foo'],
+      ['messaging:1nj32k341nkn23', '123', '456'],
     ]);
   });
 });

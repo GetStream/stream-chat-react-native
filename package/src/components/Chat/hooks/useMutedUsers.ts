@@ -18,8 +18,8 @@ export const useMutedUsers = <
       setMutedUsers((mutes) => event.me?.mutes || mutes || []);
     };
 
-    client?.on('notification.mutes_updated', handleEvent);
-    return () => client?.off('notification.mutes_updated', handleEvent);
+    const listener = client?.on('notification.mutes_updated', handleEvent);
+    return () => listener?.unsubscribe();
   }, [setMutedUsers]);
 
   return mutedUsers;

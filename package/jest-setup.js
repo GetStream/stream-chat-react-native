@@ -3,13 +3,12 @@ import { FlatList } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
-import { registerNativeHandlers } from './src/native';
 import { initializeDBMocking, resetDBMocking } from './src/mock-builders/DB/mock';
+import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
 
-console.warn = () => {
-};
+console.warn = () => {};
 
 export let netInfoFetch = jest.fn();
 

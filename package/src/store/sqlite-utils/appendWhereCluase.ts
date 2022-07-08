@@ -23,5 +23,9 @@ export const appendWhereClause = <T extends keyof Schema>(
     }
   }
 
+  if (!whereParams.length) {
+    return [selectQuery, []];
+  }
+
   return [`${selectQuery} WHERE ${whereClause.join(' AND ')}`, whereParams] as PreparedQueries;
 };
