@@ -185,6 +185,7 @@ export type VideoPayloadData = {
 
 export type VideoType = {
   paused: boolean;
+  testID: string;
   uri: string;
   videoRef: React.RefObject<VideoType>;
   onBuffer?: (props: { isBuffering: boolean }) => void;

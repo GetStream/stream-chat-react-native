@@ -154,11 +154,17 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
+      return (
+        <View
+          accessibilityLabel='empty-view-image-gallery'
+          style={[style, { transform: [{ scale: oneEighth }] }]}
+        />
+      );
     }
 
     return (
       <Animated.View
+        accessibilityLabel='image-gallery-video'
         style={[
           style,
           animatedViewStyles,
@@ -185,11 +191,13 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
             paused={paused}
             resizeMode='contain'
             style={style}
+            testID='video-player'
             uri={source.uri}
             videoRef={videoRef}
           />
         )}
         <Animated.View
+          accessibilityLabel='spinner'
           style={[
             styles.activityIndicator,
             {

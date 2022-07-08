@@ -497,7 +497,11 @@ export const ImageGallery = <
   };
 
   return (
-    <Animated.View pointerEvents={'auto'} style={[StyleSheet.absoluteFillObject, showScreenStyle]}>
+    <Animated.View
+      accessibilityLabel='image-gallery'
+      pointerEvents={'auto'}
+      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
+    >
       <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]} />
       <TapGestureHandler
         minPointers={1}

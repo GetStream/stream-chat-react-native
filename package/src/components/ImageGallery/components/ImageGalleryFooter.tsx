@@ -203,7 +203,11 @@ export const ImageGalleryFooterWithContext = <
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
+            <TouchableOpacity
+              accessibilityLabel='share-button'
+              disabled={shareMenuOpen}
+              onPress={share}
+            >
               <View style={[styles.leftContainer, leftContainer]}>
                 {ShareIcon ? ShareIcon : <ShareIconDefault />}
               </View>

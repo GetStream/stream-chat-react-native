@@ -63,19 +63,23 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
     return (
       <View style={[styles.videoContainer, videoContainer]}>
         <TouchableOpacity
+          accessibilityLabel='play-pause'
           onPress={() => {
             onPlayPause();
           }}
         >
           <View style={[styles.roundedView, roundedView, { backgroundColor: white_snow }]}>
             {paused ? (
-              <Play height={24} pathFill={black} width={24} />
+              <Play accessibilityLabel='play-icon' height={24} pathFill={black} width={24} />
             ) : (
-              <Pause height={24} width={24} />
+              <Pause accessibilityLabel='pause-icon' height={24} width={24} />
             )}
           </View>
         </TouchableOpacity>
-        <Text style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}>
+        <Text
+          accessibilityLabel='progress-duration'
+          style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}
+        >
           {progressDuration ? progressDuration : '00:00'}
         </Text>
         <ProgressControl
@@ -86,7 +90,10 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
           progress={progress}
           width={180}
         />
-        <Text style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}>
+        <Text
+          accessibilityLabel='video-duration'
+          style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}
+        >
           {videoDuration ? videoDuration : '00:00'}
         </Text>
       </View>
