@@ -2,6 +2,8 @@ import type { Schema } from './schema';
 
 export type Table = keyof Schema;
 
+export type TableColumns<T extends Table> = keyof Partial<Schema[T]>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type PreparedQueries = [string] | [string, Array<any>];
 
 export type ChannelRow = Schema['channels'];

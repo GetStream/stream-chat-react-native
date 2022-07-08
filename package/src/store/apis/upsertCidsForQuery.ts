@@ -27,7 +27,7 @@ export const upsertCidsForQuery = <
   });
 
   if (flush) {
-    QuickSqliteClient.executeSqlBatch([query]);
+    QuickSqliteClient.executeSql.apply(null, query);
   }
 
   return [query];

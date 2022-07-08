@@ -1,8 +1,8 @@
 import type { DefaultStreamChatGenerics } from 'src/types/types';
 import type { ChannelAPIResponse, ChannelFilters, ChannelSort } from 'stream-chat';
 
+import { getMessages } from './getChannelMessages';
 import { getMembers } from './getMembers';
-import { getMessages } from './getMessages';
 import { getReads } from './getReads';
 import { selectChannelIdsForFilterSort } from './queries/selectChannelIdsForFilterSort';
 import { selectChannels } from './queries/selectChannels';

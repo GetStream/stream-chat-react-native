@@ -1,17 +1,17 @@
-import type { PreparedQueries, StorableDatabaseRow, Table } from '../types';
+import { appendWhereClause } from './appendWhereCluase';
 
-export const createUpdateQuery = (
-  table: Table,
-  set: Partial<StorableDatabaseRow>,
-  whereCondition: Partial<StorableDatabaseRow>,
+import type { Schema } from '../schema';
+import type { PreparedQueries, TableColumns } from '../types';
+
+export const createUpdateQuery = <T extends keyof Schema>(
+  table: T,
+  set: Partial<{ [k in TableColumns<T>]: any }>,
+  whereCondition: Partial<{ [k in TableColumns<T>]: any }>,
 ) => {
   const fields = Object.keys(set).map((key) => `${key} = ?`);
-  const where = Object.keys(whereCondition).map((key) => `${key} = ?`);
+  const updateQuery = `UPDATE ${table} SET ${fields.join(',')}`;
 
-  return [
-    `UPDATE ${table}
-    SET ${fields.join(',')}
-    WHERE ${where.join(' AND ')}`,
-    [...Object.values(set), ...Object.values(whereCondition)],
-  ] as PreparedQueries;
+  const [updateQueryWithWhere, whereParams] = appendWhereClause(updateQuery, whereCondition);
+
+  return [updateQueryWithWhere, [...Object.values(set), ...whereParams]] as PreparedQueries;
 };

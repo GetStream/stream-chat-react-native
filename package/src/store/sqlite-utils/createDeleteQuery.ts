@@ -1,11 +1,15 @@
-import type { PreparedQueries, StorableDatabaseRow, Table } from '../types';
+import { appendWhereClause } from './appendWhereCluase';
 
-export const createDeleteQuery = (table: Table, whereCondition: Partial<StorableDatabaseRow>) => {
-  const where = Object.keys(whereCondition).map((key) => `${key} = ?`);
+import type { Schema } from '../schema';
+import type { PreparedQueries, TableColumns } from '../types';
 
-  return [
-    `DELETE FROM ${table}
-    WHERE ${where.join(' AND ')}`,
-    [...Object.values(whereCondition)],
-  ] as PreparedQueries;
+export const createDeleteQuery = <T extends keyof Schema>(
+  table: T,
+  whereCondition: Partial<{ [k in TableColumns<T>]: any }>,
+) => {
+  const deleteQuery = `DELETE FROM ${table}`;
+
+  const [deleteQueryWithWhere, whereParams] = appendWhereClause(deleteQuery, whereCondition);
+
+  return [deleteQueryWithWhere, whereParams] as PreparedQueries;
 };

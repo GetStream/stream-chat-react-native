@@ -86,15 +86,8 @@ export class QuickSqliteClient {
   };
 
   static initializeDatabase = () => {
-    if (__DEV__) {
-      // testQuery();
-    }
-
     const version = this.getUserPragmaVersion();
     if (version !== this.dbVersion) {
-      // console.log(
-      //   `Dropping the table since version ${version} is less than DB_VERSION ${this.dbVersion}`,
-      // );
       this.dropTables();
       this.updateUserPragmaVersion(this.dbVersion);
     }
