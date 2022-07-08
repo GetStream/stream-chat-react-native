@@ -78,7 +78,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-        enableHermes: true,  // clean and rebuild if changing
+    enableHermes: false,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -134,11 +134,9 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.typescriptmessaging"
+        applicationId "com.r18rn69"
         minSdkVersion rootProject.ext.minSdkVersion
-        multiDexEnabled true
         targetSdkVersion rootProject.ext.targetSdkVersion
-        vectorDrawables.useSupportLibrary true
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -159,7 +157,7 @@ android {
                     cppFlags "-std=c++17"
                     // Make sure this target name is the same you specify inside the
                     // src/main/jni/Android.mk file for the `LOCAL_MODULE` variable.
-                    targets "typescriptmessaging_appmodules"
+                    targets "r18rn69_appmodules"
                 }
             }
             if (!enableSeparateBuildPerCPUArchitecture) {
@@ -211,7 +209,7 @@ android {
         }
     }
 
-     splits {
+    splits {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
@@ -227,34 +225,34 @@ android {
             keyPassword 'android'
         }
     }
-   buildTypes {
-       debug {
-           signingConfig signingConfigs.debug
-       }
-       release {
-           // Caution! In production, you need to generate your own keystore file.
-           // see https://reactnative.dev/docs/signed-apk-android.
-           signingConfig signingConfigs.debug
-           minifyEnabled enableProguardInReleaseBuilds
-           proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-       }
-   }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
 
-   // applicationVariants are e.g. debug, release
-   applicationVariants.all { variant ->
-       variant.outputs.each { output ->
-           // For each separate APK per architecture, set a unique version code as described here:
-           // https://developer.android.com/studio/build/configure-apk-splits.html
-           // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
-           def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-           def abi = output.getFilter(OutputFile.ABI)
-           if (abi != null) {  // null for the universal-debug, universal-release variants
-               output.versionCodeOverride =
-                       defaultConfig.versionCode * 1000 + versionCodes.get(abi)
-           }
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+            // https://developer.android.com/studio/build/configure-apk-splits.html
+            // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride =
+                        defaultConfig.versionCode * 1000 + versionCodes.get(abi)
+            }
 
-       }
-   }
+        }
+    }
 }
 
 dependencies {
@@ -265,32 +263,23 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    // For React native video
-    implementation "androidx.appcompat:appcompat:1.0.0"
-    // For animated GIF support
-    implementation 'com.facebook.fresco:animated-gif:2.6.0'
-
-    // For WebP support, including animated WebP
-    implementation 'com.facebook.fresco:animated-webp:2.6.0'
-    implementation 'com.facebook.fresco:webpsupport:2.6.0'
-
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group: 'com.facebook.fbjni'
+        exclude group:'com.facebook.fbjni'
     }
 
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group: 'com.facebook.flipper'
-        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+        exclude group:'com.facebook.flipper'
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group: 'com.facebook.flipper'
+        exclude group:'com.facebook.flipper'
     }
 
     if (enableHermes) {
         //noinspection GradleDynamicVersion
         implementation("com.facebook.react:hermes-engine:+") { // From node_modules
-            exclude group: 'com.facebook.fbjni'
+            exclude group:'com.facebook.fbjni'
         }
     } else {
         implementation jscFlavor
