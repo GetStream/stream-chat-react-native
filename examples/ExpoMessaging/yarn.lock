@@ -3517,13 +3517,6 @@ expo-asset@~8.4.6:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
-expo-av@^11.2.3:
-  version "11.2.3"
-  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-11.2.3.tgz#254242dae76e3cd60ef9d9c33618e4a12d37aa33"
-  integrity sha512-ptTe96s33Ct0eOsOmNTvtaWFx4B0SDkQmDfPbiuX/C2afqbLQf8geEopw7BRO8ZZl7Qe3qBMH6YLHXKTkZkTyQ==
-  dependencies:
-    "@expo/config-plugins" "^4.0.14"
-
 expo-av@~10.2.0:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-10.2.1.tgz#c08bce464d673d0e90c68cac082bfb75a9437f25"
@@ -6702,6 +6695,21 @@ stream-chat@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.2.0.tgz#9d01c2926cc7a0270b187c90e24bf52739d14e16"
   integrity sha512-s6BkkU0IJJyaPDNGc3V8d3WF/ZnM6bgFNdEpHGkwS9oX8+caxvhmKSpEY6l5srq4+O61trUHF3yyij8CLno7ew==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "^8.5.6"
+    "@types/ws" "^7.4.0"
+    axios "^0.22.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
+stream-chat@6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.7.0.tgz#1add1e612f0009f9e7a69d35f2a2fae1296d85ef"
+  integrity sha512-usH/kh0ZjbjOP8TTlsbXS53UZRUmwP0r1dOYf0jrQg3HPfwG51iTkrXGNlzPF9ueNXkPB8ObSm7bcdVRoo+4bg==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"

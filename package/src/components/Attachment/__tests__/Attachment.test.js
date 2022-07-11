@@ -11,8 +11,10 @@ import {
   generateAudioAttachment,
   generateFileAttachment,
   generateImageAttachment,
+  generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import * as NativeUtils from '../../../native';
 
 import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
 import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
@@ -40,6 +42,16 @@ const getActionComponent = (props) => (
 describe('Attachment', () => {
   it('should render File component for "audio" type attachment', async () => {
     const attachment = generateAudioAttachment();
+    const { getByTestId } = render(getAttachmentComponent({ attachment }));
+
+    await waitFor(() => {
+      expect(getByTestId('file-attachment')).toBeTruthy();
+    });
+  });
+
+  it('should render File component for "video" type attachment', async () => {
+    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => false));
+    const attachment = generateVideoAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {

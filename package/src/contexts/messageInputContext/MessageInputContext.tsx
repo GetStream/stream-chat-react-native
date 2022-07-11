@@ -66,6 +66,7 @@ export type FileUpload = {
   duration?: number;
   paused?: boolean;
   progress?: number;
+  thumb_url?: string;
   url?: string;
 };
 
@@ -720,6 +721,7 @@ export const MessageInputProvider = <
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
+            thumb_url: file.thumb_url,
             title: file.file.name,
             type: 'video',
           } as Attachment<StreamChatGenerics>);
@@ -907,9 +909,6 @@ export const MessageInputProvider = <
   };
 
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
-    if (!newFile) {
-      return;
-    }
     const { file, id } = newFile;
 
     setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
@@ -921,7 +920,7 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-      const extraData: Partial<FileUpload> = { url: response.file };
+      const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);
