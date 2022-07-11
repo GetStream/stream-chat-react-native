@@ -19,7 +19,7 @@ const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
-type Props = {
+export type AnimatedGalleryVideoType = {
   handleEnd: () => void;
   handleLoad: (payload: VideoPayloadData) => void;
   handleProgress: (data: VideoProgressData) => void;
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
+export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.memo(
   (props) => {
     const [opacity, setOpacity] = useState<number>(1);
     const {

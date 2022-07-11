@@ -2,22 +2,13 @@ import React from 'react';
 
 import type { SharedValue } from 'react-native-reanimated';
 
+import { act } from 'react-test-renderer';
+
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Chat } from '../../../components/Chat/Chat';
-import {
-  ImageGalleryContext,
-  ImageGalleryContextValue,
-} from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
-import { generateVideoAttachment } from '../../../mock-builders/generator/attachment';
-import { generateMessage } from '../../../mock-builders/generator/message';
-import { getTestClientWithUser } from '../../../mock-builders/mock';
-import type { DefaultStreamChatGenerics } from '../../../types/types';
-import type { MessageType } from '../../MessageList/hooks/useMessageList';
-import { ImageGallery } from '../ImageGallery';
-import { AnimatedGalleryVideo } from '../components/AnimatedGalleryVideo';
-import { act } from 'react-test-renderer';
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
+import { AnimatedGalleryVideo, AnimatedGalleryVideoType } from '../components/AnimatedGalleryVideo';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
@@ -30,68 +21,57 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-describe('ImageGallery', () => {
-  it('render image gallery component with video rendered', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+const getComponent = (props: Partial<AnimatedGalleryVideoType>) => (
+  <ThemeProvider theme={defaultTheme}>
+    <AnimatedGalleryVideo {...(props as unknown as AnimatedGalleryVideoType)} />
+  </ThemeProvider>
+);
 
+describe('ImageGallery', () => {
+  it('render image gallery component with video rendered', () => {
     const { queryAllByA11yLabel } = render(
-      <OverlayProvider>
-        <ImageGalleryContext.Provider
-          value={
-            {
-              images: [
-                generateMessage({
-                  attachments: [generateVideoAttachment({ type: 'video' })],
-                }),
-              ] as unknown as MessageType<DefaultStreamChatGenerics>[],
-            } as unknown as ImageGalleryContextValue
-          }
-        >
-          <Chat client={chatClient}>
-            <ImageGallery overlayOpacity={{ value: 1 } as SharedValue<number>} />
-          </Chat>
-        </ImageGalleryContext.Provider>
-      </OverlayProvider>,
+      getComponent({
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
     expect(queryAllByA11yLabel('image-gallery-video')).toHaveLength(1);
   });
 
-  it('render empty view when shouldRender is false', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-
+  it('render empty view when shouldRender is false', () => {
     const { getByA11yLabel } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={false}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: false,
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     expect(getByA11yLabel('empty-view-image-gallery')).not.toBeUndefined();
   });
 
-  it('trigger onEnd and onProgress events handlers of Video component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+  it('trigger onEnd and onProgress events handlers of Video component', () => {
     const handleEndMock = jest.fn();
     const handleProgressMock = jest.fn();
 
     const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          handleEnd={handleEndMock}
-          handleProgress={handleProgressMock}
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={true}
-          source={{
-            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          }}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        handleEnd: handleEndMock,
+        handleProgress: handleProgressMock,
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     const videoComponent = getByTestId('video-player');
@@ -105,21 +85,17 @@ describe('ImageGallery', () => {
     expect(handleProgressMock).toHaveBeenCalled();
   });
 
-  it('trigger onLoadStart event handler of Video component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-
+  it('trigger onLoadStart event handler of Video component', () => {
     const { getByTestId, queryByA11yLabel } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={true}
-          source={{
-            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          }}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     const videoComponent = getByTestId('video-player');
@@ -131,23 +107,20 @@ describe('ImageGallery', () => {
     expect(spinnerComponent?.props.style.opacity).toBe(1);
   });
 
-  it('trigger onLoad event handler of Video component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+  it('trigger onLoad event handler of Video component', () => {
     const handleLoadMock = jest.fn();
 
     const { getByTestId, queryByA11yLabel } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          handleLoad={handleLoadMock}
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={true}
-          source={{
-            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          }}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        handleLoad: handleLoadMock,
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     const videoComponent = getByTestId('video-player');
@@ -161,21 +134,17 @@ describe('ImageGallery', () => {
     expect(spinnerComponent?.props.style.opacity).toBe(0);
   });
 
-  it('trigger onBuffer event handler of Video component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
-
+  it('trigger onBuffer event handler of Video component', () => {
     const { getByTestId, queryByA11yLabel } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={true}
-          source={{
-            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          }}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     const videoComponent = getByTestId('video-player');
@@ -198,28 +167,25 @@ describe('ImageGallery', () => {
     expect(spinnerComponent?.props.style.opacity).toBe(1);
   });
 
-  it('trigger onPlaybackStatusUpdate event handler of Video component', async () => {
-    const chatClient = await getTestClientWithUser({ id: 'testID' });
+  it('trigger onPlaybackStatusUpdate event handler of Video component', () => {
     jest.spyOn(console, 'error');
     const handleLoadMock = jest.fn();
     const handleProgressMock = jest.fn();
     const handleEndMock = jest.fn();
 
     const { getByTestId, queryByA11yLabel } = render(
-      <Chat client={chatClient}>
-        <AnimatedGalleryVideo
-          handleEnd={handleEndMock}
-          handleLoad={handleLoadMock}
-          handleProgress={handleProgressMock}
-          offsetScale={{ value: 1 } as SharedValue<number>}
-          scale={{ value: 1 } as SharedValue<number>}
-          shouldRender={true}
-          source={{
-            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          }}
-          translateX={{ value: 1 } as SharedValue<number>}
-        />
-      </Chat>,
+      getComponent({
+        handleEnd: handleEndMock,
+        handleLoad: handleLoadMock,
+        handleProgress: handleProgressMock,
+        offsetScale: { value: 1 } as SharedValue<number>,
+        scale: { value: 1 } as SharedValue<number>,
+        shouldRender: true,
+        source: {
+          uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        },
+        translateX: { value: 1 } as SharedValue<number>,
+      }),
     );
 
     const videoComponent = getByTestId('video-player');
