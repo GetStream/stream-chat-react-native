@@ -9,7 +9,6 @@ import duration from 'dayjs/plugin/duration';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
-import * as NativeUtils from '../../../native';
 import type { ImageGalleryFooterVideoControlProps } from '../components/ImageGalleryFooter';
 import { ImageGalleryVideoControl } from '../components/ImageGalleryVideoControl';
 
