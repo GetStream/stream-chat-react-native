@@ -1,17 +1,26 @@
 import React from 'react';
 
-import { render, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react-native';
 
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
-import { generateImageAttachment } from '../../../mock-builders/generator/attachment';
+import {
+  generateImageAttachment,
+  generateVideoAttachment,
+} from '../../../mock-builders/generator/attachment';
 import { generateChannelResponse } from '../../../mock-builders/generator/channel';
 import { generateMember } from '../../../mock-builders/generator/member';
 import { generateMessage } from '../../../mock-builders/generator/message';
 import { generateUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
+import * as NativeUtils from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { MessageList } from '../../MessageList/MessageList';
@@ -67,6 +76,24 @@ describe('Gallery', () => {
 
       expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
       expect(queryAllByTestId('gallery-row-0-item-1').length).toBe(1);
+    });
+  });
+
+  it('should render one image and one video attachment', async () => {
+    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => true));
+    const attachment1 = generateImageAttachment({
+      original_height: 600,
+      original_width: 400,
+    });
+    const attachment2 = generateVideoAttachment();
+    const component = await getComponent([attachment1, attachment2]);
+    const { getAllByA11yLabel, queryAllByTestId } = render(component);
+
+    await waitFor(() => {
+      expect(queryAllByTestId('gallery-row-0').length).toBe(1);
+
+      expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
+      expect(getAllByA11yLabel('video-thumbnail').length).toBe(1);
     });
   });
 
@@ -229,5 +256,35 @@ describe('Gallery', () => {
       expect(queryAllByTestId('gallery-column-1-item-0').length).toBe(1);
       expect(queryAllByTestId('gallery-column-1-item-1').length).toBe(1);
     });
+  });
+
+  it('should render an error indicator', async () => {
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1]);
+    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+
+    fireEvent(getByA11yLabel('gallery-image'), 'error');
+    expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
+  });
+
+  it('should render a loading indicator and when successful render the image', async () => {
+    const image1 = generateImageAttachment({
+      original_height: 300,
+      original_width: 600,
+    });
+
+    const component = await getComponent([image1]);
+    const { getByA11yLabel, getByAccessibilityHint } = render(component);
+
+    fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
+    expect(getByAccessibilityHint('image-loading')).toBeTruthy();
+
+    fireEvent(getByA11yLabel('gallery-image'), 'onLoadFinish');
+    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
+    expect(getByA11yLabel('gallery-image')).toBeTruthy();
   });
 });
