@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.8.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.4...sampleapp@v1.8.0) (2022-07-11)
+
+
+### Features
+
+* replace static video thumbnails with actual thumbnails ([12caa9d](https://github.com/GetStream/stream-chat-react-native/commit/12caa9da9d260e68f75c8c2f7b0fbd023a20620a))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.7.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.3...sampleapp@v1.7.4) (2022-06-29)
 
 
