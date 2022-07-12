@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { I18nManager, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import dayjs from 'dayjs';
@@ -87,6 +87,7 @@ export type AudioAttachmentUploadPreviewPropsWithContext<
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, status?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
+  testID: string;
 };
 
 const AudioAttachmentUploadPreviewWithContext = <
@@ -94,7 +95,7 @@ const AudioAttachmentUploadPreviewWithContext = <
 >(
   props: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
-  const soundRef = useRef<SoundReturnType | null>(null);
+  const soundRef = React.useRef<SoundReturnType | null>(null);
   const { fileUploads, index, item, onLoad, onPlayPause, onProgress } = props;
 
   const handleLoad = (payload: VideoPayloadData) => {
@@ -253,6 +254,7 @@ const AudioAttachmentUploadPreviewWithContext = <
     >
       <View style={[styles.fileContentContainer, fileContentContainer]}>
         <TouchableOpacity
+          accessibilityLabel='play-pause'
           onPress={() => handlePlayPause()}
           style={[
             styles.roundedView,
@@ -268,6 +270,7 @@ const AudioAttachmentUploadPreviewWithContext = <
         </TouchableOpacity>
         <View style={[styles.fileTextContainer, fileTextContainer]}>
           <Text
+            accessibilityLabel='file-name'
             numberOfLines={1}
             style={[
               styles.filenameText,
@@ -300,6 +303,7 @@ const AudioAttachmentUploadPreviewWithContext = <
                 onProgress={handleProgress}
                 paused={item.paused as boolean}
                 soundRef={soundRef}
+                testID='sound-player'
                 uri={item.file.uri}
               />
             )}
@@ -331,6 +335,7 @@ export type AudioAttachmentUploadPreviewProps<
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, status?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
+  testID: string;
 };
 
 /**

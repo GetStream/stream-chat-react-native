@@ -128,6 +128,7 @@ export type SoundOptions = {
 
 export type SoundReturnType = {
   paused: boolean;
+  testID: string;
   getDuration?: () => number;
   isPlaying?: () => boolean;
   onBuffer?: (props: { isBuffering: boolean }) => void;

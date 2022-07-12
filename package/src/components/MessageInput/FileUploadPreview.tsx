@@ -236,6 +236,7 @@ const FileUploadPreviewWithContext = <
                 onLoad={onLoad}
                 onPlayPause={onPlayPause}
                 onProgress={onProgress}
+                testID='audio-attachment-upload-preview'
               />
             </View>
           ) : (
