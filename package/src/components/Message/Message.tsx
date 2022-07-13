@@ -42,7 +42,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { useTranslatedMessage } from '../../hooks/useTranslatedMessage';
 import { isVideoPackageAvailable, triggerHaptic } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { emojiRegex, MessageStatusTypes } from '../../utils/utils';
@@ -500,7 +499,7 @@ const MessageWithContext = <
     updateMessage,
   });
 
-  const translatedMessage = useTranslatedMessage(message) as MessageType<StreamChatGenerics>;
+  const { userLanguage } = useTranslationContext();
 
   const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
@@ -540,7 +539,7 @@ const MessageWithContext = <
       groupStyles,
       handleReaction: ownCapabilities.sendReaction ? handleReaction : undefined,
       images: attachments.images,
-      message: translatedMessage,
+      message,
       messageActions: messageActions?.filter(Boolean) as MessageActionListItemProps[] | undefined,
       messageContext: { ...messageContext, disabled: true, preventPress: true },
       messageReactionTitle: !error && messageReactions ? t('Message Reactions') : undefined,
@@ -551,6 +550,7 @@ const MessageWithContext = <
       ownCapabilities,
       supportedReactions,
       threadList,
+      userLanguage,
       videos: attachments.videos,
     });
 

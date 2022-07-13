@@ -1,6 +1,7 @@
 import type { FormatMessageResponse, MessageResponse, TranslationLanguages } from 'stream-chat';
 
 import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
+import { useMessageOverlayContext } from '../contexts/messageOverlayContext/MessageOverlayContext';
 import type { DefaultStreamChatGenerics } from '../types/types';
 
 type TranslationKey = `${TranslationLanguages}_text`;
@@ -10,7 +11,11 @@ export const useTranslatedMessage = <
 >(
   message: MessageResponse<StreamChatGenerics> | FormatMessageResponse<StreamChatGenerics>,
 ) => {
-  const { userLanguage } = useTranslationContext();
+  const { userLanguage: translationContextUserLanguage } = useTranslationContext();
+  const messageOverlayContextValue = useMessageOverlayContext<StreamChatGenerics>();
+
+  const userLanguage =
+    messageOverlayContextValue.data?.userLanguage || translationContextUserLanguage;
 
   const translationKey: TranslationKey = `${userLanguage}_text`;
 

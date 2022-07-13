@@ -10,6 +10,10 @@ import {
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
 import { useTranslatedMessage } from '../useTranslatedMessage';
+import {
+  MessageOverlayProvider,
+  MessageOverlayContextValue,
+} from '../../contexts/messageOverlayContext/MessageOverlayContext';
 
 type TestComponentProps = {
   message: MessageResponse;
@@ -68,6 +72,35 @@ describe('useTranslatedMessage', () => {
 
     await waitFor(() => {
       expect(getByText('Hello world!')).toBeTruthy();
+    });
+  });
+
+  it('uses userLanguage from messageOverlayData if it is set', async () => {
+    const message = {
+      i18n: {
+        no_text: 'Hallo verden!',
+        nl_text: 'Hallo wereld!',
+      },
+      text: 'Hello world!',
+    } as MessageResponse;
+
+    /**
+     * The reason for the as unknown as MessageOverlayContextValue is that the provider
+     * uses useResettableState, wrapping the input to fit in the data structure.
+     *
+     * In practice, the userLanguage will be set with the setData call and not directly
+     * in the provider.
+     * */
+    const { getByText } = render(
+      <MessageOverlayProvider
+        value={{ userLanguage: 'nl' } as unknown as MessageOverlayContextValue}
+      >
+        <TestComponent message={message} />
+      </MessageOverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Hallo wereld!')).toBeTruthy();
     });
   });
 });
