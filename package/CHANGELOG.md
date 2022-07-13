@@ -1,5 +1,18 @@
 # Change Log
 
+## [4.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.9.0...v4.10.0) (2022-07-13)
+
+
+### Features
+
+* support automatically translated messages ([#1526](https://github.com/GetStream/stream-chat-react-native/issues/1526)) ([b50ed73](https://github.com/GetStream/stream-chat-react-native/commit/b50ed73904c72748b3ad2306c91742574f6da010))
+
+
+### Bug Fixes
+
+* image and giphy sharing issue ([5d7cf30](https://github.com/GetStream/stream-chat-react-native/commit/5d7cf303df4a092e6e2a0d6cc8d4a50d12633cc9))
+* update bottom sheet lib to avoid race condition ([#1553](https://github.com/GetStream/stream-chat-react-native/issues/1553)) ([8e4b2a4](https://github.com/GetStream/stream-chat-react-native/commit/8e4b2a46e8e304d54b0d28c116ce399259dfef5f))
+
 ## [4.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.8.0...v4.9.0) (2022-07-11)
 
 
