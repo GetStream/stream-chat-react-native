@@ -669,10 +669,14 @@ export const MessageInputProvider = <
         }
       }
 
+      // To get the mime type of the image from the file name and send it as an response for an image
+      const mime_type: string | boolean = lookup(image.file.filename as string);
+
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          mime_type,
           original_height: image.height,
           original_width: image.width,
           type: 'image',
@@ -689,11 +693,14 @@ export const MessageInputProvider = <
         sending.current = false;
         return;
       }
+      const mime_type: string | boolean = lookup(file.file.name as string);
+
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
         if (file.file.type?.startsWith('image/')) {
           attachments.push({
             fallback: file.file.name,
             image_url: file.url,
+            mime_type,
             type: 'image',
           } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('audio/')) {

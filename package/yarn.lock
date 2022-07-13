@@ -1360,22 +1360,22 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@gorhom/bottom-sheet@4.1.5":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.1.5.tgz#35341d45799de28082c380db6639537b04fa0b26"
-  integrity sha512-3F5P8jK3NXwT2lGwkAdkdLwDVHaRvMZalUTXjK6Ogf0Tki6idffJ3TNlQZlg8k6+OnXAx0+i80f4XaI+J4GFrA==
+"@gorhom/bottom-sheet@^4.1.6":
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.4.2.tgz#16e4a1271574c13c0b6ab970256767262c1cd35f"
+  integrity sha512-KpHWP/DYMGk3T+i6NshrPWpe9M/WzBlNk34Hadvw9+7MZPOkKJVDYcmuSfUzCG2kRNaPnGGbJJFO8dhwtOYbig==
   dependencies:
-    "@gorhom/portal" "^1.0.11"
+    "@gorhom/portal" "1.0.13"
     invariant "^2.2.4"
-    nanoid "^3.1.20"
+    nanoid "^3.3.3"
     react-native-redash "^16.1.1"
 
-"@gorhom/portal@^1.0.11":
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.12.tgz#1c0deabb3f9057c736352a88bae9ca891a100346"
-  integrity sha512-JOYe85RUwiksgdMbhLWDCLpH3kgFFz+LCu1lnxOMMBQSfAKtL5kkTKVrhtmQ3Lq3lJM2paGnLc4wJrlVuaC5Jw==
+"@gorhom/portal@1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@gorhom/portal/-/portal-1.0.13.tgz#da3af4d427e1fa68d264107de4b3072a4adf35ce"
+  integrity sha512-ViClKPkyGnj8HVMW45OGQSnGbWBVh8i3tgMOkGqpm6Cv0WVcDfUL7SER6zyGQy8Wdoj3GUDpAJFMqVOxpmRpzw==
   dependencies:
-    nanoid "^3.1.23"
+    nanoid "^3.3.1"
 
 "@hapi/hoek@^9.0.0":
   version "9.2.1"
@@ -7475,10 +7475,10 @@ nan@^2.12.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
   integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
 
-nanoid@^3.1.20, nanoid@^3.1.23:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.1.tgz#6347a18cac88af88f58af0b3594b723d5e99bb35"
-  integrity sha512-n6Vs/3KGyxPQd6uO0eH4Bv0ojGSUvuLlIHtC3Y0kEO23YRge8H9x1GCzLn28YX0H66pMkxuaeESFq4tKISKwdw==
+nanoid@^3.3.1, nanoid@^3.3.3:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
+  integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -10090,15 +10090,15 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@8.3.2, uuid@^8.3.0:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
-
 uuid@^3.3.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+uuid@^8.3.0, uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"

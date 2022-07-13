@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, TranslationLanguages } from 'stream-chat';
 
 import { useResettableState } from './hooks/useResettableState';
 
@@ -43,6 +43,7 @@ export type MessageOverlayData<
   ownCapabilities?: OwnCapabilitiesContextValue;
   supportedReactions?: ReactionData[];
   threadList?: boolean;
+  userLanguage?: TranslationLanguages;
   videos?: Attachment<StreamChatGenerics>[];
 };
 

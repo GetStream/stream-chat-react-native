@@ -69,7 +69,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
-    "@gorhom/bottom-sheet": "4.1.5",
+    "@gorhom/bottom-sheet": "^4.1.6",
     "dayjs": "1.10.5",
     "file-loader": "6.2.0",
     "i18next": "20.2.4",
@@ -143,7 +143,7 @@
     "react-native-web": "0.15.0",
     "react-test-renderer": "17.0.2",
     "typescript": "4.4.3",
-    "uuid": "8.3.2",
+    "uuid": "^8.3.2",
     "webpack": "4.44.2"
   }
 }
