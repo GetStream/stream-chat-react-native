@@ -207,7 +207,10 @@ const getLatestMessagePreview = <
       status: MessageReadStatus.NOT_SENT_BY_CURRENT_USER,
     };
   }
-  const message = lastMessage || messages.length ? messages[messages.length - 1] : undefined;
+
+  const channelStateLastMessage = messages.length ? messages[messages.length - 1] : undefined;
+
+  const message = lastMessage !== undefined ? lastMessage : channelStateLastMessage;
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
