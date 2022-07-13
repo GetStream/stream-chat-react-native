@@ -6,14 +6,14 @@ import { render, waitFor } from '@testing-library/react-native';
 import type { MessageResponse } from 'stream-chat';
 
 import {
+  MessageOverlayContextValue,
+  MessageOverlayProvider,
+} from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
 import { useTranslatedMessage } from '../useTranslatedMessage';
-import {
-  MessageOverlayProvider,
-  MessageOverlayContextValue,
-} from '../../contexts/messageOverlayContext/MessageOverlayContext';
 
 type TestComponentProps = {
   message: MessageResponse;
@@ -78,8 +78,8 @@ describe('useTranslatedMessage', () => {
   it('uses userLanguage from messageOverlayData if it is set', async () => {
     const message = {
       i18n: {
-        no_text: 'Hallo verden!',
         nl_text: 'Hallo wereld!',
+        no_text: 'Hallo verden!',
       },
       text: 'Hello world!',
     } as MessageResponse;

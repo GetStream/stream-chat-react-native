@@ -1,7 +1,7 @@
 import type { FormatMessageResponse, MessageResponse, TranslationLanguages } from 'stream-chat';
 
-import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
 import { useMessageOverlayContext } from '../contexts/messageOverlayContext/MessageOverlayContext';
+import { useTranslationContext } from '../contexts/translationContext/TranslationContext';
 import type { DefaultStreamChatGenerics } from '../types/types';
 
 type TranslationKey = `${TranslationLanguages}_text`;
