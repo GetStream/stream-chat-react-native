@@ -35,7 +35,7 @@
     "@react-navigation/drawer": "5.12.5",
     "@react-navigation/native": "5.9.4",
     "@react-navigation/stack": "5.14.5",
-    "@stream-io/flat-list-mvcp": "0.10.1",
+    "@stream-io/flat-list-mvcp": "0.10.2",
     "patch-package": "6.4.7",
     "react": "17.0.2",
     "react-native": "0.67.3",
