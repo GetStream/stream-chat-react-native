@@ -20,6 +20,6 @@ export const mapStorableToReaction = <
     type,
     updated_at: updatedAt,
     user: mapStorableToUser(user),
-    ...JSON.parse(extraData || '{}'),
+    ...(extraData ? JSON.parse(extraData) : {}),
   };
 };

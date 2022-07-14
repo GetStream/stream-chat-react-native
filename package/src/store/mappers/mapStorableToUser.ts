@@ -18,6 +18,6 @@ export const mapStorableToUser = <
     online: Boolean(online),
     role,
     updated_at: updatedAt,
-    ...JSON.parse(extraData || '{}'),
+    ...(extraData ? JSON.parse(extraData) : {}),
   };
 };

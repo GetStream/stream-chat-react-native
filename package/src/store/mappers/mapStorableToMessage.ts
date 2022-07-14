@@ -35,6 +35,6 @@ export const mapStorableToMessage = <
     reaction_counts: reactionCounts ? JSON.parse(reactionCounts) : {},
     updated_at: updatedAt,
     user: mapStorableToUser(user),
-    ...JSON.parse(extraData || '{}'),
+    ...(extraData ? JSON.parse(extraData) : {}),
   };
 };
