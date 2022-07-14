@@ -1,6 +1,5 @@
 import type { MessageResponse, ReactionResponse } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
@@ -9,15 +8,13 @@ import { createUpdateQuery } from '../sqlite-utils/createUpdateQuery';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
 
-export const updateReaction = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const updateReaction = ({
   flush = true,
   message,
   reaction,
 }: {
-  message: MessageResponse<StreamChatGenerics>;
-  reaction: ReactionResponse<StreamChatGenerics>;
+  message: MessageResponse;
+  reaction: ReactionResponse;
   flush?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

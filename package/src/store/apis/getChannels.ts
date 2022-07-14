@@ -19,7 +19,7 @@ export const getChannels = <
   currentUserId: string;
   filters?: ChannelFilters<StreamChatGenerics>;
   sort?: ChannelSort<StreamChatGenerics>;
-}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration' | 'pinned_messages'>[] => {
+}): Omit<ChannelAPIResponse<StreamChatGenerics>, 'duration'>[] => {
   if (!filters && !sort) {
     console.warn('Please provide the query (filters/sort) to fetch channels from DB');
     return [];
@@ -37,6 +37,7 @@ export const getChannels = <
     ...mapStorableToChannel<StreamChatGenerics>(c),
     members: cidVsMembers[c.cid],
     messages: cidVsMessages[c.cid],
+    pinned_messages: [],
     read: cidVsReads[c.cid],
   }));
 };

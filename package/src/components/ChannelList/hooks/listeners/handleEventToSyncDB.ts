@@ -9,19 +9,13 @@ import { upsertChannels } from '../../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../../store/apis/upsertMessages';
 import { upsertReads } from '../../../../store/apis/upsertReads';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
 
-export const handleEventToSyncDB = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->(
-  event: Event<StreamChatGenerics>,
-  flush?: boolean,
-) => {
+export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   const { type } = event;
 
   if (type === 'message.read') {
     if (event.user?.id && event.cid) {
-      return upsertReads<StreamChatGenerics>({
+      return upsertReads({
         cid: event.cid,
         flush,
         reads: [
@@ -37,7 +31,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'message.new') {
     if (event.message && !event.message.parent_id) {
-      return upsertMessages<StreamChatGenerics>({
+      return upsertMessages({
         flush,
         messages: [event.message],
       });
@@ -48,7 +42,7 @@ export const handleEventToSyncDB = <
     if (event.message && !event.message.parent_id) {
       // Update only if it exists, otherwise event could be related
       // to a message which is not related to existing messages with database.
-      return updateMessage<StreamChatGenerics>({
+      return updateMessage({
         flush,
         message: event.message,
       });
@@ -56,7 +50,7 @@ export const handleEventToSyncDB = <
   }
   if (type === 'reaction.updated') {
     if (event.message && event.reaction) {
-      updateMessage<StreamChatGenerics>({
+      updateMessage({
         flush,
         message: event.message,
       });
@@ -68,7 +62,7 @@ export const handleEventToSyncDB = <
       // Here we are relying on the fact message.latest_reactions always includes
       // the new reaction. So we first delete all the existing reactions and populate
       // the reactions table with message.latest_reactions
-      return updateMessage<StreamChatGenerics>({
+      return updateMessage({
         flush,
         message: event.message,
       });
@@ -122,7 +116,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'channels.queried') {
     if (event.queriedChannels) {
-      return upsertChannels<StreamChatGenerics>({
+      return upsertChannels({
         channels: event.queriedChannels?.channels,
         flush,
         isLatestMessagesSet: event.queriedChannels?.isLatestMessageSet,
@@ -170,7 +164,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'notification.message_new') {
     if (event.channel) {
-      return upsertChannelData<StreamChatGenerics>({
+      return upsertChannelData({
         channel: event.channel,
         flush,
       });

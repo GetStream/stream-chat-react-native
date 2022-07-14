@@ -176,6 +176,7 @@ const FORMATTED_MESSAGE: FormatMessageResponse<DefaultStreamChatGenerics> = {
   message: {} as unknown as MessageResponse<DefaultStreamChatGenerics>,
   pinned_at: new Date('2021-02-12T12:12:35.862282Z'),
   status: 'received',
+  type: 'regular',
   updated_at: new Date('2021-02-12T12:12:35.862282Z'),
 };
 

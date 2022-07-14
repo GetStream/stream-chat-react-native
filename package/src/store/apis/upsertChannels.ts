@@ -6,26 +6,23 @@ import { upsertMembers } from './upsertMembers';
 import { upsertMessages } from './upsertMessages';
 import { upsertReads } from './upsertReads';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
 
-export const upsertChannels = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const upsertChannels = ({
   channels,
   filters,
   flush = true,
   isLatestMessagesSet,
   sort,
 }: {
-  channels: ChannelAPIResponse<StreamChatGenerics>[];
-  filters?: ChannelFilters<StreamChatGenerics>;
+  channels: ChannelAPIResponse[];
+  filters?: ChannelFilters;
   flush?: boolean;
   isLatestMessagesSet?: boolean;
-  sort?: ChannelSort<StreamChatGenerics>;
+  sort?: ChannelSort;
 }) => {
   // Update the database only if the query is provided.
   let queries: PreparedQueries[] = [];

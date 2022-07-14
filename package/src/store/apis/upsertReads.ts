@@ -1,21 +1,18 @@
 import type { ReadResponse } from 'stream-chat';
 
-import type { DefaultStreamChatGenerics } from '../../types/types';
 import { mapReadToStorable } from '../mappers/mapReadToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
 
-export const upsertReads = <
-  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
->({
+export const upsertReads = ({
   cid,
   flush = true,
   reads,
 }: {
   cid: string;
-  reads: ReadResponse<StreamChatGenerics>[];
+  reads: ReadResponse[];
   flush?: boolean;
 }) => {
   const queries: PreparedQueries[] = [];

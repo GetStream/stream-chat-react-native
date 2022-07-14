@@ -31,9 +31,8 @@ export const createUpsertQuery = <T extends keyof Schema>(
 
   const questionMarks = Array(Object.keys(fields).length).fill('?').join(',');
   const conflictKeys = conflictCheckKeys || tables[table].primaryKey;
-  const conflictMatchersWithoutPK = fields
-    .filter((f) => !conflictKeys.includes(f))
-    // @ts-ignore
+  const conflictMatchersWithoutPK: string[] = (fields as string[])
+    .filter((f) => !(conflictKeys as string[]).includes(f))
     .map((f) => `${f}=excluded.${f}`);
 
   const conflictConstraint =
