@@ -5,11 +5,10 @@ import { waitFor } from '@testing-library/react-native';
 
 import type { DefaultStreamChatGenerics } from 'src/types/types';
 
-import type { DefaultGenerics, StreamChat } from 'stream-chat';
+import type { DefaultGenerics, MessageResponse, StreamChat } from 'stream-chat';
 
 import { ChatContext, ChatContextValue } from '../../../../contexts/chatContext/ChatContext';
 import {
-  CHANNEL,
   CHANNEL_WITH_DELETED_MESSAGES,
   CHANNEL_WITH_EMPTY_MESSAGE,
   CHANNEL_WITH_MENTIONED_USERS,
@@ -47,19 +46,11 @@ describe('useLatestMessagePreview', () => {
     </ChatContext.Provider>
   );
 
-  it('should return a channel latest message', async () => {
-    const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL, FORCE_UPDATE, LATEST_MESSAGE),
-      { wrapper: ChatProvider },
-    );
-    await waitFor(() => {
-      expect(result.current.previews).toBeTruthy();
-    });
-  });
+  it('should return a deleted message preview if the latest message is deleted', async () => {
+    const latestMessage = { type: 'deleted' } as unknown as MessageResponse;
 
-  it('should return a deleted message preview', async () => {
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_DELETED_MESSAGES, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -67,9 +58,11 @@ describe('useLatestMessagePreview', () => {
     });
   });
 
-  it('should return an "Nothing yet..." message preview', async () => {
+  it('should return an "Nothing yet..." message preview if channel has no messages', async () => {
+    const latestMessage = undefined;
+
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_NO_MESSAGES, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -77,11 +70,12 @@ describe('useLatestMessagePreview', () => {
     });
   });
 
-  it('should return latest message preview', async () => {
+  it('should use latestMessage if provided', async () => {
     const { result } = renderHook(
       () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, LATEST_MESSAGE),
       { wrapper: ChatProvider },
     );
+
     await waitFor(() => {
       expect(result.current.previews).toEqual([
         { bold: true, text: '@okechukwu: ' },
@@ -91,10 +85,13 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return a channel with an empty message preview', async () => {
+    const latestMessage = {} as unknown as MessageResponse;
+
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_EMPTY_MESSAGE, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_EMPTY_MESSAGE, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
+
     await waitFor(() => {
       expect(result.current.previews).toEqual([
         { bold: false, text: '' },
@@ -104,8 +101,16 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return a mentioned user (@Max) message preview', async () => {
+    const latestMessage = {
+      mentioned_users: [{ id: 'Max', name: 'Max' }],
+      text: 'Max',
+      user: {
+        id: 'okechukwu',
+      },
+    } as unknown as MessageResponse;
+
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_MENTIONED_USERS, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -117,8 +122,15 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return the latest command preview', async () => {
+    const latestMessage = {
+      command: 'giphy',
+      user: {
+        id: 'okechukwu',
+      },
+    } as unknown as MessageResponse;
+
     const { result } = renderHook(
-      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_COMMAND, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_COMMAND, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
     await waitFor(() => {
@@ -130,15 +142,38 @@ describe('useLatestMessagePreview', () => {
   });
 
   it('should return an attachment preview', async () => {
+    const latestMessage = {
+      attachments: ['arbitrary value'],
+      user: {
+        id: 'okechukwu',
+      },
+    } as unknown as MessageResponse;
+
     const { result } = renderHook(
-      () =>
-        useLatestMessagePreview(CHANNEL_WITH_MESSAGES_ATTACHMENTS, FORCE_UPDATE, LATEST_MESSAGE),
+      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_ATTACHMENTS, FORCE_UPDATE, latestMessage),
       { wrapper: ChatProvider },
     );
+
     await waitFor(() => {
       expect(result.current.previews).toEqual([
         { bold: true, text: '@okechukwu: ' },
         { bold: false, text: '🏙 Attachment...' },
+      ]);
+    });
+  });
+
+  it('should default to messages from the channel state if latestMessage is undefined', async () => {
+    const latestMessage = undefined;
+
+    const { result } = renderHook(
+      () => useLatestMessagePreview(CHANNEL_WITH_MESSAGES_TEXT, FORCE_UPDATE, latestMessage),
+      { wrapper: ChatProvider },
+    );
+
+    await waitFor(() => {
+      expect(result.current.previews).toEqual([
+        { bold: true, text: '@okechukwu: ' },
+        { bold: false, text: 'jkbkbiubicbi' },
       ]);
     });
   });

@@ -15,8 +15,9 @@ import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext'
 import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import {
-  TranslationContextValue,
+  DEFAULT_USER_LANGUAGE,
   TranslationProvider,
+  TranslatorFunctions,
 } from '../../contexts/translationContext/TranslationContext';
 import { useStreami18n } from '../../hooks/useStreami18n';
 import init from '../../init';
@@ -138,7 +139,7 @@ const ChatWithContext = <
   } = props;
 
   const [channel, setChannel] = useState<Channel<StreamChatGenerics>>();
-  const [translators, setTranslators] = useState<TranslationContextValue>({
+  const [translators, setTranslators] = useState<TranslatorFunctions>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
@@ -196,7 +197,9 @@ const ChatWithContext = <
 
   return (
     <ChatProvider<StreamChatGenerics> value={chatContext}>
-      <TranslationProvider value={translators}>
+      <TranslationProvider
+        value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
+      >
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
