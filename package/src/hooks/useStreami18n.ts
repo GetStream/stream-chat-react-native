@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 
 import { useIsMountedRef } from './useIsMountedRef';
 
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
+import type { TranslatorFunctions } from '../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../utils/Streami18n';
 
 export const useStreami18n = ({
   i18nInstance,
   setTranslators,
 }: {
-  setTranslators: React.Dispatch<React.SetStateAction<TranslationContextValue>>;
+  setTranslators: React.Dispatch<React.SetStateAction<TranslatorFunctions>>;
   i18nInstance?: Streami18n;
 }) => {
   const [loadingTranslators, setLoadingTranslators] = useState(true);

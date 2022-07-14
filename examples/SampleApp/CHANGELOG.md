@@ -1,5 +1,29 @@
 # Change Log
 
+### [1.8.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.8.0...sampleapp@v1.8.1) (2022-07-13)
+
+
+### Bug Fixes
+
+* update bottom sheet lib to avoid race condition ([#1553](https://github.com/GetStream/stream-chat-react-native/issues/1553)) ([8e4b2a4](https://github.com/GetStream/stream-chat-react-native/commit/8e4b2a46e8e304d54b0d28c116ce399259dfef5f))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.8.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.4...sampleapp@v1.8.0) (2022-07-11)
+
+
+### Features
+
+* replace static video thumbnails with actual thumbnails ([12caa9d](https://github.com/GetStream/stream-chat-react-native/commit/12caa9da9d260e68f75c8c2f7b0fbd023a20620a))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.7.4](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.7.3...sampleapp@v1.7.4) (2022-06-29)
 
 

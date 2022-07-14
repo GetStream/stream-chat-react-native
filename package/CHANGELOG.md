@@ -1,5 +1,33 @@
 # Change Log
 
+## [4.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.9.0...v4.10.0) (2022-07-13)
+
+
+### Features
+
+* support automatically translated messages ([#1526](https://github.com/GetStream/stream-chat-react-native/issues/1526)) ([b50ed73](https://github.com/GetStream/stream-chat-react-native/commit/b50ed73904c72748b3ad2306c91742574f6da010))
+
+
+### Bug Fixes
+
+* image and giphy sharing issue ([5d7cf30](https://github.com/GetStream/stream-chat-react-native/commit/5d7cf303df4a092e6e2a0d6cc8d4a50d12633cc9))
+* update bottom sheet lib to avoid race condition ([#1553](https://github.com/GetStream/stream-chat-react-native/issues/1553)) ([8e4b2a4](https://github.com/GetStream/stream-chat-react-native/commit/8e4b2a46e8e304d54b0d28c116ce399259dfef5f))
+
+## [4.9.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.8.0...v4.9.0) (2022-07-11)
+
+
+### Features
+
+* add loading indicator to gallery images ([0b33e2e](https://github.com/GetStream/stream-chat-react-native/commit/0b33e2ec04b2a83de7f597432c9a72f8ecdfc3d3))
+* replace static video thumbnails with actual thumbnails ([12caa9d](https://github.com/GetStream/stream-chat-react-native/commit/12caa9da9d260e68f75c8c2f7b0fbd023a20620a))
+
+
+### Bug Fixes
+
+* align placeholderText to right when when in RTL ([a072c5f](https://github.com/GetStream/stream-chat-react-native/commit/a072c5f34a1e971e90ce26ba8131b239294b4383))
+* RTL command up ([217f945](https://github.com/GetStream/stream-chat-react-native/commit/217f9452ab5435774501be2a6e5203fc36729e05))
+* rtl-blocked-file-&-image-indicator ([80a5a91](https://github.com/GetStream/stream-chat-react-native/commit/80a5a91047b272eb6e4c42170fc4376fc213316b))
+
 ## [4.8.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.7.3...v4.8.0) (2022-06-29)
 
 

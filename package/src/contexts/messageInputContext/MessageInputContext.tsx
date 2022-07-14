@@ -62,6 +62,7 @@ export type FileUpload = {
   file: File;
   id: string;
   state: FileStateValue;
+  thumb_url?: string;
   url?: string;
 };
 
@@ -668,10 +669,14 @@ export const MessageInputProvider = <
         }
       }
 
+      // To get the mime type of the image from the file name and send it as an response for an image
+      const mime_type: string | boolean = lookup(image.file.filename as string);
+
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          mime_type,
           original_height: image.height,
           original_width: image.width,
           type: 'image',
@@ -688,11 +693,14 @@ export const MessageInputProvider = <
         sending.current = false;
         return;
       }
+      const mime_type: string | boolean = lookup(file.file.name as string);
+
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
         if (file.file.type?.startsWith('image/')) {
           attachments.push({
             fallback: file.file.name,
             image_url: file.url,
+            mime_type,
             type: 'image',
           } as Attachment<StreamChatGenerics>);
         } else if (file.file.type?.startsWith('audio/')) {
@@ -710,6 +718,7 @@ export const MessageInputProvider = <
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
+            thumb_url: file.thumb_url,
             title: file.file.name,
             type: 'video',
           } as Attachment<StreamChatGenerics>);
@@ -897,9 +906,6 @@ export const MessageInputProvider = <
   };
 
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
-    if (!newFile) {
-      return;
-    }
     const { file, id } = newFile;
 
     setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
@@ -911,7 +917,7 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-      const extraData: Partial<FileUpload> = { url: response.file };
+      const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);

@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageInputContext's sendMessage exit sendMessage when edit message is not boolean image upload status is uploaded successfully 1`] = `
+Object {
+  "attachments": Array [
+    Object {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": false,
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+  ],
+  "created_at": "Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)",
+  "html": "<p>regular</p>",
+  "id": "7a85f744-cc89-4f82-a1d4-5456432cc8bf",
+  "mentioned_users": Array [
+    "dummy1",
+    "dummy2",
+  ],
+  "quoted_message": undefined,
+  "text": "",
+  "type": "regular",
+  "updated_at": "Sat Jul 02 2022 23:55:13 GMT+0530 (India Standard Time)",
+  "user": Object {
+    "banned": false,
+    "created_at": "2020-04-27T13:39:49.331742Z",
+    "id": "5d6f6322-567e-4e1e-af90-97ef1ed5cc23",
+    "image": "fc86ddcb-bac4-400c-9afd-b0c0a1c0cd33",
+    "name": "50cbdd0e-ca7e-4478-9e2c-be0f1ac6a995",
+    "online": false,
+    "role": "user",
+    "updated_at": "2020-04-27T13:39:49.332087Z",
+  },
+}
+`;
+
+exports[`MessageInputContext's sendMessage exit sendMessage when file upload status is uploaded successfully 1`] = `
+Object {
+  "attachments": Array [
+    Object {
+      "asset_url": undefined,
+      "file_size": undefined,
+      "mime_type": "file",
+      "title": "dummy.pdf",
+      "type": "file",
+    },
+    Object {
+      "asset_url": undefined,
+      "duration": undefined,
+      "file_size": undefined,
+      "mime_type": "video/mp4",
+      "thumb_url": undefined,
+      "title": "dummy.pdf",
+      "type": "video",
+    },
+    Object {
+      "asset_url": undefined,
+      "duration": undefined,
+      "file_size": undefined,
+      "mime_type": "audio/mp3",
+      "title": "dummy.pdf",
+      "type": "audio",
+    },
+    Object {
+      "fallback": "dummy.pdf",
+      "image_url": undefined,
+      "mime_type": "application/pdf",
+      "type": "image",
+    },
+  ],
+  "mentioned_users": Array [
+    "dummy1",
+    "dummy2",
+  ],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;
+
+exports[`MessageInputContext's sendMessage exit sendMessage when image upload status is uploaded successfully 1`] = `
+Object {
+  "attachments": Array [
+    Object {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": false,
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+    Object {
+      "fallback": undefined,
+      "image_url": undefined,
+      "mime_type": false,
+      "original_height": undefined,
+      "original_width": undefined,
+      "type": "image",
+    },
+  ],
+  "mentioned_users": Array [
+    "dummy1",
+    "dummy2",
+  ],
+  "parent_id": undefined,
+  "quoted_message_id": undefined,
+  "show_in_channel": undefined,
+  "text": "",
+}
+`;
