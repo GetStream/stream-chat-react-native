@@ -7,7 +7,7 @@ import { upsertMessages } from './upsertMessages';
 import { upsertReads } from './upsertReads';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { mapChannelToStorable } from '../mappers/mapChannelToStorable';
+import { mapChannelDataToStorable } from '../mappers/mapChannelDataToStorable';
 import { QuickSqliteClient } from '../QuickSqliteClient';
 import { createUpsertQuery } from '../sqlite-utils/createUpsertQuery';
 import type { PreparedQueries } from '../types';
@@ -43,7 +43,7 @@ export const upsertChannels = <
   }
 
   for (const channel of channels) {
-    queries.push(createUpsertQuery('channels', mapChannelToStorable(channel)));
+    queries.push(createUpsertQuery('channels', mapChannelDataToStorable(channel.channel)));
 
     const { members, messages, read } = channel;
     queries = queries.concat(

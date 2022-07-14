@@ -4,7 +4,7 @@ import { deleteChannel } from '../../../../store/apis/deleteChannel';
 import { deleteMember } from '../../../../store/apis/deleteMember';
 import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
 import { updateMessage } from '../../../../store/apis/updateMessage';
-import { upsertChannelInfo } from '../../../../store/apis/upsertChannelInfo';
+import { upsertChannelData } from '../../../../store/apis/upsertChannelData';
 import { upsertChannels } from '../../../../store/apis/upsertChannels';
 import { upsertMembers } from '../../../../store/apis/upsertMembers';
 import { upsertMessages } from '../../../../store/apis/upsertMessages';
@@ -65,6 +65,9 @@ export const handleEventToSyncDB = <
 
   if (type === 'reaction.new' || type === 'reaction.deleted') {
     if (event.message && !event.message.parent_id) {
+      // Here we are relying on the fact message.latest_reactions always includes
+      // the new reaction. So we first delete all the existing reactions and populate
+      // the reactions table with message.latest_reactions
       return updateMessage<StreamChatGenerics>({
         flush,
         message: event.message,
@@ -74,7 +77,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'channel.updated') {
     if (event.channel) {
-      return upsertChannelInfo({
+      return upsertChannelData({
         channel: event.channel,
         flush,
       });
@@ -92,7 +95,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'channel.visible') {
     if (event.channel) {
-      return upsertChannelInfo({
+      return upsertChannelData({
         channel: event.channel,
         flush,
       });
@@ -149,7 +152,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'notification.added_to_channel') {
     if (event.channel) {
-      return upsertChannelInfo({
+      return upsertChannelData({
         channel: event.channel,
         flush,
       });
@@ -167,7 +170,7 @@ export const handleEventToSyncDB = <
 
   if (type === 'notification.message_new') {
     if (event.channel) {
-      return upsertChannelInfo<StreamChatGenerics>({
+      return upsertChannelData<StreamChatGenerics>({
         channel: event.channel,
         flush,
       });

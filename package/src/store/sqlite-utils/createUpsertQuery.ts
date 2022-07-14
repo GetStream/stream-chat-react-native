@@ -6,7 +6,14 @@ export const createUpsertQuery = <T extends keyof Schema>(
   row: Partial<TableRow<T>>,
   conflictCheckKeys?: Array<TableColumnNames<T>>,
 ) => {
-  const fields = Object.keys(row) as (keyof typeof row)[];
+  const filteredRow: typeof row = {};
+
+  for (const key in row) {
+    if (row[key] !== undefined) {
+      filteredRow[key] = row[key];
+    }
+  }
+  const fields = Object.keys(filteredRow) as (keyof typeof row)[];
 
   const questionMarks = Array(Object.keys(fields).length).fill('?').join(',');
   const conflictKeys = conflictCheckKeys || tables[table].primaryKey;
@@ -23,6 +30,6 @@ export const createUpsertQuery = <T extends keyof Schema>(
 
   return [
     `INSERT INTO ${table} (${fields.join(',')}) VALUES (${questionMarks}) ${conflictConstraint}`,
-    Object.values(row),
+    Object.values(filteredRow),
   ] as PreparedQueries;
 };

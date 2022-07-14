@@ -14,14 +14,21 @@ export const sqliteMock = {
       status: 0,
     };
   },
-  executeSql: (dbName: string, queryInput: string, params: string[]) => {
+  executeSql: (dbName: string, queryInput: string, params: any[]) => {
     const query = queryInput.trim().toLowerCase();
     const stmt = db.prepare(query);
     let result = [];
 
     if (query.indexOf('select') === 0) {
       if (params) {
-        result = stmt.all(params);
+        const modifiedParams = params.map((p) => {
+          if (typeof p == 'boolean') {
+            return Number(p);
+          } else {
+            return p;
+          }
+        });
+        result = stmt.all(modifiedParams);
       } else {
         result = stmt.all();
       }
@@ -29,7 +36,7 @@ export const sqliteMock = {
       return {
         message: '',
         rows: {
-          _arrays: result,
+          _array: result,
         },
         status: 0,
       };
@@ -62,7 +69,7 @@ export const sqliteMock = {
     return {
       message: '',
       rows: {
-        _arrays: result,
+        _array: result,
       },
       status: 0,
     };
@@ -73,7 +80,15 @@ export const sqliteMock = {
       const params = queryAndParams[1];
       const stmt = db.prepare(query);
       if (params) {
-        stmt.run(params);
+        const modifiedParams = params.map((p) => {
+          if (typeof p == 'boolean') {
+            return Number(p);
+          } else {
+            return p;
+          }
+        });
+
+        stmt.run(modifiedParams);
       } else {
         stmt.run();
       }

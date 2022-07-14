@@ -58,6 +58,7 @@ describe('useChannelUpdated', () => {
             appSettings: null,
             client: mockClient,
             connectionRecovering: false,
+            enableOfflineSupport: false,
             isOnline: true,
             mutedUsers: [],
             setActiveChannel: () => null,

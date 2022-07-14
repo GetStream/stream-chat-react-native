@@ -332,7 +332,6 @@ export const ChannelList = <
     if (offlineChannelsActive || !enableOfflineSupport) {
       return;
     }
-
     upsertCidsForQuery({
       cids: channelIds,
       filters,

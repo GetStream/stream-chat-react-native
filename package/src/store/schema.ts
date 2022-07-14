@@ -31,13 +31,28 @@ export const tables: Tables = {
   },
   channels: {
     columns: {
+      autoTranslationEnabled: 'BOOLEAN',
+      autoTranslationLanguage: 'TEXT',
       cid: 'TEXT',
+      config: 'TEXT',
+      cooldown: 'BOOLEAN',
       createdAt: 'TEXT',
       createdById: 'TEXT',
       deletedAt: 'TEXT',
+      disabled: 'BOOLEAN DEFAULT FALSE',
       extraData: 'TEXT',
+      frozen: 'BOOLEAN',
+      hidden: 'BOOLEAN',
       id: 'TEXT',
+      invites: 'TEXT',
       lastMessageAt: 'TEXT',
+      memberCount: 'INTEGER',
+      muted: 'BOOLEAN DEFAULT FALSE',
+      ownCapabilities: 'TEXT',
+      team: 'TEXT',
+      truncatedAt: 'TEXT',
+      truncatedBy: 'TEXT',
+      truncatedById: 'TEXT',
       type: 'TEXT',
       updatedAt: 'TEXT',
     },
@@ -45,16 +60,16 @@ export const tables: Tables = {
   },
   members: {
     columns: {
-      banned: 'INTEGER DEFAULT 0',
-      channelRole: 'TEXT NOT NULL',
+      banned: 'BOOLEAN DEFAULT FALSE',
+      channelRole: 'TEXT',
       cid: 'TEXT NOT NULL',
       createdAt: 'TEXT',
       inviteAcceptedAt: 'TEXT',
-      invited: 'INTEGER',
+      invited: 'BOOLEAN',
       inviteRejectedAt: 'TEXT',
-      isModerator: 'INTEGER',
+      isModerator: 'BOOLEAN',
       role: 'TEXT',
-      shadowBanned: 'INTEGER',
+      shadowBanned: 'BOOLEAN DEFAULT FALSE',
       updatedAt: 'TEXT',
       userId: 'TEXT',
     },
@@ -89,6 +104,14 @@ export const tables: Tables = {
       updatedAt: 'TEXT',
       userId: 'TEXT',
     },
+    foreignKeys: [
+      {
+        column: 'cid',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'channels',
+        referenceTableColumn: 'cid',
+      },
+    ],
     indexes: [
       {
         columns: ['cid', 'userId'],
@@ -143,7 +166,7 @@ export const tables: Tables = {
   },
   users: {
     columns: {
-      banned: 'INTEGER DEFAULT 0',
+      banned: 'BOOLEAN DEFAULT FALSE',
       createdAt: 'TEXT',
       extraData: 'TEXT',
       id: 'TEXT',
@@ -181,10 +204,25 @@ export type Schema = {
     extraData: string;
     id: string;
     type: string;
+    autoTranslationEnabled?: boolean;
+    autoTranslationLanguage?: string;
+    config?: string;
+    cooldown?: number;
     createdAt?: string;
     createdById?: string;
     deletedAt?: string;
+    disabled?: boolean;
+    frozen?: boolean;
+    hidden?: boolean;
+    invites?: string;
     lastMessageAt?: string;
+    memberCount?: number;
+    muted?: boolean;
+    ownCapabilities?: string;
+    team?: string;
+    truncatedAt?: string;
+    truncatedBy?: string;
+    truncatedById?: string;
     updatedAt?: string;
   };
   members: {
