@@ -40,6 +40,9 @@ export type ChatProps<
    * app goes to background, and reconnect when app comes to foreground.
    */
   closeConnectionOnBackground?: boolean;
+  /**
+   * Enables offline storage and loading for chat data.
+   */
   enableOfflineSupport?: boolean;
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
