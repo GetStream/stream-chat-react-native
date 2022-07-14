@@ -39,7 +39,6 @@
     "patch-package": "6.4.7",
     "react": "17.0.2",
     "react-native": "0.67.3",
-    "react-native-dev-menu": "^4.0.2",
     "react-native-document-picker": "5.0.4",
     "react-native-fs": "2.18.0",
     "react-native-gesture-handler": "2.3.1",
