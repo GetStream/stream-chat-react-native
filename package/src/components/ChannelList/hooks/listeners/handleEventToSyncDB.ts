@@ -41,15 +41,18 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   if (type === 'message.updated' || type === 'message.deleted') {
     if (event.message && !event.message.parent_id) {
       // Update only if it exists, otherwise event could be related
-      // to a message which is not related to existing messages with database.
+      // to a message which is not in database.
       return updateMessage({
         flush,
         message: event.message,
       });
     }
   }
+
   if (type === 'reaction.updated') {
     if (event.message && event.reaction) {
+      // We update the entire message to make sure we also update
+      // reaction_counts.
       updateMessage({
         flush,
         message: event.message,
@@ -69,7 +72,12 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
     }
   }
 
-  if (type === 'channel.updated') {
+  if (
+    type === 'channel.updated' ||
+    type === 'channel.visible' ||
+    type === 'notification.added_to_channel' ||
+    type === 'notification.message_new'
+  ) {
     if (event.channel) {
       return upsertChannelData({
         channel: event.channel,
@@ -78,19 +86,14 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
     }
   }
 
-  if (type === 'channel.hidden') {
+  if (
+    type === 'channel.hidden' ||
+    type === 'channel.deleted' ||
+    type === 'notification.removed_from_channel'
+  ) {
     if (event.channel) {
       return deleteChannel({
         cid: event.channel.cid,
-        flush,
-      });
-    }
-  }
-
-  if (type === 'channel.visible') {
-    if (event.channel) {
-      return upsertChannelData({
-        channel: event.channel,
         flush,
       });
     }
@@ -99,15 +102,6 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   if (type === 'channel.truncated') {
     if (event.channel) {
       return deleteMessagesForChannel({
-        cid: event.channel.cid,
-        flush,
-      });
-    }
-  }
-
-  if (type === 'channel.deleted') {
-    if (event.channel) {
-      return deleteChannel({
         cid: event.channel.cid,
         flush,
       });
@@ -140,33 +134,6 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
         cid: event.cid,
         flush,
         member: event.member,
-      });
-    }
-  }
-
-  if (type === 'notification.added_to_channel') {
-    if (event.channel) {
-      return upsertChannelData({
-        channel: event.channel,
-        flush,
-      });
-    }
-  }
-
-  if (type === 'notification.removed_from_channel') {
-    if (event.channel) {
-      return deleteChannel({
-        cid: event.channel.cid,
-        flush,
-      });
-    }
-  }
-
-  if (type === 'notification.message_new') {
-    if (event.channel) {
-      return upsertChannelData({
-        channel: event.channel,
-        flush,
       });
     }
   }
