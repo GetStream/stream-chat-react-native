@@ -252,7 +252,7 @@ export const ChannelList = <
     loadingChannels,
     loadingNextPage,
     loadNextPage,
-    offlineChannelsActive,
+    staticChannelsActive,
     refreshing,
     refreshList,
     reloadList,
@@ -329,7 +329,7 @@ export const ChannelList = <
   const channelIdsStr = channelIds.join('');
 
   useEffect(() => {
-    if (offlineChannelsActive || !enableOfflineSupport) {
+    if (staticChannelsActive || !enableOfflineSupport) {
       return;
     }
     upsertCidsForQuery({
@@ -337,7 +337,7 @@ export const ChannelList = <
       filters,
       sort,
     });
-  }, [channelIdsStr, offlineChannelsActive]);
+  }, [channelIdsStr, staticChannelsActive]);
 
   const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,

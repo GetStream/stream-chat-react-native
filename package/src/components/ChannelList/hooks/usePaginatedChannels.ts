@@ -46,7 +46,7 @@ export const usePaginatedChannels = <
   const { client } = useChatContext<StreamChatGenerics>();
 
   const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
-  const [offlineChannelsActive, setOfflineChannelsActive] = useState<boolean>(true);
+  const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(true);
   const activeChannels = useActiveChannelsRefContext();
 
   const [error, setError] = useState<Error>();
@@ -93,7 +93,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'loadChannels' && !offlineChannelsActive ? channels.length : 0,
+      offset: queryType === 'loadChannels' && !staticChannelsActive ? channels.length : 0,
       ...options,
     };
 
@@ -106,12 +106,12 @@ export const usePaginatedChannels = <
         return;
       }
       const newChannels =
-        queryType === 'loadChannels' && !offlineChannelsActive
+        queryType === 'loadChannels' && !staticChannelsActive
           ? [...channels, ...channelQueryResponse]
           : channelQueryResponse;
 
       setChannels(newChannels);
-      setOfflineChannelsActive(false);
+      setStaticChannelsActive(false);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setError(undefined);
       isQueryingRef.current = false;
@@ -205,7 +205,7 @@ export const usePaginatedChannels = <
         : activeQueryType === 'reload' && channels.length === 0,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
-    offlineChannelsActive,
+    staticChannelsActive,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
