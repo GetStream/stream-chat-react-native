@@ -32,63 +32,60 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
     }
   >
     <View
-      animatedStyle={
-        Object {
-          "value": Object {
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#000000",
+            "borderRadius": 2,
+            "height": 4,
+            "width": 4,
+          },
+          Object {
+            "marginRight": 2,
+          },
+          Object {},
+          Object {
             "opacity": -0.3333333333333333,
           },
-        }
-      }
-      collapsable={false}
-      style={
-        Object {
-          "backgroundColor": "#000000",
-          "borderRadius": 2,
-          "height": 4,
-          "marginRight": 2,
-          "opacity": -0.3333333333333333,
-          "width": 4,
-        }
+        ]
       }
     />
     <View
-      animatedStyle={
-        Object {
-          "value": Object {
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#000000",
+            "borderRadius": 2,
+            "height": 4,
+            "width": 4,
+          },
+          Object {
+            "marginHorizontal": 2,
+          },
+          Object {},
+          Object {
             "opacity": 0.3333333333333333,
           },
-        }
-      }
-      collapsable={false}
-      style={
-        Object {
-          "backgroundColor": "#000000",
-          "borderRadius": 2,
-          "height": 4,
-          "marginHorizontal": 2,
-          "opacity": 0.3333333333333333,
-          "width": 4,
-        }
+        ]
       }
     />
     <View
-      animatedStyle={
-        Object {
-          "value": Object {
+      style={
+        Array [
+          Object {
+            "backgroundColor": "#000000",
+            "borderRadius": 2,
+            "height": 4,
+            "width": 4,
+          },
+          Object {
+            "marginLeft": 2,
+          },
+          Object {},
+          Object {
             "opacity": 1,
           },
-        }
-      }
-      collapsable={false}
-      style={
-        Object {
-          "backgroundColor": "#000000",
-          "borderRadius": 2,
-          "height": 4,
-          "marginLeft": 2,
-          "opacity": 1,
-          "width": 4,
-        }
+        ]
       }
     />
   </View>
