@@ -205,10 +205,10 @@ export const usePaginatedChannels = <
         : activeQueryType === 'reload' && channels.length === 0,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
-    staticChannelsActive,
     refreshing: activeQueryType === 'refresh',
     refreshList,
     reloadList,
     setChannels,
+    staticChannelsActive,
   };
 };
