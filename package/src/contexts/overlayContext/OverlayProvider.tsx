@@ -167,9 +167,6 @@ export const OverlayProvider = <
     }
   }, [overlay]);
 
-  // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
-
   const attachmentPickerContext = {
     attachmentPickerBottomSheetHeight,
     attachmentSelectionBarHeight,
