@@ -30,13 +30,15 @@ cd ..
 sed -e 's|"version": "[^"]*"|"version": "'"$1"'"|g' -i.bak src/version.json
 rm src/version.json.bak
 
+git add package.json
 git add {expo,native}-package/package.json
 git add src/version.json
 
+git add yarn.lock
 git add expo-package/yarn.lock
 git add native-package/yarn.lock
 
-npm version "$1" --force
+npm version --no-git-tag-version "$1"
 
 npm publish --tag="$tag"
 
@@ -46,5 +48,3 @@ npm publish --tag="$tag"
 
 cd ../expo-package
 npm publish --tag="$tag"
-
-git push --follow-tags
