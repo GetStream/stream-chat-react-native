@@ -10,6 +10,7 @@ const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
 type Props = {
+  accessibilityLabel: string;
   index: number;
   offsetScale: Animated.SharedValue<number>;
   photo: { uri: string };
@@ -26,6 +27,7 @@ type Props = {
 export const AnimatedGalleryImage: React.FC<Props> = React.memo(
   (props) => {
     const {
+      accessibilityLabel,
       index,
       offsetScale,
       photo,
@@ -83,6 +85,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
 
     return (
       <Animated.Image
+        accessibilityLabel={accessibilityLabel}
         resizeMode={'contain'}
         source={{ uri: photo.uri }}
         style={[

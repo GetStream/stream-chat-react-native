@@ -165,4 +165,35 @@ describe('AudioAttachmentUploadPreviewExpo', () => {
     const textComponent = getByA11yLabel('file-name');
     expect(textComponent?.props.style[2].writingDirection).toBe('rtl');
   });
+
+  it('handle onProgressDrag event of the progress control', () => {
+    const onProgressMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
+    const setPositionAsyncMock = jest.fn();
+
+    jest.spyOn(React, 'useRef').mockReturnValue({
+      current: {
+        setPositionAsync: setPositionAsyncMock,
+      },
+    });
+
+    const { getByTestId } = render(
+      getComponent({
+        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        onProgress: onProgressMock,
+      }),
+    );
+
+    const progressControl = getByTestId('progress-control');
+
+    act(() => {
+      fireEvent(progressControl, 'onProgressDrag', {
+        currentTime: 10,
+        seekableDuration: 10,
+      });
+    });
+
+    expect(onProgressMock).toHaveBeenCalled();
+    expect(setPositionAsyncMock).toHaveBeenCalled();
+  });
 });

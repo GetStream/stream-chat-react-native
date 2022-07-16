@@ -92,6 +92,7 @@ export type ImageGalleryFooterCustomComponentProps<
 type ImageGalleryFooterPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
+  accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
   onProgressDrag: (progress: number) => void;
@@ -111,6 +112,7 @@ export const ImageGalleryFooterWithContext = <
   props: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    accessibilityLabel,
     centerElement,
     duration,
     GridIcon,
@@ -182,6 +184,7 @@ export const ImageGalleryFooterWithContext = <
 
   return (
     <Animated.View
+      accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}

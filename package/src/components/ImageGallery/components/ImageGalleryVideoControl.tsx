@@ -88,6 +88,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
           onPlayPause={onPlayPause}
           onProgressDrag={onProgressDrag}
           progress={progress}
+          testID={'progress-control'}
           width={180}
         />
         <Text

@@ -158,4 +158,58 @@ describe('AudioAttachmentUploadPreview', () => {
     expect(onPlayPauseMock).toHaveBeenCalled();
     expect(onProgressMock).toHaveBeenCalled();
   });
+
+  it('handle onProgress event of sound player', () => {
+    const onProgressMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
+
+    const { getByTestId } = render(
+      getComponent({
+        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        onProgress: onProgressMock,
+      }),
+    );
+
+    const soundPlayer = getByTestId('sound-player');
+
+    act(() => {
+      fireEvent(soundPlayer, 'onProgress', {
+        currentTime: 10,
+        seekableDuration: 10,
+      });
+    });
+
+    expect(onProgressMock).toHaveBeenCalled();
+  });
+
+  it('handle onProgressDrag event of the progress control', () => {
+    const onProgressMock = jest.fn().mockImplementation((id, duration) => ({ duration, id }));
+    const seekMock = jest.fn();
+
+    jest.spyOn(React, 'useRef').mockReturnValue({
+      current: {
+        seek: seekMock,
+      },
+    });
+
+    const { getByTestId } = render(
+      getComponent({
+        fileUploads: [generateFileUploadPreview({ type: 'audio/mp3' })],
+        item: { file: { name: 'audio.mp3' }, paused: false } as unknown as FileUpload,
+        onProgress: onProgressMock,
+      }),
+    );
+
+    const progressControl = getByTestId('progress-control');
+
+    act(() => {
+      fireEvent(progressControl, 'onProgressDrag', {
+        currentTime: 10,
+        seekableDuration: 10,
+      });
+    });
+
+    expect(onProgressMock).toHaveBeenCalled();
+    expect(seekMock).toHaveBeenCalled();
+  });
 });

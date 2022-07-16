@@ -490,6 +490,7 @@ export const ImageGallery = <
 
   const onProgressDrag = (progress: number) => {
     // React Native Video for RN CLI has seek as an API to move to a particular location in the video
+    console.log(videoRef.current);
     if (videoRef.current && videoRef.current.seek) {
       videoRef.current.seek(progress);
     }
@@ -585,6 +586,7 @@ export const ImageGallery = <
                             />
                           ) : (
                             <AnimatedGalleryImage
+                              accessibilityLabel={'image-item'}
                               index={i}
                               key={`${photo.uri}-${i}`}
                               offsetScale={offsetScale}
@@ -623,6 +625,7 @@ export const ImageGallery = <
         {...imageGalleryCustomComponents?.header}
       />
       <ImageGalleryFooter<StreamChatGenerics>
+        accessibilityLabel={'image-gallery-footer'}
         duration={duration}
         onPlayPause={handlePlayPause}
         onProgressDrag={onProgressDrag}

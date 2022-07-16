@@ -17,6 +17,7 @@ type ProgressControlProps = {
   onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   progress: number;
+  testID: string;
   width: number;
 };
 
@@ -62,7 +63,7 @@ const ProgressControlThumb = () => {
 
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {
-    const { duration, filledColor, onPlayPause, onProgressDrag, progress, width } = props;
+    const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
     const {
       theme: {
         colors: { grey_dark },
@@ -111,7 +112,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
       <View style={[styles.containerStyle, { backgroundColor: grey_dark, width }]}>
         <Animated.View style={[styles.innerStyle, animatedStyles]} />
 
-        <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
+        <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent} testID={testID}>
           <Animated.View style={[thumbStyles]}>
             <ProgressControlThumb />
           </Animated.View>

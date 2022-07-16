@@ -317,6 +317,7 @@ const AudioAttachmentUploadPreviewWithContext = <
                 onPlayPause={handlePlayPause}
                 onProgressDrag={handleProgressDrag}
                 progress={item.progress as number}
+                testID='progress-control'
                 width={110}
               />
             </View>
