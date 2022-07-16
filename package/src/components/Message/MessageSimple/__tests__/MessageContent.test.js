@@ -202,7 +202,7 @@ describe('MessageContent', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(fileAttachments).toHaveLength(3);
+      expect(fileAttachments).toHaveLength(2);
     });
   });
 
