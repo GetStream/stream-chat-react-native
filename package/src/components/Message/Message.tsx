@@ -504,6 +504,8 @@ const MessageWithContext = <
     updateMessage,
   });
 
+  const { userLanguage } = useTranslationContext();
+
   const showMessageOverlay = async (messageReactions = false, error = errorOrFailed) => {
     await dismissKeyboard();
 
@@ -553,6 +555,7 @@ const MessageWithContext = <
       ownCapabilities,
       supportedReactions,
       threadList,
+      userLanguage,
       videos: attachments.videos,
     });
 

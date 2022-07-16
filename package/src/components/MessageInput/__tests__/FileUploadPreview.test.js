@@ -26,6 +26,7 @@ function MockedFlatList(props) {
 }
 
 jest.mock('../../../native.ts', () => {
+  // eslint-disable-next-line no-undef
   const View = require('react-native/Libraries/Components/View/View');
 
   return {

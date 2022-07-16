@@ -104,7 +104,7 @@ describe('ImageGallery', () => {
     act(() => {
       fireEvent(videoComponent, 'onLoadStart');
     });
-    expect(spinnerComponent?.props.style.opacity).toBe(1);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(1);
   });
 
   it('trigger onLoad event handler of Video component', () => {
@@ -131,7 +131,7 @@ describe('ImageGallery', () => {
     });
 
     expect(handleLoadMock).toHaveBeenCalled();
-    expect(spinnerComponent?.props.style.opacity).toBe(0);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(0);
   });
 
   it('trigger onBuffer event handler of Video component', () => {
@@ -156,7 +156,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    expect(spinnerComponent?.props.style.opacity).toBe(0);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(0);
 
     act(() => {
       fireEvent(videoComponent, 'onBuffer', {
@@ -164,7 +164,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    expect(spinnerComponent?.props.style.opacity).toBe(1);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(1);
   });
 
   it('trigger onPlaybackStatusUpdate event handler of Video component', () => {
@@ -198,7 +198,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    expect(spinnerComponent?.props.style.opacity).toBe(1);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(1);
     expect(console.error).toHaveBeenCalled();
 
     act(() => {
@@ -207,7 +207,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    expect(spinnerComponent?.props.style.opacity).toBe(0);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(0);
     expect(handleLoadMock).toHaveBeenCalled();
 
     act(() => {
@@ -226,7 +226,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    expect(spinnerComponent?.props.style.opacity).toBe(1);
+    expect(spinnerComponent?.props.style[1].opacity).toBe(1);
 
     act(() => {
       fireEvent(videoComponent, 'onPlaybackStatusUpdate', {

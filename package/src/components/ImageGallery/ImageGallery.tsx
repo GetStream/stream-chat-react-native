@@ -273,21 +273,25 @@ export const ImageGallery = <
 
     const attachmentPhotos = attachmentImages.map((a) => {
       const imageUrl = getUrlOfImageAttachment(a) as string;
+      const giphyURL = a.giphy?.[giphyVersion]?.url || a.thumb_url || a.image_url;
 
       return {
         channelId: cur.cid,
         created_at: cur.created_at,
         id: `photoId-${cur.id}-${imageUrl}`,
         messageId: cur.id,
-        mime_type: a.mime_type,
+        mime_type: a.type === 'giphy' ? 'image/gif' : a.mime_type,
         original_height: a.original_height,
         original_width: a.original_width,
         type: a.type,
-        uri: getResizedImageUrl({
-          height: screenHeight,
-          url: imageUrl,
-          width: screenWidth,
-        }),
+        uri:
+          a.type === 'giphy'
+            ? giphyURL
+            : getResizedImageUrl({
+                height: screenHeight,
+                url: imageUrl,
+                width: screenWidth,
+              }),
         user: cur.user,
         user_id: cur.user_id,
       };

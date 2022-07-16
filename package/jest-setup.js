@@ -4,6 +4,7 @@ import { FlatList } from 'react-native';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
 import { registerNativeHandlers } from './src/native';
+import View from 'react-native/Libraries/Components/View/View';
 
 // eslint-disable-next-line no-underscore-dangle
 
@@ -35,7 +36,10 @@ registerNativeHandlers({
   triggerHaptic: () => null,
 });
 
-require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
+jest.mock('react-native-reanimated', () => {
+  const RNReanimatedmock = require('react-native-reanimated/mock');
+  return { ...RNReanimatedmock, runOnUI: (fn) => fn };
+});
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 jest.mock('@gorhom/bottom-sheet', () => {
