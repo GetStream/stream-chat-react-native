@@ -11,7 +11,7 @@ import Animated, {
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-type ProgressControlProps = {
+export type ProgressControlProps = {
   duration: number;
   filledColor: string;
   onPlayPause: (status?: boolean) => void;
