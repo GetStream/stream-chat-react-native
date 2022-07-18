@@ -65,7 +65,7 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
       {centerComponent ? (
         centerComponent({ closeGridView })
       ) : (
-        <Text style={[styles.text, { color: black }, handleText]}>{t('Photos')}</Text>
+        <Text style={[styles.text, { color: black }, handleText]}>{t('Photos and Videos')}</Text>
       )}
       {rightComponent ? (
         rightComponent({ closeGridView })
