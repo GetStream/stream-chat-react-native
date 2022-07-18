@@ -53,12 +53,15 @@ const styles = StyleSheet.create({
   },
   text: { fontSize: 12 },
   textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
-  videoAttachment: {
+  videoThumbnailContainerStyle: {
     borderRadius: 8,
     height: 50,
     marginLeft: 8,
     marginVertical: 8,
     width: 50,
+  },
+  videoThumbnailImageStyle: {
+    borderRadius: 10,
   },
 });
 
@@ -140,6 +143,10 @@ const ReplyWithContext = <
         markdownStyles,
         messageContainer,
         textContainer,
+        videoThumbnail: {
+          container: videoThumbnailContainerStyle,
+          image: videoThumbnailImageStyle,
+        },
       },
     },
   } = useTheme();
@@ -153,6 +160,7 @@ const ReplyWithContext = <
     !error &&
     lastAttachment &&
     messageType !== 'file' &&
+    messageType !== 'video' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
   const onlyEmojis = !lastAttachment && !!quotedMessage.text && emojiRegex.test(quotedMessage.text);
@@ -207,7 +215,11 @@ const ReplyWithContext = <
           ) : null
         ) : null}
         {messageType === 'video' && !lastAttachment.og_scrape_url ? (
-          <VideoThumbnail style={[styles.videoAttachment]} />
+          <VideoThumbnail
+            imageStyle={[styles.videoThumbnailImageStyle, videoThumbnailImageStyle]}
+            style={[styles.videoThumbnailContainerStyle, videoThumbnailContainerStyle]}
+            thumb_url={lastAttachment.thumb_url}
+          />
         ) : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
