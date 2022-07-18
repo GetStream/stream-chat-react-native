@@ -66,7 +66,7 @@ const ChannelListComponent = (props) => {
   );
 };
 
-const waitTill = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const waitTill = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 describe('Offline support is disabled', () => {
   let chatClient;
@@ -100,51 +100,56 @@ describe('Offline support is disabled', () => {
 describe('Offline support is enabled', () => {
   let chatClient;
   let channels;
- 
+
   let allUsers;
   let allMessages;
   let allMembers;
   let allReactions;
   let allReads;
-  const getRandomInt = (lower, upper) => Math.floor(lower + (Math.random() * (upper - lower + 1)));
+  const getRandomInt = (lower, upper) => Math.floor(lower + Math.random() * (upper - lower + 1));
   const createChannel = () => {
     const id = uuidv4();
     const cid = `messaging:${id}`;
     const begin = getRandomInt(0, allUsers.length - 2); // begin shouldn't be the end of users.length
     const end = getRandomInt(begin + 1, allUsers.length - 1);
     const usersForMembers = allUsers.slice(begin, end);
-    const members = usersForMembers.map(user => generateMember({
-      cid,
-      user,
-    }));
-    const messages = Array(10).fill(1).map(() => {
-      const id = uuidv4();
-      const user = usersForMembers[getRandomInt(0, usersForMembers.length - 1)];
-
-      const begin = getRandomInt(0, usersForMembers.length - 2); // begin shouldn't be the end of users.length
-      const end = getRandomInt(begin + 1, usersForMembers.length - 1);
-
-      const usersForReactions = usersForMembers.slice(begin, end);
-      const reactions = usersForReactions.map((user) => generateReaction({
-        message_id: id,
-        user
-      }));
-      allReactions.push(...reactions);
-      return generateMessage({
+    const members = usersForMembers.map((user) =>
+      generateMember({
         cid,
-        id,
-        latest_reactions: reactions,
         user,
-        userId: user.id,
-      });
-    });
+      }),
+    );
+    const messages = Array(10)
+      .fill(1)
+      .map(() => {
+        const id = uuidv4();
+        const user = usersForMembers[getRandomInt(0, usersForMembers.length - 1)];
 
-    const reads = members.map(member => ({
+        const begin = getRandomInt(0, usersForMembers.length - 2); // begin shouldn't be the end of users.length
+        const end = getRandomInt(begin + 1, usersForMembers.length - 1);
+
+        const usersForReactions = usersForMembers.slice(begin, end);
+        const reactions = usersForReactions.map((user) =>
+          generateReaction({
+            message_id: id,
+            user,
+          }),
+        );
+        allReactions.push(...reactions);
+        return generateMessage({
+          cid,
+          id,
+          latest_reactions: reactions,
+          user,
+          userId: user.id,
+        });
+      });
+
+    const reads = members.map((member) => ({
       last_read: new Date(new Date().setDate(new Date().getDate() - getRandomInt(0, 20))),
       unread_messages: getRandomInt(0, messages.length),
       user: member.user,
     }));
-
 
     allMessages.push(...messages);
     allMembers.push(...members);
@@ -165,7 +170,9 @@ describe('Offline support is enabled', () => {
     allMembers = [];
     allReactions = [];
     allReads = [];
-    channels = Array(10).fill(1).map(() => createChannel());
+    channels = Array(10)
+      .fill(1)
+      .map(() => createChannel());
 
     chatClient = await getTestClientWithUser({ id: 'dan' });
   });
@@ -196,7 +203,7 @@ describe('Offline support is enabled', () => {
   const expectCIDsOnUIToBeInDB = (queryAllByA11yRole) => {
     const channelIdsOnUI = queryAllByA11yRole('list-item').map(
       (node) => node._fiber.pendingProps.testID,
-      );
+    );
 
     const channelQueriesRows = BetterSqlite.selectFromTable('channelQueries');
     const cidsInDB = JSON.parse(channelQueriesRows[0].cids);
@@ -213,7 +220,6 @@ describe('Offline support is enabled', () => {
       expect(index).toBe(cidsInDB.indexOf(cidOnUi));
     });
   };
-
 
   const expectAllChannelsWithStateToBeInDB = (queryAllByA11yRole) => {
     const channelIdsOnUI = queryAllByA11yRole('list-item').map(
@@ -238,19 +244,28 @@ describe('Offline support is enabled', () => {
     });
 
     messagesRows.forEach((row) => {
-      expect(allMessages.filter(m => m.id === row.id)).toHaveLength(1);
+      expect(allMessages.filter((m) => m.id === row.id)).toHaveLength(1);
     });
     membersRows.forEach((row) =>
-      expect(allMembers.filter(m => m.cid === row.cid && m.user.id === row.userId)).toHaveLength(1),
+      expect(allMembers.filter((m) => m.cid === row.cid && m.user.id === row.userId)).toHaveLength(
+        1,
+      ),
     );
-    usersRows.forEach((row) =>
-      expect(allUsers.filter(u => u.id === row.id)).toHaveLength(1),
-    );
+    usersRows.forEach((row) => expect(allUsers.filter((u) => u.id === row.id)).toHaveLength(1));
     reactionsRows.forEach((row) =>
-      expect(allReactions.filter(r => r.message_id === row.messageId && row.userId === r.user_id)).toHaveLength(1),
+      expect(
+        allReactions.filter((r) => r.message_id === row.messageId && row.userId === r.user_id),
+      ).toHaveLength(1),
     );
     readsRows.forEach((row) =>
-      expect(allReads.filter(r => r.last_read === row.lastRead && r.user.id === row.userId && r.unread_messages === row.unreadMessages)).toHaveLength(1),
+      expect(
+        allReads.filter(
+          (r) =>
+            r.last_read === row.lastRead &&
+            r.user.id === row.userId &&
+            r.unread_messages === row.unreadMessages,
+        ),
+      ).toHaveLength(1),
     );
   };
 
@@ -274,7 +289,7 @@ describe('Offline support is enabled', () => {
 
     const { getByTestId, queryAllByA11yRole } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
-    
+
     expectCIDsOnUIToBeInDB(queryAllByA11yRole);
   });
 
@@ -299,7 +314,7 @@ describe('Offline support is enabled', () => {
     act(() => dispatchMessageNewEvent(chatClient, newMessage, channels[0].channel));
 
     const messagesRows = BetterSqlite.selectFromTable('messages');
-    const matchingRows = messagesRows.filter(m => m.id === newMessage.id);
+    const matchingRows = messagesRows.filter((m) => m.id === newMessage.id);
 
     expect(matchingRows.length).toBe(1);
   });
@@ -330,14 +345,14 @@ describe('Offline support is enabled', () => {
 
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
-    
-    const updatedMessage = {...channels[0].messages[0]};
+
+    const updatedMessage = { ...channels[0].messages[0] };
     updatedMessage.text = uuidv4();
 
     act(() => dispatchMessageUpdatedEvent(chatClient, updatedMessage, channels[0].channel));
 
     const messagesRows = BetterSqlite.selectFromTable('messages');
-    const matchingRows = messagesRows.filter(m => m.id === updatedMessage.id);
+    const matchingRows = messagesRows.filter((m) => m.id === updatedMessage.id);
 
     expect(matchingRows.length).toBe(1);
     expect(matchingRows[0].text).toBe(updatedMessage.text);
@@ -360,10 +375,10 @@ describe('Offline support is enabled', () => {
     expectCIDsOnUIToBeInDB(queryAllByA11yRole);
 
     const channelsRows = BetterSqlite.selectFromTable('channels');
-    const matchingRows = channelsRows.filter(c => c.id === removedChannel.id);
+    const matchingRows = channelsRows.filter((c) => c.id === removedChannel.id);
 
     const messagesRows = BetterSqlite.selectFromTable('messages');
-    const matchingMessagesRows = messagesRows.filter(m => m.cid === removedChannel.cid);
+    const matchingMessagesRows = messagesRows.filter((m) => m.cid === removedChannel.cid);
 
     expect(matchingRows.length).toBe(0);
     expect(matchingMessagesRows.length).toBe(0);
@@ -371,10 +386,10 @@ describe('Offline support is enabled', () => {
 
   it('should add the channel to DB when user is added as member', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId, queryAllByA11yRole } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
-    
+
     const newChannel = createChannel();
     useMockedApis(chatClient, [getOrCreateChannelApi(newChannel)]);
 
@@ -389,10 +404,10 @@ describe('Offline support is enabled', () => {
 
     expectCIDsOnUIToBeInDB(queryAllByA11yRole);
     const channelsRows = BetterSqlite.selectFromTable('channels');
-    const matchingChannelsRows = channelsRows.filter(c => c.id === newChannel.channel.id);
+    const matchingChannelsRows = channelsRows.filter((c) => c.id === newChannel.channel.id);
 
     const messagesRows = BetterSqlite.selectFromTable('messages');
-    const matchingMessagesRows = messagesRows.filter(m => m.cid === newChannel.channel.cid);
+    const matchingMessagesRows = messagesRows.filter((m) => m.cid === newChannel.channel.cid);
 
     expect(matchingChannelsRows.length).toBe(1);
     expect(matchingMessagesRows.length).toBe(newChannel.messages.length);
@@ -400,7 +415,7 @@ describe('Offline support is enabled', () => {
 
   it('should remove the channel messages from DB when channel is truncated', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId, queryAllByA11yRole } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
@@ -417,19 +432,20 @@ describe('Offline support is enabled', () => {
     expectCIDsOnUIToBeInDB(queryAllByA11yRole);
 
     const messagesRows = BetterSqlite.selectFromTable('messages');
-    const matchingMessagesRows = messagesRows.filter(m => m.cid === channelToTruncate.cid);
+    const matchingMessagesRows = messagesRows.filter((m) => m.cid === channelToTruncate.cid);
 
     expect(matchingMessagesRows.length).toBe(0);
   });
 
   it('should add a reaction to DB when a new reaction is added', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
-    const targetMessage = targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+    const targetMessage =
+      targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
     const reactionMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
     const newReaction = generateReaction({
@@ -439,19 +455,24 @@ describe('Offline support is enabled', () => {
     });
     const messageWithNewReaction = {
       ...targetMessage,
-      latest_reactions: [
-        ...targetMessage.latest_reactions,
-        newReaction
-      ]
+      latest_reactions: [...targetMessage.latest_reactions, newReaction],
     };
 
-    act(() => dispatchReactionNewEvent(chatClient, newReaction, messageWithNewReaction, targetChannel.channel));
+    act(() =>
+      dispatchReactionNewEvent(
+        chatClient,
+        newReaction,
+        messageWithNewReaction,
+        targetChannel.channel,
+      ),
+    );
 
     const reactionsRows = BetterSqlite.selectFromTable('reactions');
-    const matchingReactionsRows = reactionsRows.filter(r =>
-      r.type === newReaction.type
-      && r.userId === reactionMember.user.id
-      && r.messageId === messageWithNewReaction.id
+    const matchingReactionsRows = reactionsRows.filter(
+      (r) =>
+        r.type === newReaction.type &&
+        r.userId === reactionMember.user.id &&
+        r.messageId === messageWithNewReaction.id,
     );
 
     expect(matchingReactionsRows.length).toBe(1);
@@ -459,35 +480,46 @@ describe('Offline support is enabled', () => {
 
   it('should remove a reaction from DB when reaction is deleted', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
-    const targetMessage = targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+    const targetMessage =
+      targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
     const reactionsOnTargetMessage = targetMessage.latest_reactions;
-    const reactionToBeRemoved = reactionsOnTargetMessage[getRandomInt(0, reactionsOnTargetMessage.length - 1)];
+    const reactionToBeRemoved =
+      reactionsOnTargetMessage[getRandomInt(0, reactionsOnTargetMessage.length - 1)];
 
     const reactionsRows = BetterSqlite.selectFromTable('reactions');
-    const matchingReactionsRows = reactionsRows.filter(r =>
-      r.type === reactionToBeRemoved.type
-      && r.userId === reactionToBeRemoved.user_id
-      && r.messageId === targetMessage.id
+    const matchingReactionsRows = reactionsRows.filter(
+      (r) =>
+        r.type === reactionToBeRemoved.type &&
+        r.userId === reactionToBeRemoved.user_id &&
+        r.messageId === targetMessage.id,
     );
 
     expect(matchingReactionsRows.length).toBe(1);
     const messageWithoutDeletedReaction = {
       ...targetMessage,
-      latest_reactions: reactionsOnTargetMessage.filter(r => r !== reactionToBeRemoved)
+      latest_reactions: reactionsOnTargetMessage.filter((r) => r !== reactionToBeRemoved),
     };
 
-    act(() => dispatchReactionDeletedEvent(chatClient, reactionToBeRemoved, messageWithoutDeletedReaction, targetChannel.channel));
+    act(() =>
+      dispatchReactionDeletedEvent(
+        chatClient,
+        reactionToBeRemoved,
+        messageWithoutDeletedReaction,
+        targetChannel.channel,
+      ),
+    );
 
     const reactionsRowsAfterEvent = BetterSqlite.selectFromTable('reactions');
-    const matchingReactionsRowsAfterEvent = reactionsRowsAfterEvent.filter(r =>
-      r.type === reactionToBeRemoved.type
-      && r.userId === reactionToBeRemoved.user_id
-      && r.messageId === messageWithoutDeletedReaction.id
+    const matchingReactionsRowsAfterEvent = reactionsRowsAfterEvent.filter(
+      (r) =>
+        r.type === reactionToBeRemoved.type &&
+        r.userId === reactionToBeRemoved.user_id &&
+        r.messageId === messageWithoutDeletedReaction.id,
     );
 
     expect(matchingReactionsRowsAfterEvent.length).toBe(0);
@@ -495,22 +527,32 @@ describe('Offline support is enabled', () => {
 
   it('should update a reaction in DB when reaction is updated', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
-    const targetMessage = targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
+    const targetMessage =
+      targetChannel.messages[getRandomInt(0, targetChannel.messages.length - 1)];
     const reactionsOnTargetMessage = targetMessage.latest_reactions;
-    const reactionToBeUpdated = reactionsOnTargetMessage[getRandomInt(0, reactionsOnTargetMessage.length - 1)];
+    const reactionToBeUpdated =
+      reactionsOnTargetMessage[getRandomInt(0, reactionsOnTargetMessage.length - 1)];
     reactionToBeUpdated.type = 'wow';
 
-    act(() => dispatchReactionUpdatedEvent(chatClient, reactionToBeUpdated, targetMessage, targetChannel.channel));
+    act(() =>
+      dispatchReactionUpdatedEvent(
+        chatClient,
+        reactionToBeUpdated,
+        targetMessage,
+        targetChannel.channel,
+      ),
+    );
     const reactionsRows = BetterSqlite.selectFromTable('reactions');
-    const matchingReactionsRows = reactionsRows.filter(r =>
-      r.type === reactionToBeUpdated.type
-      && r.userId === reactionToBeUpdated.user_id
-      && r.messageId === targetMessage.id
+    const matchingReactionsRows = reactionsRows.filter(
+      (r) =>
+        r.type === reactionToBeUpdated.type &&
+        r.userId === reactionToBeUpdated.user_id &&
+        r.messageId === targetMessage.id,
     );
 
     expect(matchingReactionsRows.length).toBe(1);
@@ -518,18 +560,17 @@ describe('Offline support is enabled', () => {
 
   it('should add a member to DB when a new member is added to channel', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
     const newMember = generateMember();
     act(() => dispatchMemberAddedEvent(chatClient, newMember, targetChannel.channel));
-    
+
     const membersRows = BetterSqlite.selectFromTable('members');
-    const matchingMembersRows = membersRows.filter(m =>
-      m.cid === targetChannel.channel.cid
-      && m.userId === newMember.user_id
+    const matchingMembersRows = membersRows.filter(
+      (m) => m.cid === targetChannel.channel.cid && m.userId === newMember.user_id,
     );
 
     expect(matchingMembersRows.length).toBe(1);
@@ -537,18 +578,17 @@ describe('Offline support is enabled', () => {
 
   it('should remove a member from DB when a member is removed from channel', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
     const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
     act(() => dispatchMemberRemovedEvent(chatClient, targetMember, targetChannel.channel));
-    
+
     const membersRows = BetterSqlite.selectFromTable('members');
-    const matchingMembersRows = membersRows.filter(m =>
-      m.cid === targetChannel.channel.cid
-      && m.userId === targetMember.user_id
+    const matchingMembersRows = membersRows.filter(
+      (m) => m.cid === targetChannel.channel.cid && m.userId === targetMember.user_id,
     );
 
     expect(matchingMembersRows.length).toBe(0);
@@ -556,7 +596,7 @@ describe('Offline support is enabled', () => {
 
   it('should update the member in DB when a member of a channel is updated', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
@@ -564,12 +604,13 @@ describe('Offline support is enabled', () => {
     const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
     targetMember.role = 'admin';
     act(() => dispatchMemberUpdatedEvent(chatClient, targetMember, targetChannel.channel));
-    
+
     const membersRows = BetterSqlite.selectFromTable('members');
-    const matchingMembersRows = membersRows.filter(m =>
-      m.cid === targetChannel.channel.cid
-      && m.userId === targetMember.user_id
-      && m.role === targetMember.role
+    const matchingMembersRows = membersRows.filter(
+      (m) =>
+        m.cid === targetChannel.channel.cid &&
+        m.userId === targetMember.user_id &&
+        m.role === targetMember.role,
     );
 
     expect(matchingMembersRows.length).toBe(1);
@@ -578,21 +619,19 @@ describe('Offline support is enabled', () => {
 
   it('should update the channel data in DB when a channel is updated', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
 
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
     targetChannel.channel.name = uuidv4();
     act(() => dispatchChannelUpdatedEvent(chatClient, targetChannel.channel));
-    
+
     const channelsRows = BetterSqlite.selectFromTable('channels');
-    const matchingChannelsRows = channelsRows.filter(c =>
-      c.cid === targetChannel.channel.cid
-    );
+    const matchingChannelsRows = channelsRows.filter((c) => c.cid === targetChannel.channel.cid);
 
     expect(matchingChannelsRows.length).toBe(1);
-    
+
     const extraData = JSON.parse(matchingChannelsRows[0].extraData);
 
     expect(extraData.name).toBe(targetChannel.channel.name);
@@ -600,17 +639,18 @@ describe('Offline support is enabled', () => {
 
   it('should update reads in DB when channel is read', async () => {
     useMockedApis(chatClient, [queryChannelsApi(channels)]);
-    
+
     const { getByTestId } = renderComponent();
     await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
     const targetChannel = channels[getRandomInt(0, channels.length - 1)];
     const targetMember = targetChannel.members[getRandomInt(0, targetChannel.members.length - 1)];
 
-    act(() => {dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel)});
+    act(() => {
+      dispatchMessageReadEvent(chatClient, targetMember.user, targetChannel.channel);
+    });
     const readsRows = BetterSqlite.selectFromTable('reads');
-    const matchingReadRows = readsRows.filter(r =>
-      r.userId === targetMember.user_id
-      && r.cid === targetChannel.cid
+    const matchingReadRows = readsRows.filter(
+      (r) => r.userId === targetMember.user_id && r.cid === targetChannel.cid,
     );
 
     expect(matchingReadRows.length).toBe(1);

@@ -1,9 +1,8 @@
 export default (client, member, channel = {}) => {
-    client.dispatchEvent({
-      channel,
-      cid: channel.cid,
-      member,
-      type: 'member.removed',
-    });
-  };
-  
+  client.dispatchEvent({
+    channel,
+    cid: channel.cid,
+    member,
+    type: 'member.removed',
+  });
+};

@@ -252,11 +252,11 @@ export const ChannelList = <
     loadingChannels,
     loadingNextPage,
     loadNextPage,
-    staticChannelsActive,
     refreshing,
     refreshList,
     reloadList,
     setChannels,
+    staticChannelsActive,
   } = usePaginatedChannels<StreamChatGenerics>({
     enableOfflineSupport,
     filters,
