@@ -12,8 +12,10 @@ export const appendWhereClause = <T extends keyof Schema>(
 
   for (const key in whereCondition) {
     const value: unknown = whereCondition[key];
+    if (value === undefined) continue;
+
     if (Array.isArray(value)) {
-      if (!value || value.length === 0) continue;
+      if (value.length === 0) continue;
       const questionMarks = Array(Object.keys(value).length).fill('?').join(',');
       whereClause.push(`${key} in (${questionMarks})`);
       whereParams.push(...value);
