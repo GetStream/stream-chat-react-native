@@ -631,7 +631,7 @@ const MessageListWithContext = <
    * 2. Ensures that we call `loadMoreRecent`, once per content length
    * 3. If the call to `loadMore` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
-  const maybeCallOnStartReached = (limit?: number) => {
+  const maybeCallOnStartReached = async (limit?: number) => {
     // If onStartReached has already been called for given data length, then ignore.
     if (messageList?.length && onStartReachedTracker.current[messageList.length]) {
       return;
@@ -656,9 +656,8 @@ const MessageListWithContext = <
 
     // If onEndReached is in progress, better to wait for it to finish for smooth UX
     if (onEndReachedInPromise.current) {
-      onEndReachedInPromise.current.finally(() => {
-        onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
-      });
+      await onEndReachedInPromise.current;
+      onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
     } else {
       onStartReachedInPromise.current = loadMoreRecent(limit).then(callback).catch(onError);
     }
@@ -669,7 +668,7 @@ const MessageListWithContext = <
    * 2. Ensures that we call `loadMore`, once per content length
    * 3. If the call to `loadMoreRecent` is in progress, we wait for it to finish to make sure scroll doesn't jump.
    */
-  const maybeCallOnEndReached = () => {
+  const maybeCallOnEndReached = async () => {
     // If onEndReached has already been called for given messageList length, then ignore.
     if (messageList?.length && onEndReachedTracker.current[messageList.length]) {
       return;
@@ -693,11 +692,10 @@ const MessageListWithContext = <
 
     // If onStartReached is in progress, better to wait for it to finish for smooth UX
     if (onStartReachedInPromise.current) {
-      onStartReachedInPromise.current.finally(() => {
-        onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
-          .then(callback)
-          .catch(onError);
-      });
+      await onStartReachedInPromise.current;
+      onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
+        .then(callback)
+        .catch(onError);
     } else {
       onEndReachedInPromise.current = (threadList ? loadMoreThread() : loadMore())
         .then(callback)
