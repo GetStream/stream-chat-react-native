@@ -63,7 +63,7 @@ describe('ImageGallery', () => {
     expect(queryAllByA11yLabel('image-gallery-video')).toHaveLength(1);
   });
 
-  it('handle handleLoad function when video item present', () => {
+  it('handle handleLoad function when video item present and payload duration is available', () => {
     const { getByA11yLabel } = render(
       getComponent({
         images: [
@@ -86,7 +86,30 @@ describe('ImageGallery', () => {
     expect(videoDurationComponent.children[0]).toBe('00:10');
   });
 
-  it('handle handleProgress function when video item present', () => {
+  it('handle handleLoad function when video item present and payload duration is undefined', () => {
+    const { getByA11yLabel } = render(
+      getComponent({
+        images: [
+          generateMessage({
+            attachments: [generateVideoAttachment({ type: 'video' })],
+          }),
+        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+      }),
+    );
+
+    const videoItemComponent = getByA11yLabel('image-gallery-video');
+
+    act(() => {
+      fireEvent(videoItemComponent, 'handleLoad', {
+        duration: undefined,
+      });
+    });
+
+    const videoDurationComponent = getByA11yLabel('video-duration');
+    expect(videoDurationComponent.children[0]).toBe('00:00');
+  });
+
+  it('handle handleProgress function when video item present and payload is well defined', () => {
     const { getByA11yLabel } = render(
       getComponent({
         images: [
@@ -112,6 +135,34 @@ describe('ImageGallery', () => {
     const progressDurationComponent = getByA11yLabel('progress-duration');
 
     expect(progressDurationComponent.children[0]).toBe('00:03');
+  });
+
+  it('handle handleProgress function when video item present and payload is not defined', () => {
+    const { getByA11yLabel } = render(
+      getComponent({
+        images: [
+          generateMessage({
+            attachments: [generateVideoAttachment({ type: 'video' })],
+          }),
+        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+      }),
+    );
+
+    const videoItemComponent = getByA11yLabel('image-gallery-video');
+
+    act(() => {
+      fireEvent(videoItemComponent, 'handleLoad', {
+        duration: 10,
+      });
+      fireEvent(videoItemComponent, 'handleProgress', {
+        currentTime: undefined,
+        seekableDuration: undefined,
+      });
+    });
+
+    const progressDurationComponent = getByA11yLabel('progress-duration');
+
+    expect(progressDurationComponent.children[0]).toBe('00:00');
   });
 
   it('handle handleEnd function when video item present', () => {

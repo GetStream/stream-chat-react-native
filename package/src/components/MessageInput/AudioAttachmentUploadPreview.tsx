@@ -212,7 +212,7 @@ const AudioAttachmentUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, grey_dark, grey_whisper, white_snow },
+      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white },
       messageInput: {
         fileUploadPreview: {
           audioAttachmentUploadPreview: { progressControlView, progressDurationText, roundedView },
@@ -259,13 +259,13 @@ const AudioAttachmentUploadPreviewWithContext = <
           style={[
             styles.roundedView,
             roundedView,
-            { backgroundColor: white_snow, shadowColor: black },
+            { backgroundColor: static_white, shadowColor: black },
           ]}
         >
           {item.paused ? (
-            <Play height={24} pathFill={black} width={24} />
+            <Play height={24} pathFill={static_black} width={24} />
           ) : (
-            <Pause height={24} width={24} />
+            <Pause height={24} pathFill={static_black} width={24} />
           )}
         </TouchableOpacity>
         <View style={[styles.fileTextContainer, fileTextContainer]}>

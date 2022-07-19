@@ -48,15 +48,12 @@ const styles = StyleSheet.create({
 const ProgressControlThumb = () => {
   const {
     theme: {
-      colors: { black, white_snow },
+      colors: { black },
     },
   } = useTheme();
   return (
     <View
-      style={[
-        styles.progressControlThumbStyle,
-        { backgroundColor: white_snow, shadowColor: black },
-      ]}
+      style={[styles.progressControlThumbStyle, { backgroundColor: '#ffffff', shadowColor: black }]}
     />
   );
 };
