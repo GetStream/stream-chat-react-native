@@ -109,7 +109,7 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   }
 
   if (type === 'channels.queried') {
-    if (event.queriedChannels) {
+    if (event.queriedChannels?.channels?.length) {
       return upsertChannels({
         channels: event.queriedChannels?.channels,
         flush,
