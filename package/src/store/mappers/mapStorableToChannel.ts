@@ -54,7 +54,7 @@ export const mapStorableToChannel = <
       id,
       invites: invites && JSON.parse(invites),
       last_message_at: lastMessageAt,
-      memberCount,
+      member_count: memberCount,
       muted,
       own_capabilities: ownCapabilities && JSON.parse(ownCapabilities),
       team,
