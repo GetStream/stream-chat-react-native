@@ -36,6 +36,9 @@ registerNativeHandlers({
 });
 
 require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
+// eslint-disable-next-line no-underscore-dangle, no-undef
+global.__reanimatedWorkletInit = jest.fn();
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 jest.mock('@gorhom/bottom-sheet', () => {
