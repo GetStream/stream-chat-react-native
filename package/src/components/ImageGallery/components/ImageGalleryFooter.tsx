@@ -164,7 +164,7 @@ export const ImageGalleryFooterWithContext = <
   const share = async () => {
     setShareMenuOpen(true);
     try {
-      const extension = photo.mime_type?.split('/')[1] || 'jpg';
+      const extension = photo.mime_type ? photo.mime_type?.split('/')[1] : 'jpg';
       const localFile = await saveFile({
         fileName: `${photo.user?.id || 'ChatPhoto'}-${
           photo.messageId
@@ -172,7 +172,7 @@ export const ImageGalleryFooterWithContext = <
         fromUrl: photo.uri,
       });
       // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
-      await shareImage({ type: photo.mime_type ?? 'image/jpeg', url: localFile });
+      await shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
       await deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
@@ -206,7 +206,7 @@ export const ImageGalleryFooterWithContext = <
           ) : (
             <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
               <View style={[styles.leftContainer, leftContainer]}>
-                {ShareIcon ? ShareIcon : <ShareIconDefault />}
+                {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
               </View>
             </TouchableOpacity>
           )}
