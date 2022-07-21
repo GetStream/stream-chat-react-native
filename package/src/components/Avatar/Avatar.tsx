@@ -3,7 +3,7 @@ import { Image, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
@@ -69,7 +69,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
     },
   } = useTheme();
 
-  const { imageError, setImageError } = useImageErrorHandler();
+  const { isLoadingImageError, setLoadingImageError } = useLoadingImage();
 
   return (
     <View>
@@ -85,7 +85,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
           containerStyle,
         ]}
       >
-        {imageError ? (
+        {isLoadingImageError ? (
           <View
             style={{
               backgroundColor: '#ececec',
@@ -97,10 +97,9 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
         ) : (
           <Image
             accessibilityLabel={testID || 'avatar-image'}
-            onError={() => setImageError(true)}
+            onError={() => setLoadingImageError(true)}
             source={{
               uri:
-                imageError ||
                 !imageProp ||
                 imageProp.includes(randomImageBaseUrl) ||
                 imageProp.includes(randomSvgBaseUrl)

@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useImageErrorHandler } from '../../hooks/useImageErrorHandler';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
@@ -45,7 +45,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
     },
   } = useTheme();
 
-  const { imageError, setImageError } = useImageErrorHandler();
+  const { isLoadingImageError, setLoadingImageError } = useLoadingImage();
   /**
    * [
    *    [
@@ -115,7 +115,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
       ]}
       testID={testID || 'group-avatar'}
     >
-      {imageError ? (
+      {isLoadingImageError ? (
         <View
           style={{
             backgroundColor: '#ececec',
@@ -139,20 +139,19 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
               <Image
                 accessibilityLabel={testID || 'avatar-image'}
                 key={`avatar-${url}-${rowIndex}`}
-                onError={() => setImageError(true)}
+                onError={() => setLoadingImageError(true)}
                 source={{
-                  uri:
-                    imageError || url.includes(randomSvgBaseUrl)
-                      ? url.includes(streamCDN)
-                        ? url
-                        : `${randomImageBaseUrl}${
-                            name ? `?name=${getInitials(name)}&size=${height}` : ''
-                          }`
-                      : getResizedImageUrl({
-                          height,
-                          url,
-                          width,
-                        }),
+                  uri: url.includes(randomSvgBaseUrl)
+                    ? url.includes(streamCDN)
+                      ? url
+                      : `${randomImageBaseUrl}${
+                          name ? `?name=${getInitials(name)}&size=${height}` : ''
+                        }`
+                    : getResizedImageUrl({
+                        height,
+                        url,
+                        width,
+                      }),
                 }}
                 style={[
                   image,
