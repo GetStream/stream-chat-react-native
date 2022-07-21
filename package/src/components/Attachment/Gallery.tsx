@@ -57,15 +57,15 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingErrorIndicatorStyle: {
+    bottom: 4,
+    left: 4,
+    position: 'absolute',
+  },
   imageLoadingIndicatorStyle: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-  },
-  imageLoadingErrorIndicatorStyle: {
-    position: 'absolute',
-    bottom: 4,
-    left: 4,
   },
   moreImagesContainer: {
     alignItems: 'center',
