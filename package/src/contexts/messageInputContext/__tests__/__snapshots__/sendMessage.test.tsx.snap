@@ -6,7 +6,7 @@ Object {
     Object {
       "fallback": undefined,
       "image_url": undefined,
-      "mime_type": false,
+      "mime_type": undefined,
       "original_height": undefined,
       "original_width": undefined,
       "type": "image",
@@ -87,7 +87,7 @@ Object {
     Object {
       "fallback": undefined,
       "image_url": undefined,
-      "mime_type": false,
+      "mime_type": undefined,
       "original_height": undefined,
       "original_width": undefined,
       "type": "image",
@@ -95,7 +95,7 @@ Object {
     Object {
       "fallback": undefined,
       "image_url": undefined,
-      "mime_type": false,
+      "mime_type": undefined,
       "original_height": undefined,
       "original_width": undefined,
       "type": "image",
