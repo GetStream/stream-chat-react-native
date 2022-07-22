@@ -53,7 +53,7 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
     if (event.message && event.reaction) {
       // We update the entire message to make sure we also update
       // reaction_counts.
-      updateMessage({
+      return updateMessage({
         flush,
         message: event.message,
       });
