@@ -139,18 +139,32 @@ const App = () => {
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
       const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase');
+      const push_provider = "firebase"
+      const push_provider_name = "MyRNAppFirebasePush" // name an alias for your push provider (optional)
+      client.setLocalDevice({
+        id: token,
+        push_provider,
+        // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
+        push_provider_name,
+      });
+      await AsyncStorage.setItem('@current_push_token', token)
+       
+      const removeOldToken = async () => {
+        const oldToken = await AsyncStorage.getItem('@current_push_token')
+        if(oldToken !== null) {
+          await client.removeDevice(oldToken);
+        }
+      }
 
       unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
-        await client.addDevice(newToken, 'firebase');
+        await Promise.all([removeOldToken, client.addDevice(newToken, push_provider, USER_ID, push_provider_name), AsyncStorage.setItem('@current_push_token', newToken)])
       });
     };
 
     const init = async () => {
-      await client.connectUser({ id: USER_ID }, USER_TOKEN);
-
       await requestPermission();
       await registerPushToken();
+      await client.connectUser({ id: USER_ID }, USER_TOKEN);
 
       setIsReady(true);
     };
