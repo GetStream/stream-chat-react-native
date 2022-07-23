@@ -236,12 +236,6 @@ If you had migrated from push v1 to v2, the v1 template is copied to the notific
 
 Since the `notification` field is present on iOS, it is automatically picked up by the Firebase SDK and displayed to the user when the app is not in the foreground.
 
-:::info
-
-If you want to customize the notification dynamically on the iOS app without customizing the payload or increment the badge number on every push, you will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
-
-:::
-
 ### Android
 
 To listen to notifications in the background, you can use the [`setBackgroundMessageHandler`](https://rnfirebase.io/messaging/usage#background--quit-state-messages) method.
@@ -462,15 +456,42 @@ The `notification_template` is a JSON object that includes the keys relevant to 
 
 :::
 
+### Show badge number on the iOS app
+
+We can show the number of unread messages in the app's badge by adding the `badge` key to the `apn_template` using the JavaScript SDK like below:
+
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+
+const apn_template = `{
+  "aps" : {
+    "alert": {
+      "title": "{{ sender.name }} @ {{ channel.name }}",
+      "body": "{{ truncate message.text 2000 }}"
+    },
+    "badge": {{ unread_count }},
+    "mutable-content": 1,
+    "category": "stream.chat"
+  },
+}`;
+
+client.updateAppSettings({
+  firebase_config: {
+    apn_template,
+  }
+});
+```
+
 ### Make iOS Payload Data Only
 
 If the iOS payload is made to be data only, then `setBackgroundMessageHandler` can be used to display notifications using Notifee. The payload can be customized using the JavaScript SDK like below:
 
 ```js
 const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+
 const apn_template = `{
   "aps": {
-      "content-available": 1
+    "content-available": 1
   }
 }`;
 
