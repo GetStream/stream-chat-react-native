@@ -158,7 +158,7 @@ const App = () => {
 
       unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
         await Promise.all([
-          removeOldToken,
+          removeOldToken(),
           client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
           AsyncStorage.setItem('@current_push_token', newToken),
         ]);
