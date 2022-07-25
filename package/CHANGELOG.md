@@ -1,5 +1,22 @@
 # Change Log
 
+## [4.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.10.0...v4.11.0) (2022-07-20)
+
+
+### Features
+
+* upgrade react-native-reanimated to 2.7.0 ([#1560](https://github.com/GetStream/stream-chat-react-native/issues/1560)) ([602f728](https://github.com/GetStream/stream-chat-react-native/commit/602f7282eed3ee18b58432329c79defc5f889344))
+
+
+### Bug Fixes
+
+* added translation for Video label in Reply and changed ImageGalleryOverlay header text ([ad6c9f9](https://github.com/GetStream/stream-chat-react-native/commit/ad6c9f97cc2b45a6b9162a9972f8fac865ddb51b))
+* added translation for Video label in Reply and changed ImageGalleryOverlay header text ([559c9ca](https://github.com/GetStream/stream-chat-react-native/commit/559c9cacb3c5b8f2433a92b20f4eb9e18b4d0d56))
+* avoid use of finally as redux middlewares remove it ([#1558](https://github.com/GetStream/stream-chat-react-native/issues/1558)) ([0a35e31](https://github.com/GetStream/stream-chat-react-native/commit/0a35e311098c6eb9d8e69c33ecde08225a268aad))
+* image gallery footer background color for dark mode ([19447f0](https://github.com/GetStream/stream-chat-react-native/commit/19447f02078c512247acd6170937cbefddfcb8c7))
+* image gallery footer background color for dark mode ([9631dd3](https://github.com/GetStream/stream-chat-react-native/commit/9631dd3caf71a6173a7a163a0e5ecfa556fc0e00))
+* update flat list mvcp lib in core ([#1557](https://github.com/GetStream/stream-chat-react-native/issues/1557)) ([72641c4](https://github.com/GetStream/stream-chat-react-native/commit/72641c4a56f3cba16fe3d672c5493740cc07e460))
+
 ## [4.10.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.9.0...v4.10.0) (2022-07-13)
 
 

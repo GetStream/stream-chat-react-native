@@ -57,6 +57,11 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   imageContainerStyle: { alignItems: 'center', flex: 1, justifyContent: 'center' },
+  imageLoadingErrorIndicatorStyle: {
+    bottom: 4,
+    left: 4,
+    position: 'absolute',
+  },
   imageLoadingIndicatorStyle: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -317,9 +322,6 @@ const GalleryThumbnail = <
   thumbnail,
   VideoThumbnail,
 }: GalleryThumbnailProps<StreamChatGenerics>) => {
-  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
-    useLoadingImage();
-
   const {
     theme: {
       colors: { overlay },
@@ -409,6 +411,65 @@ const GalleryThumbnail = <
         />
       ) : (
         <View style={styles.imageContainerStyle}>
+          <GalleryImageThumbnail
+            borderRadius={borderRadius}
+            ImageLoadingFailedIndicator={ImageLoadingFailedIndicator}
+            ImageLoadingIndicator={ImageLoadingIndicator}
+            thumbnail={thumbnail}
+          />
+        </View>
+      )}
+      {colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1 && imagesAndVideos.length > 4 ? (
+        <View
+          style={[
+            StyleSheet.absoluteFillObject,
+            styles.moreImagesContainer,
+            { backgroundColor: overlay },
+            moreImagesContainer,
+          ]}
+        >
+          <Text style={[styles.moreImagesText, moreImagesText]}>
+            {`+${imagesAndVideos.length - 4}`}
+          </Text>
+        </View>
+      ) : null}
+    </TouchableOpacity>
+  );
+};
+
+const GalleryImageThumbnail = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>({
+  borderRadius,
+  ImageLoadingFailedIndicator,
+  ImageLoadingIndicator,
+  thumbnail,
+}: Pick<
+  GalleryThumbnailProps<StreamChatGenerics>,
+  'ImageLoadingFailedIndicator' | 'ImageLoadingIndicator' | 'thumbnail' | 'borderRadius'
+>) => {
+  const { isLoadingImage, isLoadingImageError, setLoadingImage, setLoadingImageError } =
+    useLoadingImage();
+
+  const {
+    theme: {
+      messageSimple: {
+        gallery: { image },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <View
+      style={{
+        height: thumbnail.height - 1,
+        width: thumbnail.width - 1,
+      }}
+    >
+      {isLoadingImageError ? (
+        <ImageLoadingFailedIndicator style={[styles.imageLoadingErrorIndicatorStyle]} />
+      ) : (
+        <>
           <MemoizedGalleryImage
             onError={(error) => {
               console.warn(error);
@@ -433,28 +494,9 @@ const GalleryThumbnail = <
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
-          {isLoadingImageError && (
-            <View style={{ position: 'absolute' }}>
-              <ImageLoadingFailedIndicator style={styles.imageLoadingIndicatorStyle} />
-            </View>
-          )}
-        </View>
+        </>
       )}
-      {colIndex === numOfColumns - 1 && rowIndex === numOfRows - 1 && imagesAndVideos.length > 4 ? (
-        <View
-          style={[
-            StyleSheet.absoluteFillObject,
-            styles.moreImagesContainer,
-            { backgroundColor: overlay },
-            moreImagesContainer,
-          ]}
-        >
-          <Text style={[styles.moreImagesText, moreImagesText]}>
-            {`+${imagesAndVideos.length - 4}`}
-          </Text>
-        </View>
-      ) : null}
-    </TouchableOpacity>
+    </View>
   );
 };
 

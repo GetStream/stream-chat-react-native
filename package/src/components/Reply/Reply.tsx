@@ -226,7 +226,7 @@ const ReplyWithContext = <
               : messageType === 'image'
               ? t('Photo')
               : messageType === 'video'
-              ? 'Video'
+              ? t('Video')
               : messageType === 'file'
               ? lastAttachment?.title || ''
               : '',
