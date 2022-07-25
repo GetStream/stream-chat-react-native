@@ -87,7 +87,7 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { overlay },
+      colors: { overlay, white },
       messageInput: {
         imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
@@ -147,7 +147,7 @@ const ImageUploadPreviewWithContext = <
           style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
           testID='remove-image-upload-preview'
         >
-          <Close />
+          <Close pathFill={white} />
         </TouchableOpacity>
         <UnsupportedImageTypeIndicator indicatorType={indicatorType} />
       </View>
