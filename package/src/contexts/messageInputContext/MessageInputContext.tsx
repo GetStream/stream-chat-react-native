@@ -676,11 +676,11 @@ export const MessageInputProvider = <
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
-          mime_type,
+          mime_type: mime_type ? mime_type : undefined,
           original_height: image.height,
           original_width: image.width,
           type: 'image',
-        } as Attachment<StreamChatGenerics>);
+        });
       }
     }
 
@@ -700,9 +700,9 @@ export const MessageInputProvider = <
           attachments.push({
             fallback: file.file.name,
             image_url: file.url,
-            mime_type,
+            mime_type: mime_type ? mime_type : undefined,
             type: 'image',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else if (file.file.type?.startsWith('audio/')) {
           attachments.push({
             asset_url: file.url,
@@ -711,7 +711,7 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'audio',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
@@ -721,7 +721,7 @@ export const MessageInputProvider = <
             thumb_url: file.thumb_url,
             title: file.file.name,
             type: 'video',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else {
           attachments.push({
             asset_url: file.url,
@@ -729,7 +729,7 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'file',
-          } as Attachment<StreamChatGenerics>);
+          });
         }
       }
     }

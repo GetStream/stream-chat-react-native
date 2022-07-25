@@ -132,7 +132,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey_whisper, overlay },
+      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -209,10 +209,10 @@ const FileUploadPreviewWithContext = <
           onPress={() => {
             removeFile(item.id);
           }}
-          style={[styles.dismiss, { backgroundColor: overlay }, dismiss]}
+          style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
           testID='remove-file-upload-preview'
         >
-          <Close />
+          <Close pathFill={grey_dark} />
         </TouchableOpacity>
       </>
     );

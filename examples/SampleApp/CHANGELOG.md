@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.9.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.8.1...sampleapp@v1.9.0) (2022-07-20)
+
+
+### Features
+
+* upgrade react-native-reanimated to 2.7.0 ([#1560](https://github.com/GetStream/stream-chat-react-native/issues/1560)) ([602f728](https://github.com/GetStream/stream-chat-react-native/commit/602f7282eed3ee18b58432329c79defc5f889344))
+
+
+### Bug Fixes
+
+* update flat list mvcp lib in core ([#1557](https://github.com/GetStream/stream-chat-react-native/issues/1557)) ([72641c4](https://github.com/GetStream/stream-chat-react-native/commit/72641c4a56f3cba16fe3d672c5493740cc07e460))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.8.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.8.0...sampleapp@v1.8.1) (2022-07-13)
 
 
