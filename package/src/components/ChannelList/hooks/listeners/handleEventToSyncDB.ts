@@ -30,7 +30,7 @@ export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   }
 
   if (type === 'message.new') {
-    if (event.message && !event.message.parent_id) {
+    if (event.message && (!event.message.parent_id || event.message.show_in_channel)) {
       return upsertMessages({
         flush,
         messages: [event.message],
