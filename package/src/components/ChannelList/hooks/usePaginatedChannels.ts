@@ -193,7 +193,7 @@ export const usePaginatedChannels = <
 
       reloadList();
     }
-  }, [filterStr, sortStr, client]);
+  }, [filterStr, sortStr]);
 
   return {
     channels,
