@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
 
 export type GalleryPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
@@ -135,8 +135,8 @@ const GalleryWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setImage,
-    setImages,
+    setSelectedMessage,
+    setMessages,
     setOverlay,
     threadList,
     videos,
@@ -250,8 +250,8 @@ const GalleryWithContext = <
                   onPressIn={onPressIn}
                   preventPress={preventPress}
                   rowIndex={rowIndex}
-                  setImage={setImage}
-                  setImages={setImages}
+                  setSelectedMessage={setSelectedMessage}
+                  setMessages={setMessages}
                   setOverlay={setOverlay}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
@@ -290,7 +290,7 @@ type GalleryThumbnailProps<
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
 > &
-  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
@@ -316,8 +316,8 @@ const GalleryThumbnail = <
   onPressIn,
   preventPress,
   rowIndex,
-  setImage,
-  setImages,
+  setSelectedMessage,
+  setMessages,
   setOverlay,
   thumbnail,
   VideoThumbnail,
@@ -336,11 +336,11 @@ const GalleryThumbnail = <
       // Added if-else to keep the logic readable, instead of DRY.
       // if - legacyImageViewerSwipeBehaviour is disabled
       // else - legacyImageViewerSwipeBehaviour is enabled
-      setImages([message]);
-      setImage({ messageId: message.id, url: thumbnail.url });
+      setMessages([message]);
+      setSelectedMessage({ messageId: message.id, url: thumbnail.url });
       setOverlay('gallery');
     } else if (legacyImageViewerSwipeBehaviour) {
-      setImage({ messageId: message?.id, url: thumbnail.url });
+      setSelectedMessage({ messageId: message?.id, url: thumbnail.url });
       setOverlay('gallery');
     }
   };
@@ -576,14 +576,15 @@ export const Gallery = <
     onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
-    setImage: propSetImage,
+    setSelectedMessage: propSetSelectedMessage,
     setOverlay: propSetOverlay,
     threadList: propThreadList,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setSelectedMessage: contextSetSelectedMessage, setMessages } =
+    useImageGalleryContext<StreamChatGenerics>();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -618,7 +619,7 @@ export const Gallery = <
   const onPress = propOnPress || contextOnPress;
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
-  const setImage = propSetImage || contextSetImage;
+  const setSelectedMessage = propSetSelectedMessage || contextSetSelectedMessage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
@@ -643,8 +644,8 @@ export const Gallery = <
         onPress,
         onPressIn,
         preventPress,
-        setImage,
-        setImages,
+        setSelectedMessage,
+        setMessages,
         setOverlay,
         threadList,
         videos,

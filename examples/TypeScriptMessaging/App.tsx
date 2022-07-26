@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { LogBox, Platform, SafeAreaView, View, useColorScheme } from 'react-native';
+import { LogBox, Platform, SafeAreaView, View, useColorScheme, I18nManager } from 'react-native';
 import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
@@ -44,6 +44,8 @@ type StreamChatGenerics = {
   reactionType: LocalReactionType;
   userType: LocalUserType;
 };
+
+I18nManager.forceRTL(false);
 
 const chatClient = StreamChat.getInstance<StreamChatGenerics>('q95x9hkbyd6p');
 const userToken =

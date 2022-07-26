@@ -161,7 +161,8 @@ export const ImageGallery = <
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
   const { overlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>();
+  const { messages, selectedMessage, setSelectedMessage } =
+    useImageGalleryContext<StreamChatGenerics>();
 
   /**
    * Height constants
@@ -256,7 +257,7 @@ export const ImageGallery = <
    * photo attachments
    */
 
-  const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
       cur.attachments?.filter(
         (attachment) =>
@@ -297,7 +298,7 @@ export const ImageGallery = <
       };
     });
 
-    return [...acc, ...attachmentPhotos] as Photo<StreamChatGenerics>[];
+    return [...attachmentPhotos, ...acc] as Photo<StreamChatGenerics>[];
   }, []);
 
   /**
@@ -323,7 +324,8 @@ export const ImageGallery = <
     };
 
     const newIndex = photos.findIndex(
-      (photo) => photo.messageId === image?.messageId && photo.uri === image?.url,
+      (photo) =>
+        photo.messageId === selectedMessage?.messageId && photo.uri === selectedMessage?.url,
     );
 
     if (photoLength > 1) {
@@ -331,7 +333,7 @@ export const ImageGallery = <
     }
 
     runOnUI(updatePosition)(newIndex);
-  }, [image, photoLength]);
+  }, [selectedMessage, photoLength]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -664,7 +666,7 @@ export const ImageGallery = <
             closeGridView={closeGridView}
             numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
             photos={gridPhotos}
-            setImage={setImage}
+            setImage={setSelectedMessage}
             {...imageGalleryCustomComponents?.grid}
           />
         </BottomSheetModal>

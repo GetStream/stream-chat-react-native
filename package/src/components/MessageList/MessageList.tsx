@@ -124,7 +124,7 @@ type MessageListPropsWithContext<
     | 'targetedMessage'
   > &
   Pick<ChatContextValue<StreamChatGenerics>, 'client'> &
-  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImages'> &
+  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setMessages'> &
   Pick<PaginatedMessageListContextValue<StreamChatGenerics>, 'loadMore' | 'loadMoreRecent'> &
   Pick<OverlayContextValue, 'overlay'> &
   Pick<
@@ -266,7 +266,7 @@ const MessageListWithContext = <
     scrollToFirstUnreadThreshold,
     selectedPicker,
     setFlatListRef,
-    setImages,
+    setMessages,
     setSelectedPicker,
     setTargetedMessage,
     StickyHeader,
@@ -846,7 +846,7 @@ const MessageListWithContext = <
       isListActive &&
       ((threadList && thread) || (!threadList && !thread))
     ) {
-      setImages(messagesWithImages as MessageType<StreamChatGenerics>[]);
+      setMessages(messagesWithImages as MessageType<StreamChatGenerics>[]);
     }
   }, [
     imageString,
@@ -990,7 +990,7 @@ export const MessageList = <
     targetedMessage,
   } = useChannelContext<StreamChatGenerics>();
   const { client } = useChatContext<StreamChatGenerics>();
-  const { setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setMessages } = useImageGalleryContext<StreamChatGenerics>();
   const {
     DateHeader,
     deletedMessagesVisibilityType,
@@ -1048,7 +1048,7 @@ export const MessageList = <
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,
         selectedPicker,
-        setImages,
+        setMessages,
         setSelectedPicker,
         setTargetedMessage,
         StickyHeader,

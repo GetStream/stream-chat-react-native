@@ -7,13 +7,18 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 import { getDisplayName } from '../utils/getDisplayName';
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+type SelectedMessage = {
+  messageId?: string;
+  url?: string;
+};
+
 export type ImageGalleryContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
-  images: MessageType<StreamChatGenerics>[];
-  setImage: React.Dispatch<React.SetStateAction<{ messageId?: string; url?: string } | undefined>>;
-  setImages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
-  image?: { messageId?: string; url?: string };
+  messages: MessageType<StreamChatGenerics>[];
+  setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
+  setMessages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
+  selectedMessage?: SelectedMessage;
 };
 
 export const ImageGalleryContext = React.createContext(
@@ -25,19 +30,19 @@ export const ImageGalleryProvider = <
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
-  const [images, setImages] = useState<MessageType<StreamChatGenerics>[]>([]);
-  const [image, setImage] = useState<{ messageId?: string; url?: string }>();
-
-  const imageGalleryContext = {
-    image,
-    images,
-    setImage,
-    setImages,
-  };
+  const [messages, setMessages] = useState<MessageType<StreamChatGenerics>[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<SelectedMessage>();
 
   return (
     <ImageGalleryContext.Provider
-      value={imageGalleryContext as unknown as ImageGalleryContextValue}
+      value={
+        {
+          selectedMessage,
+          messages,
+          setSelectedMessage,
+          setMessages,
+        } as unknown as ImageGalleryContextValue
+      }
     >
       {children}
     </ImageGalleryContext.Provider>

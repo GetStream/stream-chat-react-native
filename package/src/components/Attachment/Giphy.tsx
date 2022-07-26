@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 
 export type GiphyPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     | 'handleAction'
@@ -174,8 +174,8 @@ const GiphyWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setImage,
-    setImages,
+    setSelectedMessage,
+    setMessages,
     setOverlay,
   } = props;
 
@@ -211,8 +211,8 @@ const GiphyWithContext = <
   const giphyDimensions: { height?: number; width?: number } = {};
 
   const defaultOnPress = () => {
-    setImages([message]);
-    setImage({ messageId: message.id, url: uri });
+    setMessages([message]);
+    setSelectedMessage({ messageId: message.id, url: uri });
     setOverlay('gallery');
   };
 
@@ -441,7 +441,7 @@ export const Giphy = <
   const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
-  const { setImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setSelectedMessage, setMessages } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
 
   const {
@@ -466,8 +466,8 @@ export const Giphy = <
         onPress,
         onPressIn,
         preventPress,
-        setImage,
-        setImages,
+        setSelectedMessage,
+        setMessages,
         setOverlay,
       }}
       {...props}
