@@ -325,15 +325,15 @@ export const ChannelList = <
   useSyncDatabase({
     enableOfflineSupport,
   });
-  const channelIds = channels.map((c) => c.cid);
-  const channelIdsStr = channelIds.join('');
+
+  const channelIdsStr = channels.reduce((acc, channel) => `${acc}${channel.cid}`, '');
 
   useEffect(() => {
     if (staticChannelsActive || !enableOfflineSupport) {
       return;
     }
     upsertCidsForQuery({
-      cids: channelIds,
+      cids: channels.map((c) => c.cid),
       filters,
       sort,
     });

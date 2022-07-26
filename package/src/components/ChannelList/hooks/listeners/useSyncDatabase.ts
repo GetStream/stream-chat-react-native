@@ -17,7 +17,7 @@ export const useSyncDatabase = <
 }: Params) => {
   const { client } = useChatContext<StreamChatGenerics>();
   useEffect(() => {
-    let listener: ReturnType<StreamChat['on']>;
+    let listener: ReturnType<StreamChat['on']> | undefined;
 
     if (enableOfflineSupport) {
       listener = client?.on(handleEventToSyncDB);

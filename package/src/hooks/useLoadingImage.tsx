@@ -7,7 +7,7 @@ export const useLoadingImage = () => {
   const [isLoadingImageError, setLoadingImageError] = useState(false);
   const { isConnected } = useNetInfo();
   useEffect(() => {
-    if (isConnected && isLoadingImageError) {
+    if (isConnected) {
       setLoadingImageError(false);
     }
   }, [isConnected]);

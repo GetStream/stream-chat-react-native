@@ -177,7 +177,8 @@ export const usePaginatedChannels = <
   const sortStr = useMemo(() => JSON.stringify(sort), [sort]);
 
   useEffect(() => {
-    if (client?.user?.id) {
+    const loadChannels = () => {
+      if (!client?.user?.id) return;
       if (enableOfflineSupport) {
         try {
           const channelsFromDB = getChannels({ currentUserId: client.user.id, filters, sort });
@@ -192,7 +193,9 @@ export const usePaginatedChannels = <
       }
 
       reloadList();
-    }
+    };
+
+    loadChannels();
   }, [filterStr, sortStr]);
 
   return {

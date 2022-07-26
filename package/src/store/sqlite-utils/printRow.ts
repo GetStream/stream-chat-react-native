@@ -1,25 +1,14 @@
 import type { TableRow } from '../types';
 
-function isJson(str: string) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
 export const printRow = (row: TableRow<any>) => {
-  const prettyRow = {};
+  const prettyRow: Record<string, any> = {};
   for (const key in row) {
     // @ts-ignore
     const value = row[key];
 
-    if (isJson(value)) {
-      // @ts-ignore
+    try {
       prettyRow[key] = JSON.parse(value);
-    } else {
-      // @ts-ignore
+    } catch (e) {
       prettyRow[key] = value;
     }
   }

@@ -4,11 +4,11 @@ import type { PreparedQueries, TableColumnNames } from '../types';
 export const appendWhereClause = <T extends keyof Schema>(
   selectQuery: string,
   whereCondition?: Partial<{ [k in TableColumnNames<T>]: any }>,
-) => {
+): PreparedQueries => {
   if (!whereCondition) return [selectQuery, []];
 
   const whereClause = [];
-  const whereParams: unknown[] = [];
+  const whereParams: any[] = [];
 
   for (const key in whereCondition) {
     const value: unknown = whereCondition[key];
@@ -29,5 +29,5 @@ export const appendWhereClause = <T extends keyof Schema>(
     return [selectQuery, []];
   }
 
-  return [`${selectQuery} WHERE ${whereClause.join(' AND ')}`, whereParams] as PreparedQueries;
+  return [`${selectQuery} WHERE ${whereClause.join(' AND ')}`, whereParams];
 };

@@ -13,7 +13,7 @@ export const createUpsertQuery = <T extends keyof Schema>(
   table: T,
   row: Partial<TableRow<T>>,
   conflictCheckKeys?: Array<TableColumnNames<T>>,
-) => {
+): PreparedQueries => {
   const filteredRow: typeof row = {};
 
   // In case of "DO UPDATE SET", we only want to update the properties which
@@ -44,5 +44,5 @@ export const createUpsertQuery = <T extends keyof Schema>(
   return [
     `INSERT INTO ${table} (${fields.join(',')}) VALUES (${questionMarks}) ${conflictConstraint}`,
     Object.values(filteredRow),
-  ] as PreparedQueries;
+  ];
 };
