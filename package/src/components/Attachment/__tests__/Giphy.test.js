@@ -285,7 +285,7 @@ describe('Giphy', () => {
       </OverlayProvider>,
     );
 
-    fireEvent(getByA11yLabel('giphy-attachment-image'), 'error');
+    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'error');
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
@@ -302,13 +302,13 @@ describe('Giphy', () => {
 
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadStart');
+    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'onLoadStart');
 
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('giphy-attachment-image'), 'onLoadFinish');
+    fireEvent(getByA11yLabel('Giphy Attachment Image'), 'onLoadFinish');
 
     waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
-    expect(getByA11yLabel('giphy-attachment-image')).toBeTruthy();
+    expect(getByA11yLabel('Giphy Attachment Image')).toBeTruthy();
   });
 });

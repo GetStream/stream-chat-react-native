@@ -57,7 +57,7 @@ describe('AudioAttachmentUploadPreviewExpo', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');
@@ -86,7 +86,7 @@ describe('AudioAttachmentUploadPreviewExpo', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');
@@ -115,7 +115,7 @@ describe('AudioAttachmentUploadPreviewExpo', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');
@@ -162,7 +162,7 @@ describe('AudioAttachmentUploadPreviewExpo', () => {
       }),
     );
 
-    const textComponent = getByA11yLabel('file-name');
+    const textComponent = getByA11yLabel('File Name');
     expect(textComponent?.props.style[2].writingDirection).toBe('rtl');
   });
 

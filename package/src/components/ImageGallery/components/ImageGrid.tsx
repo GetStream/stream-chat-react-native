@@ -82,7 +82,7 @@ const GridImage = <
   }
 
   return (
-    <TouchableOpacity accessibilityLabel='grid-image' onPress={selectAndClose}>
+    <TouchableOpacity accessibilityLabel='Grid Image' onPress={selectAndClose}>
       {type === 'video' ? (
         <View style={[styles.image, { height: size, width: size }, gridImage]}>
           <VideoThumbnail />
@@ -155,7 +155,7 @@ export const ImageGrid = <
 
   return (
     <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
-      accessibilityLabel='image-grid'
+      accessibilityLabel='Image Grid'
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },

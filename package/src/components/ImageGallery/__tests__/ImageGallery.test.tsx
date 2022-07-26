@@ -59,8 +59,8 @@ describe('ImageGallery', () => {
         ] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
-    expect(queryAllByA11yLabel('image-item')).toHaveLength(2);
-    expect(queryAllByA11yLabel('image-gallery-video')).toHaveLength(1);
+    expect(queryAllByA11yLabel('Image Item')).toHaveLength(2);
+    expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
   });
 
   it('handle handleLoad function when video item present and payload duration is available', () => {
@@ -74,7 +74,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('image-gallery-video');
+    const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -82,7 +82,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const videoDurationComponent = getByA11yLabel('video-duration');
+    const videoDurationComponent = getByA11yLabel('Video Duration');
     expect(videoDurationComponent.children[0]).toBe('00:10');
   });
 
@@ -97,7 +97,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('image-gallery-video');
+    const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -105,7 +105,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const videoDurationComponent = getByA11yLabel('video-duration');
+    const videoDurationComponent = getByA11yLabel('Video Duration');
     expect(videoDurationComponent.children[0]).toBe('00:00');
   });
 
@@ -120,7 +120,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('image-gallery-video');
+    const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -132,7 +132,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const progressDurationComponent = getByA11yLabel('progress-duration');
+    const progressDurationComponent = getByA11yLabel('Progress Duration');
 
     expect(progressDurationComponent.children[0]).toBe('00:03');
   });
@@ -148,7 +148,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('image-gallery-video');
+    const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -160,7 +160,7 @@ describe('ImageGallery', () => {
       });
     });
 
-    const progressDurationComponent = getByA11yLabel('progress-duration');
+    const progressDurationComponent = getByA11yLabel('Progress Duration');
 
     expect(progressDurationComponent.children[0]).toBe('00:00');
   });
@@ -176,7 +176,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    const videoItemComponent = getByA11yLabel('image-gallery-video');
+    const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
       fireEvent(videoItemComponent, 'handleLoad', {
@@ -185,8 +185,8 @@ describe('ImageGallery', () => {
       fireEvent(videoItemComponent, 'handleEnd');
     });
 
-    const progressDurationComponent = getByA11yLabel('progress-duration');
-    expect(getByA11yLabel('play-icon')).not.toBeUndefined();
+    const progressDurationComponent = getByA11yLabel('Progress Duration');
+    expect(getByA11yLabel('Play Icon')).not.toBeUndefined();
     expect(progressDurationComponent.children[0]).toBe('00:10');
   });
 });

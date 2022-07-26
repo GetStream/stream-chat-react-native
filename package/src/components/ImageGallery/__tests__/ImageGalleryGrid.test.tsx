@@ -44,7 +44,7 @@ describe('ImageGalleryOverlay', () => {
       getComponent({ photos: [generateImageAttachment(), generateImageAttachment()] }),
     );
 
-    expect(queryAllByA11yLabel('image-grid')).toHaveLength(1);
+    expect(queryAllByA11yLabel('Image Grid')).toHaveLength(1);
   });
 
   it('should render ImageGalleryGrid individual images', () => {
@@ -54,7 +54,7 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    expect(queryAllByA11yLabel('grid-image')).toHaveLength(2);
+    expect(queryAllByA11yLabel('Grid Image')).toHaveLength(2);
   });
 
   it('should render ImageGalleryGrid with custom image component', () => {
@@ -86,7 +86,7 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    const component = getAllByA11yLabel('grid-image');
+    const component = getAllByA11yLabel('Grid Image');
 
     act(() => {
       fireEvent(component[0], 'onPress');

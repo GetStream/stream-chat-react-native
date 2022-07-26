@@ -156,7 +156,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
     if (!shouldRender) {
       return (
         <View
-          accessibilityLabel='empty-view-image-gallery'
+          accessibilityLabel='Empty View Image Gallery'
           style={[style, { transform: [{ scale: oneEighth }] }]}
         />
       );
@@ -164,7 +164,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
 
     return (
       <Animated.View
-        accessibilityLabel='image-gallery-video'
+        accessibilityLabel='Image Gallery Video'
         style={[
           style,
           animatedViewStyles,
@@ -197,7 +197,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
           />
         )}
         <Animated.View
-          accessibilityLabel='spinner'
+          accessibilityLabel='Spinner'
           style={[
             styles.activityIndicator,
             {

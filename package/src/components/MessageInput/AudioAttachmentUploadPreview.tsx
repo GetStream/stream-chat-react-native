@@ -254,7 +254,7 @@ const AudioAttachmentUploadPreviewWithContext = <
     >
       <View style={[styles.fileContentContainer, fileContentContainer]}>
         <TouchableOpacity
-          accessibilityLabel='play-pause'
+          accessibilityLabel='Play Pause Button'
           onPress={() => handlePlayPause()}
           style={[
             styles.roundedView,
@@ -270,7 +270,7 @@ const AudioAttachmentUploadPreviewWithContext = <
         </TouchableOpacity>
         <View style={[styles.fileTextContainer, fileTextContainer]}>
           <Text
-            accessibilityLabel='file-name'
+            accessibilityLabel='File Name'
             numberOfLines={1}
             style={[
               styles.filenameText,

@@ -208,7 +208,7 @@ export const ImageGalleryFooterWithContext = <
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
             <TouchableOpacity
-              accessibilityLabel='share-button'
+              accessibilityLabel='Share Button'
               disabled={shareMenuOpen}
               onPress={share}
             >

@@ -52,7 +52,7 @@ describe('AudioAttachmentUploadPreview', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');
@@ -78,7 +78,7 @@ describe('AudioAttachmentUploadPreview', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');
@@ -105,7 +105,7 @@ describe('AudioAttachmentUploadPreview', () => {
       }),
     );
 
-    const playPauseButton = getByA11yLabel('play-pause');
+    const playPauseButton = getByA11yLabel('Play Pause Button');
 
     act(() => {
       fireEvent(playPauseButton, 'onPress');

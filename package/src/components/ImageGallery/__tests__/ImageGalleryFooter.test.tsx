@@ -178,7 +178,7 @@ describe('ImageGalleryFooter', () => {
     );
 
     act(() => {
-      fireEvent(queryByA11yLabel('share-button') as ReactTestInstance, 'onPress');
+      fireEvent(queryByA11yLabel('Share Button') as ReactTestInstance, 'onPress');
     });
 
     await waitFor(() => {

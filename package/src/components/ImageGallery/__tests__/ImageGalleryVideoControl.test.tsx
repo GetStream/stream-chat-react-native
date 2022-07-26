@@ -26,7 +26,7 @@ describe('ImageGalleryOverlay', () => {
 
     const { queryByA11yLabel } = render(getComponent({ onPlayPause: onPlayPauseMock }));
 
-    const component = queryByA11yLabel('play-pause') as ReactTestInstance;
+    const component = queryByA11yLabel('Play Pause Button') as ReactTestInstance;
 
     act(() => {
       fireEvent(component, 'onPress');
@@ -41,7 +41,7 @@ describe('ImageGalleryOverlay', () => {
   it('should render the play icon when paused prop is true', async () => {
     const { queryByA11yLabel } = render(getComponent({ paused: true }));
 
-    const component = queryByA11yLabel('play-icon') as ReactTestInstance;
+    const component = queryByA11yLabel('Play Icon') as ReactTestInstance;
 
     await waitFor(() => {
       expect(component).not.toBeUndefined();
@@ -58,8 +58,8 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    const videoDurationComponent = queryByA11yLabel('video-duration') as ReactTestInstance;
-    const progressDurationComponent = queryByA11yLabel('progress-duration') as ReactTestInstance;
+    const videoDurationComponent = queryByA11yLabel('Video Duration') as ReactTestInstance;
+    const progressDurationComponent = queryByA11yLabel('Progress Duration') as ReactTestInstance;
 
     expect(videoDurationComponent.children[0]).toBe('01:00:00');
     expect(progressDurationComponent.children[0]).toBe('01:00:00');
@@ -75,8 +75,8 @@ describe('ImageGalleryOverlay', () => {
       }),
     );
 
-    const videoDurationComponent = queryByA11yLabel('video-duration') as ReactTestInstance;
-    const progressDurationComponent = queryByA11yLabel('progress-duration') as ReactTestInstance;
+    const videoDurationComponent = queryByA11yLabel('Video Duration') as ReactTestInstance;
+    const progressDurationComponent = queryByA11yLabel('Progress Duration') as ReactTestInstance;
 
     expect(videoDurationComponent.children[0]).toBe('01:00');
     expect(progressDurationComponent.children[0]).toBe('00:30');

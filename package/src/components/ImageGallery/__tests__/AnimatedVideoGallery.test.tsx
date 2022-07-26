@@ -40,7 +40,7 @@ describe('ImageGallery', () => {
         translateX: { value: 1 } as SharedValue<number>,
       }),
     );
-    expect(queryAllByA11yLabel('image-gallery-video')).toHaveLength(1);
+    expect(queryAllByA11yLabel('Image Gallery Video')).toHaveLength(1);
   });
 
   it('render empty view when shouldRender is false', () => {
@@ -53,7 +53,7 @@ describe('ImageGallery', () => {
       }),
     );
 
-    expect(getByA11yLabel('empty-view-image-gallery')).not.toBeUndefined();
+    expect(getByA11yLabel('Empty View Image Gallery')).not.toBeUndefined();
   });
 
   it('trigger onEnd and onProgress events handlers of Video component', () => {
@@ -99,7 +99,7 @@ describe('ImageGallery', () => {
     );
 
     const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('spinner');
+    const spinnerComponent = queryByA11yLabel('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onLoadStart');
@@ -124,7 +124,7 @@ describe('ImageGallery', () => {
     );
 
     const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('spinner');
+    const spinnerComponent = queryByA11yLabel('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onLoad');
@@ -148,7 +148,7 @@ describe('ImageGallery', () => {
     );
 
     const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('spinner');
+    const spinnerComponent = queryByA11yLabel('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onBuffer', {
@@ -189,7 +189,7 @@ describe('ImageGallery', () => {
     );
 
     const videoComponent = getByTestId('video-player');
-    const spinnerComponent = queryByA11yLabel('spinner');
+    const spinnerComponent = queryByA11yLabel('Spinner');
 
     act(() => {
       fireEvent(videoComponent, 'onPlaybackStatusUpdate', {

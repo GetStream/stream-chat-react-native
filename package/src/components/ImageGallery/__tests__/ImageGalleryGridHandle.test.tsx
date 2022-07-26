@@ -42,7 +42,7 @@ describe('ImageGalleryOverlay', () => {
   it('should render ImageGalleryGridHandle', () => {
     const { queryAllByA11yLabel } = render(getComponent());
 
-    expect(queryAllByA11yLabel('image-grid-handle')).toHaveLength(1);
+    expect(queryAllByA11yLabel('Image Grid Handle')).toHaveLength(1);
   });
 
   it('should render the custom components', () => {

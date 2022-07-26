@@ -38,7 +38,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const { style, thumb_url, ...rest } = props;
   return (
     <ImageBackground
-      accessibilityLabel='video-thumbnail'
+      accessibilityLabel='Video Thumbnail'
       source={{ uri: thumb_url }}
       {...rest}
       style={[styles.container, container, style]}

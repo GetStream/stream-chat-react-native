@@ -61,7 +61,7 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
 
   return (
     <View
-      accessibilityLabel='image-grid-handle'
+      accessibilityLabel='Image Grid Handle'
       style={[styles.handle, { backgroundColor: white }, handle]}
     >
       {leftComponent ? leftComponent({ closeGridView }) : <View style={styles.leftContainer} />}

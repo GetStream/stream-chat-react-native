@@ -162,7 +162,7 @@ describe('ImageGalleryHeader', () => {
     );
 
     act(() => {
-      fireEvent(queryByA11yLabel('hide-overlay') as ReactTestInstance, 'onPress');
+      fireEvent(queryByA11yLabel('Hide Overlay') as ReactTestInstance, 'onPress');
     });
 
     await waitFor(() => {

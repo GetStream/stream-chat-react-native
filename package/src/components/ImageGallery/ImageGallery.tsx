@@ -502,7 +502,7 @@ export const ImageGallery = <
 
   return (
     <Animated.View
-      accessibilityLabel='image-gallery'
+      accessibilityLabel='Image Gallery'
       pointerEvents={'auto'}
       style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
@@ -585,7 +585,7 @@ export const ImageGallery = <
                             />
                           ) : (
                             <AnimatedGalleryImage
-                              accessibilityLabel={'image-item'}
+                              accessibilityLabel={'Image Item'}
                               index={i}
                               key={`${photo.uri}-${i}`}
                               offsetScale={offsetScale}
@@ -624,7 +624,7 @@ export const ImageGallery = <
         {...imageGalleryCustomComponents?.header}
       />
       <ImageGalleryFooter<StreamChatGenerics>
-        accessibilityLabel={'image-gallery-footer'}
+        accessibilityLabel={'Image Gallery Footer'}
         duration={duration}
         onPlayPause={handlePlayPause}
         onProgressDrag={onProgressDrag}
