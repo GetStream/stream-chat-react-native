@@ -194,7 +194,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey_whisper, light_gray },
+      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
       messageInput: {
         fileUploadPreview: {
           audioAttachmentFileContainer,
@@ -293,12 +293,21 @@ const FileUploadPreviewWithContext = <
             onPress={() => {
               removeFile(item.id);
             }}
-            style={[styles.dismiss, { backgroundColor: light_gray }, dismiss]}
+            style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
             testID='remove-file-upload-preview'
           >
             <Close />
           </TouchableOpacity>
         </UploadProgressIndicator>
+        <TouchableOpacity
+          onPress={() => {
+            removeFile(item.id);
+          }}
+          style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
+          testID='remove-file-upload-preview'
+        >
+          <Close pathFill={grey_dark} />
+        </TouchableOpacity>
       </>
     );
   };

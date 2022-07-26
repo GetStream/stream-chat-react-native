@@ -538,6 +538,10 @@ export type Theme = {
     markdownStyles: MarkdownStyle;
     messageContainer: ViewStyle;
     textContainer: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      image: ImageStyle;
+    };
   };
   screenPadding: number;
   spinner: ViewStyle;
@@ -1073,6 +1077,10 @@ export const defaultTheme: Theme = {
     markdownStyles: {},
     messageContainer: {},
     textContainer: {},
+    videoThumbnail: {
+      container: {},
+      image: {},
+    },
   },
   screenPadding: 8,
   spinner: {},
