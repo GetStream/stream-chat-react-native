@@ -1,5 +1,5 @@
 /* global require */
-import { FlatList } from 'react-native';
+import { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
@@ -30,15 +30,18 @@ registerNativeHandlers({
   },
   pickDocument: () => null,
   saveFile: () => null,
+  SDK: 'stream-chat-react-native',
   shareImage: () => null,
+  Sound: { initializeSound: () => null, Player: View },
   takePhoto: () => null,
   triggerHaptic: () => null,
+  Video: View,
 });
 
-require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
-// eslint-disable-next-line no-underscore-dangle, no-undef
-global.__reanimatedWorkletInit = jest.fn();
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+jest.mock('react-native-reanimated', () => {
+  const RNReanimatedmock = require('react-native-reanimated/mock');
+  return { ...RNReanimatedmock, runOnUI: (fn) => fn };
+});
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 jest.mock('@gorhom/bottom-sheet', () => {
@@ -52,4 +55,3 @@ jest.mock('@gorhom/bottom-sheet', () => {
     default: react.View,
   };
 });
-// jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));

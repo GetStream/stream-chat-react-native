@@ -1,11 +1,13 @@
 let VideoComponent;
+let AudioComponent;
 try {
-  const videoPackage = require('expo-av');
-  VideoComponent = videoPackage.Video;
+  const audioVideoPackage = require('expo-av');
+  VideoComponent = audioVideoPackage.Video;
+  AudioComponent = audioVideoPackage.Audio;
 } catch (_) {
   console.warn(
-    'Video library is currently not installed. To allow in-app video playback, install the "expo-av" package.',
+    'Audio Video library is currently not installed. To allow in-app audio or video playback, install the "expo-av" package.',
   );
 }
 
-export default VideoComponent;
+export { AudioComponent, VideoComponent };
