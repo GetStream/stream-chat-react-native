@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   },
   roundedView: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
     elevation: 6,
@@ -49,7 +48,7 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const { imageStyle, style, thumb_url } = props;
   return (
     <ImageBackground
-      accessibilityLabel='video-thumbnail'
+      accessibilityLabel='Video Thumbnail'
       imageStyle={imageStyle}
       source={{ uri: thumb_url }}
       style={[styles.container, container, style]}

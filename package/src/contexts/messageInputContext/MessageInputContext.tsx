@@ -22,6 +22,7 @@ import { useCreateMessageInputContext } from './hooks/useCreateMessageInputConte
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
+import type { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/AudioAttachmentUploadPreview';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
@@ -62,6 +63,9 @@ export type FileUpload = {
   file: File;
   id: string;
   state: FileStateValue;
+  duration?: number;
+  paused?: boolean;
+  progress?: number;
   thumb_url?: string;
   url?: string;
 };
@@ -220,6 +224,12 @@ export type InputMessageInputContextValue<
    * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
+
+  /** Custom UI component for AudioAttachmentUploadPreview. */
+  AudioAttachmentUploadPreview: React.ComponentType<
+    AudioAttachmentUploadPreviewProps<StreamChatGenerics>
+  >;
+
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;
   /**
@@ -1031,8 +1041,11 @@ export const MessageInputProvider = <
         : FileState.UPLOADING;
 
     const newFile: FileUpload = {
+      duration: 0,
       file: { ...file, type: mimeType || file?.type },
       id,
+      paused: true,
+      progress: 0,
       state: fileState,
     };
 

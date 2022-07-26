@@ -127,7 +127,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
         >
           {column.map(({ height, name, url, width }, rowIndex) => (
             <Image
-              accessibilityLabel={testID || 'avatar-image'}
+              accessibilityLabel={testID || 'Avatar Image'}
               key={`avatar-${url}-${rowIndex}`}
               onError={() => setImageError(true)}
               source={{

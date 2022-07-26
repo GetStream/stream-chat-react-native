@@ -21,9 +21,12 @@ export const Colors = {
   grey_whisper: '#ECEBEB',
   icon_background: '#FFFFFF',
   label_bg_transparent: '#00000033', // 33 = 20% opacity
+  light_gray: '#DBDDE1',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
+  static_black: '#000000',
+  static_white: '#ffffff',
   targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
   transparent: 'transparent',
   white: '#FFFFFF',
@@ -244,6 +247,12 @@ export type Theme = {
       editingBoxHeaderTitle: TextStyle;
     };
     fileUploadPreview: {
+      audioAttachmentFileContainer: ViewStyle;
+      audioAttachmentUploadPreview: {
+        progressControlView: ViewStyle;
+        progressDurationText: TextStyle;
+        roundedView: ViewStyle;
+      };
       dismiss: ViewStyle;
       fileContainer: ViewStyle;
       fileContentContainer: ViewStyle;
@@ -737,6 +746,12 @@ export const defaultTheme: Theme = {
       editingBoxHeaderTitle: {},
     },
     fileUploadPreview: {
+      audioAttachmentFileContainer: {},
+      audioAttachmentUploadPreview: {
+        progressControlView: {},
+        progressDurationText: {},
+        roundedView: {},
+      },
       dismiss: {},
       fileContainer: {},
       fileContentContainer: {},

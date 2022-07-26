@@ -107,6 +107,7 @@ import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
+import { AudioAttachmentUploadPreview as AudioAttachmentUploadPreviewDefault } from '../MessageInput/AudioAttachmentUploadPreview';
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { InputEditingStateHeader as InputEditingStateHeaderDefault } from '../MessageInput/components/InputEditingStateHeader';
 import { InputGiphySearch as InputGiphyCommandInputDefault } from '../MessageInput/components/InputGiphySearch';
@@ -398,6 +399,7 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AudioAttachmentUploadPreview = AudioAttachmentUploadPreviewDefault,
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
@@ -1618,6 +1620,7 @@ const ChannelWithContext = <
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
+    AudioAttachmentUploadPreview,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,

@@ -13,7 +13,7 @@ export const GalleryImage: React.FC<
   return (
     <ImageBackground
       {...rest}
-      accessibilityLabel='gallery-image'
+      accessibilityLabel='Gallery Image'
       source={{
         uri: makeImageCompatibleUrl(uri),
       }}

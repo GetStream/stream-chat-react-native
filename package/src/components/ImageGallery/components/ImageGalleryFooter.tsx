@@ -64,7 +64,7 @@ export type ImageGalleryFooterCustomComponent<
 
 export type ImageGalleryFooterVideoControlProps = {
   duration: number;
-  onPlayPause: () => void;
+  onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   paused: boolean;
   progress: number;
@@ -92,6 +92,7 @@ export type ImageGalleryFooterCustomComponentProps<
 type ImageGalleryFooterPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
+  accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
   onProgressDrag: (progress: number) => void;
@@ -111,6 +112,7 @@ export const ImageGalleryFooterWithContext = <
   props: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    accessibilityLabel,
     centerElement,
     duration,
     GridIcon,
@@ -182,6 +184,7 @@ export const ImageGalleryFooterWithContext = <
 
   return (
     <Animated.View
+      accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}
@@ -204,7 +207,11 @@ export const ImageGalleryFooterWithContext = <
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
+            <TouchableOpacity
+              accessibilityLabel='Share Button'
+              disabled={shareMenuOpen}
+              onPress={share}
+            >
               <View style={[styles.leftContainer, leftContainer]}>
                 {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
               </View>

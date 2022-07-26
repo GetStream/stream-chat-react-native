@@ -60,7 +60,10 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
   const { t } = useTranslationContext();
 
   return (
-    <View style={[styles.handle, { backgroundColor: white }, handle]}>
+    <View
+      accessibilityLabel='Image Grid Handle'
+      style={[styles.handle, { backgroundColor: white }, handle]}
+    >
       {leftComponent ? leftComponent({ closeGridView }) : <View style={styles.leftContainer} />}
       {centerComponent ? (
         centerComponent({ closeGridView })

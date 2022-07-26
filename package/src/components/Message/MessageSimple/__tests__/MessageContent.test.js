@@ -188,15 +188,21 @@ describe('MessageContent', () => {
   it('renders the FileAttachment component when a file attachment exists', async () => {
     const user = generateUser();
     const message = generateMessage({
-      attachments: [{ title: 'file', type: 'file' }],
+      attachments: [
+        { title: 'file', type: 'file' },
+        { title: 'audio', type: 'audio' },
+        { title: 'video', type: 'video' },
+      ],
       user,
     });
 
-    const { getByTestId } = renderMessage({ message });
+    const { getByTestId, queryAllByTestId } = renderMessage({ message });
+
+    const fileAttachments = queryAllByTestId('file-attachment');
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(getByTestId('file-attachment')).toBeTruthy();
+      expect(fileAttachments).toHaveLength(2);
     });
   });
 

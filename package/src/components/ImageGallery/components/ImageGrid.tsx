@@ -82,7 +82,7 @@ const GridImage = <
   }
 
   return (
-    <TouchableOpacity onPress={selectAndClose}>
+    <TouchableOpacity accessibilityLabel='Grid Image' onPress={selectAndClose}>
       {type === 'video' ? (
         <View style={[styles.image, { height: size, width: size }, gridImage]}>
           <VideoThumbnail />
@@ -102,26 +102,27 @@ const renderItem = <
   item: GridImageItem<StreamChatGenerics>;
 }) => <GridImage item={item} />;
 
-type Props<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> =
-  ImageGalleryGridImageComponents<StreamChatGenerics> & {
-    closeGridView: () => void;
-    photos: Photo<StreamChatGenerics>[];
-    setImage: React.Dispatch<
-      React.SetStateAction<
-        | {
-            messageId?: string | undefined;
-            url?: string | undefined;
-          }
-        | undefined
-      >
-    >;
-    numberOfImageGalleryGridColumns?: number;
-  };
+export type ImageGridType<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = ImageGalleryGridImageComponents<StreamChatGenerics> & {
+  closeGridView: () => void;
+  photos: Photo<StreamChatGenerics>[];
+  setImage: React.Dispatch<
+    React.SetStateAction<
+      | {
+          messageId?: string | undefined;
+          url?: string | undefined;
+        }
+      | undefined
+    >
+  >;
+  numberOfImageGalleryGridColumns?: number;
+};
 
 export const ImageGrid = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: Props<StreamChatGenerics>,
+  props: ImageGridType<StreamChatGenerics>,
 ) => {
   const {
     avatarComponent,
@@ -154,6 +155,7 @@ export const ImageGrid = <
 
   return (
     <BottomSheetFlatList<GridImageItem<StreamChatGenerics>>
+      accessibilityLabel='Image Grid'
       contentContainerStyle={[
         styles.contentContainer,
         { backgroundColor: white },
