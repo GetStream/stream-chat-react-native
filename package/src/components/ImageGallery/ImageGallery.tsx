@@ -259,18 +259,20 @@ export const ImageGallery = <
 
   const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
-      cur.attachments?.filter(
-        (attachment) =>
-          (attachment.type === 'giphy' &&
-            (attachment.giphy?.[giphyVersion]?.url ||
-              attachment.thumb_url ||
-              attachment.image_url)) ||
-          (attachment.type === 'image' &&
-            !attachment.title_link &&
-            !attachment.og_scrape_url &&
-            getUrlOfImageAttachment(attachment)) ||
-          (isVideoPackageAvailable() && attachment.type === 'video'),
-      ) || [];
+      cur.attachments
+        ?.filter(
+          (attachment) =>
+            (attachment.type === 'giphy' &&
+              (attachment.giphy?.[giphyVersion]?.url ||
+                attachment.thumb_url ||
+                attachment.image_url)) ||
+            (attachment.type === 'image' &&
+              !attachment.title_link &&
+              !attachment.og_scrape_url &&
+              getUrlOfImageAttachment(attachment)) ||
+            (isVideoPackageAvailable() && attachment.type === 'video'),
+        )
+        .reverse() || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {
       const imageUrl = getUrlOfImageAttachment(a) as string;
@@ -310,6 +312,12 @@ export const ImageGallery = <
   const photoLength = photos.length;
 
   /**
+   * The URL for the images may differ because of dimensions passed as
+   * part of the query.
+   */
+  const stripQueryFromUrl = (url: string) => url.split('?')[0];
+
+  /**
    * Set selected photo when changed via pressing in the message list
    */
   useEffect(() => {
@@ -325,7 +333,8 @@ export const ImageGallery = <
 
     const newIndex = photos.findIndex(
       (photo) =>
-        photo.messageId === selectedMessage?.messageId && photo.uri === selectedMessage?.url,
+        photo.messageId === selectedMessage?.messageId &&
+        stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
     );
 
     if (photoLength > 1) {
