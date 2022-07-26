@@ -66,6 +66,7 @@ export type FileUpload = {
   duration?: number;
   paused?: boolean;
   progress?: number;
+  thumb_url?: string;
   url?: string;
 };
 
@@ -220,7 +221,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for attach button.
    *
-   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/v3/#attachbutton)
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/attach-button/)
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
 
@@ -234,7 +235,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for commands button.
    *
-   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/v3/#commandsbutton)
+   * Defaults to and accepts same props as: [CommandsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/commands-button/)
    */
   CommandsButton: React.ComponentType<CommandsButtonProps<StreamChatGenerics>>;
   /**
@@ -273,7 +274,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for more options button.
    *
-   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/v3/#moreoptionsbutton)
+   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/more-options-button/)
    */
   MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps<StreamChatGenerics>>;
   /** Limit on the number of lines in the text input before scrolling */
@@ -282,7 +283,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component for send button.
    *
-   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/v3/#sendbutton)
+   * Defaults to and accepts same props as: [SendButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/send-button/)
    */
   SendButton: React.ComponentType<SendButtonProps<StreamChatGenerics>>;
   sendImageAsync: boolean;
@@ -678,14 +679,18 @@ export const MessageInputProvider = <
         }
       }
 
+      // To get the mime type of the image from the file name and send it as an response for an image
+      const mime_type: string | boolean = lookup(image.file.filename as string);
+
       if (image.state === FileState.UPLOADED || image.state === FileState.FINISHED) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
+          mime_type: mime_type ? mime_type : undefined,
           original_height: image.height,
           original_width: image.width,
           type: 'image',
-        } as Attachment<StreamChatGenerics>);
+        });
       }
     }
 
@@ -698,13 +703,16 @@ export const MessageInputProvider = <
         sending.current = false;
         return;
       }
+      const mime_type: string | boolean = lookup(file.file.name as string);
+
       if (file.state === FileState.UPLOADED || file.state === FileState.FINISHED) {
         if (file.file.type?.startsWith('image/')) {
           attachments.push({
             fallback: file.file.name,
             image_url: file.url,
+            mime_type: mime_type ? mime_type : undefined,
             type: 'image',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else if (file.file.type?.startsWith('audio/')) {
           attachments.push({
             asset_url: file.url,
@@ -713,16 +721,17 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'audio',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else if (file.file.type?.startsWith('video/')) {
           attachments.push({
             asset_url: file.url,
             duration: file.file.duration,
             file_size: file.file.size,
             mime_type: file.file.type,
+            thumb_url: file.thumb_url,
             title: file.file.name,
             type: 'video',
-          } as Attachment<StreamChatGenerics>);
+          });
         } else {
           attachments.push({
             asset_url: file.url,
@@ -730,7 +739,7 @@ export const MessageInputProvider = <
             mime_type: file.file.type,
             title: file.file.name,
             type: 'file',
-          } as Attachment<StreamChatGenerics>);
+          });
         }
       }
     }
@@ -907,9 +916,6 @@ export const MessageInputProvider = <
   };
 
   const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
-    if (!newFile) {
-      return;
-    }
     const { file, id } = newFile;
 
     setFileUploads(getUploadSetStateAction(id, FileState.UPLOADING));
@@ -921,7 +927,7 @@ export const MessageInputProvider = <
       } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-      const extraData: Partial<FileUpload> = { url: response.file };
+      const extraData: Partial<FileUpload> = { thumb_url: response.thumb_url, url: response.file };
       setFileUploads(getUploadSetStateAction(id, FileState.UPLOADED, extraData));
     } catch (error: unknown) {
       handleFileOrImageUploadError(error, false, id);

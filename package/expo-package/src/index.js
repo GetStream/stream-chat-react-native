@@ -49,6 +49,7 @@ registerNativeHandlers({
         after,
         first,
         mediaType: [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video],
+        sortBy: [MediaLibrary.SortBy.modificationTime],
       });
       const assets = results.assets.map((asset) => ({
         duration: asset.duration,

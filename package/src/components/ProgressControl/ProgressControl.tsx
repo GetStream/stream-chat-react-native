@@ -11,12 +11,13 @@ import Animated, {
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-type ProgressControlProps = {
+export type ProgressControlProps = {
   duration: number;
   filledColor: string;
   onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   progress: number;
+  testID: string;
   width: number;
 };
 
@@ -47,22 +48,19 @@ const styles = StyleSheet.create({
 const ProgressControlThumb = () => {
   const {
     theme: {
-      colors: { black, white_snow },
+      colors: { black },
     },
   } = useTheme();
   return (
     <View
-      style={[
-        styles.progressControlThumbStyle,
-        { backgroundColor: white_snow, shadowColor: black },
-      ]}
+      style={[styles.progressControlThumbStyle, { backgroundColor: '#ffffff', shadowColor: black }]}
     />
   );
 };
 
 export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
   (props) => {
-    const { duration, filledColor, onPlayPause, onProgressDrag, progress, width } = props;
+    const { duration, filledColor, onPlayPause, onProgressDrag, progress, testID, width } = props;
     const {
       theme: {
         colors: { grey_dark },
@@ -111,7 +109,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
       <View style={[styles.containerStyle, { backgroundColor: grey_dark, width }]}>
         <Animated.View style={[styles.innerStyle, animatedStyles]} />
 
-        <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent}>
+        <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent} testID={testID}>
           <Animated.View style={[thumbStyles]}>
             <ProgressControlThumb />
           </Animated.View>

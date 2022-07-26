@@ -4,14 +4,20 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import { MessageProvider } from '../../../contexts/messageContext/MessageContext';
+import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import {
   generateAttachmentAction,
   generateAudioAttachment,
   generateFileAttachment,
   generateImageAttachment,
+  generateVideoAttachment,
 } from '../../../mock-builders/generator/attachment';
 import { generateMessage } from '../../../mock-builders/generator/message';
+import * as NativeUtils from '../../../native';
+
+import { ImageLoadingFailedIndicator } from '../../Attachment/ImageLoadingFailedIndicator';
+import { ImageLoadingIndicator } from '../../Attachment/ImageLoadingIndicator';
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
 
@@ -19,9 +25,11 @@ const getAttachmentComponent = (props) => {
   const message = generateMessage();
   return (
     <ThemeProvider>
-      <MessageProvider value={{ message }}>
-        <Attachment {...props} />
-      </MessageProvider>
+      <MessagesProvider value={{ ImageLoadingFailedIndicator, ImageLoadingIndicator }}>
+        <MessageProvider value={{ message }}>
+          <Attachment {...props} />
+        </MessageProvider>
+      </MessagesProvider>
     </ThemeProvider>
   );
 };
@@ -34,6 +42,16 @@ const getActionComponent = (props) => (
 describe('Attachment', () => {
   it('should render File component for "audio" type attachment', async () => {
     const attachment = generateAudioAttachment();
+    const { getByTestId } = render(getAttachmentComponent({ attachment }));
+
+    await waitFor(() => {
+      expect(getByTestId('file-attachment')).toBeTruthy();
+    });
+  });
+
+  it('should render File component for "video" type attachment', async () => {
+    jest.spyOn(NativeUtils, 'isVideoPackageAvailable').mockImplementation(jest.fn(() => false));
+    const attachment = generateVideoAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
     await waitFor(() => {

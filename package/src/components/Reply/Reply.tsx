@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import merge from 'lodash/merge';
@@ -7,8 +7,8 @@ import type { Attachment } from 'stream-chat';
 
 import { useMessageContext } from '../../contexts/messageContext/MessageContext';
 import {
+  MessageInputContext,
   MessageInputContextValue,
-  useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
   MessagesContextValue,
@@ -53,12 +53,15 @@ const styles = StyleSheet.create({
   },
   text: { fontSize: 12 },
   textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
-  videoAttachment: {
+  videoThumbnailContainerStyle: {
     borderRadius: 8,
     height: 50,
     marginLeft: 8,
     marginVertical: 8,
     width: 50,
+  },
+  videoThumbnailImageStyle: {
+    borderRadius: 10,
   },
 });
 
@@ -140,6 +143,10 @@ const ReplyWithContext = <
         markdownStyles,
         messageContainer,
         textContainer,
+        videoThumbnail: {
+          container: videoThumbnailContainerStyle,
+          image: videoThumbnailImageStyle,
+        },
       },
     },
   } = useTheme();
@@ -153,6 +160,7 @@ const ReplyWithContext = <
     !error &&
     lastAttachment &&
     messageType !== 'file' &&
+    messageType !== 'video' &&
     (lastAttachment.image_url || lastAttachment.thumb_url || lastAttachment.og_scrape_url);
 
   const onlyEmojis = !lastAttachment && !!quotedMessage.text && emojiRegex.test(quotedMessage.text);
@@ -207,7 +215,11 @@ const ReplyWithContext = <
           ) : null
         ) : null}
         {messageType === 'video' && !lastAttachment.og_scrape_url ? (
-          <VideoThumbnail style={[styles.videoAttachment]} />
+          <VideoThumbnail
+            imageStyle={[styles.videoThumbnailImageStyle, videoThumbnailImageStyle]}
+            style={[styles.videoThumbnailContainerStyle, videoThumbnailContainerStyle]}
+            thumb_url={lastAttachment.thumb_url}
+          />
         ) : null}
         <MessageTextContainer<StreamChatGenerics>
           markdownStyles={
@@ -226,7 +238,7 @@ const ReplyWithContext = <
               : messageType === 'image'
               ? t('Photo')
               : messageType === 'video'
-              ? 'Video'
+              ? t('Video')
               : messageType === 'file'
               ? lastAttachment?.title || ''
               : '',
@@ -265,6 +277,22 @@ const ReplyWithContext = <
       </View>
     </View>
   );
+};
+
+/**
+ * When a reply is rendered in a MessageSimple, it does
+ * not have a MessageInputContext. As this is deliberate,
+ * this function exists to avoid the error thrown when
+ * using a context outside of its provider.
+ * */
+const useMessageInputContextIfAvailable = <
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+>() => {
+  const contextValue = useContext(
+    MessageInputContext,
+  ) as unknown as MessageInputContextValue<StreamChatGenerics>;
+
+  return contextValue;
 };
 
 const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics>(
@@ -307,7 +335,7 @@ export const Reply = <
   const { FileAttachmentIcon = FileIconDefault, MessageAvatar = MessageAvatarDefault } =
     useMessagesContext<StreamChatGenerics>();
 
-  const { editing, quotedMessage } = useMessageInputContext<StreamChatGenerics>();
+  const { editing, quotedMessage } = useMessageInputContextIfAvailable<StreamChatGenerics>();
 
   const quotedEditingMessage = (
     typeof editing !== 'boolean' ? editing?.quoted_message || false : false

@@ -128,6 +128,7 @@ export type SoundOptions = {
 
 export type SoundReturnType = {
   paused: boolean;
+  testID: string;
   getDuration?: () => number;
   isPlaying?: () => boolean;
   onBuffer?: (props: { isBuffering: boolean }) => void;
@@ -185,6 +186,7 @@ export type VideoPayloadData = {
 
 export type VideoType = {
   paused: boolean;
+  testID: string;
   uri: string;
   videoRef: React.RefObject<VideoType>;
   onBuffer?: (props: { isBuffering: boolean }) => void;

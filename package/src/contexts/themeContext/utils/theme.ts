@@ -25,6 +25,8 @@ export const Colors = {
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#000000CC', // CC = 80% opacity
   shadow_icon: '#00000040', // 40 = 25% opacity; x=0, y=0, radius=4
+  static_black: '#000000',
+  static_white: '#ffffff',
   targetedMessageBackground: '#FBF4DD', // dark mode = #302D22
   transparent: 'transparent',
   white: '#FFFFFF',
@@ -461,6 +463,10 @@ export type Theme = {
       shuffle: TextStyle;
       title: TextStyle;
     };
+    loadingIndicator: {
+      container: ViewStyle;
+      roundedView: ViewStyle;
+    };
     pinnedHeader: {
       container: ViewStyle;
       label: TextStyle;
@@ -532,6 +538,10 @@ export type Theme = {
     markdownStyles: MarkdownStyle;
     messageContainer: ViewStyle;
     textContainer: ViewStyle;
+    videoThumbnail: {
+      container: ViewStyle;
+      image: ImageStyle;
+    };
   };
   screenPadding: number;
   spinner: ViewStyle;
@@ -984,6 +994,10 @@ export const defaultTheme: Theme = {
       shuffle: {},
       title: {},
     },
+    loadingIndicator: {
+      container: {},
+      roundedView: {},
+    },
     pinnedHeader: {
       container: {},
       label: {},
@@ -1063,6 +1077,10 @@ export const defaultTheme: Theme = {
     markdownStyles: {},
     messageContainer: {},
     textContainer: {},
+    videoThumbnail: {
+      container: {},
+      image: {},
+    },
   },
   screenPadding: 8,
   spinner: {},

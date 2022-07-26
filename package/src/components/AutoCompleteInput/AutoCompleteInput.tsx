@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { I18nManager, StyleSheet, TextInput, TextInputProps } from 'react-native';
 
 import throttle from 'lodash/throttle';
 
@@ -362,7 +362,7 @@ const AutoCompleteInputWithContext = <
       isTrackingStarted.current
     ) {
       stopTracking();
-    } else if (giphyEnabled && !(await handleCommand(text))) {
+    } else if (!(await handleCommand(text))) {
       const mentionTokenMatch = text
         .slice(0, selectionEnd.current)
         .match(/(?!^|\W)?@[^\s@]*\s?[^\s@]*$/g);
@@ -417,6 +417,7 @@ const AutoCompleteInputWithContext = <
         {
           color: black,
           maxHeight: (textHeight || 17) * numberOfLines,
+          textAlign: I18nManager.isRTL ? 'right' : 'left',
         },
         inputBox,
       ]}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ViewProps } from 'react-native';
+import { ImageBackground, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons';
@@ -17,29 +17,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 50,
     display: 'flex',
+    elevation: 6,
     height: 36,
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      height: 3,
+      width: 0,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
     width: 36,
   },
 });
 
-export type VideoThumbnailProps = ViewProps;
+export type VideoThumbnailProps = {
+  imageStyle?: StyleProp<ImageStyle>;
+  style?: StyleProp<ViewStyle>;
+  thumb_url?: string;
+};
 
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
     theme: {
-      colors: { black, white_snow },
+      colors: { static_black, static_white },
       messageSimple: {
         videoThumbnail: { container, roundedView },
       },
     },
   } = useTheme();
-  const { style, ...rest } = props;
+  const { imageStyle, style, thumb_url } = props;
   return (
-    <View {...rest} style={[styles.container, container, style]}>
-      <View style={[styles.roundedView, roundedView, { backgroundColor: white_snow }]}>
-        <Play height={24} pathFill={black} width={24} />
+    <ImageBackground
+      accessibilityLabel='Video Thumbnail'
+      imageStyle={imageStyle}
+      source={{ uri: thumb_url }}
+      style={[styles.container, container, style]}
+    >
+      <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
+        <Play height={24} pathFill={static_black} width={24} />
       </View>
-    </View>
+    </ImageBackground>
   );
 };

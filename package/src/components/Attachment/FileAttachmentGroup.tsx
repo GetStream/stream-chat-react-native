@@ -60,10 +60,10 @@ const FileAttachmentGroupWithContext = <
 
   // Handler triggered when an audio is loaded in the message input. The initial state is defined for the audio here and the duration is set.
   const onLoad = (index: string, duration: number) => {
-    setFilesToDisplay((prevFileUploads) =>
-      prevFileUploads.map((fileUpload, id) => ({
-        ...fileUpload,
-        duration: id.toString() === index ? duration : fileUpload.duration,
+    setFilesToDisplay((prevFilesToDisplay) =>
+      prevFilesToDisplay.map((fileToDisplay, id) => ({
+        ...fileToDisplay,
+        duration: id.toString() === index ? duration : fileToDisplay.duration,
       })),
     );
   };
@@ -125,18 +125,22 @@ const FileAttachmentGroupWithContext = <
           ]}
         >
           {file.type === 'audio' ? (
-            <AudioAttachmentUploadPreview
-              duration={file.duration}
-              fileId={index.toString()}
-              fileName={file.title as string}
-              fileUrl={file.asset_url}
-              index={index}
-              onLoad={onLoad}
-              onPlayPause={onPlayPause}
-              onProgress={onProgress}
-              paused={file.paused}
-              progress={file.progress}
-            />
+            <View accessibilityLabel='audio-attachment-preview'>
+              <AudioAttachmentUploadPreview
+                index={index}
+                item={{
+                  duration: file.duration,
+                  file: { name: file.title as string, uri: file.asset_url },
+                  id: index.toString(),
+                  paused: file.paused,
+                  progress: file.progress,
+                }}
+                onLoad={onLoad}
+                onPlayPause={onPlayPause}
+                onProgress={onProgress}
+                testID='audio-attachment-preview'
+              />
+            </View>
           ) : (
             <Attachment attachment={file} />
           )}

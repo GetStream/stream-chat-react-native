@@ -27,7 +27,7 @@ jobs:
       - name: Lint
         run: yarn lerna-workspaces run lint && cd docusaurus && npx prettier --check '**/*.mdx'
       - name: Test
-        run: yarn test:unit
+        run: yarn test:coverage
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         with:

@@ -2,6 +2,9 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import type { TouchableOpacityProps } from 'react-native';
 
+import type { ImageLoadingFailedIndicatorProps } from 'src/components/Attachment/ImageLoadingFailedIndicator';
+import type { ImageLoadingIndicatorProps } from 'src/components/Attachment/ImageLoadingIndicator';
+
 import type { MessagePinnedHeaderProps } from 'src/components/Message/MessageSimple/MessagePinnedHeader';
 
 import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
@@ -115,6 +118,17 @@ export type MessagesContextValue<
    * The giphy version to render - check the keys of the [Image Object](https://developers.giphy.com/docs/api/schema#image-object) for possible values. Uses 'fixed_height' by default
    * */
   giphyVersion: keyof NonNullable<Attachment['giphy']>;
+
+  /**
+   * The indicator rendered when loading an image fails.
+   */
+  ImageLoadingFailedIndicator: React.ComponentType<ImageLoadingFailedIndicatorProps>;
+
+  /**
+   * The indicator rendered when image is loading. By default renders <ActivityIndicator/>
+   */
+  ImageLoadingIndicator: React.ComponentType<ImageLoadingIndicatorProps>;
+
   /**
    * When true, messageList will be scrolled at first unread message, when opened.
    */
@@ -129,6 +143,7 @@ export type MessagesContextValue<
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
    **/
   InlineUnreadIndicator: React.ComponentType;
+
   Message: React.ComponentType<MessageProps<StreamChatGenerics>>;
   /**
    * UI component for MessageAvatar
@@ -179,7 +194,7 @@ export type MessagesContextValue<
   MessageStatus: React.ComponentType<MessageStatusProps<StreamChatGenerics>>;
   /**
    * UI component for MessageSystem
-   * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/v3/#messagesystem)
+   * Defaults to: [MessageSystem](https://getstream.io/chat/docs/sdk/reactnative/ui-components/message-system/)
    */
   MessageSystem: React.ComponentType<MessageSystemProps<StreamChatGenerics>>;
   /**
@@ -194,7 +209,7 @@ export type MessagesContextValue<
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * UI component for Reply
-   * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/v3/#reply)
+   * Defaults to: [Reply](https://getstream.io/chat/docs/sdk/reactnative/ui-components/reply/)
    */
   Reply: React.ComponentType<ReplyProps<StreamChatGenerics>>;
   /**
@@ -203,7 +218,7 @@ export type MessagesContextValue<
   retrySendMessage: (message: MessageResponse<StreamChatGenerics>) => Promise<void>;
   /**
    * UI component for ScrollToBottomButton
-   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/v3/#ScrollToBottomButton)
+   * Defaults to: [ScrollToBottomButton](https://getstream.io/chat/docs/sdk/reactnative/ui-components/scroll-to-bottom-button/)
    */
   ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<StreamChatGenerics>) => void;
@@ -211,12 +226,12 @@ export type MessagesContextValue<
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
-   * Defaults to: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/v3/#typingindicator)
+   * Defaults to: [TypingIndicator](https://getstream.io/chat/docs/sdk/reactnative/ui-components/typing-indicator/)
    */
   TypingIndicator: React.ComponentType;
   /**
    * UI component for TypingIndicatorContainer
-   * Defaults to: [TypingIndicatorContainer](https://getstream.github.io/stream-chat-react-native/v3/#typingindicatorcontainer)
+   * Defaults to: [TypingIndicatorContainer](https://getstream.io/chat/docs/sdk/reactnative/contexts/messages-context/#typingindicatorcontainer)
    */
   TypingIndicatorContainer: React.ComponentType;
   updateMessage: (
