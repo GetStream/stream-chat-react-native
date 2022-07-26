@@ -74,7 +74,12 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
   }
 
   return (
-    <TapGestureHandler maxDeltaX={16} maxDeltaY={16} onHandlerStateChange={tapEvent}>
+    <TapGestureHandler
+      maxDeltaX={16}
+      maxDeltaY={16}
+      onHandlerStateChange={tapEvent}
+      testID='image-gallery-overlay'
+    >
       <Animated.View
         style={[
           StyleSheet.absoluteFillObject,

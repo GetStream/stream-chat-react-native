@@ -12,6 +12,7 @@ export const useCreateMessageInputContext = <
   asyncIds,
   asyncUploads,
   AttachButton,
+  AudioAttachmentUploadPreview,
   autoCompleteSuggestionsLimit,
   clearEditingState,
   clearQuotedMessageState,
@@ -96,7 +97,9 @@ export const useCreateMessageInputContext = <
 }: MessageInputContextValue<StreamChatGenerics> &
   Pick<ThreadContextValue<StreamChatGenerics>, 'thread'>) => {
   const editingExists = !!editing;
-  const fileUploadsValue = fileUploads.map(({ state }) => state).join();
+  const fileUploadsValue = fileUploads
+    .map(({ duration, paused, progress, state }) => `${state},${paused},${progress},${duration}`)
+    .join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const mentionedUsersLength = mentionedUsers.length;
   const quotedMessageId = quotedMessage
@@ -113,6 +116,7 @@ export const useCreateMessageInputContext = <
       asyncIds,
       asyncUploads,
       AttachButton,
+      AudioAttachmentUploadPreview,
       autoCompleteSuggestionsLimit,
       clearEditingState,
       clearQuotedMessageState,

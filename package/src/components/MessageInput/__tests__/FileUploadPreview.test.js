@@ -25,6 +25,21 @@ function MockedFlatList(props) {
   return <View testID={props.testID}>{items}</View>;
 }
 
+jest.mock('../../../native.ts', () => {
+  // eslint-disable-next-line no-undef
+  const View = require('react-native/Libraries/Components/View/View');
+
+  return {
+    isAudioPackageAvailable: jest.fn(() => true),
+    NetInfo: {
+      addEventListener: jest.fn(),
+    },
+    Sound: {
+      Player: View,
+    },
+  };
+});
+
 describe('FileUploadPreview', () => {
   it('should render FileUploadPreview with all uploading files', async () => {
     const fileUploads = [
@@ -296,6 +311,55 @@ describe('FileUploadPreview', () => {
       expect(queryAllByText('File type not supported')).toHaveLength(1);
       expect(removeFile).toHaveBeenCalledTimes(0);
       expect(uploadFile).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  it('should render FileUploadPreview with all uploaded audios', async () => {
+    const fileUploads = [
+      generateFileUploadPreview({
+        id: 'file-upload-id-1',
+        state: FileState.UPLOADED,
+        type: 'audio/mp3',
+      }),
+    ];
+    const removeFile = jest.fn();
+    const uploadFile = jest.fn();
+
+    const user1 = generateUser();
+
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 })],
+      messages: [generateMessage({ user: user1 }), generateMessage({ user: user1 })],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel} FlatList={MockedFlatList}>
+            <FileUploadPreview
+              fileUploads={fileUploads}
+              removeFile={removeFile}
+              uploadFile={uploadFile}
+            />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const audioAttachmentUploadPreviewComponent = getByTestId('audio-attachment-upload-preview');
+
+    await waitFor(() => {
+      fireEvent(audioAttachmentUploadPreviewComponent, 'onLoad');
+      fireEvent(audioAttachmentUploadPreviewComponent, 'onProgress');
+      fireEvent(audioAttachmentUploadPreviewComponent, 'onPlayPause');
+      fireEvent(audioAttachmentUploadPreviewComponent, 'onPlayPause', {
+        status: false,
+      });
     });
   });
 });

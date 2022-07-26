@@ -306,7 +306,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           >
                             <Image
-                              accessibilityLabel="avatar-image"
+                              accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
                                 Object {
@@ -554,7 +554,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           >
                             <Image
-                              accessibilityLabel="avatar-image"
+                              accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
                                 Object {
@@ -802,7 +802,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           >
                             <Image
-                              accessibilityLabel="avatar-image"
+                              accessibilityLabel="Avatar Image"
                               onError={[Function]}
                               source={
                                 Object {
@@ -1093,7 +1093,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               }
                             >
                               <Image
-                                accessibilityLabel="avatar-image"
+                                accessibilityLabel="Avatar Image"
                                 onError={[Function]}
                                 source={
                                   Object {

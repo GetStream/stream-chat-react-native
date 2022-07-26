@@ -342,6 +342,8 @@ const MessageWithContext = <
             } else if (cur.type === 'video' && !cur.og_scrape_url) {
               acc.files.push(cur);
               acc.other = []; // remove other attachments if a file exists
+            } else if (cur.type === 'audio') {
+              acc.files.push(cur);
             } else if (cur.type === 'image' && !cur.title_link && !cur.og_scrape_url) {
               /**
                * this next if is not combined with the above one for cases where we have
@@ -371,7 +373,6 @@ const MessageWithContext = <
           other: [] as Attachment<StreamChatGenerics>[],
           videos: [] as Attachment<StreamChatGenerics>[],
         };
-
   /**
    * Check if any actions to prevent long press
    */
