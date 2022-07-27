@@ -18,6 +18,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { isAudioPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
@@ -128,7 +129,7 @@ const FileAttachmentGroupWithContext = <
             stylesProp.attachmentContainer,
           ]}
         >
-          {file.type === 'audio' ? (
+          {file.type === 'audio' && isAudioPackageAvailable() ? (
             <View accessibilityLabel='audio-attachment-preview'>
               <AudioAttachment
                 index={index}
