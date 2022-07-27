@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type AudioAttachmentUploadPreviewPropsWithContext<
+export type AudioAttachmentPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
@@ -87,13 +87,13 @@ export type AudioAttachmentUploadPreviewPropsWithContext<
   onLoad: (index: string, duration: number) => void;
   onPlayPause: (index: string, status?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
-  testID: string;
+  testID?: string;
 };
 
-const AudioAttachmentUploadPreviewWithContext = <
+const AudioAttachmentWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>,
+  props: AudioAttachmentPropsWithContext<StreamChatGenerics>,
 ) => {
   const soundRef = React.useRef<SoundReturnType | null>(null);
   const { fileUploads, index, item, onLoad, onPlayPause, onProgress } = props;
@@ -212,10 +212,10 @@ const AudioAttachmentUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white },
+      colors: { accent_blue, black, grey_dark, grey_whisper, static_black, static_white, white },
       messageInput: {
         fileUploadPreview: {
-          audioAttachmentUploadPreview: { progressControlView, progressDurationText, roundedView },
+          audioAttachment: { progressControlView, progressDurationText, roundedView },
           fileContainer,
           fileContentContainer,
           filenameText,
@@ -245,6 +245,7 @@ const AudioAttachmentUploadPreviewWithContext = <
             }
           : {},
         {
+          backgroundColor: white,
           borderColor: grey_whisper,
           width: -16,
         },
@@ -328,9 +329,9 @@ const AudioAttachmentUploadPreviewWithContext = <
   );
 };
 
-export type AudioAttachmentUploadPreviewProps<
+export type AudioAttachmentProps<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Partial<AudioAttachmentUploadPreviewPropsWithContext<StreamChatGenerics>> & {
+> = Partial<AudioAttachmentPropsWithContext<StreamChatGenerics>> & {
   index: number;
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
@@ -340,23 +341,17 @@ export type AudioAttachmentUploadPreviewProps<
 };
 
 /**
- * AudioAttachmentUploadPreview
- * UI Component to preview the audio files set for upload
+ * AudioAttachment
+ * UI Component to preview the audio files
  */
-export const AudioAttachmentUploadPreview = <
+export const AudioAttachment = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >(
-  props: AudioAttachmentUploadPreviewProps<StreamChatGenerics>,
+  props: AudioAttachmentProps<StreamChatGenerics>,
 ) => {
   const { fileUploads, removeFile, uploadFile } = useMessageInputContext<StreamChatGenerics>();
 
-  return (
-    <AudioAttachmentUploadPreviewWithContext
-      {...{ fileUploads, removeFile, uploadFile }}
-      {...props}
-    />
-  );
+  return <AudioAttachmentWithContext {...{ fileUploads, removeFile, uploadFile }} {...props} />;
 };
 
-AudioAttachmentUploadPreview.displayName =
-  'AudioAttachmentUploadPreview{messageInput{autoAttachmentUploadPreview}}';
+AudioAttachment.displayName = 'AudioAttachment{messageInput{autoAttachment}}';

@@ -123,7 +123,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachment'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -133,7 +133,7 @@ const FileUploadPreviewWithContext = <
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    AudioAttachmentUploadPreview,
+    AudioAttachment,
     FileAttachmentIcon,
     fileUploads,
     removeFile,
@@ -230,7 +230,7 @@ const FileUploadPreviewWithContext = <
                 audioAttachmentFileContainer,
               ]}
             >
-              <AudioAttachmentUploadPreview
+              <AudioAttachment
                 index={index}
                 item={item}
                 onLoad={onLoad}
@@ -371,14 +371,14 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { AudioAttachment, fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
       {...{
-        AudioAttachmentUploadPreview,
+        AudioAttachment,
         FileAttachmentIcon,
         fileUploads,
         removeFile,

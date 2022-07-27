@@ -10,13 +10,16 @@ import {
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
 import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
-import { AudioAttachmentUploadPreview } from '../MessageInput/AudioAttachmentUploadPreview';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,6 +30,7 @@ const styles = StyleSheet.create({
 export type FileAttachmentGroupPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'files'> &
+  Pick<MessageInputContextValue<StreamChatGenerics>, 'AudioAttachment'> &
   Pick<MessagesContextValue<StreamChatGenerics>, 'Attachment'> & {
     /**
      * The unique id for the message with file attachments
@@ -51,7 +55,7 @@ const FileAttachmentGroupWithContext = <
 >(
   props: FileAttachmentGroupPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { Attachment, files, messageId, styles: stylesProp = {} } = props;
+  const { Attachment, AudioAttachment, files, messageId, styles: stylesProp = {} } = props;
   const [filesToDisplay, setFilesToDisplay] = useState<FilesToDisplayType[]>([]);
 
   useEffect(() => {
@@ -126,7 +130,7 @@ const FileAttachmentGroupWithContext = <
         >
           {file.type === 'audio' ? (
             <View accessibilityLabel='audio-attachment-preview'>
-              <AudioAttachmentUploadPreview
+              <AudioAttachment
                 index={index}
                 item={{
                   duration: file.duration,
@@ -181,6 +185,8 @@ export const FileAttachmentGroup = <
 
   const { Attachment = AttachmentDefault } = useMessagesContext<StreamChatGenerics>();
 
+  const { AudioAttachment } = useMessageInputContext<StreamChatGenerics>();
+
   const files = propFiles || contextFiles;
 
   if (!files.length) return null;
@@ -189,6 +195,7 @@ export const FileAttachmentGroup = <
     <MemoizedFileAttachmentGroup
       {...{
         Attachment,
+        AudioAttachment,
         files,
         messageId,
       }}
