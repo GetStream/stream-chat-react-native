@@ -559,7 +559,7 @@ useEffect(() => {
     await notifee.displayNotification({
       title: 'New message from ' + message.message.user.name,
       body: message.message.text,
-      data: remoteMessage.data,
+      data,
       android: {
         channelId,
         pressAction: {
