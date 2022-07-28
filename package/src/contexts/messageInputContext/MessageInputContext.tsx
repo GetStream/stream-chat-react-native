@@ -21,8 +21,8 @@ import {
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
 import { isEditingBoolean, useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 
+import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import type { AttachButtonProps } from '../../components/MessageInput/AttachButton';
-import type { AudioAttachmentUploadPreviewProps } from '../../components/MessageInput/AudioAttachmentUploadPreview';
 import type { CommandsButtonProps } from '../../components/MessageInput/CommandsButton';
 import type { InputEditingStateHeaderProps } from '../../components/MessageInput/components/InputEditingStateHeader';
 import type { InputGiphySearchProps } from '../../components/MessageInput/components/InputGiphySearch';
@@ -225,10 +225,8 @@ export type InputMessageInputContextValue<
    */
   AttachButton: React.ComponentType<AttachButtonProps<StreamChatGenerics>>;
 
-  /** Custom UI component for AudioAttachmentUploadPreview. */
-  AudioAttachmentUploadPreview: React.ComponentType<
-    AudioAttachmentUploadPreviewProps<StreamChatGenerics>
-  >;
+  /** Custom UI component for AudioAttachment. */
+  AudioAttachment: React.ComponentType<AudioAttachmentProps<StreamChatGenerics>>;
 
   clearEditingState: () => void;
   clearQuotedMessageState: () => void;

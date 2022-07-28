@@ -1,5 +1,6 @@
 export * from './Attachment/Attachment';
 export * from './Attachment/AttachmentActions';
+export * from './Attachment/AudioAttachment';
 export * from './Attachment/Card';
 export * from './Attachment/FileAttachment';
 export * from './Attachment/FileAttachmentGroup';
@@ -113,7 +114,6 @@ export * from './MessageInput/AttachButton';
 export * from './MessageInput/CommandsButton';
 export * from './MessageInput/CooldownTimer';
 export * from './MessageInput/FileUploadPreview';
-export * from './MessageInput/AudioAttachmentUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/InputButtons';
 export * from './MessageInput/MessageInput';

@@ -40,6 +40,7 @@ export type VideoThumbnailProps = {
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
     theme: {
+      colors: { static_black, static_white },
       messageSimple: {
         videoThumbnail: { container, roundedView },
       },
@@ -53,8 +54,8 @@ export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
       source={{ uri: thumb_url }}
       style={[styles.container, container, style]}
     >
-      <View style={[styles.roundedView, roundedView]}>
-        <Play height={24} pathFill={'#000'} width={24} />
+      <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
+        <Play height={24} pathFill={static_black} width={24} />
       </View>
     </ImageBackground>
   );

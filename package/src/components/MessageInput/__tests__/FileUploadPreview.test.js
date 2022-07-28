@@ -351,13 +351,13 @@ describe('FileUploadPreview', () => {
       </OverlayProvider>,
     );
 
-    const audioAttachmentUploadPreviewComponent = getByTestId('audio-attachment-upload-preview');
+    const AudioAttachmentComponent = getByTestId('audio-attachment-upload-preview');
 
     await waitFor(() => {
-      fireEvent(audioAttachmentUploadPreviewComponent, 'onLoad');
-      fireEvent(audioAttachmentUploadPreviewComponent, 'onProgress');
-      fireEvent(audioAttachmentUploadPreviewComponent, 'onPlayPause');
-      fireEvent(audioAttachmentUploadPreviewComponent, 'onPlayPause', {
+      fireEvent(AudioAttachmentComponent, 'onLoad');
+      fireEvent(AudioAttachmentComponent, 'onProgress');
+      fireEvent(AudioAttachmentComponent, 'onPlayPause');
+      fireEvent(AudioAttachmentComponent, 'onPlayPause', {
         status: false,
       });
     });

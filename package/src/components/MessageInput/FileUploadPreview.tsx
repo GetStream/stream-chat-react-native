@@ -123,7 +123,7 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachmentUploadPreview'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachment'
 > &
   Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
 
@@ -133,7 +133,7 @@ const FileUploadPreviewWithContext = <
   props: FileUploadPreviewPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
-    AudioAttachmentUploadPreview,
+    AudioAttachment,
     FileAttachmentIcon,
     fileUploads,
     removeFile,
@@ -172,8 +172,8 @@ const FileUploadPreviewWithContext = <
   };
 
   // The handler which controls or sets the paused/played state of the audio.
-  const onPlayPause = (index: string, status?: boolean) => {
-    if (status === false) {
+  const onPlayPause = (index: string, pausedStatus?: boolean) => {
+    if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
       setFileUploads((prevFileUploads) =>
         prevFileUploads.map((fileUpload) => ({
@@ -230,7 +230,7 @@ const FileUploadPreviewWithContext = <
                 audioAttachmentFileContainer,
               ]}
             >
-              <AudioAttachmentUploadPreview
+              <AudioAttachment
                 index={index}
                 item={item}
                 onLoad={onLoad}
@@ -296,18 +296,9 @@ const FileUploadPreviewWithContext = <
             style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
             testID='remove-file-upload-preview'
           >
-            <Close />
+            <Close pathFill={grey_dark} />
           </TouchableOpacity>
         </UploadProgressIndicator>
-        <TouchableOpacity
-          onPress={() => {
-            removeFile(item.id);
-          }}
-          style={[styles.dismiss, { backgroundColor: grey_gainsboro }, dismiss]}
-          testID='remove-file-upload-preview'
-        >
-          <Close pathFill={grey_dark} />
-        </TouchableOpacity>
       </>
     );
   };
@@ -380,14 +371,14 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { AudioAttachmentUploadPreview, fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { AudioAttachment, fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
   const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
       {...{
-        AudioAttachmentUploadPreview,
+        AudioAttachment,
         FileAttachmentIcon,
         fileUploads,
         removeFile,

@@ -9,10 +9,7 @@ import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 
 import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
-import {
-  AudioAttachmentUploadPreview,
-  AudioAttachmentUploadPreviewProps,
-} from '../AudioAttachmentUploadPreview';
+import { AudioAttachment, AudioAttachmentProps } from '../../Attachment/AudioAttachment';
 
 jest.mock('../../../native.ts', () => {
   const View = require('react-native/Libraries/Components/View/View');
@@ -28,13 +25,13 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-const getComponent = (props: Partial<AudioAttachmentUploadPreviewProps>) => (
+const getComponent = (props: Partial<AudioAttachmentProps>) => (
   <ThemeProvider theme={defaultTheme}>
-    <AudioAttachmentUploadPreview {...(props as unknown as AudioAttachmentUploadPreviewProps)} />,
+    <AudioAttachment {...(props as unknown as AudioAttachmentProps)} />,
   </ThemeProvider>
 );
 
-describe('AudioAttachmentUploadPreview', () => {
+describe('AudioAttachment', () => {
   it('handle play pause button when isPausedStatusAvailable unavailable and progress 1', () => {
     const seekMock = jest.fn();
     jest.spyOn(React, 'useRef').mockReturnValue({
