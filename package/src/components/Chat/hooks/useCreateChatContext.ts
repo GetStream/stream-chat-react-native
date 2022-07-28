@@ -14,6 +14,7 @@ export const useCreateChatContext = <
   isOnline,
   mutedUsers,
   setActiveChannel,
+  subscribeConnectionRecoveredCallback,
 }: ChatContextValue<StreamChatGenerics>) => {
   const channelId = channel?.id;
   const clientValues = client
@@ -33,6 +34,7 @@ export const useCreateChatContext = <
       isOnline,
       mutedUsers,
       setActiveChannel,
+      subscribeConnectionRecoveredCallback,
     }),
     [channelId, clientValues, connectionRecovering, isOnline, mutedUsersLength],
   );

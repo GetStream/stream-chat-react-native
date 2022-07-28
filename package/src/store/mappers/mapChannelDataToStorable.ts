@@ -11,7 +11,6 @@ export const mapChannelDataToStorable = <
 >(
   channel: ChannelResponse<StreamChatGenerics>,
 ): TableRow<'channels'> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {
     auto_translation_enabled,
     auto_translation_language,
@@ -27,6 +26,7 @@ export const mapChannelDataToStorable = <
     invites,
     last_message_at,
     member_count,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     members,
     muted,
     own_capabilities,

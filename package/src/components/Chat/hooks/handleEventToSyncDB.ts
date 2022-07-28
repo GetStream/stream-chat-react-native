@@ -1,14 +1,14 @@
 import type { Event } from 'stream-chat';
 
-import { deleteChannel } from '../../../../store/apis/deleteChannel';
-import { deleteMember } from '../../../../store/apis/deleteMember';
-import { deleteMessagesForChannel } from '../../../../store/apis/deleteMessagesForChannel';
-import { updateMessage } from '../../../../store/apis/updateMessage';
-import { upsertChannelData } from '../../../../store/apis/upsertChannelData';
-import { upsertChannels } from '../../../../store/apis/upsertChannels';
-import { upsertMembers } from '../../../../store/apis/upsertMembers';
-import { upsertMessages } from '../../../../store/apis/upsertMessages';
-import { upsertReads } from '../../../../store/apis/upsertReads';
+import { deleteChannel } from '../../../store/apis/deleteChannel';
+import { deleteMember } from '../../../store/apis/deleteMember';
+import { deleteMessagesForChannel } from '../../../store/apis/deleteMessagesForChannel';
+import { updateMessage } from '../../../store/apis/updateMessage';
+import { upsertChannelData } from '../../../store/apis/upsertChannelData';
+import { upsertChannels } from '../../../store/apis/upsertChannels';
+import { upsertMembers } from '../../../store/apis/upsertMembers';
+import { upsertMessages } from '../../../store/apis/upsertMessages';
+import { upsertReads } from '../../../store/apis/upsertReads';
 
 export const handleEventToSyncDB = (event: Event, flush?: boolean) => {
   const { type } = event;

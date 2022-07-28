@@ -6,10 +6,14 @@ import Dayjs from 'dayjs';
 import type { Channel } from 'stream-chat';
 
 import { useAppSettings } from './hooks/useAppSettings';
+import { useConnectionRecovered } from './hooks/useConnectionRecovered';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useMutedUsers } from './hooks/useMutedUsers';
 
+import { useSyncDatabase } from './hooks/useSyncDatabase';
+
+import { ChannelsStateProvider } from '../../contexts/channelsStateContext/ChannelsStateContext';
 import { ChatContextValue, ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { DeepPartial, ThemeProvider } from '../../contexts/themeContext/ThemeContext';
@@ -178,6 +182,10 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<StreamChatGenerics>) => setChannel(newChannel);
 
   const appSettings = useAppSettings(client, isOnline);
+  const { subscribeConnectionRecoveredCallback } = useConnectionRecovered<StreamChatGenerics>({
+    client,
+    enableOfflineSupport,
+  });
 
   const chatContext = useCreateChatContext({
     appSettings,
@@ -188,6 +196,7 @@ const ChatWithContext = <
     isOnline,
     mutedUsers,
     setActiveChannel,
+    subscribeConnectionRecoveredCallback,
   });
 
   useEffect(() => {
@@ -196,6 +205,11 @@ const ChatWithContext = <
     }
   }, []);
 
+  useSyncDatabase({
+    client,
+    enableOfflineSupport,
+  });
+
   if (loadingTranslators) return null;
 
   return (
@@ -203,7 +217,9 @@ const ChatWithContext = <
       <TranslationProvider
         value={{ ...translators, userLanguage: client.user?.language || DEFAULT_USER_LANGUAGE }}
       >
-        <ThemeProvider style={style}>{children}</ThemeProvider>
+        <ThemeProvider style={style}>
+          <ChannelsStateProvider<StreamChatGenerics>>{children}</ChannelsStateProvider>
+        </ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
   );

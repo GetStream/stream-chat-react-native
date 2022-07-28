@@ -4,18 +4,18 @@ import type { StreamChat } from 'stream-chat';
 
 import { handleEventToSyncDB } from './handleEventToSyncDB';
 
-import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
-import type { DefaultStreamChatGenerics } from '../../../../types/types';
+import type { DefaultStreamChatGenerics } from '../../../types/types';
 
-type Params = {
+type Params<StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics> = {
+  client: StreamChat<StreamChatGenerics>;
   enableOfflineSupport: boolean;
 };
 export const useSyncDatabase = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 >({
+  client,
   enableOfflineSupport,
-}: Params) => {
-  const { client } = useChatContext<StreamChatGenerics>();
+}: Params<StreamChatGenerics>) => {
   useEffect(() => {
     let listener: ReturnType<StreamChat['on']> | undefined;
 
