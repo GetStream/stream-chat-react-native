@@ -85,7 +85,7 @@ export type AudioAttachmentPropsWithContext<
   index: number;
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
-  onPlayPause: (index: string, status?: boolean) => void;
+  onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
   testID?: string;
 };
@@ -335,7 +335,7 @@ export type AudioAttachmentProps<
   index: number;
   item: Omit<FileUpload, 'state'>;
   onLoad: (index: string, duration: number) => void;
-  onPlayPause: (index: string, status?: boolean) => void;
+  onPlayPause: (index: string, pausedStatus?: boolean) => void;
   onProgress: (index: string, currentTime?: number, hasEnd?: boolean) => void;
   testID: string;
 };

@@ -172,8 +172,8 @@ const FileUploadPreviewWithContext = <
   };
 
   // The handler which controls or sets the paused/played state of the audio.
-  const onPlayPause = (index: string, status?: boolean) => {
-    if (status === false) {
+  const onPlayPause = (index: string, pausedStatus?: boolean) => {
+    if (pausedStatus === false) {
       // If the status is false we set the audio with the index as playing and the others as paused.
       setFileUploads((prevFileUploads) =>
         prevFileUploads.map((fileUpload) => ({
