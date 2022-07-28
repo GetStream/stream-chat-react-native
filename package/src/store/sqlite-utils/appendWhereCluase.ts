@@ -1,17 +1,17 @@
 import type { Schema } from '../schema';
-import type { PreparedQueries, TableColumnNames } from '../types';
+import type { PreparedQueries, TableColumnNames, TableColumnValue } from '../types';
 
 export const appendWhereClause = <T extends keyof Schema>(
   selectQuery: string,
-  whereCondition?: Partial<{ [k in TableColumnNames<T>]: any }>,
+  whereCondition?: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
 ): PreparedQueries => {
   if (!whereCondition) return [selectQuery, []];
 
   const whereClause = [];
-  const whereParams: any[] = [];
+  const whereParams: TableColumnValue[] = [];
 
   for (const key in whereCondition) {
-    const value: unknown = whereCondition[key];
+    const value = whereCondition[key];
     if (value === undefined) continue;
 
     if (Array.isArray(value)) {

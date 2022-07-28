@@ -66,8 +66,6 @@ const ChannelListComponent = (props) => {
   );
 };
 
-const waitTill = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 describe('Offline support is disabled', () => {
   let chatClient;
 

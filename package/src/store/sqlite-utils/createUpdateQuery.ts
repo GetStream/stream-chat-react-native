@@ -1,7 +1,7 @@
 import { appendWhereClause } from './appendWhereCluase';
 
 import type { Schema } from '../schema';
-import type { PreparedQueries, TableColumnNames } from '../types';
+import type { PreparedQueries, TableColumnNames, TableColumnValue, TableRow } from '../types';
 
 /**
  * Creates a simple update query for sqlite.
@@ -15,8 +15,8 @@ import type { PreparedQueries, TableColumnNames } from '../types';
  */
 export const createUpdateQuery = <T extends keyof Schema>(
   table: T,
-  set: Partial<{ [k in TableColumnNames<T>]: any }>,
-  whereCondition: Partial<{ [k in TableColumnNames<T>]: any }>,
+  set: Partial<TableRow<T>>,
+  whereCondition: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
 ): PreparedQueries => {
   const fields = Object.keys(set).map((key) => `${key} = ?`);
   const updateQuery = `UPDATE ${table} SET ${fields.join(',')}`;

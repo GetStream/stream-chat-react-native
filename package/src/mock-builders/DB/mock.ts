@@ -1,7 +1,5 @@
 import Database from 'better-sqlite3';
 
-import { SUCCESSFUL_QUERY_RESULT } from './consts';
-
 import type { PreparedQueries } from '../../store/types';
 
 export let db: Database;
@@ -14,7 +12,7 @@ export const sqliteMock = {
       status: 0,
     };
   },
-  executeSql: (dbName: string, queryInput: string, params: any[]) => {
+  executeSql: (dbName: string, queryInput: string, params: unknown[]) => {
     const query = queryInput.trim().toLowerCase();
     const stmt = db.prepare(query);
     let result = [];

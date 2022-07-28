@@ -1,7 +1,7 @@
 import { appendWhereClause } from './appendWhereCluase';
 
 import type { Schema } from '../schema';
-import type { PreparedQueries, TableColumnNames } from '../types';
+import type { PreparedQueries, TableColumnNames, TableColumnValue } from '../types';
 
 /**
  * Creates a simple delete query for sqlite.
@@ -15,7 +15,7 @@ import type { PreparedQueries, TableColumnNames } from '../types';
 
 export const createDeleteQuery = <T extends keyof Schema>(
   table: T,
-  whereCondition: Partial<{ [k in TableColumnNames<T>]: any }>,
+  whereCondition: Partial<{ [k in TableColumnNames<T>]: TableColumnValue | TableColumnValue[] }>,
 ): PreparedQueries => {
   const deleteQuery = `DELETE FROM ${table}`;
 
