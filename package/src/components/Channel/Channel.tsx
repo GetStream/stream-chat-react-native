@@ -229,6 +229,7 @@ export type ChannelPropsWithContext<
       | 'additionalTouchableProps'
       | 'Attachment'
       | 'AttachmentActions'
+      | 'AudioAttachment'
       | 'Card'
       | 'CardCover'
       | 'CardFooter'
@@ -1620,7 +1621,6 @@ const ChannelWithContext = <
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
-    AudioAttachment,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,
@@ -1679,6 +1679,7 @@ const ChannelWithContext = <
     additionalTouchableProps,
     Attachment,
     AttachmentActions,
+    AudioAttachment,
     Card,
     CardCover,
     CardFooter,
