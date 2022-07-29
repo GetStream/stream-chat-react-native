@@ -324,6 +324,7 @@ const MessageOverlayWithContext = <
                     <Animated.View style={[styles.flex, panStyle]}>
                       {message && (
                         <View
+                          pointerEvents='none'
                           style={[
                             styles.center,
                             styles.overlayPadding,

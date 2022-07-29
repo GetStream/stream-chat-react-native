@@ -4,7 +4,11 @@ import { act } from 'react-test-renderer';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import type { FileUpload } from '../../../contexts/messageInputContext/MessageInputContext';
+import {
+  FileUpload,
+  MessageInputContext,
+  MessageInputContextValue,
+} from '../../../contexts/messageInputContext/MessageInputContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../contexts/themeContext/utils/theme';
 
@@ -26,9 +30,15 @@ jest.mock('react-native/Libraries/ReactNative/I18nManager', () => ({
   isRTL: true,
 }));
 
-const getComponent = (props: Partial<AudioAttachmentProps>) => (
+const getComponent = (
+  props: Partial<AudioAttachmentProps & Pick<MessageInputContextValue, 'fileUploads'>>,
+) => (
   <ThemeProvider theme={defaultTheme}>
-    <AudioAttachment {...(props as unknown as AudioAttachmentProps)} />,
+    <MessageInputContext.Provider
+      value={{ fileUploads: props.fileUploads } as unknown as MessageInputContextValue}
+    >
+      <AudioAttachment {...(props as unknown as AudioAttachmentProps)} />,
+    </MessageInputContext.Provider>
   </ThemeProvider>
 );
 

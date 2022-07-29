@@ -123,9 +123,9 @@ type FileUploadPreviewPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<
   MessageInputContextValue<StreamChatGenerics>,
-  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads' | 'AudioAttachment'
+  'fileUploads' | 'removeFile' | 'uploadFile' | 'setFileUploads'
 > &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'FileAttachmentIcon'>;
+  Pick<MessagesContextValue<StreamChatGenerics>, 'AudioAttachment' | 'FileAttachmentIcon'>;
 
 const FileUploadPreviewWithContext = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
@@ -194,7 +194,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
-      colors: { black, grey_dark, grey_gainsboro, grey_whisper },
+      colors: { black, grey_dark, grey_gainsboro, grey_whisper, white },
       messageInput: {
         fileUploadPreview: {
           audioAttachmentFileContainer,
@@ -230,14 +230,31 @@ const FileUploadPreviewWithContext = <
                 audioAttachmentFileContainer,
               ]}
             >
-              <AudioAttachment
-                index={index}
-                item={item}
-                onLoad={onLoad}
-                onPlayPause={onPlayPause}
-                onProgress={onProgress}
+              <View
+                style={[
+                  styles.fileContainer,
+                  index === fileUploads.length - 1
+                    ? {
+                        marginBottom: 0,
+                      }
+                    : {},
+                  {
+                    backgroundColor: white,
+                    borderColor: grey_whisper,
+                    width: -16,
+                  },
+                  fileContainer,
+                ]}
                 testID='audio-attachment-upload-preview'
-              />
+              >
+                <AudioAttachment
+                  item={item}
+                  onLoad={onLoad}
+                  onPlayPause={onPlayPause}
+                  onProgress={onProgress}
+                  testID='audio-attachment-upload-preview'
+                />
+              </View>
             </View>
           ) : (
             <View
@@ -371,9 +388,9 @@ export const FileUploadPreview = <
 >(
   props: FileUploadPreviewProps<StreamChatGenerics>,
 ) => {
-  const { AudioAttachment, fileUploads, removeFile, setFileUploads, uploadFile } =
+  const { fileUploads, removeFile, setFileUploads, uploadFile } =
     useMessageInputContext<StreamChatGenerics>();
-  const { FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
+  const { AudioAttachment, FileAttachmentIcon } = useMessagesContext<StreamChatGenerics>();
 
   return (
     <MemoizedFileUploadPreview
