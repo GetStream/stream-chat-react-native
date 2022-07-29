@@ -1,8 +1,8 @@
 import React from 'react';
+
 import { FlatList, Image, Platform } from 'react-native';
 
 import NetInfo from '@react-native-community/netinfo';
-
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
@@ -12,7 +12,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import ExpoVideoPlayer from './optionalDependencies/Video';
+import { AudioComponent, VideoComponent } from './optionalDependencies/Video';
 
 registerNativeHandlers({
   compressImage: async ({ compressImageQuality = 1, uri }) => {
@@ -109,7 +109,6 @@ registerNativeHandlers({
   pickDocument: async ({ maxNumberOfFiles }) => {
     try {
       const { type, ...rest } = await DocumentPicker.getDocumentAsync();
-
       if (type === 'cancel') {
         return {
           cancelled: true,
@@ -142,6 +141,19 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed or cancelled...');
     }
+  },
+  Sound: {
+    initializeSound: AudioComponent
+      ? async (source, initialStatus, onPlaybackStatusUpdate) => {
+          const { sound } = await AudioComponent.Sound.createAsync(
+            source,
+            initialStatus,
+            onPlaybackStatusUpdate,
+          );
+          return sound;
+        }
+      : null,
+    Player: null,
   },
   takePhoto: async ({ compressImageQuality = 1 }) => {
     try {
@@ -223,18 +235,20 @@ registerNativeHandlers({
     }
   },
   // eslint-disable-next-line react/display-name
-  Video: ExpoVideoPlayer ? ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
-      <ExpoVideoPlayer
-        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-        ref={videoRef}
-        resizeMode='contain'
-        shouldPlay={!paused}
-        source={{
-          uri,
-        }}
-        style={[style]}
-      />
-    ) : null,
+  Video: VideoComponent
+    ? ({ onPlaybackStatusUpdate, paused, style, uri, videoRef }) => (
+        <VideoComponent
+          onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+          ref={videoRef}
+          resizeMode='contain'
+          shouldPlay={!paused}
+          source={{
+            uri,
+          }}
+          style={[style]}
+        />
+      )
+    : null,
 });
 
 export * from 'stream-chat-react-native-core';

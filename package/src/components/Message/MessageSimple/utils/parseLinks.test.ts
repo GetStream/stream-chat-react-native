@@ -22,6 +22,10 @@ describe('parseLinksFromText', () => {
     ],
     ['127.0.0.1/local_(development)_server', '127.0.0.1/local_(development)_server'],
     ['https://a.co:8999/ab.php?p=12', 'a.co:8999/ab.php?p=12'],
+    [
+      'http://help.apple.com/xcode/mac/current/#/devba7f53ad4',
+      'help.apple.com/xcode/mac/current/#/devba7f53ad4',
+    ],
   ])('Returns the encoded value of %p as %p', (link, expected) => {
     const result = parseLinksFromText(link);
 

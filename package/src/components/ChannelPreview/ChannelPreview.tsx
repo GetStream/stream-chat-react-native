@@ -69,25 +69,27 @@ const ChannelPreviewWithContext = <
   }, [channelLastMessageString]);
 
   useEffect(() => {
-    const handleEvent = (event: Event<StreamChatGenerics>) => {
-      if (event.message) {
+    const handleNewMessageEvent = (event: Event<StreamChatGenerics>) => {
+      const message = event.message;
+      if (message && (!message.parent_id || message.show_in_channel)) {
         setLastMessage(event.message);
-      }
-
-      if (event.type === 'message.new') {
         setUnread(channel.countUnread());
       }
     };
 
-    channel.on('message.new', handleEvent);
-    channel.on('message.updated', handleEvent);
-    channel.on('message.deleted', handleEvent);
-
-    return () => {
-      channel.off('message.new', handleEvent);
-      channel.off('message.updated', handleEvent);
-      channel.off('message.deleted', handleEvent);
+    const handleUpdatedOrDeletedMessage = (event: Event<StreamChatGenerics>) => {
+      if (event.message?.id === lastMessage?.id) {
+        setLastMessage(event.message);
+      }
     };
+
+    const listeners = [
+      channel.on('message.new', handleNewMessageEvent),
+      channel.on('message.updated', handleUpdatedOrDeletedMessage),
+      channel.on('message.deleted', handleUpdatedOrDeletedMessage),
+    ];
+
+    return () => listeners.forEach((l) => l.unsubscribe());
   }, []);
 
   useEffect(() => {

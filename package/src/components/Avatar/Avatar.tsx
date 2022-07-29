@@ -85,7 +85,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
         ]}
       >
         <Image
-          accessibilityLabel={testID || 'avatar-image'}
+          accessibilityLabel={testID || 'Avatar Image'}
           onError={() => setImageError(true)}
           source={{
             uri:

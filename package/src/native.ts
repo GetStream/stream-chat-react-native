@@ -93,8 +93,6 @@ type HapticFeedbackMethod =
 type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
-export let SDK: string;
-
 export type PlaybackStatus = {
   didJustFinish: boolean;
   durationMillis: number;
@@ -106,6 +104,65 @@ export type PlaybackStatus = {
   positionMillis: number;
 };
 
+export type AVPlaybackStatusToSet = {
+  isLooping: boolean;
+  isMuted: boolean;
+  positionMillis: number;
+  progressUpdateIntervalMillis: number;
+  rate: number;
+  shouldCorrectPitch: boolean;
+  shouldPlay: boolean;
+  volume: number;
+};
+
+export let SDK: string;
+
+export type SoundOptions = {
+  basePathOrCallback?: string;
+  callback?: () => void;
+  filenameOrFile?: string;
+  initialStatus?: Partial<AVPlaybackStatusToSet>;
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
+  source?: { uri: string };
+};
+
+export type SoundReturnType = {
+  paused: boolean;
+  testID: string;
+  getDuration?: () => number;
+  isPlaying?: () => boolean;
+  onBuffer?: (props: { isBuffering: boolean }) => void;
+  onEnd?: () => void;
+  onLoad?: (payload: VideoPayloadData) => void;
+  onLoadStart?: () => void;
+  onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
+  onProgress?: (data: VideoProgressData) => void;
+  onReadyForDisplay?: () => void;
+  pauseAsync?: () => void;
+  play?: () => void;
+  playAsync?: () => void;
+  replayAsync?: () => void;
+  resizeMode?: string;
+  seek?: (progress: number) => void;
+  setPositionAsync?: (millis: number) => void;
+  soundRef?: React.RefObject<SoundReturnType>;
+  stopAsync?: () => void;
+  style?: StyleProp<ViewStyle>;
+  unloadAsync?: () => void;
+  uri?: string;
+};
+
+export type SoundType = {
+  initializeSound: (
+    source?: { uri: string },
+    initialStatus?: Partial<AVPlaybackStatusToSet>,
+    onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void,
+  ) => SoundReturnType | null;
+  Player: React.ComponentType<SoundReturnType> | null;
+};
+
+export let Sound: SoundType;
+
 export type VideoProgressData = {
   currentTime?: number;
   playableDuration?: number;
@@ -113,9 +170,9 @@ export type VideoProgressData = {
 };
 
 export type VideoPayloadData = {
+  duration: number;
   audioTracks?: { index: number; language: string; title: string; type: string }[];
   currentPosition?: number;
-  duration?: number;
   naturalSize?: { height: number; orientation: 'portrait' | 'landscape'; width: number };
   textTracks?: { index: number; language: string; title: string; type: string }[];
   videoTracks?: {
@@ -129,6 +186,7 @@ export type VideoPayloadData = {
 
 export type VideoType = {
   paused: boolean;
+  testID: string;
   uri: string;
   videoRef: React.RefObject<VideoType>;
   onBuffer?: (props: { isBuffering: boolean }) => void;
@@ -158,6 +216,7 @@ type Handlers = {
   saveFile?: SaveFile;
   SDK?: string;
   shareImage?: ShareImage;
+  Sound?: SoundType;
   takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
   Video?: React.ComponentType<VideoType>;
@@ -187,10 +246,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     getPhotos = handlers.getPhotos;
   }
 
-  if (handlers.NetInfo) {
-    NetInfo = handlers.NetInfo;
-  }
-
   if (handlers.pickDocument) {
     pickDocument = handlers.pickDocument;
   }
@@ -207,6 +262,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     shareImage = handlers.shareImage;
   }
 
+  if (handlers.Sound) {
+    Sound = handlers.Sound;
+  }
+
   if (handlers.takePhoto) {
     takePhoto = handlers.takePhoto;
   }
@@ -221,3 +280,4 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 };
 
 export const isVideoPackageAvailable = () => !!Video;
+export const isAudioPackageAvailable = () => !!Sound.Player || !!Sound.initializeSound;
