@@ -9,10 +9,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
-import {
-  MessageInputContextValue,
-  useMessageInputContext,
-} from '../../contexts/messageInputContext/MessageInputContext';
+
 import {
   MessagesContextValue,
   useMessagesContext,
@@ -22,17 +19,27 @@ import { isAudioPackageAvailable } from '../../native';
 
 import type { DefaultStreamChatGenerics } from '../../types/types';
 
+const FILE_PREVIEW_HEIGHT = 60;
+
 const styles = StyleSheet.create({
   container: {
     padding: 4,
+  },
+  fileContainer: {
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: 'row',
+    height: FILE_PREVIEW_HEIGHT,
+    justifyContent: 'space-between',
+    paddingLeft: 8,
+    paddingRight: 8,
   },
 });
 
 export type FileAttachmentGroupPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = Pick<MessageContextValue<StreamChatGenerics>, 'files'> &
-  Pick<MessageInputContextValue<StreamChatGenerics>, 'AudioAttachment'> &
-  Pick<MessagesContextValue<StreamChatGenerics>, 'Attachment'> & {
+  Pick<MessagesContextValue<StreamChatGenerics>, 'Attachment' | 'AudioAttachment'> & {
     /**
      * The unique id for the message with file attachments
      */
@@ -113,6 +120,7 @@ const FileAttachmentGroupWithContext = <
 
   const {
     theme: {
+      colors: { grey_whisper, white },
       messageSimple: {
         fileAttachmentGroup: { container },
       },
@@ -130,9 +138,23 @@ const FileAttachmentGroupWithContext = <
           ]}
         >
           {file.type === 'audio' && isAudioPackageAvailable() ? (
-            <View accessibilityLabel='audio-attachment-preview'>
+            <View
+              accessibilityLabel='audio-attachment-preview'
+              style={[
+                styles.fileContainer,
+                index === filesToDisplay.length - 1
+                  ? {
+                      marginBottom: 0,
+                    }
+                  : {},
+                {
+                  backgroundColor: white,
+                  borderColor: grey_whisper,
+                  width: -16,
+                },
+              ]}
+            >
               <AudioAttachment
-                index={index}
                 item={{
                   duration: file.duration,
                   file: { name: file.title as string, uri: file.asset_url },
@@ -184,9 +206,8 @@ export const FileAttachmentGroup = <
 
   const { files: contextFiles } = useMessageContext<StreamChatGenerics>();
 
-  const { Attachment = AttachmentDefault } = useMessagesContext<StreamChatGenerics>();
-
-  const { AudioAttachment } = useMessageInputContext<StreamChatGenerics>();
+  const { Attachment = AttachmentDefault, AudioAttachment } =
+    useMessagesContext<StreamChatGenerics>();
 
   const files = propFiles || contextFiles;
 
