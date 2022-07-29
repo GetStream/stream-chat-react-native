@@ -167,7 +167,7 @@ export const ImageGalleryHeader = <
           {leftElement ? (
             leftElement({ hideOverlay, photo })
           ) : (
-            <TouchableOpacity onPress={hideOverlay}>
+            <TouchableOpacity accessibilityLabel='Hide Overlay' onPress={hideOverlay}>
               <View style={[styles.leftContainer, leftContainer]}>
                 {CloseIcon ? CloseIcon : <Close />}
               </View>

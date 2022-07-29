@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, View, ViewProps } from 'react-native';
+import { ImageBackground, ImageStyle, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Play } from '../../icons';
@@ -15,37 +15,47 @@ const styles = StyleSheet.create({
   },
   roundedView: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
+    elevation: 6,
     height: 36,
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      height: 3,
+      width: 0,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
     width: 36,
   },
 });
 
-export type VideoThumbnailProps = ViewProps & {
+export type VideoThumbnailProps = {
+  imageStyle?: StyleProp<ImageStyle>;
+  style?: StyleProp<ViewStyle>;
   thumb_url?: string;
 };
 
 export const VideoThumbnail: React.FC<VideoThumbnailProps> = (props) => {
   const {
     theme: {
+      colors: { static_black, static_white },
       messageSimple: {
         videoThumbnail: { container, roundedView },
       },
     },
   } = useTheme();
-  const { style, thumb_url, ...rest } = props;
+  const { imageStyle, style, thumb_url } = props;
   return (
     <ImageBackground
-      accessibilityLabel='video-thumbnail'
+      accessibilityLabel='Video Thumbnail'
+      imageStyle={imageStyle}
       source={{ uri: thumb_url }}
-      {...rest}
       style={[styles.container, container, style]}
     >
-      <View style={[styles.roundedView, roundedView]}>
-        <Play height={24} pathFill={'#000'} width={24} />
+      <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
+        <Play height={24} pathFill={static_black} width={24} />
       </View>
     </ImageBackground>
   );

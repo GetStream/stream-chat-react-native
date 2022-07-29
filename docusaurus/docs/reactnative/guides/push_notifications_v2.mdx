@@ -139,18 +139,36 @@ const App = () => {
     // Register FCM token with stream chat server.
     const registerPushToken = async () => {
       const token = await messaging().getToken();
-      await client.addDevice(token, 'firebase');
+      const push_provider = 'firebase';
+      const push_provider_name = 'MyRNAppFirebasePush'; // name an alias for your push provider (optional)
+      client.setLocalDevice({
+        id: token,
+        push_provider,
+        // push_provider_name is meant for optional multiple providers support, see: https://getstream.io/chat/docs/react/push_providers_and_multi_bundle
+        push_provider_name,
+      });
+      await AsyncStorage.setItem('@current_push_token', token);
+
+      const removeOldToken = async () => {
+        const oldToken = await AsyncStorage.getItem('@current_push_token');
+        if (oldToken !== null) {
+          await client.removeDevice(oldToken);
+        }
+      };
 
       unsubscribeTokenRefreshListener = messaging().onTokenRefresh(async newToken => {
-        await client.addDevice(newToken, 'firebase');
+        await Promise.all([
+          removeOldToken(),
+          client.addDevice(newToken, push_provider, USER_ID, push_provider_name),
+          AsyncStorage.setItem('@current_push_token', newToken),
+        ]);
       });
     };
 
     const init = async () => {
-      await client.connectUser({ id: USER_ID }, USER_TOKEN);
-
       await requestPermission();
       await registerPushToken();
+      await client.connectUser({ id: USER_ID }, USER_TOKEN);
 
       setIsReady(true);
     };
@@ -221,12 +239,6 @@ If you had migrated from push v1 to v2, the v1 template is copied to the notific
 ### iOS
 
 Since the `notification` field is present on iOS, it is automatically picked up by the Firebase SDK and displayed to the user when the app is not in the foreground.
-
-:::info
-
-If you want to customize the notification dynamically on the iOS app without customizing the payload or increment the badge number on every push, you will need to implement a [`Notification Service Extension`](https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension) in the native language.
-
-:::
 
 ### Android
 
@@ -448,15 +460,42 @@ The `notification_template` is a JSON object that includes the keys relevant to 
 
 :::
 
+### Show badge number on the iOS app
+
+We can show the number of unread messages in the app's badge by adding the `badge` key to the `apn_template` using the JavaScript SDK like below:
+
+```js
+const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+
+const apn_template = `{
+  "aps" : {
+    "alert": {
+      "title": "{{ sender.name }} @ {{ channel.name }}",
+      "body": "{{ truncate message.text 2000 }}"
+    },
+    "badge": {{ unread_count }},
+    "mutable-content": 1,
+    "category": "stream.chat"
+  },
+}`;
+
+client.updateAppSettings({
+  firebase_config: {
+    apn_template,
+  }
+});
+```
+
 ### Make iOS Payload Data Only
 
 If the iOS payload is made to be data only, then `setBackgroundMessageHandler` can be used to display notifications using Notifee. The payload can be customized using the JavaScript SDK like below:
 
 ```js
 const client = StreamChat.getInstance(‘api_key’, ‘api_secret’);
+
 const apn_template = `{
   "aps": {
-      "content-available": 1
+    "content-available": 1
   }
 }`;
 

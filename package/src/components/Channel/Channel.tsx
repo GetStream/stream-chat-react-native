@@ -76,6 +76,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { generateRandomId, MessageStatusTypes, ReactionData } from '../../utils/utils';
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
+import { AudioAttachment as AudioAttachmentDefault } from '../Attachment/AudioAttachment';
 import { Card as CardDefault } from '../Attachment/Card';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
@@ -398,6 +399,7 @@ const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
+    AudioAttachment = AudioAttachmentDefault,
     AutoCompleteSuggestionHeader = AutoCompleteSuggestionHeaderDefault,
     AutoCompleteSuggestionItem = AutoCompleteSuggestionItemDefault,
     AutoCompleteSuggestionList = AutoCompleteSuggestionListDefault,
@@ -1618,6 +1620,7 @@ const ChannelWithContext = <
   const inputMessageInputContext = useCreateInputMessageInputContext<StreamChatGenerics>({
     additionalTextInputProps,
     AttachButton,
+    AudioAttachment,
     autoCompleteSuggestionsLimit,
     autoCompleteTriggerSettings,
     channelId,

@@ -64,7 +64,7 @@ export type ImageGalleryFooterCustomComponent<
 
 export type ImageGalleryFooterVideoControlProps = {
   duration: number;
-  onPlayPause: () => void;
+  onPlayPause: (status?: boolean) => void;
   onProgressDrag: (progress: number) => void;
   paused: boolean;
   progress: number;
@@ -92,6 +92,7 @@ export type ImageGalleryFooterCustomComponentProps<
 type ImageGalleryFooterPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = ImageGalleryFooterCustomComponentProps<StreamChatGenerics> & {
+  accessibilityLabel: string;
   duration: number;
   onPlayPause: () => void;
   onProgressDrag: (progress: number) => void;
@@ -111,6 +112,7 @@ export const ImageGalleryFooterWithContext = <
   props: ImageGalleryFooterPropsWithContext<StreamChatGenerics>,
 ) => {
   const {
+    accessibilityLabel,
     centerElement,
     duration,
     GridIcon,
@@ -134,7 +136,7 @@ export const ImageGalleryFooterWithContext = <
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const {
     theme: {
-      colors: { black },
+      colors: { black, white },
       imageGallery: {
         footer: {
           centerContainer,
@@ -171,7 +173,8 @@ export const ImageGalleryFooterWithContext = <
         }-${selectedIndex}.${extension}`,
         fromUrl: photo.uri,
       });
-      await shareImage({ type: photo.mime_type, url: localFile });
+      // `image/jpeg` is added for the case where the mime_type isn't available for a file/image
+      await shareImage({ type: photo.mime_type || 'image/jpeg', url: localFile });
       await deleteFile({ uri: localFile });
     } catch (error) {
       console.log(error);
@@ -181,11 +184,12 @@ export const ImageGalleryFooterWithContext = <
 
   return (
     <Animated.View
+      accessibilityLabel={accessibilityLabel}
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[container, footerStyle]}>
+      <ReanimatedSafeAreaView style={[container, footerStyle, { backgroundColor: white }]}>
         {photo.type === 'video' ? (
           videoControlElement ? (
             videoControlElement({ duration, onPlayPause, onProgressDrag, paused, progress })
@@ -199,13 +203,17 @@ export const ImageGalleryFooterWithContext = <
             />
           )
         ) : null}
-        <View style={[styles.innerContainer, innerContainer, { backgroundColor: 'white' }]}>
+        <View style={[styles.innerContainer, innerContainer, { backgroundColor: white }]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
+            <TouchableOpacity
+              accessibilityLabel='Share Button'
+              disabled={shareMenuOpen}
+              onPress={share}
+            >
               <View style={[styles.leftContainer, leftContainer]}>
-                {ShareIcon ? ShareIcon : <ShareIconDefault />}
+                {ShareIcon ? ShareIcon : <ShareIconDefault pathFill={black} />}
               </View>
             </TouchableOpacity>
           )}

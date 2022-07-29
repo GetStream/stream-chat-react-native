@@ -1,5 +1,6 @@
 export * from './Attachment/Attachment';
 export * from './Attachment/AttachmentActions';
+export * from './Attachment/AudioAttachment';
 export * from './Attachment/Card';
 export * from './Attachment/FileAttachment';
 export * from './Attachment/FileAttachmentGroup';
@@ -148,6 +149,8 @@ export * from './MessageOverlay/OverlayBackdrop';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionsAvatar';
 export * from './MessageOverlay/OverlayReactionList';
+
+export * from './ProgressControl/ProgressControl';
 
 export * from './Reply/Reply';
 

@@ -4,20 +4,18 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import dayjs from 'dayjs';
 
 import type { ImageGalleryFooterVideoControlProps } from './ImageGalleryFooter';
-import { ProgressControl } from './ProgressControl';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import { Pause, Play } from '../../../icons';
+import { ProgressControl } from '../../ProgressControl/ProgressControl';
 
 const styles = StyleSheet.create({
   durationTextStyle: {
-    color: '#fff',
     fontWeight: 'bold',
   },
   roundedView: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 50,
     display: 'flex',
     elevation: 2,
@@ -55,6 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
+        colors: { static_black, static_white },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -63,25 +62,44 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     return (
       <View style={[styles.videoContainer, videoContainer]}>
-        <TouchableOpacity onPress={onPlayPause}>
-          <View style={[styles.roundedView, roundedView]}>
+        <TouchableOpacity
+          accessibilityLabel='Play Pause Button'
+          onPress={() => {
+            onPlayPause();
+          }}
+        >
+          <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
             {paused ? (
-              <Play height={24} pathFill={'#000'} width={24} />
+              <Play accessibilityLabel='Play Icon' height={24} pathFill={static_black} width={24} />
             ) : (
-              <Pause height={24} width={24} />
+              <Pause
+                accessibilityLabel='Pause Icon'
+                height={24}
+                pathFill={static_black}
+                width={24}
+              />
             )}
           </View>
         </TouchableOpacity>
-        <Text style={[styles.durationTextStyle, durationTextStyle]}>
+        <Text
+          accessibilityLabel='Progress Duration'
+          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+        >
           {progressDuration ? progressDuration : '00:00'}
         </Text>
         <ProgressControl
           duration={duration}
+          filledColor={static_white}
           onPlayPause={onPlayPause}
           onProgressDrag={onProgressDrag}
           progress={progress}
+          testID={'progress-control'}
+          width={180}
         />
-        <Text style={[styles.durationTextStyle, durationTextStyle]}>
+        <Text
+          accessibilityLabel='Video Duration'
+          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
+        >
           {videoDuration ? videoDuration : '00:00'}
         </Text>
       </View>

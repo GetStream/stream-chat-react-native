@@ -341,7 +341,7 @@ const GiphyWithContext = <
         ]}
       >
         <Image
-          accessibilityLabel='giphy-attachment-image'
+          accessibilityLabel='Giphy Attachment Image'
           onError={(error) => {
             console.warn(error);
             setLoadingImage(false);

@@ -1,0 +1,46 @@
+---
+id: 'audio-attachment'
+title: 'AudioAttachment'
+---
+
+Component to render the Audio Attachment controls within the [MessageList](./message_list.mdx) and [MessageInput](./message_input.mdx).
+
+This is the default component provided to the prop [`AudioAttachment`](../core-components/channel.mdx#audioattachment) on the `Channel` component.
+
+## Props
+
+### <div class="label required">required</div> **index**
+
+| Type   |
+| ------ |
+| number |
+
+### <div class="label required">required</div> **item**
+
+| Type                                         |
+| -------------------------------------------- |
+| object(duration, progress, paused, id, file) |
+
+### <div class="label required">required</div> **onLoad**
+
+| Type                                        |
+| ------------------------------------------- |
+| `(index: string, duration: number) => void` |
+
+### <div class="label required">required</div> **onProgress**
+
+| Type                                                              |
+| ----------------------------------------------------------------- |
+| `(index: string, currentTime?: number, hasEnd?: boolean) => void` |
+
+### <div class="label required">required</div> **onPlayPause**
+
+| Type                                              |
+| ------------------------------------------------- |
+| `(index: string, pausedStatus?: boolean) => void` |
+
+### testID
+
+| Type   |
+| ------ |
+| string |

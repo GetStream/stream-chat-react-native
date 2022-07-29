@@ -93,7 +93,7 @@ describe('Gallery', () => {
       expect(queryAllByTestId('gallery-row-0').length).toBe(1);
 
       expect(queryAllByTestId('gallery-row-0-item-0').length).toBe(1);
-      expect(getAllByA11yLabel('video-thumbnail').length).toBe(1);
+      expect(getAllByA11yLabel('Video Thumbnail').length).toBe(1);
     });
   });
 
@@ -267,7 +267,7 @@ describe('Gallery', () => {
     const component = await getComponent([image1]);
     const { getByA11yLabel, getByAccessibilityHint } = render(component);
 
-    fireEvent(getByA11yLabel('gallery-image'), 'error');
+    fireEvent(getByA11yLabel('Gallery Image'), 'error');
     expect(getByAccessibilityHint('image-loading-error')).toBeTruthy();
   });
 
@@ -280,11 +280,11 @@ describe('Gallery', () => {
     const component = await getComponent([image1]);
     const { getByA11yLabel, getByAccessibilityHint } = render(component);
 
-    fireEvent(getByA11yLabel('gallery-image'), 'onLoadStart');
+    fireEvent(getByA11yLabel('Gallery Image'), 'onLoadStart');
     expect(getByAccessibilityHint('image-loading')).toBeTruthy();
 
-    fireEvent(getByA11yLabel('gallery-image'), 'onLoadFinish');
-    waitForElementToBeRemoved(() => getByAccessibilityHint('image-loading'));
-    expect(getByA11yLabel('gallery-image')).toBeTruthy();
+    fireEvent(getByA11yLabel('Gallery Image'), 'onLoadFinish');
+    waitForElementToBeRemoved(() => getByAccessibilityHint('Image Loading'));
+    expect(getByA11yLabel('Gallery Image')).toBeTruthy();
   });
 });

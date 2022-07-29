@@ -19,7 +19,7 @@ const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
-type Props = {
+export type AnimatedGalleryVideoType = {
   handleEnd: () => void;
   handleLoad: (payload: VideoPayloadData) => void;
   handleProgress: (data: VideoProgressData) => void;
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
+export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.memo(
   (props) => {
     const [opacity, setOpacity] = useState<number>(1);
     const {
@@ -154,11 +154,17 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={[style, { transform: [{ scale: oneEighth }] }]} />;
+      return (
+        <View
+          accessibilityLabel='Empty View Image Gallery'
+          style={[style, { transform: [{ scale: oneEighth }] }]}
+        />
+      );
     }
 
     return (
       <Animated.View
+        accessibilityLabel='Image Gallery Video'
         style={[
           style,
           animatedViewStyles,
@@ -185,11 +191,13 @@ export const AnimatedGalleryVideo: React.FC<Props> = React.memo(
             paused={paused}
             resizeMode='contain'
             style={style}
+            testID='video-player'
             uri={source.uri}
             videoRef={videoRef}
           />
         )}
         <Animated.View
+          accessibilityLabel='Spinner'
           style={[
             styles.activityIndicator,
             {
