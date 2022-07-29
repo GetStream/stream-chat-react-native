@@ -13,7 +13,7 @@
 
 @implementation SampleAppTests
 
-- (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
+- (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
   if (test(view)) {
     return YES;
