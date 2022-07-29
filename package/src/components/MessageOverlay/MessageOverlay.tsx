@@ -42,7 +42,10 @@ import { mergeThemes, ThemeProvider, useTheme } from '../../contexts/themeContex
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { vh, vw } from '../../utils/utils';
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
-import { OverlayReactions as DefaultOverlayReactions, Reaction } from '../MessageOverlay/OverlayReactions';
+import {
+  OverlayReactions as DefaultOverlayReactions,
+  Reaction,
+} from '../MessageOverlay/OverlayReactions';
 import type { ReplyProps } from '../Reply/Reply';
 
 const styles = StyleSheet.create({

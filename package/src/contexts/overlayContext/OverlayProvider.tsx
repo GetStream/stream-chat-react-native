@@ -62,7 +62,7 @@ import {
  */
 export const OverlayProvider = <
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-  >(
+>(
   props: PropsWithChildren<OverlayProviderProps<StreamChatGenerics>>,
 ) => {
   const {

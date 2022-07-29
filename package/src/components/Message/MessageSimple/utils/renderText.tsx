@@ -1,9 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { GestureResponderEvent, Linking, Text, TextProps, View, ViewProps } from 'react-native';
 
-// @ts-expect-error
-import Markdown from 'react-native-markdown-package';
-
 import truncate from 'lodash/truncate';
 import {
   DefaultRules,
@@ -23,6 +20,7 @@ import { parseLinksFromText } from './parseLinks';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { Colors, MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import Markdown from '../../../../markdown/Markdown';
 import type { DefaultStreamChatGenerics } from '../../../../types/types';
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 
