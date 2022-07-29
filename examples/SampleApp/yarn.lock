@@ -6804,9 +6804,9 @@ react-native-markdown-package@1.8.1:
     simple-markdown "^0.7.1"
 
 react-native-quick-sqlite@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-3.1.5.tgz#27d592f568260f98f7c7503de0bc10add9af06a0"
-  integrity sha512-v/O5T9VRbVDff50mH6aAK2QyY3dUpLlj8Y5856sASLiKa7OS1ua4GH8yeOrM+U+2ThZe6Kls4BucB2Yhe6yNQw==
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-3.1.8.tgz#a432561472dfb35f7f75979626c7a83acb279662"
+  integrity sha512-/3FWi53Vs0uaFD796yJ+65/1wjahl3iGohrKxPOZGH5e32IUfZ/L+KrrAGpxvRLcfLNWrB3xr952ZPQTiuLiIg==
 
 react-native-reanimated@2.7.0:
   version "2.7.0"
@@ -7629,10 +7629,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@4.10.0:
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.10.0.tgz#bed5dc54fb8fda3c186e2d10c19e33f115cf5b31"
-  integrity sha512-+p+LzC45pPjxoZWBjjkvQWp3mjOyN+oN1Dfdd7JpxPSbvx+yLvxp5uOFN9erWqMrUOgcFxqoEkjMt/e0gLB3qw==
+stream-chat-react-native-core@4.11.0:
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.11.0.tgz#b307bbcc2a4008c0289c191ba611f1728e0e430b"
+  integrity sha512-WUChTTbrriyT2bkFCFzhPM4G8hYbq/BzLUeDVqVUPA9lNvfFhaw36Rq+4KI4+TAoxuJhz8mdxZzUNjvVUbYEgA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"

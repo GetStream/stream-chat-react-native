@@ -1,5 +1,3 @@
-import 'react-native-quick-sqlite';
-
 export * from './components';
 export * from './hooks';
 export { registerNativeHandlers, NetInfo } from './native';

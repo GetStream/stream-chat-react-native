@@ -1,4 +1,17 @@
 /* eslint-disable no-underscore-dangle */
+// Importing following package just to avoid errors using sqlite global.
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+import types from 'react-native-quick-sqlite';
+
+try {
+  require('react-native-quick-sqlite');
+} catch (e) {
+  // Failed for one of the reason
+  // 1. Running on expo, where we don't support offline storage yet.
+  // 2. Offline support is disabled, in which case this library is not installed.
+}
+
 import { DB_LOCATION, DB_NAME, DB_STATUS_ERROR } from './constants';
 import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
@@ -75,6 +88,13 @@ export class QuickSqliteClient {
   };
 
   static initializeDatabase = () => {
+    // @ts-ignore
+    if (window.sqlite === undefined) {
+      throw new Error(
+        'Please install "react-native-quick-sqlite" package to enable offline support',
+      );
+    }
+
     const version = this.getUserPragmaVersion();
     if (version !== this.dbVersion) {
       this.dropTables();
