@@ -1,0 +1,258 @@
+---
+id: channel-list
+sidebar_position: 3
+title: ChannelList
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+import Filters from '../common-content/core-components/channel-list/props/filters.mdx';
+import Sort from '../common-content/core-components/channel-list/props/sort.mdx';
+import Options from '../common-content/core-components/channel-list/props/options.mdx';
+import OnSelect from '../common-content/core-components/channel-list/props/on_select.mdx';
+import AdditionalFlatListProps from '../common-content/core-components/channel-list/props/additional_flat_list_props.mdx';
+import LoadMoreThreshold from '../common-content/core-components/channel-list/props/load_more_threshold.mdx';
+import LockChannelOrder from '../common-content/core-components/channel-list/props/lock_channel_order.mdx';
+import MaxUnreadCount from '../common-content/core-components/channel-list/props/max_unread_count.mdx';
+import NumberOfSkeletons from '../common-content/core-components/channel-list/props/number_of_skeletons.mdx';
+import OnAddedToChannel from '../common-content/core-components/channel-list/props/on_added_to_channel.mdx';
+import OnChannelDeleted from '../common-content/core-components/channel-list/props/on_channel_deleted.mdx';
+import OnChannelHidden from '../common-content/core-components/channel-list/props/on_channel_hidden.mdx';
+import OnChannelVisible from '../common-content/core-components/channel-list/props/on_channel_visible.mdx';
+import OnChannelTruncated from '../common-content/core-components/channel-list/props/on_channel_truncated.mdx';
+import OnChannelUpdated from '../common-content/core-components/channel-list/props/on_channel_updated.mdx';
+import OnMessageNew from '../common-content/core-components/channel-list/props/on_message_new.mdx';
+import OnRemovedFromChannel from '../common-content/core-components/channel-list/props/on_removed_from_channel.mdx';
+import SetFlatListRef from '../common-content/core-components/channel-list/props/set_flat_list_ref.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel-list/props/empty_state_indicator.mdx';
+import FooterLoadingIndicator from '../common-content/core-components/channel-list/props/footer_loading_indicator.mdx';
+import HeaderErrorIndicator from '../common-content/core-components/channel-list/props/header_error_indicator.mdx';
+import HeaderNetworkDownIndicator from '../common-content/core-components/channel-list/props/header_network_down_indicator.mdx';
+import List from '../common-content/core-components/channel-list/props/list.mdx';
+import ListHeaderComponent from '../common-content/core-components/channel-list/props/list_header_component.mdx';
+import LoadingErrorIndicator from '../common-content/core-components/channel-list/props/loading_error_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel-list/props/loading_indicator.mdx';
+import Preview from '../common-content/core-components/channel-list/props/preview.mdx';
+import PreviewAvatar from '../common-content/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../common-content/core-components/channel-list/props/preview_message.mdx';
+import PreviewMutedStatus from '../common-content/core-components/channel-list/props/preview_muted_status.mdx';
+import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+import Skeleton from '../common-content/core-components/channel-list/props/skeleton.mdx';
+
+The `ChannelList` displays a list of channels using React Native's [FlatList](https://reactnative.dev/docs/flatlist) component.
+`ChannelList` internally fetches a list of channels using the [client's query channels function](https://getstream.io/chat/docs/javascript/query_channels/?language=javascript); to which you can pass the [`filters`](#filters), [`sort`](#sort) and [`options`](#options) parameters via props on `ChannelList`.
+
+When a user presses on a channel in the list you can provide navigation logic via the [`onSelect`](#onselect) prop to navigate to the selected channel.
+
+## Basic Usage
+
+`ChannelList` should be rendered inside of the `OverlayProvider` and `Chat` so it is provided the appropriate contexts to function internally.
+
+```tsx {5-7,12-17}
+import { StreamChat } from 'stream-chat';
+import { ChannelList, Chat, OverlayProvider } from 'stream-chat-react-native';
+
+const client = StreamChat.getInstance('api_key');
+const filters = { members: { $in: [ 'vishal', 'lucas', 'neil' ] } };
+const sort = { last_message_at: -1 };
+const options = { limit: 20, messages_limit: 30 };
+
+export const App = () =>
+  <OverlayProvider>
+    <Chat client={client}>
+      <ChannelList
+        filters={filters}
+        sort={sort}
+        options={options}
+        onSelect={(channel) => /** navigate to channel screen */ }
+      />
+    </Chat>
+  </OverlayProvider>;
+```
+
+## Context Providers
+
+`ChannelList` contains the provider for the `ChannelsContext`.
+This can be accessed using the corresponding hook.
+
+| Context           | Hook                 |
+| ----------------- | -------------------- |
+| `ChannelsContext` | `useChannelsContext` |
+
+## UI Customizations
+
+The `ChannelList` is highly customizable.
+The UI can be tailored to your design by replacing any number of components with custom components.
+
+Customizing the title can be done easily by providing a custom component to the appropriate prop.
+
+```tsx
+const CustomPreviewTitle = ({ channel }) => (
+  <Text>
+    {channel.data.customProperty} - {channel.data.name}
+  </Text>
+);
+
+<ChannelList PreviewTitle={CustomPreviewTitle} />;
+```
+
+<Tabs
+  defaultValue='list-item-components'
+  values={[
+    { label: 'List Items', value: 'list-item-components' },
+    { label: 'Indicators', value: 'indicators' },
+  ]}
+>
+<TabItem value='list-item-components'>
+
+![](../assets/api-references/components/channel-list/visual_guide_1.png)
+
+</TabItem>
+<TabItem value='indicators'>
+
+![](../assets/api-references/components/channel-list/visual_guide_2.png)
+
+</TabItem>
+</Tabs>
+
+## Props
+
+### <div class="label info">recommended</div> **filters**
+
+<Filters />
+
+### <div class="label info">recommended</div> **sort**
+
+<Sort />
+
+### <div class="label info">recommended</div> **options**
+
+<Options />
+
+### <div class="label info">recommended</div> **onSelect**
+
+<OnSelect />
+
+### additionalFlatListProps
+
+<AdditionalFlatListProps />
+
+### loadMoreThreshold
+
+<LoadMoreThreshold />
+
+### lockChannelOrder
+
+<LockChannelOrder />
+
+### maxUnreadCount
+
+<MaxUnreadCount />
+
+### numberOfSkeletons
+
+<NumberOfSkeletons />
+
+### onAddedToChannel
+
+<OnAddedToChannel />
+
+### onChannelDeleted
+
+<OnChannelDeleted />
+
+### onChannelHidden
+
+<OnChannelHidden />
+
+### onChannelVisible
+
+<OnChannelVisible />
+
+### onChannelTruncated
+
+<OnChannelTruncated />
+
+### onChannelUpdated
+
+<OnChannelUpdated />
+
+### onMessageNew
+
+<OnMessageNew />
+
+### onRemovedFromChannel
+
+<OnRemovedFromChannel />
+
+### setFlatListRef
+
+<SetFlatListRef />
+
+### EmptyStateIndicator
+
+<EmptyStateIndicator />
+
+### FooterLoadingIndicator
+
+<FooterLoadingIndicator />
+
+### HeaderErrorIndicator
+
+<HeaderErrorIndicator />
+
+### HeaderNetworkDownIndicator
+
+<HeaderNetworkDownIndicator />
+
+### List
+
+<List />
+
+### ListHeaderComponent
+
+<ListHeaderComponent />
+
+### LoadingErrorIndicator
+
+<LoadingErrorIndicator />
+
+### LoadingIndicator
+
+<LoadingIndicator />
+
+### Preview
+
+<Preview />
+
+### PreviewAvatar
+
+<PreviewAvatar />
+
+### PreviewMessage
+
+<PreviewMessage />
+
+### PreviewMutedStatus
+
+<PreviewMutedStatus />
+
+### PreviewStatus
+
+<PreviewStatus />
+
+### PreviewTitle
+
+<PreviewTitle />
+
+### PreviewUnreadCount
+
+<PreviewUnreadCount />
+
+### Skeleton
+
+<Skeleton />

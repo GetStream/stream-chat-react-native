@@ -1,0 +1,247 @@
+---
+id: getting_started
+sidebar_position: 1
+slug: /
+title: Getting Started
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+The Basics section of this documentation introduces the fundamentals of Stream Chat for React Native.
+It will cover installing Stream Chat within your project, give you some troubleshooting tips, and provide an overview of what is possible using the library.
+This should be considered a primer before delving into the UI and Core Components or Customization sections.
+
+## Installation
+
+Your [environment should be setup](https://reactnative.dev/docs/environment-setup) and a project created prior to beginning the installation.
+
+### Add Required dependencies
+
+Install the required packages in your React Native project.
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+  yarn add stream-chat-react-native
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+  npm install stream-chat-react-native
+```
+
+</TabItem>
+</Tabs>
+
+Stream Chat has a number of peer dependencies that are required to take advantage of all of the out of the box features.
+It is suggested you follow the install instructions for each package to ensure it is properly setup.
+Most if not all of the required packages now support auto-linking so setup should be minimal. Those with known [additional steps](#additional-steps) have been noted.
+
+- [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
+- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
+- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
+- [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker)
+- [`react-native-fs`](https://github.com/itinance/react-native-fs)
+- [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler)
+- [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback)
+- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
+- [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer)
+- [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated)
+- [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context)
+- [`react-native-share`](https://github.com/react-native-share/react-native-share)
+- [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
+- [`react-native-video`](https://github.com/react-native-video/react-native-video)
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+yarn add @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg react-native-video
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+npm install @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg react-native-video
+```
+
+</TabItem>
+</Tabs>
+
+For iOS on a Mac install the pods `npx pod-install ios`.
+
+#### Version compabilities
+
+To be able to use the Stream Chat React Native SDK, a few dependencies must meet the following version requirements:
+
+| react-native | stream-chat-react-native (min required) | react-native-reanimated (min required) |
+| ------------ | --------------------------------------- | -------------------------------------- |
+| 0.68         | 4.11.0                                  | 2.7.0                                  |
+| 0.67         | 4.2.0                                   | 2.4.0                                  |
+| 0.66         | 3.9.0                                   | 2.2.3                                  |
+| 0.65         | 3.9.0                                   | 2.2.1                                  |
+| 0.64         | 3.6.2                                   | 2.2.0                                  |
+| 0.63         | 3.0.0                                   | 2.2.0                                  |
+
+### Additional Steps
+
+For some of the packages listed below, there are additional steps required to setup the package:
+
+- `react-native-reanimated` - [additional installation steps](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation)
+
+  Add Reanimated's babel plugin to your babel.config.js:
+
+  ```js
+    module.exports = {
+        ...
+        plugins: [
+            ...
+            'react-native-reanimated/plugin',
+        ],
+    };
+  ```
+
+- `react-native-gesture-handler` - [additional installation steps](https://docs.swmansion.com/react-native-gesture-handler/docs/#android)
+
+  RNGH requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
+
+  ```tsx
+  import 'react-native-gesture-handler';
+  import { AppRegistry } from 'react-native';
+
+  import App from './App';
+  import { name as appName } from './app.json';
+
+  AppRegistry.registerComponent(appName, () => App);
+  ```
+
+  Also wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHO`
+
+  ```jsx
+  import { GestureHandlerRootView } from 'react-native-gesture-handler';
+  import { OverlayProvider } from 'stream-chat-react-native';
+
+  export default function App() {
+    return (
+      <GestureHandlerRootView>
+        <OverlayProvider>{/* Your app code goes here */}</OverlayProvider>
+      </GestureHandlerRootView>
+    );
+  }
+  ```
+
+  Please take a look at our Example Application for reference.
+
+- `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
+- `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
+- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
+
+:::note
+
+If you are planning to use file picker functionality, make sure you enable iCloud capability in your app - [Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
+
+:::
+
+### Add Optional Dependencies
+
+- `react-native-video` - [additional installation steps](https://github.com/react-native-video/react-native-video/blob/master/API.md#installation)
+
+  > Available in stream-chat-react-native >= v4.7.0
+
+  Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default
+  browser of the device.
+
+### AndroidX Support
+
+> AndroidX is a major step forward in the Android ecosystem, and the old support library artifacts are being deprecated.
+> For 0.60, React Native has been migrated over to AndroidX.
+> This is a breaking change, and your native code and dependencies will need to be migrated as well.
+
+(Reference: <https://facebook.github.io/react-native/blog/2019/07/03/version-60#androidx-support>)
+
+Dependencies such as `react-native-document-picker`, `react-native-gesture-handler`, and `react-native-reanimated` don't have AndroidX support.
+But an awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with AndroidX support.
+
+## Expo Installation
+
+Stream Chat for React Native is set up for parity on Expo, expo requires a different set of dependencies than bare React Native, in your project directory run.
+
+### Add Required Dependencies
+
+```bash
+expo install stream-chat-expo
+expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg expo-av
+```
+
+### Additional Steps
+
+For some of the packages listed below, there are additional steps required to setup the package:
+
+- `react-native-reanimated` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/reanimated/#installation)
+
+  Add Reanimated's babel plugin to your babel.config.js:
+
+  ```js
+    module.exports = {
+        ...
+        plugins: [
+            ...
+            'react-native-reanimated/plugin',
+        ],
+    };
+  ```
+
+- `react-native-gesture-handler` - [additional installation steps](https://docs.expo.dev/versions/latest/sdk/gesture-handler/#api)
+
+  RNGH requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
+
+  ```tsx
+  import 'react-native-gesture-handler';
+  import { AppRegistry } from 'react-native';
+
+  import App from './App';
+  import { name as appName } from './app.json';
+
+  AppRegistry.registerComponent(appName, () => App);
+  ```
+
+  Also wrap your entry point with `<GestureHandlerRootView>` or `gestureHandlerRootHO`
+
+  ```jsx
+  import { GestureHandlerRootView } from 'react-native-gesture-handler';
+  import { OverlayProvider } from 'stream-chat-react-native';
+
+  export default function App() {
+    return (
+      <GestureHandlerRootView>
+        <OverlayProvider>{/* Your app code goes here */}</OverlayProvider>
+      </GestureHandlerRootView>
+    );
+  }
+  ```
+
+### Add Optional Dependencies
+
+- `expo-av` - [additional installation steps](https://docs.expo.dev/versions/v45.0.0/sdk/video/)
+
+  > Available in stream-chat-expo >= v4.7.0
+
+  Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default
+  browser of the device.
