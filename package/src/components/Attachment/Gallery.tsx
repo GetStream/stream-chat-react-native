@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     left: 4,
     position: 'absolute',
   },
+  imageLoadingIndicatorContainer: {
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
   imageLoadingIndicatorStyle: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -490,7 +496,7 @@ const GalleryImageThumbnail = <
             uri={thumbnail.url}
           />
           {isLoadingImage && (
-            <View style={{ position: 'absolute' }}>
+            <View style={[styles.imageLoadingIndicatorContainer]}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
