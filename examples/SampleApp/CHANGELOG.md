@@ -1,5 +1,17 @@
 # Change Log
 
+## [1.10.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.9.0...sampleapp@v1.10.0) (2022-07-29)
+
+
+### Features
+
+* support playing audio attachments from message input ([#1489](https://github.com/GetStream/stream-chat-react-native/issues/1489)) ([d7dd0f7](https://github.com/GetStream/stream-chat-react-native/commit/d7dd0f7926e99199c8eee421f27e4727dcd32fe5))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ## [1.9.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.8.1...sampleapp@v1.9.0) (2022-07-20)
 
 
