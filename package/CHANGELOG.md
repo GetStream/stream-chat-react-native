@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.0...v4.12.1) (2022-08-01)
+
+
+### Bug Fixes
+
+* broken touch listeners on reaction list ([#1600](https://github.com/GetStream/stream-chat-react-native/issues/1600)) ([5510e62](https://github.com/GetStream/stream-chat-react-native/commit/5510e629295136089f6d96505ac859a05647a925))
+
 ## [4.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.11.0...v4.12.0) (2022-07-29)
 
 
