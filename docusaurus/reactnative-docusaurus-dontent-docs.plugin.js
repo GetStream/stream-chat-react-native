@@ -6,7 +6,7 @@ module.exports = {
         lastVersion: '4.x.x',
         versions: {
           current: {
-            label: 'v5.0.0-rc',
+            label: 'v5.0.0-beta',
             path: 'v5',
             banner: 'unreleased'
           },
