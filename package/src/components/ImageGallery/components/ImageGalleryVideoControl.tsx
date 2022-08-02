@@ -53,7 +53,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
 
     const {
       theme: {
-        colors: { black, white_snow },
+        colors: { static_black, static_white },
         imageGallery: {
           videoControl: { durationTextStyle, roundedView, videoContainer },
         },
@@ -68,23 +68,28 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
             onPlayPause();
           }}
         >
-          <View style={[styles.roundedView, roundedView, { backgroundColor: white_snow }]}>
+          <View style={[styles.roundedView, roundedView, { backgroundColor: static_white }]}>
             {paused ? (
-              <Play accessibilityLabel='Play Icon' height={24} pathFill={black} width={24} />
+              <Play accessibilityLabel='Play Icon' height={24} pathFill={static_black} width={24} />
             ) : (
-              <Pause accessibilityLabel='Pause Icon' height={24} width={24} />
+              <Pause
+                accessibilityLabel='Pause Icon'
+                height={24}
+                pathFill={static_black}
+                width={24}
+              />
             )}
           </View>
         </TouchableOpacity>
         <Text
           accessibilityLabel='Progress Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
         >
           {progressDuration ? progressDuration : '00:00'}
         </Text>
         <ProgressControl
           duration={duration}
-          filledColor={white_snow}
+          filledColor={static_white}
           onPlayPause={onPlayPause}
           onProgressDrag={onProgressDrag}
           progress={progress}
@@ -93,7 +98,7 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
         />
         <Text
           accessibilityLabel='Video Duration'
-          style={[styles.durationTextStyle, durationTextStyle, { color: white_snow }]}
+          style={[styles.durationTextStyle, durationTextStyle, { color: static_white }]}
         >
           {videoDuration ? videoDuration : '00:00'}
         </Text>

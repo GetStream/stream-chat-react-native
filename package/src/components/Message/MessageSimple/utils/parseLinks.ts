@@ -11,7 +11,7 @@ const schema = `(\\w{2,15}:\\/\\/)`;
 // something.tld OR 123.123.123.123
 const domain = `((?:\\w+\\.[a-zA-Z]+)+(?:[^:\\/\\s]+)|(?:\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))`;
 const port = `(:[0-9]{1,5})`;
-const path = `((?:\\/)?[^?#\\s]+)`;
+const path = `((?:\\/)?[^?\\s]+)`;
 const queryString = `(\\?[^#\\s]+)`;
 const fragment = `(#[\\w_-]+)`;
 
