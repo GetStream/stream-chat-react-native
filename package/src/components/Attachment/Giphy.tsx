@@ -391,11 +391,13 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     attachment: { actions: prevActions, image_url: prevImageUrl, thumb_url: prevThumbUrl },
     giphyVersion: prevGiphyVersion,
     isMyMessage: prevIsMyMessage,
+    message: prevMessage,
   } = prevProps;
   const {
     attachment: { actions: nextActions, image_url: nextImageUrl, thumb_url: nextThumbUrl },
     giphyVersion: nextGiphyVersion,
     isMyMessage: nextIsMyMessage,
+    message: nextMessage,
   } = nextProps;
 
   const imageUrlEqual = prevImageUrl === nextImageUrl;
@@ -418,6 +420,11 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   const isMyMessageEqual = prevIsMyMessage === nextIsMyMessage;
   if (!isMyMessageEqual) return false;
 
+  const messageEqual =
+    prevMessage?.id === nextMessage?.id &&
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
+
+  if (!messageEqual) return false;
   return true;
 };
 

@@ -309,6 +309,7 @@ export const Card = <
 
   return (
     <MemoizedCard
+      key={`${message?.id}${message?.updated_at}`} // press listeners must change on message update, updating key ensures this
       {...{
         additionalTouchableProps,
         CardCover,
