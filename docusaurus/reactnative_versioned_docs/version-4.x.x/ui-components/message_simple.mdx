@@ -1,0 +1,51 @@
+---
+id: message-simple
+title: MessageSimple
+---
+
+import Alignment from '../common-content/contexts/message-context/alignment.mdx';
+import GroupStyles from '../common-content/contexts/message-context/group_styles.mdx';
+import HasReactions from '../common-content/contexts/message-context/has_reactions.mdx';
+import MessageProp from '../common-content/contexts/message-context/message.mdx';
+
+import EnableMessageGroupingByUser from '../common-content/core-components/channel/props/enable_message_grouping_by_user.mdx';
+import MessageAvatar from '../common-content/core-components/channel/props/message_avatar.mdx';
+import MessageContent from '../common-content/core-components/channel/props/message_content.mdx';
+import ReactionList from '../common-content/core-components/channel/props/reaction_list.mdx';
+
+Component to render a message within the [`MessageList`](./message_list.mdx). This component has been well optimized to save un-necessary re-renderings.
+This is the default component provided to the prop [`MessageSimple`](../core-components/channel.mdx#messagesimple) on the `Channel` component.
+
+## Props
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#alignment)_</div> alignment {#alignment}
+
+<Alignment />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#enablemessagegroupingbyuser)_</div> enableMessageGroupingByUser {#enablemessagegroupingbyuser}
+
+<EnableMessageGroupingByUser />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#groupstyles)_</div> groupStyles {#groupstyles}
+
+<GroupStyles />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#hasreactions)_</div> hasReactions {#hasreactions}
+
+<HasReactions />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#message)_</div> message {#message}
+
+<MessageProp />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#messageavatar)_</div> MessageAvatar {#messageavatar}
+
+<MessageAvatar />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#messagecontent)_</div> MessageContent {#messagecontent}
+
+<MessageContent />
+
+### <div class="label description">_overrides the value from [MessageContext](../contexts/message_context.mdx#reactionlist)_</div> ReactionList {#reactionlist}
+
+<ReactionList />
