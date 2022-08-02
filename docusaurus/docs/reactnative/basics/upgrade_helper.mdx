@@ -20,7 +20,20 @@ yarn add @stream-io/react-native-cameraroll
 
 ## Enable Offline Support
 
-Offline Support is a major opt-in feature introduced in v5 of SDK. To enable offline support please follow the given steps:
+Offline Support is a major opt-in feature introduced in v5 of SDK.
+Offline storage implementation currently offers following features:
+
+- access to chat when internet is disabled
+- faster loading of chat since chat gets loaded from offline storage first before loading data from network
+- syncing of database using websocket events and sync api.
+
+Following features are currently **NOT** implemented. They will be implemented gradually as part of minor releases in v5.
+
+- optimistically update offline database during chat interactions such as send message, add reactions etc.
+- access to threads in offline mode
+- offline caching of attachment images and user images
+
+To enable offline support please follow the given steps:
 
 - **Add `react-native-quick-sqlite` dependency**
 
