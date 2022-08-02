@@ -21,6 +21,9 @@ yarn add @stream-io/react-native-cameraroll
 ## Enable Offline Support
 
 Offline Support is a major opt-in feature introduced in v5 of SDK.
+
+> Offline support is currently not implemented for Expo package (stream-chat-expo).
+
 Offline storage implementation currently offers following features:
 
 - access to chat when internet is disabled
@@ -34,6 +37,14 @@ Following features are currently **NOT** implemented. They will be implemented g
 - offline caching of attachment images and user images
 
 To enable offline support please follow the given steps:
+
+- **Upgrade stream-chat dependency (optional)**
+
+  If you have installed `stream-chat` dependency explicitely on your application, then upgrade it to v7
+
+  ```bash
+  yarn add stream-chat@7.0.0-offline-support.3
+  ```
 
 - **Add `react-native-quick-sqlite` dependency**
 
@@ -89,4 +100,18 @@ To enable offline support please follow the given steps:
   <Chat client={chatClient} enableOfflineSupport>
     ...
   </Chat>;
+  ```
+
+- **Reset the database when signing out the user**
+
+  Since SDK doesn't handle the app level authentication logic, its application's responsibility
+  to ensure resetting database when user gets logged out. This should be generally done before you
+  call `client.disconnectUser()`
+
+  ```jsx
+  import { QuickSqliteClient } from 'stream-chat-react-native';
+
+  // Sign out logic
+  QuickSqliteClient.resetDB();
+  chatClient.disconnectUser();
   ```
