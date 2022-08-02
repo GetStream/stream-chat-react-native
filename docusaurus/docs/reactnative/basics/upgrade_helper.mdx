@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 ## Update Camera Roll dependency
 
-Replace the `@react-native-community/cameraroll` with `@stream-io/react-native-cameraroll`. We had to roll out our fork as `@react-native-community/cameraroll` is no longer accepting pull requests for important fixes like Android 11 compatibility. 
+Replace the `@react-native-community/cameraroll` with `@stream-io/react-native-cameraroll`. We had to roll out our fork as `@react-native-community/cameraroll` is no longer accepting pull requests for important fixes like Android 11 compatibility.
 
 ```bash
 # Remove existing cameraroll dependency
@@ -32,14 +32,15 @@ Offline Support is a major opt-in feature introduced in v5 of SDK. To enable off
 
   Until v4, you could provide separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
   But from v5, it is necessary that you provide only one instance of `Chat` component within your application.
-  This component needs to be a parent for all the chat related components such as `ChannelList`, `Channel` or `Thread`. 
+  This component needs to be a parent for all the chat related components such as `ChannelList`, `Channel` or `Thread`.
 
 - **Do not wait for `connectUser` call to succeed**
 
   It is important that you call `connectUser` method on chat client, before you render Chat components.
   But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:
-    - Chat components have access to current user information, which is important to store/access offline data.
-    - In case or slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
+
+  - Chat components have access to current user information, which is important to store/access offline data.
+  - In case or slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
 
   ```tsx {7,8,16}
   const chatClient = StreamChat.getInstance('API_KEY');
@@ -48,14 +49,14 @@ Offline Support is a major opt-in feature introduced in v5 of SDK. To enable off
 
     useEffect(() => {
       const startChat = async () => {
-        const connectPromise = chatClient.connectUser(user, tokenOrTokenProvider)
+        const connectPromise = chatClient.connectUser(user, tokenOrTokenProvider);
         setIsClientReady(true); // this allows components to render
         await connectPromise();
         // Any other post-connectUser logic you may have goes here.
-      }
+      };
 
       startChat();
-    }, [])
+    }, []);
 
     if (!isClientReady) return null; // or some loading indicator;
 
@@ -63,8 +64,8 @@ Offline Support is a major opt-in feature introduced in v5 of SDK. To enable off
       <Chat client={chatClient} enableOfflineSupport>
         ...
       </Chat>
-    )
-  }
+    );
+  };
   ```
 
 - **Add `enableOfflineSupport` prop on Chat component**
@@ -74,5 +75,5 @@ Offline Support is a major opt-in feature introduced in v5 of SDK. To enable off
 
   <Chat client={chatClient} enableOfflineSupport>
     ...
-  </Chat>
+  </Chat>;
   ```
