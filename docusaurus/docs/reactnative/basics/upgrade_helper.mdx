@@ -1,531 +1,78 @@
 ---
-id: upgrading-from-v3
-title: Upgrading from V3
+id: upgrading-from-v4
+title: Upgrading from V4
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-import pinMessageAction from '../assets/basics/upgrading-from-v3/pin_message_action.png';
-import pinnedMessage from '../assets/basics/upgrading-from-v3/pinned_message.png';
-import scrollViewWarning from '../assets/basics/upgrading-from-v3/scroll_view_warning.png';
-import slowMode from '../assets/basics/upgrading-from-v3/slow_mode.gif';
+## Update Camera Roll dependency
 
-import galleryBefore1 from '../assets/basics/upgrading-from-v3/gallery_before_1.png';
-import galleryBefore2 from '../assets/basics/upgrading-from-v3/gallery_before_2.png';
-import galleryBefore3 from '../assets/basics/upgrading-from-v3/gallery_before_3.png';
-import galleryAfter1 from '../assets/basics/upgrading-from-v3/gallery_after_1.png';
-import galleryAfter2 from '../assets/basics/upgrading-from-v3/gallery_after_2.png';
-import galleryAfter3 from '../assets/basics/upgrading-from-v3/gallery_after_3.png';
+Replace the `@react-native-community/cameraroll` with `@stream-io/react-native-cameraroll`. We had to roll out our fork as `@react-native-community/cameraroll` is no longer accepting pull requests for important fixes like Android 11 compatibility. 
 
-## Add a required `threadList` prop
+```bash
+# Remove existing cameraroll dependency
+yarn remove @react-native-community/cameraroll
 
-Add a `threadList` prop on `Channel` component which wraps the Thread component as following:
-
-(This change is only required if you use `Thread` component within your application. )
-
-```tsx
-<Channel channel={channel} thread={thread} threadList>
-  <Thread />
-</Channel>
+# Add stream-io's fork for cameraroll dependency.
+yarn add @stream-io/react-native-cameraroll
 ```
 
-## Updates on `Channel` props
+## Enable Offline Support
 
-Some of the props have been dropped since v4 release.
+Offline Support is a major opt-in feature introduced in v5 of SDK. To enable offline support please follow the given steps:
 
-### `mutesEnabled`
+- **Add `react-native-quick-sqlite` dependency**
 
-This prop was used to configure visibility of "Mute User" action within message overlay, and has been removed in v4.
-Please check [Mute User Action](#mute-user-action) section for details.
+  ```bash
+  yarn add react-native-quick-sqlite
+  ```
 
-### `handleMute`
+- **Ensure unique instance of Chat component**
 
-This prop was used to add non-interruptive function call when "Mute User" action on message gets called, and has been removed in v4.
-Please check [Mute User Action](#mute-user-action) section for details.
+  Until v4, you could provide separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
+  But from v5, it is necessary that you provide only one instance of `Chat` component within your application.
+  This component needs to be a parent for all the chat related components such as `ChannelList`, `Channel` or `Thread`. 
 
-### `quotedRepliesEnabled`
+- **Do not wait for `connectUser` call to succeed**
 
-This prop was used to configure visibility of "Reply" action within message overlay.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
+  It is important that you call `connectUser` method on chat client, before you render Chat components.
+  But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:
+    - Chat components have access to current user information, which is important to store/access offline data.
+    - In case or slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
 
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    quoteMessage: false
-  }}
->
-```
+  ```tsx {7,8,16}
+  const chatClient = StreamChat.getInstance('API_KEY');
+  const App = () => {
+    const [isClientReady, setIsClientReady] = useState(false);
 
-### `reactionsEnabled`
+    useEffect(() => {
+      const startChat = async () => {
+        const connectPromise = chatClient.connectUser(user, tokenOrTokenProvider)
+        setIsClientReady(true); // this allows components to render
+        await connectPromise();
+        // Any other post-connectUser logic you may have goes here.
+      }
 
-This prop was used to configure visibility of reaction selector within overlay.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
+      startChat();
+    }, [])
 
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    sendReactions: false
-  }}
->
-```
+    if (!isClientReady) return null; // or some loading indicator;
 
-### `readEventsEnabled`
-
-This prop was used to configure visibility of read receipts for message.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
-
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    readEvents: false
-  }}
->
-```
-
-### `threadRepliesEnabled`
-
-This prop was used to configure visibility of "Thread Reply" action within message overlay.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
-
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    sendReply: false
-  }}
->
-```
-
-### `typingEventsEnabled`
-
-This prop was used to configure visibility of "Typing Indicator" within `MessageList`.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
-
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    sendTypingEvents: false
-  }}
->
-```
-
-### `uploadsEnabled`
-
-This prop was used to configure visibility of `AttachButton` within `MessageInput`.
-In v4 you can provide a prop [`overrideOwnCapabilities`](../core-components/channel.mdx#overrideowncapabilities) on Channel component to achieve the same result.
-
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    uploadFile: false
-  }}
->
-```
-
-### `animatedLongPress`
-
-This prop was used to disabled the pop-in-out animation of message bubble when long pressed.
-Support for this prop has been dropped from v4 of SDK for performance reason. For more details,
-please take a look at description of PR [#987](https://github.com/GetStream/stream-chat-react-native/pull/987)
-
-### `onDoubleTapMessage`
-
-This prop was used to add double tap handler for message component.
-Support for this prop has been dropped from v4 of SDK for performance reason. For more details,
-please take a look at description of PR [#987](https://github.com/GetStream/stream-chat-react-native/pull/987)
-
-For implementing double tap handler on message bubble please take a look at example mentioned in our [docs](../guides/message_customizations.mdx#instagram-style-double-tap-reaction)
-
-### `messageActions`
-
-This prop is used to customize the actions available on message within overlay. Its a function which return an array
-of actions. Since v4 this function won't receive following properties on its parameter object:
-
-- `canModifyMessage`
-- `mutesEnabled`
-- `reactionsEnabled`
-- `threadRepliesEnabled`
-- `quotedRepliesEnabled`
-
-Instead a new property has been added - `ownCapabilities` to check availability of feature for current user
-Please check the docs of [message action customization](../guides/message_actions_customization.mdx#how-to-add-a-custom-message-action) for example.
-
-### `blockUser`
-
-This prop was used to remove "Block User" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `copyMessage`
-
-This prop was used to remove "Copy Message" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `deleteMessage`
-
-This prop was used to remove "Delete Message" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `editMessage`
-
-This prop was used to remove "Edit Message" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `flagMessage`
-
-This prop was used to remove "Flag Message" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `quotedReply`
-
-This prop was used to remove "Reply" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `retry`
-
-This prop was used to remove "Resend" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `threadReply`
-
-This prop was used to remove "Thread Reply" action from message actions, and has been removed in v4.
-Please check the [guide](../guides/message_actions_customization.mdx#how-to-disable-a-message-action) for disabling certain message action in v4
-
-### `legacyImageViewerSwipeBehaviour`
-
-Default value for this prop has been switched to `false` for performance reason.
-
-## Mute User Action
-
-In v4 "Mute User" action has been removed from the SDK, since its not exactly an action on message and is not
-the right place for it.
-If the business requirements of application needs this message action, then please add it by customizing `messageActions`
-prop as mentioned in [example](../guides/message_actions_customization.mdx#how-to-add-a-custom-message-action)
-
-## Update The Dependencies
-
-- Since v4, peer dependency `react-native-blur` has been removed from the SDK. Blur background of overlay has been
-  replaced with opacity based background instead. So unless this dependency is used explicitely within application, it
-  can be safely removed.
-
-```sh
-yarn remove react-native-blur
-npx pod-install
-```
-
-- Minimum required version of `stream-chat` is 6.0.0. So if you have installed `stream-chat` dependency explicitely,
-  please make sure to upgrade it to [`v6.0.0`](https://github.com/GetStream/stream-chat-js/releases/tag/v6.0.0)
-
-## Refactor Typescript Generics
-
-Until now StreamChat client and Chat components accepted 7 different generics as provided in following example:
-
-```tsx
-const client = StreamChat.getInstance<
-  ChatAttachment,
-  ChatChannel,
-  CustomCommands,
-  ChatEvent,
-  UserMessage,
-  CustomReaction,
-  ChatUser
->('YOUR_API_KEY', 'API_KEY_SECRET');
-```
-
-These 7 generics have been replaced now with 1 single generics for the sake of simplicity.
-
-```tsx
-const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
-```
-
-Please refer to our typescript guide for details of [Generics](../customization/typescript.mdx#generics).
-
-## Whats new in v4?
-
-### Optimized Image Attachments
-
-[Gallery](../ui-components/gallery.mdx) component has been revamped to be more performant and more responsive.
-Heavy images have been one of the crucial reasons previously for slow performance on low RAM devices. In this version of SDK,
-resized version of images (depending on DP ratio of device) will be requested from new CDN to avoid rendering heavy images on UI.
-
-Also previously all the image attachments used to be rendered in fixed size container, which was not ideal for portrait or landscape images since
-user won't be able to see a cropped image on UI. In this version, we render images in dynamic size container, depending on aspect ratio of image.
-
-<Tabs
-  defaultValue='case1'
-  values={[
-    { label: 'Case 1', value: 'case1' },
-    { label: 'Case 2', value: 'case2' },
-    { label: 'Case 3', value: 'case3' },
-  ]}
->
-<TabItem value='case1'>
-
-<table>
-  <tr>
-    <td align='center'>Before</td>
-    <td align='center'>After</td>
-  </tr>
-  <tr>
-    <td align='center' width='50%'>
-      <img src={galleryBefore1} />
-    </td>
-    <td align='center' width='50%'>
-      <img src={galleryAfter1} />
-    </td>
-  </tr>
-</table>
-
-</TabItem>
-<TabItem value='case2'>
-
-<table>
-  <tr>
-    <td align='center'>Before</td>
-    <td align='center'>After</td>
-  </tr>
-  <tr>
-    <td align='center' width='50%'>
-      <img src={galleryBefore2} />
-    </td>
-    <td align='center' width='50%'>
-      <img src={galleryAfter2} />
-    </td>
-  </tr>
-</table>
-
-</TabItem>
-<TabItem value='case3'>
-  <table>
-  <tr>
-    <td align='center'>Before</td>
-    <td align='center'>After</td>
-  </tr>
-  <tr>
-    <td align='center' width='50%'>
-      <img src={galleryBefore3} />
-    </td>
-    <td align='center' width='50%'>
-      <img src={galleryAfter3} />
-    </td>
-  </tr>
-  <tr></tr>
-</table>
-</TabItem>
-</Tabs>
-
-### Refactor Generics to a Single Generic
-
-The Typescript generics have been simplified to a single generic instead of 7 different generics (as in previous versions of SDK) which should be passed to the component or StreamChat client.
-
-```tsx
-const client = StreamChat.getInstance<StreamChatGenerics>('YOUR_API_KEY');
-```
-
-where `StreamChatGenerics` can be defined as;
-
-```tsx
-type StreamChatGenerics = {
-  attachmentType: LocalAttachmentType;
-  channelType: LocalChannelType;
-  commandType: LocalCommandType;
-  eventType: LocalEventType;
-  messageType: LocalMessageType;
-  reactionType: LocalReactionType;
-  userType: LocalUserType;
-};
-```
-
-:::note
-`LocalAttachmentType`, `LocalChannelType` etc. are type deifinitions for their respective key as per your application types necessities.
-
-Eg:
-
-```tsx
-type LocalAttachmentType = {
-  file_size?: number;
-  mime_type?: string;
-};
-type LocalChannelType = Record<string, unknown>;
-type LocalCommandType = string;
-type LocalEventType = Record<string, unknown>;
-type LocalMessageType = Record<string, unknown>;
-type LocalReactionType = Record<string, unknown>;
-type LocalUserType = {
-  image?: string;
-};
-```
-
-:::
-
-A seperate guide has been added to documentation for details of [Generics](../customization/typescript.mdx#generics)
-
-### Slow Mode Feature
-
-Slow mode helps reduce noise on a channel by limiting users to a maximum of 1 message per cooldown interval.
-Slow mode is disabled by default and can be enabled/disabled via the Dashboard, using the Chat Explorer.
-
-For more details, please check the documentation for [slow mode](https://getstream.io/chat/docs/javascript/slow_mode/?language=javascript#channel-slow-mode)
-
-When cooldown interval kicks in, `SendButton` (to send message) will be replaced with a countdown timer
-This countdown timer can be customized using a prop on Channel component - [`CooldownTimer`](../core-components/channel.mdx#cooldowntimer)
-
-<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={slowMode} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
-
-### Pin Message Feature
-
-"Pin Message" action within overlay now allows you to pin a message to channel.
-
-Pinned messages allow users to highlight important messages, make announcements, or temporarily promote content.
-Pinning a message is, by default, restricted to certain user roles, but this is flexible.
-Each channel can have multiple pinned messages and these can be created or updated with or without an expiration.
-
-To read more about how to retrieve pinned messages or search pinned messages, please read the documentation on
-[Pinned Messages](https://getstream.io/chat/docs/javascript/pinned_messages/).
-
-<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={pinMessageAction} alt='Unthemed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-  <img src={pinnedMessage} alt='Themed' width='280' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
-
-### Better Handlings Of User Capabilities on Channel
-
-Features and UI components have been configured to use the `own_capabilities` returned by backend, improving the consistency
-between SDK features and permissions/config/settings applied on application. To read more about these capabilities, please follow the documentation - https://getstream.io/chat/docs/javascript/channel_capabilities/
-
-You can override these capabilities on UI level by providing [`overrideOwnCapabilities`](../core-components/channel.mdx) prop on Channel component:
-
-```tsx
-<Channel
-  overrideOwnCapabilities={{
-    banChannelMembers: false, // hides "Block User" message action.
-    deleteAnyMessage: false, // hides "Delete Message" action for received message.
-    deleteOwnMessage: false, // hides "Delete Message" action for own message.
-    flagMessage: false, // hides "Flag Message" action.
-    pinMessage: false, // hides "Pin Message" action.
-    quoteMessage: false, // hides "Reply" action.
-    readEvents: false, // hides read receipts.
-    sendLinks: false, // disallows sending links with message.
-    sendMessage: false, // disallows sending a message.
-    sendReaction: false, // hides reaction selector in overlay.
-    sendReply: false, // hides "Thread Reply" message action.
-    sendTypingEvents: false, // disallows sending typing events
-    updateAnyMessage: false, // hides "Edit Message" action for received message.
-    updateOwnMessage: false, // hides "Edit Message" action for own message.
-    uploadFile: false, // hides attach button on message input.
-  }}
-```
-
-### Replaced next/prev Giphy Navigation With Shuffle
-
-Next and previous buttons on giphy message have been replaced with shuffle button, since Giphy
-api doesn't support pagination and it resulted into confusing user experience.
-
-### Dropped BlurView Package
-
-- Background for the overlay which opens up when user long-presses on a message, has been replaced with
-  opacity based background instead of [BlurView](https://github.com/Kureev/react-native-blur) [#874](https://github.com/GetStream/stream-chat-react-native/pull/874)
-  This dependency caused a lot of issues due to its underlying native [BlurView](https://github.com/Dimezis/BlurView) dependency.
-  Thus we decided to get rid of this hurdle by dropping this peer dependency.
-
-### Performance Improvements
-
-- `react-native-reanimated` based animations have been removed from Message component for performance reason [#987](https://github.com/GetStream/stream-chat-react-native/pull/987).
-  - Long press animation on message UI has been removed
-  - `animatedLongPress` prop has been removed from `Channel` component.
-- Redundant http requests for downloading image attachments have been fixed [#1010](https://github.com/GetStream/stream-chat-react-native/pull/1010)
-- Performance intensive legacy image viewer behaviour has been turned off by default [#1006](https://github.com/GetStream/stream-chat-react-native/pull/1006).
-  Please take a look at description of the prop [legacyImageViewerSwipeBehaviour](../core-components/channel.mdx#legacyimageviewerswipebehaviour) for details.
-
-### Improved Customizability
-
-#### Autocomplete suggestions
-
-The following three new props on `Channel` component allows customizing UI for autocomplete suggestions list:
-
-- [`AutoCompleteSuggestionHeader`](../core-components/channel.mdx#autocompletesuggestionheader)
-- [`AutoCompleteSuggestionList`](../core-components/channel.mdx#autocompletesuggestionlist)
-- [`AutoCompleteSuggestionItem`](../core-components/channel.mdx#autocompletesuggestionitem)
-
-For details please read the docs on [Autocomplete Suggestions Customizations](../guides/auto_complete_suggestion_list_customizations.mdx)
-
-#### Message Actions
-
-Following two new props on `OverlayProvider` component allows customizing UI for message actions:
-
-- [`MessageActionList`](../core-components/overlay_provider.mdx#messageactionlist)
-- [`MessageActionListItem`](../core-components/overlay_provider.mdx#messageactionlistitem)
-
-Additionally styles of the message actions can be customized using following new theme keys:
-
-```tsx
-overlay: {
-  messageActions: {
-    actionContainer: ViewStyle;
-    icon: ViewStyle;
-    title: TextStyle;
+    return (
+      <Chat client={chatClient} enableOfflineSupport>
+        ...
+      </Chat>
+    )
   }
-}
-```
+  ```
 
-A seperate guide has been added to documentation for details of [How To Customize Message Actions UI](../guides/message_actions_customization.mdx#how-to-customize-message-action-ui)
+- **Add `enableOfflineSupport` prop on Chat component**
 
-#### Deleted Messages
+  ```tsx
+  import { Chat } from 'stream-chat-react-native';
 
-Visibility of deleted messages can be configured using a prop `deletedMessagesVisibilityType` on Channel component.
-
-```tsx
-<Channel deletedMessagesVisibilityType={'never'} />
-```
-
-This prop has following 4 possible values:
-
-- `always`: The deleted messages in the channel will be visible to both the sender and receiver.
-- `never`: The deleted messages will not be visible to anyone.
-- `sender`: The deleted messages in the channel will only be visible to sender.
-- `receiver`: The deleted messages in the channel will only be visible to receiver.
-
-#### Overlay Reactions User Avatar
-
-Avatar of users (shown in OverlayReactions component) who reacted to message, can now be customized
-using a prop on `OverlayProvide` component - [`OverlayReactionsAvatar`](../core-components/overlay_provider.mdx#overlayreactionsavatar).
-
-### Fixes Issues
-
-#### Warning about Virtualized List wrapped inside ScrollView
-
-Following warning from v3 of SDK has been fixed now.
-
-<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-  <img src={scrollViewWarning} alt='Unthemed' width='100%' style={{ objectFit: 'contain', paddingBottom: '8px' }} />
-</div>
-
-This warning was a result of `ScrollView` wrapped around `FlatList` inside overlay. Purpose of the wrapping ScrollView was to make overlay scrollable in case
-message text content is too long. The UX and this warning has been fixed by removing the ScrollView and truncating the text content of message within overlay.
-You can customize the truncation length of message text by providing a prop [`messageTextNumberOfLines`](../core-components/overlay_provider.mdx#messagetextnumberoflines) (number) on `OverlayProvider`.
-
-```tsx
-<OverlayProvider messageTextNumberOfLines={300}>{/** child components */}</OverlayProvider>
-```
-
-#### ChannelList ignores updated filters if api call is in progress
-
-https://github.com/GetStream/stream-chat-react-native/issues/678
-
-If the screen which creates the filter prop for ChannelList quickly renders two or more
-different filters, only the first filter will be fetched, with the subsequent filters
-being discarded. This results in a stale ChannelList until it is manually refreshed.
-
-#### Failed messages can't be deleted
-
-Delete action on failed message would result in error previously, which has been fixed in this release.
-
-#### Mentioned users get removed after editing message
-
-https://github.com/GetStream/stream-chat-react-native/issues/1023
-
-#### Url parsing crashes the app when text contains special character
-
-Application would crash if the message text contains special character and someone
-replies to the message. This has been fixed in this release.
+  <Chat client={chatClient} enableOfflineSupport>
+    ...
+  </Chat>
+  ```
