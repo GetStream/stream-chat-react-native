@@ -3,8 +3,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Attachment } from 'stream-chat';
 
-import { useLoadingImage } from './hooks/useLoadingImage';
-
 import {
   ImageGalleryContextValue,
   useImageGalleryContext,
@@ -22,6 +20,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { GiphyIcon } from '../../icons';
 import { Lightning } from '../../icons/Lightning';
 import type { DefaultStreamChatGenerics } from '../../types/types';

@@ -95,7 +95,7 @@ export function useChannelState<
       setState,
       state,
     },
-    {},
+    channel?.state?.members || {},
   );
 
   const [messages, setMessages] = useStateManager(
@@ -115,7 +115,7 @@ export function useChannelState<
       setState,
       state,
     },
-    {},
+    channel?.state?.read || {},
   );
 
   const [typing, setTyping] = useStateManager(

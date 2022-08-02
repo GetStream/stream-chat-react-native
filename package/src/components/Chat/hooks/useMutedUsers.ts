@@ -9,15 +9,17 @@ export const useMutedUsers = <
 >(
   client: StreamChat<StreamChatGenerics>,
 ) => {
-  const [mutedUsers, setMutedUsers] = useState<Mute<StreamChatGenerics>[]>(client.mutedUsers || []);
+  const [mutedUsers, setMutedUsers] = useState<Mute<StreamChatGenerics>[]>(
+    client?.mutedUsers || [],
+  );
 
   useEffect(() => {
     const handleEvent = (event: Event<StreamChatGenerics>) => {
       setMutedUsers((mutes) => event.me?.mutes || mutes || []);
     };
 
-    client.on('notification.mutes_updated', handleEvent);
-    return () => client.off('notification.mutes_updated', handleEvent);
+    const listener = client?.on('notification.mutes_updated', handleEvent);
+    return () => listener?.unsubscribe();
   }, [setMutedUsers]);
 
   return mutedUsers;

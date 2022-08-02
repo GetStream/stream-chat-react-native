@@ -6904,6 +6904,21 @@ stream-chat@6.7.0:
     jsonwebtoken "^8.5.1"
     ws "^7.4.4"
 
+stream-chat@7.0.0-offline-support.3:
+  version "7.0.0-offline-support.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-7.0.0-offline-support.3.tgz#de18a7401f6007b89f5aaf6015ee933b45e218de"
+  integrity sha512-uYeDt1MqCDsZ9AIdBw5c7hRM0dshxLUkaYy3Co6gdAqh6AXCEVVDSzjxXT2w1wpKZpxpwZoy4YyQJTYKrNcJNA==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "^8.5.6"
+    "@types/ws" "^7.4.0"
+    axios "^0.22.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
 strict-uri-encode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"

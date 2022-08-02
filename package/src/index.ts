@@ -20,4 +20,5 @@ export { default as ruTranslations } from './i18n/ru.json';
 export { default as trTranslations } from './i18n/tr.json';
 export { default as heTranslations } from './i18n/he.json';
 
+export { QuickSqliteClient } from './store/QuickSqliteClient';
 export { version } from './version.json';

@@ -30,11 +30,12 @@ export const useNewMessage = <
             cid: event.cid,
           });
         }
+
         return [...channels];
       });
     };
 
-    client.on('message.new', handleEvent);
-    return () => client.off('message.new', handleEvent);
+    const listener = client?.on('message.new', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

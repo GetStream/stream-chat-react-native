@@ -35,7 +35,7 @@ export const useRemovedFromChannelNotification = <
       }
     };
 
-    client.on('notification.removed_from_channel', handleEvent);
-    return () => client.off('notification.removed_from_channel', handleEvent);
+    const listener = client?.on('notification.removed_from_channel', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

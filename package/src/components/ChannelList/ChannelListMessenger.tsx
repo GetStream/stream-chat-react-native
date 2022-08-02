@@ -142,6 +142,10 @@ const ChannelListMessengerWithContext = <
   const ListFooterComponent = () =>
     channels.length && ListHeaderComponent ? <ListHeaderComponent /> : null;
 
+  if (loadingChannels) {
+    return <LoadingIndicator listType='channel' />;
+  }
+
   return (
     <>
       <FlatList
