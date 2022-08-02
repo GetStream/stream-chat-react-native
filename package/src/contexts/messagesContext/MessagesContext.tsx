@@ -11,6 +11,7 @@ import type { Attachment, ChannelState, MessageResponse } from 'stream-chat';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
+import type { AudioAttachmentProps } from '../../components/Attachment/AudioAttachment';
 import type { CardProps } from '../../components/Attachment/Card';
 import type { FileAttachmentProps } from '../../components/Attachment/FileAttachment';
 import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
@@ -72,6 +73,8 @@ export type MessagesContextValue<
    * Defaults to: [AttachmentActions](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/AttachmentActions.tsx)
    */
   AttachmentActions: React.ComponentType<AttachmentActionsProps<StreamChatGenerics>>;
+  /** Custom UI component for AudioAttachment. */
+  AudioAttachment: React.ComponentType<AudioAttachmentProps>;
   /**
    * UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/Attachment/Card.tsx)

@@ -362,6 +362,7 @@ const MessageOverlayWithContext = <
                               <MessageAvatar {...{ alignment, message, showAvatar: true }} />
                             )}
                             <View
+                              pointerEvents='none'
                               style={[
                                 styles.containerInner,
                                 {
