@@ -1,5 +1,12 @@
 # Change Log
 
+### [4.12.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.1...v4.12.2) (2022-08-03)
+
+
+### Bug Fixes
+
+* reactions and pinning are not updating on attachments ([#1609](https://github.com/GetStream/stream-chat-react-native/issues/1609)) ([fc55611](https://github.com/GetStream/stream-chat-react-native/commit/fc55611f9fbc8c09fcbea464273cfa0fe6d6f384))
+
 ### [4.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.0...v4.12.1) (2022-08-01)
 
 
