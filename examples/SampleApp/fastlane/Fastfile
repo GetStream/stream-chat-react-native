@@ -85,6 +85,7 @@ platform :ios do
       package = load_json(json_path: "./package.json")
       increment_version_number(version_number: package["version"], xcodeproj: "./ios/SampleApp.xcodeproj")
       current_build_number = app_store_build_number(
+        live: false,
         app_identifier: "io.getstream.reactnative.SampleApp",
       )
       increment_build_number(
