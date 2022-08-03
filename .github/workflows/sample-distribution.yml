@@ -30,6 +30,13 @@ jobs:
             yarn && yarn bootstrap-ci;
             cd package/native-package
             yarn;
+      - name: Cache iOS pods
+        uses: actions/cache@v2
+        with:
+          path: examples/SampleApp/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('examples/SampleApp/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
       - name: iOS Pods setup
         uses: nick-invision/retry@v2
         with:
