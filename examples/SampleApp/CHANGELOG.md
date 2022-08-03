@@ -1,5 +1,17 @@
 # Change Log
 
+### [1.10.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.10.1...sampleapp@v1.10.2) (2022-08-03)
+
+
+### Bug Fixes
+
+* **docs:** ios foreground push notifications ([#1587](https://github.com/GetStream/stream-chat-react-native/issues/1587)) ([12207c5](https://github.com/GetStream/stream-chat-react-native/commit/12207c53dbe12c3ab47543ddc8a3ad32c6186614))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.10.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.10.0...sampleapp@v1.10.1) (2022-08-01)
 
 
