@@ -3,7 +3,7 @@ name: sample-distribution
 on:
   push:
     branches:
-      - develop
+      - santhosh/get-version-from-app-store
 
 concurrency:
   group: sample-distribution
