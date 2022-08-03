@@ -525,7 +525,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     videos: nextVideos,
   } = nextProps;
 
-  const messageEqual = prevMessage?.id === nextMessage?.id;
+  const messageEqual =
+    prevMessage?.id === nextMessage?.id &&
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
   if (!messageEqual) return false;
 
   const groupStylesEqual =
