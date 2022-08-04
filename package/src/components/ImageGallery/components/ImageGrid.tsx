@@ -107,7 +107,7 @@ export type ImageGridType<
 > = ImageGalleryGridImageComponents<StreamChatGenerics> & {
   closeGridView: () => void;
   photos: Photo<StreamChatGenerics>[];
-  setImage: React.Dispatch<
+  setSelectedMessage: React.Dispatch<
     React.SetStateAction<
       | {
           messageId?: string | undefined;
@@ -130,7 +130,7 @@ export const ImageGrid = <
     imageComponent,
     numberOfImageGalleryGridColumns,
     photos,
-    setImage,
+    setSelectedMessage,
   } = props;
 
   const {
@@ -148,7 +148,7 @@ export const ImageGrid = <
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
-      setImage({ messageId: photo.messageId, url: photo.uri });
+      setSelectedMessage({ messageId: photo.messageId, url: photo.uri });
       closeGridView();
     },
   }));
