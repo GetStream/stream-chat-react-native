@@ -580,6 +580,7 @@ export const Gallery = <
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
+    message: propMessage,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -596,7 +597,7 @@ export const Gallery = <
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
     images: contextImages,
-    message,
+    message: contextMessage,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
     onPressIn: contextOnPressIn,
@@ -615,6 +616,7 @@ export const Gallery = <
 
   const images = propImages || contextImages;
   const videos = propVideos || contextVideos;
+  const message = propMessage || contextMessage;
 
   if (!images.length && !videos.length) return null;
 
