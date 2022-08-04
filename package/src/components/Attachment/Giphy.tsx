@@ -174,9 +174,9 @@ const GiphyWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setSelectedMessage,
     setMessages,
     setOverlay,
+    setSelectedMessage,
   } = props;
 
   const { actions, giphy: giphyData, image_url, thumb_url, title, type } = attachment;
@@ -441,7 +441,7 @@ export const Giphy = <
   const { handleAction, isMyMessage, message, onLongPress, onPress, onPressIn, preventPress } =
     useMessageContext<StreamChatGenerics>();
   const { additionalTouchableProps, giphyVersion } = useMessagesContext<StreamChatGenerics>();
-  const { setSelectedMessage, setMessages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setMessages, setSelectedMessage } = useImageGalleryContext<StreamChatGenerics>();
   const { setOverlay } = useOverlayContext();
 
   const {
@@ -466,9 +466,9 @@ export const Giphy = <
         onPress,
         onPressIn,
         preventPress,
-        setSelectedMessage,
         setMessages,
         setOverlay,
+        setSelectedMessage,
       }}
       {...props}
     />

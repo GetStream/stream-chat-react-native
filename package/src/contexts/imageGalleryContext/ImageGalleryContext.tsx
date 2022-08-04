@@ -16,8 +16,8 @@ export type ImageGalleryContextValue<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
 > = {
   messages: MessageType<StreamChatGenerics>[];
-  setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
   setMessages: React.Dispatch<React.SetStateAction<MessageType<StreamChatGenerics>[]>>;
+  setSelectedMessage: React.Dispatch<React.SetStateAction<SelectedMessage | undefined>>;
   selectedMessage?: SelectedMessage;
 };
 
@@ -37,10 +37,10 @@ export const ImageGalleryProvider = <
     <ImageGalleryContext.Provider
       value={
         {
-          selectedMessage,
           messages,
-          setSelectedMessage,
+          selectedMessage,
           setMessages,
+          setSelectedMessage,
         } as unknown as ImageGalleryContextValue
       }
     >

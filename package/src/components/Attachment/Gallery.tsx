@@ -135,9 +135,9 @@ const GalleryWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setSelectedMessage,
     setMessages,
     setOverlay,
+    setSelectedMessage,
     threadList,
     videos,
     VideoThumbnail,
@@ -250,9 +250,9 @@ const GalleryWithContext = <
                   onPressIn={onPressIn}
                   preventPress={preventPress}
                   rowIndex={rowIndex}
-                  setSelectedMessage={setSelectedMessage}
                   setMessages={setMessages}
                   setOverlay={setOverlay}
+                  setSelectedMessage={setSelectedMessage}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
                 />
@@ -316,9 +316,9 @@ const GalleryThumbnail = <
   onPressIn,
   preventPress,
   rowIndex,
-  setSelectedMessage,
   setMessages,
   setOverlay,
+  setSelectedMessage,
   thumbnail,
   VideoThumbnail,
 }: GalleryThumbnailProps<StreamChatGenerics>) => {
@@ -576,14 +576,14 @@ export const Gallery = <
     onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
-    setSelectedMessage: propSetSelectedMessage,
     setOverlay: propSetOverlay,
+    setSelectedMessage: propSetSelectedMessage,
     threadList: propThreadList,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setSelectedMessage: contextSetSelectedMessage, setMessages } =
+  const { setMessages, setSelectedMessage: contextSetSelectedMessage } =
     useImageGalleryContext<StreamChatGenerics>();
   const {
     alignment: contextAlignment,
@@ -644,9 +644,9 @@ export const Gallery = <
         onPress,
         onPressIn,
         preventPress,
-        setSelectedMessage,
         setMessages,
         setOverlay,
+        setSelectedMessage,
         threadList,
         videos,
         VideoThumbnail,
