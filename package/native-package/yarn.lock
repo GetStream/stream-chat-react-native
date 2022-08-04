@@ -1002,11 +1002,6 @@ electron-to-chromium@^1.4.17:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.71.tgz#17056914465da0890ce00351a3b946fd4cd51ff6"
   integrity sha512-Hk61vXXKRb2cd3znPE9F+2pLWdIOmP7GjiTj45y6L3W/lO+hSnUSUhq+6lEaERWBdZOHbk2s3YV5c9xVl3boVw==
 
-eme-encryption-scheme-polyfill@^2.0.1:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/eme-encryption-scheme-polyfill/-/eme-encryption-scheme-polyfill-2.0.5.tgz#590a437483539edd95a209bbfc14f5458c0052a6"
-  integrity sha512-F1C7SGjzE0ypKPqr7+30AcGl4YyEllrJidVDDWfwIwCadEfIHuayTn/nsy7EFNoZOJp4gUAohAGwLQEXE+exuw==
-
 emojis-list@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-3.0.0.tgz#5570662046ad29e2e916e71aae260abdff4f6a78"
@@ -1624,10 +1619,10 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-stream-chat-react-native-core@4.10.0:
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.10.0.tgz#bed5dc54fb8fda3c186e2d10c19e33f115cf5b31"
-  integrity sha512-+p+LzC45pPjxoZWBjjkvQWp3mjOyN+oN1Dfdd7JpxPSbvx+yLvxp5uOFN9erWqMrUOgcFxqoEkjMt/e0gLB3qw==
+stream-chat-react-native-core@4.12.2:
+  version "4.12.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.12.2.tgz#45bcda8346c45560c04c87e4a48c42a35075cfde"
+  integrity sha512-esBqKcUv9S3IVLX88Hl3uVKspzNgdPMRMeLYPNmkR23UAc7CBWcc7sIM0Mlwbb8mym54x1YAGADslnPWtT4itA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"
