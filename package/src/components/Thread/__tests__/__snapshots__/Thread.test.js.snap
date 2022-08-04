@@ -147,6 +147,7 @@ exports[`Thread should match thread snapshot 1`] = `
             "minIndexForVisible": 1,
           }
         }
+        maxToRenderPerBatch={30}
         onContentSizeChange={[Function]}
         onLayout={[Function]}
         onMomentumScrollBegin={[Function]}
@@ -154,6 +155,7 @@ exports[`Thread should match thread snapshot 1`] = `
         onScroll={[Function]}
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
+        onScrollToIndexFailed={[Function]}
         onTouchEnd={[Function]}
         onViewableItemsChanged={[Function]}
         removeClippedSubviews={false}

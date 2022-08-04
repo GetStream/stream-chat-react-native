@@ -54,7 +54,7 @@ PODS:
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
-  - FirebaseCoreDiagnostics (8.14.0):
+  - FirebaseCoreDiagnostics (8.15.0):
     - GoogleDataTransport (~> 9.1)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
@@ -66,7 +66,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseInstallations (8.14.0):
+  - FirebaseInstallations (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/UserDefaults (~> 7.7)
@@ -162,9 +162,9 @@ PODS:
     - GoogleUtilities/Network (~> 7.7)
     - "GoogleUtilities/NSData+zlib (~> 7.7)"
     - nanopb (~> 2.30908.0)
-  - GoogleDataTransport (9.1.2):
-    - GoogleUtilities/Environment (~> 7.2)
-    - nanopb (~> 2.30908.0)
+  - GoogleDataTransport (9.1.4):
+    - GoogleUtilities/Environment (~> 7.7)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
   - GoogleUtilities/AppDelegateSwizzler (7.7.0):
     - GoogleUtilities/Environment
@@ -193,7 +193,7 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - OpenSSL-Universal (1.1.180)
-  - PromisesObjC (2.0.0)
+  - PromisesObjC (2.1.0)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -409,13 +409,17 @@ PODS:
   - React-jsinspector (0.67.3)
   - React-logger (0.67.3):
     - glog
-  - react-native-cameraroll (4.0.4):
+  - react-native-cameraroll (4.2.0):
     - React-Core
   - react-native-document-picker (5.0.4):
     - React-Core
   - react-native-image-resizer (1.4.5):
     - React-Core
   - react-native-netinfo (6.0.0):
+    - React-Core
+  - react-native-quick-sqlite (3.1.8):
+    - React
+    - React-callinvoker
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
@@ -606,10 +610,11 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
+  - "react-native-cameraroll (from `../node_modules/@stream-io/react-native-cameraroll`)"
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-quick-sqlite (from `../node_modules/react-native-quick-sqlite`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -709,13 +714,15 @@ EXTERNAL SOURCES:
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-cameraroll:
-    :path: "../node_modules/@react-native-community/cameraroll"
+    :path: "../node_modules/@stream-io/react-native-cameraroll"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-quick-sqlite:
+    :path: "../node_modules/react-native-quick-sqlite"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -783,9 +790,9 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 2fc3876e2eb347673ad2f35e249ae7b15d6c88f5
   FirebaseAppDistribution: 54c3de22099cd46d93b6a24b1e70474530bb3188
   FirebaseCore: b84a44ee7ba999e0f9f76d198a9c7f60a797b848
-  FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
+  FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
   FirebaseCrashlytics: 079ef36f5c4b7161188928faec40fa276ebefd84
-  FirebaseInstallations: 7d1d967a307c12f1aadd76844fc321cef699b1ce
+  FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
   FirebaseMessaging: 5ebc42d281567658a2cb72b9ef3506e4a1a1a6e4
   Flipper: 30e8eeeed6abdc98edaf32af0cda2f198be4b733
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
@@ -799,13 +806,13 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
-  GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
+  GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   hermes-engine: bf7577d12ac6ccf53ab8b5af3c6ccf0dd8458c5c
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
-  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
   RCTRequired: 3c77b683474faf23920fbefc71c4e13af21470c0
   RCTTypeSafety: 720b1841260dac692444c2822b27403178da8b28
@@ -819,10 +826,11 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 15ea57ead631a11fad57634ff69f78e797113a39
   React-jsinspector: 1e1e03345cf6d47779e2061d679d0a87d9ae73d8
   React-logger: 1e10789cb84f99288479ba5f20822ce43ced6ffe
-  react-native-cameraroll: 88f4e62d9ecd0e1f253abe4f685474f2ea14bfa2
+  react-native-cameraroll: 71a4a68ebcff2fcb7305f4b408f9a972658bcdc7
   react-native-document-picker: 1a7518132d4a06b67f459be9bb1464a567d2b3b4
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
+  react-native-quick-sqlite: e31f937c9385597bfb402ea0e7677e0093bc17d0
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   React-perflogger: 93d3f142d6d9a46e635f09ba0518027215a41098

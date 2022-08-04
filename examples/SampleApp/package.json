@@ -1,6 +1,6 @@
 {
   "name": "sampleapp",
-  "version": "1.9.0",
+  "version": "1.10.1",
   "private": true,
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
   "dependencies": {
     "@notifee/react-native": "^5.0.3",
     "@react-native-async-storage/async-storage": "1.15.17",
-    "@react-native-community/cameraroll": "4.0.4",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-community/netinfo": "6.0.0",
     "@react-native-firebase/app": "^14.7.0",
@@ -36,6 +35,7 @@
     "@react-navigation/native": "5.9.4",
     "@react-navigation/stack": "5.14.5",
     "@stream-io/flat-list-mvcp": "0.10.2",
+    "@stream-io/react-native-cameraroll": "^4.2.0",
     "patch-package": "6.4.7",
     "react": "17.0.2",
     "react-native": "0.67.3",
@@ -46,6 +46,7 @@
     "react-native-image-crop-picker": "0.36.2",
     "react-native-image-resizer": "1.4.5",
     "react-native-markdown-package": "1.8.1",
+    "react-native-quick-sqlite": "^3.1.5",
     "react-native-reanimated": "2.7.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "3.2.0",

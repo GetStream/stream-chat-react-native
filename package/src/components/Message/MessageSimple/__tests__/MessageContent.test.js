@@ -196,13 +196,15 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId, queryAllByTestId } = renderMessage({ message });
+    const { getByTestId, queryAllByA11yLabel, queryAllByTestId } = renderMessage({ message });
 
     const fileAttachments = queryAllByTestId('file-attachment');
+    const audioAttachments = queryAllByA11yLabel('audio-attachment-preview');
 
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(fileAttachments).toHaveLength(2);
+      expect(fileAttachments).toHaveLength(1);
+      expect(audioAttachments).toHaveLength(1);
     });
   });
 

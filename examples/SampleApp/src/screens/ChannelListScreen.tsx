@@ -57,7 +57,6 @@ const options = {
   state: true,
   watch: true,
 };
-
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useAppContext();
   const navigation = useNavigation();
@@ -81,7 +80,7 @@ export const ChannelListScreen: React.FC = () => {
     () => ({
       ...baseFilters,
       members: {
-        $in: [chatClientUserId || ''],
+        $in: [chatClientUserId],
       },
     }),
     [chatClientUserId],
@@ -98,11 +97,13 @@ export const ChannelListScreen: React.FC = () => {
     </View>
   );
 
-  if (!chatClient) return null;
-
   const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
     scrollRef.current = ref;
   };
+
+  if (!chatClient) {
+    return null;
+  }
 
   return (
     <View

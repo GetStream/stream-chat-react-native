@@ -4,7 +4,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
-import { useLoadingImage } from './hooks/useLoadingImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -30,6 +29,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
@@ -61,6 +61,12 @@ const styles = StyleSheet.create({
     bottom: 4,
     left: 4,
     position: 'absolute',
+  },
+  imageLoadingIndicatorContainer: {
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
   },
   imageLoadingIndicatorStyle: {
     alignItems: 'center',
@@ -490,7 +496,7 @@ const GalleryImageThumbnail = <
             uri={thumbnail.url}
           />
           {isLoadingImage && (
-            <View style={{ position: 'absolute' }}>
+            <View style={[styles.imageLoadingIndicatorContainer]}>
               <ImageLoadingIndicator style={styles.imageLoadingIndicatorStyle} />
             </View>
           )}
@@ -519,7 +525,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     videos: nextVideos,
   } = nextProps;
 
-  const messageEqual = prevMessage?.id === nextMessage?.id;
+  const messageEqual =
+    prevMessage?.id === nextMessage?.id &&
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
   if (!messageEqual) return false;
 
   const groupStylesEqual =

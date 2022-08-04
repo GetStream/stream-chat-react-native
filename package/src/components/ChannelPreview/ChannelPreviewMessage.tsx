@@ -37,15 +37,16 @@ export const ChannelPreviewMessage = <
 
   return (
     <Text numberOfLines={1} style={[styles.message, { color: grey }, message]}>
-      {latestMessagePreview.previews.map((preview, index) =>
-        preview.text ? (
-          <Text
-            key={`${preview.text}_${index}`}
-            style={[{ color: grey }, preview.bold ? styles.bold : {}, message]}
-          >
-            {preview.text}
-          </Text>
-        ) : null,
+      {latestMessagePreview?.previews?.map(
+        (preview, index) =>
+          preview.text && (
+            <Text
+              key={`${preview.text}_${index}`}
+              style={[{ color: grey }, preview.bold ? styles.bold : {}, message]}
+            >
+              {preview.text}
+            </Text>
+          ),
       )}
     </Text>
   );

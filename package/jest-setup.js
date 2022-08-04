@@ -3,6 +3,7 @@ import { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
+import { initializeDBMocking, resetDBMocking } from './src/mock-builders/DB/mock';
 import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
@@ -55,3 +56,6 @@ jest.mock('@gorhom/bottom-sheet', () => {
     default: react.View,
   };
 });
+
+beforeEach(initializeDBMocking);
+afterEach(resetDBMocking);

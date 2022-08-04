@@ -1340,11 +1340,6 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-community/cameraroll@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-4.0.4.tgz#3e2567ce54e3985e8e0a51832dfa0e1c5317f75b"
-  integrity sha512-3SY96Xh1yQjV5M7dFisl5kQmrO/K09URarZwmTN801KEalOoo/opsd/e8Vu1dwSKe0NGCK7A2u0oJQpeNbWbnA==
-
 "@react-native-community/cli-debugger-ui@^6.0.0-rc.0":
   version "6.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-6.0.0-rc.0.tgz#774378626e4b70f5e1e2e54910472dcbaffa1536"
@@ -1631,6 +1626,13 @@
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.10.2.tgz#e247206c5c6409bb4af120e0f02d7b9b505f6e53"
   integrity sha512-jebEKP7pfRF8/tVSqNM6qdvisfOtMnMlzGYTWldoOnIq9/6DS1BU4ilzBuH6O7iBUu4bDokrMCNJgA2b2EKW/A==
+
+"@stream-io/react-native-cameraroll@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@stream-io/react-native-cameraroll/-/react-native-cameraroll-4.2.0.tgz#91d89420b3f31f4183d3f686338e157413ba4f97"
+  integrity sha512-KykN0xzT6tBJV1kAOIr01cre8AjjD7zxjj8cWsM2sfpTClOLpDBuON1uXW/1oQvK6SG8btARqcbH8MlhZV6Knw==
+  dependencies:
+    invariant "^2.2.4"
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -6801,6 +6803,11 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
+react-native-quick-sqlite@^3.1.5:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-3.1.8.tgz#a432561472dfb35f7f75979626c7a83acb279662"
+  integrity sha512-/3FWi53Vs0uaFD796yJ+65/1wjahl3iGohrKxPOZGH5e32IUfZ/L+KrrAGpxvRLcfLNWrB3xr952ZPQTiuLiIg==
+
 react-native-reanimated@2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.7.0.tgz#2cebf9bddaf87a4b364079b40e9099ec0d7ce247"
@@ -7622,10 +7629,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@4.10.0:
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.10.0.tgz#bed5dc54fb8fda3c186e2d10c19e33f115cf5b31"
-  integrity sha512-+p+LzC45pPjxoZWBjjkvQWp3mjOyN+oN1Dfdd7JpxPSbvx+yLvxp5uOFN9erWqMrUOgcFxqoEkjMt/e0gLB3qw==
+stream-chat-react-native-core@4.11.0:
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.11.0.tgz#b307bbcc2a4008c0289c191ba611f1728e0e430b"
+  integrity sha512-WUChTTbrriyT2bkFCFzhPM4G8hYbq/BzLUeDVqVUPA9lNvfFhaw36Rq+4KI4+TAoxuJhz8mdxZzUNjvVUbYEgA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"
@@ -7653,6 +7660,21 @@ stream-chat@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.7.0.tgz#1add1e612f0009f9e7a69d35f2a2fae1296d85ef"
   integrity sha512-usH/kh0ZjbjOP8TTlsbXS53UZRUmwP0r1dOYf0jrQg3HPfwG51iTkrXGNlzPF9ueNXkPB8ObSm7bcdVRoo+4bg==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "^8.5.6"
+    "@types/ws" "^7.4.0"
+    axios "^0.22.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
+stream-chat@7.0.0-offline-support.3:
+  version "7.0.0-offline-support.3"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-7.0.0-offline-support.3.tgz#de18a7401f6007b89f5aaf6015ee933b45e218de"
+  integrity sha512-uYeDt1MqCDsZ9AIdBw5c7hRM0dshxLUkaYy3Co6gdAqh6AXCEVVDSzjxXT2w1wpKZpxpwZoy4YyQJTYKrNcJNA==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"
