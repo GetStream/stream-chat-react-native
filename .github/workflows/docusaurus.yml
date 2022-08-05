@@ -5,7 +5,7 @@ on:
     branches:
 #       - main # default branch name for each repo that docs should be push from
 #       - develop
-      - v5-release
+      - v5.0.0-beta
     paths:
       - docusaurus/**
 jobs:
