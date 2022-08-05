@@ -1,5 +1,23 @@
 # Change Log
 
+## [4.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.2...v4.13.0) (2022-08-05)
+
+
+### Features
+
+* update markdown package ([0c23acd](https://github.com/GetStream/stream-chat-react-native/commit/0c23acd99ee45d3e2543350a43fbb18465b19934))
+
+
+### Bug Fixes
+
+* allow overriding message from props on gallery component ([#1620](https://github.com/GetStream/stream-chat-react-native/issues/1620)) ([44ecf98](https://github.com/GetStream/stream-chat-react-native/commit/44ecf98cc59ff4701dfd95e725ecd68231ffa3c0))
+* update markdown package to fix prop types import error ([1438321](https://github.com/GetStream/stream-chat-react-native/commit/1438321c396750aeee8b51680452783846d850d3))
+
+
+### Reverts
+
+* Revert "Revert "fix: update markdown package to fix prop types import error " (#1622)" (#1623) ([12ab5d5](https://github.com/GetStream/stream-chat-react-native/commit/12ab5d5d20daed6534e423f570b4b99d531e8015)), closes [#1622](https://github.com/GetStream/stream-chat-react-native/issues/1622) [#1623](https://github.com/GetStream/stream-chat-react-native/issues/1623)
+
 ### [4.12.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.1...v4.12.2) (2022-08-03)
 
 
