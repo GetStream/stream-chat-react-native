@@ -1,4 +1,4 @@
-import type { ExtendableGenerics, LiteralStringForUnion } from 'stream-chat';
+import type { DefaultGenerics, LiteralStringForUnion } from 'stream-chat';
 
 export type Asset = {
   duration: number | null;
@@ -36,7 +36,7 @@ interface DefaultChannelType extends UnknownType {
   image?: string;
 }
 
-export interface DefaultStreamChatGenerics extends ExtendableGenerics {
+export interface DefaultStreamChatGenerics extends DefaultGenerics {
   attachmentType: UnknownType;
   channelType: DefaultChannelType;
   commandType: LiteralStringForUnion;
