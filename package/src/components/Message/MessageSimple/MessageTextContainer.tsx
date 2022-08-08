@@ -117,8 +117,16 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
   prevProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
   nextProps: MessageTextContainerPropsWithContext<StreamChatGenerics>,
 ) => {
-  const { message: prevMessage, onlyEmojis: prevOnlyEmojis } = prevProps;
-  const { message: nextMessage, onlyEmojis: nextOnlyEmojis } = nextProps;
+  const {
+    markdownStyles: prevMarkdownStyles,
+    message: prevMessage,
+    onlyEmojis: prevOnlyEmojis,
+  } = prevProps;
+  const {
+    markdownStyles: nextMarkdownStyles,
+    message: nextMessage,
+    onlyEmojis: nextOnlyEmojis,
+  } = nextProps;
 
   const messageTextEqual = prevMessage.text === nextMessage.text;
   if (!messageTextEqual) return false;
@@ -133,6 +141,18 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
         nextMessage.mentioned_users?.length &&
         prevMessage.mentioned_users[0].name === nextMessage.mentioned_users[0].name));
   if (!mentionedUsersEqual) return false;
+
+  // stringify could be an expensive operation, so lets rule out the obvious
+  // possibilities first such as different object reference or empty objects etc.
+  // Also keeping markdown equality check at the last to make sure other less
+  // expensive equality checks get executed first and markdown check will be skipped if returned
+  // false from previous checks.
+  const markdownStylesEqual =
+    prevMarkdownStyles === nextMarkdownStyles ||
+    (Object.keys(prevMarkdownStyles || {}).length === 0 &&
+      Object.keys(nextMarkdownStyles || {}).length === 0) ||
+    JSON.stringify(prevMarkdownStyles) === JSON.stringify(nextMarkdownStyles);
+  if (!markdownStylesEqual) return false;
 
   return true;
 };
