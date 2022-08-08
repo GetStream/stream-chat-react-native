@@ -279,10 +279,15 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   });
 
   // display the notification
+  const { stream, ...rest } = remoteMessage.data ?? {};
+  const data = {
+    ...rest,
+    ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+  };
   await notifee.displayNotification({
     title: 'New message from ' + message.message.user.name,
     body: message.message.text,
-    data: remoteMessage.data,
+    data,
     android: {
       channelId,
       // add a press action to open the app on press
@@ -546,10 +551,15 @@ useEffect(() => {
     });
 
     // display the notification
+    const { stream, ...rest } = remoteMessage.data ?? {};
+    const data = {
+      ...rest,
+      ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+    };
     await notifee.displayNotification({
       title: 'New message from ' + message.message.user.name,
       body: message.message.text,
-      data: remoteMessage.data,
+      data,
       android: {
         channelId,
         pressAction: {

@@ -246,6 +246,34 @@ describe('ChannelList', () => {
         });
       });
 
+      it('should add channel to top if channel is hidden from the list', async () => {
+        const { getAllByRole, getByTestId, getByText } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
+
+        await waitFor(() => expect(getByTestId('channel-list')).toBeTruthy());
+        act(() => dispatchChannelHiddenEvent(chatClient, testChannel3.channel));
+
+        const newItems = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(newItems).toHaveLength(2);
+        });
+
+        const newMessage = sendNewMessageOnChannel3();
+
+        await waitFor(() => {
+          expect(getByText(newMessage.text)).toBeTruthy();
+        });
+
+        const items = getAllByRole('list-item');
+
+        await waitFor(() => {
+          expect(within(items[0]).getByText(newMessage.text)).toBeTruthy();
+        });
+      });
+
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
         const { getAllByRole, getByTestId, getByText } = render(
           <Chat client={chatClient}>

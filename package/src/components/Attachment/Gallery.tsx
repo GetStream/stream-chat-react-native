@@ -525,7 +525,9 @@ const areEqual = <StreamChatGenerics extends DefaultStreamChatGenerics = Default
     videos: nextVideos,
   } = nextProps;
 
-  const messageEqual = prevMessage?.id === nextMessage?.id;
+  const messageEqual =
+    prevMessage?.id === nextMessage?.id &&
+    `${prevMessage?.updated_at}` === `${nextMessage?.updated_at}`;
   if (!messageEqual) return false;
 
   const groupStylesEqual =
@@ -578,6 +580,7 @@ export const Gallery = <
     ImageLoadingFailedIndicator: PropImageLoadingFailedIndicator,
     ImageLoadingIndicator: PropImageLoadingIndicator,
     images: propImages,
+    message: propMessage,
     onLongPress: propOnLongPress,
     onPress: propOnPress,
     onPressIn: propOnPressIn,
@@ -594,7 +597,7 @@ export const Gallery = <
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
     images: contextImages,
-    message,
+    message: contextMessage,
     onLongPress: contextOnLongPress,
     onPress: contextOnPress,
     onPressIn: contextOnPressIn,
@@ -613,6 +616,7 @@ export const Gallery = <
 
   const images = propImages || contextImages;
   const videos = propVideos || contextVideos;
+  const message = propMessage || contextMessage;
 
   if (!images.length && !videos.length) return null;
 

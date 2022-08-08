@@ -1,5 +1,57 @@
 # Change Log
 
+## [4.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.2...v4.13.0) (2022-08-05)
+
+
+### Features
+
+* update markdown package ([0c23acd](https://github.com/GetStream/stream-chat-react-native/commit/0c23acd99ee45d3e2543350a43fbb18465b19934))
+
+
+### Bug Fixes
+
+* allow overriding message from props on gallery component ([#1620](https://github.com/GetStream/stream-chat-react-native/issues/1620)) ([44ecf98](https://github.com/GetStream/stream-chat-react-native/commit/44ecf98cc59ff4701dfd95e725ecd68231ffa3c0))
+* update markdown package to fix prop types import error ([1438321](https://github.com/GetStream/stream-chat-react-native/commit/1438321c396750aeee8b51680452783846d850d3))
+
+
+### Reverts
+
+* Revert "Revert "fix: update markdown package to fix prop types import error " (#1622)" (#1623) ([12ab5d5](https://github.com/GetStream/stream-chat-react-native/commit/12ab5d5d20daed6534e423f570b4b99d531e8015)), closes [#1622](https://github.com/GetStream/stream-chat-react-native/issues/1622) [#1623](https://github.com/GetStream/stream-chat-react-native/issues/1623)
+
+### [4.12.2](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.1...v4.12.2) (2022-08-03)
+
+
+### Bug Fixes
+
+* reactions and pinning are not updating on attachments ([#1609](https://github.com/GetStream/stream-chat-react-native/issues/1609)) ([fc55611](https://github.com/GetStream/stream-chat-react-native/commit/fc55611f9fbc8c09fcbea464273cfa0fe6d6f384))
+
+### [4.12.1](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.0...v4.12.1) (2022-08-01)
+
+
+### Bug Fixes
+
+* broken touch listeners on reaction list ([#1600](https://github.com/GetStream/stream-chat-react-native/issues/1600)) ([5510e62](https://github.com/GetStream/stream-chat-react-native/commit/5510e629295136089f6d96505ac859a05647a925))
+
+## [4.12.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.11.0...v4.12.0) (2022-07-29)
+
+
+### Features
+
+* show audio attachments in message list ([#1582](https://github.com/GetStream/stream-chat-react-native/issues/1582)) ([d2bc714](https://github.com/GetStream/stream-chat-react-native/commit/d2bc714a13bacd7656c439250211811c368d8456))
+* support playing audio attachments from message input ([#1489](https://github.com/GetStream/stream-chat-react-native/issues/1489)) ([d7dd0f7](https://github.com/GetStream/stream-chat-react-native/commit/d7dd0f7926e99199c8eee421f27e4727dcd32fe5))
+
+
+### Bug Fixes
+
+* add pathFill to the image and file upload Close icon ([#1573](https://github.com/GetStream/stream-chat-react-native/issues/1573)) ([b51a71e](https://github.com/GetStream/stream-chat-react-native/commit/b51a71e80623b8fcc5bb8379486c4e3ff2609ddb))
+* added condition to render only the video thumbnail in video reply and fix styles and theming ([#1565](https://github.com/GetStream/stream-chat-react-native/issues/1565)) ([d4d7fd2](https://github.com/GetStream/stream-chat-react-native/commit/d4d7fd2a06d53fdbce815dc599d9c02c9a24d593))
+* allow pound sign in link paths ([#1581](https://github.com/GetStream/stream-chat-react-native/issues/1581)) ([6711b7d](https://github.com/GetStream/stream-chat-react-native/commit/6711b7dbe2c01b73a1c7947541634b79990ff9c9))
+* center align the image loading indicator ([#1593](https://github.com/GetStream/stream-chat-react-native/issues/1593)) ([db4248f](https://github.com/GetStream/stream-chat-react-native/commit/db4248fbe3e88988f4a845eb56f7351dfb5fdc60))
+* erroneous usage of AudioAttachment and its props from message input context ([#1588](https://github.com/GetStream/stream-chat-react-native/issues/1588)) ([75561fd](https://github.com/GetStream/stream-chat-react-native/commit/75561fdc2d59732a6b8a35dd12d3a0f2b6a56126))
+* ignore thread response from latest message preview on channel list ([#1580](https://github.com/GetStream/stream-chat-react-native/issues/1580)) ([07c6f89](https://github.com/GetStream/stream-chat-react-native/commit/07c6f894b4596b69dcecff5b1da9933749b92e53))
+* image sharing in android ([#1575](https://github.com/GetStream/stream-chat-react-native/issues/1575)) ([b638eec](https://github.com/GetStream/stream-chat-react-native/commit/b638eecf3a26b03ae9cd1a6826c8f4c310f2db49))
+* reposition image error indicator ([#1577](https://github.com/GetStream/stream-chat-react-native/issues/1577)) ([edfd8ca](https://github.com/GetStream/stream-chat-react-native/commit/edfd8cac42284cc08afa46e249cbe66debddb111))
+
 ## [4.11.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.10.0...v4.11.0) (2022-07-20)
 
 
