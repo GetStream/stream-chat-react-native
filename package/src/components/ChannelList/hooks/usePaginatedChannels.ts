@@ -6,7 +6,7 @@ import { useActiveChannelsRefContext } from '../../../contexts/activeChannelsRef
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useIsMountedRef } from '../../../hooks/useIsMountedRef';
 
-import { getChannels } from '../../../store/apis/getChannels';
+import { getChannelsForFilterSort } from '../../../store/apis/getChannelsForFilterSort';
 import type { DefaultStreamChatGenerics } from '../../../types/types';
 import { ONE_SECOND_IN_MS } from '../../../utils/date';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
@@ -44,8 +44,10 @@ export const usePaginatedChannels = <
   sort = {},
 }: Parameters<StreamChatGenerics>) => {
   const { client } = useChatContext<StreamChatGenerics>();
-
-  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>([]);
+  const initialChannelsStateRef = useRef([]);
+  const [channels, setChannels] = useState<Channel<StreamChatGenerics>[]>(
+    initialChannelsStateRef.current,
+  );
   const [staticChannelsActive, setStaticChannelsActive] = useState<boolean>(true);
   const activeChannels = useActiveChannelsRefContext();
 
@@ -181,12 +183,19 @@ export const usePaginatedChannels = <
       if (!client?.user?.id) return;
       if (enableOfflineSupport) {
         try {
-          const channelsFromDB = getChannels({ currentUserId: client.user.id, filters, sort });
-          setChannels(
-            client.hydrateActiveChannels(channelsFromDB, {
-              staticState: true,
-            }),
-          );
+          const channelsFromDB = getChannelsForFilterSort({
+            currentUserId: client.user.id,
+            filters,
+            sort,
+          });
+
+          if (channelsFromDB) {
+            setChannels(
+              client.hydrateActiveChannels(channelsFromDB, {
+                staticState: true,
+              }),
+            );
+          }
         } catch (e) {
           console.warn('Failed to get channels from database: ', e);
         }
@@ -205,7 +214,7 @@ export const usePaginatedChannels = <
     loadingChannels:
       activeQueryType === 'queryLocalDB'
         ? true
-        : activeQueryType === 'reload' && channels.length === 0,
+        : activeQueryType === 'reload' && channels === initialChannelsStateRef.current,
     loadingNextPage: activeQueryType === 'loadChannels',
     loadNextPage,
     refreshing: activeQueryType === 'refresh',

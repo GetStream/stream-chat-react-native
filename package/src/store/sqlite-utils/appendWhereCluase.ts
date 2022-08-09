@@ -15,7 +15,6 @@ export const appendWhereClause = <T extends keyof Schema>(
     if (value === undefined) continue;
 
     if (Array.isArray(value)) {
-      if (value.length === 0) continue;
       const questionMarks = Array(Object.keys(value).length).fill('?').join(',');
       whereClause.push(`${key} in (${questionMarks})`);
       whereParams.push(...value);
@@ -25,7 +24,7 @@ export const appendWhereClause = <T extends keyof Schema>(
     }
   }
 
-  if (!whereParams.length) {
+  if (!whereParams.length && !whereClause.length) {
     return [selectQuery, []];
   }
 

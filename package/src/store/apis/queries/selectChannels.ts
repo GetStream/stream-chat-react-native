@@ -5,9 +5,15 @@ import type { TableRowJoinedUser } from '../../types';
 export const selectChannels = ({
   channelIds,
 }: { channelIds?: string[] } = {}): TableRowJoinedUser<'channels'>[] => {
-  const query = createSelectQuery('channels', ['*'], {
-    cid: channelIds,
-  });
+  const query = createSelectQuery(
+    'channels',
+    ['*'],
+    channelIds
+      ? {
+          cid: channelIds,
+        }
+      : undefined,
+  );
 
   const result = QuickSqliteClient.executeSql.apply(null, query);
 
