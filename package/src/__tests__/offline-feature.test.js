@@ -6,7 +6,6 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { v4 as uuidv4 } from 'uuid';
 
-
 import { ChannelList } from '../components/ChannelList/ChannelList';
 import { Chat } from '../components/Chat/Chat';
 import { useChannelsContext } from '../contexts/channelsContext/ChannelsContext';
