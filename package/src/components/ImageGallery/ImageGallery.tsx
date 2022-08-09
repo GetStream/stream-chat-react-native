@@ -675,7 +675,7 @@ export const ImageGallery = <
             closeGridView={closeGridView}
             numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
             photos={gridPhotos}
-            setImage={setSelectedMessage}
+            setSelectedMessage={setSelectedMessage}
             {...imageGalleryCustomComponents?.grid}
           />
         </BottomSheetModal>
