@@ -161,7 +161,8 @@ export const ImageGallery = <
   } = useTheme();
   const [gridPhotos, setGridPhotos] = useState<Photo<StreamChatGenerics>[]>([]);
   const { overlay, translucentStatusBar } = useOverlayContext();
-  const { image, images, setImage } = useImageGalleryContext<StreamChatGenerics>();
+  const { messages, selectedMessage, setSelectedMessage } =
+    useImageGalleryContext<StreamChatGenerics>();
 
   /**
    * Height constants
@@ -256,20 +257,22 @@ export const ImageGallery = <
    * photo attachments
    */
 
-  const photos = images.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
+  const photos = messages.reduce((acc: Photo<StreamChatGenerics>[], cur) => {
     const attachmentImages =
-      cur.attachments?.filter(
-        (attachment) =>
-          (attachment.type === 'giphy' &&
-            (attachment.giphy?.[giphyVersion]?.url ||
-              attachment.thumb_url ||
-              attachment.image_url)) ||
-          (attachment.type === 'image' &&
-            !attachment.title_link &&
-            !attachment.og_scrape_url &&
-            getUrlOfImageAttachment(attachment)) ||
-          (isVideoPackageAvailable() && attachment.type === 'video'),
-      ) || [];
+      cur.attachments
+        ?.filter(
+          (attachment) =>
+            (attachment.type === 'giphy' &&
+              (attachment.giphy?.[giphyVersion]?.url ||
+                attachment.thumb_url ||
+                attachment.image_url)) ||
+            (attachment.type === 'image' &&
+              !attachment.title_link &&
+              !attachment.og_scrape_url &&
+              getUrlOfImageAttachment(attachment)) ||
+            (isVideoPackageAvailable() && attachment.type === 'video'),
+        )
+        .reverse() || [];
 
     const attachmentPhotos = attachmentImages.map((a) => {
       const imageUrl = getUrlOfImageAttachment(a) as string;
@@ -297,7 +300,7 @@ export const ImageGallery = <
       };
     });
 
-    return [...acc, ...attachmentPhotos] as Photo<StreamChatGenerics>[];
+    return [...attachmentPhotos, ...acc] as Photo<StreamChatGenerics>[];
   }, []);
 
   /**
@@ -307,6 +310,12 @@ export const ImageGallery = <
    * inside the gesture handler as it will have an array as a dependency
    */
   const photoLength = photos.length;
+
+  /**
+   * The URL for the images may differ because of dimensions passed as
+   * part of the query.
+   */
+  const stripQueryFromUrl = (url: string) => url.split('?')[0];
 
   /**
    * Set selected photo when changed via pressing in the message list
@@ -323,7 +332,9 @@ export const ImageGallery = <
     };
 
     const newIndex = photos.findIndex(
-      (photo) => photo.messageId === image?.messageId && photo.uri === image?.url,
+      (photo) =>
+        photo.messageId === selectedMessage?.messageId &&
+        stripQueryFromUrl(photo.uri) === stripQueryFromUrl(selectedMessage?.url || ''),
     );
 
     if (photoLength > 1) {
@@ -331,7 +342,7 @@ export const ImageGallery = <
     }
 
     runOnUI(updatePosition)(newIndex);
-  }, [image, photoLength]);
+  }, [selectedMessage, photoLength]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -664,7 +675,7 @@ export const ImageGallery = <
             closeGridView={closeGridView}
             numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
             photos={gridPhotos}
-            setImage={setImage}
+            setSelectedMessage={setSelectedMessage}
             {...imageGalleryCustomComponents?.grid}
           />
         </BottomSheetModal>

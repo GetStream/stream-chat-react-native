@@ -6,8 +6,6 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { BetterSqlite } from './utils/BetterSqlite';
-
 import { ChannelList } from '../components/ChannelList/ChannelList';
 import { Chat } from '../components/Chat/Chat';
 import { useChannelsContext } from '../contexts/channelsContext/ChannelsContext';
@@ -36,6 +34,7 @@ import { generateUser } from '../mock-builders/generator/user';
 import { getTestClientWithUser } from '../mock-builders/mock';
 import { convertFilterSortToQuery } from '../store/apis/utils/convertFilterSortToQuery';
 import { tables } from '../store/schema';
+import { BetterSqlite } from '../test-utils/BetterSqlite';
 
 /**
  * We are gonna use following custom UI components for preview and list.
