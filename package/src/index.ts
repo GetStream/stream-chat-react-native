@@ -22,3 +22,6 @@ export { default as heTranslations } from './i18n/he.json';
 
 export { QuickSqliteClient } from './store/QuickSqliteClient';
 export { version } from './version.json';
+
+import * as OfflineStoreApis from './store/apis';
+export { OfflineStoreApis };
