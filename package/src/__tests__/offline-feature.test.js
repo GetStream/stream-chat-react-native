@@ -6,7 +6,7 @@ import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { BetterSqlite } from './utils/BetterSqlite';
+import { BetterSqlite } from '../test-utils/BetterSqlite';
 
 import { ChannelList } from '../components/ChannelList/ChannelList';
 import { Chat } from '../components/Chat/Chat';

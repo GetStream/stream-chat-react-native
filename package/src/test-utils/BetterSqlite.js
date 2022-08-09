@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 
-import { tables } from '../../store/schema';
+import { tables } from '../store/schema';
 
 export class BetterSqlite {
   db = null;
