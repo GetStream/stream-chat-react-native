@@ -1,11 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-// Importing following package just to avoid errors using sqlite global.
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-import types from 'react-native-quick-sqlite';
+import type { QuickSQLite } from 'react-native-quick-sqlite';
+let sqlite: typeof QuickSQLite;
 
 try {
-  require('react-native-quick-sqlite');
+  sqlite = require('react-native-quick-sqlite')?.QuickSQLite;
 } catch (e) {
   // Failed for one of the reason
   // 1. Running on expo, where we don't support offline storage yet.
@@ -17,13 +15,18 @@ import { tables } from './schema';
 import { createCreateTableQuery } from './sqlite-utils/createCreateTableQuery';
 import type { PreparedQueries, Table } from './types';
 
+/**
+ * QuickSqliteClient takes care of any direct interaction with sqlite.
+ * This way usage react-native-quick-sqlite package is scoped to a single class/file.
+ */
 export class QuickSqliteClient {
-  static dbVersion = 0;
+  static dbVersion = 2;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
 
   static getDbVersion = () => this.dbVersion;
+  // Force a specific db version. This is mainly useful for testsuit.
   static setDbVersion = (version: number) => (this.dbVersion = version);
 
   static openDB = () => {
@@ -89,13 +92,14 @@ export class QuickSqliteClient {
 
   static initializeDatabase = () => {
     // @ts-ignore
-    if (window.sqlite === undefined) {
+    if (sqlite === undefined) {
       throw new Error(
         'Please install "react-native-quick-sqlite" package to enable offline support',
       );
     }
 
     const version = this.getUserPragmaVersion();
+
     if (version !== this.dbVersion) {
       this.dropTables();
       this.updateUserPragmaVersion(this.dbVersion);

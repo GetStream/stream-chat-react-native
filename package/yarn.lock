@@ -2145,6 +2145,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/better-sqlite3@^7.6.0":
+  version "7.6.0"
+  resolved "https://registry.yarnpkg.com/@types/better-sqlite3/-/better-sqlite3-7.6.0.tgz#603d1c7a72527dd946e2bf641ed4c0b74a547423"
+  integrity sha512-rnSP9vY+fVsF3iJja5yRGBJV63PNBiezJlYrCkqUmQWFoB16cxAHwOkjsAYEu317miOfKaJpa65cbp0P4XJ/jw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -8737,10 +8744,11 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-quick-sqlite@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-3.1.5.tgz#27d592f568260f98f7c7503de0bc10add9af06a0"
-  integrity sha512-v/O5T9VRbVDff50mH6aAK2QyY3dUpLlj8Y5856sASLiKa7OS1ua4GH8yeOrM+U+2ThZe6Kls4BucB2Yhe6yNQw==
+react-native-quick-sqlite@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-4.0.3.tgz#bd10439248cb20b5e773d3a618254bb45ec3be29"
+  integrity sha512-FnHJiQyPM7WXA2I+OiIF5Xrt7LGPjyrrQ68ITqFgblBSpgZaXNgHU3unDQZJS2Bgc6rBwly03eH2z+DTmkgFVg==
+
 react-native-reanimated@2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.7.0.tgz#2cebf9bddaf87a4b364079b40e9099ec0d7ce247"

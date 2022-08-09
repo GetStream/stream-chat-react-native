@@ -1,8 +1,8 @@
-import Database from 'better-sqlite3';
+import Sqlite3 from 'better-sqlite3';
 
 import type { PreparedQueries } from '../../store/types';
 
-export let db: Database;
+export let db: Sqlite3.Database;
 
 export const sqliteMock = {
   close: () => {
@@ -15,7 +15,7 @@ export const sqliteMock = {
   executeSql: (dbName: string, queryInput: string, params: unknown[]) => {
     const query = queryInput.trim().toLowerCase();
     const stmt = db.prepare(query);
-    let result = [];
+    let result: unknown[] = [];
 
     if (query.indexOf('select') === 0) {
       if (params) {
@@ -98,15 +98,10 @@ export const sqliteMock = {
     };
   },
   open: () => {
-    db = new Database('foobar.db');
+    db = new Sqlite3('foobar.db');
     return {
       message: '',
       status: 0,
     };
   },
 };
-
-export const initializeDBMocking = () => {
-  global.sqlite = sqliteMock;
-};
-export const resetDBMocking = () => (global.sqlite = undefined);

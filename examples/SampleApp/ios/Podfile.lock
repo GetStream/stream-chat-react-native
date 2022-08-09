@@ -417,7 +417,7 @@ PODS:
     - React-Core
   - react-native-netinfo (6.0.0):
     - React-Core
-  - react-native-quick-sqlite (3.1.8):
+  - react-native-quick-sqlite (4.0.3):
     - React
     - React-callinvoker
     - React-Core
@@ -830,7 +830,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: 1a7518132d4a06b67f459be9bb1464a567d2b3b4
   react-native-image-resizer: d9fb629a867335bdc13230ac2a58702bb8c8828f
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
-  react-native-quick-sqlite: e31f937c9385597bfb402ea0e7677e0093bc17d0
+  react-native-quick-sqlite: 780b181b94055cbda7c421aa7befeb97214767ed
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   React-perflogger: 93d3f142d6d9a46e635f09ba0518027215a41098

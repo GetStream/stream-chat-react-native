@@ -3,12 +3,11 @@ import { FlatList, View } from 'react-native';
 
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock.js';
 
-import { initializeDBMocking, resetDBMocking } from './src/mock-builders/DB/mock';
 import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
 
-console.warn = () => {};
+console.warn = () => { };
 
 export let netInfoFetch = jest.fn();
 
@@ -56,6 +55,10 @@ jest.mock('@gorhom/bottom-sheet', () => {
     default: react.View,
   };
 });
+jest.mock('react-native-quick-sqlite', () => {
+  const { sqliteMock } = require('./src/mock-builders/DB/mock');
 
-beforeEach(initializeDBMocking);
-afterEach(resetDBMocking);
+  return {
+    QuickSQLite: sqliteMock
+  };
+});
