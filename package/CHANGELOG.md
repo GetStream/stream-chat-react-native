@@ -1,5 +1,18 @@
 # Change Log
 
+## [4.14.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.13.0...v4.14.0) (2022-08-10)
+
+
+### Features
+
+* add support for sharing mp4 and webp giphy attachments ([#1612](https://github.com/GetStream/stream-chat-react-native/issues/1612)) ([11012d0](https://github.com/GetStream/stream-chat-react-native/commit/11012d04f292184a5ac3289c9b8f08e86233987e))
+
+
+### Bug Fixes
+
+* handle hidden channels in message.new listener ([#1624](https://github.com/GetStream/stream-chat-react-native/issues/1624)) ([ec9a524](https://github.com/GetStream/stream-chat-react-native/commit/ec9a524dec3b3a7dd80a10b0a31dc8587b62d331))
+* rerender message text container when markdown style prop updates ([#1628](https://github.com/GetStream/stream-chat-react-native/issues/1628)) ([dc36f2b](https://github.com/GetStream/stream-chat-react-native/commit/dc36f2ba86deba4f9f6939be6d64ca88da195f82))
+
 ## [4.13.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.12.2...v4.13.0) (2022-08-05)
 
 
