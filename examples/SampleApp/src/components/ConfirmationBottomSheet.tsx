@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Delete, UserMinus, useTheme } from 'stream-chat-react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from '@gorhom/bottom-sheet';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Delete, UserMinus, useTheme} from 'stream-chat-react-native';
 
-import { useAppOverlayContext } from '../context/AppOverlayContext';
+import {useAppOverlayContext} from '../context/AppOverlayContext';
 import {
   isAddMemberBottomSheetData,
   useBottomSheetOverlayContext,
@@ -47,13 +47,16 @@ const styles = StyleSheet.create({
 });
 
 export const ConfirmationBottomSheet: React.FC = () => {
-  const { setOverlay } = useAppOverlayContext();
-  const { data: contextData, reset } = useBottomSheetOverlayContext();
-  const data = contextData && !isAddMemberBottomSheetData(contextData) ? contextData : undefined;
+  const {setOverlay} = useAppOverlayContext();
+  const {data: contextData, reset} = useBottomSheetOverlayContext();
+  const data =
+    contextData && !isAddMemberBottomSheetData(contextData)
+      ? contextData
+      : undefined;
 
   const {
     theme: {
-      colors: { accent_red, black, border, grey, white },
+      colors: {accent_red, black, border, grey, white},
     },
   } = useTheme();
   const inset = useSafeAreaInsets();
@@ -62,7 +65,13 @@ export const ConfirmationBottomSheet: React.FC = () => {
     return null;
   }
 
-  const { cancelText = 'CANCEL', confirmText = 'CONFIRM', onConfirm, subtext, title } = data;
+  const {
+    cancelText = 'CANCEL',
+    confirmText = 'CONFIRM',
+    onConfirm,
+    subtext,
+    title,
+  } = data;
 
   return (
     <View
@@ -72,12 +81,15 @@ export const ConfirmationBottomSheet: React.FC = () => {
           backgroundColor: white,
           marginBottom: inset.bottom,
         },
-      ]}
-    >
+      ]}>
       <View style={styles.description}>
-        {confirmText === 'LEAVE' ? <UserMinus pathFill={grey} /> : <Delete pathFill={accent_red} />}
-        <Text style={[styles.title, { color: black }]}>{title}</Text>
-        <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
+        {confirmText === 'LEAVE' ? (
+          <UserMinus pathFill={grey} />
+        ) : (
+          <Delete pathFill={accent_red} />
+        )}
+        <Text style={[styles.title, {color: black}]}>{title}</Text>
+        <Text style={[styles.subtext, {color: black}]}>{subtext}</Text>
       </View>
       <View
         style={[
@@ -85,19 +97,17 @@ export const ConfirmationBottomSheet: React.FC = () => {
           {
             borderTopColor: border,
           },
-        ]}
-      >
+        ]}>
         <TouchableOpacity
           onPress={() => {
             setOverlay('none');
             reset();
           }}
-          style={styles.actionButtonLeft}
-        >
-          <Text style={{ color: grey }}>{cancelText}</Text>
+          style={styles.actionButtonLeft}>
+          <Text style={{color: grey}}>{cancelText}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight}>
-          <Text style={{ color: accent_red }}>{confirmText}</Text>
+          <Text style={{color: accent_red}}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
     </View>

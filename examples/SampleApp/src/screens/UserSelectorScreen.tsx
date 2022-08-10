@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   Image,
   Platform,
@@ -8,19 +8,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme, version } from 'stream-chat-react-native';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme, version} from 'stream-chat-react-native';
 
-import { USERS } from '../ChatUsers';
-import { useAppContext } from '../context/AppContext';
-import { RightArrow } from '../icons/RightArrow';
-import { StreamLogo } from '../icons/StreamLogo';
-import { Settings } from '../icons/Settings';
+import {USERS} from '../ChatUsers';
+import {useAppContext} from '../context/AppContext';
+import {RightArrow} from '../icons/RightArrow';
+import {StreamLogo} from '../icons/StreamLogo';
+import {Settings} from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
-import type { UserSelectorParamList } from '../types';
+import type {UserSelectorParamList} from '../types';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -87,14 +87,14 @@ type Props = {
   navigation: UserSelectorScreenNavigationProp;
 };
 
-export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
+export const UserSelectorScreen: React.FC<Props> = ({navigation}) => {
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
+      colors: {black, border, grey, grey_gainsboro, grey_whisper, white_snow},
     },
   } = useTheme();
-  const { switchUser } = useAppContext();
-  const { bottom } = useSafeAreaInsets();
+  const {switchUser} = useAppContext();
+  const {bottom} = useSafeAreaInsets();
 
   useEffect(() => {
     AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
@@ -103,19 +103,20 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView
       edges={['right', 'top', 'left']}
-      style={[styles.container, { backgroundColor: white_snow }]}
-      testID='user-selector-screen'
-    >
+      style={[styles.container, {backgroundColor: white_snow}]}
+      testID="user-selector-screen">
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         style={styles.scrollContainer}
-        testID='users-list'
-      >
+        testID="users-list">
         <View style={styles.titleContainer}>
           <StreamLogo />
-          <Text style={[styles.title, { color: black }]}>Welcome to Stream Chat</Text>
-          <Text style={[styles.subTitle, { color: black }]}>
-            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'} sdk:
+          <Text style={[styles.title, {color: black}]}>
+            Welcome to Stream Chat
+          </Text>
+          <Text style={[styles.subTitle, {color: black}]}>
+            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
+            sdk:
           </Text>
         </View>
 
@@ -125,9 +126,8 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[styles.userContainer, { borderBottomColor: border }]}
-            testID={`user-selector-button-${u.id}`}
-          >
+            style={[styles.userContainer, {borderBottomColor: border}]}
+            testID={`user-selector-button-${u.id}`}>
             <Image
               source={{
                 uri: u.image,
@@ -141,11 +141,10 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
                   {
                     color: black,
                   },
-                ]}
-              >
+                ]}>
                 {u.name}
               </Text>
-              <Text style={{ color: grey }}>Stream test account</Text>
+              <Text style={{color: grey}}>Stream test account</Text>
             </View>
             <View style={styles.rightArrow}>
               <RightArrow height={24} width={24} />
@@ -156,13 +155,11 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
-          style={[styles.userContainer, { borderBottomColor: border }]}
-        >
+          style={[styles.userContainer, {borderBottomColor: border}]}>
           <View
             style={{
               flexDirection: 'row',
-            }}
-          >
+            }}>
             <View
               style={{
                 alignItems: 'center',
@@ -171,8 +168,7 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
                 height: 40,
                 justifyContent: 'center',
                 width: 40,
-              }}
-            >
+              }}>
               <Settings />
             </View>
             <View style={styles.nameContainer}>
@@ -182,11 +178,10 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
                   {
                     color: black,
                   },
-                ]}
-              >
+                ]}>
                 Advanced Options
               </Text>
-              <Text style={{ color: grey }}>Custom settings</Text>
+              <Text style={{color: grey}}>Custom settings</Text>
             </View>
           </View>
           <View style={styles.rightArrow}>
@@ -201,9 +196,10 @@ export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
             paddingBottom: bottom ? bottom : 16,
             paddingTop: 16,
           },
-        ]}
-      >
-        <Text style={[styles.footerText, { color: grey_gainsboro }]}>Stream SDK v{version}</Text>
+        ]}>
+        <Text style={[styles.footerText, {color: grey_gainsboro}]}>
+          Stream SDK v{version}
+        </Text>
       </View>
     </SafeAreaView>
   );

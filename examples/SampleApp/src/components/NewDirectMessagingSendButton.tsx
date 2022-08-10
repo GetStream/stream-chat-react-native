@@ -1,7 +1,7 @@
 import React from 'react';
-import { Alert } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/core';
+import {Alert} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/core';
 
 import {
   DefaultAttachmentType,
@@ -21,9 +21,9 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import { NewDirectMessagingScreenNavigationProp } from '../screens/NewDirectMessagingScreen';
+import {NewDirectMessagingScreenNavigationProp} from '../screens/NewDirectMessagingScreen';
 
-import { StreamChatGenerics } from '../types';
+import {StreamChatGenerics} from '../types';
 
 type NewDirectMessagingSendButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -33,7 +33,10 @@ type NewDirectMessagingSendButtonPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyActive' | 'sendMessage'> & {
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'giphyActive' | 'sendMessage'
+> & {
   /** Disables the button */ disabled: boolean;
 };
 
@@ -46,13 +49,21 @@ const SendButtonWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  props: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
 ) => {
-  const { disabled = false, giphyActive, sendMessage } = props;
+  const {disabled = false, giphyActive, sendMessage} = props;
   const {
     theme: {
-      colors: { accent_blue, grey_gainsboro },
-      messageInput: { sendButton },
+      colors: {accent_blue, grey_gainsboro},
+      messageInput: {sendButton},
     },
   } = useTheme();
 
@@ -61,8 +72,7 @@ const SendButtonWithContext = <
       disabled={disabled}
       onPress={sendMessage}
       style={[sendButton]}
-      testID='send-button'
-    >
+      testID="send-button">
       {giphyActive && <Search pathFill={accent_blue} />}
       {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
       {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
@@ -79,8 +89,24 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
 >(
-  prevProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
+  nextProps: NewDirectMessagingSendButtonPropsWithContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >,
 ) => {
   const {
     disabled: prevDisabled,
@@ -94,13 +120,19 @@ const areEqual = <
   } = nextProps;
 
   const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
+  if (!disabledEqual) {
+    return false;
+  }
 
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
-  if (!giphyActiveEqual) return false;
+  if (!giphyActiveEqual) {
+    return false;
+  }
 
   const sendMessageEqual = prevSendMessage === nextSendMessage;
-  if (!sendMessageEqual) return false;
+  if (!sendMessageEqual) {
+    return false;
+  }
 
   return true;
 };
@@ -118,23 +150,29 @@ export type SendButtonProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType,
-> = Partial<NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<
+  NewDirectMessagingSendButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
+>;
 
 /**
  * UI Component for send button in MessageInput component.
  */
-export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGenerics>) => {
+export const NewDirectMessagingSendButton = (
+  props: SendButtonProps<StreamChatGenerics>,
+) => {
   const navigation = useNavigation<NewDirectMessagingScreenNavigationProp>();
-  const { channel } = useChannelContext<StreamChatGenerics>();
+  const {channel} = useChannelContext<StreamChatGenerics>();
 
-  const { giphyActive, text } = useMessageInputContext<StreamChatGenerics>();
+  const {giphyActive, text} = useMessageInputContext<StreamChatGenerics>();
 
   const sendMessage = async () => {
-    if (!channel) return;
+    if (!channel) {
+      return;
+    }
     channel.initialized = false;
     await channel.query({});
     try {
-      await channel.sendMessage({ text });
+      await channel.sendMessage({text});
       navigation.replace('ChannelScreen', {
         channelId: channel.id,
       });
@@ -145,9 +183,9 @@ export const NewDirectMessagingSendButton = (props: SendButtonProps<StreamChatGe
 
   return (
     <MemoizedNewDirectMessagingSendButton<StreamChatGenerics>
-      {...{ giphyActive, sendMessage }}
+      {...{giphyActive, sendMessage}}
       {...props}
-      {...{ disabled: props.disabled || false }}
+      {...{disabled: props.disabled || false}}
     />
   );
 };

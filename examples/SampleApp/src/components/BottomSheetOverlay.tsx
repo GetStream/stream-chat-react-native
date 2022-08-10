@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
+import React, {useEffect} from 'react';
+import {Keyboard, StyleSheet, ViewStyle} from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -19,16 +19,16 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { KeyboardCompatibleView, useTheme, vh } from 'stream-chat-react-native';
+import {KeyboardCompatibleView, useTheme, vh} from 'stream-chat-react-native';
 
-import { AddMemberBottomSheet } from './AddMemberBottomSheet';
-import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
+import {AddMemberBottomSheet} from './AddMemberBottomSheet';
+import {ConfirmationBottomSheet} from './ConfirmationBottomSheet';
 
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
+import {useAppOverlayContext} from '../context/AppOverlayContext';
+import {useBottomSheetOverlayContext} from '../context/BottomSheetOverlayContext';
 
 const styles = StyleSheet.create({
-  addMembers: { borderRadius: 16, marginHorizontal: 8 },
+  addMembers: {borderRadius: 16, marginHorizontal: 8},
   animatedContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -47,15 +47,15 @@ export type BottomSheetOverlayProps = {
 const screenHeight = vh(100);
 
 export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
-  const { overlayOpacity, visible } = props;
+  const {overlayOpacity, visible} = props;
 
-  const { overlay, setOverlay } = useAppOverlayContext();
+  const {overlay, setOverlay} = useAppOverlayContext();
 
-  const { reset } = useBottomSheetOverlayContext();
+  const {reset} = useBottomSheetOverlayContext();
 
   const {
     theme: {
-      colors: { white },
+      colors: {white},
     },
   } = useTheme();
 
@@ -101,7 +101,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   }, [visible]);
 
   const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onActive: (evt) => {
+    onActive: evt => {
       translateY.value = offsetY.value + evt.translationY;
       overlayOpacity.value = interpolate(
         translateY.value,
@@ -110,7 +110,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
         Extrapolate.CLAMP,
       );
     },
-    onFinish: (evt) => {
+    onFinish: evt => {
       const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
       if (finalYPosition > viewHeight.value / 2 && translateY.value > 0) {
@@ -156,32 +156,43 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
   const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: interpolate(showScreen.value, [0, 1], [viewHeight.value / 2, 0]),
+        translateY: interpolate(
+          showScreen.value,
+          [0, 1],
+          [viewHeight.value / 2, 0],
+        ),
       },
     ],
   }));
 
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
-    <Animated.View pointerEvents={visible ? 'auto' : 'none'} style={StyleSheet.absoluteFill}>
-      <PanGestureHandler enabled={visible} maxPointers={1} minDist={10} onGestureEvent={onPan}>
+    <Animated.View
+      pointerEvents={visible ? 'auto' : 'none'}
+      style={StyleSheet.absoluteFill}>
+      <PanGestureHandler
+        enabled={visible}
+        maxPointers={1}
+        minDist={10}
+        onGestureEvent={onPan}>
         <Animated.View style={StyleSheet.absoluteFillObject}>
           <TapGestureHandler
             maxDist={32}
-            onHandlerStateChange={({ nativeEvent: { state } }) => {
+            onHandlerStateChange={({nativeEvent: {state}}) => {
               if (state === State.END) {
                 setOverlay('none');
               }
-            }}
-          >
+            }}>
             <Animated.View style={[styles.animatedContainer, panStyle]}>
               <KeyboardCompatibleView keyboardVerticalOffset={10}>
                 <TapGestureHandler>
                   <Animated.View
                     onLayout={({
                       nativeEvent: {
-                        layout: { height },
+                        layout: {height},
                       },
                     }) => {
                       viewHeight.value = height;
@@ -193,8 +204,7 @@ export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
                         backgroundColor: white,
                       },
                       overlay === 'addMembers' ? styles.addMembers : undefined,
-                    ]}
-                  >
+                    ]}>
                     {overlay === 'addMembers' && <AddMemberBottomSheet />}
                     {overlay === 'confirmation' && <ConfirmationBottomSheet />}
                   </Animated.View>

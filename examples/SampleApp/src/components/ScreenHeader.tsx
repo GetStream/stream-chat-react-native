@@ -1,17 +1,24 @@
-import React, { useEffect } from 'react';
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAttachmentPickerContext, useTheme } from 'stream-chat-react-native';
+import React, {useEffect} from 'react';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useAttachmentPickerContext, useTheme} from 'stream-chat-react-native';
 
-import { UnreadCountBadge } from './UnreadCountBadge';
+import {UnreadCountBadge} from './UnreadCountBadge';
 
-import { GoBack } from '../icons/GoBack';
+import {GoBack} from '../icons/GoBack';
 
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type {DrawerNavigationProp} from '@react-navigation/drawer';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
-import type { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
+import type {DrawerNavigatorParamList, StackNavigatorParamList} from '../types';
 
 const styles = StyleSheet.create({
   backButton: {
@@ -58,7 +65,7 @@ type ScreenHeaderNavigationProp = CompositeNavigationProp<
 export const BackButton: React.FC<{
   onBack?: () => void;
   showUnreadCountBadge?: boolean;
-}> = ({ onBack, showUnreadCountBadge }) => {
+}> = ({onBack, showUnreadCountBadge}) => {
   const navigation = useNavigation<ScreenHeaderNavigationProp>();
 
   return (
@@ -69,8 +76,7 @@ export const BackButton: React.FC<{
           onBack();
         }
       }}
-      style={styles.backButton}
-    >
+      style={styles.backButton}>
       <GoBack />
       {!!showUnreadCountBadge && (
         <View style={styles.backButtonUnreadCount}>
@@ -96,12 +102,12 @@ type ScreenHeaderProps = {
 
 const HEADER_CONTENT_HEIGHT = 55;
 
-export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
+export const ScreenHeader: React.FC<ScreenHeaderProps> = props => {
   const {
     inSafeArea,
     LeftContent,
     onBack,
-    RightContent = () => <View style={{ height: 24, width: 24 }} />,
+    RightContent = () => <View style={{height: 24, width: 24}} />,
     showUnreadCountBadge,
     style,
     Subtitle,
@@ -112,11 +118,11 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
 
   const {
     theme: {
-      colors: { black, border, grey, white },
+      colors: {black, border, grey, white},
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
-  const { setTopInset } = useAttachmentPickerContext();
+  const {setTopInset} = useAttachmentPickerContext();
 
   useEffect(() => {
     if (setTopInset) {
@@ -134,8 +140,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
           height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
         },
         style,
-      ]}
-    >
+      ]}>
       <View
         style={[
           styles.contentContainer,
@@ -143,17 +148,19 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
             height: HEADER_CONTENT_HEIGHT,
             marginTop: inSafeArea ? 0 : insets.top,
           },
-        ]}
-      >
+        ]}>
         <View style={styles.leftContainer}>
           {LeftContent ? (
             <LeftContent />
           ) : (
-            <BackButton onBack={onBack} showUnreadCountBadge={showUnreadCountBadge} />
+            <BackButton
+              onBack={onBack}
+              showUnreadCountBadge={showUnreadCountBadge}
+            />
           )}
         </View>
         <View style={styles.centerContainer}>
-          <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>
+          <View style={{paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0}}>
             {Title ? (
               <Title />
             ) : (
@@ -164,8 +171,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
                     {
                       color: black,
                     },
-                  ]}
-                >
+                  ]}>
                   {titleText}
                 </Text>
               )
@@ -181,8 +187,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
                   {
                     color: grey,
                   },
-                ]}
-              >
+                ]}>
                 {subtitleText}
               </Text>
             )

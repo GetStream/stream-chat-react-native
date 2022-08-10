@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { isOwnUser } from 'stream-chat';
-import { useTheme } from 'stream-chat-react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {isOwnUser} from 'stream-chat';
+import {useTheme} from 'stream-chat-react-native';
 
-import { useAppContext } from '../context/AppContext';
+import {useAppContext} from '../context/AppContext';
 
 const styles = StyleSheet.create({
   unreadContainer: {
@@ -23,18 +23,18 @@ const styles = StyleSheet.create({
 export const UnreadCountBadge: React.FC = () => {
   const {
     theme: {
-      colors: { accent_red },
+      colors: {accent_red},
     },
   } = useTheme();
 
-  const { chatClient } = useAppContext();
+  const {chatClient} = useAppContext();
   const [count, setCount] = useState<number>();
 
   useEffect(() => {
     const user = chatClient?.user;
     const unreadCount = isOwnUser(user) ? user.total_unread_count : undefined;
     setCount(unreadCount);
-    const listener = chatClient?.on((e) => {
+    const listener = chatClient?.on(e => {
       if (e.total_unread_count) {
         setCount(e.total_unread_count);
       }
@@ -48,8 +48,10 @@ export const UnreadCountBadge: React.FC = () => {
   }, [chatClient]);
 
   return (
-    <View style={[styles.unreadContainer, { backgroundColor: accent_red }]}>
-      {!!count && <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>}
+    <View style={[styles.unreadContainer, {backgroundColor: accent_red}]}>
+      {!!count && (
+        <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>
+      )}
     </View>
   );
 };

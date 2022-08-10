@@ -1,6 +1,6 @@
-import { generateRandomId } from 'stream-chat-react-native';
+import {generateRandomId} from 'stream-chat-react-native';
 
-import type { Attachment } from 'stream-chat';
+import type {Attachment} from 'stream-chat';
 
 const messageSearchByFileAttachmentType = () => {
   const attachments: Attachment[] = [
@@ -9,7 +9,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/pdf',
-      title: `SlimAron.pdf`,
+      title: 'SlimAron.pdf',
       type: 'file',
     },
     {
@@ -17,7 +17,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/vnd.ms-powerpoint',
-      title: `Resume.ppt`,
+      title: 'Resume.ppt',
       type: 'file',
     },
     {
@@ -25,7 +25,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/vnd.ms-excel',
-      title: `RocketLaunch.xls`,
+      title: 'RocketLaunch.xls',
       type: 'file',
     },
     {
@@ -33,7 +33,7 @@ const messageSearchByFileAttachmentType = () => {
       file_size: Math.random() * 10000,
       id: generateRandomId(),
       mime_type: 'application/x-7z-compressed',
-      title: `Resume.zip`,
+      title: 'Resume.zip',
       type: 'file',
     },
   ];
@@ -94,7 +94,8 @@ const messageSearchByImageAttachmentType = () => {
     },
     {
       id: generateRandomId(),
-      image_url: 'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
+      image_url:
+        'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
       type: 'image',
     },
     {

@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Check, generateRandomId, useTheme, vw } from 'stream-chat-react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
+import Svg, {Defs, LinearGradient, Rect, Stop} from 'react-native-svg';
+import {Check, generateRandomId, useTheme, vw} from 'stream-chat-react-native';
 
-import { RoundButton } from '../components/RoundButton';
-import { ScreenHeader } from '../components/ScreenHeader';
-import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
-import { useAppContext } from '../context/AppContext';
-import { useUserSearchContext } from '../context/UserSearchContext';
+import {RoundButton} from '../components/RoundButton';
+import {ScreenHeader} from '../components/ScreenHeader';
+import {UserSearchResults} from '../components/UserSearch/UserSearchResults';
+import {useAppContext} from '../context/AppContext';
+import {useUserSearchContext} from '../context/UserSearchContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
-import type { StackNavigatorParamList } from '../types';
+import type {StackNavigatorParamList} from '../types';
 
 const styles = StyleSheet.create({
-  absolute: { position: 'absolute' },
+  absolute: {position: 'absolute'},
   container: {
     flex: 1,
   },
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
-  memberLength: { fontSize: 12 },
+  memberLength: {fontSize: 12},
   nameText: {
     fontSize: 12,
     textAlignVertical: 'center',
@@ -54,11 +54,11 @@ type ConfirmButtonProps = {
   onPress?: () => void;
 };
 
-const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
-  const { disabled, onPress } = props;
+const ConfirmButton: React.FC<ConfirmButtonProps> = props => {
+  const {disabled, onPress} = props;
   const {
     theme: {
-      colors: { accent_blue, grey },
+      colors: {accent_blue, grey},
     },
   } = useTheme();
 
@@ -78,24 +78,35 @@ export type NewGroupChannelAssignNameScreenProps = {
   navigation: NewGroupChannelAssignNameScreenNavigationProp;
 };
 
-export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignNameScreenProps> = ({
-  navigation,
-}) => {
-  const { chatClient } = useAppContext();
-  const { selectedUserIds, selectedUsers } = useUserSearchContext();
+export const NewGroupChannelAssignNameScreen: React.FC<
+  NewGroupChannelAssignNameScreenProps
+> = ({navigation}) => {
+  const {chatClient} = useAppContext();
+  const {selectedUserIds, selectedUsers} = useUserSearchContext();
 
   const {
     theme: {
-      colors: { bg_gradient_end, bg_gradient_start, black, border, grey, white_snow },
+      colors: {
+        bg_gradient_end,
+        bg_gradient_start,
+        black,
+        border,
+        grey,
+        white_snow,
+      },
     },
   } = useTheme();
 
   const [groupName, setGroupName] = useState('');
 
-  if (!chatClient) return null;
+  if (!chatClient) {
+    return null;
+  }
 
   const onConfirm = () => {
-    if (!chatClient.user || !selectedUsers || !groupName) return;
+    if (!chatClient.user || !selectedUsers || !groupName) {
+      return;
+    }
 
     const channel = chatClient.channel('messaging', generateRandomId(), {
       members: [...selectedUserIds, chatClient.user?.id],
@@ -112,9 +123,11 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   return (
     <View style={styles.container}>
       <ScreenHeader
-        RightContent={() => <ConfirmButton disabled={!groupName} onPress={onConfirm} />}
+        RightContent={() => (
+          <ConfirmButton disabled={!groupName} onPress={onConfirm} />
+        )}
         style={styles.header}
-        titleText='Name of Group Chat'
+        titleText="Name of Group Chat"
       />
       <View style={styles.container}>
         <View
@@ -124,13 +137,12 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
               backgroundColor: white_snow,
               borderColor: border,
             },
-          ]}
-        >
-          <Text style={[styles.nameText, { color: grey }]}>NAME</Text>
+          ]}>
+          <Text style={[styles.nameText, {color: grey}]}>NAME</Text>
           <TextInput
             autoFocus
             onChangeText={setGroupName}
-            placeholder='Choose a group chat name'
+            placeholder="Choose a group chat name"
             placeholderTextColor={grey}
             style={[
               styles.inputBox,
@@ -143,17 +155,26 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
         </View>
         <View style={styles.gradient}>
           <Svg height={24} style={styles.absolute} width={vw(100)}>
-            <Rect fill='url(#gradient)' height={24} width={vw(100)} x={0} y={0} />
+            <Rect
+              fill="url(#gradient)"
+              height={24}
+              width={vw(100)}
+              x={0}
+              y={0}
+            />
             <Defs>
               <LinearGradient
-                gradientUnits='userSpaceOnUse'
-                id='gradient'
+                gradientUnits="userSpaceOnUse"
+                id="gradient"
                 x1={0}
                 x2={0}
                 y1={0}
-                y2={24}
-              >
-                <Stop offset={1} stopColor={bg_gradient_start} stopOpacity={1} />
+                y2={24}>
+                <Stop
+                  offset={1}
+                  stopColor={bg_gradient_start}
+                  stopOpacity={1}
+                />
                 <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
               </LinearGradient>
             </Defs>
@@ -164,8 +185,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
               {
                 color: grey,
               },
-            ]}
-          >
+            ]}>
             {selectedUsers.length} Members
           </Text>
         </View>

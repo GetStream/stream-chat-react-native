@@ -7,7 +7,8 @@ const extractLinkedPackages = require('stream-chat-react-native-core/metro-dev-h
 
 const projectRoot = PATH.resolve(__dirname);
 
-const { alternateRoots, extraNodeModules, moduleBlacklist } = extractLinkedPackages(projectRoot);
+const {alternateRoots, extraNodeModules, moduleBlacklist} =
+  extractLinkedPackages(projectRoot);
 
 module.exports = {
   resolver: {

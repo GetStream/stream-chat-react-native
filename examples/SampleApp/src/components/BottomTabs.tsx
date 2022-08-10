@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme} from 'stream-chat-react-native';
 
-import { UnreadCountBadge } from './UnreadCountBadge';
+import {UnreadCountBadge} from './UnreadCountBadge';
 
-import { ChatsTab } from '../icons/ChatsTab';
-import { MentionsTab } from '../icons/MentionsTab';
+import {ChatsTab} from '../icons/ChatsTab';
+import {MentionsTab} from '../icons/MentionsTab';
 
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 
 const styles = StyleSheet.create({
   notification: {
@@ -33,14 +33,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
-  const { navigation, state } = props;
+export const BottomTabs: React.FC<BottomTabBarProps> = props => {
+  const {navigation, state} = props;
   const {
     theme: {
-      colors: { black, grey, white },
+      colors: {black, grey, white},
     },
   } = useTheme();
-  const { bottom } = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
 
   const getTab = (key: string) => {
     switch (key) {
@@ -70,12 +70,13 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
           backgroundColor: white,
           paddingBottom: bottom,
         },
-      ]}
-    >
+      ]}>
       {state.routes.map((route, index) => {
         const tab = getTab(route.name);
 
-        if (!tab) return null;
+        if (!tab) {
+          return null;
+        }
 
         const isFocused = state.index === index;
 
@@ -91,10 +92,15 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
         };
 
         return (
-          <TouchableOpacity key={index} onPress={onPress} style={styles.tabContainer}>
+          <TouchableOpacity
+            key={index}
+            onPress={onPress}
+            style={styles.tabContainer}>
             <View>
               {isFocused ? tab.iconActive : tab.icon}
-              {tab.notification && <View style={styles.notification}>{tab.notification}</View>}
+              {tab.notification && (
+                <View style={styles.notification}>{tab.notification}</View>
+              )}
             </View>
             <Text
               style={[
@@ -102,8 +108,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
                 {
                   color: isFocused ? black : grey,
                 },
-              ]}
-            >
+              ]}>
               {tab.title}
             </Text>
           </TouchableOpacity>

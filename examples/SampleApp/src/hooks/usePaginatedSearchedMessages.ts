@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
-import { useAppContext } from '../context/AppContext';
+import {useAppContext} from '../context/AppContext';
 
-import type { MessageFilters, MessageResponse } from 'stream-chat';
+import type {MessageFilters, MessageResponse} from 'stream-chat';
 
-import type { StreamChatGenerics } from '../types';
-import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
+import type {StreamChatGenerics} from '../types';
+import {DEFAULT_PAGINATION_LIMIT} from '../utils/constants';
 
 export const usePaginatedSearchedMessages = (
   messageFilters: string | MessageFilters<StreamChatGenerics> = {},
@@ -13,11 +13,12 @@ export const usePaginatedSearchedMessages = (
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse<StreamChatGenerics>[]>();
+  const [messages, setMessages] =
+    useState<MessageResponse<StreamChatGenerics>[]>();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
-  const { chatClient } = useAppContext();
+  const {chatClient} = useAppContext();
 
   const done = () => {
     queryInProgress.current = false;
@@ -67,7 +68,7 @@ export const usePaginatedSearchedMessages = (
         },
       );
 
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = res?.results.map(r => r.message);
       if (!newMessages) {
         queryInProgress.current = false;
         done();
@@ -79,7 +80,7 @@ export const usePaginatedSearchedMessages = (
         messagesLength = newMessages.length;
         setMessages(newMessages);
       } else {
-        setMessages((existingMessages) => {
+        setMessages(existingMessages => {
           if (!existingMessages) {
             messagesLength = newMessages.length;
             return newMessages;
@@ -116,7 +117,9 @@ export const usePaginatedSearchedMessages = (
   }, [messageFilters]);
 
   const refreshList = () => {
-    if (!chatClient?.user?.id) return;
+    if (!chatClient?.user?.id) {
+      return;
+    }
 
     offset.current = 0;
     hasMoreResults.current = true;

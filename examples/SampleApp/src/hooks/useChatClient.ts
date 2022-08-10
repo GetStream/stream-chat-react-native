@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { StreamChat } from 'stream-chat';
+import {useEffect, useRef, useState} from 'react';
+import {StreamChat} from 'stream-chat';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 
-import { USER_TOKENS, USERS } from '../ChatUsers';
+import {USER_TOKENS, USERS} from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
-import type { LoginConfig, StreamChatGenerics } from '../types';
+import type {LoginConfig, StreamChatGenerics} from '../types';
 
 // Request Push Notification permission from device.
 const requestNotificationPermission = async () => {
@@ -14,17 +14,21 @@ const requestNotificationPermission = async () => {
   const isEnabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-  console.log('Permission Status', { authStatus, isEnabled });
+  console.log('Permission Status', {authStatus, isEnabled});
 };
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+messaging().setBackgroundMessageHandler(async remoteMessage => {
   const messageId = remoteMessage.data?.id;
-  if (!messageId) return;
+  if (!messageId) {
+    return;
+  }
   const config = await AsyncStore.getItem<LoginConfig | null>(
     '@stream-rn-sampleapp-login-config',
     null,
   );
-  if (!config) return;
+  if (!config) {
+    return;
+  }
 
   const client = StreamChat.getInstance(config.apiKey);
 
@@ -45,7 +49,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   });
 
   if (message.message.user?.name && message.message.text) {
-    const { stream, ...rest } = remoteMessage.data ?? {};
+    const {stream, ...rest} = remoteMessage.data ?? {};
     const data = {
       ...rest,
       ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
@@ -65,7 +69,8 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
 });
 
 export const useChatClient = () => {
-  const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
+  const [chatClient, setChatClient] =
+    useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const unsubscribePushListenersRef = useRef<() => void>();
@@ -101,39 +106,46 @@ export const useChatClient = () => {
       await client.addDevice(token, 'firebase');
 
       // Listen to new FCM tokens and register them with stream chat server.
-      const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (newToken) => {
-        await client.addDevice(newToken, 'firebase');
-      });
+      const unsubscribeTokenRefresh = messaging().onTokenRefresh(
+        async newToken => {
+          await client.addDevice(newToken, 'firebase');
+        },
+      );
       // show notifications when on foreground
-      const unsubscribeForegroundMessageReceive = messaging().onMessage(async (remoteMessage) => {
-        const messageId = remoteMessage.data?.id;
-        if (!messageId) return;
-        const message = await client.getMessage(messageId);
-        if (message.message.user?.name && message.message.text) {
-          // create the android channel to send the notification to
-          const channelId = await notifee.createChannel({
-            id: 'foreground',
-            name: 'Foreground Messages',
-          });
-          // display the notification on foreground
-          const { stream, ...rest } = remoteMessage.data ?? {};
-          const data = {
-            ...rest,
-            ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
-          };
-          await notifee.displayNotification({
-            android: {
-              channelId,
-              pressAction: {
-                id: 'default',
+      const unsubscribeForegroundMessageReceive = messaging().onMessage(
+        async remoteMessage => {
+          const messageId = remoteMessage.data?.id;
+          if (!messageId) {
+            return;
+          }
+          const message = await client.getMessage(messageId);
+          if (message.message.user?.name && message.message.text) {
+            // create the android channel to send the notification to
+            const channelId = await notifee.createChannel({
+              id: 'foreground',
+              name: 'Foreground Messages',
+            });
+            // display the notification on foreground
+            const {stream, ...rest} = remoteMessage.data ?? {};
+            const data = {
+              ...rest,
+              ...((stream as unknown as Record<string, string> | undefined) ??
+                {}), // extract and merge stream object if present
+            };
+            await notifee.displayNotification({
+              android: {
+                channelId,
+                pressAction: {
+                  id: 'default',
+                },
               },
-            },
-            body: message.message.text,
-            data,
-            title: 'New message from ' + message.message.user.name,
-          });
-        }
-      });
+              body: message.message.text,
+              data,
+              title: 'New message from ' + message.message.user.name,
+            });
+          }
+        },
+      );
 
       unsubscribePushListenersRef.current = () => {
         unsubscribeTokenRefresh();

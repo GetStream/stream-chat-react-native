@@ -1,5 +1,5 @@
-import { UserResponse } from 'stream-chat';
-import { StreamChatGenerics } from './types';
+import {UserResponse} from 'stream-chat';
+import {StreamChatGenerics} from './types';
 
 export const USER_TOKENS: Record<string, string> = {
   e2etest1:
@@ -29,12 +29,12 @@ export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
   },
   qatest1: {
     id: 'qatest1',
-    image: `https://randomuser.me/api/portraits/thumb/men/10.jpg`,
+    image: 'https://randomuser.me/api/portraits/thumb/men/10.jpg',
     name: 'QA Test 1',
   },
   qatest2: {
     id: 'qatest2',
-    image: `https://randomuser.me/api/portraits/thumb/men/11.jpg`,
+    image: 'https://randomuser.me/api/portraits/thumb/men/11.jpg',
     name: 'QA Test 2',
   },
 
@@ -62,17 +62,17 @@ export const USERS: Record<string, UserResponse<StreamChatGenerics>> = {
   // eslint-disable-next-line sort-keys
   e2etest1: {
     id: 'e2etest1',
-    image: `https://randomuser.me/api/portraits/thumb/women/10.jpg`,
+    image: 'https://randomuser.me/api/portraits/thumb/women/10.jpg',
     name: 'E2E Test 1',
   },
   e2etest2: {
     id: 'e2etest2',
-    image: `https://randomuser.me/api/portraits/thumb/women/11.jpg`,
+    image: 'https://randomuser.me/api/portraits/thumb/women/11.jpg',
     name: 'E2E Test 2',
   },
   e2etest3: {
     id: 'e2etest3',
-    image: `https://randomuser.me/api/portraits/thumb/women/12.jpg`,
+    image: 'https://randomuser.me/api/portraits/thumb/women/12.jpg',
     name: 'E2E Test 3',
   },
 };

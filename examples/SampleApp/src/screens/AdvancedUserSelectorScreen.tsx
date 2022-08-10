@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardCompatibleView, useTheme, version } from 'stream-chat-react-native';
+import React, {useState} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {
+  KeyboardCompatibleView,
+  useTheme,
+  version,
+} from 'stream-chat-react-native';
 
-import { ScreenHeader } from '../components/ScreenHeader';
-import { useAppContext } from '../context/AppContext';
+import {ScreenHeader} from '../components/ScreenHeader';
+import {useAppContext} from '../context/AppContext';
 
 const styles = StyleSheet.create({
   bottomContainer: {
@@ -31,7 +42,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     textAlignVertical: 'center',
   },
-  labelsContainer: { paddingHorizontal: 16, paddingTop: 8 },
+  labelsContainer: {paddingHorizontal: 16, paddingTop: 8},
   labelText: {
     fontSize: 10,
     fontWeight: '700',
@@ -64,7 +75,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 }) => {
   const {
     theme: {
-      colors: { accent_blue, accent_red, black, grey, white_smoke },
+      colors: {accent_blue, accent_red, black, grey, white_smoke},
     },
   } = useTheme();
   const [borderColor, setBorderColor] = useState(white_smoke);
@@ -89,8 +100,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
           borderWidth: 1,
           paddingVertical: !!value || !!error ? 16 : 8,
         },
-      ]}
-    >
+      ]}>
       {!!value && (
         <Text
           style={[
@@ -98,8 +108,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
             {
               color: grey,
             },
-          ]}
-        >
+          ]}>
           {label}
         </Text>
       )}
@@ -110,8 +119,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
             {
               color: accent_red,
             },
-          ]}
-        >
+          ]}>
           Please enter {label}
         </Text>
       )}
@@ -121,7 +129,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         onFocus={onFocus}
         placeholder={label}
         placeholderTextColor={grey}
-        returnKeyType='next'
+        returnKeyType="next"
         style={[
           styles.input,
           {
@@ -136,14 +144,14 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 };
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
-  const { bottom } = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
   const {
     theme: {
-      colors: { button_background, button_text, grey_gainsboro, white_snow },
+      colors: {button_background, button_text, grey_gainsboro, white_snow},
     },
   } = useTheme();
 
-  const { loginUser } = useAppContext();
+  const {loginUser} = useAppContext();
   const [apiKey, setApiKey] = useState('');
   const [apiKeyError, setApiKeyError] = useState(false);
   const [userId, setUserId] = useState('');
@@ -180,15 +188,14 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
             backgroundColor: white_snow,
             paddingBottom: bottom,
           },
-        ]}
-      >
-        <ScreenHeader titleText='Advanced Options' />
+        ]}>
+        <ScreenHeader titleText="Advanced Options" />
         <View style={styles.innerContainer}>
           <View style={styles.labelsContainer}>
             <LabeledTextInput
               error={apiKeyError}
-              label='Chat API Key'
-              onChangeText={(text) => {
+              label="Chat API Key"
+              onChangeText={text => {
                 setApiKeyError(false);
                 setApiKey(text);
               }}
@@ -196,8 +203,8 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
             />
             <LabeledTextInput
               error={userIdError}
-              label='User ID'
-              onChangeText={(text) => {
+              label="User ID"
+              onChangeText={text => {
                 setUserIdError(false);
                 setUserId(text);
               }}
@@ -205,16 +212,16 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
             />
             <LabeledTextInput
               error={userTokenError}
-              label='User Token'
-              onChangeText={(text) => {
+              label="User Token"
+              onChangeText={text => {
                 setUserTokenError(false);
                 setUserToken(text);
               }}
               value={userToken}
             />
             <LabeledTextInput
-              label='Username (optional)'
-              onChangeText={(text) => {
+              label="Username (optional)"
+              onChangeText={text => {
                 setUserName(text);
               }}
               value={userName}
@@ -223,7 +230,9 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
           <View style={styles.bottomContainer}>
             <TouchableOpacity
               onPress={async () => {
-                if (!isValidInput()) return;
+                if (!isValidInput()) {
+                  return;
+                }
 
                 try {
                   await loginUser({
@@ -243,13 +252,11 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                 {
                   backgroundColor: button_background,
                 },
-              ]}
-            >
+              ]}>
               <Text
                 style={{
                   color: button_text,
-                }}
-              >
+                }}>
                 Login
               </Text>
             </TouchableOpacity>
@@ -259,8 +266,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                 {
                   color: grey_gainsboro,
                 },
-              ]}
-            >
+              ]}>
               Stream SDK v{version}
             </Text>
           </View>

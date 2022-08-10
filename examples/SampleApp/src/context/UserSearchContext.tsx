@@ -1,19 +1,22 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 
-import { PaginatedUsers, usePaginatedUsers } from '../hooks/usePaginatedUsers';
+import {PaginatedUsers, usePaginatedUsers} from '../hooks/usePaginatedUsers';
 
 export type UserSearchContextValue = PaginatedUsers;
 
-export const UserSearchContext = React.createContext({} as UserSearchContextValue);
+export const UserSearchContext = React.createContext(
+  {} as UserSearchContextValue,
+);
 
 export const UserSearchProvider: React.FC<{
   value?: UserSearchContextValue;
-}> = ({ children, value }) => {
+}> = ({children, value}) => {
   const paginatedUsers = usePaginatedUsers();
 
-  const userSearchContext = { ...paginatedUsers, ...value };
+  const userSearchContext = {...paginatedUsers, ...value};
   return (
-    <UserSearchContext.Provider value={userSearchContext as UserSearchContextValue}>
+    <UserSearchContext.Provider
+      value={userSearchContext as UserSearchContextValue}>
       {children}
     </UserSearchContext.Provider>
   );

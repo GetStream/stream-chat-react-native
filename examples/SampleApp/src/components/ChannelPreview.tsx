@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RectButton } from 'react-native-gesture-handler';
+import {StyleSheet, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {RectButton} from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {
   ChannelPreviewMessenger,
@@ -12,13 +12,13 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import { useAppOverlayContext } from '../context/AppOverlayContext';
-import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
-import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';
+import {useAppOverlayContext} from '../context/AppOverlayContext';
+import {useBottomSheetOverlayContext} from '../context/BottomSheetOverlayContext';
+import {useChannelInfoOverlayContext} from '../context/ChannelInfoOverlayContext';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type {StackNavigationProp} from '@react-navigation/stack';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type {StackNavigatorParamList, StreamChatGenerics} from '../types';
 
 const styles = StyleSheet.create({
   leftSwipeableButton: {
@@ -42,29 +42,31 @@ type ChannelListScreenNavigationProp = StackNavigationProp<
   'ChannelListScreen'
 >;
 
-export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGenerics>> = (
-  props,
-) => {
-  const { channel } = props;
+export const ChannelPreview: React.FC<
+  ChannelPreviewMessengerProps<StreamChatGenerics>
+> = props => {
+  const {channel} = props;
 
-  const { setOverlay } = useAppOverlayContext();
+  const {setOverlay} = useAppOverlayContext();
 
-  const { setData: setDataBottomSheet } = useBottomSheetOverlayContext();
+  const {setData: setDataBottomSheet} = useBottomSheetOverlayContext();
 
-  const { data, setData } = useChannelInfoOverlayContext();
+  const {data, setData} = useChannelInfoOverlayContext();
 
-  const { client } = useChatContext<StreamChatGenerics>();
+  const {client} = useChatContext<StreamChatGenerics>();
 
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
 
   const {
     theme: {
-      colors: { accent_red, white_smoke },
+      colors: {accent_red, white_smoke},
     },
   } = useTheme();
 
   const otherMembers = channel
-    ? Object.values(channel.state.members).filter((member) => member.user?.id !== data?.clientId)
+    ? Object.values(channel.state.members).filter(
+        member => member.user?.id !== data?.clientId,
+      )
     : [];
 
   return (
@@ -72,14 +74,14 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
       overshootLeft={false}
       overshootRight={false}
       renderRightActions={() => (
-        <View style={[styles.swipeableContainer, { backgroundColor: white_smoke }]}>
+        <View
+          style={[styles.swipeableContainer, {backgroundColor: white_smoke}]}>
           <RectButton
             onPress={() => {
-              setData({ channel, clientId: client.userID, navigation });
+              setData({channel, clientId: client.userID, navigation});
               setOverlay('channelInfo');
             }}
-            style={[styles.leftSwipeableButton]}
-          >
+            style={[styles.leftSwipeableButton]}>
             <MenuPointHorizontal />
           </RectButton>
           <RectButton
@@ -93,17 +95,17 @@ export const ChannelPreview: React.FC<ChannelPreviewMessengerProps<StreamChatGen
                 subtext: `Are you sure you want to delete this ${
                   otherMembers.length === 1 ? 'conversation' : 'group'
                 }?`,
-                title: `Delete ${otherMembers.length === 1 ? 'Conversation' : 'Group'}`,
+                title: `Delete ${
+                  otherMembers.length === 1 ? 'Conversation' : 'Group'
+                }`,
               });
               setOverlay('confirmation');
             }}
-            style={[styles.rightSwipeableButton]}
-          >
+            style={[styles.rightSwipeableButton]}>
             <Delete pathFill={accent_red} />
           </RectButton>
         </View>
-      )}
-    >
+      )}>
       <ChannelPreviewMessenger {...props} />
     </Swipeable>
   );

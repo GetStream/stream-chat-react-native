@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { ChannelContextValue } from 'stream-chat-react-native';
+import type {StackNavigationProp} from '@react-navigation/stack';
+import type {ChannelContextValue} from 'stream-chat-react-native';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
+import type {StackNavigatorParamList, StreamChatGenerics} from '../types';
 
 type ChannelListScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -23,11 +23,13 @@ export type ChannelInfoOverlayContextValue = {
   data?: ChannelInfoOverlayData;
 };
 
-export const ChannelInfoOverlayContext = React.createContext({} as ChannelInfoOverlayContextValue);
+export const ChannelInfoOverlayContext = React.createContext(
+  {} as ChannelInfoOverlayContextValue,
+);
 
 export const ChannelInfoOverlayProvider: React.FC<{
   value?: ChannelInfoOverlayContextValue;
-}> = ({ children, value }) => {
+}> = ({children, value}) => {
   const [data, setData] = useState(value?.data);
 
   const reset = () => {
@@ -41,12 +43,13 @@ export const ChannelInfoOverlayProvider: React.FC<{
   };
   return (
     <ChannelInfoOverlayContext.Provider
-      value={channelInfoOverlayContext as ChannelInfoOverlayContextValue}
-    >
+      value={channelInfoOverlayContext as ChannelInfoOverlayContextValue}>
       {children}
     </ChannelInfoOverlayContext.Provider>
   );
 };
 
 export const useChannelInfoOverlayContext = () =>
-  useContext(ChannelInfoOverlayContext) as unknown as ChannelInfoOverlayContextValue;
+  useContext(
+    ChannelInfoOverlayContext,
+  ) as unknown as ChannelInfoOverlayContextValue;

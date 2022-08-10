@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import type { Channel as StreamChatChannel } from 'stream-chat';
-import { RouteProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import type {Channel as StreamChatChannel} from 'stream-chat';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import {
   Channel,
   ChannelAvatar,
@@ -13,27 +17,30 @@ import {
   useTheme,
   useTypingString,
 } from 'stream-chat-react-native';
-import { Platform, StyleSheet, View } from 'react-native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {Platform, StyleSheet, View} from 'react-native';
+import type {StackNavigationProp} from '@react-navigation/stack';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-import { useAppContext } from '../context/AppContext';
-import { ScreenHeader } from '../components/ScreenHeader';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import {useAppContext} from '../context/AppContext';
+import {ScreenHeader} from '../components/ScreenHeader';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useChannelMembersStatus} from '../hooks/useChannelMembersStatus';
 
-import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
-import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
+import type {StackNavigatorParamList, StreamChatGenerics} from '../types';
+import {NetworkDownIndicator} from '../components/NetworkDownIndicator';
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  flex: {flex: 1},
 });
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
   'ChannelScreen'
 >;
-export type ChannelScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelScreen'>;
+export type ChannelScreenRouteProp = RouteProp<
+  StackNavigatorParamList,
+  'ChannelScreen'
+>;
 export type ChannelScreenProps = {
   navigation: ChannelScreenNavigationProp;
   route: ChannelScreenRouteProp;
@@ -43,16 +50,18 @@ export type ChannelHeaderProps = {
   channel: StreamChatChannel<StreamChatGenerics>;
 };
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
-  const { closePicker } = useAttachmentPickerContext();
+const ChannelHeader: React.FC<ChannelHeaderProps> = ({channel}) => {
+  const {closePicker} = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
-  const { isOnline } = useChatContext();
-  const { chatClient } = useAppContext();
+  const {isOnline} = useChatContext();
+  const {chatClient} = useAppContext();
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   const isOneOnOneConversation =
     channel &&
@@ -81,8 +90,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
                 channel,
               });
             }
-          }}
-        >
+          }}>
           <ChannelAvatar channel={channel} />
         </TouchableOpacity>
       )}
@@ -97,28 +105,30 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   route: {
-    params: { channel: channelFromProp, channelId, messageId },
+    params: {channel: channelFromProp, channelId, messageId},
   },
 }) => {
-  const { chatClient } = useAppContext();
+  const {chatClient} = useAppContext();
   const navigation = useNavigation();
-  const { bottom } = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
   const {
     theme: {
-      colors: { white },
+      colors: {white},
     },
   } = useTheme();
 
-  const [channel, setChannel] = useState<StreamChatChannel<StreamChatGenerics> | undefined>(
-    channelFromProp,
-  );
+  const [channel, setChannel] = useState<
+    StreamChatChannel<StreamChatGenerics> | undefined
+  >(channelFromProp);
 
   const [selectedThread, setSelectedThread] =
     useState<ThreadContextValue<StreamChatGenerics>['thread']>();
 
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient || !channelId) return;
+      if (!chatClient || !channelId) {
+        return;
+      }
 
       const newChannel = chatClient?.channel('messaging', channelId);
 
@@ -135,10 +145,13 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     setSelectedThread(undefined);
   });
 
-  if (!channel || !chatClient) return null;
+  if (!channel || !chatClient) {
+    return null;
+  }
 
   return (
-    <View style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}>
+    <View
+      style={[styles.flex, {backgroundColor: white, paddingBottom: bottom}]}>
       <Channel
         channel={channel}
         disableTypingIndicator
@@ -147,11 +160,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageId={messageId}
         NetworkDownIndicator={() => null}
-        thread={selectedThread}
-      >
+        thread={selectedThread}>
         <ChannelHeader channel={channel} />
         <MessageList<StreamChatGenerics>
-          onThreadSelect={(thread) => {
+          onThreadSelect={thread => {
             setSelectedThread(thread);
             navigation.navigate('ThreadScreen', {
               channel,

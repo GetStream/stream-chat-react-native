@@ -1,20 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
-import { useAppContext } from '../context/AppContext';
+import {useAppContext} from '../context/AppContext';
 
-import type { Channel, MessageResponse } from 'stream-chat';
+import type {Channel, MessageResponse} from 'stream-chat';
 
-import type { StreamChatGenerics } from '../types';
-import { DEFAULT_PAGINATION_LIMIT } from '../utils/constants';
+import type {StreamChatGenerics} from '../types';
+import {DEFAULT_PAGINATION_LIMIT} from '../utils/constants';
 
-export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>) => {
-  const { chatClient } = useAppContext();
+export const usePaginatedPinnedMessages = (
+  channel: Channel<StreamChatGenerics>,
+) => {
+  const {chatClient} = useAppContext();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | boolean>(false);
-  const [messages, setMessages] = useState<MessageResponse<StreamChatGenerics>[]>([]);
+  const [messages, setMessages] = useState<
+    MessageResponse<StreamChatGenerics>[]
+  >([]);
 
   const fetchPinnedMessages = async () => {
     if (queryInProgress.current) {
@@ -35,23 +39,23 @@ export const usePaginatedPinnedMessages = (channel: Channel<StreamChatGenerics>)
 
       const res = await chatClient?.search(
         {
-          cid: { $in: [channel.cid] },
+          cid: {$in: [channel.cid]},
         },
-        { pinned: true },
+        {pinned: true},
         {
           limit: DEFAULT_PAGINATION_LIMIT,
           offset: offset.current,
         },
       );
 
-      const newMessages = res?.results.map((r) => r.message);
+      const newMessages = res?.results.map(r => r.message);
 
       if (!newMessages) {
         queryInProgress.current = false;
         return;
       }
 
-      setMessages((existingMessages) => existingMessages.concat(newMessages));
+      setMessages(existingMessages => existingMessages.concat(newMessages));
 
       if (newMessages.length < DEFAULT_PAGINATION_LIMIT) {
         hasMoreResults.current = false;

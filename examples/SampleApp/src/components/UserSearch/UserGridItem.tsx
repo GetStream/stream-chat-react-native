@@ -1,13 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from '@gorhom/bottom-sheet';
-import { Avatar, Close, useTheme } from 'stream-chat-react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {TouchableOpacity} from '@gorhom/bottom-sheet';
+import {Avatar, Close, useTheme} from 'stream-chat-react-native';
 
-import type { UserResponse } from 'stream-chat';
+import type {UserResponse} from 'stream-chat';
 
-import type { StreamChatGenerics } from '../../types';
+import type {StreamChatGenerics} from '../../types';
 
-const presenceIndicator = { cx: 7, cy: 7, r: 5 };
+const presenceIndicator = {cx: 7, cy: 7, r: 5};
 
 const styles = StyleSheet.create({
   presenceIndicatorContainer: {
@@ -51,11 +51,14 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
 }) => {
   const {
     theme: {
-      colors: { black, white_snow },
+      colors: {black, white_snow},
     },
   } = useTheme();
   return (
-    <TouchableOpacity key={user.id} onPress={onPress} style={styles.selectedUserItemContainer}>
+    <TouchableOpacity
+      key={user.id}
+      onPress={onPress}
+      style={styles.selectedUserItemContainer}>
       <Avatar
         id={user.id}
         image={user.image}
@@ -71,12 +74,13 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
             {
               backgroundColor: white_snow,
             },
-          ]}
-        >
+          ]}>
           <Close />
         </View>
       )}
-      <Text numberOfLines={2} style={[styles.selectedUserItemName, { color: black }]}>
+      <Text
+        numberOfLines={2}
+        style={[styles.selectedUserItemName, {color: black}]}>
         {user.name}
       </Text>
     </TouchableOpacity>
