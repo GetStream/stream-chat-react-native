@@ -236,17 +236,15 @@ You will need to add some modules in your `android/app/build.gradle`
 
 ```java
 dependencies {
-  // For Android versions less than Ice Cream Sandwich (API level 14)
-  implementation 'com.facebook.fresco:animated-base-support:1.3.0'
+  // For animated GIF support
+  implementation 'com.facebook.fresco:animated-gif:2.6.0'
 
-  // For GIF support
-  implementation 'com.facebook.fresco:animated-gif:2.0.0'
+  // For WebP support, including animated WebP
+  implementation 'com.facebook.fresco:animated-webp:2.6.0'
+  implementation 'com.facebook.fresco:webpsupport:2.6.0'
 
-  // For WebP support, with animations
-  implementation 'com.facebook.fresco:animated-webp:2.1.0'
-
-  // For WebP support, without animations
-  implementation 'com.facebook.fresco:webpsupport:2.0.0'
+  // Provide the Android support library (you might already have this or a similar dependency)
+  implementation 'com.android.support:support-core-utils:24.2.1'
   ...
 }
 ```
