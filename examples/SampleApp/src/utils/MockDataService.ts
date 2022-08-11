@@ -1,6 +1,6 @@
-import {generateRandomId} from 'stream-chat-react-native';
+import { generateRandomId } from 'stream-chat-react-native';
 
-import type {Attachment} from 'stream-chat';
+import type { Attachment } from 'stream-chat';
 
 const messageSearchByFileAttachmentType = () => {
   const attachments: Attachment[] = [
@@ -94,8 +94,7 @@ const messageSearchByImageAttachmentType = () => {
     },
     {
       id: generateRandomId(),
-      image_url:
-        'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
+      image_url: 'https://randomwordgenerator.com/img/picture-generator/natural-4946737_640.jpg',
       type: 'image',
     },
     {

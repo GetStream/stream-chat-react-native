@@ -1,14 +1,13 @@
-import {useEffect, useState} from 'react';
-import {StreamChat} from 'stream-chat';
+import { useEffect, useState } from 'react';
+import { StreamChat } from 'stream-chat';
 
-import {USER_TOKENS, USERS} from '../ChatUsers';
+import { USER_TOKENS, USERS } from '../ChatUsers';
 import AsyncStore from '../utils/AsyncStore';
 
-import type {LoginConfig, StreamChatGenerics} from '../types';
+import type { LoginConfig, StreamChatGenerics } from '../types';
 
 export const useChatClient = () => {
-  const [chatClient, setChatClient] =
-    useState<StreamChat<StreamChatGenerics> | null>(null);
+  const [chatClient, setChatClient] = useState<StreamChat<StreamChatGenerics> | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {

@@ -1,13 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Channel,
   Group,
@@ -18,18 +11,18 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import {RoundButton} from '../components/RoundButton';
-import {ScreenHeader} from '../components/ScreenHeader';
-import {SelectedUserTag} from '../components/UserSearch/SelectedUserTag';
-import {UserSearchResults} from '../components/UserSearch/UserSearchResults';
-import {useAppContext} from '../context/AppContext';
-import {useUserSearchContext} from '../context/UserSearchContext';
+import { RoundButton } from '../components/RoundButton';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
+import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
+import { useAppContext } from '../context/AppContext';
+import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type {StackNavigationProp} from '@react-navigation/stack';
-import type {Channel as StreamChatChannel} from 'stream-chat';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { Channel as StreamChatChannel } from 'stream-chat';
 
-import {NewDirectMessagingSendButton} from '../components/NewDirectMessagingSendButton';
-import type {StackNavigatorParamList, StreamChatGenerics} from '../types';
+import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,7 +56,7 @@ const styles = StyleSheet.create({
   inputBoxContainer: {
     flexDirection: 'row',
   },
-  noChats: {fontSize: 12},
+  noChats: { fontSize: 12 },
   searchContainer: {
     borderBottomWidth: 1,
     flexDirection: 'row',
@@ -92,7 +85,7 @@ const styles = StyleSheet.create({
 const EmptyMessagesIndicator = () => {
   const {
     theme: {
-      colors: {grey},
+      colors: { grey },
     },
   } = useTheme();
   return (
@@ -103,7 +96,8 @@ const EmptyMessagesIndicator = () => {
           {
             color: grey,
           },
-        ]}>
+        ]}
+      >
         No chats here yet...
       </Text>
     </View>
@@ -119,15 +113,15 @@ export type NewDirectMessagingScreenProps = {
   navigation: NewDirectMessagingScreenNavigationProp;
 };
 
-export const NewDirectMessagingScreen: React.FC<
-  NewDirectMessagingScreenProps
-> = ({navigation}) => {
+export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
+  navigation,
+}) => {
   const {
     theme: {
-      colors: {accent_blue, black, border, grey, white},
+      colors: { accent_blue, black, border, grey, white },
     },
   } = useTheme();
-  const {chatClient} = useAppContext();
+  const { chatClient } = useAppContext();
 
   const {
     onChangeSearchText,
@@ -199,17 +193,9 @@ export const NewDirectMessagingScreen: React.FC<
     initChannel();
   }, [selectedUsersLength]);
 
-  const renderUserSearch = ({inSafeArea}: {inSafeArea: boolean}) => (
-    <View
-      style={[
-        {backgroundColor: white},
-        focusOnSearchInput ? styles.container : undefined,
-      ]}>
-      <ScreenHeader
-        inSafeArea={inSafeArea}
-        onBack={reset}
-        titleText="New Chat"
-      />
+  const renderUserSearch = ({ inSafeArea }: { inSafeArea: boolean }) => (
+    <View style={[{ backgroundColor: white }, focusOnSearchInput ? styles.container : undefined]}>
+      <ScreenHeader inSafeArea={inSafeArea} onBack={reset} titleText='New Chat' />
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => {
@@ -225,14 +211,16 @@ export const NewDirectMessagingScreen: React.FC<
             backgroundColor: white,
             borderBottomColor: border,
           },
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.searchContainerLeft,
             {
               color: grey,
             },
-          ]}>
+          ]}
+        >
           TO:
         </Text>
         <View style={styles.searchContainerMiddle}>
@@ -255,7 +243,7 @@ export const NewDirectMessagingScreen: React.FC<
               <TextInput
                 onChangeText={onChangeSearchText}
                 onFocus={onFocusInput}
-                placeholder="Type a name"
+                placeholder='Type a name'
                 placeholderTextColor={grey}
                 ref={searchInputRef}
                 style={[
@@ -271,11 +259,7 @@ export const NewDirectMessagingScreen: React.FC<
           )}
         </View>
         <View style={styles.searchContainerRight}>
-          {selectedUsers.length === 0 ? (
-            <User pathFill={grey} />
-          ) : (
-            <UserAdd pathFill={grey} />
-          )}
+          {selectedUsers.length === 0 ? <User pathFill={grey} /> : <UserAdd pathFill={grey} />}
         </View>
       </TouchableOpacity>
       {focusOnSearchInput && !searchText && selectedUsers.length === 0 && (
@@ -283,7 +267,8 @@ export const NewDirectMessagingScreen: React.FC<
           onPress={() => {
             navigation.push('NewGroupChannelAddMemberScreen');
           }}
-          style={styles.createGroupButtonContainer}>
+          style={styles.createGroupButtonContainer}
+        >
           <RoundButton>
             <Group pathFill={accent_blue} />
           </RoundButton>
@@ -293,14 +278,15 @@ export const NewDirectMessagingScreen: React.FC<
               {
                 color: black,
               },
-            ]}>
+            ]}
+          >
             Create a Group
           </Text>
         </TouchableOpacity>
       )}
       {results && focusOnSearchInput && (
         <UserSearchResults
-          toggleSelectedUser={user => {
+          toggleSelectedUser={(user) => {
             setFocusOnSearchInput(false);
             toggleUser(user);
           }}
@@ -314,7 +300,7 @@ export const NewDirectMessagingScreen: React.FC<
   }
 
   if (!currentChannel.current) {
-    return renderUserSearch({inSafeArea: false});
+    return renderUserSearch({ inSafeArea: false });
   }
 
   return (
@@ -324,7 +310,8 @@ export const NewDirectMessagingScreen: React.FC<
         {
           backgroundColor: white,
         },
-      ]}>
+      ]}
+    >
       <Channel<StreamChatGenerics>
         additionalTextInputProps={{
           onFocus: () => {
@@ -340,14 +327,14 @@ export const NewDirectMessagingScreen: React.FC<
         enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         onChangeText={setMessageInputText}
-        overrideOwnCapabilities={{sendMessage: true}}
+        overrideOwnCapabilities={{ sendMessage: true }}
         SendButton={NewDirectMessagingSendButton}
-        setInputRef={ref => (messageInputRef.current = ref)}>
-        {renderUserSearch({inSafeArea: true})}
-        {results &&
-          results.length >= 0 &&
-          !focusOnSearchInput &&
-          focusOnMessageInput && <MessageList />}
+        setInputRef={(ref) => (messageInputRef.current = ref)}
+      >
+        {renderUserSearch({ inSafeArea: true })}
+        {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
+          <MessageList />
+        )}
         {selectedUsers.length > 0 && <MessageInput />}
       </Channel>
     </SafeAreaView>

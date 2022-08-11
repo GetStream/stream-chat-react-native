@@ -1,5 +1,5 @@
-import {UserResponse} from 'stream-chat';
-import {StreamChatGenerics} from './types';
+import { UserResponse } from 'stream-chat';
+import { StreamChatGenerics } from './types';
 
 export const USER_TOKENS: Record<string, string> = {
   e2etest1:

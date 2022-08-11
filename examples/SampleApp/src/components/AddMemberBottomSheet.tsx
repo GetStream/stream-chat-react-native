@@ -1,27 +1,21 @@
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import {TouchableOpacity} from '@gorhom/bottom-sheet';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {CircleClose, Search, useTheme} from 'stream-chat-react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from 'react-native';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CircleClose, Search, useTheme } from 'stream-chat-react-native';
 
-import {UserSearchResultsGrid} from './UserSearch/UserSearchResultsGrid';
+import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
 
-import {useAppOverlayContext} from '../context/AppOverlayContext';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
 import {
   isAddMemberBottomSheetData,
   useBottomSheetOverlayContext,
 } from '../context/BottomSheetOverlayContext';
-import {usePaginatedUsers} from '../hooks/usePaginatedUsers';
+import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 
-import type {UserResponse} from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
-import {StreamChatGenerics} from '../types';
+import { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -66,17 +60,16 @@ const styles = StyleSheet.create({
 });
 
 export const AddMemberBottomSheet: React.FC = () => {
-  const {setOverlay} = useAppOverlayContext();
-  const {data, reset} = useBottomSheetOverlayContext();
+  const { setOverlay } = useAppOverlayContext();
+  const { data, reset } = useBottomSheetOverlayContext();
 
-  const channel =
-    data && isAddMemberBottomSheetData(data) ? data.channel : undefined;
+  const channel = data && isAddMemberBottomSheetData(data) ? data.channel : undefined;
 
   const insets = useSafeAreaInsets();
 
   const {
     theme: {
-      colors: {accent_red, black, grey, grey_whisper, white, white_smoke},
+      colors: { accent_red, black, grey, grey_whisper, white, white_smoke },
     },
   } = useTheme();
   const {
@@ -89,8 +82,7 @@ export const AddMemberBottomSheet: React.FC = () => {
     searchText,
   } = usePaginatedUsers();
 
-  const [addMemberQueryInProgress, setAddMemberQueryInProgress] =
-    useState(false);
+  const [addMemberQueryInProgress, setAddMemberQueryInProgress] = useState(false);
   const [error, setError] = useState(false);
 
   if (!channel) {
@@ -117,7 +109,8 @@ export const AddMemberBottomSheet: React.FC = () => {
         {
           marginBottom: insets.bottom,
         },
-      ]}>
+      ]}
+    >
       <View style={styles.inputRow}>
         <View
           style={[
@@ -126,12 +119,13 @@ export const AddMemberBottomSheet: React.FC = () => {
               backgroundColor: white,
               borderColor: grey_whisper,
             },
-          ]}>
+          ]}
+        >
           <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
-            placeholder="Search"
+            placeholder='Search'
             placeholderTextColor={grey}
             style={[
               styles.inputBox,
@@ -154,8 +148,9 @@ export const AddMemberBottomSheet: React.FC = () => {
               {
                 backgroundColor: white_smoke,
               },
-            ]}>
-            <ActivityIndicator size="small" />
+            ]}
+          >
+            <ActivityIndicator size='small' />
             <Text style={styles.text}>Adding user to channel</Text>
           </View>
         )}
@@ -166,14 +161,16 @@ export const AddMemberBottomSheet: React.FC = () => {
               {
                 backgroundColor: accent_red,
               },
-            ]}>
+            ]}
+          >
             <Text
               style={[
                 styles.text,
                 {
                   color: white,
                 },
-              ]}>
+              ]}
+            >
               Error adding user to channel
             </Text>
           </View>

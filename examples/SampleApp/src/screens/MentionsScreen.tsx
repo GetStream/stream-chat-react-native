@@ -1,18 +1,18 @@
-import React, {useMemo, useRef} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import {AtMentions, useTheme} from 'stream-chat-react-native';
-import {MessageResponse} from 'stream-chat';
+import React, { useMemo, useRef } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { AtMentions, useTheme } from 'stream-chat-react-native';
+import { MessageResponse } from 'stream-chat';
 
-import {ChatScreenHeader} from '../components/ChatScreenHeader';
-import {MessageSearchList} from '../components/MessageSearch/MessageSearchList';
-import {usePaginatedSearchedMessages} from '../hooks/usePaginatedSearchedMessages';
-import {useScrollToTop} from '@react-navigation/native';
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
+import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
+import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
+import { useScrollToTop } from '@react-navigation/native';
 
-import type {StackNavigationProp} from '@react-navigation/stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type {BottomTabNavigatorParamList} from '../types';
-import {useAppContext} from '../context/AppContext';
-import type {StreamChatGenerics} from '../types';
+import type { BottomTabNavigatorParamList } from '../types';
+import { useAppContext } from '../context/AppContext';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,34 +32,29 @@ const styles = StyleSheet.create({
 const EmptyMentionsSearchIndicator = () => {
   const {
     theme: {
-      colors: {grey, grey_gainsboro},
+      colors: { grey, grey_gainsboro },
     },
   } = useTheme();
 
   return (
     <View style={styles.emptyIndicatorContainer}>
       <AtMentions height={112} pathFill={grey_gainsboro} width={112} />
-      <Text style={[styles.emptyIndicatorText, {color: grey}]}>
-        No mentions exist yet...
-      </Text>
+      <Text style={[styles.emptyIndicatorText, { color: grey }]}>No mentions exist yet...</Text>
     </View>
   );
 };
 
 export type MentionsScreenProps = {
-  navigation: StackNavigationProp<
-    BottomTabNavigatorParamList,
-    'MentionsScreen'
-  >;
+  navigation: StackNavigationProp<BottomTabNavigatorParamList, 'MentionsScreen'>;
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
   const {
     theme: {
-      colors: {white_snow},
+      colors: { white_snow },
     },
   } = useTheme();
-  const {chatClient} = useAppContext();
+  const { chatClient } = useAppContext();
   const messageFilters = useMemo(
     () => ({
       'mentioned_users.id': {
@@ -69,13 +64,11 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
     [chatClient],
   );
 
-  const scrollRef = useRef<FlatList<
-    MessageResponse<StreamChatGenerics>
-  > | null>(null);
+  const scrollRef = useRef<FlatList<MessageResponse<StreamChatGenerics>> | null>(null);
 
   useScrollToTop(scrollRef);
 
-  const {loading, loadMore, messages, refreshing, refreshList} =
+  const { loading, loadMore, messages, refreshing, refreshList } =
     usePaginatedSearchedMessages(messageFilters);
 
   return (
@@ -85,7 +78,8 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
         {
           backgroundColor: white_snow,
         },
-      ]}>
+      ]}
+    >
       <ChatScreenHeader />
       <MessageSearchList
         EmptySearchIndicator={EmptyMentionsSearchIndicator}

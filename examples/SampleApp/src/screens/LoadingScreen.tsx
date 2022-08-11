@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from 'react-native';
-import {useTheme} from 'stream-chat-react-native';
+import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
+import { useTheme } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,7 +12,7 @@ const styles = StyleSheet.create({
 
 export const LoadingScreen: React.FC = () => {
   const colorScheme = useColorScheme();
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   return (
     <View
@@ -25,16 +20,13 @@ export const LoadingScreen: React.FC = () => {
         styles.container,
         {
           backgroundColor:
-            theme?.colors?.white_snow || colorScheme === 'dark'
-              ? '#070A0D'
-              : '#FCFCFC',
+            theme?.colors?.white_snow || colorScheme === 'dark' ? '#070A0D' : '#FCFCFC',
         },
-      ]}>
+      ]}
+    >
       <ActivityIndicator
-        color={
-          theme?.colors?.black || colorScheme === 'dark' ? '#FFFFFF' : '#000000'
-        }
-        size="small"
+        color={theme?.colors?.black || colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+        size='small'
       />
     </View>
   );

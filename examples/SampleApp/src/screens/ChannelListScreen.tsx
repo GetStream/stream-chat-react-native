@@ -1,29 +1,17 @@
-import React, {useMemo, useRef, useState} from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useNavigation, useScrollToTop} from '@react-navigation/native';
-import {
-  ChannelList,
-  CircleClose,
-  Search,
-  useTheme,
-} from 'stream-chat-react-native';
-import {Channel} from 'stream-chat';
-import {ChannelPreview} from '../components/ChannelPreview';
-import {ChatScreenHeader} from '../components/ChatScreenHeader';
-import {MessageSearchList} from '../components/MessageSearch/MessageSearchList';
-import {useAppContext} from '../context/AppContext';
-import {usePaginatedSearchedMessages} from '../hooks/usePaginatedSearchedMessages';
+import React, { useMemo, useRef, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useNavigation, useScrollToTop } from '@react-navigation/native';
+import { ChannelList, CircleClose, Search, useTheme } from 'stream-chat-react-native';
+import { Channel } from 'stream-chat';
+import { ChannelPreview } from '../components/ChannelPreview';
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
+import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
+import { useAppContext } from '../context/AppContext';
+import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type {ChannelSort} from 'stream-chat';
+import type { ChannelSort } from 'stream-chat';
 
-import type {StreamChatGenerics} from '../types';
+import type { StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   channelListContainer: {
@@ -36,7 +24,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 40,
   },
-  emptyIndicatorText: {paddingTop: 28},
+  emptyIndicatorText: { paddingTop: 28 },
   flex: {
     flex: 1,
   },
@@ -63,7 +51,7 @@ const styles = StyleSheet.create({
 const baseFilters = {
   type: 'messaging',
 };
-const sort: ChannelSort<StreamChatGenerics> = {last_message_at: -1};
+const sort: ChannelSort<StreamChatGenerics> = { last_message_at: -1 };
 const options = {
   presence: true,
   state: true,
@@ -71,11 +59,11 @@ const options = {
 };
 
 export const ChannelListScreen: React.FC = () => {
-  const {chatClient} = useAppContext();
+  const { chatClient } = useAppContext();
   const navigation = useNavigation();
   const {
     theme: {
-      colors: {black, grey, grey_gainsboro, grey_whisper, white, white_snow},
+      colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
     },
   } = useTheme();
 
@@ -85,7 +73,7 @@ export const ChannelListScreen: React.FC = () => {
   const [searchInputText, setSearchInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {loading, loadMore, messages, refreshing, refreshList, reset} =
+  const { loading, loadMore, messages, refreshing, refreshList, reset } =
     usePaginatedSearchedMessages(searchQuery);
 
   const chatClientUserId = chatClient?.user?.id;
@@ -104,7 +92,7 @@ export const ChannelListScreen: React.FC = () => {
   const EmptySearchIndicator = () => (
     <View style={styles.emptyIndicatorContainer}>
       <Search height={112} pathFill={grey_gainsboro} width={112} />
-      <Text style={[styles.emptyIndicatorText, {color: grey}]}>
+      <Text style={[styles.emptyIndicatorText, { color: grey }]}>
         {`No results for "${searchQuery}"`}
       </Text>
     </View>
@@ -114,9 +102,7 @@ export const ChannelListScreen: React.FC = () => {
     return null;
   }
 
-  const setScrollRef = (
-    ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>,
-  ) => {
+  const setScrollRef = (ref: React.RefObject<FlatList<Channel<StreamChatGenerics>> | null>) => {
     scrollRef.current = ref;
   };
 
@@ -127,7 +113,8 @@ export const ChannelListScreen: React.FC = () => {
         {
           backgroundColor: white_snow,
         },
-      ]}>
+      ]}
+    >
       <ChatScreenHeader />
 
       <View style={styles.flex}>
@@ -138,24 +125,25 @@ export const ChannelListScreen: React.FC = () => {
               backgroundColor: white,
               borderColor: grey_whisper,
             },
-          ]}>
+          ]}
+        >
           <Search pathFill={black} />
           <TextInput
-            onChangeText={text => {
+            onChangeText={(text) => {
               setSearchInputText(text);
               if (!text) {
                 reset();
                 setSearchQuery('');
               }
             }}
-            onSubmitEditing={({nativeEvent: {text}}) => {
+            onSubmitEditing={({ nativeEvent: { text } }) => {
               setSearchQuery(text);
             }}
-            placeholder="Search"
+            placeholder='Search'
             placeholderTextColor={grey}
             ref={searchInputRef}
-            returnKeyType="search"
-            style={[styles.searchInput, {color: black}]}
+            returnKeyType='search'
+            style={[styles.searchInput, { color: black }]}
             value={searchInputText}
           />
           {!!searchInputText && (
@@ -167,7 +155,8 @@ export const ChannelListScreen: React.FC = () => {
                   searchInputRef.current.blur();
                 }
                 reset();
-              }}>
+              }}
+            >
               <CircleClose pathFill={grey} />
             </TouchableOpacity>
           )}
@@ -184,12 +173,8 @@ export const ChannelListScreen: React.FC = () => {
             showResultCount
           />
         )}
-        <View style={{flex: searchQuery ? 0 : 1}}>
-          <View
-            style={[
-              styles.channelListContainer,
-              {opacity: searchQuery ? 0 : 1},
-            ]}>
+        <View style={{ flex: searchQuery ? 0 : 1 }}>
+          <View style={[styles.channelListContainer, { opacity: searchQuery ? 0 : 1 }]}>
             <ChannelList<StreamChatGenerics>
               additionalFlatListProps={{
                 getItemLayout: (_, index) => ({
@@ -202,7 +187,7 @@ export const ChannelListScreen: React.FC = () => {
               filters={filters}
               HeaderNetworkDownIndicator={() => null}
               maxUnreadCount={99}
-              onSelect={channel => {
+              onSelect={(channel) => {
                 navigation.navigate('ChannelScreen', {
                   channel,
                 });

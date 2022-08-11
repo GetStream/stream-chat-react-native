@@ -1,28 +1,22 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {ArrowRight, Search, useTheme} from 'stream-chat-react-native';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ArrowRight, Search, useTheme } from 'stream-chat-react-native';
 
-import {ScreenHeader} from '../components/ScreenHeader';
-import {UserGridItem} from '../components/UserSearch/UserGridItem';
-import {UserSearchResults} from '../components/UserSearch/UserSearchResults';
-import {useAppContext} from '../context/AppContext';
-import {useUserSearchContext} from '../context/UserSearchContext';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { UserGridItem } from '../components/UserSearch/UserGridItem';
+import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
+import { useAppContext } from '../context/AppContext';
+import { useUserSearchContext } from '../context/UserSearchContext';
 
-import type {StackNavigationProp} from '@react-navigation/stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
-import type {StackNavigatorParamList} from '../types';
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  flatList: {paddingBottom: 16},
+  flatList: { paddingBottom: 16 },
   inputBox: {
     flex: 1,
     fontSize: 14,
@@ -45,7 +39,7 @@ const styles = StyleSheet.create({
   navigationButton: {
     paddingRight: 8,
   },
-  userGridItemContainer: {marginHorizontal: 8, width: 64},
+  userGridItemContainer: { marginHorizontal: 8, width: 64 },
 });
 
 type RightArrowButtonProps = {
@@ -53,20 +47,17 @@ type RightArrowButtonProps = {
   onPress?: () => void;
 };
 
-const RightArrowButton: React.FC<RightArrowButtonProps> = props => {
-  const {disabled, onPress} = props;
+const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
+  const { disabled, onPress } = props;
 
   const {
     theme: {
-      colors: {accent_blue},
+      colors: { accent_blue },
     },
   } = useTheme();
 
   return (
-    <TouchableOpacity
-      disabled={disabled}
-      onPress={onPress}
-      style={styles.navigationButton}>
+    <TouchableOpacity disabled={disabled} onPress={onPress} style={styles.navigationButton}>
       <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
     </TouchableOpacity>
   );
@@ -81,25 +72,17 @@ type Props = {
   navigation: NewGroupChannelAddMemberScreenNavigationProp;
 };
 
-export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
-  navigation,
-}) => {
-  const {chatClient} = useAppContext();
+export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({ navigation }) => {
+  const { chatClient } = useAppContext();
 
   const {
     theme: {
-      colors: {black, border, grey, white},
+      colors: { black, border, grey, white },
     },
   } = useTheme();
 
-  const {
-    onChangeSearchText,
-    onFocusInput,
-    removeUser,
-    reset,
-    searchText,
-    selectedUsers,
-  } = useUserSearchContext();
+  const { onChangeSearchText, onFocusInput, removeUser, reset, searchText, selectedUsers } =
+    useUserSearchContext();
 
   const onRightArrowPress = () => {
     if (selectedUsers.length === 0) {
@@ -117,12 +100,9 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
       <ScreenHeader
         onBack={reset}
         RightContent={() => (
-          <RightArrowButton
-            disabled={selectedUsers.length === 0}
-            onPress={onRightArrowPress}
-          />
+          <RightArrowButton disabled={selectedUsers.length === 0} onPress={onRightArrowPress} />
         )}
-        titleText="Add Group Members"
+        titleText='Add Group Members'
       />
       <View>
         <View
@@ -133,12 +113,13 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
               borderColor: border,
               marginBottom: selectedUsers.length === 0 ? 8 : 16,
             },
-          ]}>
+          ]}
+        >
           <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
-            placeholder="Search"
+            placeholder='Search'
             placeholderTextColor={grey}
             style={[
               styles.inputBox,
@@ -153,7 +134,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
           data={selectedUsers}
           horizontal
           keyExtractor={(item, index) => `${item.id}-${index}`}
-          renderItem={({index, item: user}) => (
+          renderItem={({ index, item: user }) => (
             <View style={styles.userGridItemContainer}>
               <UserGridItem
                 onPress={() => {

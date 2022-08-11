@@ -1,6 +1,6 @@
 import React from 'react';
-import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
-import {useTheme} from 'stream-chat-react-native';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTheme } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,11 +30,11 @@ type RoundButtonProps = {
   onPress?: () => void;
 };
 
-export const RoundButton: React.FC<RoundButtonProps> = props => {
-  const {children, disabled, onPress} = props;
+export const RoundButton: React.FC<RoundButtonProps> = (props) => {
+  const { children, disabled, onPress } = props;
   const {
     theme: {
-      colors: {black, icon_background},
+      colors: { black, icon_background },
     },
   } = useTheme();
 
@@ -48,7 +48,8 @@ export const RoundButton: React.FC<RoundButtonProps> = props => {
           backgroundColor: icon_background,
           shadowColor: black,
         },
-      ]}>
+      ]}
+    >
       {children}
     </TouchableOpacity>
   );

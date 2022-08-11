@@ -1,10 +1,10 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {useTheme} from 'stream-chat-react-native';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useTheme } from 'stream-chat-react-native';
 
-import type {UserResponse} from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
-import type {StreamChatGenerics} from '../../types';
+import type { StreamChatGenerics } from '../../types';
 
 const styles = StyleSheet.create({
   tagContainer: {
@@ -41,7 +41,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
 }) => {
   const {
     theme: {
-      colors: {black, grey_gainsboro},
+      colors: { black, grey_gainsboro },
     },
   } = useTheme();
 
@@ -50,7 +50,8 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
       disabled={disabled}
       key={`${tag}-${index}`}
       onPress={onPress}
-      style={[styles.tagContainer, {backgroundColor: grey_gainsboro}]}>
+      style={[styles.tagContainer, { backgroundColor: grey_gainsboro }]}
+    >
       <Image
         source={{
           uri: tag.image,
@@ -64,7 +65,8 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
           {
             color: black,
           },
-        ]}>
+        ]}
+      >
         {tag.name}
       </Text>
     </TouchableOpacity>

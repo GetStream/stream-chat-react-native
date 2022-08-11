@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Spinner, useTheme} from 'stream-chat-react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { Spinner, useTheme } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({
   networkDownContainer: {
@@ -16,17 +16,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export const NetworkDownIndicator: React.FC<{titleSize: 'small' | 'large'}> = ({
+export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = ({
   titleSize = 'small',
 }) => {
   const {
     theme: {
-      colors: {black},
+      colors: { black },
     },
   } = useTheme();
 
   return (
-    <View style={styles.networkDownContainer} testID="network-down-indicator">
+    <View style={styles.networkDownContainer} testID='network-down-indicator'>
       <Spinner />
       <Text
         style={[
@@ -35,7 +35,8 @@ export const NetworkDownIndicator: React.FC<{titleSize: 'small' | 'large'}> = ({
             color: black,
           },
           titleSize === 'large' ? styles.networkDownTextLarge : {},
-        ]}>
+        ]}
+      >
         Searching for Network
       </Text>
     </View>

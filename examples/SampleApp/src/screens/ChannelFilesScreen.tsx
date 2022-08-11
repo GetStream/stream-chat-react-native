@@ -1,13 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {
-  SectionList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Dayjs from 'dayjs';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   FileIcon,
   getFileSizeDisplayText,
@@ -16,14 +10,14 @@ import {
   useTheme,
 } from 'stream-chat-react-native';
 
-import {ScreenHeader} from '../components/ScreenHeader';
-import {usePaginatedAttachments} from '../hooks/usePaginatedAttachments';
-import {File} from '../icons/File';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
+import { File } from '../icons/File';
 
-import type {RouteProp} from '@react-navigation/native';
-import type {Attachment} from 'stream-chat';
+import type { RouteProp } from '@react-navigation/native';
+import type { Attachment } from 'stream-chat';
 
-import type {StackNavigatorParamList, StreamChatGenerics} from '../types';
+import type { StackNavigatorParamList, StreamChatGenerics } from '../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -75,10 +69,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type ChannelFilesScreenRouteProp = RouteProp<
-  StackNavigatorParamList,
-  'ChannelFilesScreen'
->;
+type ChannelFilesScreenRouteProp = RouteProp<StackNavigatorParamList, 'ChannelFilesScreen'>;
 
 export type ChannelFilesScreenProps = {
   route: ChannelFilesScreenRouteProp;
@@ -86,17 +77,14 @@ export type ChannelFilesScreenProps = {
 
 export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   route: {
-    params: {channel},
+    params: { channel },
   },
 }) => {
-  const {loading, loadMore, messages} = usePaginatedAttachments(
-    channel,
-    'file',
-  );
+  const { loading, loadMore, messages } = usePaginatedAttachments(channel, 'file');
   const insets = useSafeAreaInsets();
   const {
     theme: {
-      colors: {black, border, grey, white_snow},
+      colors: { black, border, grey, white_snow },
     },
   } = useTheme();
 
@@ -116,7 +104,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       }
     > = {};
 
-    messages.forEach(message => {
+    messages.forEach((message) => {
       const month = Dayjs(message.created_at).format('MMM YYYY');
 
       if (!newSections[month]) {
@@ -126,7 +114,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
         };
       }
 
-      message.attachments?.forEach(a => {
+      message.attachments?.forEach((a) => {
         if (a.type !== 'file') {
           return;
         }
@@ -146,23 +134,25 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
           backgroundColor: white_snow,
           paddingBottom: insets.bottom,
         },
-      ]}>
-      <ScreenHeader titleText="Files" />
+      ]}
+    >
+      <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
           <SectionList<Attachment<StreamChatGenerics>>
             contentContainerStyle={styles.sectionContentContainer}
             ListEmptyComponent={EmptyListComponent}
             onEndReached={loadMore}
-            renderItem={({index, item: attachment, section}) => (
+            renderItem={({ index, item: attachment, section }) => (
               <TouchableOpacity
                 key={`${attachment.asset_url}${attachment.image_url}${attachment.og_scrape_url}${attachment.thumb_url}${attachment.type}`}
                 onPress={() => goToURL(attachment.asset_url)}
                 style={{
                   borderBottomColor: border,
                   borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
-                }}>
-                <View style={[styles.container, {backgroundColor: white_snow}]}>
+                }}
+              >
+                <View style={[styles.container, { backgroundColor: white_snow }]}>
                   <FileIcon mimeType={attachment.mime_type} />
                   <View style={styles.details}>
                     <Text
@@ -172,7 +162,8 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                         {
                           color: black,
                         },
-                      ]}>
+                      ]}
+                    >
                       {attachment.title}
                     </Text>
                     <Text
@@ -181,24 +172,24 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                         {
                           color: grey,
                         },
-                      ]}>
+                      ]}
+                    >
                       {getFileSizeDisplayText(attachment.file_size)}
                     </Text>
                   </View>
                 </View>
               </TouchableOpacity>
             )}
-            renderSectionHeader={({section: {title}}) => (
+            renderSectionHeader={({ section: { title } }) => (
               <View
                 style={[
                   styles.sectionContainer,
                   {
                     backgroundColor: white_snow,
                   },
-                ]}>
-                <Text style={[styles.sectionTitle, {color: black}]}>
-                  {title}
-                </Text>
+                ]}
+              >
+                <Text style={[styles.sectionTitle, { color: black }]}>{title}</Text>
               </View>
             )}
             sections={sections}
@@ -213,14 +204,14 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 const EmptyListComponent = () => {
   const {
     theme: {
-      colors: {black, grey, grey_gainsboro},
+      colors: { black, grey, grey_gainsboro },
     },
   } = useTheme();
   return (
     <View style={styles.emptyContainer}>
       <File fill={grey_gainsboro} scale={6} />
-      <Text style={[styles.noFiles, {color: black}]}>No files</Text>
-      <Text style={[styles.noFilesDetails, {color: grey}]}>
+      <Text style={[styles.noFiles, { color: black }]}>No files</Text>
+      <Text style={[styles.noFilesDetails, { color: grey }]}>
         Files sent on this chat will appear here.
       </Text>
     </View>

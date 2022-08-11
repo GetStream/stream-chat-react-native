@@ -1,13 +1,12 @@
-import React, {PropsWithChildren, useContext, useState} from 'react';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import type {ChannelContextValue} from 'stream-chat-react-native';
+import type { ChannelContextValue } from 'stream-chat-react-native';
 
-import type {StreamChatGenerics} from '../types';
+import type { StreamChatGenerics } from '../types';
 
 export const isAddMemberBottomSheetData = (
   data: BottomSheetOverlayData,
-): data is Pick<ChannelContextValue<StreamChatGenerics>, 'channel'> =>
-  'channel' in data;
+): data is Pick<ChannelContextValue<StreamChatGenerics>, 'channel'> => 'channel' in data;
 
 export type BottomSheetOverlayData =
   | Pick<ChannelContextValue<StreamChatGenerics>, 'channel'>
@@ -25,9 +24,7 @@ export type BottomSheetOverlayContextValue = {
   data?: BottomSheetOverlayData;
 };
 
-export const BottomSheetOverlayContext = React.createContext(
-  {} as BottomSheetOverlayContextValue,
-);
+export const BottomSheetOverlayContext = React.createContext({} as BottomSheetOverlayContextValue);
 
 export const BottomSheetOverlayProvider = ({
   children,
@@ -48,13 +45,12 @@ export const BottomSheetOverlayProvider = ({
   };
   return (
     <BottomSheetOverlayContext.Provider
-      value={bottomSheetOverlayContext as BottomSheetOverlayContextValue}>
+      value={bottomSheetOverlayContext as BottomSheetOverlayContextValue}
+    >
       {children}
     </BottomSheetOverlayContext.Provider>
   );
 };
 
 export const useBottomSheetOverlayContext = () =>
-  useContext(
-    BottomSheetOverlayContext,
-  ) as unknown as BottomSheetOverlayContextValue;
+  useContext(BottomSheetOverlayContext) as unknown as BottomSheetOverlayContextValue;

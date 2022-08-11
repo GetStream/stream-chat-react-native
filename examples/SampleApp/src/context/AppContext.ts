@@ -1,8 +1,8 @@
 import React from 'react';
 
-import type {StreamChat} from 'stream-chat';
+import type { StreamChat } from 'stream-chat';
 
-import type {LoginConfig, StreamChatGenerics} from '../types';
+import type { LoginConfig, StreamChatGenerics } from '../types';
 
 type AppContextType = {
   chatClient: StreamChat<StreamChatGenerics> | null;
