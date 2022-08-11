@@ -69,13 +69,8 @@ export type TextMentionTouchableHandlerPayload<
 };
 
 export type UrlTouchableHandlerPayload = {
-  emitter: 'textLink' | 'card';
+  emitter: 'textLink' | 'card' | 'fileAttachment';
   additionalInfo?: { url?: string };
-};
-
-export type FileAttachmentTouchableHandlerPayload = {
-  additionalInfo: { url?: string };
-  emitter: 'fileAttachment';
 };
 
 export type TouchableHandlerPayload = {
@@ -87,7 +82,6 @@ export type TouchableHandlerPayload = {
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
-  | FileAttachmentTouchableHandlerPayload
 );
 
 export type MessageTouchableHandlerPayload<
