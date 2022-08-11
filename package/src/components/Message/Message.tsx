@@ -74,7 +74,7 @@ export type UrlTouchableHandlerPayload = {
 };
 
 export type FileAttachmentTouchableHandlerPayload = {
-  additionalInfo: { assetUrl?: string };
+  additionalInfo: { url?: string };
   emitter: 'fileAttachment';
 };
 

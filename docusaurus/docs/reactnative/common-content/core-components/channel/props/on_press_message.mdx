@@ -29,13 +29,8 @@ For example:
             return;
           }
 
-          if (emitter === 'card' || emitter === 'textLink') {
+          if (emitter === 'card' || emitter === 'textLink' || emitter === 'fileAttachment') {
             console.log(additionalInfo?.url);
-            return;
-          }
-
-          if (emitter === 'fileAttachment') {
-            console.log(additionalInfo?.assetUrl);
             return;
           }
 
