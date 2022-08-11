@@ -103,6 +103,7 @@ const FileAttachmentWithContext = <
       onLongPress={(event) => {
         if (onLongPress) {
           onLongPress({
+            additionalInfo: { assetUrl: attachment.asset_url },
             emitter: 'fileAttachment',
             event,
           });
@@ -111,6 +112,7 @@ const FileAttachmentWithContext = <
       onPress={(event) => {
         if (onPress) {
           onPress({
+            additionalInfo: { assetUrl: attachment.asset_url },
             defaultHandler: defaultOnPress,
             emitter: 'fileAttachment',
             event,
@@ -120,6 +122,7 @@ const FileAttachmentWithContext = <
       onPressIn={(event) => {
         if (onPressIn) {
           onPressIn({
+            additionalInfo: { assetUrl: attachment.asset_url },
             defaultHandler: defaultOnPress,
             emitter: 'fileAttachment',
             event,

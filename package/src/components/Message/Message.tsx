@@ -73,6 +73,11 @@ export type UrlTouchableHandlerPayload = {
   additionalInfo?: { url?: string };
 };
 
+export type FileAttachmentTouchableHandlerPayload = {
+  additionalInfo: { assetUrl?: string };
+  emitter: 'fileAttachment';
+};
+
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
@@ -82,6 +87,7 @@ export type TouchableHandlerPayload = {
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
+  | FileAttachmentTouchableHandlerPayload
 );
 
 export type MessageTouchableHandlerPayload<
