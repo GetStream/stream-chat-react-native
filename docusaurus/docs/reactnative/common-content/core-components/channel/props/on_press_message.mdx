@@ -34,6 +34,11 @@ For example:
             return;
           }
 
+          if (emitter === 'fileAttachment') {
+            console.log(additionalInfo?.attachment);
+            return;
+          }
+
           defaultHandler?.();
       }}
     >
