@@ -381,6 +381,7 @@ export const ImageGallery = <
     scale,
     screenHeight,
     screenWidth,
+    selectedIndex,
     setSelectedIndex,
     translateX,
     translateY,
