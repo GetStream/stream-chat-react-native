@@ -42,6 +42,7 @@ export const useImageGalleryGestures = ({
   scale,
   screenHeight,
   screenWidth,
+  selectedIndex,
   setSelectedIndex,
   translateX,
   translateY,
@@ -57,6 +58,7 @@ export const useImageGalleryGestures = ({
   scale: SharedValue<number>;
   screenHeight: number;
   screenWidth: number;
+  selectedIndex: number;
   setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
@@ -81,6 +83,20 @@ export const useImageGalleryGestures = ({
   const focalX = useSharedValue(0);
   const focalY = useSharedValue(0);
   const index = useSharedValue(0);
+
+  /**
+   * if a specific image index > 0 has been passed in
+   * while creating the hook, set the value of the index
+   * reference to its value.
+   *
+   * This makes it possible to seelct an image in the list,
+   * and scroll/pan as normal. Prior to this,
+   * it was always assumed that one started at index 0 in the
+   * gallery.
+   * */
+  if (index.value !== selectedIndex) {
+    index.value = selectedIndex;
+  }
 
   /**
    * Shared values for movement
