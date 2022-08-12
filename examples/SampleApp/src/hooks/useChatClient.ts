@@ -45,6 +45,11 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   });
 
   if (message.message.user?.name && message.message.text) {
+    const { stream, ...rest } = remoteMessage.data ?? {};
+    const data = {
+      ...rest,
+      ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+    };
     await notifee.displayNotification({
       android: {
         channelId,
@@ -53,7 +58,7 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
         },
       },
       body: message.message.text,
-      data: remoteMessage.data,
+      data,
       title: 'New message from ' + message.message.user.name,
     });
   }
@@ -113,6 +118,11 @@ export const useChatClient = () => {
             name: 'Foreground Messages',
           });
           // display the notification on foreground
+          const { stream, ...rest } = remoteMessage.data ?? {};
+          const data = {
+            ...rest,
+            ...((stream as unknown as Record<string, string> | undefined) ?? {}), // extract and merge stream object if present
+          };
           await notifee.displayNotification({
             android: {
               channelId,
@@ -121,7 +131,7 @@ export const useChatClient = () => {
               },
             },
             body: message.message.text,
-            data: remoteMessage.data,
+            data,
             title: 'New message from ' + message.message.user.name,
           });
         }

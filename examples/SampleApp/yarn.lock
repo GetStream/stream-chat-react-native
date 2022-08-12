@@ -6793,20 +6793,19 @@ react-native-lightbox@^0.7.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-markdown-package@1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/react-native-markdown-package/-/react-native-markdown-package-1.8.1.tgz#51da74c4110dc870038ba83a8a0502d2bf2a51b8"
-  integrity sha512-8y0RJajuEerLBSVrta7hRcuFXADBUIQ7uwAp6k2NEFnha+yjYWS+1FrB886CHNQkD+qkvvbzc9TFbaC/far9uw==
-  dependencies:
-    lodash "^4.17.15"
-    prop-types "^15.6.0"
-    react-native-lightbox "^0.7.0"
-    simple-markdown "^0.7.1"
-
 react-native-quick-sqlite@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-4.0.3.tgz#bd10439248cb20b5e773d3a618254bb45ec3be29"
   integrity sha512-FnHJiQyPM7WXA2I+OiIF5Xrt7LGPjyrrQ68ITqFgblBSpgZaXNgHU3unDQZJS2Bgc6rBwly03eH2z+DTmkgFVg==
+
+react-native-markdown-package@1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-markdown-package/-/react-native-markdown-package-1.8.2.tgz#19db1047e174077f9b9f80303938c775b1c223c0"
+  integrity sha512-F3z/p0XfY6Nu9NlXQx1pYcPdz7Y37NRcAKTN+yb9nwRi8BW75mdc3uaBrM13PDVUlL0hbfTL7FuoAdSbsyB5vg==
+  dependencies:
+    lodash "^4.17.15"
+    react-native-lightbox "^0.7.0"
+    simple-markdown "^0.7.1"
 
 react-native-reanimated@2.7.0:
   version "2.7.0"
@@ -7629,10 +7628,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@4.12.1:
-  version "4.12.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.12.1.tgz#31810ffeb308f5d5d81d8823f5374b3f4a4ca4a0"
-  integrity sha512-ZvC4w2Pc8pLHSyRM7tWd9TBOmquF4M+63LNIDD9/GVNV7iWSBw27bQgNH+B8ezfatYWpIAqiMZ5PdPqgp6ZgjQ==
+stream-chat-react-native-core@4.12.2:
+  version "4.12.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.12.2.tgz#45bcda8346c45560c04c87e4a48c42a35075cfde"
+  integrity sha512-esBqKcUv9S3IVLX88Hl3uVKspzNgdPMRMeLYPNmkR23UAc7CBWcc7sIM0Mlwbb8mym54x1YAGADslnPWtT4itA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"

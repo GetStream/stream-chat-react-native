@@ -65,6 +65,7 @@ import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getResizedImageUrl } from '../../utils/getResizedImageUrl';
 import { getUrlOfImageAttachment } from '../../utils/getUrlOfImageAttachment';
 import { vh, vw } from '../../utils/utils';
+import { getGiphyMimeType } from '../Attachment/utils/getGiphyMimeType';
 
 const isAndroid = Platform.OS === 'android';
 const fullScreenHeight = Dimensions.get('screen').height;
@@ -283,7 +284,7 @@ export const ImageGallery = <
         created_at: cur.created_at,
         id: `photoId-${cur.id}-${imageUrl}`,
         messageId: cur.id,
-        mime_type: a.type === 'giphy' ? 'image/gif' : a.mime_type,
+        mime_type: a.type === 'giphy' ? getGiphyMimeType(giphyURL ?? '') : a.mime_type,
         original_height: a.original_height,
         original_width: a.original_width,
         type: a.type,

@@ -84,7 +84,14 @@ platform :ios do
 
       package = load_json(json_path: "./package.json")
       increment_version_number(version_number: package["version"], xcodeproj: "./ios/SampleApp.xcodeproj")
-      increment_build_number(xcodeproj: "./ios/SampleApp.xcodeproj")
+      current_build_number = app_store_build_number(
+        live: false,
+        app_identifier: "io.getstream.reactnative.SampleApp",
+      )
+      increment_build_number(
+        build_number: current_build_number + 1,
+        xcodeproj: "./ios/SampleApp.xcodeproj"
+      )
 
       gym(
           workspace: "./ios/SampleApp.xcworkspace",
@@ -112,12 +119,5 @@ platform :ios do
         end
       end
 
-      commit_version_bump(
-        message: "[fastlane][ios] Bump version [skip ci]",
-        xcodeproj: "./ios/SampleApp.xcodeproj",
-        force: true # otherwise untracked files may crash the CI build
-      )
-
-      push_to_git_remote()
   end
 end

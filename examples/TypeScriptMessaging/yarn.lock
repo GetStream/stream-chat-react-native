@@ -6307,6 +6307,15 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
+react-native-markdown-package@1.8.2:
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-markdown-package/-/react-native-markdown-package-1.8.2.tgz#19db1047e174077f9b9f80303938c775b1c223c0"
+  integrity sha512-F3z/p0XfY6Nu9NlXQx1pYcPdz7Y37NRcAKTN+yb9nwRi8BW75mdc3uaBrM13PDVUlL0hbfTL7FuoAdSbsyB5vg==
+  dependencies:
+    lodash "^4.17.15"
+    react-native-lightbox "^0.7.0"
+    simple-markdown "^0.7.1"
+
 react-native-reanimated@2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.7.0.tgz#2cebf9bddaf87a4b364079b40e9099ec0d7ce247"
@@ -7100,10 +7109,10 @@ stream-buffers@2.2.x:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.11.0.tgz#b307bbcc2a4008c0289c191ba611f1728e0e430b"
-  integrity sha512-WUChTTbrriyT2bkFCFzhPM4G8hYbq/BzLUeDVqVUPA9lNvfFhaw36Rq+4KI4+TAoxuJhz8mdxZzUNjvVUbYEgA==
+stream-chat-react-native-core@4.12.2:
+  version "4.12.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-4.12.2.tgz#45bcda8346c45560c04c87e4a48c42a35075cfde"
+  integrity sha512-esBqKcUv9S3IVLX88Hl3uVKspzNgdPMRMeLYPNmkR23UAc7CBWcc7sIM0Mlwbb8mym54x1YAGADslnPWtT4itA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@gorhom/bottom-sheet" "^4.1.6"

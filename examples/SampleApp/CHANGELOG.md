@@ -1,5 +1,46 @@
 # Change Log
 
+### [1.11.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.11.0...sampleapp@v1.11.1) (2022-08-10)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+## [1.11.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.10.2...sampleapp@v1.11.0) (2022-08-05)
+
+
+### Features
+
+* update markdown package ([0c23acd](https://github.com/GetStream/stream-chat-react-native/commit/0c23acd99ee45d3e2543350a43fbb18465b19934))
+
+
+### Bug Fixes
+
+* update markdown package to fix prop types import error ([1438321](https://github.com/GetStream/stream-chat-react-native/commit/1438321c396750aeee8b51680452783846d850d3))
+
+
+### Reverts
+
+* Revert "Revert "fix: update markdown package to fix prop types import error " (#1622)" (#1623) ([12ab5d5](https://github.com/GetStream/stream-chat-react-native/commit/12ab5d5d20daed6534e423f570b4b99d531e8015)), closes [#1622](https://github.com/GetStream/stream-chat-react-native/issues/1622) [#1623](https://github.com/GetStream/stream-chat-react-native/issues/1623)
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
+### [1.10.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.10.1...sampleapp@v1.10.2) (2022-08-03)
+
+
+### Bug Fixes
+
+* **docs:** ios foreground push notifications ([#1587](https://github.com/GetStream/stream-chat-react-native/issues/1587)) ([12207c5](https://github.com/GetStream/stream-chat-react-native/commit/12207c53dbe12c3ab47543ddc8a3ad32c6186614))
+
+
+### Workspaces
+
+* Following linked packages updated: [stream-chat-react-native]
+
 ### [1.10.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v1.10.0...sampleapp@v1.10.1) (2022-08-01)
 
 
