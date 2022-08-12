@@ -278,6 +278,7 @@ registerNativeHandlers({
     ? ({ onBuffer, onEnd, onLoad, onProgress, paused, style, uri, videoRef }) => (
         <AudioVideoPlayer
           ignoreSilentSwitch={'ignore'}
+          resizeMode="contain"
           onBuffer={onBuffer}
           onEnd={onEnd}
           onError={(error) => {
