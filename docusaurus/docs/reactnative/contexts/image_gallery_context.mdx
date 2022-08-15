@@ -3,7 +3,7 @@ id: image-gallery-context
 title: ImageGalleryContext
 ---
 
-import SetImage from '../common-content/contexts/image-gallery-context/set_image.mdx';
+import SetSelectedMessage from '../common-content/contexts/image-gallery-context/set_selected_message.mdx';
 
 `ImageGalleryContext` is provided by [`OverlayProvider`](../core-components/overlay_provider.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
 
@@ -15,7 +15,7 @@ import SetImage from '../common-content/contexts/image-gallery-context/set_image
 import { useContext } from 'react';
 import { ImageGalleryContext } from 'stream-chat-react-native';
 
-const { images, setImages } = useContext(ImageGalleryContext);
+const { messages, setMessages } = useContext(ImageGalleryContext);
 ```
 
 Alternatively, you can also use `useImageGalleryContext` hook provided by library to consume ImageGalleryContext.
@@ -23,19 +23,19 @@ Alternatively, you can also use `useImageGalleryContext` hook provided by librar
 ```tsx
 import { useImageGalleryContext } from 'stream-chat-react-native';
 
-const { images, setImages } = useImageGalleryContext();
+const { messages, setMessages } = useImageGalleryContext();
 ```
 
 This context can be useful if you are planning to build a separate screen for channel images, where you may want to open image viewer/gallery when user presses on image.
 You can use this `ImageGalleryContext` in combination with `OverlayContext` to open image viewer and show pressed image.
 
 ```tsx
-const { images, setImages } = useImageGalleryContext();
+const { messages, setMessages, setSelectedMessage } = useImageGalleryContext();
 const { setOverlay } = useOverlayContext();
 
 onPress={() => {
-  setImages(messagesWithImage);
-  setImage({
+  setMessages(messagesWithImage);
+  setSelectedMessage({
     messageId: selectedItem.messageId,
     url: selectedItem.uri,
   });
@@ -47,9 +47,9 @@ Please check the implementation of [`ChannelImagesScreen`](https://github.com/Ge
 
 ## Value
 
-### image
+### selectedMessage
 
-Current active image in image viewer/gallery.
+Current active message in image viewer/gallery.
 
 ```tsx
 {
@@ -62,7 +62,7 @@ Current active image in image viewer/gallery.
 | ------ |
 | object |
 
-### images
+### messages
 
 All the messages in channel which contain image attachments. Image viewer/gallery uses this array to navigate to next or previous image.
 
@@ -70,14 +70,14 @@ All the messages in channel which contain image attachments. Image viewer/galler
 | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/hooks/useMessageList.ts)[] |
 
-### setImage
+### setSelectedMessage
 
-<SetImage />
+<SetSelectedMessage />
 
-### setImages
+### setMessages
 
-Setter for value [images](#images).
+Setter for value [messages](#messages).
 
 | Type                                                                                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| (messageWithImages: [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/hooks/useMessageList.ts)[]) => void |
+| (messages: [MessageType](https://github.com/GetStream/stream-chat-react-native/blob/main/package/src/components/MessageList/hooks/useMessageList.ts)[]) => void |
