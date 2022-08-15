@@ -513,6 +513,7 @@
 			baseConfigurationReference = 928F266145128604D0E443A3 /* Pods-SampleApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleAppDebug.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -543,6 +544,7 @@
 			baseConfigurationReference = A953FAB89314F8DD53E32840 /* Pods-SampleApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = SampleApp/SampleAppRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
