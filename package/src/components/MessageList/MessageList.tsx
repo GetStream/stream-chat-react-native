@@ -530,7 +530,7 @@ const MessageListWithContext = <
     index: number;
     item: MessageType<StreamChatGenerics>;
   }) => {
-    if (!channel || (!channel.initialized && !channel.staticState)) return null;
+    if (!channel || (!channel.initialized && !channel.offlineMode)) return null;
 
     const lastRead = channel.lastRead();
 

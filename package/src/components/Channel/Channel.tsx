@@ -577,7 +577,7 @@ const ChannelWithContext = <
   const channelId = channel?.id || '';
   useEffect(() => {
     const initChannel = () => {
-      if (!channel || !shouldSyncChannel || channel.staticState) return;
+      if (!channel || !shouldSyncChannel || channel.offlineMode) return;
       /**
        * Loading channel at first unread message  requires channel to be initialized in the first place,
        * since we use read state on channel to decide what offset to load channel at.
