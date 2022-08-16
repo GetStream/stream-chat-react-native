@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
+import com.facebook.react.ReactInstanceEventListener;
 
 public class ReactNativeFlipper {
   public static void initializeFlipper(Context context, ReactInstanceManager reactInstanceManager) {
@@ -70,7 +71,7 @@ public class ReactNativeFlipper {
       ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
       if (reactContext == null) {
         reactInstanceManager.addReactInstanceEventListener(
-            new ReactInstanceManager.ReactInstanceEventListener() {
+            new ReactInstanceEventListener() {
               @Override
               public void onReactContextInitialized(ReactContext reactContext) {
                 reactInstanceManager.removeReactInstanceEventListener(this);

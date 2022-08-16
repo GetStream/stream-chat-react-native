@@ -4,8 +4,8 @@ import { DarkTheme, DefaultTheme, NavigationContainer, RouteProp } from '@react-
 import {
   createStackNavigator,
   StackNavigationProp,
-  useHeaderHeight,
 } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
