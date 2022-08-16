@@ -1,0 +1,100 @@
+---
+id: offline-support
+sidebar_position: 6
+title: Offline Support
+---
+
+React Native Chat SDK provides OOTB support for offline mode, which means user will be able to access and interact
+with chat even when the network is off. This is an opt-in feature that needs to be explicitely enabled on application
+level.
+
+> Offline support is currently not supported for Expo package (stream-chat-expo).
+
+## Features
+
+- ✅ Access to channel list and message list without network
+- ✅ Faster loading of chat since chat gets loaded from offline storage first before loading data from network
+- ✅ Syncing the local database using websocket events and sync api (once network is recovered)
+- ❌ Caching of image attachments
+- ❌ Optimistic updates to database on user action in offline mode e.g., send message, add reaction etc
+
+## How To Enable Offline Support
+
+- **Upgrade stream-chat dependency (optional)**
+
+  If you have installed `stream-chat` dependency explicitely on your application, then upgrade it to v7
+
+  ```bash
+  yarn add stream-chat@7.0.0-offline-support.4
+  ```
+
+- **Add `react-native-quick-sqlite` dependency**
+
+  ```bash
+  yarn add react-native-quick-sqlite
+  npx pod-install
+  ```
+
+- **Ensure unique instance of Chat component**
+
+  Until v4, you could provide separate `Chat` component for each usage of `Channel` component or `ChannelList` component.
+  But from v5, it is necessary that you provide only one instance of `Chat` component within your application.
+  This component needs to be a parent for all the chat related components such as `ChannelList`, `Channel` or `Thread`.
+
+- **Do not wait for `connectUser` call to succeed**
+
+  It is important that you call `connectUser` method on chat client, before you render Chat components.
+  But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:
+
+  - Chat components have access to current user information, which is important to store/access offline data.
+  - In case or slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
+
+  ```tsx {7,8,16}
+  const chatClient = StreamChat.getInstance('API_KEY');
+  const App = () => {
+    const [isClientReady, setIsClientReady] = useState(false);
+
+    useEffect(() => {
+      const startChat = async () => {
+        const connectPromise = chatClient.connectUser(user, tokenOrTokenProvider);
+        setIsClientReady(true); // this allows components to render
+        await connectPromise();
+        // Any other post-connectUser logic you may have goes here.
+      };
+
+      startChat();
+    }, []);
+
+    if (!isClientReady) return null; // or some loading indicator;
+
+    return (
+      <Chat client={chatClient} enableOfflineSupport>
+        ...
+      </Chat>
+    );
+  };
+  ```
+
+- **Add `enableOfflineSupport` prop on Chat component**
+
+  ```tsx
+  import { Chat } from 'stream-chat-react-native';
+
+  <Chat client={chatClient} enableOfflineSupport>
+    ...
+  </Chat>;
+  ```
+
+- **Reset the database when signing out the user**
+
+  Since SDK doesn't handle the app level authentication logic, its application's responsibility
+  to ensure resetting database when user gets logged out. This should be generally done before you
+  call `client.disconnectUser()`
+
+  ```jsx
+  import { QuickSqliteClient } from 'stream-chat-react-native';
+
+  // Sign out logic
+  QuickSqliteClient.resetDB();
+  chatClient.disconnectUser();
+  ```
