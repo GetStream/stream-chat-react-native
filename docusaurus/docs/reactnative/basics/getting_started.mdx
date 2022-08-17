@@ -60,7 +60,6 @@ Most if not all of the required packages now support auto-linking so setup shoul
 - [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context)
 - [`react-native-share`](https://github.com/react-native-share/react-native-share)
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
-- [`react-native-video`](https://github.com/react-native-video/react-native-video)
 
 <Tabs
   defaultValue='yarn'
@@ -72,14 +71,14 @@ Most if not all of the required packages now support auto-linking so setup shoul
 <TabItem value='yarn'>
 
 ```bash
-yarn add @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg react-native-video
+yarn add @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
 ```
 
 </TabItem>
 <TabItem value='npm'>
 
 ```bash
-npm install @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg react-native-video
+npm install @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
 ```
 
 </TabItem>
@@ -161,12 +160,43 @@ If you are planning to use file picker functionality, make sure you enable iClou
 
 ### Add Optional Dependencies
 
-- `react-native-video` - [additional installation steps](https://github.com/react-native-video/react-native-video/blob/master/API.md#installation)
+#### Video playing support
 
-  > Available in stream-chat-react-native >= v4.7.0
+Install `react-native-video` in your React Native project.
 
-  Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default
-  browser of the device.
+> Available in stream-chat-react-native >= v4.7.0
+
+Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default browser of the device.
+
+<Tabs
+  defaultValue='yarn'
+  values={[
+    { label: 'Yarn', value: 'yarn' },
+    { label: 'npm', value: 'npm' },
+  ]}
+>
+<TabItem value='yarn'>
+
+```bash
+yarn add react-native-video
+```
+
+</TabItem>
+<TabItem value='npm'>
+
+```bash
+npm install react-native-video
+```
+
+</TabItem>
+</Tabs>
+
+We require [exoplayer](https://github.com/google/ExoPlayer) to be the media player on Android. To make `react-native-video` to use exoplayer, add the following in `android/settings.gradle`:
+
+```
+include ':react-native-video'
+project(':react-native-video').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android-exoplayer')
+```
 
 ### AndroidX Support
 
@@ -187,7 +217,7 @@ Stream Chat for React Native is set up for parity on Expo, expo requires a diffe
 
 ```bash
 expo install stream-chat-expo
-expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg expo-av
+expo install @react-native-community/netinfo expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
 ```
 
 ### Additional Steps
@@ -239,9 +269,14 @@ For some of the packages listed below, there are additional steps required to se
 
 ### Add Optional Dependencies
 
-- `expo-av` - [additional installation steps](https://docs.expo.dev/versions/v45.0.0/sdk/video/)
+#### Video playing support
 
-  > Available in stream-chat-expo >= v4.7.0
+Install `expo-av` in your React Native project.
 
-  Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default
-  browser of the device.
+> Available in stream-chat-expo >= v4.7.0
+
+Installing this package allows you to play the video files/attachments in the chat. Otherwise by default, video files will be opened in default browser of the device.
+
+```bash
+expo install expo-av
+```

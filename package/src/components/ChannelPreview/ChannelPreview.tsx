@@ -78,9 +78,12 @@ const ChannelPreviewWithContext = <
     };
 
     const handleUpdatedOrDeletedMessage = (event: Event<StreamChatGenerics>) => {
-      if (event.message?.id === lastMessage?.id) {
-        setLastMessage(event.message);
-      }
+      setLastMessage((prevLastMessage) => {
+        if (prevLastMessage?.id === event.message?.id) {
+          return event.message;
+        }
+        return prevLastMessage;
+      });
     };
 
     const listeners = [
