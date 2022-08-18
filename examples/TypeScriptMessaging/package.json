@@ -33,7 +33,8 @@
     "react-native-svg": "12.1.1",
     "react-native-video": "^5.2.0",
     "stream-chat-react-native": "link:../../package/native-package",
-    "stream-chat-react-native-core": "link:../../package"
+    "stream-chat-react-native-core": "link:../../package",
+    "stream-chat-react-native-devtools": "link:../../../stream-chat-react-native-devtools"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -50,6 +51,7 @@
     "fbjs": "^3.0.4",
     "jest": "26.6.3",
     "metro-react-native-babel-preset": "0.66.2",
+    "react-native-flipper": "^0.158.0",
     "react-test-renderer": "17.0.2",
     "typescript": "4.2.4"
   },

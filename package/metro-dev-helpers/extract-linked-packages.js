@@ -16,6 +16,7 @@ module.exports = function extractLinkedPackages(repoDir) {
   const sdkRootPackage = linkedPackages['stream-chat-react-native-core'];
   const sdkNativePackage = linkedPackages['stream-chat-react-native'];
   const sdkExpoPackage = linkedPackages['stream-chat-expo'];
+  const streamChatReactNativeDevtools = linkedPackages['stream-chat-react-native-devtools'];
 
   if (!sdkRootPackage) {
     throw new Error('stream-chat-react-native-core is not linked!');
@@ -30,6 +31,8 @@ module.exports = function extractLinkedPackages(repoDir) {
   if (sdkExpoPackage) {
     alternateRoots.push(sdkExpoPackage);
   }
+
+  if (streamChatReactNativeDevtools) alternateRoots.push(streamChatReactNativeDevtools);
 
   if (!sdkNativePackage && !sdkExpoPackage) {
     throw new Error(
