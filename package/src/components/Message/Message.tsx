@@ -73,15 +73,23 @@ export type UrlTouchableHandlerPayload = {
   additionalInfo?: { url?: string };
 };
 
+export type FileAttachmentTouchableHandlerPayload<
+  StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
+> = {
+  emitter: 'fileAttachment';
+  additionalInfo?: { attachment?: Attachment<StreamChatGenerics> };
+};
+
 export type TouchableHandlerPayload = {
   defaultHandler?: () => void;
   event?: GestureResponderEvent;
 } & (
   | {
-      emitter?: TouchableEmitter;
+      emitter?: Exclude<TouchableEmitter, 'textMention' | 'textLink' | 'card' | 'fileAttachment'>;
     }
   | TextMentionTouchableHandlerPayload
   | UrlTouchableHandlerPayload
+  | FileAttachmentTouchableHandlerPayload
 );
 
 export type MessageTouchableHandlerPayload<
