@@ -20,9 +20,10 @@ const halfScreenWidth = vw(50);
 const oneEighth = 1 / 8;
 
 export type AnimatedGalleryVideoType = {
+  attachmentId: string;
   handleEnd: () => void;
-  handleLoad: (payload: VideoPayloadData) => void;
-  handleProgress: (data: VideoProgressData) => void;
+  handleLoad: (index: string, duration: number) => void;
+  handleProgress: (index: string, progress: number, hasEnd?: boolean) => void;
   index: number;
   offsetScale: Animated.SharedValue<number>;
   paused: boolean;
@@ -51,7 +52,9 @@ const styles = StyleSheet.create({
 export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.memo(
   (props) => {
     const [opacity, setOpacity] = useState<number>(1);
+
     const {
+      attachmentId,
       handleEnd,
       handleLoad,
       handleProgress,
@@ -76,7 +79,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
 
     const onLoad = (payload: VideoPayloadData) => {
       setOpacity(0);
-      handleLoad(payload);
+      handleLoad(attachmentId, payload.duration);
     };
 
     const onEnd = () => {
@@ -84,7 +87,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
     };
 
     const onProgress = (data: VideoProgressData) => {
-      handleProgress(data);
+      handleProgress(attachmentId, data.currentTime / data.seekableDuration);
     };
 
     const onBuffer = ({ isBuffering }: { isBuffering: boolean }) => {
@@ -102,13 +105,13 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
       } else {
         // Update your UI for the loaded state
         setOpacity(0);
-        handleLoad({ duration: playbackStatus.durationMillis / 1000 });
+        handleLoad(attachmentId, playbackStatus.durationMillis / 1000);
         if (playbackStatus.isPlaying) {
           // Update your UI for the playing state
-          handleProgress({
-            currentTime: playbackStatus.positionMillis / 1000,
-            seekableDuration: playbackStatus.durationMillis / 1000,
-          });
+          handleProgress(
+            attachmentId,
+            playbackStatus.positionMillis / 1000 / (playbackStatus.durationMillis / 1000),
+          );
         }
 
         if (playbackStatus.isBuffering) {
