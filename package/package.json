@@ -80,7 +80,7 @@
     "react-art": "^17.0.2",
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^1.3.0",
-    "stream-chat": "7.0.0-offline-support.4"
+    "stream-chat": "7.0.0"
   },
   "peerDependencies": {
     "react-native-svg": "^12.1.0"
