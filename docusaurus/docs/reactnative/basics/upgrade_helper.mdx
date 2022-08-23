@@ -6,18 +6,6 @@ title: Upgrading from V4
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## Update Camera Roll dependency
-
-Replace the `@react-native-community/cameraroll` with `@stream-io/react-native-cameraroll`. We had to roll out our fork as `@react-native-community/cameraroll` is no longer accepting pull requests for important fixes like Android 11 compatibility.
-
-```bash
-# Remove existing cameraroll dependency
-yarn remove @react-native-community/cameraroll
-
-# Add stream-io's fork for cameraroll dependency.
-yarn add @stream-io/react-native-cameraroll
-```
-
 ## Prop or Context Changes
 
 Following values in [`ImageGalleryContext`](https://getstream.io/chat/docs/sdk/reactnative/v5/contexts/image-gallery-context/#value) have been renamed
@@ -49,7 +37,7 @@ To enable offline support please follow the given steps:
 
 - **Upgrade stream-chat dependency (optional)**
 
-  If you have installed `stream-chat` dependency explicitely on your application, then upgrade it to v7
+  If you have installed `stream-chat` dependency explicitly on your application, then upgrade it to v7
 
   ```bash
   yarn add stream-chat@7.0.0-offline-support.4
@@ -74,7 +62,7 @@ To enable offline support please follow the given steps:
   But you don't need to wait for `connectUser` to succeed before rendering Chat components. This is to ensure:
 
   - Chat components have access to current user information, which is important to store/access offline data.
-  - In case or slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
+  - In case of slow or no network, Chat components will still load the chat data without waiting for connectUser to succeed.
 
   ```tsx {7,8,16}
   const chatClient = StreamChat.getInstance('API_KEY');

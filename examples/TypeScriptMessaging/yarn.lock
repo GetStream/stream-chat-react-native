@@ -1119,6 +1119,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@react-native-camera-roll/camera-roll@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-5.0.0.tgz#86564e335df5fc1e765a025f369c653283bd54ab"
+  integrity sha512-H7xfQnzNUnJ/TN+cqtepJ3A6CP4c1zaRKYkoL/DGISzcZFCLwrRcOnrgZLyeJwQhfXwgcoZMFlUtfUDiKO9YMg==
+
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-8.0.4.tgz#97e16a20e207b95de12e29b03816e8f2b2c80cc7"
@@ -1415,13 +1420,6 @@
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.10.2.tgz#e247206c5c6409bb4af120e0f02d7b9b505f6e53"
   integrity sha512-jebEKP7pfRF8/tVSqNM6qdvisfOtMnMlzGYTWldoOnIq9/6DS1BU4ilzBuH6O7iBUu4bDokrMCNJgA2b2EKW/A==
-
-"@stream-io/react-native-cameraroll@^4.2.0":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@stream-io/react-native-cameraroll/-/react-native-cameraroll-4.2.1.tgz#a22265609051db867161d6036df2943266184aaf"
-  integrity sha512-gR+vm2hTcsktNw5HBeV7tk8RH/UhJplKKnyIyyELpRxv/Nz0bKAaLYRUO/JU8ZKYi4A6GK5C+TlCZL0BOGZ1ug==
-  dependencies:
-    invariant "^2.2.4"
 
 "@tootallnate/once@1":
   version "1.1.2"
