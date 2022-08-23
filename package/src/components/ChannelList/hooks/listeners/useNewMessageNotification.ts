@@ -42,7 +42,7 @@ export const useNewMessageNotification = <
       }
     };
 
-    client.on('notification.message_new', handleEvent);
-    return () => client.off('notification.message_new', handleEvent);
+    const listener = client?.on('notification.message_new', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

@@ -65,7 +65,7 @@ describe('ImageGalleryHeader', () => {
         <ImageGalleryContext.Provider
           value={
             {
-              images: [
+              messages: [
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),
@@ -109,7 +109,7 @@ describe('ImageGalleryHeader', () => {
         <ImageGalleryContext.Provider
           value={
             {
-              images: [
+              messages: [
                 generateMessage({
                   attachments: [generateVideoAttachment({ type: 'video' })],
                 }),
@@ -146,7 +146,7 @@ describe('ImageGalleryHeader', () => {
         <ImageGalleryContext.Provider
           value={
             {
-              images: [
+              messages: [
                 generateMessage({
                   attachments: [generateImageAttachment()],
                 }),

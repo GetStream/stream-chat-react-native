@@ -7,7 +7,7 @@ import { registerNativeHandlers } from './src/native';
 
 // eslint-disable-next-line no-underscore-dangle
 
-console.warn = () => {};
+console.warn = () => { };
 
 export let netInfoFetch = jest.fn();
 
@@ -53,5 +53,12 @@ jest.mock('@gorhom/bottom-sheet', () => {
     BottomSheetModalProvider: react.View,
     BottomSheetScrollView: react.ScrollView,
     default: react.View,
+  };
+});
+jest.mock('react-native-quick-sqlite', () => {
+  const { sqliteMock } = require('./src/mock-builders/DB/mock');
+
+  return {
+    QuickSQLite: sqliteMock
   };
 });

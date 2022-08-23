@@ -1,0 +1,38 @@
+---
+id: channel-avatar
+title: ChannelAvatar
+---
+
+import Channel from '../common-content/ui-components/channel-preview-messenger/props/channel.mdx';
+
+Component to render the avatar of a channel, within the [`ChannelList`](../core-components/channel_list.mdx) component.
+
+## Basic Usage
+
+You can customize this component and provide it back to the SDK via the [`PreviewAvatar`](../core-components/channel_list.mdx#previewavatar) prop on `ChannelList` if desired.
+
+In the following sample we add an onPress handler on avatar.
+
+```jsx
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ChannelList, ChannelAvatar } from 'stream-chat-react-native';
+
+<ChannelList
+  PreviewAvatar={({ channel }) => (
+    <TouchableOpacity
+      disallowInterruption={true}
+      onPress={() => {
+        /** Handler for press action */
+      }}
+    >
+      <ChannelAvatar channel={channel} />
+    </TouchableOpacity>
+  )}
+/>;
+```
+
+## Props
+
+### <div class="label required">required</div> **channel**
+
+<Channel />

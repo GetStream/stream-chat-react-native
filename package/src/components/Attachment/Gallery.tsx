@@ -4,7 +4,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import { GalleryImage } from './GalleryImage';
-import { useLoadingImage } from './hooks/useLoadingImage';
 import { buildGallery } from './utils/buildGallery/buildGallery';
 
 import type { Thumbnail } from './utils/buildGallery/types';
@@ -30,6 +29,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useLoadingImage } from '../../hooks/useLoadingImage';
 import { isVideoPackageAvailable } from '../../native';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { getUrlWithoutParams } from '../../utils/utils';
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 
 export type GalleryPropsWithContext<
   StreamChatGenerics extends DefaultStreamChatGenerics = DefaultStreamChatGenerics,
-> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+> = Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     | 'alignment'
@@ -141,9 +141,9 @@ const GalleryWithContext = <
     onPress,
     onPressIn,
     preventPress,
-    setImage,
-    setImages,
+    setMessages,
     setOverlay,
+    setSelectedMessage,
     threadList,
     videos,
     VideoThumbnail,
@@ -256,9 +256,9 @@ const GalleryWithContext = <
                   onPressIn={onPressIn}
                   preventPress={preventPress}
                   rowIndex={rowIndex}
-                  setImage={setImage}
-                  setImages={setImages}
+                  setMessages={setMessages}
                   setOverlay={setOverlay}
+                  setSelectedMessage={setSelectedMessage}
                   thumbnail={thumbnail}
                   VideoThumbnail={VideoThumbnail}
                 />
@@ -296,7 +296,7 @@ type GalleryThumbnailProps<
   | 'ImageLoadingIndicator'
   | 'ImageLoadingFailedIndicator'
 > &
-  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setImage' | 'setImages'> &
+  Pick<ImageGalleryContextValue<StreamChatGenerics>, 'setSelectedMessage' | 'setMessages'> &
   Pick<
     MessageContextValue<StreamChatGenerics>,
     'onLongPress' | 'onPress' | 'onPressIn' | 'preventPress'
@@ -322,9 +322,9 @@ const GalleryThumbnail = <
   onPressIn,
   preventPress,
   rowIndex,
-  setImage,
-  setImages,
+  setMessages,
   setOverlay,
+  setSelectedMessage,
   thumbnail,
   VideoThumbnail,
 }: GalleryThumbnailProps<StreamChatGenerics>) => {
@@ -342,11 +342,11 @@ const GalleryThumbnail = <
       // Added if-else to keep the logic readable, instead of DRY.
       // if - legacyImageViewerSwipeBehaviour is disabled
       // else - legacyImageViewerSwipeBehaviour is enabled
-      setImages([message]);
-      setImage({ messageId: message.id, url: thumbnail.url });
+      setMessages([message]);
+      setSelectedMessage({ messageId: message.id, url: thumbnail.url });
       setOverlay('gallery');
     } else if (legacyImageViewerSwipeBehaviour) {
-      setImage({ messageId: message?.id, url: thumbnail.url });
+      setSelectedMessage({ messageId: message?.id, url: thumbnail.url });
       setOverlay('gallery');
     }
   };
@@ -585,14 +585,15 @@ export const Gallery = <
     onPress: propOnPress,
     onPressIn: propOnPressIn,
     preventPress: propPreventPress,
-    setImage: propSetImage,
     setOverlay: propSetOverlay,
+    setSelectedMessage: propSetSelectedMessage,
     threadList: propThreadList,
     videos: propVideos,
     VideoThumbnail: PropVideoThumbnail,
   } = props;
 
-  const { setImage: contextSetImage, setImages } = useImageGalleryContext<StreamChatGenerics>();
+  const { setMessages, setSelectedMessage: contextSetSelectedMessage } =
+    useImageGalleryContext<StreamChatGenerics>();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -628,7 +629,7 @@ export const Gallery = <
   const onPress = propOnPress || contextOnPress;
   const preventPress =
     typeof propPreventPress === 'boolean' ? propPreventPress : contextPreventPress;
-  const setImage = propSetImage || contextSetImage;
+  const setSelectedMessage = propSetSelectedMessage || contextSetSelectedMessage;
   const setOverlay = propSetOverlay || contextSetOverlay;
   const threadList = propThreadList || contextThreadList;
   const VideoThumbnail = PropVideoThumbnail || ContextVideoThumnbnail;
@@ -653,9 +654,9 @@ export const Gallery = <
         onPress,
         onPressIn,
         preventPress,
-        setImage,
-        setImages,
+        setMessages,
         setOverlay,
+        setSelectedMessage,
         threadList,
         videos,
         VideoThumbnail,

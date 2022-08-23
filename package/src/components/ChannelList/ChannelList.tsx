@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { FlatList } from 'react-native-gesture-handler';
 
@@ -15,7 +15,6 @@ import { useChannelHidden } from './hooks/listeners/useChannelHidden';
 import { useChannelTruncated } from './hooks/listeners/useChannelTruncated';
 import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useChannelVisible } from './hooks/listeners/useChannelVisible';
-import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
@@ -28,6 +27,8 @@ import {
   ChannelsContextValue,
   ChannelsProvider,
 } from '../../contexts/channelsContext/ChannelsContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { upsertCidsForQuery } from '../../store/apis/upsertCidsForQuery';
 import type { DefaultStreamChatGenerics } from '../../types/types';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
@@ -241,7 +242,7 @@ export const ChannelList = <
   } = props;
 
   const [forceUpdate, setForceUpdate] = useState(0);
-
+  const { enableOfflineSupport, subscribeConnectionRecoveredCallback } = useChatContext();
   const {
     channels,
     error,
@@ -253,7 +254,9 @@ export const ChannelList = <
     refreshList,
     reloadList,
     setChannels,
+    staticChannelsActive,
   } = usePaginatedChannels<StreamChatGenerics>({
+    enableOfflineSupport,
     filters,
     options,
     sort,
@@ -292,11 +295,6 @@ export const ChannelList = <
     setChannels,
   });
 
-  useConnectionRecovered<StreamChatGenerics>({
-    refreshList,
-    setForceUpdate,
-  });
-
   useNewMessage({
     lockChannelOrder,
     setChannels,
@@ -314,6 +312,28 @@ export const ChannelList = <
 
   useUserPresence({
     setChannels,
+  });
+
+  const channelIdsStr = channels.reduce((acc, channel) => `${acc}${channel.cid}`, '');
+
+  useEffect(() => {
+    if (staticChannelsActive || !enableOfflineSupport) {
+      return;
+    }
+    upsertCidsForQuery({
+      cids: channels.map((c) => c.cid),
+      filters,
+      sort,
+    });
+  }, [channelIdsStr, staticChannelsActive]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeConnectionRecoveredCallback(() => {
+      refreshList();
+      setForceUpdate((count) => count + 1);
+    });
+
+    return () => unsubscribe();
   });
 
   const channelsContext = useCreateChannelsContext({

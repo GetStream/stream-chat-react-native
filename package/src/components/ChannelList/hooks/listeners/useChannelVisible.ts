@@ -42,7 +42,7 @@ export const useChannelVisible = <
       }
     };
 
-    client.on('channel.visible', handleEvent);
-    return () => client.off('channel.visible', handleEvent);
+    const listener = client?.on('channel.visible', handleEvent);
+    return () => listener?.unsubscribe();
   }, []);
 };

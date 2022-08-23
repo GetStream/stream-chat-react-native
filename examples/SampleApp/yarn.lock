@@ -1635,10 +1635,10 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-community/cameraroll@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-4.0.4.tgz#3e2567ce54e3985e8e0a51832dfa0e1c5317f75b"
-  integrity sha512-3SY96Xh1yQjV5M7dFisl5kQmrO/K09URarZwmTN801KEalOoo/opsd/e8Vu1dwSKe0NGCK7A2u0oJQpeNbWbnA==
+"@react-native-camera-roll/camera-roll@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-5.0.0.tgz#86564e335df5fc1e765a025f369c653283bd54ab"
+  integrity sha512-H7xfQnzNUnJ/TN+cqtepJ3A6CP4c1zaRKYkoL/DGISzcZFCLwrRcOnrgZLyeJwQhfXwgcoZMFlUtfUDiKO9YMg==
 
 "@react-native-community/cli-clean@^8.0.4":
   version "8.0.4"
@@ -7255,6 +7255,11 @@ react-native-markdown-package@1.8.2:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
+react-native-quick-sqlite@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-4.0.3.tgz#bd10439248cb20b5e773d3a618254bb45ec3be29"
+  integrity sha512-FnHJiQyPM7WXA2I+OiIF5Xrt7LGPjyrrQ68ITqFgblBSpgZaXNgHU3unDQZJS2Bgc6rBwly03eH2z+DTmkgFVg==
+
 react-native-reanimated@^2.9.1:
   version "2.9.1"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.9.1.tgz#d9a932e312c13c05b4f919e43ebbf76d996e0bc1"
@@ -8126,6 +8131,21 @@ stream-chat@6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-6.7.0.tgz#1add1e612f0009f9e7a69d35f2a2fae1296d85ef"
   integrity sha512-usH/kh0ZjbjOP8TTlsbXS53UZRUmwP0r1dOYf0jrQg3HPfwG51iTkrXGNlzPF9ueNXkPB8ObSm7bcdVRoo+4bg==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/jsonwebtoken" "^8.5.6"
+    "@types/ws" "^7.4.0"
+    axios "^0.22.0"
+    base64-js "^1.5.1"
+    form-data "^4.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    ws "^7.4.4"
+
+stream-chat@7.0.0-offline-support.4:
+  version "7.0.0-offline-support.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-7.0.0-offline-support.4.tgz#07fdb00f3bf1f1890aea6d8808e172da72c03bbc"
+  integrity sha512-YsZy+glK3OGvnABx60wYtJjy6o3s98PkfT6OCiLm89YMiCbkBitDll5OWu/ZzKxb5PTr+Lh654dUf9mOTlWCMw==
   dependencies:
     "@babel/runtime" "^7.16.3"
     "@types/jsonwebtoken" "^8.5.6"

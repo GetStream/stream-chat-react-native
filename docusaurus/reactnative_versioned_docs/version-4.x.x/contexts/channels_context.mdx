@@ -1,0 +1,176 @@
+---
+id: channels-context
+title: ChannelsContext
+---
+
+import Channels from '../common-content/contexts/channels-context/channels.mdx';
+import Error from '../common-content/contexts/channels-context/error.mdx';
+import HasNextPage from '../common-content/contexts/channels-context/has_next_page.mdx';
+import LoadingChannels from '../common-content/contexts/channels-context/loading_channels.mdx';
+import LoadingNextPage from '../common-content/contexts/channels-context/loading_next_page.mdx';
+import LoadNextPage from '../common-content/contexts/channels-context/load_next_page.mdx';
+import Refreshing from '../common-content/contexts/channels-context/refreshing.mdx';
+import RefreshList from '../common-content/contexts/channels-context/refresh_list.mdx';
+import ReloadList from '../common-content/contexts/channels-context/reload_list.mdx';
+
+import AdditionalFlatListProps from '../common-content/core-components/channel-list/props/additional_flat_list_props.mdx';
+import LoadMoreThreshold from '../common-content/core-components/channel-list/props/load_more_threshold.mdx';
+import MaxUnreadCount from '../common-content/core-components/channel-list/props/max_unread_count.mdx';
+import NumberOfSkeletons from '../common-content/core-components/channel-list/props/number_of_skeletons.mdx';
+import OnSelect from '../common-content/core-components/channel-list/props/on_select.mdx';
+import SetFlatListRef from '../common-content/core-components/channel-list/props/set_flat_list_ref.mdx';
+import EmptyStateIndicator from '../common-content/core-components/channel-list/props/empty_state_indicator.mdx';
+import FooterLoadingIndicator from '../common-content/core-components/channel-list/props/footer_loading_indicator.mdx';
+import HeaderErrorIndicator from '../common-content/core-components/channel-list/props/header_error_indicator.mdx';
+import HeaderNetworkDownIndicator from '../common-content/core-components/channel-list/props/header_network_down_indicator.mdx';
+import ListHeaderComponent from '../common-content/core-components/channel-list/props/list_header_component.mdx';
+import LoadingErrorIndicator from '../common-content/core-components/channel-list/props/loading_error_indicator.mdx';
+import LoadingIndicator from '../common-content/core-components/channel-list/props/loading_indicator.mdx';
+import Preview from '../common-content/core-components/channel-list/props/preview.mdx';
+import PreviewAvatar from '../common-content/core-components/channel-list/props/preview_avatar.mdx';
+import PreviewMessage from '../common-content/core-components/channel-list/props/preview_message.mdx';
+import PreviewStatus from '../common-content/core-components/channel-list/props/preview_status.mdx';
+import PreviewTitle from '../common-content/core-components/channel-list/props/preview_title.mdx';
+import PreviewUnreadCount from '../common-content/core-components/channel-list/props/preview_unread_count.mdx';
+import Skeleton from '../common-content/core-components/channel-list/props/skeleton.mdx';
+
+`ChannelsContext` is provided by [`ChannelList`](../core-components/channel_list.mdx) component. If you are not familiar with React Context API, please read about it on [React docs](https://reactjs.org/docs/context.html).
+
+## Basic Usage
+
+`ChannelsContext` can be consumed by any of the child component of `ChannelList` component as following:
+
+```tsx
+import { useContext } from 'react';
+import { ChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useContext(ChannelsContext);
+```
+
+Alternatively, you can also use `useChannelsContext` hook provided by library to consume ChannelsContext.
+
+```tsx
+import { useChannelsContext } from 'stream-chat-react-native';
+
+const { channels, reloadList } = useChannelsContext();
+```
+
+## Value
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#additionalflatlistprops)_ props</div> additionalFlatListProps {#additionalflatlistprops}
+
+<AdditionalFlatListProps />
+
+### channels
+
+<Channels />
+
+### error
+
+<Error />
+
+<!-- ### forceUpdate -->
+
+### hasNextPage
+
+<HasNextPage />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#listheadercomponent)_ props</div> ListHeaderComponent {#listheadercomponent}
+
+<ListHeaderComponent />
+
+### loadingChannels
+
+<LoadingChannels />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadmorethreshold)_ props</div> loadMoreThreshold {#loadmorethreshold}
+
+<LoadMoreThreshold />
+
+### loadingNextPage
+
+<LoadingNextPage />
+
+### loadNextPage
+
+<LoadNextPage />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#maxunreadcount)_ props</div> maxUnreadCount {#maxunreadcount}
+
+<MaxUnreadCount />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#numberofskeletons)_ props</div> numberOfSkeletons {#numberofskeletons}
+
+<NumberOfSkeletons />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#onselect)_ props</div> onSelect {#onselect}
+
+<OnSelect />
+
+### refreshing
+
+<Refreshing />
+
+### refreshList
+
+<RefreshList />
+
+### reloadList
+
+<ReloadList />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#setflatlistref)_ props</div> setFlatListRef {#setflatlistref}
+
+<SetFlatListRef />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#emptystateindicator)_ props</div> EmptyStateIndicator {#emptystateindicator}
+
+<EmptyStateIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#footerloadingindicator)_ props</div> FooterLoadingIndicator {#footerloadingindicator}
+
+<FooterLoadingIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#headererrorindicator)_ props</div> HeaderErrorIndicator {#headererrorindicator}
+
+<HeaderErrorIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#headernetworkdownindicator)_ props</div> HeaderNetworkDownIndicator {#headernetworkdownindicator}
+
+<HeaderNetworkDownIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadingerrorindicator)_ props</div> LoadingErrorIndicator {#loadingerrorindicator}
+
+<LoadingErrorIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#loadingindicator)_ props</div> LoadingIndicator {#loadingindicator}
+
+<LoadingIndicator />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#preview)_ props</div> Preview {#preview}
+
+<Preview />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewavatar)_ props</div> PreviewAvatar {#previewavatar}
+
+<PreviewAvatar />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewmessage)_ props</div> PreviewMessage {#previewmessage}
+
+<PreviewMessage />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewstatus)_ props</div> PreviewStatus {#previewstatus}
+
+<PreviewStatus />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewtitle)_ props</div> PreviewTitle {#previewtitle}
+
+<PreviewTitle />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#previewunreadcount)_ props</div> PreviewUnreadCount {#previewunreadcount}
+
+<PreviewUnreadCount />
+
+### <div class="label description">_forwarded from [ChannelList](../core-components/channel_list.mdx#skeleton)_ props</div> Skeleton {#skeleton}
+
+<Skeleton />
