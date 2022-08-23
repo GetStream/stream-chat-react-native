@@ -225,6 +225,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
   (prevProps, nextProps) => {
     if (
       prevProps.paused === nextProps.paused &&
+      prevProps.repeat === nextProps.repeat &&
       prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.source.uri === nextProps.source.uri &&
       prevProps.screenHeight === nextProps.screenHeight &&
