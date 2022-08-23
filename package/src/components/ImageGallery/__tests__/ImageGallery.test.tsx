@@ -48,7 +48,7 @@ describe('ImageGallery', () => {
   it('render image gallery component', () => {
     const { queryAllByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [
               generateImageAttachment(),
@@ -66,7 +66,7 @@ describe('ImageGallery', () => {
   it('handle handleLoad function when video item present and payload duration is available', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -89,7 +89,7 @@ describe('ImageGallery', () => {
   it('handle handleLoad function when video item present and payload duration is undefined', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -112,7 +112,7 @@ describe('ImageGallery', () => {
   it('handle handleProgress function when video item present and payload is well defined', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -140,7 +140,7 @@ describe('ImageGallery', () => {
   it('handle handleProgress function when video item present and payload is not defined', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),
@@ -168,7 +168,7 @@ describe('ImageGallery', () => {
   it('handle handleEnd function when video item present', () => {
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
+        messages: [
           generateMessage({
             attachments: [generateVideoAttachment({ type: 'video' })],
           }),

@@ -47,7 +47,7 @@ Stream Chat has a number of peer dependencies that are required to take advantag
 It is suggested you follow the install instructions for each package to ensure it is properly setup.
 Most if not all of the required packages now support auto-linking so setup should be minimal. Those with known [additional steps](#additional-steps) have been noted.
 
-- [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
+- [`@react-native-camera-roll/camera-roll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
 - [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
 - [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
 - [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker)
@@ -71,14 +71,14 @@ Most if not all of the required packages now support auto-linking so setup shoul
 <TabItem value='yarn'>
 
 ```bash
-yarn add @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
+yarn add @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
 ```
 
 </TabItem>
 <TabItem value='npm'>
 
 ```bash
-npm install @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
+npm install @react-native-camera-roll/camera-roll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg
 ```
 
 </TabItem>
@@ -86,12 +86,13 @@ npm install @react-native-community/cameraroll @react-native-community/netinfo @
 
 For iOS on a Mac install the pods `npx pod-install ios`.
 
-#### Version compabilities
+#### Version compatibilities
 
 To be able to use the Stream Chat React Native SDK, a few dependencies must meet the following version requirements:
 
 | react-native | stream-chat-react-native (min required) | react-native-reanimated (min required) |
 | ------------ | --------------------------------------- | -------------------------------------- |
+| 0.69         | 4.13.0                                  | 2.9.1                                  |
 | 0.68         | 4.11.0                                  | 2.7.0                                  |
 | 0.67         | 4.2.0                                   | 2.4.0                                  |
 | 0.66         | 3.9.0                                   | 2.2.3                                  |
@@ -150,7 +151,7 @@ For some of the packages listed below, there are additional steps required to se
 
 - `react-native` - [additional installation steps](https://reactnative.dev/docs/image#gif-and-webp-support-on-android)
 - `react-native-image-crop-picker` - [additional installation steps](https://github.com/ivpusic/react-native-image-crop-picker#step-3)
-- `react-native-cameraroll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
+- `react-native-camera-roll` - [additional installation steps](https://github.com/react-native-cameraroll/react-native-cameraroll#permissions)
 
 :::note
 

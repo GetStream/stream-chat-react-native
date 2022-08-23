@@ -26,6 +26,14 @@ const { loadingMore, loadMoreRecent, messages } = usePaginatedMessageListContext
 
 ## Value
 
+### hasNoMoreRecentMessagesToLoad
+
+True if `Channel` has loaded all the recent messages and there no more to load.
+
+| Type    |
+| ------- |
+| boolean |
+
 ### hasMore
 
 False if `Channel` has loaded all the messages in history, via pagination. Channel component uses this value to decide if more messages should be queried from server when user reaches top of the `MessageList`.

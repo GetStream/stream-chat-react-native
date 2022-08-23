@@ -76,13 +76,13 @@ describe('ImageGalleryOverlay', () => {
 
   it('should trigger the selectAndClose when the Image item is pressed', () => {
     const closeGridViewMock = jest.fn();
-    const setImageMock = jest.fn();
+    const setSelectedMessageMock = jest.fn();
 
     const { getAllByA11yLabel } = render(
       getComponent({
         closeGridView: closeGridViewMock,
         photos: [generateImageAttachment(), generateVideoAttachment({ type: 'video' })],
-        setImage: setImageMock,
+        setSelectedMessage: setSelectedMessageMock,
       }),
     );
 
@@ -93,6 +93,6 @@ describe('ImageGalleryOverlay', () => {
     });
 
     expect(closeGridViewMock).toHaveBeenCalledTimes(1);
-    expect(setImageMock).toHaveBeenCalledTimes(1);
+    expect(setSelectedMessageMock).toHaveBeenCalledTimes(1);
   });
 });
