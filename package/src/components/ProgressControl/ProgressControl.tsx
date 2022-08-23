@@ -15,10 +15,10 @@ export type ProgressControlProps = {
   duration: number;
   filledColor: string;
   onPlayPause: (status?: boolean) => void;
-  onProgressDrag: (progress: number) => void;
   progress: number;
   testID: string;
   width: number;
+  onProgressDrag?: (progress: number) => void;
 };
 
 const height = 2;
@@ -94,7 +94,7 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
         onFinish: () => {
           translateX.value = state.value;
           const dragFinishLocationInSeconds = (state.value / width) * duration;
-          runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
+          if (onProgressDrag) runOnJS(onProgressDrag)(dragFinishLocationInSeconds);
           runOnJS(onPlayPause)(false);
         },
         onStart: () => {
@@ -109,7 +109,11 @@ export const ProgressControl: React.FC<ProgressControlProps> = React.memo(
       <View style={[styles.containerStyle, { backgroundColor: grey_dark, width }]}>
         <Animated.View style={[styles.innerStyle, animatedStyles]} />
 
-        <PanGestureHandler maxPointers={1} onGestureEvent={onGestureEvent} testID={testID}>
+        <PanGestureHandler
+          maxPointers={1}
+          onGestureEvent={onProgressDrag ? onGestureEvent : undefined}
+          testID={testID}
+        >
           <Animated.View style={[thumbStyles]}>
             <ProgressControlThumb />
           </Animated.View>

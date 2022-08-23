@@ -471,8 +471,8 @@ export const ImageGallery = <
   };
 
   const handleProgress = (index: string, progress: number, hasEnd?: boolean) => {
-    setImageGalleryAttachments((prevImageGalleryAttachment) =>
-      prevImageGalleryAttachment.map((imageGalleryAttachment) => ({
+    setImageGalleryAttachments((prevImageGalleryAttachments) =>
+      prevImageGalleryAttachments.map((imageGalleryAttachment) => ({
         ...imageGalleryAttachment,
         progress:
           imageGalleryAttachment.id === index
@@ -505,17 +505,7 @@ export const ImageGallery = <
   };
 
   const onPlayPause = (status?: boolean) => {
-    const { progress } = imageGalleryAttachments[selectedIndex];
     if (status === undefined) {
-      // React Native Video for RN CLI has seek as an API to move to a particular location in the video
-      if (progress === 1 && videoRef.current && videoRef.current.seek) {
-        videoRef.current.seek(0);
-      }
-      // Expo AV for Expo has replayAsync as an API to move to a starting of the video
-      if (progress === 1 && videoRef.current && videoRef.current.replayAsync) {
-        videoRef.current.replayAsync();
-      }
-
       if (imageGalleryAttachments[selectedIndex].paused) {
         handlePlayPause(imageGalleryAttachments[selectedIndex].id, false);
       } else {
@@ -523,18 +513,6 @@ export const ImageGallery = <
       }
     } else {
       handlePlayPause(imageGalleryAttachments[selectedIndex].id, status);
-    }
-  };
-
-  const onProgressDrag = (progress: number) => {
-    // React Native Video for RN CLI has seek as an API to move to a particular location in the video
-    if (videoRef.current && videoRef.current.seek) {
-      videoRef.current.seek(progress);
-    }
-
-    // Expo AV for Expo has setPositionAsync as an API to move to a particular location of the video
-    if (videoRef.current && videoRef.current.setPositionAsync) {
-      videoRef.current.setPositionAsync(progress * 1000);
     }
   };
 
@@ -605,6 +583,7 @@ export const ImageGallery = <
                               offsetScale={offsetScale}
                               paused={photo.paused || false}
                               previous={selectedIndex > i}
+                              repeat={true}
                               scale={scale}
                               screenHeight={screenHeight}
                               selected={selectedIndex === i}
@@ -668,7 +647,6 @@ export const ImageGallery = <
           accessibilityLabel={'Image Gallery Footer'}
           duration={imageGalleryAttachments[selectedIndex].duration || 0}
           onPlayPause={onPlayPause}
-          onProgressDrag={onProgressDrag}
           opacity={headerFooterOpacity}
           openGridView={openGridView}
           paused={imageGalleryAttachments[selectedIndex].paused || false}

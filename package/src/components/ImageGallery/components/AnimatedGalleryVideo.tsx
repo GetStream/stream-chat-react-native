@@ -36,6 +36,7 @@ export type AnimatedGalleryVideoType = {
   translateX: Animated.SharedValue<number>;
   translateY: Animated.SharedValue<number>;
   videoRef: React.RefObject<VideoType>;
+  repeat?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -62,6 +63,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
       offsetScale,
       paused,
       previous,
+      repeat,
       scale,
       screenHeight,
       selected,
@@ -192,6 +194,7 @@ export const AnimatedGalleryVideo: React.FC<AnimatedGalleryVideoType> = React.me
             onPlaybackStatusUpdate={onPlayBackStatusUpdate}
             onProgress={onProgress}
             paused={paused}
+            repeat={repeat}
             resizeMode='contain'
             style={style}
             testID='video-player'

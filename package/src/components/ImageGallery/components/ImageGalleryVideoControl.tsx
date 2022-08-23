@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 
 export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlProps> = React.memo(
   (props) => {
-    const { duration, onPlayPause, onProgressDrag, paused, progress } = props;
+    const { duration, onPlayPause, paused, progress } = props;
 
     const videoDuration = duration
       ? duration / 3600 >= 1
@@ -91,7 +91,6 @@ export const ImageGalleryVideoControl: React.FC<ImageGalleryFooterVideoControlPr
           duration={duration}
           filledColor={static_white}
           onPlayPause={onPlayPause}
-          onProgressDrag={onProgressDrag}
           progress={progress}
           testID={'progress-control'}
           width={180}

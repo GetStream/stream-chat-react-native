@@ -64,22 +64,25 @@ describe('ImageGallery', () => {
   });
 
   it('handle handleLoad function when video item present and payload duration is available', () => {
+    const attachment = generateVideoAttachment({ type: 'video' });
+    const message = generateMessage({
+      attachments: [attachment],
+    });
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
-          generateMessage({
-            attachments: [generateVideoAttachment({ type: 'video' })],
-          }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
     const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
-      fireEvent(videoItemComponent, 'handleLoad', {
-        duration: 10,
-      });
+      fireEvent(
+        videoItemComponent,
+        'handleLoad',
+        `photoId-${message.id}-${attachment.asset_url}`,
+        10,
+      );
     });
 
     const videoDurationComponent = getByA11yLabel('Video Duration');
@@ -110,26 +113,32 @@ describe('ImageGallery', () => {
   });
 
   it('handle handleProgress function when video item present and payload is well defined', () => {
+    const attachment = generateVideoAttachment({ type: 'video' });
+    const message = generateMessage({
+      attachments: [attachment],
+    });
+
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
-          generateMessage({
-            attachments: [generateVideoAttachment({ type: 'video' })],
-          }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
     const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
-      fireEvent(videoItemComponent, 'handleLoad', {
-        duration: 10,
-      });
-      fireEvent(videoItemComponent, 'handleProgress', {
-        currentTime: 3,
-        seekableDuration: 10,
-      });
+      fireEvent(
+        videoItemComponent,
+        'handleLoad',
+        `photoId-${message.id}-${attachment.asset_url}`,
+        10,
+      );
+      fireEvent(
+        videoItemComponent,
+        'handleProgress',
+        `photoId-${message.id}-${attachment.asset_url}`,
+        0.3,
+      );
     });
 
     const progressDurationComponent = getByA11yLabel('Progress Duration');
@@ -166,22 +175,25 @@ describe('ImageGallery', () => {
   });
 
   it('handle handleEnd function when video item present', () => {
+    const attachment = generateVideoAttachment({ type: 'video' });
+    const message = generateMessage({
+      attachments: [attachment],
+    });
     const { getByA11yLabel } = render(
       getComponent({
-        images: [
-          generateMessage({
-            attachments: [generateVideoAttachment({ type: 'video' })],
-          }),
-        ] as unknown as MessageType<DefaultStreamChatGenerics>[],
+        images: [message] as unknown as MessageType<DefaultStreamChatGenerics>[],
       }),
     );
 
     const videoItemComponent = getByA11yLabel('Image Gallery Video');
 
     act(() => {
-      fireEvent(videoItemComponent, 'handleLoad', {
-        duration: 10,
-      });
+      fireEvent(
+        videoItemComponent,
+        'handleLoad',
+        `photoId-${message.id}-${attachment.asset_url}`,
+        10,
+      );
       fireEvent(videoItemComponent, 'handleEnd');
     });
 

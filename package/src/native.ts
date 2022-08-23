@@ -196,6 +196,7 @@ export type VideoType = {
   onPlaybackStatusUpdate?: (playbackStatus: PlaybackStatus) => void;
   onProgress?: (data: VideoProgressData) => void;
   onReadyForDisplay?: () => void;
+  repeat?: boolean;
   replayAsync?: () => void;
   resizeMode?: string;
   seek?: (progress: number) => void;
