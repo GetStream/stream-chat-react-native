@@ -1,5 +1,19 @@
 # Change Log
 
+## [4.15.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.14.0...v4.15.0) (2022-08-17)
+
+
+### Features
+
+* add asset url for file attachment's press event emitter ([#1637](https://github.com/GetStream/stream-chat-react-native/issues/1637)) ([9df8e59](https://github.com/GetStream/stream-chat-react-native/commit/9df8e59c137e48d87da149e0dce8094addabd6b3))
+
+
+### Bug Fixes
+
+* channel preview message only updates on the first last message ([#1636](https://github.com/GetStream/stream-chat-react-native/issues/1636)) ([920a776](https://github.com/GetStream/stream-chat-react-native/commit/920a776ade74cecf65a35b44f2cccc396f9b0410))
+* generics typing issues if js client is above 6.7.1 ([#1645](https://github.com/GetStream/stream-chat-react-native/issues/1645)) ([79296e0](https://github.com/GetStream/stream-chat-react-native/commit/79296e023d7f72c4c3ca6fe0951254ea2948cc72))
+* make onPressMessage possible to override for TextLink ([#1635](https://github.com/GetStream/stream-chat-react-native/issues/1635)) ([0a57442](https://github.com/GetStream/stream-chat-react-native/commit/0a574421a56aa0e536b6ad9043169b2f2f111d08))
+
 ## [4.14.0](https://github.com/GetStream/stream-chat-react-native/compare/v4.13.0...v4.14.0) (2022-08-10)
 
 
